@@ -1,0 +1,76 @@
+Grid2.statuses = {}
+Grid2.statusTypes = {}
+
+local status = {}
+
+function status:init(name)
+	LibStub("AceEvent-3.0"):Embed(self)
+	self.indicators = {}
+	self.name = name
+end
+
+function status:RegisterIndicator(indicator)
+	if self.indicators[indicator] then return end
+	local enabled = next(self.indicators)
+	self.indicators[indicator] = true
+	if not enabled then
+		self:OnEnable()
+		self.enabled = true
+	end
+end
+
+function status:UnregisterIndicator(indicator)
+	if not self.indicators[indicator] then return end
+	self.indicators[indicator] = nil
+	local enabled = next(self.indicators)
+	if not enabled then
+		self:OnDisable()
+		self.enabled = nil
+	end
+end
+
+function status:UpdateIndicators(unit)
+	local parent = Grid2:GetUnitFrame(unit)
+	if parent then
+		for indicator in pairs(self.indicators) do
+			indicator:Update(parent, unit)
+		end
+	end
+end
+
+function status:HasRange()
+	return self.range
+end
+
+function status:IsInRange(unitid, range)
+	return not self.range or (range and self.range >= range)
+end
+
+Grid2.statusPrototype = {
+	__index = status,
+	new = function (self, ...)
+		local e = setmetatable({}, self)
+		e:init(...)
+		return e
+	end,
+}
+
+function Grid2:RegisterStatus(status, types)
+	assert(not self.statuses[status.name])
+	self.statuses[status.name] = status
+	for _, type in ipairs(types) do
+		local t = self.statusTypes[type]
+		if not t then
+			t = {}
+			self.statusTypes[type] = t
+		end
+		t[#t+1] = status
+	end
+	if self.db then
+		self:InitializeElement("status", status)
+	end
+end
+
+function Grid2:IterateStatuses(type)
+	return next, type and self.statusTypes[type] or self.statuses
+end

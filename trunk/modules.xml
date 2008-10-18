@@ -1,0 +1,21 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+<Script file="modules\IndicatorAlpha.lua"/>
+<Script file="modules\IndicatorBorder.lua"/>
+<Script file="modules\IndicatorBar.lua"/>
+<Script file="modules\IndicatorText.lua"/>
+<Script file="modules\IndicatorIcon.lua"/>
+<Script file="modules\IndicatorCorner.lua"/>
+<Script file="modules\StatusName.lua"/>
+<Script file="modules\StatusHealth.lua"/>
+<Script file="modules\StatusMana.lua"/>
+<Script file="modules\StatusClassColor.lua"/>
+<Script file="modules\StatusTarget.lua"/>
+<Script file="modules\StatusAggro.lua"/>
+<Script file="modules\StatusAuras.lua"/>
+<Script file="modules\StatusHeals.lua"/>
+<Script file="modules\StatusRange.lua"/>
+<Script file="modules\StatusVoiceComm.lua"/>
+
+</Ui>

@@ -1,0 +1,42 @@
+## Interface: 20400
+## Title: Grid 2
+## Notes: A modular, lightweight and screen-estate saving grid of party/raid unit frames
+## Author: Pastamancer & Maia, Jerry
+## Version: $Rev: 74477 $
+## X-ReleaseDate: "$Date: 2008-05-20 02:51:54 +0200 (mar., 20 mai 2008) $"
+## X-Website: http://wowace.com/wiki/Grid
+## X-Category: UnitFrame
+## X-AceForum: 2525
+## X-RelSite-WoWI: 5747
+
+## DefaultState: disabled
+## LoadOnDemand: 0
+
+## X-Embeds: Ace3, LibGratuity-3.0, LibBanzai-2.0, LibHealComm-3.0
+## OptionalDeps: Ace3, LibGratuity-3.0, LibBanzai-2.0, LibHealComm-3.0
+
+## SavedVariables: Grid2DB
+
+## Non-Ace Libraries
+#libs\UTF8\utf8data.lua
+libs\UTF8\utf8.lua
+
+## Ace Libraries
+embeds.xml
+
+#Locales
+locales.xml
+
+# Grid
+GridCore.lua
+GridUtils.lua
+GridBlink.lua
+GridRoster.lua
+GridRange.lua
+GridLayout.lua
+GridLayoutLayouts.lua
+GridFrame.lua
+GridIndicator.lua
+GridStatus.lua
+
+modules.xml

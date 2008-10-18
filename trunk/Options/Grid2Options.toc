@@ -1,0 +1,13 @@
+## Interface: 20400
+## Title: Grid 2 Options
+## LoadOnDemand: 1
+
+locales.xml
+core.lua
+GridCore.lua
+GridFrame.lua
+GridLayout.lua
+GridBlink.lua
+GridMedia.lua
+GridIndicators.lua
+GridStatuses.lua
