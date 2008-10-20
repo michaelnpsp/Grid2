@@ -1,13 +1,11 @@
-## Interface: 20400
+## Interface: 30000
 ## Title: Grid 2
 ## Notes: A modular, lightweight and screen-estate saving grid of party/raid unit frames
 ## Author: Pastamancer & Maia, Jerry
-## Version: $Rev: 74477 $
-## X-ReleaseDate: "$Date: 2008-05-20 02:51:54 +0200 (mar., 20 mai 2008) $"
-## X-Website: http://wowace.com/wiki/Grid
+## Version: $Rev$
+## X-ReleaseDate: "$Date$"
+## X-Website: http://wowace.com/projects/grid2/
 ## X-Category: UnitFrame
-## X-AceForum: 2525
-## X-RelSite-WoWI: 5747
 
 ## DefaultState: disabled
 ## LoadOnDemand: 0

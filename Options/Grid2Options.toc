@@ -1,6 +1,7 @@
-## Interface: 20400
+## Interface: 30000
 ## Title: Grid 2 Options
 ## LoadOnDemand: 1
+## Dependencies: Grid2
 
 locales.xml
 core.lua
