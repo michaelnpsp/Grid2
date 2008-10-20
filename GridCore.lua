@@ -71,7 +71,7 @@ function modulePrototype:RegisterModule(name, module)
 	if not module.db then
 		module.db = self.core.db:RegisterNamespace(name, module.defaultDB)
 	end
-	
+
 	if Grid2Options then
 		Grid2Options:AddModule(self.name, name, module)
 	end
@@ -117,7 +117,7 @@ function Grid2:OnInitialize()
 	self:RegisterChatCommand("grid2", "OnChatCommand")
 	self:RegisterChatCommand("gr2", "OnChatCommand")
 	local optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Grid2", "Grid2")
-	
+
 	local prev_OnShow = optionsFrame:GetScript("OnShow")
 	optionsFrame:SetScript("OnShow", function (self, ...)
 		Grid2:LoadOptions()
@@ -127,7 +127,7 @@ function Grid2:OnInitialize()
 
 	self.optionsFrame = optionsFrame
 	self:RegisterModules()
-	
+
 	for _, indicator in self:IterateIndicators() do
 		self:InitializeElement("indicator", indicator)
 	end
@@ -162,42 +162,43 @@ function Grid2:OnEnable()
 	self:RegisterEvent("RAID_ROSTER_UPDATED", "RosterUpdated")
 	self:RegisterEvent("UNIT_PET")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
-	
+
 	self.db.RegisterCallback(self, "OnProfileChanged")
-	
+
 	self:SendMessage("Grid_Enabled")
 
 	self:EnableModules()
-	
+
 	self:SetupIndicators()
 end
 
 local config = {
 	-- @FIXME, this should be configurable
-	["text-up"] = { name = 99, },
+	["text-up"] = { healthdeficit = 90, name = 80, },
 	["text-up-color"] = { classcolor = 99 },
 	["text-down"] = { death = 99, heals = 80 },
 	["text-down-color"] = { death = 99, heals = 80 },
-	
-	bar = { health = 99 },
-	barcolor = { classcolor = 99 },
-	
-	border = { 
+
+	["health-bar"] = { health = 99 },
+	["health-bar-color"] = { classcolor = 99 },
+	["heals-bar"] = { heals = 99 },
+
+	border = {
 		target = 99,
 		voice = 80,
 		lowmana = 70,
 		lowhealth = 60,
 	},
-	
-	["corner-1"] = { aggro = 99 },
-	["corner-3"] = { heals = 99 },
-	
+
+	["corner-bottomleft"] = { aggro = 99 },
+	["corner-topright"] = { heals = 99 },
+
 	alpha = { range = 99 },
 }
 
 function Grid2:SetupIndicators()
 	local debuffPriorities
-	
+
 	local class = select(2, UnitClass("player"))
 	if class == "DRUID" then
 		debuffPriorities = {
@@ -218,21 +219,21 @@ function Grid2:SetupIndicators()
 			end
 		end
 		self:RegisterStatus(lifebloom, { "color" })
-		self.indicators["corner-4"]:RegisterStatus(lifebloom, 99)
-		
+		self.indicators["corner-topleft"]:RegisterStatus(lifebloom, 99)
+
 		local rejuv = self:CreateBuffStatus(GetSpellInfo(774), true)
 		function rejuv:GetColor()
 			return 0, 0, 1
 		end
 		self:RegisterStatus(rejuv, { "color" })
-		self.indicators["corner-4"]:RegisterStatus(rejuv, 89)
-		
+		self.indicators["corner-topleft"]:RegisterStatus(rejuv, 89)
+
 		local regrowth = self:CreateBuffStatus(GetSpellInfo(8936), true)
 		function regrowth:GetColor()
 			return 1, .5, .1
 		end
 		self:RegisterStatus(regrowth, { "color" })
-		self.indicators["corner-4"]:RegisterStatus(regrowth, 79)
+		self.indicators["corner-topleft"]:RegisterStatus(regrowth, 79)
 	elseif class == "PRIEST" then
 		debuffPriorities = {
 			["debuff-Disease"] = 90,
@@ -245,14 +246,14 @@ function Grid2:SetupIndicators()
 			return 1, 1, 1
 		end
 		self:RegisterStatus(renew, { "color" })
-		self.indicators["corner-4"]:RegisterStatus(renew, 50)
-		
+		self.indicators["corner-topleft"]:RegisterStatus(renew, 50)
+
 		local weakened = self:CreateDebuffStatus((GetSpellInfo(6788)))
 		function weakened:GetColor()
 			return 1, 0, 0
 		end
 		self:RegisterStatus(weakened, { "color" })
-		self.indicators["corner-4"]:RegisterStatus(weakened, 99)
+		self.indicators["corner-topleft"]:RegisterStatus(weakened, 99)
 	elseif class == "PALADIN" then
 		debuffPriorities = {
 			["debuff-Disease"] = 90,
@@ -265,7 +266,7 @@ function Grid2:SetupIndicators()
 			return 1, 0, 0
 		end
 		self:RegisterStatus(forbearance, { "color" })
-		self.indicators["corner-4"]:RegisterStatus(forbearance, 99)
+		self.indicators["corner-topleft"]:RegisterStatus(forbearance, 99)
 	elseif class == "SHAMAN" then
 		debuffPriorities = {
 			["debuff-Poison"] = 90,
@@ -288,7 +289,7 @@ function Grid2:SetupIndicators()
 			["debuff-Disease"] = 10,
 		}
 	end
-	config["corner-2"] = debuffPriorities
+	config["corner-bottomright"] = debuffPriorities
 	config["icon-center"] = debuffPriorities
 
 	for indicatorName, configs in pairs(config) do
@@ -360,7 +361,7 @@ function Grid2:RosterUpdated()
 			instType = "solo"
 		end
 	end
-	
+
 	self:Debug("RosterUpdated", groupType, "=>", instType)
 
 	if groupType ~= instType then

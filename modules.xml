@@ -7,6 +7,7 @@
 <Script file="modules\IndicatorText.lua"/>
 <Script file="modules\IndicatorIcon.lua"/>
 <Script file="modules\IndicatorCorner.lua"/>
+
 <Script file="modules\StatusName.lua"/>
 <Script file="modules\StatusHealth.lua"/>
 <Script file="modules\StatusMana.lua"/>
