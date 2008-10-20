@@ -7,7 +7,6 @@ local function Corner_Create(self, parent)
 	Corner:SetHeight(cornerSize)
 	Corner:SetBackdrop({
 		bgFile = "Interface\\Addons\\Grid2\\white16x16", tile = true, tileSize = 16,
-		edgeFile = "Interface\\Addons\\Grid2\\white16x16", edgeSize = 0,
 		insets = {left = 0, right = 0, top = 0, bottom = 0},
 	})
 	Corner:SetBackdropBorderColor(0,0,0,1)
@@ -50,9 +49,9 @@ local Corner_defaultDB = {
 	}
 }
 
-local function CreateCornerIndicator(name, anchor, anchorRel, offsetx, offsety)
+function Grid2:CreateCornerIndicator(name, anchor, anchorRel, offsetx, offsety)
 	name = "corner-"..name
-	local Corner = Grid2.indicatorPrototype:new(name)
+	local Corner = self.indicatorPrototype:new(name)
 
 	Corner.anchor = anchor
 	Corner.anchorRel = anchorRel
@@ -65,12 +64,12 @@ local function CreateCornerIndicator(name, anchor, anchorRel, offsetx, offsety)
 	Corner.SetCornerSize = Corner_SetCornerSize
 	Corner.defaultDB = Corner_defaultDB
 
-	Grid2:RegisterIndicator(Corner, { "color" })
+	self:RegisterIndicator(Corner, { "color" })
+
+	return Corner
 end
 
-CreateCornerIndicator(1, "BOTTOMLEFT", "BOTTOMLEFT", 1, 1)
-CreateCornerIndicator(2, "BOTTOMRIGHT", "BOTTOMRIGHT", -1, 1)
-CreateCornerIndicator(3, "TOPRIGHT", "TOPRIGHT", -1, -1)
-CreateCornerIndicator(4, "TOPLEFT", "TOPLEFT", 1, -1)
-
-Grid2.CreateCornerIndicator = CreateCornerIndicator
+Grid2:CreateCornerIndicator("bottomleft", "BOTTOMLEFT", "BOTTOMLEFT", 1, 1)
+Grid2:CreateCornerIndicator("bottomright", "BOTTOMRIGHT", "BOTTOMRIGHT", -1, 1)
+Grid2:CreateCornerIndicator("topright", "TOPRIGHT", "TOPRIGHT", -1, -1)
+Grid2:CreateCornerIndicator("topleft", "TOPLEFT", "TOPLEFT", 1, -1)

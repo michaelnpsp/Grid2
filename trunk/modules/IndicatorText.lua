@@ -63,9 +63,9 @@ local function TextColor_OnUpdate(self, parent, unit, status)
 	end
 end
 
-local function CreateTextIndicator(name, anchor, anchorRel, offsetx, offsety)
+function Grid2:CreateTextIndicator(name, anchor, anchorRel, offsetx, offsety)
 	name = "text-"..name
-	local Text = Grid2.indicatorPrototype:new(name)
+	local Text = self.indicatorPrototype:new(name)
 
 	Text.anchor = anchor
 	Text.anchorRel = anchorRel
@@ -78,21 +78,19 @@ local function CreateTextIndicator(name, anchor, anchorRel, offsetx, offsety)
 	Text.SetTextFont = Text_SetTextFont
 	Text.defaultDB = Text_defaultDB
 
-	Grid2:RegisterIndicator(Text, { "text" })
-	
-	local TextColor = Grid2.indicatorPrototype:new(name.."-color")
+	self:RegisterIndicator(Text, { "text" })
+
+	local TextColor = self.indicatorPrototype:new(name.."-color")
 
 	TextColor.textname = name
 	TextColor.Create = TextColor_Create
 	TextColor.Layout = TextColor_Layout
 	TextColor.OnUpdate = TextColor_OnUpdate
 
-	Grid2:RegisterIndicator(TextColor, { "color" })
-	
+	self:RegisterIndicator(TextColor, { "color" })
+
 	return Text, TextColor
 end
 
-CreateTextIndicator("up", "BOTTOM", "CENTER", 0, 4)
-CreateTextIndicator("down", "TOP", "CENTER", 0, -4)
-
-Grid2.CreateTextIndicator = CreateTextIndicator
+Grid2:CreateTextIndicator("up", "BOTTOM", "CENTER", 0, 4)
+Grid2:CreateTextIndicator("down", "TOP", "CENTER", 0, -4)

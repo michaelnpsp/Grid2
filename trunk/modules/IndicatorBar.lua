@@ -1,8 +1,6 @@
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
-local Bar = Grid2.indicatorPrototype:new("bar")
-
-function Bar:Create(parent)
+local function Bar_Create(self, parent)
 	local media = LibStub("LibSharedMedia-3.0", true)
 	local texture = media and media:Fetch("statusbar", self.db.profile.texture) or "Interface\\Addons\\Grid2\\gradient32x32"
 
@@ -16,24 +14,25 @@ function Bar:Create(parent)
 	parent.Bar:SetValue(1)
 	parent.Bar:SetStatusBarColor(0,0,0,0.8)
 
-	parent.BarBG:SetPoint("CENTER")
-	parent.Bar:SetPoint("CENTER")
+	parent.BarBG:SetPoint(self.anchor, parent, self.anchorRel, self.offsetx, self.offsety)
+	parent.Bar:SetPoint(self.anchor, parent, self.anchorRel, self.offsetx, self.offsety)
 	self:SetOrientation(parent)
 end
 
-function Bar:Layout(parent)
-	local w, h = parent:GetWidth() - 2, parent:GetHeight() - 2
+local function Bar_Layout(self, parent)
+	local inset = self.db.profile.inset or 2
+	local w, h = parent:GetWidth() - inset, parent:GetHeight() - inset
 	parent.BarBG:SetWidth(w)
 	parent.BarBG:SetHeight(h)
 	parent.Bar:SetWidth(w)
 	parent.Bar:SetHeight(h)
 end
 
-function Bar:GetBlinkFrame(parent)
+local function Bar_GetBlinkFrame(self, parent)
 	return parent.Bar
 end
 
-function Bar:OnUpdate(parent, unit, status)
+local function Bar_OnUpdate(self, parent, unit, status)
 	if status then
 		parent.Bar:SetValue(status:GetPercent(unit))
 	else
@@ -41,34 +40,31 @@ function Bar:OnUpdate(parent, unit, status)
 	end
 end
 
-function Bar:SetOrientation(parent, orientation)
+local function Bar_SetOrientation(self, parent, orientation)
 	orientation = orientation or self.db.profile.orientation
 	parent.Bar:SetOrientation(orientation)
 end
 
-function Bar:SetTexture(parent, texture)
+local function Bar_SetTexture(self, parent, texture)
 	parent.BarBG:SetTexture(texture)
 	parent.Bar:SetStatusBarTexture(texture)
 end
 
-Bar.defaultDB = {
+local Bar_defaultDB = {
 	profile = {
 		orientation = "VERTICAL",
 		texture = "Gradient",
+		inset = 2
 	}
 }
 
-Grid2:RegisterIndicator(Bar, { "percent" })
-
-local BarColor = Grid2.indicatorPrototype:new("barcolor")
-
-function BarColor:Create(parent)
+local function BarColor_Create(self, parent)
 end
 
-function BarColor:Layout(parent)
+local function BarColor_Layout(self, parent)
 end
 
-function BarColor:OnUpdate(parent, unit, status)
+local function BarColor_OnUpdate(self, parent, unit, status)
 	if status then
 		self:SetBarColor(parent, status:GetColor(unit))
 	else
@@ -76,7 +72,7 @@ function BarColor:OnUpdate(parent, unit, status)
 	end
 end
 
-function BarColor:SetBarColor(parent, r, g, b, a)
+local function BarColor_SetBarColor(self, parent, r, g, b, a)
 	if self.db.profile.invertBarColor then
 		parent.Bar:SetStatusBarColor(r, g, b, a)
 		parent.BarBG:SetVertexColor(0, 0, 0, 0)
@@ -86,10 +82,41 @@ function BarColor:SetBarColor(parent, r, g, b, a)
 	end
 end
 
-BarColor.defaultDB = {
+local BarColor_defaultDB = {
 	profile = {
 		invertBarColor = false,
 	}
 }
 
-Grid2:RegisterIndicator(BarColor, { "color" })
+function Grid2:CreateBarIndicator(name, anchor, anchorRel, offsetx, offsety)
+	name = "bar-"..name
+
+	local Bar = self.indicatorPrototype:new(name)
+	Bar.anchor = anchor
+	Bar.anchorRel = anchorRel
+	Bar.offsetx = offsetx
+	Bar.offsety = offsety
+	Bar.Create = Bar_Create
+	Bar.Layout = Bar_Layout
+	Bar.GetBlinkFrame = Bar_GetBlinkFrame
+	Bar.OnUpdate = Bar_OnUpdate
+	Bar.SetOrientation = Bar_SetOrientation
+	Bar.SetTexture = Bar_SetTexture
+	Bar.defaultDB = Bar_defaultDB
+
+	self:RegisterIndicator(Bar, { "percent" })
+
+	local BarColor = self.indicatorPrototype:new(name.."-color")
+	BarColor.Create = BarColor_Create
+	BarColor.Layout = BarColor_Layout
+	BarColor.OnUpdate = BarColor_OnUpdate
+	BarColor.SetBarColor = BarColor_SetBarColor
+	BarColor.defaultDB = BarColor_defaultDB
+
+	self:RegisterIndicator(BarColor, { "color" })
+
+	return Bar, BarColor
+end
+
+Grid2:CreateBarIndicator("health", "CENTER")
+Grid2:CreateBarIndicator("heals", "CENTER")

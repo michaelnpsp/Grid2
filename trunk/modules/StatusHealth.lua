@@ -3,6 +3,7 @@ local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 local Health = Grid2.statusPrototype:new("health")
 local LowHealth = Grid2.statusPrototype:new("lowhealth")
 local Death = Grid2.statusPrototype:new("death")
+local HealthDeficit = Grid2.statusPrototype:new("healthdeficit")
 
 Health.defaultDB = {
 	profile = {
@@ -16,6 +17,7 @@ local function Frame_OnUnitHealthChanged(self, _, unit)
 	if Health.enabled then Health:UpdateIndicators(unit) end
 	if LowHealth.enabled then LowHealth:UpdateIndicators(unit) end
 	if Death.enabled then Death:UpdateIndicators(unit) end
+	if HealthDeficit.enabled then HealthDeficit:UpdateIndicators(unit) end
 end
 
 local EnableHealthFrame
@@ -124,3 +126,27 @@ function Death:GetColor(unit)
 end
 
 Grid2:RegisterStatus(Death, { "text", "color" })
+
+HealthDeficit.defaultDB = {
+	profile = {
+		threshold = 0.2,
+	}
+}
+
+function HealthDeficit:OnEnable()
+	EnableHealthFrame(true)
+end
+
+function HealthDeficit:OnDisable()
+	EnableHealthFrame(false)
+end
+
+function HealthDeficit:IsActive(unit)
+	return (1 - Health:GetPercent(unit)) > self.db.profile.threshold
+end
+
+function HealthDeficit:GetText(unit)
+	return Grid2:GetShortNumber(UnitHealth(unit) - UnitHealthMax(unit))
+end
+
+Grid2:RegisterStatus(HealthDeficit, {"text"})

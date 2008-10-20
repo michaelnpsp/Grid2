@@ -3,6 +3,11 @@ if not HealComm then return end
 local next = next
 local select = select
 
+local playerName = UnitName"player"
+
+local playerHealingTargetNames = {}
+local playerHealingSize
+
 local Heals = Grid2.statusPrototype:new("heals")
 
 local rosterCache = setmetatable({}, { __index = function (self, unit)
@@ -59,13 +64,24 @@ function Heals:OnDisable()
 	HealComm.UnregisterCallback(self, "HealComm_DirectHealStop")
 	HealComm.UnregisterCallback(self, "HealComm_DirectHealDelayed")
 	HealComm.UnregisterCallback(self, "HealComm_HealModifierUpdate")
-	
+
 	self:UnregisterMessage("Grid_RosterUpdated")
 	self:UnregisterMessage("Grid_PetChanged")
 end
 
 function Heals:Update(event, healerName, healSize, endTime, ...)
-	-- @FIXME: fix self heals.
+	if healerName == playerName then
+		if event == 'HealComm_DirectHealStart' then
+			playerHealingSize = healSize > 0 and healSize
+			wipe(playerHealingTargetNames)
+			for i = 1, select("#", ...) do
+				playerHealingTargetNames[select(i, ...)] = true
+			end
+		else
+			playerHealingSize = nil
+		end
+	end
+
 	for i = 1, select("#", ...) do
 		local name = select(i, ...)
 		local unit = invRosterCache[name]
@@ -74,8 +90,26 @@ function Heals:Update(event, healerName, healSize, endTime, ...)
 end
 
 function Heals:IsActive(unit)
-	local heal = HealComm:UnitIncomingHealGet(rosterCache[unit], GetTime() + 100)
+	local name = rosterCache[unit]
+	if playerHealingSize and playerHealingTargetNames[name] then return true end
+	local heal = HealComm:UnitIncomingHealGet(name, GetTime() + 100)
 	return heal and heal > 0
+end
+
+function Heals:GetHealingOnUnit(unit)
+	local name = rosterCache[unit]
+
+	local heal
+	if playerHealingSize and playerHealingTargetNames[name] then
+		heal = playerHealingSize
+	else
+		heal = 0
+	end
+
+	otherHeals = HealComm:UnitIncomingHealGet(name, GetTime() + 100)
+	if otherHeals then heal = heal + otherHeals end
+	heal = heal * HealComm:UnitHealModifierGet(name)
+	return heal
 end
 
 Heals.defaultDB = {
@@ -90,10 +124,12 @@ function Heals:GetColor(unit)
 end
 
 function Heals:GetText(unit)
-	local name = rosterCache[unit]
-	local heal = HealComm:UnitIncomingHealGet(name, GetTime() + 100)
-	heal = heal * HealComm:UnitHealModifierGet(name)
-	return Grid2:GetShortNumber(heal, true)
+	return Grid2:GetShortNumber(self:GetHealingOnUnit(unit), true)
 end
 
-Grid2:RegisterStatus(Heals, { "color", "text" })
+function Heals:GetPercent(unit)
+	-- @FIXME: I don't like +UnitHealth here
+	return (self:GetHealingOnUnit(unit) + UnitHealth(unit)) / UnitHealthMax(unit)
+end
+
+Grid2:RegisterStatus(Heals, { "color", "text", "percentage" })
