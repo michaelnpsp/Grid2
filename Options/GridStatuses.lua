@@ -40,8 +40,8 @@ local function MakeClassColorStatusOptions()
 	local options = {
 		hostile = {
 			type = "toggle",
-			name = "Color Charmed Unit",
-			desc = "Color Units that are charmed.",
+			name = L["Color Charmed Unit"],
+			desc = L["Color Units that are charmed."],
 			order = 1,
 			get = function ()
 				return profile.colorHostile
@@ -56,7 +56,7 @@ local function MakeClassColorStatusOptions()
 			args = {
 				hostile = {
 					type = "color",
-					name = "Charmed unit Color",
+					name = L["Charmed unit Color"],
 					get = function ()
 						local c = profile.colors.HOSTILE
 						return c.r, c.g, c.b, c.a
@@ -71,7 +71,7 @@ local function MakeClassColorStatusOptions()
 				},
 				defunit = {
 					type = "color",
-					name = "Default unit Color",
+					name = L["Default unit Color"],
 					get = function ()
 						local c = profile.colors.UNKNOWN_UNIT
 						return c.r, c.g, c.b, c.a
@@ -86,7 +86,7 @@ local function MakeClassColorStatusOptions()
 				},
 				defpet = {
 					type = "color",
-					name = "Default pet Color",
+					name = L["Default pet Color"],
 					get = function ()
 						local c = profile.colors.UNKNOWN_PET
 						return c.r, c.g, c.b, c.a
@@ -110,7 +110,7 @@ local function MakeClassColorStatusOptions()
 	} do
 		options.colors.args[type] = {
 			type = "color",
-			name = ("%s Color"):format(type),
+			name = (L["%s Color"]):format(type),
 			get = function ()
 				local c = profile.colors[type]
 				return c.r, c.g, c.b, c.a
@@ -133,7 +133,7 @@ Grid2Options:AddElement("status",  Grid2.statuses.classcolor, MakeClassColorStat
 Grid2Options:AddElement("status",  Grid2.statuses.health, {
 	deadAsFullHealth = {
 		type = "toggle",
-		name = "Show dead as having Full Health",
+		name = L["Show dead as having Full Health"],
 		get = function ()
 			return Grid2.statuses.health.db.profile.deadAsFullHealth
 		end,
@@ -146,8 +146,8 @@ Grid2Options:AddElement("status",  Grid2.statuses.health, {
 Grid2Options:AddElement("status",  Grid2.statuses.range, {
 	default = {
 		type = "range",
-		name = "Default alpha",
-		desc = "Default alpha value when units are way out of range.",
+		name = L["Default alpha"],
+		desc = L["Default alpha value when units are way out of range."],
 		min = 0,
 		max = 1,
 		step = 0.01,
@@ -160,8 +160,8 @@ Grid2Options:AddElement("status",  Grid2.statuses.range, {
 	},
 	update = {
 		type = "range",
-		name = "Update rate",
-		desc = "Rate at which the range gets updated",
+		name = L["Update rate"],
+		desc = L["Rate at which the range gets updated"],
 		min = 0,
 		max = 5,
 		step = 0.1,

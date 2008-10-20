@@ -109,6 +109,16 @@ L["Adjust the frequency of the Blink effect."] = true
 
 L["Color"] = true
 L["Color for %s."] = true
+L["Color Charmed Unit"] = true
+L["Color Units that are charmed."] = true
 L["Unit Colors"] = true
+L["Charmed unit Color"] = true
+L["Default unit Color"] = true
+L["%s Color"] = true
+L["Show dead as having Full Health"] = true
+L["Default alpha"] = true
+L["Default alpha value when units are way out of range."] = true
+L["Update rate"] = true
+L["Rate at which the range gets updated"] = true
 L["Invert Bar Color"] = true
 L["Swap foreground/background colors on bars."] = true
