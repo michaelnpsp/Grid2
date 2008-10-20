@@ -195,7 +195,7 @@ L["Health threshold"] = "생명력 수치"
 L["Only show deficit above % damage."] = "결손량을 표시할 백분율(%)을 설정합니다."
 L["Color deficit based on class."] = "직업에 기준을 둔 결손 색상을 사용합니다."
 L["Low HP threshold"] = "생명력 낮음 수치"
-L["Set the HP % for the low HP warning."] = "생명력 낮음 경고를 위한 백분율을 설정합니다."
+L["Set the HP % for the low HP warning."] = "생명력 낮음 경고를 위한 백분율(%)을 설정합니다."
 
 --}}}
 --{{{ GridStatusRange

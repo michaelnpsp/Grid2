@@ -99,13 +99,13 @@ L["Adjust the size of the center icon."] = "중앙 아이콘의 크기를 조정
 L["Corner Size"] = "모서리 크기"
 L["Adjust the size of the corner indicators."] = "모서리 지시기의 크기를 조정합니다."
 
-L["Blink effect"] = "점멸 효과"
-L["Select the type of Blink effect used by Grid2."] = "Grid2의 점멸 효과 사용의 유형을 선택합니다."
+L["Blink effect"] = "깜박임 효과"
+L["Select the type of Blink effect used by Grid2."] = "Grid2에 사용할 깜박임 효과의 유형을 선택합니다."
 L["None"] = "없음"
-L["Blink"] = "점멸"
+L["Blink"] = "깜박임"
 L["Flash"] = "반짝임"
-L["Blink Frequency"] = "점멸 빈도"
-L["Adjust the frequency of the Blink effect."] = "점멸 효과의 빈도를 조정합니다."
+L["Blink Frequency"] = "깜박임 빈도"
+L["Adjust the frequency of the Blink effect."] = "깜박임 효과의 빈도를 조정합니다."
 
 L["Color"] = "색상"
 L["Color for %s."] = "%s 색상"
