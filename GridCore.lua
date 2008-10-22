@@ -137,9 +137,7 @@ function Grid2:OnInitialize()
 end
 
 function Grid2:LoadOptions()
-	if Grid2Options then
-		return Grid2Options
-	end
+	if Grid2Options then return end
 	if not IsAddOnLoaded("Grid2Options") then
 		LoadAddOn("Grid2Options")
 		if Grid2Options then

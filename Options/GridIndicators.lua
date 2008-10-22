@@ -73,7 +73,7 @@ local function AddBarIndicatorOptions(Bar)
 			values={["VERTICAL"] = L["VERTICAL"], ["HORIZONTAL"] = L["HORIZONTAL"]}
 		},
 	}
-	
+
 	if Grid2Options.AddMediaOption then
 		local textureOption = {
 			type = "select",
@@ -159,10 +159,12 @@ end
 
 AddTextIndicatorOptions(Grid2.indicators["text-up"])
 AddTextIndicatorOptions(Grid2.indicators["text-down"])
-AddBarIndicatorOptions(Grid2.indicators.bar)
+AddBarIndicatorOptions(Grid2.indicators["bar-health"])
+AddBarColorIndicatorOptions(Grid2.indicators["bar-health-color"])
+AddBarIndicatorOptions(Grid2.indicators["bar-heals"])
+AddBarColorIndicatorOptions(Grid2.indicators["bar-heals-color"])
 AddIconIndicatorOptions(Grid2.indicators["icon-center"])
-AddCornerIndicatorOptions(Grid2.indicators["corner-1"])
-AddCornerIndicatorOptions(Grid2.indicators["corner-2"])
-AddCornerIndicatorOptions(Grid2.indicators["corner-3"])
-AddCornerIndicatorOptions(Grid2.indicators["corner-4"])
-AddBarColorIndicatorOptions(Grid2.indicators.barcolor)
+AddCornerIndicatorOptions(Grid2.indicators["corner-bottomleft"])
+AddCornerIndicatorOptions(Grid2.indicators["corner-bottomright"])
+AddCornerIndicatorOptions(Grid2.indicators["corner-topright"])
+AddCornerIndicatorOptions(Grid2.indicators["corner-topleft"])

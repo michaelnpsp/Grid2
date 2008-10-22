@@ -114,6 +114,7 @@ L["Color Units that are charmed."] = true
 L["Unit Colors"] = true
 L["Charmed unit Color"] = true
 L["Default unit Color"] = true
+L["Default pet Color"] = true
 L["%s Color"] = true
 L["Show dead as having Full Health"] = true
 L["Default alpha"] = true
