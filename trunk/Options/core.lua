@@ -8,7 +8,7 @@ function Grid2Options:AddModule(parent, name, module, extraOptions)
 	extraOptions = extraOptions or module.extraOptions
 	module.extraOptions = nil
 	if not extraOptions then return end
-	
+
 	local options = {
 		type = "group",
 		name = (module.menuName or module.name),
@@ -33,7 +33,7 @@ function Grid2Options:AddElement(type, element, extraOptions)
 	extraOptions = extraOptions or element.extraOptions
 	element.extraOptions = nil
 	if not extraOptions then return end
-	
+
 	local group = self.options.Grid2.args[type]
 	if not group then
 		group = {
@@ -80,7 +80,7 @@ end
 
 function Grid2Options:Initialize()
 	LibStub("AceConfig-3.0"):RegisterOptionsTable("Grid2", self.options.Grid2)
-	
+
 	local function InitializeModuleOptions(parent)
 		for name, module in parent:IterateModules() do
 			Grid2Options:AddModule(parent.name, name, module)
@@ -95,7 +95,7 @@ function Grid2Options:Initialize()
 	for _, status in Grid2:IterateStatuses() do
 		self:AddElement("status", status)
 	end
-	
+
 	for name, layout in pairs(Grid2Layout.layoutSettings) do
 		self:AddLayout(name, layout)
 	end
@@ -105,7 +105,7 @@ end
 
 function Grid2Options:OnChatCommand(input)
     if not input or input:trim() == "" then
-        InterfaceOptionsFrame_OpenToFrame(Grid2.optionsFrame)
+        InterfaceOptionsFrame_OpenToCategory(Grid2.optionsFrame)
     else
         LibStub("AceConfigCmd-3.0").HandleCommand(Grid2, "grid2", "Grid2", input)
     end
