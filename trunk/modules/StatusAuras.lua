@@ -36,10 +36,10 @@ end
 local DebuffCache = {}
 local function MakeDebuffTypeStatus(type, color)
 	local name = "debuff-"..type
-	
+
 	local c = {}
 	DebuffCache[type] = c
-	
+
 	local status = Grid2.statusPrototype:new(name)
 
 	status.debuffType = type
@@ -51,7 +51,7 @@ local function MakeDebuffTypeStatus(type, color)
 	function status:OnDisable()
 		EnableAuraFrame(false)
 	end
-	
+
 	function status:IsActive(unit)
 		return c[unit] ~= nil
 	end
@@ -66,7 +66,7 @@ local function MakeDebuffTypeStatus(type, color)
 		local color = self.db.profile.color
 		return color.r, color.g, color.b, color.a
 	end
-	
+
 	function status:GetIcon(unit)
 		return c[unit]
 	end
@@ -94,15 +94,10 @@ local function status_IsActive(self, unit)
 	return self.states[unit]
 end
 
-local function status_IsActiveMine(self, unit)
-	return self.states[unit] and self.timelefts[unit]
-end
-
 local function status_IsActiveBlink(self, unit)
-	local timeleft = self.timelefts[unit]
-	if not self.states[unit] or not timeleft then
+	if not self.states[unit] then
 		return
-	elseif timeleft < self.blinkThreshold then
+	elseif (GetTime() - self.expirations[unit]) < self.blinkThreshold then
 		return "blink"
 	else
 		return true
@@ -121,35 +116,35 @@ local function status_GetDuration(self, unit)
 	return self.durations[unit]
 end
 
-local function status_GetTimeLeft(self, unit)
-	return self.timelefts[unit]
+local function status_GetExpirationTime(self, unit)
+	return self.expirations[unit]
 end
 
-local function status_UpdateState(self, unit, auraName, iconTexture, count, duration, timeLeft)
+local function status_UpdateState(self, unit, auraName, iconTexture, count, duration, expiration)
 	if self.auraName == auraName then
 		self.states[unit] = true
 		self.textures[unit] = iconTexture
 		self.counts[unit] = count
 		self.durations[unit] = duration
-		self.timelefts[unit] = timeLeft
+		self.expirations[unit] = expiration
 		self.new_state = self:IsActive(unit)
 		self.new_count = count
 	end
 end
 
-local function status_UpdateStateMine(self, unit, auraName, iconTexture, count, duration, timeLeft)
-	if self.auraName == auraName and timeLeft and timeLeft > 0 then
+local function status_UpdateStateMine(self, unit, auraName, iconTexture, count, duration, expiration, isMine)
+	if self.auraName == auraName and isMine then
 		self.states[unit] = true
 		self.textures[unit] = iconTexture
 		self.counts[unit] = count
 		self.durations[unit] = duration
-		self.timelefts[unit] = timeLeft
+		self.expirations[unit] = expiration
 		self.new_state = self:IsActive(unit)
 		self.new_count = count
 	end
 end
 
-local function status_HasStateChanged(self)
+local function status_HasStateChanged(self, unit)
 	local changed = (self.new_state ~= self.prev_state) or (self.new_count ~= self.prev_count)
 	self.new_state = nil
 	self.prev_state = nil
@@ -158,42 +153,17 @@ local function status_HasStateChanged(self)
 	return changed
 end
 
-local AddTimeTracker
-do
-	local timetracker
-	AddTimeTracker = function (status, value)
-		timetracker = CreateFrame("Frame", nil, Grid2LayoutFrame)
-		timetracker.tracked = {}
-		timetracker:SetScript("OnUpdate", function (self, elapsed)
-			for status, value in pairs(self.tracked) do
-				local timelefts = status.timelefts
-				for unit, timeleft in pairs(timelefts) do
-					local new_timeleft = timeleft - elapsed
-					timelefts[unit] = new_timeleft
-					if (timeleft < value) ~= (new_timeleft < value) then
-						status:UpdateIndicators(unit)
-					end
-				end
-			end
-		end)
-		AddTimeTracker = function (status, value)
-			timetracker.tracked[status] = value
-		end
-		return AddTimeTracker(status, value)
-	end
-end
-
 function Grid2:CreateBuffStatus(name, mine)
 	StatusCount = StatusCount + 1
 	local status = Grid2.statusPrototype:new("buff-"..StatusCount)
-	
+
 	status.auraName = name
 	status.states = {}
 	status.textures = {}
 	status.counts = {}
-	status.timelefts = {}
+	status.expirations = {}
 	status.durations = {}
-	
+
 	function status:OnEnable()
 		EnableAuraFrame(true)
 		BuffHandlers[self] = true
@@ -203,38 +173,35 @@ function Grid2:CreateBuffStatus(name, mine)
 		EnableAuraFrame(false)
 		BuffHandlers[self] = nil
 	end
-	
+
 	status.Reset = status_Reset
 	if type(mine) == "number" then
 		status.blinkThreshold = mine
 		status.IsActive = status_IsActiveBlink
-		AddTimeTracker(status, mine)
-	elseif mine then
-		status.IsActive = status_IsActiveMine
 	else
 		status.IsActive = status_IsActive
 	end
 	status.GetTexture = status_GetTexture
 	status.GetCount = status_GetCount
 	status.GetDuration = status_GetDuration
-	status.GetTimeLeft = status_GetTimeLeft
+	status.GetExpirationTime = status_GetExpirationTime
 	status.UpdateState = mine and status_UpdateStateMine or status_UpdateState
 	status.HasStateChanged = status_HasStateChanged
-	
+
 	return status -- status is not registered yet
 end
 
 function Grid2:CreateDebuffStatus(name, mine)
 	StatusCount = StatusCount + 1
 	local status = Grid2.statusPrototype:new("debuff-"..StatusCount)
-	
+
 	status.auraName = name
 	status.states = {}
 	status.textures = {}
 	status.counts = {}
-	status.timelefts = {}
+	status.expirations = {}
 	status.durations = {}
-	
+
 	function status:OnEnable()
 		EnableAuraFrame(true)
 		DebuffHandlers[self] = true
@@ -244,24 +211,21 @@ function Grid2:CreateDebuffStatus(name, mine)
 		EnableAuraFrame(false)
 		DebuffHandlers[self] = nil
 	end
-	
+
 	status.Reset = status_Reset
 	if type(mine) == "number" then
 		status.blinkThreshold = mine
 		status.IsActive = status_IsActiveBlink
-		AddTimeTracker(status, mine)
-	elseif mine then
-		status.IsActive = status_IsActiveMine
 	else
 		status.IsActive = status_IsActive
 	end
 	status.GetTexture = status_GetTexture
 	status.GetCount = status_GetCount
 	status.GetDuration = status_GetDuration
-	status.GetTimeLeft = status_GetTimeLeft
+	status.GetExpirationTime = status_GetExpirationTime
 	status.UpdateState = status_UpdateState
 	status.HasStateChanged = status_HasStateChanged
-	
+
 	return status -- status is not registered yet
 end
 
@@ -271,7 +235,7 @@ do
 	function update(unit)
 		local parent = Grid2:GetUnitFrame(unit)
 		if not parent then return end
-		
+
 		for status in pairs(DebuffHandlers) do
 			status:Reset(unit)
 		end
@@ -281,10 +245,10 @@ do
 		-- scan Debuffs and find the available debuff types
 		local i = 1
 		while true do
-			local name, _, iconTexture, count, debuffType, duration, timeLeft = UnitDebuff(unit, i)
+			local name, _, iconTexture, count, debuffType, duration, expirationTime, isMine = UnitDebuff(unit, i)
 			if not name then break end
 			for status in pairs(DebuffHandlers) do
-				status:UpdateState(unit, name, iconTexture, count, duration, timeLeft)
+				status:UpdateState(unit, name, iconTexture, count, duration, expirationTime, isMine)
 			end
 			i = i + 1
 			if debuffType and not types[debuffType] then
@@ -293,10 +257,10 @@ do
 		end
 		i = 1
 		while true do
-			local name, _, iconTexture, count, duration, timeLeft = UnitBuff(unit, i)
+			local name, _, iconTexture, count, duration, expirationTime, isMine = UnitBuff(unit, i)
 			if not name then break end
 			for status in pairs(BuffHandlers) do
-				status:UpdateState(unit, name, iconTexture, count, duration, timeLeft)
+				status:UpdateState(unit, name, iconTexture, count, duration, expirationTime, isMine)
 			end
 			i = i + 1
 		end
@@ -314,16 +278,16 @@ do
 			end
 			types[type] = nil
 		end
-		
+
 		for status in pairs(DebuffHandlers) do
-			if status:HasStateChanged() then
+			if status:HasStateChanged(unit) then
 				for indicator in pairs(status.indicators) do
 					indicators[indicator] = true
 				end
 			end
 		end
 		for status in pairs(BuffHandlers) do
-			if status:HasStateChanged() then
+			if status:HasStateChanged(unit) then
 				for indicator in pairs(status.indicators) do
 					indicators[indicator] = true
 				end

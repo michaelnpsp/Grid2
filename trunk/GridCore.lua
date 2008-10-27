@@ -195,7 +195,7 @@ local config = {
 	alpha = { range = 99 },
 }
 
-function Grid2:SetupIndicators()
+function Grid2:SetupDebuffPriorities()
 	local debuffPriorities
 
 	local class = select(2, UnitClass("player"))
@@ -233,6 +233,16 @@ function Grid2:SetupIndicators()
 		end
 		self:RegisterStatus(regrowth, { "color" })
 		self.indicators["corner-topleft"]:RegisterStatus(regrowth, 79)
+
+		if select(5, GetTalentInfo(3, 26)) > 0 then
+			local wildgrowth = self:CreateBuffStatus(GetSpellInfo(53248), true)
+			function wildgrowth:GetColor()
+				return .4, .9, .4
+			end
+			self:RegisterStatus(wildgrowth, { "color" })
+			self.indicators["corner-topleft"]:RegisterStatus(wildgrowth, 69)
+		end
+
 	elseif class == "PRIEST" then
 		debuffPriorities = {
 			["debuff-Disease"] = 90,
@@ -290,6 +300,10 @@ function Grid2:SetupIndicators()
 	end
 	config["corner-bottomright"] = debuffPriorities
 	config["icon-center"] = debuffPriorities
+end
+
+function Grid2:SetupIndicators()
+	self:SetupDebuffPriorities()
 
 	for indicatorName, configs in pairs(config) do
 		local indicator = self.indicators[indicatorName]
