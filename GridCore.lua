@@ -177,9 +177,10 @@ local config = {
 	["text-down"] = { death = 99, heals = 80 },
 	["text-down-color"] = { death = 99, heals = 80 },
 
-	["health-bar"] = { health = 99 },
-	["health-bar-color"] = { classcolor = 99 },
-	["heals-bar"] = { heals = 99 },
+	["bar-health"] = { health = 99 },
+	["bar-health-color"] = { classcolor = 99 },
+	["bar-heals"] = { heals = 99 },
+	["bar-heals-color"] = { heals = 99 },
 
 	border = {
 		target = 99,
