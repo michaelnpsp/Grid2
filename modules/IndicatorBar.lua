@@ -11,7 +11,7 @@ local function Bar_Create(self, parent)
 
 	-- create bar
 	local Bar = CreateFrame("StatusBar", nil, parent)
-	parent[self.name] = Bar
+	parent[self.nameFG] = Bar
 	Bar:SetStatusBarTexture(texture)
 	Bar:SetMinMaxValues(0, 1)
 	Bar:SetValue(1)
@@ -25,7 +25,7 @@ end
 local function Bar_Layout(self, parent)
 	local inset = self.db.profile.inset or 2
 	local w, h = parent:GetWidth() - inset, parent:GetHeight() - inset
-	local Bar, BarBG = parent[self.name], parent[self.nameBG]
+	local Bar, BarBG = parent[self.nameFG], parent[self.nameBG]
 	BarBG:SetWidth(w)
 	BarBG:SetHeight(h)
 	Bar:SetWidth(w)
@@ -33,11 +33,11 @@ local function Bar_Layout(self, parent)
 end
 
 local function Bar_GetBlinkFrame(self, parent)
-	return parent[self.name]
+	return parent[self.nameFG]
 end
 
 local function Bar_OnUpdate(self, parent, unit, status)
-	local Bar = parent[self.name]
+	local Bar = parent[self.nameFG]
 	if status then
 		Bar:SetValue(status:GetPercent(unit))
 	else
@@ -47,12 +47,12 @@ end
 
 local function Bar_SetOrientation(self, parent, orientation)
 	orientation = orientation or self.db.profile.orientation
-	parent[self.name]:SetOrientation(orientation)
+	parent[self.nameFG]:SetOrientation(orientation)
 end
 
 local function Bar_SetTexture(self, parent, texture)
 	parent[self.nameBG]:SetTexture(texture)
-	parent[self.name]:SetStatusBarTexture(texture)
+	parent[self.nameFG]:SetStatusBarTexture(texture)
 end
 
 local Bar_defaultDB = {
@@ -78,7 +78,7 @@ local function BarColor_OnUpdate(self, parent, unit, status)
 end
 
 local function BarColor_SetBarColor(self, parent, r, g, b, a)
-	local Bar, BarBG = parent[self.name], parent[self.nameBG]
+	local Bar, BarBG = parent[self.nameFG], parent[self.nameBG]
 	if self.db.profile.invertBarColor then
 		Bar:SetStatusBarColor(r, g, b, a)
 		BarBG:SetVertexColor(0, 0, 0, 0)
@@ -98,7 +98,7 @@ function Grid2:CreateBarIndicator(name, anchor, anchorRel, offsetx, offsety)
 	name = "bar-"..name
 
 	local Bar = self.indicatorPrototype:new(name)
-	Bar.name = name
+	Bar.nameFG = name
 	Bar.nameBG = name.."-background"
 	Bar.anchor = anchor
 	Bar.anchorRel = anchorRel
@@ -115,7 +115,7 @@ function Grid2:CreateBarIndicator(name, anchor, anchorRel, offsetx, offsety)
 	self:RegisterIndicator(Bar, { "percent" })
 
 	local BarColor = self.indicatorPrototype:new(name.."-color")
-	BarColor.name = Bar.name
+	BarColor.nameFG = Bar.nameFG
 	BarColor.nameBG = Bar.nameBG
 	BarColor.Create = BarColor_Create
 	BarColor.Layout = BarColor_Layout
