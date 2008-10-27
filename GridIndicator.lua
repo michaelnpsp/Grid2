@@ -14,7 +14,10 @@ function indicator:init(name)
 end
 
 function indicator:RegisterStatus(status, priority)
-	if self.priorities[status] then return end
+	if self.priorities[status] then
+		Grid2:Print(string.format("WARNING ! Status %s already registered with indicator %s", status.name, self.name))
+		return
+	end
 	self.priorities[status] = priority
 	self.statuses[#self.statuses + 1] = status
 	table.sort(self.statuses, self.sortStatuses)

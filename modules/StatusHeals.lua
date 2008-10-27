@@ -132,4 +132,4 @@ function Heals:GetPercent(unit)
 	return (self:GetHealingOnUnit(unit) + UnitHealth(unit)) / UnitHealthMax(unit)
 end
 
-Grid2:RegisterStatus(Heals, { "color", "text", "percentage" })
+Grid2:RegisterStatus(Heals, { "color", "text", "percent" })
