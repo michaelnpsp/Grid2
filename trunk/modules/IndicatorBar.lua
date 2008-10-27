@@ -41,7 +41,7 @@ local function Bar_OnUpdate(self, parent, unit, status)
 	if status then
 		Bar:SetValue(status:GetPercent(unit))
 	else
-		Bar:SetValue(1)
+		Bar:SetValue(0)
 	end
 end
 

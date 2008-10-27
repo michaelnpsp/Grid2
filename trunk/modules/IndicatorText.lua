@@ -25,12 +25,14 @@ local function Text_Layout(self, parent)
 	Text:SetWidth(parent:GetWidth())
 end
 
+local string_sub = string.utf8sub or string.sub
+
 local function Text_OnUpdate(self, parent, unit, status)
 	local Text = parent[self.name]
 	local content = status and status:GetText(unit)
 	if content and content ~= "" then
 		Text:Show()
-		Text:SetText(content:utf8sub(1, self.db.profile.textlength))
+		Text:SetText(string_sub(content, 1, self.db.profile.textlength))
 	else
 		Text:Hide()
 	end
