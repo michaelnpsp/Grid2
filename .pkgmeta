@@ -1,20 +1,24 @@
 package-as: Grid2
 
 externals:
-	Libs/LibStub: svn://svn.wowace.com/wow/libstub/mainline/tags/1.0
-	Libs/CallbackHandler-1.0: svn://svn.wowace.com/wow/callbackhandler/mainline/tags/1.0.3/CallbackHandler-1.0
-	Libs/AceAddon-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Beta/AceAddon-3.0
-	Libs/AceConsole-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Beta/AceConsole-3.0
-	Libs/AceHook-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Beta/AceHook-3.0
-	Libs/AceEvent-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Beta/AceEvent-3.0
-	Libs/AceDB-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Beta/AceDB-3.0
-	Libs/AceGUI-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Beta/AceGUI-3.0
-	Libs/AceAddon-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Beta/AceAddon-3.0
-	Libs/AceConfig-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Beta/AceConfig-3.0
-	Libs/AceLocale-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Beta/AceLocale-3.0
+	Libs/Libstub: svn://svn.wowace.com/wow/libstub/mainline/tags/1.0
+	Libs/CallbackHandler-1.0: svn://svn.wowace.com/wow/callbackhandler/mainline/trunk/CallbackHandler-1.0
+	Libs/AceAddon-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceAddon-3.0
+	Libs/AceConsole-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConsole-3.0
+	Libs/AceHook-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceHook-3.0
+	Libs/AceEvent-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceEvent-3.0
+	Libs/AceDB-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDB-3.0
+	Libs/AceDBOptions-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDBOptions-3.0
+	Libs/AceGUI-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceGUI-3.0
+	Libs/AceConfig-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConfig-3.0
+	Libs/AceLocale-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceLocale-3.0
 	Libs/LibGratuity-3.0: svn://svn.wowace.com/wow/libgratuity-3-0/mainline/trunk
 	Libs/LibBanzai-2.0: svn://svn.wowace.com/wow/libbanzai-2-0/mainline/trunk
 	Libs/LibHealComm-3.0: svn://svn.wowace.com/wow/libhealcomm-3-0/mainline/trunk
+	Libs/UTF8: http://grid.13th-floor.org/svn/trunk/UTF8
+	Alert/Libs/SharedMediaLib-3.0: svn://svn.wowace.com/wow/libsharedmedia-3-0/mainline/trunk
+	Alert/Libs/Libsink-2.0: svn://svn.wowace.com/wow/libsink-2-0/mainline/trunk
 
 move-folders:
 	Grid2/Options: Grid2Options
+	Grid2/Alert: Grid2Alert

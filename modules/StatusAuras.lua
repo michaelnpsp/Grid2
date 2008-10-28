@@ -94,6 +94,7 @@ local function status_IsActive(self, unit)
 	return self.states[unit]
 end
 
+local GetTime = GetTime
 local function status_IsActiveBlink(self, unit)
 	if not self.states[unit] then
 		return

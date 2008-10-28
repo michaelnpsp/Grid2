@@ -67,7 +67,6 @@ local function initRanges()
 end
 
 function GridRange:ScanSpellbook()
-	LoadAddOn("LibGratuity-3.0")
 	local gratuity = LibStub:GetLibrary("LibGratuity-3.0")
 
 	initRanges()
