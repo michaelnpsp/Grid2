@@ -112,14 +112,18 @@ Grid2Layout.defaultDB = {
 				type = "self-gain",
 				message = "Aggro !",
 				sound = "Aggro",
+				min_pause = 0.5,
 			},
 			Detox = {
 				status = "GetDetoxStatus",
 				type = "any-gain",
 				message = nil,
 				sound = "Detox",
+				min_pause = 0.5,
 			},
-		}
+		},
+		min_pause = 0.2,
+		sinkOptions = {},
 	},
 }
 
@@ -130,6 +134,35 @@ function Grid2Alert:OnInitialize()
 
 	self:SetSinkStorage(self.db.profile.sinkOptions)
 	-- media.RegisterCallback(self, "LibSharedMedia_Registered", "UpdateMedia")
+end
+
+function Grid2Alert:GetStatusList(status)
+	if type(status) == "string" and self[status] then
+		return self[status](self)
+	elseif type(status) == "list" then
+		return status
+	else
+		return { status }
+	end
+end
+
+function Grid2Alert:GetDetoxStatus()
+	local class = select(2, UnitClass"player")
+	if class == "DRUID" then
+		return { "debuff-Curse", "debuff-Poison" }
+	elseif class == "MAGE" then
+		return { "debuff-Curse" }
+	elseif class == "PALADIN" then
+		return { "debuff-Magic", "debuff-Poison", "debuff-Disease" }
+	elseif class == "PRIEST" then
+		return { "debuff-Magic", "debuff-Disease" }
+	elseif class == "SHAMAN" then
+		local result = { "debuff-Disease", "debuff-Poison" }
+		if select(5, GetTalentInfo(3, 18)) > 0 then
+			table.insert(result, "debuff-Curse")
+		end
+		return result
+	end
 end
 
 function Grid2Alert:OnEnable(first)
@@ -152,7 +185,7 @@ function Grid2Alert:OnDisable()
 	end
 end
 
-function GridAlert:TriggerAlert(alert, unit)
+function Grid2Alert:TriggerAlert(alert, unit)
 	local p = self.db.profile
 	local settings = p.alerts[alert]
 	if not settings then
@@ -174,7 +207,9 @@ function GridAlert:TriggerAlert(alert, unit)
 		end
         local message = settings.message
 		if message then
-            message = message:gsub("%%t", UnitName(unit))
+			if message:find("%t", nil, true) then
+				message = message:gsub("%%t", UnitName(unit))
+			end
 			self:Pour(message, 1, 0, 0)
 		end
 	end
