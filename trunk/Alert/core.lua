@@ -6,8 +6,8 @@ media:Register("sound", "Aggro", "Interface\\Addons\\Grid2Alert\\sounds\\aggro.w
 media:Register("sound", "Detox", "Sound\\interface\\AuctionWindowOpen.wav")
 
 local function Alert_Enable(self)
+	local status = self.status
 	if not self.HookName then
-		local status = self.status
 		if status.HasStateChanged then
 			-- Aura Status don't call UpdateIndicators
 			self.HookName = "HasStateChanged"
@@ -27,6 +27,7 @@ local function Alert_Enable(self)
 		self.prev = status[self.HookName]
 	end
 	status[self.HookName] = self.hook
+	Grid2:Print("Alert_Enable", self.status.name)
 end
 
 local function Alert_Disable(self)
@@ -85,10 +86,16 @@ local function Alert_Initialize(self, type)
 	elseif type == "all-lost" then
 		self.count = 0
 		self.Update = Alert_UpdateAllLost
+	else
+		Grid2:Print("ERROR ! invalid alert type", type)
 	end
 end
 
-function Grid2Alert:HookStatus(status, name)
+function Grid2Alert:HookStatus(status, name, alert_type)
+	if type(status) == "string" then
+		status = Grid2.statuses[status]
+	end
+	Grid2:Print("Grid2Alert:HookStatus", status.name, name)
 	local Alert = {
 		status = status,
 		name = name,
@@ -97,13 +104,13 @@ function Grid2Alert:HookStatus(status, name)
 		TriggerAlert = Alert_TriggerAlert,
 	}
 
-	Alert_Initialize(Alert, type)
+	Alert_Initialize(Alert, alert_type)
 	self.alerts[Alert] = status
 
 	return Alert
 end
 
-Grid2Layout.defaultDB = {
+Grid2Alert.defaultDB = {
 	profile = {
 		debug = false,
 		alerts = {
@@ -137,7 +144,7 @@ function Grid2Alert:OnInitialize()
 end
 
 function Grid2Alert:GetStatusList(status)
-	if type(status) == "string" and self[status] then
+	if type(status) == "string" and type(self[status]) == "function" then
 		return self[status](self)
 	elseif type(status) == "list" then
 		return status
@@ -165,14 +172,18 @@ function Grid2Alert:GetDetoxStatus()
 	end
 end
 
-function Grid2Alert:OnEnable(first)
-	if first then
+local enabled
+function Grid2Alert:OnEnable()
+	if not enabled then
 		for name, info in pairs(self.db.profile.alerts) do
 			local statusList = self:GetStatusList(info.status)
-			for _, status in ipairs(statusList) do
-				self:HookStatus(status, name)
+			if statusList then
+				for _, status in ipairs(statusList) do
+					self:HookStatus(status, name, info.type)
+				end
 			end
 		end
+		enabled = true
 	end
 	for alert in pairs(self.alerts) do
 		alert:Enable()
@@ -186,6 +197,7 @@ function Grid2Alert:OnDisable()
 end
 
 function Grid2Alert:TriggerAlert(alert, unit)
+	Grid2:Print("TriggerAlert", alert, unit)
 	local p = self.db.profile
 	local settings = p.alerts[alert]
 	if not settings then
