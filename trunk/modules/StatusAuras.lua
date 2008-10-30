@@ -105,7 +105,7 @@ local function status_IsActiveBlink(self, unit)
 	end
 end
 
-local function status_GetTexture(self, unit)
+local function status_GetIcon(self, unit)
 	return self.textures[unit]
 end
 
@@ -182,7 +182,7 @@ function Grid2:CreateBuffStatus(name, mine)
 	else
 		status.IsActive = status_IsActive
 	end
-	status.GetTexture = status_GetTexture
+	status.GetIcon = status_GetIcon
 	status.GetCount = status_GetCount
 	status.GetDuration = status_GetDuration
 	status.GetExpirationTime = status_GetExpirationTime
@@ -220,7 +220,7 @@ function Grid2:CreateDebuffStatus(name, mine)
 	else
 		status.IsActive = status_IsActive
 	end
-	status.GetTexture = status_GetTexture
+	status.GetIcon = status_GetIcon
 	status.GetCount = status_GetCount
 	status.GetDuration = status_GetDuration
 	status.GetExpirationTime = status_GetExpirationTime
