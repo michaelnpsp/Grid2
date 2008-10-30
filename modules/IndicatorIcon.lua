@@ -2,14 +2,30 @@ local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 local function Icon_Create(self, parent)
 	local f = CreateFrame("Frame", nil, parent)
-	f:SetAllPoints()
 	f:SetFrameLevel(parent:GetFrameLevel() +  4)
+	f:SetWidth(iconSize)
+	f:SetHeight(iconSize)
+
 	local Icon = f:CreateTexture(nil, "OVERLAY")
-	local iconSize = self.db.profile.iconSize
+	f.Icon = Icon
 	Icon:SetTexCoord(0.05, 0.95, 0.05, 0.95)
-	Icon:SetWidth(iconSize)
-	Icon:SetHeight(iconSize)
-	parent[self.name] = Icon
+	Icon:SetAllPoints()
+
+	local Text = f:CreateFontString()
+	f.Text = Text
+	Text:SetAllPoints()
+	Text:SetFontObject(GameFontHighlightSmall)
+	Text:SetFont(font, self.db.profile.fontSize)
+	Text:SetJustifyH("CENTER")
+	Text:SetJustifyV("CENTER")
+	Text:Hide()
+
+	local Cooldown = CreateFrame("Cooldown", nil, f, "CooldownFrameTemplate")
+	f.Cooldown = Cooldown
+	Cooldown:SetAllPoints(f)
+	Cooldown:Hide()
+
+	parent[self.name] = f
 end
 
 local function Icon_Layout(self, parent)
@@ -24,11 +40,30 @@ local function Icon_GetBlinkFrame(self, parent)
 	return parent[self.name]
 end
 
+local GetTime = GetTime
 local function Icon_OnUpdate(self, parent, unit, status)
 	local Icon = parent[self.name]
 	if status then
-		Icon:SetTexture(status:GetIcon(unit))
+		Icon.Icon:SetTexture(status:GetIcon(unit))
 		Icon:Show()
+		if status.GetColor then
+			Icon:SetBackdropBorderColor(status:GetColor(unit))
+		else
+			Icon:SetBackdropBorderColor(1, 0, 0)
+		end
+		if status.GetCount then
+			Icon.Text:SetText(status:GetCount(unit))
+			Icon.Text:Show()
+		else
+			Icon.Text:Hide()
+		end
+		if status.GetExpirationTime and status.GetDuration then
+			local expirationTime, duration = status:GetExpirationTime(unit), status:GetDuration(unit)
+			Icon.Cooldown:SetCooldown(expirationTime - duration, duration)
+			Icon.Cooldown:Show()
+		else
+			Icon.Cooldown:Hide()
+		end
 	else
 		Icon:Hide()
 	end
@@ -46,10 +81,10 @@ local Icon_defaultDB = {
 	}
 }
 
-local function CreateIconIndicator(name, anchor, anchorRel, offsetx, offsety)
+function Grid2:CreateIconIndicator(name, anchor, anchorRel, offsetx, offsety)
 
-	name = "icon-"..name 
-	local Icon = Grid2.indicatorPrototype:new(name)
+	name = "icon-"..name
+	local Icon = self.indicatorPrototype:new(name)
 
 	Icon.anchor = anchor
 	Icon.anchorRel = anchorRel
@@ -62,10 +97,8 @@ local function CreateIconIndicator(name, anchor, anchorRel, offsetx, offsety)
 	Icon.SetIconSize = Icon_SetIconSize
 	Icon.defaultDB = Icon_defaultDB
 
-	Grid2:RegisterIndicator(Icon, { "icon" })
+	self:RegisterIndicator(Icon, { "icon" })
 	return Icon
 end
 
-Grid2.CreateIconIndicator = CreateIconIndicator
-
-CreateIconIndicator("center", "CENTER", "CENTER", 0, 0)
+Grid2:CreateIconIndicator("center", "CENTER")

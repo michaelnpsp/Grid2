@@ -1,0 +1,7 @@
+## Interface: 30000
+## Title: Grid 2 Raid Debuffs
+## Dependencies: Grid2
+
+embeds.xml
+
+core.lua

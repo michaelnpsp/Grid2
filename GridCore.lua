@@ -279,9 +279,9 @@ function Grid2:SetupDebuffPriorities()
 	elseif class == "SHAMAN" then
 		debuffPriorities = {
 			["debuff-Poison"] = 90,
-			["debuff-Magic"] = 40,
-			["debuff-Curse"] = 30,
-			["debuff-Disease"] = 20,
+			["debuff-Disease"] = 80,
+			["debuff-Curse"] = 50,
+			["debuff-Magic"] = 30,
 		}
 	elseif class == "MAGE" then
 		debuffPriorities = {
