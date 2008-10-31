@@ -3,8 +3,10 @@ local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 local function Icon_Create(self, parent)
 	local f = CreateFrame("Frame", nil, parent)
 	f:SetFrameLevel(parent:GetFrameLevel() +  4)
-	f:SetWidth(iconSize)
-	f:SetHeight(iconSize)
+	f:SetBackdrop({
+		edgeFile = "Interface\\Addons\\Grid2\\white16x16", edgeSize = 2,
+		insets = {left = 2, right = 2, top = 2, bottom = 2},
+	 })
 
 	local Icon = f:CreateTexture(nil, "OVERLAY")
 	f.Icon = Icon
@@ -15,7 +17,7 @@ local function Icon_Create(self, parent)
 	f.Text = Text
 	Text:SetAllPoints()
 	Text:SetFontObject(GameFontHighlightSmall)
-	Text:SetFont(font, self.db.profile.fontSize)
+	Text:SetFont(Text:GetFont(), self.db.profile.fontSize)
 	Text:SetJustifyH("CENTER")
 	Text:SetJustifyV("CENTER")
 	Text:Hide()
@@ -78,6 +80,7 @@ end
 local Icon_defaultDB = {
 	profile = {
 		iconSize = 16,
+		fontSize = 8,
 	}
 }
 
