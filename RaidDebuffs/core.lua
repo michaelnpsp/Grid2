@@ -8,6 +8,7 @@ local spellDB = {
 	[BZ["Hyjal Summit"]] = { 31249, 31306, 31347, 31341, 31344, 31944, 31972, },
 	[BZ["Black Temple"]] = { 34654, 39674, 41150, 41168, 39837, 40239, 40251, 40604, 40481, 40508, 42005, 41303, 41410, 41376, 40860, 41001, 41485, 41472, 41914, 41917, 40585, 40932, },
 	[BZ["Sunwell Plateau"]] = { 46561, 46562, 46266, 46557, 46560, 46543, 46427, 45032, 45034, 45018, 46384, 45150, 45855, 45662, 45402, 45717, 45256,  45333, 46771, 45270, 45347, 45348, 45996, 45442, 45641, 45885, 45737, 45740, 45741, },
+	["Forêt du Chant de cristal"] = { 37328, 58624 },
 }
 
 local GSRD = Grid2:NewModule("StatusRaidDebuffs")
@@ -56,6 +57,7 @@ end
 local states = {}
 local textures = {}
 local counts = {}
+local types = {}
 local durations = {}
 local expirations = {}
 
@@ -65,6 +67,10 @@ end
 
 function status:GetIcon(unit)
 	return textures[unit]
+end
+
+function status:GetColor(unit)
+	return 1, 0, 0
 end
 
 function status:GetCount(unit)
@@ -105,30 +111,33 @@ frame:SetScript("OnEvent", function (self, event, ...)
 			local p_state = states[unit]
 			local p_texture = textures[unit]
 			local p_count = counts[unit]
+			local p_type = types[unit]
 			local p_duration = durations[unit]
 			local p_expiration = expirations[unit]
 
 			local n_state, n_texture, n_count, n_expiration, n_duration, _
 			n_state = true
-			_, _, n_texture, n_count, _, n_duration, n_expiration = UnitDebuff(auraIndex)
+			_, _, n_texture, n_count, n_type, n_duration, n_expiration = UnitDebuff(unit, auraIndex)
 
 			if
 				p_state ~= n_state or
 				p_texture ~= n_texture or
 				p_count ~= n_count or
+				p_type ~= n_type or
 				p_duration ~= n_duration or
 				p_expiration ~= n_expiration
 			then
 				states[unit] = n_state
 				textures[unit] = n_texture
 				counts[unit] = n_count
+				types[unit] = n_type
 				durations[unit] = n_duration
 				expirations[unit] = n_expiration
-				status:Update(unit)
+				status:UpdateIndicators(unit)
 			end
 		elseif states[unit] then
 			states[unit] = nil
-			status:Update(unit)
+			status:UpdateIndicators(unit)
 		end
 	else
 		GSRD:UpdateZoneSpells()
@@ -136,3 +145,9 @@ frame:SetScript("OnEvent", function (self, event, ...)
 end)
 
 Grid2:RegisterStatus(status, { "icon" })
+
+local prev_SetupIndicators = Grid2.SetupIndicators
+function Grid2:SetupIndicators()
+	prev_SetupIndicators(self)
+	self.indicators["icon-center"]:RegisterStatus(self.statuses["raid-debuffs"], 1000)
+end
