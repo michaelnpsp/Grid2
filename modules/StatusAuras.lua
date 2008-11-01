@@ -88,6 +88,7 @@ local function status_Reset(self, unit)
 	self.prev_state = self:IsActive(unit)
 	self.prev_count = self.counts[unit]
 	self.states[unit] = nil
+	self.expirations[unit] = nil
 end
 
 local function status_IsActive(self, unit)
@@ -98,7 +99,7 @@ local GetTime = GetTime
 local function status_IsActiveBlink(self, unit)
 	if not self.states[unit] then
 		return
-	elseif (GetTime() - self.expirations[unit]) < self.blinkThreshold then
+	elseif (self.expirations[unit] - GetTime()) < self.blinkThreshold then
 		return "blink"
 	else
 		return true
@@ -154,6 +155,31 @@ local function status_HasStateChanged(self, unit)
 	return changed
 end
 
+local AddTimeTracker
+do
+	local timetracker
+	AddTimeTracker = function (status, value)
+		timetracker = CreateFrame("Frame", nil, Grid2LayoutFrame)
+		timetracker.tracked = {}
+		timetracker:SetScript("OnUpdate", function (self, elapsed)
+			local time = GetTime()
+			for status, value in pairs(self.tracked) do
+				local expirations = status.expirations
+				for unit, expiration in pairs(expirations) do
+					local timeLeft = expiration - time
+					if (timeLeft < value) ~= (timeLeft + elapsed < value) then
+						status:UpdateIndicators(unit)
+					end
+				end
+			end
+		end)
+		AddTimeTracker = function (status, value)
+			timetracker.tracked[status] = value
+		end
+		return AddTimeTracker(status, value)
+	end
+end
+
 function Grid2:CreateBuffStatus(name, mine)
 	StatusCount = StatusCount + 1
 	local status = Grid2.statusPrototype:new("buff-"..StatusCount)
@@ -179,6 +205,7 @@ function Grid2:CreateBuffStatus(name, mine)
 	if type(mine) == "number" then
 		status.blinkThreshold = mine
 		status.IsActive = status_IsActiveBlink
+		AddTimeTracker(status, mine)
 	else
 		status.IsActive = status_IsActive
 	end
@@ -217,6 +244,7 @@ function Grid2:CreateDebuffStatus(name, mine)
 	if type(mine) == "number" then
 		status.blinkThreshold = mine
 		status.IsActive = status_IsActiveBlink
+		AddTimeTracker(status, mine)
 	else
 		status.IsActive = status_IsActive
 	end
@@ -258,7 +286,7 @@ do
 		end
 		i = 1
 		while true do
-			local name, _, iconTexture, count, duration, expirationTime, isMine = UnitBuff(unit, i)
+			local name, _, iconTexture, count, debuffType, duration, expirationTime, isMine = UnitBuff(unit, i)
 			if not name then break end
 			for status in pairs(BuffHandlers) do
 				status:UpdateState(unit, name, iconTexture, count, duration, expirationTime, isMine)
