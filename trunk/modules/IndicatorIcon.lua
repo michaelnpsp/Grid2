@@ -8,12 +8,17 @@ local function Icon_Create(self, parent)
 		insets = {left = 2, right = 2, top = 2, bottom = 2},
 	 })
 
-	local Icon = f:CreateTexture(nil, "OVERLAY")
+	local Icon = f:CreateTexture(nil, "ARTWORK")
 	f.Icon = Icon
 	Icon:SetTexCoord(0.05, 0.95, 0.05, 0.95)
 	Icon:SetAllPoints()
 
-	local Text = f:CreateFontString()
+	local Cooldown = CreateFrame("Cooldown", nil, f, "CooldownFrameTemplate")
+	f.Cooldown = Cooldown
+	Cooldown:SetAllPoints(f)
+	Cooldown:Hide()
+
+	local Text = Cooldown:CreateFontString(nil, "OVERLAY")
 	f.Text = Text
 	Text:SetAllPoints()
 	Text:SetFontObject(GameFontHighlightSmall)
@@ -21,11 +26,6 @@ local function Icon_Create(self, parent)
 	Text:SetJustifyH("CENTER")
 	Text:SetJustifyV("CENTER")
 	Text:Hide()
-
-	local Cooldown = CreateFrame("Cooldown", nil, f, "CooldownFrameTemplate")
-	f.Cooldown = Cooldown
-	Cooldown:SetAllPoints(f)
-	Cooldown:Hide()
 
 	parent[self.name] = f
 end
@@ -54,7 +54,9 @@ local function Icon_OnUpdate(self, parent, unit, status)
 			Icon:SetBackdropBorderColor(1, 0, 0)
 		end
 		if status.GetCount then
-			Icon.Text:SetText(status:GetCount(unit))
+			local count = status:GetCount(unit)
+			if not count or count <= 1 then count = "" end
+			Icon.Text:SetText(count)
 			Icon.Text:Show()
 		else
 			Icon.Text:Hide()
