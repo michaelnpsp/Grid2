@@ -1,0 +1,43 @@
+## Interface: 30000
+## Title: Grid 2
+## Notes: A modular, lightweight and screen-estate saving grid of party/raid unit frames
+## Notes-ruRU: Модульный, легкий  отображающий на экране область группы/рейда в виде сетки
+## Notes-zhCN: 小巧的轻量级模块化队伍框架
+## Notes-zhTW: 精簡的團隊框架功能
+## Author: Pastamancer & Maia, Jerry
+## Version: $Rev: 15 $
+## X-ReleaseDate: "$Date: 2008-10-25 16:07:52 +0000 (Sat, 25 Oct 2008) $"
+## X-Website: http://wowace.com/projects/grid2/
+## X-Category: UnitFrame
+
+## DefaultState: disabled
+## LoadOnDemand: 0
+
+## X-Embeds: Ace3, LibGratuity-3.0, LibBanzai-2.0, LibHealComm-3.0
+## OptionalDeps: Ace3, LibGratuity-3.0, LibBanzai-2.0, LibHealComm-3.0
+
+## SavedVariables: Grid2DB
+
+## Non-Ace Libraries
+#libs\UTF8\utf8data.lua
+libs\UTF8\utf8.lua
+
+## Ace Libraries
+embeds.xml
+
+#Locales
+locales.xml
+
+# Grid
+GridCore.lua
+GridUtils.lua
+GridBlink.lua
+GridRoster.lua
+GridRange.lua
+GridLayout.lua
+GridLayoutLayouts.lua
+GridFrame.lua
+GridIndicator.lua
+GridStatus.lua
+
+modules.xml
