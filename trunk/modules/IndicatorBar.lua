@@ -127,6 +127,3 @@ function Grid2:CreateBarIndicator(name, anchor, anchorRel, offsetx, offsety)
 
 	return Bar, BarColor
 end
-
-Grid2:CreateBarIndicator("health", "CENTER")
-Grid2:CreateBarIndicator("heals", "CENTER")

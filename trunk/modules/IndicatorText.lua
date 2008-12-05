@@ -93,6 +93,3 @@ function Grid2:CreateTextIndicator(name, anchor, anchorRel, offsetx, offsety)
 
 	return Text, TextColor
 end
-
-Grid2:CreateTextIndicator("up", "BOTTOM", "CENTER", 0, 4)
-Grid2:CreateTextIndicator("down", "TOP", "CENTER", 0, -4)
