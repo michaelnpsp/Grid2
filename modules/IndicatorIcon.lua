@@ -105,5 +105,3 @@ function Grid2:CreateIconIndicator(name, anchor, anchorRel, offsetx, offsety)
 	self:RegisterIndicator(Icon, { "icon" })
 	return Icon
 end
-
-Grid2:CreateIconIndicator("center", "CENTER")

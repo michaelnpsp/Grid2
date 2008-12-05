@@ -68,8 +68,3 @@ function Grid2:CreateCornerIndicator(name, anchor, anchorRel, offsetx, offsety)
 
 	return Corner
 end
-
-Grid2:CreateCornerIndicator("bottomleft", "BOTTOMLEFT", "BOTTOMLEFT", 1, 1)
-Grid2:CreateCornerIndicator("bottomright", "BOTTOMRIGHT", "BOTTOMRIGHT", -1, 1)
-Grid2:CreateCornerIndicator("topright", "TOPRIGHT", "TOPRIGHT", -1, -1)
-Grid2:CreateCornerIndicator("topleft", "TOPLEFT", "TOPLEFT", 1, -1)
