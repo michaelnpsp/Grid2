@@ -7,64 +7,64 @@ function Grid2:MakeDefaultSetup()
 	}
 
 	local class = select(2, UnitClass("player"))
-	self:SetupDefaultIndicators(config, class)
-	self:SetupDefaultStatus(config, class)
-	self:SetupDefaultAuras(config, class)
-	self:SetupDebuffPriorities(config, class)
+	self:SetupDefaultIndicators(setup, class)
+	self:SetupDefaultStatus(setup, class)
+	self:SetupDefaultAuras(setup, class)
+	self:SetupDebuffPriorities(setup, class)
 
 	return setup
 end
 
-function Grid2:SetupDefaultIndicators(config, class)
-	config.indicators.Bars = {
+function Grid2:SetupDefaultIndicators(setup, class)
+	setup.indicators.Bars = {
 		health = { "CENTER" },
 		heals = { "CENTER" },
 	}
-	config.indicators.Corners = {
+	setup.indicators.Corners = {
 		bottomleft = { "BOTTOMLEFT", "BOTTOMLEFT", 1, 1 },
 		bottomright = { "BOTTOMRIGHT", "BOTTOMRIGHT", -1, 1 },
 		topright = { "TOPRIGHT", "TOPRIGHT", -1, -1 },
 		topleft = { "TOPLEFT", "TOPLEFT", 1, -1 },
 	}
-	config.indicators.Icons = {
+	setup.indicators.Icons = {
 		center = { "CENTER" },
 	}
-	config.indicators.Texts = {
+	setup.indicators.Texts = {
 		up = { "BOTTOM", "CENTER", 0, 4, },
 		down = { "TOP", "CENTER", 0, -4, },
 	}
 end
 
-function Grid2:SetupDefaultStatus(config, class)
-	config.status["text-up"] = { healthdeficit = 90, name = 80, }
-	config.status["text-up-color"] = { classcolor = 99 }
-	config.status["text-down"] = { death = 99, heals = 80 }
-	config.status["text-down-color"] = { death = 99, heals = 80 }
+function Grid2:SetupDefaultStatus(setup, class)
+	setup.status["text-up"] = { healthdeficit = 90, name = 80, }
+	setup.status["text-up-color"] = { classcolor = 99 }
+	setup.status["text-down"] = { death = 99, heals = 80 }
+	setup.status["text-down-color"] = { death = 99, heals = 80 }
 
-	config.status["bar-health"] = { health = 99 }
-	config.status["bar-health-color"] = { classcolor = 99 }
-	config.status["bar-heals"] = { heals = 99 }
-	config.status["bar-heals-color"] = { heals = 99 }
+	setup.status["bar-health"] = { health = 99 }
+	setup.status["bar-health-color"] = { classcolor = 99 }
+	setup.status["bar-heals"] = { heals = 99 }
+	setup.status["bar-heals-color"] = { heals = 99 }
 
-	config.status.border = {
+	setup.status.border = {
 		target = 99,
 		voice = 80,
 		lowmana = 70,
 		lowhealth = 60,
 	}
 
-	config.status["corner-bottomleft"] = { aggro = 99 }
-	config.status["corner-topright"] = { heals = 99 }
+	setup.status["corner-bottomleft"] = { aggro = 99 }
+	setup.status["corner-topright"] = { heals = 99 }
 
-	config.status.alpha = { range = 99 }
+	setup.status.alpha = { range = 99 }
 end
 
-function Grid2:SetupDefaultAuras(config, class)
+function Grid2:SetupDefaultAuras(setup, class)
 	local auraCorner
 	if class == "DRUID" then
-		config.buffs.lifebloom = { 33763, 2, 0, .5, 0, 0, .7, 0, .2, 1, .2 }
-		config.buffs.rejuv = { 774, true, 0, 0, 1, }
-		config.buffs.regrowth = { 8936, true, 1, .5, .1, }
+		setup.buffs.lifebloom = { 33763, 2, 0, .5, 0, 0, .7, 0, .2, 1, .2 }
+		setup.buffs.rejuv = { 774, true, 0, 0, 1, }
+		setup.buffs.regrowth = { 8936, true, 1, .5, .1, }
 		auraCorner = {
 			["buff-lifebloom"] = 99,
 			["buff-rejuv"] = 89,
@@ -72,19 +72,19 @@ function Grid2:SetupDefaultAuras(config, class)
 		}
 
 		if select(5, GetTalentInfo(3, 26)) > 0 then
-			config.buffs.wildgrowth = { 53248, true, .4, .9, .4, }
+			setup.buffs.wildgrowth = { 53248, true, .4, .9, .4, }
 			auraCorner["buff-wildgrowth"] = 69
 		end
 	elseif class == "PRIEST" then
-		config.buffs.renew = { 139, true, 1, 1, 1, }
-		config.debuffs.weakened = { 6788, 1, 0, 0, }
+		setup.buffs.renew = { 139, true, 1, 1, 1, }
+		setup.debuffs.weakened = { 6788, 1, 0, 0, }
 
 		auraCorner = {
 			["buff-renew"] = 99,
 			["debuff-weakened"] = 89,
 		}
 	elseif class == "PALADIN" then
-		config.debuffs.forbearance = { 25771, 1, 0, 0, }
+		setup.debuffs.forbearance = { 25771, 1, 0, 0, }
 
 		auraCorner = {
 			["debuff-forbearance"] = 99,
@@ -92,11 +92,11 @@ function Grid2:SetupDefaultAuras(config, class)
 	end
 
 	if auraCorner then
-		config.status["corner-topleft"] = auraCorner
+		setup.status["corner-topleft"] = auraCorner
 	end
 end
 
-function Grid2:SetupDebuffPriorities(config, class)
+function Grid2:SetupDebuffPriorities(setup, class)
 	local debuffPriorities
 	if class == "DRUID" then
 		debuffPriorities = {
@@ -141,27 +141,27 @@ function Grid2:SetupDebuffPriorities(config, class)
 			["debuff-Disease"] = 10,
 		}
 	end
-	config.status["corner-bottomright"] = debuffPriorities
-	config.status["icon-center"] = debuffPriorities
+	setup.status["corner-bottomright"] = debuffPriorities
+	setup.status["icon-center"] = debuffPriorities
 end
 
-function Grid2:SetupIndicators(config)
-	for name, info in pairs(config.indicators.Bars) do
+function Grid2:SetupIndicators(setup)
+	for name, info in pairs(setup.indicators.Bars) do
 		self:CreateBarIndicator(name, unpack(info))
 	end
-	for name, info in pairs(config.indicators.Corners) do
+	for name, info in pairs(setup.indicators.Corners) do
 		self:CreateCornerIndicator(name, unpack(info))
 	end
-	for name, info in pairs(config.indicators.Icons) do
+	for name, info in pairs(setup.indicators.Icons) do
 		self:CreateIconIndicator(name, unpack(info))
 	end
-	for name, info in pairs(config.indicators.Texts) do
+	for name, info in pairs(setup.indicators.Texts) do
 		self:CreateTextIndicator(name, unpack(info))
 	end
 end
 
-function Grid2:SetupAuraStatus(config)
-	for name, info in pairs(config.buffs) do
+function Grid2:SetupAuraStatus(setup)
+	for name, info in pairs(setup.buffs) do
 		local name, mine = info[1], info[2]
 		local status = self:CreateBuffStatus(name, mine)
 		status.name = "buff-"..name -- force name
@@ -182,7 +182,7 @@ function Grid2:SetupAuraStatus(config)
 		status.GetColor = loadstring(handler)()
 		self:RegisterStatus(status, { "color" })
 	end
-	for name, info in pairs(config.debuffs) do
+	for name, info in pairs(setup.debuffs) do
 		local name = info[1]
 		local status = self:CreateDebuffStatus(name)
 		status.name = "debuff-"..name -- force name
@@ -205,8 +205,8 @@ function Grid2:SetupAuraStatus(config)
 	end
 end
 
-function Grid2:SetupStatus(config)
-	for indicatorName, configs in pairs(config.status) do
+function Grid2:SetupStatus(setup)
+	for indicatorName, configs in pairs(setup.status) do
 		local indicator = self.indicators[indicatorName]
 		if indicator then
 			for statusName, priority in pairs(configs) do

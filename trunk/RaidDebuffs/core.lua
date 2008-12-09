@@ -145,7 +145,7 @@ end)
 Grid2:RegisterStatus(status, { "icon" })
 
 local prev_SetupIndicators = Grid2.SetupIndicators
-function Grid2:SetupIndicators()
-	prev_SetupIndicators(self)
+function Grid2:SetupIndicators(...)
+	prev_SetupIndicators(self, ...)
 	self.indicators["icon-center"]:RegisterStatus(self.statuses["raid-debuffs"], 1000)
 end
