@@ -39,5 +39,6 @@ GridLayoutLayouts.lua
 GridFrame.lua
 GridIndicator.lua
 GridStatus.lua
+GridDefaults.lua
 
 modules.xml
