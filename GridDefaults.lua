@@ -71,10 +71,8 @@ function Grid2:SetupDefaultAuras(setup, class)
 			["buff-regrowth"] = 79,
 		}
 
-		if select(5, GetTalentInfo(3, 26)) > 0 then
-			setup.buffs.wildgrowth = { 53248, true, .4, .9, .4, }
-			auraCorner["buff-wildgrowth"] = 69
-		end
+		setup.buffs.wildgrowth = { 53248, true, .4, .9, .4, }
+		auraCorner["buff-wildgrowth"] = 69
 	elseif class == "PRIEST" then
 		setup.buffs.renew = { 139, true, 1, 1, 1, }
 		setup.debuffs.weakened = { 6788, 1, 0, 0, }
@@ -166,7 +164,7 @@ function Grid2:SetupAuraStatus(setup)
 		local status = self:CreateBuffStatus(name, mine)
 		status.name = "buff-"..name -- force name
 		local color_count = (#info - 2) / 3
-		if color_count <= 0 then
+		if color_count <= 0 or #info ~= color_count * 3 + 2 then
 			self:Print("Invalid number of colors for buff %s", name)
 			return
 		end
@@ -175,7 +173,7 @@ function Grid2:SetupAuraStatus(setup)
 		if color_count > 1 then
 			handler = handler.." local count = self:GetCount(unit)"
 			for i = 1, color_count - 1 do
-				handler = handler.. ("if count == %d then return %s, %s, %s end"):format(unpack(info, i * 3, (i + 1) * 3 - 1))
+				handler = handler..("if count == %d then return %s, %s, %s end"):format(i, unpack(info, i * 3, (i + 1) * 3 - 1))
 			end
 		end
 		handler = handler..(" return %s, %s, %s end"):format(unpack(info, color_count * 3))
