@@ -5,8 +5,8 @@
 ## Notes-zhCN: 小巧的轻量级模块化队伍框架
 ## Notes-zhTW: 精簡的團隊框架功能
 ## Author: Pastamancer & Maia, Jerry
-## Version: $Rev: 15 $
-## X-ReleaseDate: "$Date: 2008-10-25 16:07:52 +0000 (Sat, 25 Oct 2008) $"
+## Version: $Rev$
+## X-ReleaseDate: "$Date$"
 ## X-Website: http://wowace.com/projects/grid2/
 ## X-Category: UnitFrame
 
