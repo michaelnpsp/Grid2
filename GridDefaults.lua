@@ -173,11 +173,11 @@ function Grid2:SetupAuraStatus(setup)
 		if color_count > 1 then
 			handler = handler.." local count = self:GetCount(unit)"
 			for i = 1, color_count - 1 do
-				handler = handler..("if count == %d then return %s, %s, %s end"):format(i, unpack(info, i * 3, (i + 1) * 3 - 1))
+				handler = handler..(" if count == %d then return %s, %s, %s end"):format(i, unpack(info, i * 3, (i + 1) * 3 - 1))
 			end
 		end
 		handler = handler..(" return %s, %s, %s end"):format(unpack(info, color_count * 3))
-		status.GetColor = loadstring(handler)()
+		status.GetColor = assert(loadstring(handler))()
 		self:RegisterStatus(status, { "color" })
 	end
 	for name, info in pairs(setup.debuffs) do
