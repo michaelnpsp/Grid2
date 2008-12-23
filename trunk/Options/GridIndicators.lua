@@ -157,14 +157,21 @@ local function AddBarColorIndicatorOptions(BarColor)
 	})
 end
 
-AddTextIndicatorOptions(Grid2.indicators["text-up"])
-AddTextIndicatorOptions(Grid2.indicators["text-down"])
-AddBarIndicatorOptions(Grid2.indicators["bar-health"])
-AddBarColorIndicatorOptions(Grid2.indicators["bar-health-color"])
-AddBarIndicatorOptions(Grid2.indicators["bar-heals"])
-AddBarColorIndicatorOptions(Grid2.indicators["bar-heals-color"])
-AddIconIndicatorOptions(Grid2.indicators["icon-center"])
-AddCornerIndicatorOptions(Grid2.indicators["corner-bottomleft"])
-AddCornerIndicatorOptions(Grid2.indicators["corner-bottomright"])
-AddCornerIndicatorOptions(Grid2.indicators["corner-topright"])
-AddCornerIndicatorOptions(Grid2.indicators["corner-topleft"])
+local function AddSetupIndicatorsOptions(setup)
+	local indicators = setup.indicators
+	for name in pairs(indicators.Bars) do
+		AddBarIndicatorOptions(Grid2.indicators["bar-"..name])
+		AddBarColorIndicatorOptions(Grid2.indicators["bar-"..name.."-color"])
+	end
+	for name in pairs(indicators.Corners) do
+		AddCornerIndicatorOptions(Grid2.indicators["corner-"..name])
+	end
+	for name in pairs(indicators.Icons) do
+		AddCornerIndicatorOptions(Grid2.indicators["icon-"..name])
+	end
+	for name in pairs(indicators.Texts) do
+		AddCornerIndicatorOptions(Grid2.indicators["text-"..name])
+	end
+end
+
+AddSetupIndicatorsOptions(Grid2.db.profile.setup)

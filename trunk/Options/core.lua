@@ -1,7 +1,14 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 
 local Grid2Options = {
-	options = {}
+	options = {
+		Auras = {
+			type = "group",
+			name = "Auras",
+			desc = L["Options for %s."]:format("Auras"),
+			args = {},
+		},
+	}
 }
 
 function Grid2Options:AddModule(parent, name, module, extraOptions)
@@ -12,7 +19,7 @@ function Grid2Options:AddModule(parent, name, module, extraOptions)
 	local options = {
 		type = "group",
 		name = (module.menuName or module.name),
-		desc = string.format(L["Options for %s."], module.name),
+		desc = L["Options for %s."]:format(module.name),
 		args = {},
 	}
 
@@ -39,7 +46,7 @@ function Grid2Options:AddElement(type, element, extraOptions)
 		group = {
 			type = "group",
 			name = type,
-			desc = string.format(L["Options for %s."], type),
+			desc = L["Options for %s."]:format(type),
 			args = {},
 		}
 		self.options.Grid2.args[type] = group
@@ -48,12 +55,27 @@ function Grid2Options:AddElement(type, element, extraOptions)
 	group.args[element.name] = {
 		type = "group",
 		name = element.name,
-		desc = string.format(L["Options for %s."], type),
+		desc = L["Options for %s."]:format(type),
 		args = options,
 	}
 	for name, option in pairs(extraOptions) do
 		options[name] = option
 	end
+end
+
+function Grid2Options:AddAura(type, name, spell, owner, r, g, b, ...)
+	local group = self.options.Auras.args[type]
+	if not group then
+		group = {
+			type = "group",
+			name = type,
+			desc = L["Options for %s."]:format(type),
+			args = {},
+		}
+		self.options.Auras.args[type] = group
+	end
+	group.args[name] = {
+	}
 end
 
 function Grid2Options:AddModuleDebugMenu(name, module)
