@@ -134,6 +134,11 @@ function Grid2:OnInitialize()
 	for _, status in self:IterateStatuses() do
 		self:InitializeElement("status", status)
 	end
+
+	local media = LibStub("LibSharedMedia-3.0", true)
+	if media then
+		media:Register("statusbar", "Gradient", "Interface\\Addons\\Grid2\\gradient32x32")
+	end
 end
 
 function Grid2:LoadOptions()
