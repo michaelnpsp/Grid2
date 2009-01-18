@@ -71,6 +71,22 @@ Grid2Options:AddModule("Grid2", "Grid2Layout", Grid2Layout, {
 					  end,
 				values = {},
 			},
+			raid = {
+				type = "select",
+				name = L["Heroic Raid Layout"],
+				desc = L["Select which layout to use for raid in heroic mode."],
+				order = 3,
+				get = function ()
+						  return Grid2Layout.db.profile.layouts.hraid
+					  end,
+				set = function (_, v)
+						  Grid2Layout.db.profile.layouts.hraid = v
+						  if Grid2Layout.partyType == "hraid" then
+							Grid2Layout:LoadLayout(v)
+						  end
+					  end,
+				values = {},
+			},
 			pvp = {
 				type = "select",
 				name = L["Battleground Layout"],

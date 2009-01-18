@@ -119,7 +119,8 @@ Grid2Layout.defaultDB = {
 		layouts = {
 			solo = L["Solo"],
 			party = L["Solo w/Pet"],
-			raid = L["By Group 25 w/Pets"],
+			raid = L["By Group 10 w/Pets"],
+			hraid = L["By Group 25 w/Pets"],
 			pvp = L["By Group 40"],
 			arena = L["By Group 10"],
 		},
@@ -485,7 +486,7 @@ function Grid2Layout:CheckVisibility()
 		self.frame:Show()
 	elseif frameDisplay == "Grouped" and self.partyType ~= "solo" then
 		self.frame:Show()
-	elseif frameDisplay == "Raid" and self.partyType == "raid" then
+	elseif frameDisplay == "Raid" and (self.partyType == "raid" or self.partyType == "hraid") then
 		self.frame:Show()
 	else
 		self.frame:Hide()
