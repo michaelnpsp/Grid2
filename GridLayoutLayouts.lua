@@ -9,6 +9,7 @@ DEFAULT_PET_GROUPFILTER = nil -- for testing purpose
 
 Grid2Layout:AddLayout(L["None"], {
 	meta = {
+		hraid = true,
 		raid = true,
 		party = true,
 		pvp = true,
@@ -51,6 +52,7 @@ Grid2Layout:AddLayout(L["Solo w/Pet"], {
 
 Grid2Layout:AddLayout(L["By Group 40"], {
 	meta = {
+		hraid = true,
 		raid = true,
 		pvp = true,
 	},
@@ -92,6 +94,7 @@ Grid2Layout:AddLayout(L["By Group 40"], {
 
 Grid2Layout:AddLayout(L["By Group 25"], {
 	meta = {
+		hraid = true,
 		raid = true,
 	},
 	[1] = {
@@ -113,6 +116,7 @@ Grid2Layout:AddLayout(L["By Group 25"], {
 
 Grid2Layout:AddLayout(L["By Group 25 w/Pets"], {
 	meta = {
+		hraid = true,
 		raid = true,
 	},
 	[1] = {
@@ -141,6 +145,7 @@ Grid2Layout:AddLayout(L["By Group 25 w/Pets"], {
 
 Grid2Layout:AddLayout(L["By Group 20"], {
 	meta = {
+		hraid = true,
 		raid = true,
 	},
 	[1] = {
@@ -159,6 +164,7 @@ Grid2Layout:AddLayout(L["By Group 20"], {
 
 Grid2Layout:AddLayout(L["By Group 15"], {
 	meta = {
+		hraid = true,
 		raid = true,
 		pvp = true,
 	},
@@ -175,6 +181,7 @@ Grid2Layout:AddLayout(L["By Group 15"], {
 
 Grid2Layout:AddLayout(L["By Group 15 w/Pets"], {
 	meta = {
+		hraid = true,
 		raid = true,
 		pvp = true,
 	},
@@ -198,6 +205,7 @@ Grid2Layout:AddLayout(L["By Group 15 w/Pets"], {
 
 Grid2Layout:AddLayout(L["By Group 10"], {
 	meta = {
+		hraid = true,
 		raid = true,
 		pvp = true,
 	},
@@ -211,6 +219,7 @@ Grid2Layout:AddLayout(L["By Group 10"], {
 
 Grid2Layout:AddLayout(L["By Group 10 w/Pets"], {
 	meta = {
+		hraid = true,
 		raid = true,
 		pvp = true,
 	},
@@ -231,6 +240,7 @@ Grid2Layout:AddLayout(L["By Group 10 w/Pets"], {
 
 Grid2Layout:AddLayout(L["By Group 5"], {
 	meta = {
+		hraid = true,
 		raid = true,
 		arena = true,
 	},
@@ -241,6 +251,7 @@ Grid2Layout:AddLayout(L["By Group 5"], {
 
 Grid2Layout:AddLayout(L["By Group 5 w/Pets"], {
 	meta = {
+		hraid = true,
 		raid = true,
 		arena = true,
 	},
@@ -258,6 +269,7 @@ Grid2Layout:AddLayout(L["By Group 5 w/Pets"], {
 
 Grid2Layout:AddLayout(L["By Class"], {
 	meta = {
+		hraid = true,
 		raid = true,
 		pvp = true,
 	},
@@ -292,6 +304,7 @@ Grid2Layout:AddLayout(L["By Class"], {
 
 Grid2Layout:AddLayout(L["By Class w/Pets"], {
 	meta = {
+		hraid = true,
 		raid = true,
 		pvp = true,
 	},
@@ -331,6 +344,7 @@ Grid2Layout:AddLayout(L["By Class w/Pets"], {
 
 Grid2Layout:AddLayout(L["Onyxia"], {
 	meta = {
+		hraid = true,
 		raid = true,
 	},
 	[1] = {
@@ -364,6 +378,7 @@ Grid2Layout:AddLayout(L["Onyxia"], {
 
 Grid2Layout:AddLayout(L["By Group 25 w/tanks"], {
 	meta = {
+		hraid = true,
 		raid = true,
 	},
 	[1] = {

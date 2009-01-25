@@ -71,7 +71,7 @@ Grid2Options:AddModule("Grid2", "Grid2Layout", Grid2Layout, {
 					  end,
 				values = {},
 			},
-			raid = {
+			hraid = {
 				type = "select",
 				name = L["Heroic Raid Layout"],
 				desc = L["Select which layout to use for raid in heroic mode."],
