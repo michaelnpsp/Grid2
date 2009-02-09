@@ -167,10 +167,10 @@ local function AddSetupIndicatorsOptions(setup)
 		AddCornerIndicatorOptions(Grid2.indicators["corner-"..name])
 	end
 	for name in pairs(indicators.Icons) do
-		AddCornerIndicatorOptions(Grid2.indicators["icon-"..name])
+		AddIconIndicatorOptions(Grid2.indicators["icon-"..name])
 	end
 	for name in pairs(indicators.Texts) do
-		AddCornerIndicatorOptions(Grid2.indicators["text-"..name])
+		AddTextIndicatorOptions(Grid2.indicators["text-"..name])
 	end
 end
 
