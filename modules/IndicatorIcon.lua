@@ -73,7 +73,7 @@ local function Icon_OnUpdate(self, parent, unit, status)
 	end
 end
 
-local function Icon_SetIconSize(self, parent, size)
+local function Icon_SetIconSize(self, parent, iconSize)
 	local Icon = parent[self.name]
 	Icon:SetWidth(iconSize)
 	Icon:SetHeight(iconSize)
