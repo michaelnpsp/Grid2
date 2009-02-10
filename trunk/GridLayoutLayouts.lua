@@ -300,6 +300,9 @@ Grid2Layout:AddLayout(L["By Class"], {
 	[9] = {
 		groupFilter = "ROGUE",
 	},
+	[10] = {
+		groupFilter = "DEATHKNIGHT",
+	},
 })
 
 Grid2Layout:AddLayout(L["By Class w/Pets"], {
@@ -336,6 +339,9 @@ Grid2Layout:AddLayout(L["By Class w/Pets"], {
 		groupFilter = "ROGUE",
 	},
 	[10] = {
+		groupFilter = "DEATHKNIGHT",
+	},
+	[11] = {
 		type = "raidpet",
 		groupFilter = DEFAULT_PET_GROUPFILTER,
 		filterOnPet = true,

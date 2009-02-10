@@ -6,7 +6,6 @@ local function Text_Create(self, parent)
 
 	local f = CreateFrame("Frame", nil, parent)
 	f:SetAllPoints()
-	f:SetFrameLevel(parent:GetFrameLevel() +  3)
 	local t = f:CreateFontString(nil, "OVERLAY")
 	t:SetFontObject(GameFontHighlightSmall)
 	t:SetFont(font, self.db.profile.fontSize)
@@ -21,6 +20,7 @@ end
 
 local function Text_Layout(self, parent)
 	local Text = parent[self.name]
+	Text:GetParent():SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
 	Text:SetPoint(self.anchor, parent, self.anchorRel, self.offsetx, self.offsety)
 	Text:SetWidth(parent:GetWidth())
 end
@@ -65,10 +65,14 @@ local function TextColor_OnUpdate(self, parent, unit, status)
 	end
 end
 
-function Grid2:CreateTextIndicator(name, anchor, anchorRel, offsetx, offsety)
+function Grid2:CreateTextIndicator(name, level, anchor, anchorRel, offsetx, offsety)
 	name = "text-"..name
+	if type(level) == "string" then
+		level, anchor, anchorRel, offsetx, offsety = 0, level, anchor, anchorRel, offsetx
+	end
 	local Text = self.indicatorPrototype:new(name)
 
+	Text.frameLevel = level
 	Text.anchor = anchor
 	Text.anchorRel = anchorRel
 	Text.offsetx = offsetx

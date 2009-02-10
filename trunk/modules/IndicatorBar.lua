@@ -26,6 +26,7 @@ local function Bar_Layout(self, parent)
 	local inset = self.db.profile.inset or 2
 	local w, h = parent:GetWidth() - inset, parent:GetHeight() - inset
 	local Bar, BarBG = parent[self.nameFG], parent[self.nameBG]
+	Bar:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
 	BarBG:SetWidth(w)
 	BarBG:SetHeight(h)
 	Bar:SetWidth(w)
@@ -94,12 +95,16 @@ local BarColor_defaultDB = {
 	}
 }
 
-function Grid2:CreateBarIndicator(name, anchor, anchorRel, offsetx, offsety)
+function Grid2:CreateBarIndicator(name, level, anchor, anchorRel, offsetx, offsety)
 	name = "bar-"..name
-
+	if type(level) == "string" then
+		level, anchor, anchorRel, offsetx, offsety = 0, level, anchor, anchorRel, offsetx
+	end
 	local Bar = self.indicatorPrototype:new(name)
 	Bar.nameFG = name
 	Bar.nameBG = name.."-background"
+	
+	Bar.frameLevel = level
 	Bar.anchor = anchor
 	Bar.anchorRel = anchorRel
 	Bar.offsetx = offsetx

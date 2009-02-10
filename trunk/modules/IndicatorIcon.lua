@@ -2,7 +2,6 @@ local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 local function Icon_Create(self, parent)
 	local f = CreateFrame("Frame", nil, parent)
-	f:SetFrameLevel(parent:GetFrameLevel() +  4)
 	f:SetBackdrop({
 		edgeFile = "Interface\\Addons\\Grid2\\white16x16", edgeSize = 2,
 		insets = {left = 2, right = 2, top = 2, bottom = 2},
@@ -32,6 +31,7 @@ end
 
 local function Icon_Layout(self, parent)
 	local Icon = parent[self.name]
+	Icon:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
 	Icon:SetPoint(self.anchor, parent, self.anchorRel, self.offsetx, self.offsety)
 	local iconSize = self.db.profile.iconSize
 	Icon:SetWidth(iconSize)
@@ -86,11 +86,15 @@ local Icon_defaultDB = {
 	}
 }
 
-function Grid2:CreateIconIndicator(name, anchor, anchorRel, offsetx, offsety)
+function Grid2:CreateIconIndicator(name, level, anchor, anchorRel, offsetx, offsety)
 
 	name = "icon-"..name
+	if type(level) == "string" then
+		level, anchor, anchorRel, offsetx, offsety = 0, level, anchor, anchorRel, offsetx
+	end
 	local Icon = self.indicatorPrototype:new(name)
 
+	Icon.frameLevel = level
 	Icon.anchor = anchor
 	Icon.anchorRel = anchorRel
 	Icon.offsetx = offsetx
