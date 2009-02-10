@@ -11,7 +11,6 @@ local function Corner_Create(self, parent)
 	})
 	Corner:SetBackdropBorderColor(0,0,0,1)
 	Corner:SetBackdropColor(1,1,1,1)
-	Corner:SetFrameLevel(5)
 	parent[self.name] = Corner
 end
 
@@ -21,6 +20,7 @@ end
 
 local function Corner_Layout(self, parent)
 	local Corner = parent[self.name]
+	Corner:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
 	Corner:SetPoint(self.anchor, parent, self.anchorRel, self.offsetx, self.offsety)
 	local cornerSize = self.db.profile.cornerSize
 	Corner:SetWidth(cornerSize) -- @FIXME merge the sizes ?
@@ -49,10 +49,14 @@ local Corner_defaultDB = {
 	}
 }
 
-function Grid2:CreateCornerIndicator(name, anchor, anchorRel, offsetx, offsety)
+function Grid2:CreateCornerIndicator(name, level, anchor, anchorRel, offsetx, offsety)
 	name = "corner-"..name
+	if type(level) == "string" then
+		level, anchor, anchorRel, offsetx, offsety = 0, level, anchor, anchorRel, offsetx
+	end
 	local Corner = self.indicatorPrototype:new(name)
 
+	Corner.frameLevel = level
 	Corner.anchor = anchor
 	Corner.anchorRel = anchorRel
 	Corner.offsetx = offsetx

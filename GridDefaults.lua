@@ -17,21 +17,21 @@ end
 
 function Grid2:SetupDefaultIndicators(setup, class)
 	setup.indicators.Bars = {
-		health = { "CENTER" },
-		heals = { "CENTER" },
+		health = { 1, "CENTER" },
+		heals = { 2, "CENTER" },
 	}
 	setup.indicators.Corners = {
-		bottomleft = { "BOTTOMLEFT", "BOTTOMLEFT", 1, 1 },
-		bottomright = { "BOTTOMRIGHT", "BOTTOMRIGHT", -1, 1 },
-		topright = { "TOPRIGHT", "TOPRIGHT", -1, -1 },
-		topleft = { "TOPLEFT", "TOPLEFT", 1, -1 },
+		bottomleft = { 5, "BOTTOMLEFT", "BOTTOMLEFT", 1, 1 },
+		bottomright = { 5, "BOTTOMRIGHT", "BOTTOMRIGHT", -1, 1 },
+		topright = { 5, "TOPRIGHT", "TOPRIGHT", -1, -1 },
+		topleft = { 5, "TOPLEFT", "TOPLEFT", 1, -1 },
 	}
 	setup.indicators.Icons = {
-		center = { "CENTER" },
+		center = { 4, "CENTER" },
 	}
 	setup.indicators.Texts = {
-		up = { "BOTTOM", "CENTER", 0, 4, },
-		down = { "TOP", "CENTER", 0, -4, },
+		up = { 3, "BOTTOM", "CENTER", 0, 4, },
+		down = { 3, "TOP", "CENTER", 0, -4, },
 	}
 end
 
