@@ -86,6 +86,7 @@ local StatusCount = 0
 local BuffHandlers, DebuffHandlers = {}, {}
 local function status_Reset(self, unit)
 	self.prev_state = self:IsActive(unit)
+	self.new_state = nil
 	self.prev_count = self.counts[unit]
 	self.states[unit] = nil
 	self.expirations[unit] = nil
@@ -147,12 +148,7 @@ local function status_UpdateStateMine(self, unit, auraName, iconTexture, count, 
 end
 
 local function status_HasStateChanged(self, unit)
-	local changed = (self.new_state ~= self.prev_state) or (self.new_count ~= self.prev_count)
-	self.new_state = nil
-	self.prev_state = nil
-	self.new_count = nil
-	self.prev_count = nil
-	return changed
+	return (self.new_state ~= self.prev_state) or (self.new_count ~= self.prev_count)
 end
 
 local AddTimeTracker
