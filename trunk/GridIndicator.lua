@@ -13,11 +13,26 @@ function indicator:init(name)
 	self.name = name
 end
 
+function Grid2:IsCompatiblePair(indicator, status)
+	-- we check that the status provides at least
+	-- one of the required indicator types
+	for type, list in pairs(self.indicatorTypes) do
+		if list[indicator.name] then
+			for _, s in self:IterateStatuses(type) do
+				if s == status then
+					return type
+				end
+			end
+		end
+	end
+end
+
 function indicator:RegisterStatus(status, priority)
 	if self.priorities[status] then
 		Grid2:Print(string.format("WARNING ! Status %s already registered with indicator %s", status.name, self.name))
 		return
 	end
+	assert(Grid2:IsCompatiblePair(self, status))
 	self.priorities[status] = priority
 	self.statuses[#self.statuses + 1] = status
 	table.sort(self.statuses, self.sortStatuses)
