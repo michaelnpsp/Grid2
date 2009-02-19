@@ -159,10 +159,10 @@ function Grid2:SetupIndicators(setup)
 end
 
 function Grid2:SetupAuraStatus(setup)
-	for name, info in pairs(setup.buffs) do
+	for statusName, info in pairs(setup.buffs) do
 		local name, mine = info[1], info[2]
 		local status = self:CreateBuffStatus(name, mine)
-		status.name = "buff-"..name -- force name
+		status.name = "buff-"..statusName -- force name
 		local color_count = (#info - 2) / 3
 		if color_count <= 0 or #info ~= color_count * 3 + 2 then
 			self:Print("Invalid number of colors for buff %s", name)
@@ -180,10 +180,10 @@ function Grid2:SetupAuraStatus(setup)
 		status.GetColor = assert(loadstring(handler))()
 		self:RegisterStatus(status, { "color" })
 	end
-	for name, info in pairs(setup.debuffs) do
+	for statusName, info in pairs(setup.debuffs) do
 		local name = info[1]
 		local status = self:CreateDebuffStatus(name)
-		status.name = "debuff-"..name -- force name
+		status.name = "debuff-"..statusName -- force name
 		local color_count = (#info - 1) / 3
 		if color_count <= 0 then
 			self:Print("Invalid number of colors for debuff %s", name)

@@ -177,6 +177,9 @@ do
 end
 
 function Grid2:CreateBuffStatus(name, mine)
+	if type(name) == "number" then name = GetSpellInfo(name) end
+	assert(type(name) == "string")
+
 	StatusCount = StatusCount + 1
 	local status = Grid2.statusPrototype:new("buff-"..StatusCount)
 
@@ -216,6 +219,9 @@ function Grid2:CreateBuffStatus(name, mine)
 end
 
 function Grid2:CreateDebuffStatus(name, mine)
+	if type(name) == "number" then name = GetSpellInfo(name) end
+	assert(type(name) == "string")
+
 	StatusCount = StatusCount + 1
 	local status = Grid2.statusPrototype:new("debuff-"..StatusCount)
 
