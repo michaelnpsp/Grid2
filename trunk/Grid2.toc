@@ -23,7 +23,20 @@
 libs\UTF8\utf8.lua
 
 ## Ace Libraries
-embeds.xml
+#@no-lib-strip@
+Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
+Libs\AceAddon-3.0\AceAddon-3.0.xml
+Libs\AceEvent-3.0\AceEvent-3.0.xml
+Libs\AceDB-3.0\AceDB-3.0.xml
+Libs\AceConsole-3.0\AceConsole-3.0.xml
+Libs\AceGUI-3.0\AceGUI-3.0.xml
+Libs\AceConfig-3.0\AceConfig-3.0.xml
+Libs\AceLocale-3.0\AceLocale-3.0.xml
+Libs\LibGratuity-3.0\lib.xml
+Libs\LibBanzai-2.0\lib.xml
+Libs\LibHealComm-3.0\lib.xml
+#@end-no-lib-strip@
 
 #Locales
 locales.xml
