@@ -1,4 +1,4 @@
-## Interface: 30000
+﻿## Interface: 30000
 ## Title: Grid 2
 ## Notes: A modular, lightweight and screen-estate saving grid of party/raid unit frames
 ## Notes-ruRU: Модульный, легкий  отображающий на экране область группы/рейда в виде сетки
@@ -50,6 +50,7 @@ GridRange.lua
 GridLayout.lua
 GridLayoutLayouts.lua
 GridFrame.lua
+GridLocation.lua
 GridIndicator.lua
 GridStatus.lua
 GridDefaults.lua

@@ -1,18 +1,47 @@
-function Grid2:MakeDefaultSetup()
-	local setup = {
-		buffs = {},
-		debuffs = {},
-		indicators = {},
-		status = {},
-	}
-
+function Grid2:MakeDefaultSetup(setup)
 	local class = select(2, UnitClass("player"))
-	self:SetupDefaultIndicators(setup, class)
-	self:SetupDefaultStatus(setup, class)
-	self:SetupDefaultAuras(setup, class)
-	self:SetupDebuffPriorities(setup, class)
+
+	if (not setup) then
+		setup = {}
+	end
+
+	if (not setup.locations) then
+		self:SetupDefaultLocations(setup, class)
+	end
+	if (not setup.indicators) then
+		setup.indicators = {}
+		self:SetupDefaultIndicators(setup, class)
+	end
+	if (not setup.status) then
+		setup.status = {}
+		self:SetupDefaultStatus(setup, class)
+	end
+	if (not setup.buffs) then
+		setup.buffs = {}
+		setup.debuffs = {}
+		self:SetupDefaultAuras(setup, class)
+		self:SetupDebuffPriorities(setup, class)
+	end
 
 	return setup
+end
+
+function Grid2:SetupDefaultLocations(setup, class)
+	setup.locations = {
+		["corner-top-left"] = {relIndicator = nil, point = "TOPLEFT", relPoint = "TOPLEFT", x = 2, y = 2, name = "corner-top-left"},
+		["corner-top-right"] = {relIndicator = nil, point = "TOPRIGHT", relPoint = "TOPRIGHT", x = -2, y = 2, name = "corner-top-right"},
+		["corner-bottom-left"] = {relIndicator = nil, point = "BOTTOMLEFT", relPoint = "BOTTOMLEFT", x = 2, y = -2, name = "corner-bottom-left"},
+		["corner-bottom-right"] = {relIndicator = nil, point = "BOTTOMRIGHT", relPoint = "BOTTOMRIGHT", x = -2, y = -2, name = "corner-bottom-right"},
+		["side-left"] = {relIndicator = nil, point = "LEFT", relPoint = "LEFT", x = 2, y = 0, name = "side-left"},
+		["side-right"] = {relIndicator = nil, point = "RIGHT", relPoint = "RIGHT", x = -2, y = 0, name = "side-right"},
+		["side-top"] = {relIndicator = nil, point = "TOP", relPoint = "TOP", x = 0, y = 2, name = "side-top"},
+		["side-bottom"] = {relIndicator = nil, point = "BOTTOM", relPoint = "BOTTOM", x = 0, y = -2, name = "side-bottom"},
+		["center"] = {relIndicator = nil, point = "CENTER", relPoint = "CENTER", x = 0, y = 0, name = "center"},
+		["center-left"] = {relIndicator = "center", point = "RIGHT", relPoint = "LEFT", x = 2, y = 0, name = "center-left"},
+		["center-right"] = {relIndicator = "center", point = "LEFT", relPoint = "RIGHT", x = -2, y = 0, name = "center-right"},
+		["center-top"] = {relIndicator = "center", point = "BOTTOM", relPoint = "TOP", x = 0, y = 2, name = "center-top"},
+		["center-bottom"] = {relIndicator = "center", point = "TOP", relPoint = "BOTTOM", x = 0, y = -2, name = "center-bottom"},
+	}
 end
 
 function Grid2:SetupDefaultIndicators(setup, class)
@@ -218,11 +247,9 @@ function Grid2:SetupStatus(setup)
 end
 
 function Grid2:Setup()
-	local setup = self.db.profile.setup
-	if not setup then
-		setup = self:MakeDefaultSetup()
-		self.db.profile.setup = setup
-	end
+	local setup = self:MakeDefaultSetup(self.db.profile.setup)
+	self.db.profile.setup = setup
+
 	self:SetupIndicators(setup)
 	self:SetupAuraStatus(setup)
 	self:SetupStatus(setup)
