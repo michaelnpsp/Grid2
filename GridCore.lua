@@ -128,6 +128,9 @@ function Grid2:OnInitialize()
 	self.optionsFrame = optionsFrame
 	self:RegisterModules()
 
+	for _, location in self:IterateLocations() do
+		self:InitializeElement("location", location)
+	end
 	for _, indicator in self:IterateIndicators() do
 		self:InitializeElement("indicator", indicator)
 	end
