@@ -11,6 +11,10 @@ L["Always"] = "一直"
 L["Never"] = "不显示"
 L["OOC"] = "非战斗"
 
+L["location"] = "location"
+L["indicator"] = "indicator"
+L["status"] = "status"
+
 L["Advanced"] = "高级"
 L["Advanced options."] = "高级选项。"
 

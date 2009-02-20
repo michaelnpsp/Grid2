@@ -11,6 +11,10 @@ L["Always"] = true
 L["Never"] = true
 L["OOC"] = true
 
+L["location"] = true
+L["indicator"] = true
+L["status"] = true
+
 L["Advanced"] = true
 L["Advanced options."] = true
 
@@ -77,6 +81,36 @@ L["TOPLEFT"] = true
 L["TOPRIGHT"] = true
 L["BOTTOMLEFT"] = true
 L["BOTTOMRIGHT"] = true
+
+L["corner-top-left"] = "corner-top-left"
+L["corner-top-right"] = "corner-top-right"
+L["corner-bottom-left"] = "corner-bottom-left"
+L["corner-bottom-right"] = "corner-bottom-right"
+L["side-left"] = "side-left"
+L["side-right"] = "side-right"
+L["side-top"] = "side-top"
+L["side-bottom"] = "side-bottom"
+L["center"] = "center"
+L["center-left"] = "center-left"
+L["center-right"] = "center-right"
+L["center-top"] = "center-top"
+L["center-bottom"] = "center-bottom"
+
+L["Name"] = true
+L["<CharacterOnlyString>"] = true
+L["Align Point"] = true
+L["Align this point on the indicator"] = true
+L["Align relative to"] = true
+L["Align my align point relative to"] = true
+L["Delete"] = true
+L["X Offset"] = true
+L["X - Horizontal Offset"] = true
+L["Y Offset"] = true
+L["Y - Vertical Offset"] = true
+L["New Location"] = true
+L["Create a new location for an indicator."] = true
+L["Reset Locations"] = true
+L["Reset locations to the default list."] = true
 
 L["Group Anchor"] = true
 L["Sets where groups are anchored relative to the layout frame."] = true

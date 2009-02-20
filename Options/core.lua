@@ -45,7 +45,7 @@ function Grid2Options:AddElement(type, element, extraOptions)
 	if not group then
 		group = {
 			type = "group",
-			name = type,
+			name = L[type] or type,
 			desc = L["Options for %s."]:format(type),
 			args = {},
 		}
@@ -58,6 +58,27 @@ function Grid2Options:AddElement(type, element, extraOptions)
 		desc = L["Options for %s."]:format(type),
 		args = options,
 	}
+	for name, option in pairs(extraOptions) do
+		options[name] = option
+	end
+end
+
+-- Adds meta options for the list of elements from AddElement
+-- If reset is true then discard the old options
+function Grid2Options:AddElementGroup(type, extraOptions, reset)
+	if not extraOptions then return end
+
+	local group = self.options.Grid2.args[type]
+	if (reset or not group) then
+		group = {
+			type = "group",
+			name = L[type] or type,
+			desc = L["Options for %s."]:format(type),
+			args = {},
+		}
+		self.options.Grid2.args[type] = group
+	end
+	local options = group.args
 	for name, option in pairs(extraOptions) do
 		options[name] = option
 	end
@@ -111,6 +132,9 @@ function Grid2Options:Initialize()
 	end
 	self:AddModuleDebugMenu("Grid2", Grid2)
 	InitializeModuleOptions(Grid2)
+	for _, location in Grid2:IterateLocations() do
+		self:AddElement("location", location)
+	end
 	for _, indicator in Grid2:IterateIndicators() do
 		self:AddElement("indicator", indicator)
 	end

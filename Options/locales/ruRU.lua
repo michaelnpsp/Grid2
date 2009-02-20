@@ -11,6 +11,10 @@ L["Always"] = "Всегда"
 L["Never"] = "Никогда"
 L["OOC"] = "OOC"
 
+L["location"] = "location"
+L["indicator"] = "indicator"
+L["status"] = "status"
+
 L["Advanced"] = "Дополнительные"
 L["Advanced options."] = "Допонительные опции."
 
