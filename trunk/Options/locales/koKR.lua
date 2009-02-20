@@ -1,4 +1,4 @@
-local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2Options", "koKR")
+﻿local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2Options", "koKR")
 if not L then return end
 
 L["Debug"] = "디버그"
@@ -10,6 +10,10 @@ L["Show unit tooltip.  Choose 'Always', 'Never', or 'OOC'."] = "유닛 툴팁을
 L["Always"] = "항상"
 L["Never"] = "안함"
 L["OOC"] = "비전투"
+
+L["location"] = "location"
+L["indicator"] = "indicator"
+L["status"] = "status"
 
 L["Advanced"] = "고급"
 L["Advanced options."] = "고급 옵션을 설정합니다."
