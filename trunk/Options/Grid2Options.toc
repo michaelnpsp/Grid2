@@ -10,5 +10,6 @@ GridFrame.lua
 GridLayout.lua
 GridBlink.lua
 GridMedia.lua
+GridLocations.lua
 GridIndicators.lua
 GridStatuses.lua
