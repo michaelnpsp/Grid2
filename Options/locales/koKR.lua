@@ -1,4 +1,4 @@
-﻿local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2Options", "koKR")
+local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2Options", "koKR")
 if not L then return end
 
 L["Debug"] = "디버그"
@@ -81,6 +81,36 @@ L["TOPLEFT"] = "좌측 상단"
 L["TOPRIGHT"] = "우측 상단"
 L["BOTTOMLEFT"] = "좌측 하단"
 L["BOTTOMRIGHT"] = "우측 하단"
+
+L["corner-top-left"] = "모서리-좌측 상단"
+L["corner-top-right"] = "모서리-우측 상단"
+L["corner-bottom-left"] = "모서리-좌측 하단"
+L["corner-bottom-right"] = "모서리-우측 하단"
+L["side-left"] = "사이드-좌측"
+L["side-right"] = "사이드-우측"
+L["side-top"] = "사이드-상단"
+L["side-bottom"] = "사이드-하단"
+L["center"] = "중앙"
+L["center-left"] = "중앙-좌측"
+L["center-right"] = "중앙-우측"
+L["center-top"] = "중앙- 상단"
+L["center-bottom"] = "중앙-하단"
+
+L["Name"] = "이름"
+L["<CharacterOnlyString>"] = "<CharacterOnlyString>"
+L["Align Point"] = "포인트 정렬"
+L["Align this point on the indicator"] = "지시기에 이 포인트를 정렬"
+L["Align relative to"] = "정렬"
+L["Align my align point relative to"] = "나의 상대 포인트에 정렬"
+L["Delete"] = "삭제"
+L["X Offset"] = "X 간격"
+L["X - Horizontal Offset"] = "X - 가로 간격"
+L["Y Offset"] = "Y 간격"
+L["Y - Vertical Offset"] = "Y - 세로 간격"
+L["New Location"] = "새로운 위치"
+L["Create a new location for an indicator."] = "지시기의 새로운 위치를 만듭니다."
+L["Reset Locations"] = "위치 초기화"
+L["Reset locations to the default list."] = "기본 목록으로 위치를 되돌립니다."
 
 L["Group Anchor"] = "그룹 위치"
 L["Sets where groups are anchored relative to the layout frame."] = "그룹 배치 창의 위치를 설정합니다."
