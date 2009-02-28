@@ -119,6 +119,10 @@ L["Location"] = true
 L["Select the location of the indicator"] = true
 L["Statuses"] = true
 L["Select statuses to display with the indicator"] = true
+L["New Status"] = true
+L["Create a new status."] = true
+L["Reset Statuses"] = true
+L["Reset statuses to defaults."] = true
 
 L["Group Anchor"] = true
 L["Sets where groups are anchored relative to the layout frame."] = true
