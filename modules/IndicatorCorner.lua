@@ -21,6 +21,7 @@ end
 local function Corner_Layout(self, parent)
 	local Corner = parent[self.name]
 	Corner:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
+	Corner:ClearAllPoints()
 	Corner:SetPoint(self.anchor, parent, self.anchorRel, self.offsetx, self.offsety)
 	local cornerSize = self.db.profile.cornerSize
 	Corner:SetWidth(cornerSize) -- @FIXME merge the sizes ?

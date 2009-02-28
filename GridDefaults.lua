@@ -8,6 +8,9 @@ function Grid2:MakeDefaultSetup(setup)
 	if (not setup.locations) then
 		self:SetupDefaultLocations(setup, class)
 	end
+	if (not setup.indicatorLocations) then
+		self:SetupDefaultIndicatorLocations(setup, class)
+	end
 	if (not setup.indicators) then
 		setup.indicators = {}
 		self:SetupDefaultIndicators(setup, class)
@@ -28,19 +31,29 @@ end
 
 function Grid2:SetupDefaultLocations(setup, class)
 	setup.locations = {
-		["corner-top-left"] = {relIndicator = nil, point = "TOPLEFT", relPoint = "TOPLEFT", x = 2, y = 2, name = "corner-top-left"},
-		["corner-top-right"] = {relIndicator = nil, point = "TOPRIGHT", relPoint = "TOPRIGHT", x = -2, y = 2, name = "corner-top-right"},
-		["corner-bottom-left"] = {relIndicator = nil, point = "BOTTOMLEFT", relPoint = "BOTTOMLEFT", x = 2, y = -2, name = "corner-bottom-left"},
-		["corner-bottom-right"] = {relIndicator = nil, point = "BOTTOMRIGHT", relPoint = "BOTTOMRIGHT", x = -2, y = -2, name = "corner-bottom-right"},
-		["side-left"] = {relIndicator = nil, point = "LEFT", relPoint = "LEFT", x = 2, y = 0, name = "side-left"},
-		["side-right"] = {relIndicator = nil, point = "RIGHT", relPoint = "RIGHT", x = -2, y = 0, name = "side-right"},
-		["side-top"] = {relIndicator = nil, point = "TOP", relPoint = "TOP", x = 0, y = 2, name = "side-top"},
-		["side-bottom"] = {relIndicator = nil, point = "BOTTOM", relPoint = "BOTTOM", x = 0, y = -2, name = "side-bottom"},
+		["corner-top-left"] = {relIndicator = nil, point = "TOPLEFT", relPoint = "TOPLEFT", x = 1, y = -1, name = "corner-top-left"},
+		["corner-top-right"] = {relIndicator = nil, point = "TOPRIGHT", relPoint = "TOPRIGHT", x = -1, y = -1, name = "corner-top-right"},
+		["corner-bottom-left"] = {relIndicator = nil, point = "BOTTOMLEFT", relPoint = "BOTTOMLEFT", x = 1, y = 1, name = "corner-bottom-left"},
+		["corner-bottom-right"] = {relIndicator = nil, point = "BOTTOMRIGHT", relPoint = "BOTTOMRIGHT", x = -1, y = 1, name = "corner-bottom-right"},
+		["side-left"] = {relIndicator = nil, point = "LEFT", relPoint = "LEFT", x = 1, y = 0, name = "side-left"},
+		["side-right"] = {relIndicator = nil, point = "RIGHT", relPoint = "RIGHT", x = -1, y = 0, name = "side-right"},
+		["side-top"] = {relIndicator = nil, point = "TOP", relPoint = "TOP", x = 0, y = -1, name = "side-top"},
+		["side-bottom"] = {relIndicator = nil, point = "BOTTOM", relPoint = "BOTTOM", x = 0, y = 1, name = "side-bottom"},
 		["center"] = {relIndicator = nil, point = "CENTER", relPoint = "CENTER", x = 0, y = 0, name = "center"},
 		["center-left"] = {relIndicator = "center", point = "RIGHT", relPoint = "LEFT", x = 2, y = 0, name = "center-left"},
 		["center-right"] = {relIndicator = "center", point = "LEFT", relPoint = "RIGHT", x = -2, y = 0, name = "center-right"},
 		["center-top"] = {relIndicator = "center", point = "BOTTOM", relPoint = "TOP", x = 0, y = 2, name = "center-top"},
 		["center-bottom"] = {relIndicator = "center", point = "TOP", relPoint = "BOTTOM", x = 0, y = -2, name = "center-bottom"},
+	}
+end
+
+function Grid2:SetupDefaultIndicatorLocations(setup, class)
+	setup.indicatorLocations = {
+		["corner-topleft"] = "corner-top-left",
+		["corner-topright"] = "corner-top-right",
+		["corner-bottomleft"] = "corner-bottom-left",
+		["corner-bottomright"] = "corner-bottom-right",
+		["corner-side-bottom"] = "side-bottom",
 	}
 end
 
@@ -54,6 +67,7 @@ function Grid2:SetupDefaultIndicators(setup, class)
 		bottomright = { 5, "BOTTOMRIGHT", "BOTTOMRIGHT", -1, 1 },
 		topright = { 5, "TOPRIGHT", "TOPRIGHT", -1, -1 },
 		topleft = { 5, "TOPLEFT", "TOPLEFT", 1, -1 },
+		["side-bottom"] = { 5, "BOTTOM", "BOTTOM", 0, 1 },
 	}
 	setup.indicators.Icons = {
 		center = { 4, "CENTER" },
@@ -89,37 +103,54 @@ function Grid2:SetupDefaultStatus(setup, class)
 end
 
 function Grid2:SetupDefaultAuras(setup, class)
-	local auraCorner
-	if class == "DRUID" then
+	local auraSquare, buffSquare
+	if (class == "DEATHKNIGHT") then
+		setup.buffs.hornOfWinter = { 57330, true, 1, 1, 1, }
+
+		buffSquare = {
+			["buff-hornOfWinter"] = 99,
+		}
+	elseif (class == "DRUID") then
 		setup.buffs.lifebloom = { 33763, 2, 0, .5, 0, 0, .7, 0, .2, 1, .2 }
 		setup.buffs.rejuv = { 774, true, 0, 0, 1, }
 		setup.buffs.regrowth = { 8936, true, 1, .5, .1, }
-		auraCorner = {
+		auraSquare = {
 			["buff-lifebloom"] = 99,
 			["buff-rejuv"] = 89,
 			["buff-regrowth"] = 79,
 		}
 
 		setup.buffs.wildgrowth = { 53248, true, .4, .9, .4, }
-		auraCorner["buff-wildgrowth"] = 69
-	elseif class == "PRIEST" then
+		auraSquare["buff-wildgrowth"] = 69
+	elseif (class == "MAGE") then
+		setup.buffs.iceArmor = { 7302, true, 1, 1, 1, }
+		setup.buffs.iceBarrier = { 11426, true, 1, 1, 1, }
+
+		buffSquare = {
+			["buff-iceArmor"] = 99,
+			["buff-iceBarrier"] = 89,
+		}
+	elseif (class == "PRIEST") then
 		setup.buffs.renew = { 139, true, 1, 1, 1, }
 		setup.debuffs.weakened = { 6788, 1, 0, 0, }
 
-		auraCorner = {
+		auraSquare = {
 			["buff-renew"] = 99,
 			["debuff-weakened"] = 89,
 		}
-	elseif class == "PALADIN" then
+	elseif (class == "PALADIN") then
 		setup.debuffs.forbearance = { 25771, 1, 0, 0, }
 
-		auraCorner = {
+		auraSquare = {
 			["debuff-forbearance"] = 99,
 		}
 	end
 
-	if auraCorner then
-		setup.status["corner-topleft"] = auraCorner
+	if (auraSquare) then
+		setup.status["corner-topleft"] = auraSquare
+	end
+	if (buffSquare) then
+		setup.status["corner-side-bottom"] = buffSquare
 	end
 end
 
