@@ -119,8 +119,8 @@ L["Enable %s"] = "Включено %s"
 
 --}}}
 --{{{ GridStatusAggro
-L["Aggro"] = "Агро"
-L["Aggro alert"] = "Сигнал Агро"
+L["Aggro"] = "Угроза"
+L["Aggro alert"] = "Сигнал угрозы"
 
 --}}}
 --{{{ GridStatusAuras
@@ -171,7 +171,7 @@ L["Ignore Self"] = "Игнорировать себя"
 L["Ignore heals cast by you."] = "Игнорировать лечение самого себя"
 L["(.+) begins to cast (.+)."] = "(.+)поступает умение(.+)?" --test
 L["(.+) gains (.+) Mana from (.+)'s Life Tap."] = "(.+)поступает(.+)?Мана для(.+)  Сигнал жизни" --test
-L["^Corpse of (.+)$"] = "(.+) Поражения" --test
+L["^Corpse of (.+)$"] = "Труп (.+)" --test
 
 --}}}
 --{{{ GridStatusHealth
