@@ -1,6 +1,35 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 local media = LibStub("LibSharedMedia-3.0", true)
 
+function Grid2Options.GetIndicatorStatus(info, statusKey)
+	local indicator = info.arg
+
+	for key, status in Grid2:IterateStatuses() do
+		if (key == statusKey) then
+			return status.indicators[indicator]
+		end
+	end
+
+	return false
+end
+
+function Grid2Options.SetIndicatorStatus(info, statusKey, value)
+	local indicator = info.arg
+
+	for key, status in Grid2:IterateStatuses() do
+		if (key == statusKey) then
+			if (value) then
+				indicator:RegisterStatus(status, 99)
+				Grid2Options:RegisterIndicatorStatus(indicator, status)
+			else
+				indicator:UnregisterStatus(status)
+				Grid2Options:UnregisterIndicatorStatus(indicator, status)
+			end
+			Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
+		end
+	end
+end
+
 local function AddTextIndicatorOptions(Text)
 	local options = {
 		textlength = {
@@ -119,10 +148,12 @@ local function AddIconIndicatorOptions(Icon)
 	})
 end
 
-local function AddCornerIndicatorOptions(Corner)
-	Grid2Options:AddElement("indicator", Corner, {
+local function AddCornerIndicatorOptions(indicatorKey)
+	local Corner = Grid2.indicators[indicatorKey]
+	local options = {
 		cornersize = {
 			type = "range",
+			order = 10,
 			name = L["Corner Size"],
 			desc = L["Adjust the size of the corner indicators."],
 			min = 1,
@@ -136,7 +167,39 @@ local function AddCornerIndicatorOptions(Corner)
 				Grid2Frame:WithAllFrames(function (f) Corner:SetCornerSize(f, v) end)
 			end,
 		},
-	})
+		location = {
+		    type = 'select',
+			order = 20,
+			name = L["Location"],
+			desc = L["Select the location of the indicator"],
+		    values = Grid2Options.GetLocationValues,
+			get = Grid2Options.GetIndicatorLocation,
+			set = function (info, value)
+				Grid2Options.SetIndicatorLocation(info, value)
+				local location = Grid2Options:GetLocation(value)
+
+				Corner.anchor = location.point
+				Corner.anchorRel = location.relPoint
+				Corner.offsetx = location.x
+				Corner.offsety = location.y
+				Grid2Frame:WithAllFrames(function (f) Corner:Layout(f) end)
+			end,
+			arg = indicatorKey,
+		},
+		statuses = {
+		    type = 'multiselect',
+			order = 30,
+			name = L["Statuses"],
+			desc = L["Select statuses to display with the indicator"],
+			values = function (info)
+				return Grid2Options:GetStatusValues(Corner)
+			end,
+			get = Grid2Options.GetIndicatorStatus,
+			set = Grid2Options.SetIndicatorStatus,
+			arg = Corner,
+		},
+	}
+	Grid2Options:AddElement("indicator", Corner, options)
 end
 
 local function AddBarColorIndicatorOptions(BarColor)
@@ -157,14 +220,91 @@ local function AddBarColorIndicatorOptions(BarColor)
 	})
 end
 
-local function AddSetupIndicatorsOptions(setup)
+
+local newIndicatorName = ""
+
+local function getNewIndicatorNameValue()
+	return newIndicatorName
+end
+
+local function setNewIndicatorNameValue(info, customName)
+	customName = Grid2Options:GetValidatedName(customName)
+	newIndicatorName = customName
+end
+
+local function NewIndicator()
+	newIndicatorName = Grid2Options:GetValidatedName(newIndicatorName)
+	if (newIndicatorName and newIndicatorName ~= "") then
+		local indicator = {relIndicator = nil, point = "TOPLEFT", relPoint = "TOPLEFT", x = 0, y = 0, name = newIndicatorName}
+		Grid2.db.profile.setup.indicators[newIndicatorName] = indicator
+		AddIndicatorOptions(newIndicatorName, indicator)
+	end
+end
+
+local function NewIndicatorDisabled()
+	newIndicatorName = Grid2Options:GetValidatedName(newIndicatorName)
+	if (newIndicatorName and newIndicatorName ~= "") then
+		local indicators = Grid2.db.profile.setup.indicators
+		if (not indicators[newIndicatorName]) then
+			return false
+		end
+	end
+	return true
+end
+
+function ResetIndicators()
+	local setup = Grid2.db.profile.setup
+	Grid2:SetupDefaultIndicators(setup)
+	Grid2Frame:UpdateAllFrames()
+	Grid2Options:AddSetupIndicatorsOptions(setup, true)
+end
+
+local function AddIndicatorsGroup(reset)
+	local options = {
+		name = {
+			type = "input",
+			order = 1,
+			width = "full",
+			name = L["Name"],
+			usage = L["<CharacterOnlyString>"],
+			get = getNewIndicatorNameValue,
+			set = setNewIndicatorNameValue,
+		},
+		newIndicator = {
+			type = "execute",
+			order = 2,
+			name = L["New Indicator"],
+			desc = L["Create a new indicator."],
+			func = NewIndicator,
+			disabled = NewIndicatorDisabled,
+		},
+		resetIndicatorsHeader = {
+			type = "header",
+			order = 10,
+			name = "",
+		},
+		resetIndicators = {
+			type = "execute",
+			order = 11,
+			name = L["Reset Indicators"],
+			desc = L["Reset indicators to defaults."],
+			func = ResetIndicators,
+		},
+	}
+	Grid2Options:AddElementGroup("indicator", options, reset)
+end
+
+
+function Grid2Options:AddSetupIndicatorsOptions(setup, reset)
+	AddIndicatorsGroup(reset)
+
 	local indicators = setup.indicators
 	for name in pairs(indicators.Bars) do
 		AddBarIndicatorOptions(Grid2.indicators["bar-"..name])
 		AddBarColorIndicatorOptions(Grid2.indicators["bar-"..name.."-color"])
 	end
 	for name in pairs(indicators.Corners) do
-		AddCornerIndicatorOptions(Grid2.indicators["corner-"..name])
+		AddCornerIndicatorOptions("corner-"..name)
 	end
 	for name in pairs(indicators.Icons) do
 		AddIconIndicatorOptions(Grid2.indicators["icon-"..name])
@@ -174,4 +314,4 @@ local function AddSetupIndicatorsOptions(setup)
 	end
 end
 
-AddSetupIndicatorsOptions(Grid2.db.profile.setup)
+Grid2Options:AddSetupIndicatorsOptions(Grid2.db.profile.setup)

@@ -157,4 +157,11 @@ function Grid2Options:OnChatCommand(input)
     end
 end
 
+function Grid2Options:GetValidatedName(name)
+	name = name:gsub("%.", "")
+	name = name:gsub("\"", "")
+	name = name:gsub(" ", "")
+	return name
+end
+
 _G.Grid2Options = Grid2Options
