@@ -1,11 +1,33 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 local LG = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 
-local function GetValidatedName(name)
-	name = name:gsub("%.", "")
-	name = name:gsub("\"", "")
-	name = name:gsub(" ", "")
-	return name
+function Grid2Options:GetLocation(locationKey)
+	local location = Grid2.db.profile.setup.locations[locationKey]
+	return location
+end
+
+local locationValues = {}
+function Grid2Options.GetLocationValues(info)
+	local locations = Grid2.db.profile.setup.locations
+	wipe(locationValues)
+
+	for locationKey, location in pairs(locations) do
+		local name = L[location.name] or location.name
+		locationValues[locationKey] = name
+	end
+
+	return locationValues
+end
+
+function Grid2Options.GetIndicatorLocation(info)
+	local indicatorKey = info.arg
+	local locationKey = Grid2.db.profile.setup.indicatorLocations[indicatorKey]
+	return locationKey
+end
+
+function Grid2Options.SetIndicatorLocation(info, value)
+	local indicatorKey = info.arg
+	Grid2.db.profile.setup.indicatorLocations[indicatorKey] = value
 end
 
 -- Translate db <--> dropdown menu
@@ -71,7 +93,7 @@ local function setLocationNameValue(info, customName)
 	local locationKey = info.arg.locationKey
 	local location = info.arg.location
 	local defaultName = L[locationKey]
-	customName = GetValidatedName(customName)
+	customName = Grid2Options:GetValidatedName(customName)
 	if (not defaultName or defaultName ~= customName) then
 		location[info[# info]] = customName
 	end
@@ -181,12 +203,12 @@ local function getNewLocationNameValue()
 end
 
 local function setNewLocationNameValue(info, customName)
-	customName = GetValidatedName(customName)
+	customName = Grid2Options:GetValidatedName(customName)
 	newLocationName = customName
 end
 
 local function NewLocation()
-	newLocationName = GetValidatedName(newLocationName)
+	newLocationName = Grid2Options:GetValidatedName(newLocationName)
 	if (newLocationName and newLocationName ~= "") then
 		local location = {relIndicator = nil, point = "TOPLEFT", relPoint = "TOPLEFT", x = 0, y = 0, name = newLocationName}
 		Grid2.db.profile.setup.locations[newLocationName] = location
@@ -195,7 +217,7 @@ local function NewLocation()
 end
 
 local function NewLocationDisabled()
-	newLocationName = GetValidatedName(newLocationName)
+	newLocationName = Grid2Options:GetValidatedName(newLocationName)
 	if (newLocationName and newLocationName ~= "") then
 		local locations = Grid2.db.profile.setup.locations
 		if (not locations[newLocationName]) then

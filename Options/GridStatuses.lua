@@ -124,7 +124,7 @@ local function MakeClassColorStatusOptions()
 			end,
 		}
 	end
-	
+
 	return options
 end
 
@@ -173,3 +173,41 @@ Grid2Options:AddElement("status",  Grid2.statuses.range, {
 		end,
 	},
 })
+
+function Grid2Options:GetStatusValues(indicator)
+	local statusValues = {}
+
+	for statusKey, status in Grid2:IterateStatuses() do
+		if (Grid2:IsCompatiblePair(indicator, status)) then
+			statusValues[statusKey] = status.name
+		end
+	end
+
+	return statusValues
+end
+
+function Grid2Options:RegisterIndicatorStatus(indicator, status)
+	local indicators = Grid2.db.profile.setup.status
+	if (not indicators[indicator.name]) then
+		indicators[indicator.name] = {}
+	end
+	local indicatorStatuses = indicators[indicator.name]
+
+	if (indicatorStatuses[status.name]) then
+		Grid2:Print(string.format("WARNING ! Indicator %s already registered with status %s", indicator.name, status.name))
+		return
+	else
+		indicatorStatuses[status.name] = 99
+	end
+end
+
+function Grid2Options:UnregisterIndicatorStatus(indicator, status)
+	local indicators = Grid2.db.profile.setup.status
+	if (indicators[indicator.name]) then
+		local indicatorStatuses = indicators[indicator.name]
+
+		indicatorStatuses[status.name] = nil
+	end
+end
+
+
