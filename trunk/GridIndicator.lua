@@ -42,9 +42,9 @@ end
 function indicator:UnregisterStatus(status)
 	if not self.priorities[status] then return end
 	self.priorities[status] = nil
-	for i, s in ipairs(self.status) do
+	for i, s in ipairs(self.statuses) do
 		if s == status then
-			table.remove(self.status, i)
+			table.remove(self.statuses, i)
 			break
 		end
 	end
@@ -112,7 +112,8 @@ Grid2.indicatorPrototype = {
 
 function Grid2:RegisterIndicator(indicator, types)
 	local name = indicator.name
-	assert(name and not self.indicators[name])
+--	assert(name and not self.indicators[name])
+-- TODO: add an unregister so assert does not get triggered and indicators can switch types
 	self.indicators[name] = indicator
 	for _, type in ipairs(types) do
 		local t = self.indicatorTypes[type]
