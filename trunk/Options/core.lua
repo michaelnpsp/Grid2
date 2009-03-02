@@ -115,6 +115,19 @@ function Grid2Options:AddModuleDebugMenu(name, module)
 	}
 end
 
+function Grid2Options:AddResetDebugMenu()
+	self.options.Grid2.args.debug.args.reset = {
+		type = "execute",
+		order = 1,
+		name = L["Reset"],
+		desc = L["Reset and ReloadUI."],
+		func = function ()
+			Grid2DB = nil
+			ReloadUI()
+		end,
+	}
+end
+
 function Grid2Options:AddLayout(layoutName, layout)
 	for type in pairs(layout.meta) do
 		self.options.Grid2Layout.args.layouts.args[type].values[layoutName] = layoutName
@@ -131,6 +144,7 @@ function Grid2Options:Initialize()
 		end
 	end
 	self:AddModuleDebugMenu("Grid2", Grid2)
+	self:AddResetDebugMenu()
 	InitializeModuleOptions(Grid2)
 	for _, location in Grid2:IterateLocations() do
 		self:AddElement("location", location)
