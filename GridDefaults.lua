@@ -105,7 +105,7 @@ end
 function Grid2:SetupDefaultAuras(setup, class)
 	local auraSquare, buffSquare
 	if (class == "DEATHKNIGHT") then
-		setup.buffs.hornOfWinter = { 57330, true, 1, 1, 1, }
+		setup.buffs.hornOfWinter = { 57330, true, 0.1, 0.1, 1, }
 
 		buffSquare = {
 			["buff-hornOfWinter"] = 99,
@@ -218,47 +218,59 @@ function Grid2:SetupIndicators(setup)
 	end
 end
 
+function Grid2:SetupAuraBuffColorHandler(status, info)
+	local color_count = (#info - 2) / 3
+	if color_count <= 0 or #info ~= color_count * 3 + 2 then
+		local name = info[1]
+		self:Print("Invalid number of colors for buff %s", name)
+		return
+	end
+
+	local handler = "return function (self, unit)"
+	if color_count > 1 then
+		handler = handler.." local count = self:GetCount(unit)"
+		for i = 1, color_count - 1 do
+			handler = handler..(" if count == %d then return %s, %s, %s end"):format(i, unpack(info, i * 3, (i + 1) * 3 - 1))
+		end
+	end
+	handler = handler..(" return %s, %s, %s end"):format(unpack(info, color_count * 3))
+	status.GetColor = assert(loadstring(handler))()
+end
+
+function Grid2:SetupAuraDebuffColorHandler(status, info)
+	local color_count = (#info - 1) / 3
+	if color_count <= 0 then
+		local name = info[1]
+		self:Print("Invalid number of colors for debuff %s", name)
+		return
+	end
+
+	local handler = "return function (self, unit)"
+	if color_count > 1 then
+		handler = handler.." local count = self:GetCount(unit)"
+		for i = 1, color_count - 1 do
+			handler = handler.. ("if count == %d then return %s, %s, %s end"):format(unpack(info, i * 3 - 1, (i + 1) * 3 - 2))
+		end
+	end
+	handler = handler..(" return %s, %s, %s end"):format(unpack(info, color_count * 3 - 1))
+	status.GetColor = loadstring(handler)()
+end
+
 function Grid2:SetupAuraStatus(setup)
 	for statusName, info in pairs(setup.buffs) do
 		local name, mine = info[1], info[2]
-		local status = self:CreateBuffStatus(name, mine)
+		local status = self:CreateBuffStatus(unpack(info))
 		status.name = "buff-"..statusName -- force name
-		local color_count = (#info - 2) / 3
-		if color_count <= 0 or #info ~= color_count * 3 + 2 then
-			self:Print("Invalid number of colors for buff %s", name)
-			return
-		end
 
-		local handler = "return function (self, unit)"
-		if color_count > 1 then
-			handler = handler.." local count = self:GetCount(unit)"
-			for i = 1, color_count - 1 do
-				handler = handler..(" if count == %d then return %s, %s, %s end"):format(i, unpack(info, i * 3, (i + 1) * 3 - 1))
-			end
-		end
-		handler = handler..(" return %s, %s, %s end"):format(unpack(info, color_count * 3))
-		status.GetColor = assert(loadstring(handler))()
+		self:SetupAuraBuffColorHandler(status, info)
 		self:RegisterStatus(status, { "color" })
 	end
 	for statusName, info in pairs(setup.debuffs) do
 		local name = info[1]
 		local status = self:CreateDebuffStatus(name)
 		status.name = "debuff-"..statusName -- force name
-		local color_count = (#info - 1) / 3
-		if color_count <= 0 then
-			self:Print("Invalid number of colors for debuff %s", name)
-			return
-		end
 
-		local handler = "return function (self, unit)"
-		if color_count > 1 then
-			handler = handler.." local count = self:GetCount(unit)"
-			for i = 1, color_count - 1 do
-				handler = handler.. ("if count == %d then return %s, %s, %s end"):format(unpack(info, i * 3 - 1, (i + 1) * 3 - 2))
-			end
-		end
-		handler = handler..(" return %s, %s, %s end"):format(unpack(info, color_count * 3 - 1))
-		status.GetColor = loadstring(handler)()
+		self:SetupAuraDebuffColorHandler(status, info)
 		self:RegisterStatus(status, { "color" })
 	end
 end
