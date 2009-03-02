@@ -30,7 +30,7 @@ function Grid2Options.SetIndicatorStatus(info, statusKey, value)
 	end
 end
 
-function Grid2Options:AddIndicatorStatusesOptions(indicator, options)
+function Grid2Options:AddIndicatorStatusOptions(indicator, options)
 	options.statuses = {
 	    type = 'multiselect',
 		order = 90,
@@ -45,14 +45,36 @@ function Grid2Options:AddIndicatorStatusesOptions(indicator, options)
 	}
 end
 
+function Grid2Options:AddIndicatorLocationOptions(indicator, options)
+	options.location = {
+	    type = 'select',
+		order = 5,
+		name = L["Location"],
+		desc = L["Select the location of the indicator"],
+	    values = Grid2Options.GetLocationValues,
+		get = Grid2Options.GetIndicatorLocation,
+		set = function (info, value)
+			Grid2Options.SetIndicatorLocation(info, value)
+			local location = Grid2Options:GetLocation(value)
+
+			indicator.anchor = location.point
+			indicator.anchorRel = location.relPoint
+			indicator.offsetx = location.x
+			indicator.offsety = location.y
+			Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
+		end,
+		arg = indicator.name,
+	}
+end
+
 
 local function AddTextIndicatorOptions(Text)
 	local options = {
 		textlength = {
 			type = "range",
+			order = 10,
 			name = L["Center Text Length"],
 			desc = L["Number of characters to show on Center Text indicator."],
-			order = 11,
 			min = 0,
 			max = 20,
 			step = 1,
@@ -64,6 +86,7 @@ local function AddTextIndicatorOptions(Text)
 		},
 		fontsize = {
 			type = "range",
+			order = 20,
 			name = L["Font Size"],
 			desc = L["Adjust the font size."],
 			min = 6,
@@ -83,6 +106,7 @@ local function AddTextIndicatorOptions(Text)
 	if Grid2Options.AddMediaOption then
 		local fontOption = {
 			type = "select",
+			order = 70,
 			name = L["Font"],
 			desc = L["Adjust the font settings"],
 			get = function ()
@@ -98,7 +122,8 @@ local function AddTextIndicatorOptions(Text)
 		Grid2Options:AddMediaOption("font", fontOption)
 		options.font = fontOption
 	end
-	Grid2Options:AddIndicatorStatusesOptions(Text, options)
+	Grid2Options:AddIndicatorLocationOptions(Text, options)
+	Grid2Options:AddIndicatorStatusOptions(Text, options)
 
 	Grid2Options:AddElement("indicator", Text, options)
 end
@@ -107,6 +132,7 @@ local function AddBarIndicatorOptions(Bar)
 	local options = {
 		orientation = {
 			type = "select",
+			order = 10,
 			name = L["Orientation of Frame"],
 			desc = L["Set frame orientation."],
 			get = function ()
@@ -123,6 +149,7 @@ local function AddBarIndicatorOptions(Bar)
 	if Grid2Options.AddMediaOption then
 		local textureOption = {
 			type = "select",
+			order = 70,
 			name = L["Frame Texture"],
 			desc = L["Adjust the texture of each unit's frame."],
 			get = function (info)
@@ -149,6 +176,7 @@ local function AddIconIndicatorOptions(Icon)
 	local options = {
 		iconsize = {
 			type = "range",
+			order = 10,
 			name = L["Icon Size"],
 			desc = L["Adjust the size of the center icon."],
 			min = 5,
@@ -163,7 +191,8 @@ local function AddIconIndicatorOptions(Icon)
 			end,
 		},
 	}
-	Grid2Options:AddIndicatorStatusesOptions(Icon, options)
+	Grid2Options:AddIndicatorLocationOptions(Icon, options)
+	Grid2Options:AddIndicatorStatusOptions(Icon, options)
 
 	Grid2Options:AddElement("indicator", Icon, options)
 end
@@ -187,27 +216,9 @@ local function AddCornerIndicatorOptions(indicatorKey)
 				Grid2Frame:WithAllFrames(function (f) Corner:SetCornerSize(f, v) end)
 			end,
 		},
-		location = {
-		    type = 'select',
-			order = 20,
-			name = L["Location"],
-			desc = L["Select the location of the indicator"],
-		    values = Grid2Options.GetLocationValues,
-			get = Grid2Options.GetIndicatorLocation,
-			set = function (info, value)
-				Grid2Options.SetIndicatorLocation(info, value)
-				local location = Grid2Options:GetLocation(value)
-
-				Corner.anchor = location.point
-				Corner.anchorRel = location.relPoint
-				Corner.offsetx = location.x
-				Corner.offsety = location.y
-				Grid2Frame:WithAllFrames(function (f) Corner:Layout(f) end)
-			end,
-			arg = indicatorKey,
-		},
 	}
-	Grid2Options:AddIndicatorStatusesOptions(Corner, options)
+	Grid2Options:AddIndicatorLocationOptions(Corner, options)
+	Grid2Options:AddIndicatorStatusOptions(Corner, options)
 
 	Grid2Options:AddElement("indicator", Corner, options)
 end
@@ -216,9 +227,9 @@ local function AddBarColorIndicatorOptions(BarColor)
 	Grid2Options:AddElement("indicator", BarColor, {
 		invert = {
 			type = "toggle",
+			order = 12,
 			name = L["Invert Bar Color"],
 			desc = L["Swap foreground/background colors on bars."],
-			order = 12,
 			get = function ()
 				return BarColor.db.profile.invertBarColor
 			end,
