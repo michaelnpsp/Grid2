@@ -31,6 +31,7 @@ end
 
 local function Icon_Layout(self, parent)
 	local Icon = parent[self.name]
+	Icon:ClearAllPoints()
 	Icon:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
 	Icon:SetPoint(self.anchor, parent, self.anchorRel, self.offsetx, self.offsety)
 	local iconSize = self.db.profile.iconSize

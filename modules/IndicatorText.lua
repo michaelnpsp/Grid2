@@ -20,6 +20,7 @@ end
 
 local function Text_Layout(self, parent)
 	local Text = parent[self.name]
+	Text:ClearAllPoints()
 	Text:GetParent():SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
 	Text:SetPoint(self.anchor, parent, self.anchorRel, self.offsetx, self.offsety)
 	Text:SetWidth(parent:GetWidth())
