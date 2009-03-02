@@ -1,6 +1,7 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 local LG = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 
+
 local function MakeStatusColorOption(status, options)
 	options = options or {}
 	options.color = {
@@ -12,8 +13,14 @@ local function MakeStatusColorOption(status, options)
 			return c.r, c.g, c.b, c.a
 		end,
 		set = function (_, r, g, b, a)
-			local c = status.db.profile
+			local c = status.db.profile.color
 			c.r, c.g, c.b, c.a = r, g, b, a
+			local info = {
+				status.name,
+				true,
+				r, g, b,
+			}
+			Grid2:SetupAuraBuffColorHandler(status, info)
 			for unit in Grid2:IterateRoster(true) do
 				status:UpdateIndicators(unit)
 			end
@@ -23,18 +30,8 @@ local function MakeStatusColorOption(status, options)
 	return options
 end
 
-for _, name in ipairs{
-	"aggro", "heals", "lowmana", "lowhealth", "target", "voice",
-	"debuff-Magic", "debuff-Curse", "debuff-Disease", "debuff-Poison",
-} do
-	local status = Grid2.statuses[name]
-	if status then
-		Grid2Options:AddElement("status", status, MakeStatusColorOption(status))
-	end
-end
 
-
-local function MakeClassColorStatusOptions()
+local function MakeStatusClassColorOptions()
 	local status = Grid2.statuses.classcolor
 	local profile = status.db.profile
 	local options = {
@@ -128,51 +125,7 @@ local function MakeClassColorStatusOptions()
 	return options
 end
 
-Grid2Options:AddElement("status",  Grid2.statuses.classcolor, MakeClassColorStatusOptions())
 
-Grid2Options:AddElement("status",  Grid2.statuses.health, {
-	deadAsFullHealth = {
-		type = "toggle",
-		name = L["Show dead as having Full Health"],
-		get = function ()
-			return Grid2.statuses.health.db.profile.deadAsFullHealth
-		end,
-		set = function (_, v)
-			Grid2.statuses.health.db.profile.deadAsFullHealth = v
-		end,
-	},
-})
-
-Grid2Options:AddElement("status",  Grid2.statuses.range, {
-	default = {
-		type = "range",
-		name = L["Default alpha"],
-		desc = L["Default alpha value when units are way out of range."],
-		min = 0,
-		max = 1,
-		step = 0.01,
-		get = function ()
-			return Grid2.statuses.range.db.profile.default
-		end,
-		set = function (_, v)
-			Grid2.statuses.range.db.profile.default = v
-		end,
-	},
-	update = {
-		type = "range",
-		name = L["Update rate"],
-		desc = L["Rate at which the range gets updated"],
-		min = 0,
-		max = 5,
-		step = 0.1,
-		get = function ()
-			return Grid2.statuses.range.db.profile.elapsed
-		end,
-		set = function (_, v)
-			Grid2.statuses.range.db.profile.elapsed = v
-		end,
-	},
-})
 
 function Grid2Options:GetStatusValues(indicator)
 	local statusValues = {}
@@ -211,3 +164,152 @@ function Grid2Options:UnregisterIndicatorStatus(indicator, status)
 end
 
 
+
+local newStatusName = ""
+
+local function getNewStatusNameValue()
+	return newStatusName
+end
+
+local function setNewStatusNameValue(info, customName)
+	customName = Grid2Options:GetValidatedName(customName)
+	newStatusName = customName
+end
+
+local function NewStatus()
+	newStatusName = Grid2Options:GetValidatedName(newStatusName)
+	if (newStatusName and newStatusName ~= "") then
+---		local status = {relIndicator = nil, point = "TOPLEFT", relPoint = "TOPLEFT", x = 0, y = 0, name = newIndicatorName}
+--		Grid2.db.profile.setup.indicators[newIndicatorName] = indicator
+--		AddIndicatorOptions(newIndicatorName, indicator)
+	end
+end
+
+local function NewStatusDisabled()
+	newStatusName = Grid2Options:GetValidatedName(newStatusName)
+	if (newStatusName and newStatusName ~= "") then
+--		local statuses = Grid2.db.profile.setup.indicators
+		if (not statuses[newStatusName]) then
+			return false
+		end
+	end
+	return true
+end
+
+function ResetStatuses()
+	local setup = Grid2.db.profile.setup
+	Grid2:SetupDefaultStatus(setup)
+	Grid2Frame:UpdateAllFrames()
+	Grid2Options:AddSetupStatusesOptions(setup, true)
+end
+
+local function AddStatusesGroup(reset)
+	local options = {
+		name = {
+			type = "input",
+			order = 1,
+			width = "full",
+			name = L["Name"],
+			usage = L["<CharacterOnlyString>"],
+			get = getNewStatusNameValue,
+			set = setNewStatusNameValue,
+		},
+		newStatus = {
+			type = "execute",
+			order = 2,
+			name = L["New Status"],
+			desc = L["Create a new status."],
+			func = NewStatus,
+			disabled = NewStatusDisabled,
+		},
+		resetStatusesHeader = {
+			type = "header",
+			order = 10,
+			name = "",
+		},
+		resetStatuses = {
+			type = "execute",
+			order = 11,
+			name = L["Reset Statuses"],
+			desc = L["Reset statuses to defaults."],
+			func = ResetStatuses,
+		},
+	}
+	Grid2Options:AddElementGroup("status", options, reset)
+end
+
+function Grid2Options:AddSetupStatusesOptions(setup, reset)
+	AddStatusesGroup(reset)
+
+	for _, name in ipairs{
+		"aggro", "heals", "lowmana", "lowhealth", "target", "voice",
+		"debuff-Magic", "debuff-Curse", "debuff-Disease", "debuff-Poison",
+	} do
+		local status = Grid2.statuses[name]
+		if status then
+			Grid2Options:AddElement("status", status, MakeStatusColorOption(status))
+		end
+	end
+
+	Grid2Options:AddElement("status",  Grid2.statuses.classcolor, MakeStatusClassColorOptions())
+
+	for statusName, info in pairs(setup.buffs) do
+		local status = Grid2.statuses["buff-"..statusName] -- TODO: fix names more better.  Type should not get baked in.
+		if status then
+			Grid2Options:AddElement("status", status, MakeStatusColorOption(status))
+		end
+	end
+	for statusName, info in pairs(setup.debuffs) do
+		local status = Grid2.statuses["debuff-"..statusName] -- TODO: fix names more better.  Type should not get baked in.
+		if status then
+			Grid2Options:AddElement("status", status, MakeStatusColorOption(status))
+		end
+	end
+
+	Grid2Options:AddElement("status",  Grid2.statuses.health, {
+		deadAsFullHealth = {
+			type = "toggle",
+			name = L["Show dead as having Full Health"],
+			get = function ()
+				return Grid2.statuses.health.db.profile.deadAsFullHealth
+			end,
+			set = function (_, v)
+				Grid2.statuses.health.db.profile.deadAsFullHealth = v
+			end,
+		},
+	})
+
+	Grid2Options:AddElement("status",  Grid2.statuses.range, {
+		default = {
+			type = "range",
+			name = L["Default alpha"],
+			desc = L["Default alpha value when units are way out of range."],
+			min = 0,
+			max = 1,
+			step = 0.01,
+			get = function ()
+				return Grid2.statuses.range.db.profile.default
+			end,
+			set = function (_, v)
+				Grid2.statuses.range.db.profile.default = v
+			end,
+		},
+		update = {
+			type = "range",
+			name = L["Update rate"],
+			desc = L["Rate at which the range gets updated"],
+			min = 0,
+			max = 5,
+			step = 0.1,
+			get = function ()
+				return Grid2.statuses.range.db.profile.elapsed
+			end,
+			set = function (_, v)
+				Grid2.statuses.range.db.profile.elapsed = v
+			end,
+		},
+	})
+
+end
+
+Grid2Options:AddSetupStatusesOptions(Grid2.db.profile.setup)
