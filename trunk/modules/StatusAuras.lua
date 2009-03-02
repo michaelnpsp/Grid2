@@ -176,7 +176,7 @@ do
 	end
 end
 
-function Grid2:CreateBuffStatus(name, mine)
+function Grid2:CreateBuffStatus(name, mine, r, g, b, a)
 	if type(name) == "number" then name = GetSpellInfo(name) end
 	assert(type(name) == "string")
 
@@ -189,6 +189,16 @@ function Grid2:CreateBuffStatus(name, mine)
 	status.counts = {}
 	status.expirations = {}
 	status.durations = {}
+
+	if (r and g and b) then
+		a = a or 1
+--print("CreateBuffStatus", name, mine, r, g, b, a)
+	end
+	status.defaultDB = {
+		profile = {
+			color = { r = r, g = g, b = b, a = a },
+		}
+	}
 
 	function status:OnEnable()
 		EnableAuraFrame(true)
@@ -224,7 +234,6 @@ function Grid2:CreateDebuffStatus(name, mine)
 
 	StatusCount = StatusCount + 1
 	local status = Grid2.statusPrototype:new("debuff-"..StatusCount)
-
 	status.auraName = name
 	status.states = {}
 	status.textures = {}

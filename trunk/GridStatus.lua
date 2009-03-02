@@ -10,9 +10,9 @@ function status:init(name)
 end
 
 function status:RegisterIndicator(indicator)
-	if self.indicators[indicator] then 
+	if self.indicators[indicator] then
 		Grid2:Print(string.format("WARNING ! Indicator %s already registered with status %s", indicator.name, self.name))
-		return 
+		return
 	end
 	local enabled = next(self.indicators)
 	self.indicators[indicator] = true
