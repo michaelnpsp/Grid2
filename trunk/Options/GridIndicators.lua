@@ -30,6 +30,22 @@ function Grid2Options.SetIndicatorStatus(info, statusKey, value)
 	end
 end
 
+function Grid2Options:AddIndicatorStatusesOptions(indicator, options)
+	options.statuses = {
+	    type = 'multiselect',
+		order = 90,
+		name = L["Statuses"],
+		desc = L["Select statuses to display with the indicator"],
+		values = function (info)
+			return Grid2Options:GetStatusValues(indicator)
+		end,
+		get = Grid2Options.GetIndicatorStatus,
+		set = Grid2Options.SetIndicatorStatus,
+		arg = indicator,
+	}
+end
+
+
 local function AddTextIndicatorOptions(Text)
 	local options = {
 		textlength = {
@@ -82,6 +98,7 @@ local function AddTextIndicatorOptions(Text)
 		Grid2Options:AddMediaOption("font", fontOption)
 		options.font = fontOption
 	end
+	Grid2Options:AddIndicatorStatusesOptions(Text, options)
 
 	Grid2Options:AddElement("indicator", Text, options)
 end
@@ -129,7 +146,7 @@ local function AddBarIndicatorOptions(Bar)
 end
 
 local function AddIconIndicatorOptions(Icon)
-	Grid2Options:AddElement("indicator", Icon, {
+	local options = {
 		iconsize = {
 			type = "range",
 			name = L["Icon Size"],
@@ -145,7 +162,10 @@ local function AddIconIndicatorOptions(Icon)
 				Grid2Frame:WithAllFrames(function (f) Icon:SetIconSize(f, v) end)
 			end,
 		},
-	})
+	}
+	Grid2Options:AddIndicatorStatusesOptions(Icon, options)
+
+	Grid2Options:AddElement("indicator", Icon, options)
 end
 
 local function AddCornerIndicatorOptions(indicatorKey)
@@ -186,19 +206,9 @@ local function AddCornerIndicatorOptions(indicatorKey)
 			end,
 			arg = indicatorKey,
 		},
-		statuses = {
-		    type = 'multiselect',
-			order = 30,
-			name = L["Statuses"],
-			desc = L["Select statuses to display with the indicator"],
-			values = function (info)
-				return Grid2Options:GetStatusValues(Corner)
-			end,
-			get = Grid2Options.GetIndicatorStatus,
-			set = Grid2Options.SetIndicatorStatus,
-			arg = Corner,
-		},
 	}
+	Grid2Options:AddIndicatorStatusesOptions(Corner, options)
+
 	Grid2Options:AddElement("indicator", Corner, options)
 end
 
