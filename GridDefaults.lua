@@ -40,10 +40,10 @@ function Grid2:SetupDefaultLocations(setup, class)
 		["side-top"] = {relIndicator = nil, point = "TOP", relPoint = "TOP", x = 0, y = -1, name = "side-top"},
 		["side-bottom"] = {relIndicator = nil, point = "BOTTOM", relPoint = "BOTTOM", x = 0, y = 1, name = "side-bottom"},
 		["center"] = {relIndicator = nil, point = "CENTER", relPoint = "CENTER", x = 0, y = 0, name = "center"},
-		["center-left"] = {relIndicator = "center", point = "RIGHT", relPoint = "LEFT", x = 2, y = 0, name = "center-left"},
-		["center-right"] = {relIndicator = "center", point = "LEFT", relPoint = "RIGHT", x = -2, y = 0, name = "center-right"},
-		["center-top"] = {relIndicator = "center", point = "BOTTOM", relPoint = "TOP", x = 0, y = 2, name = "center-top"},
-		["center-bottom"] = {relIndicator = "center", point = "TOP", relPoint = "BOTTOM", x = 0, y = -2, name = "center-bottom"},
+		["center-left"] = {relIndicator = "center", point = "RIGHT", relPoint = "CENTER", x = 1, y = 0, name = "center-left"},
+		["center-right"] = {relIndicator = "center", point = "LEFT", relPoint = "CENTER", x = -1, y = 0, name = "center-right"},
+		["center-top"] = {relIndicator = "center", point = "BOTTOM", relPoint = "CENTER", x = 0, y = 1, name = "center-top"},
+		["center-bottom"] = {relIndicator = "center", point = "TOP", relPoint = "CENTER", x = 0, y = -1, name = "center-bottom"},
 	}
 end
 
@@ -207,13 +207,32 @@ function Grid2:SetupIndicators(setup)
 	for name, info in pairs(setup.indicators.Bars) do
 		self:CreateBarIndicator(name, unpack(info))
 	end
+	local locationKey, location
 	for name, info in pairs(setup.indicators.Corners) do
+		locationKey = setup.indicatorLocations["corner-"..name]
+		location = setup.locations[locationKey]
+		if (location) then
+			info[2], info[3], info[4], info[5] = location.point, location.relPoint, location.x, location.y
+		end
+
 		self:CreateCornerIndicator(name, unpack(info))
 	end
 	for name, info in pairs(setup.indicators.Icons) do
+		locationKey = setup.indicatorLocations["icon-"..name]
+		location = setup.locations[locationKey]
+		if (location) then
+			info[2], info[3], info[4], info[5] = location.point, location.relPoint, location.x, location.y
+		end
+
 		self:CreateIconIndicator(name, unpack(info))
 	end
 	for name, info in pairs(setup.indicators.Texts) do
+		locationKey = setup.indicatorLocations["text-"..name]
+		location = setup.locations[locationKey]
+		if (location) then
+			info[2], info[3], info[4], info[5] = location.point, location.relPoint, location.x, location.y
+		end
+
 		self:CreateTextIndicator(name, unpack(info))
 	end
 end

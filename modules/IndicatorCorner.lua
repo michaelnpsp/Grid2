@@ -51,11 +51,11 @@ local Corner_defaultDB = {
 }
 
 function Grid2:CreateCornerIndicator(name, level, anchor, anchorRel, offsetx, offsety)
-	name = "corner-"..name
+	local indicatorKey = "corner-"..name
 	if type(level) == "string" then
 		level, anchor, anchorRel, offsetx, offsety = 0, level, anchor, anchorRel, offsetx
 	end
-	local Corner = self.indicatorPrototype:new(name)
+	local Corner = self.indicatorPrototype:new(indicatorKey)
 
 	Corner.frameLevel = level
 	Corner.anchor = anchor
