@@ -6,6 +6,7 @@ local function MakeStatusColorOption(status, options)
 	options = options or {}
 	options.color = {
 		type = "color",
+		order = 10,
 		name = L["Color"],
 		desc = L["Color for %s."]:format(status.name),
 		get = function ()
@@ -26,6 +27,27 @@ local function MakeStatusColorOption(status, options)
 			end
 		end,
 		hasAlpha = true
+	}
+	return options
+end
+
+
+local function MakeStatusThresholdOption(status, options)
+	options = options or {}
+	options.threshold = {
+		type = "range",
+		order = 20,
+		name = L["Threshold"],
+		desc = L["Threshold at which to activate the status."],
+		min = 0,
+		max = 1,
+		step = 0.01,
+		get = function ()
+			return status.db.profile.threshold
+		end,
+		set = function (_, v)
+			status.db.profile.threshold = v
+		end,
 	}
 	return options
 end
@@ -240,18 +262,30 @@ end
 
 function Grid2Options:AddSetupStatusesOptions(setup, reset)
 	AddStatusesGroup(reset)
+	local status, options
 
 	for _, name in ipairs{
-		"aggro", "heals", "lowmana", "lowhealth", "target", "voice",
+		"aggro", "heals", "lowmana", "target", "voice",
 		"debuff-Magic", "debuff-Curse", "debuff-Disease", "debuff-Poison",
 	} do
-		local status = Grid2.statuses[name]
+		status = Grid2.statuses[name]
 		if status then
 			Grid2Options:AddElement("status", status, MakeStatusColorOption(status))
 		end
 	end
 
-	Grid2Options:AddElement("status",  Grid2.statuses.classcolor, MakeStatusClassColorOptions())
+	status = Grid2.statuses.lowhealth
+	options = MakeStatusColorOption(status)
+	options = MakeStatusThresholdOption(status, options)
+	Grid2Options:AddElement("status",  status, options)
+
+	status = Grid2.statuses.healthdeficit
+	options = MakeStatusThresholdOption(status)
+	Grid2Options:AddElement("status",  status, options)
+
+	status = Grid2.statuses.classcolor
+	options = MakeStatusClassColorOptions()
+	Grid2Options:AddElement("status",  status, options)
 
 	for statusName, info in pairs(setup.buffs) do
 		local status = Grid2.statuses["buff-"..statusName] -- TODO: fix names more better.  Type should not get baked in.
