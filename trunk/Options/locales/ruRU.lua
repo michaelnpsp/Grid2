@@ -144,8 +144,8 @@ L["HORIZONTAL"] = "ГОРИЗОНТАЛЬНО"
 
 L["Icon Size"] = "Размер иконки"
 L["Adjust the size of the center icon."] = "Настройка размера значка в центре."
-L["Corner Size"] = "Размер Угла"
-L["Adjust the size of the corner indicators."] = "настрйока размера индикатора в углу."
+L["Size"] = "Размер Угла"
+L["Adjust the size of the indicators."] = "настрйока размера индикатора в углу."
 
 L["Blink effect"] = "Эффект мерцания"
 L["Select the type of Blink effect used by Grid2."] = "Gвыьерите тип эффекта мерцания для использования в Grid2."

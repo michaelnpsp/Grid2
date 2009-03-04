@@ -100,8 +100,8 @@ L["HORIZONTAL"] = "水平"
 
 L["Icon Size"] = "圖示大小"
 L["Adjust the size of the center icon."] = "調整中央圖示的尺寸。"
-L["Corner Size"] = "邊角大小"
-L["Adjust the size of the corner indicators."] = "調整边角指示器的大小。"
+L["Size"] = "邊角大小"
+L["Adjust the size of the indicators."] = "調整边角指示器的大小。"
 
 L["Blink effect"] = "閃爍效果"
 L["Select the type of Blink effect used by Grid2."] = "選擇 Grid2 閃爍效果。"

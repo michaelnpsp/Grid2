@@ -148,8 +148,8 @@ L["HORIZONTAL"] = true
 
 L["Icon Size"] = true
 L["Adjust the size of the center icon."] = true
-L["Corner Size"] = true
-L["Adjust the size of the corner indicators."] = true
+L["Size"] = true
+L["Adjust the size of the indicators."] = true
 
 L["Blink effect"] = true
 L["Select the type of Blink effect used by Grid2."] = true

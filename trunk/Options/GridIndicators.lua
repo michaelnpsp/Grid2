@@ -197,30 +197,30 @@ local function AddIconIndicatorOptions(Icon)
 	Grid2Options:AddElement("indicator", Icon, options)
 end
 
-local function AddCornerIndicatorOptions(indicatorKey)
-	local Corner = Grid2.indicators[indicatorKey]
+local function AddSquareIndicatorOptions(indicatorKey)
+	local Square = Grid2.indicators[indicatorKey]
 	local options = {
-		cornersize = {
+		size = {
 			type = "range",
 			order = 10,
-			name = L["Corner Size"],
-			desc = L["Adjust the size of the corner indicators."],
+			name = L["Size"],
+			desc = L["Adjust the size of the indicators."],
 			min = 1,
 			max = 20,
 			step = 1,
 			get = function ()
-				return Corner.db.profile.cornerSize
+				return Square.db.profile.cornerSize
 			end,
 			set = function (_, v)
-				Corner.db.profile.cornerSize = v
-				Grid2Frame:WithAllFrames(function (f) Corner:SetCornerSize(f, v) end)
+				Square.db.profile.cornerSize = v
+				Grid2Frame:WithAllFrames(function (f) Square:SetSize(f, v) end)
 			end,
 		},
 	}
-	Grid2Options:AddIndicatorLocationOptions(Corner, options)
-	Grid2Options:AddIndicatorStatusOptions(Corner, options)
+	Grid2Options:AddIndicatorLocationOptions(Square, options)
+	Grid2Options:AddIndicatorStatusOptions(Square, options)
 
-	Grid2Options:AddElement("indicator", Corner, options)
+	Grid2Options:AddElement("indicator", Square, options)
 end
 
 local function AddBarColorIndicatorOptions(BarColor)
@@ -320,18 +320,18 @@ function Grid2Options:AddSetupIndicatorsOptions(setup, reset)
 	AddIndicatorsGroup(reset)
 
 	local indicators = setup.indicators
-	for name in pairs(indicators.Bars) do
-		AddBarIndicatorOptions(Grid2.indicators["bar-"..name])
-		AddBarColorIndicatorOptions(Grid2.indicators["bar-"..name.."-color"])
+	for indicatorKey in pairs(indicators.Bars) do
+		AddBarIndicatorOptions(Grid2.indicators[indicatorKey])
+		AddBarColorIndicatorOptions(Grid2.indicators[indicatorKey.."-color"])
 	end
-	for name in pairs(indicators.Corners) do
-		AddCornerIndicatorOptions("corner-"..name)
+	for indicatorKey in pairs(indicators.Squares) do
+		AddSquareIndicatorOptions(indicatorKey)
 	end
-	for name in pairs(indicators.Icons) do
-		AddIconIndicatorOptions(Grid2.indicators["icon-"..name])
+	for indicatorKey in pairs(indicators.Icons) do
+		AddIconIndicatorOptions(Grid2.indicators[indicatorKey])
 	end
-	for name in pairs(indicators.Texts) do
-		AddTextIndicatorOptions(Grid2.indicators["text-"..name])
+	for indicatorKey in pairs(indicators.Texts) do
+		AddTextIndicatorOptions(Grid2.indicators[indicatorKey])
 	end
 end
 
