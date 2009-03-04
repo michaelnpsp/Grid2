@@ -148,7 +148,7 @@ L["Show on %s."] = "Показать на %s."
 L["Show if missing"] = "Показывать если пропущен"
 L["Display status only if the buff is not active."] = "Показывать статус только если баффы не активны"
 L["Filter Abolished units"] = "Фильтр персонажей находящихся под исцелением"
-L["Skip units that have an active Abolish buff."] = "Пропускает персонажей на которых есть активные баффы исцеления." --try...
+L["Skip units that have an active Abolish buff."] = "Пропускает персонажей на которых есть активное Устранение баффа."
 
 --}}}
 --{{{ GridStatusName
@@ -169,9 +169,9 @@ L["Heals"] = "Лечение"
 L["Incoming heals"] = "Поступающее лечение"
 L["Ignore Self"] = "Игнорировать себя"
 L["Ignore heals cast by you."] = "Игнорировать лечение самого себя"
-L["(.+) begins to cast (.+)."] = "(.+)поступает умение(.+)?" --test
-L["(.+) gains (.+) Mana from (.+)'s Life Tap."] = "(.+)поступает(.+)?Мана для(.+)  Сигнал жизни" --test
-L["^Corpse of (.+)$"] = "Труп (.+)" --test
+L["(.+) begins to cast (.+)."] = "(.+) применяет (.+)?" --test
+L["(.+) gains (.+) Mana from (.+)'s Life Tap."] = "(.+) получает (.+) маны от (.+) Жизнеотвода" --test
+L["^Corpse of (.+)$"] = "Труп (.+)"
 
 --}}}
 --{{{ GridStatusHealth
@@ -195,7 +195,7 @@ L["Health threshold"] = "Порог здоровья"
 L["Only show deficit above % damage."] = "Показывать дефицит только после % урона."
 L["Color deficit based on class."] = "Цвет дефицита в зависимости от класса"
 L["Low HP threshold"] = "Порог \"Мало HP\""
-L["Set the HP % for the low HP warning."] = "Установить % для предупредения о том что у единицы мало здоровья."
+L["Set the HP % for the low HP warning."] = "Установить % для предупреждения о том что у игрока мало здоровья."
 
 --}}}
 --{{{ GridStatusRange
