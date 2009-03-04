@@ -148,8 +148,8 @@ L["HORIZONTAL"] = "가로"
 
 L["Icon Size"] = "아이콘 크기"
 L["Adjust the size of the center icon."] = "중앙 아이콘의 크기를 조정합니다."
-L["Corner Size"] = "모서리 크기"
-L["Adjust the size of the corner indicators."] = "모서리 지시기의 크기를 조정합니다."
+L["Size"] = "모서리 크기"
+L["Adjust the size of the indicators."] = "모서리 지시기의 크기를 조정합니다."
 
 L["Blink effect"] = "깜박임 효과"
 L["Select the type of Blink effect used by Grid2."] = "Grid2에 사용할 깜박임 효과의 유형을 선택합니다."
