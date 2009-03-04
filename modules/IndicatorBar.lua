@@ -95,15 +95,14 @@ local BarColor_defaultDB = {
 	}
 }
 
-function Grid2:CreateBarIndicator(name, level, anchor, anchorRel, offsetx, offsety)
-	name = "bar-"..name
+function Grid2:CreateBarIndicator(indicatorKey, level, anchor, anchorRel, offsetx, offsety)
 	if type(level) == "string" then
 		level, anchor, anchorRel, offsetx, offsety = 0, level, anchor, anchorRel, offsetx
 	end
-	local Bar = self.indicatorPrototype:new(name)
-	Bar.nameFG = name
-	Bar.nameBG = name.."-background"
-	
+	local Bar = self.indicatorPrototype:new(indicatorKey)
+	Bar.nameFG = indicatorKey
+	Bar.nameBG = indicatorKey.."-background"
+
 	Bar.frameLevel = level
 	Bar.anchor = anchor
 	Bar.anchorRel = anchorRel
@@ -119,7 +118,7 @@ function Grid2:CreateBarIndicator(name, level, anchor, anchorRel, offsetx, offse
 
 	self:RegisterIndicator(Bar, { "percent" })
 
-	local BarColor = self.indicatorPrototype:new(name.."-color")
+	local BarColor = self.indicatorPrototype:new(indicatorKey.."-color")
 	BarColor.nameFG = Bar.nameFG
 	BarColor.nameBG = Bar.nameBG
 	BarColor.Create = BarColor_Create
