@@ -51,36 +51,36 @@ function Grid2:SetupDefaultIndicatorLocations(setup, class)
 	setup.indicatorLocations = {
 		["corner-topleft"] = "corner-top-left",
 		["corner-topright"] = "corner-top-right",
-		["corner-bottomleft"] = "corner-bottom-left",
+		["aggro"] = "corner-bottom-left",
 		["corner-bottomright"] = "corner-bottom-right",
-		["corner-side-bottom"] = "side-bottom",
+		["buffs-mine"] = "side-bottom",
 	}
 end
 
 function Grid2:SetupDefaultIndicators(setup, class)
 	setup.indicators.Bars = {
-		health = { 1, "CENTER" },
-		heals = { 2, "CENTER" },
+		["bar-health"] = { 1, "CENTER" },
+		["bar-heals"] = { 2, "CENTER" },
 	}
-	setup.indicators.Corners = {
-		bottomleft = { 5, "BOTTOMLEFT", "BOTTOMLEFT", 1, 1 },
-		bottomright = { 5, "BOTTOMRIGHT", "BOTTOMRIGHT", -1, 1 },
-		topright = { 5, "TOPRIGHT", "TOPRIGHT", -1, -1 },
-		topleft = { 5, "TOPLEFT", "TOPLEFT", 1, -1 },
-		["side-bottom"] = { 5, "BOTTOM", "BOTTOM", 0, 1 },
+	setup.indicators.Squares = {
+		["aggro"] = { 5, "BOTTOMLEFT", "BOTTOMLEFT", 1, 1 },
+		["corner-bottomright"] = { 5, "BOTTOMRIGHT", "BOTTOMRIGHT", -1, 1 },
+		["corner-topright"] = { 5, "TOPRIGHT", "TOPRIGHT", -1, -1 },
+		["corner-topleft"] = { 5, "TOPLEFT", "TOPLEFT", 1, -1 },
+		["buffs-mine"] = { 5, "BOTTOM", "BOTTOM", 0, 1 },
 	}
 	setup.indicators.Icons = {
-		center = { 4, "CENTER" },
+		["icon-center"] = { 4, "CENTER" },
 	}
 	setup.indicators.Texts = {
-		up = { 3, "BOTTOM", "CENTER", 0, 4, },
-		down = { 3, "TOP", "CENTER", 0, -4, },
+		["name"] = { 3, "BOTTOM", "CENTER", 0, 4, },
+		["text-down"] = { 3, "TOP", "CENTER", 0, -4, },
 	}
 end
 
 function Grid2:SetupDefaultStatus(setup, class)
-	setup.status["text-up"] = { healthdeficit = 90, name = 80, }
-	setup.status["text-up-color"] = { classcolor = 99 }
+	setup.status["name"] = { healthdeficit = 90, name = 80, }
+	setup.status["name-color"] = { classcolor = 99 }
 	setup.status["text-down"] = { death = 99, heals = 80 }
 	setup.status["text-down-color"] = { death = 99, heals = 80 }
 
@@ -96,7 +96,7 @@ function Grid2:SetupDefaultStatus(setup, class)
 		lowhealth = 60,
 	}
 
-	setup.status["corner-bottomleft"] = { aggro = 99 }
+	setup.status["aggro"] = { aggro = 99 }
 	setup.status["corner-topright"] = { heals = 99 }
 
 	setup.status.alpha = { range = 99 }
@@ -150,7 +150,7 @@ function Grid2:SetupDefaultAuras(setup, class)
 		setup.status["corner-topleft"] = auraSquare
 	end
 	if (buffSquare) then
-		setup.status["corner-side-bottom"] = buffSquare
+		setup.status["buffs-mine"] = buffSquare
 	end
 end
 
@@ -204,36 +204,36 @@ function Grid2:SetupDebuffPriorities(setup, class)
 end
 
 function Grid2:SetupIndicators(setup)
-	for name, info in pairs(setup.indicators.Bars) do
-		self:CreateBarIndicator(name, unpack(info))
+	for indicatorKey, info in pairs(setup.indicators.Bars) do
+		self:CreateBarIndicator(indicatorKey, unpack(info))
 	end
 	local locationKey, location
-	for name, info in pairs(setup.indicators.Corners) do
-		locationKey = setup.indicatorLocations["corner-"..name]
+	for indicatorKey, info in pairs(setup.indicators.Squares) do
+		locationKey = setup.indicatorLocations[indicatorKey]
 		location = setup.locations[locationKey]
 		if (location) then
 			info[2], info[3], info[4], info[5] = location.point, location.relPoint, location.x, location.y
 		end
 
-		self:CreateCornerIndicator(name, unpack(info))
+		self:CreateSquareIndicator(indicatorKey, unpack(info))
 	end
-	for name, info in pairs(setup.indicators.Icons) do
-		locationKey = setup.indicatorLocations["icon-"..name]
+	for indicatorKey, info in pairs(setup.indicators.Icons) do
+		locationKey = setup.indicatorLocations[indicatorKey]
 		location = setup.locations[locationKey]
 		if (location) then
 			info[2], info[3], info[4], info[5] = location.point, location.relPoint, location.x, location.y
 		end
 
-		self:CreateIconIndicator(name, unpack(info))
+		self:CreateIconIndicator(indicatorKey, unpack(info))
 	end
-	for name, info in pairs(setup.indicators.Texts) do
-		locationKey = setup.indicatorLocations["text-"..name]
+	for indicatorKey, info in pairs(setup.indicators.Texts) do
+		locationKey = setup.indicatorLocations[indicatorKey]
 		location = setup.locations[locationKey]
 		if (location) then
 			info[2], info[3], info[4], info[5] = location.point, location.relPoint, location.x, location.y
 		end
 
-		self:CreateTextIndicator(name, unpack(info))
+		self:CreateTextIndicator(indicatorKey, unpack(info))
 	end
 end
 

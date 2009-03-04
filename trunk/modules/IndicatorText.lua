@@ -66,12 +66,11 @@ local function TextColor_OnUpdate(self, parent, unit, status)
 	end
 end
 
-function Grid2:CreateTextIndicator(name, level, anchor, anchorRel, offsetx, offsety)
-	name = "text-"..name
+function Grid2:CreateTextIndicator(indicatorKey, level, anchor, anchorRel, offsetx, offsety)
 	if type(level) == "string" then
 		level, anchor, anchorRel, offsetx, offsety = 0, level, anchor, anchorRel, offsetx
 	end
-	local Text = self.indicatorPrototype:new(name)
+	local Text = self.indicatorPrototype:new(indicatorKey)
 
 	Text.frameLevel = level
 	Text.anchor = anchor
@@ -87,9 +86,9 @@ function Grid2:CreateTextIndicator(name, level, anchor, anchorRel, offsetx, offs
 
 	self:RegisterIndicator(Text, { "text" })
 
-	local TextColor = self.indicatorPrototype:new(name.."-color")
+	local TextColor = self.indicatorPrototype:new(indicatorKey.."-color")
 
-	TextColor.textname = name
+	TextColor.textname = indicatorKey
 	TextColor.Create = TextColor_Create
 	TextColor.Layout = TextColor_Layout
 	TextColor.OnUpdate = TextColor_OnUpdate

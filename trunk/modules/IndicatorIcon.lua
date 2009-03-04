@@ -87,13 +87,11 @@ local Icon_defaultDB = {
 	}
 }
 
-function Grid2:CreateIconIndicator(name, level, anchor, anchorRel, offsetx, offsety)
-
-	name = "icon-"..name
+function Grid2:CreateIconIndicator(indicatorKey, level, anchor, anchorRel, offsetx, offsety)
 	if type(level) == "string" then
 		level, anchor, anchorRel, offsetx, offsety = 0, level, anchor, anchorRel, offsetx
 	end
-	local Icon = self.indicatorPrototype:new(name)
+	local Icon = self.indicatorPrototype:new(indicatorKey)
 
 	Icon.frameLevel = level
 	Icon.anchor = anchor
