@@ -15,6 +15,10 @@ L["location"] = true
 L["indicator"] = true
 L["status"] = true
 
+L["Icon"] = true
+L["Square"] = true
+L["Text"] = true
+
 L["Advanced"] = true
 L["Advanced options."] = true
 
@@ -107,6 +111,7 @@ L["Create a new status."] = true
 L["Delete"] = true
 L["Location"] = true
 L["Name"] = true
+L["Name of the new indicator"] = true
 L["New Indicator"] = true
 L["New Location"] = true
 L["New Status"] = true
@@ -123,6 +128,8 @@ L["Select the location of the indicator"] = true
 L["Statuses"] = true
 L["Threshold"] = true
 L["Threshold at which to activate the status."] = true
+L["Type"] = true
+L["Type of indicator to create"] = true
 L["X Offset"] = true
 L["X - Horizontal Offset"] = true
 L["Y Offset"] = true

@@ -1,6 +1,31 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 local media = LibStub("LibSharedMedia-3.0", true)
 
+
+-- List of indicator types that can be created
+local newIndicatorTypes = {}
+
+-- List of creation functions for creatable indicators
+local funcCreateIndicatorList = {}
+
+-- List of option creation functions for creatable indicators
+local funcCreateOptionsList = {}
+
+function Grid2Options.GetNewIndicatorTypes()
+	return newIndicatorTypes
+end
+
+function Grid2Options:RegisterIndicators(setupList, indicatorTypeKey, name, funcCreate, funcCreateOptions)
+	newIndicatorTypes[indicatorTypeKey] = name
+	funcCreateIndicatorList[indicatorTypeKey] = funcCreate
+	funcCreateOptionsList[indicatorTypeKey] = funcCreateOptions
+
+	for indicatorKey in pairs(setupList) do
+		funcCreateOptions(Grid2.indicators[indicatorKey])
+	end
+end
+
+
 function Grid2Options.GetIndicatorStatus(info, statusKey)
 	local indicator = info.arg
 
@@ -41,6 +66,29 @@ function Grid2Options:AddIndicatorStatusOptions(indicator, options)
 		end,
 		get = Grid2Options.GetIndicatorStatus,
 		set = Grid2Options.SetIndicatorStatus,
+		arg = indicator,
+	}
+end
+
+
+local function DeleteIndicator(info)
+--[[
+	local indicator = info.arg--.locationKey
+	local locations = Grid2.db.profile.setup.locations
+	locations[locationKey] = nil
+
+	Grid2Frame:UpdateAllFrames()
+	local setup = Grid2.db.profile.setup
+	Grid2Options:AddSetupLocationOptions(setup, true)
+--]]
+end
+
+function Grid2Options:AddIndicatorDeleteOptions(indicator, options)
+	options.delete = {
+	    type = "execute",
+		order = 83,
+	    name = L["Delete"],
+	    func = DeleteIndicator,
 		arg = indicator,
 	}
 end
@@ -197,8 +245,7 @@ local function AddIconIndicatorOptions(Icon)
 	Grid2Options:AddElement("indicator", Icon, options)
 end
 
-local function AddSquareIndicatorOptions(indicatorKey)
-	local Square = Grid2.indicators[indicatorKey]
+local function AddSquareIndicatorOptions(Square)
 	local options = {
 		size = {
 			type = "range",
@@ -243,7 +290,6 @@ end
 
 
 local newIndicatorName = ""
-
 local function getNewIndicatorNameValue()
 	return newIndicatorName
 end
@@ -253,12 +299,32 @@ local function setNewIndicatorNameValue(info, customName)
 	newIndicatorName = customName
 end
 
+
+local newIndicatorType = "square"
+local function getNewIndicatorType(info)
+	return newIndicatorType
+end
+
+local function setNewIndicatorType(info, indicatorType)
+	newIndicatorType = indicatorType
+end
+
 local function NewIndicator()
 	newIndicatorName = Grid2Options:GetValidatedName(newIndicatorName)
 	if (newIndicatorName and newIndicatorName ~= "") then
-		local indicator = {relIndicator = nil, point = "TOPLEFT", relPoint = "TOPLEFT", x = 0, y = 0, name = newIndicatorName}
-		Grid2.db.profile.setup.indicators[newIndicatorName] = indicator
-		AddIndicatorOptions(newIndicatorName, indicator)
+		local info = {5, "TOPLEFT", "TOPLEFT", 1, -1}
+
+		local createFunc = funcCreateIndicatorList[newIndicatorType]
+		local indicator = createFunc(Grid2, newIndicatorName, unpack(info))
+		Grid2Frame:WithAllFrames(function (f)
+			indicator:Create(f)
+			indicator:Layout(f)
+		end)
+
+		Grid2.db.profile.setup.indicators[newIndicatorType][newIndicatorName] = info
+
+		local funcCreateOptions = funcCreateOptionsList[newIndicatorType]
+		funcCreateOptions(indicator)
 	end
 end
 
@@ -282,18 +348,28 @@ end
 
 local function AddIndicatorsGroup(reset)
 	local options = {
-		name = {
+		newIndicatorName = {
 			type = "input",
 			order = 1,
 			width = "full",
 			name = L["Name"],
+			desc = L["Name of the new indicator"],
 			usage = L["<CharacterOnlyString>"],
 			get = getNewIndicatorNameValue,
 			set = setNewIndicatorNameValue,
 		},
+		newIndicatorType = {
+		    type = 'select',
+			order = 3,
+			name = L["Type"],
+			desc = L["Type of indicator to create"],
+		    values = Grid2Options.GetNewIndicatorTypes,
+			get = getNewIndicatorType,
+			set = setNewIndicatorType,
+		},
 		newIndicator = {
 			type = "execute",
-			order = 2,
+			order = 5,
 			name = L["New Indicator"],
 			desc = L["Create a new indicator."],
 			func = NewIndicator,
@@ -324,15 +400,10 @@ function Grid2Options:AddSetupIndicatorsOptions(setup, reset)
 		AddBarIndicatorOptions(Grid2.indicators[indicatorKey])
 		AddBarColorIndicatorOptions(Grid2.indicators[indicatorKey.."-color"])
 	end
-	for indicatorKey in pairs(indicators.Squares) do
-		AddSquareIndicatorOptions(indicatorKey)
-	end
-	for indicatorKey in pairs(indicators.Icons) do
-		AddIconIndicatorOptions(Grid2.indicators[indicatorKey])
-	end
-	for indicatorKey in pairs(indicators.Texts) do
-		AddTextIndicatorOptions(Grid2.indicators[indicatorKey])
-	end
+
+	Grid2Options:RegisterIndicators(indicators.square, "square", L["Square"], Grid2.CreateSquareIndicator, AddSquareIndicatorOptions)
+	Grid2Options:RegisterIndicators(indicators.icon, "icon", L["Icon"], Grid2.CreateIconIndicator, AddIconIndicatorOptions)
+	Grid2Options:RegisterIndicators(indicators.text, "text", L["Text"], Grid2.CreateTextIndicator, AddTextIndicatorOptions)
 end
 
 Grid2Options:AddSetupIndicatorsOptions(Grid2.db.profile.setup)
