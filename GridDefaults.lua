@@ -62,17 +62,17 @@ function Grid2:SetupDefaultIndicators(setup, class)
 		["bar-health"] = { 1, "CENTER" },
 		["bar-heals"] = { 2, "CENTER" },
 	}
-	setup.indicators.Squares = {
+	setup.indicators.square = {
 		["aggro"] = { 5, "BOTTOMLEFT", "BOTTOMLEFT", 1, 1 },
 		["corner-bottomright"] = { 5, "BOTTOMRIGHT", "BOTTOMRIGHT", -1, 1 },
 		["corner-topright"] = { 5, "TOPRIGHT", "TOPRIGHT", -1, -1 },
 		["corner-topleft"] = { 5, "TOPLEFT", "TOPLEFT", 1, -1 },
 		["buffs-mine"] = { 5, "BOTTOM", "BOTTOM", 0, 1 },
 	}
-	setup.indicators.Icons = {
+	setup.indicators.icon = {
 		["icon-center"] = { 4, "CENTER" },
 	}
-	setup.indicators.Texts = {
+	setup.indicators.text = {
 		["name"] = { 3, "BOTTOM", "CENTER", 0, 4, },
 		["text-down"] = { 3, "TOP", "CENTER", 0, -4, },
 	}
@@ -208,7 +208,7 @@ function Grid2:SetupIndicators(setup)
 		self:CreateBarIndicator(indicatorKey, unpack(info))
 	end
 	local locationKey, location
-	for indicatorKey, info in pairs(setup.indicators.Squares) do
+	for indicatorKey, info in pairs(setup.indicators.square) do
 		locationKey = setup.indicatorLocations[indicatorKey]
 		location = setup.locations[locationKey]
 		if (location) then
@@ -217,7 +217,7 @@ function Grid2:SetupIndicators(setup)
 
 		self:CreateSquareIndicator(indicatorKey, unpack(info))
 	end
-	for indicatorKey, info in pairs(setup.indicators.Icons) do
+	for indicatorKey, info in pairs(setup.indicators.icon) do
 		locationKey = setup.indicatorLocations[indicatorKey]
 		location = setup.locations[locationKey]
 		if (location) then
@@ -226,7 +226,7 @@ function Grid2:SetupIndicators(setup)
 
 		self:CreateIconIndicator(indicatorKey, unpack(info))
 	end
-	for indicatorKey, info in pairs(setup.indicators.Texts) do
+	for indicatorKey, info in pairs(setup.indicators.text) do
 		locationKey = setup.indicatorLocations[indicatorKey]
 		location = setup.locations[locationKey]
 		if (location) then
