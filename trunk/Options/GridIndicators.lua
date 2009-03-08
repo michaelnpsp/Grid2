@@ -311,10 +311,24 @@ local function setNewIndicatorType(info, indicatorType)
 	newIndicatorType = indicatorType
 end
 
+
+local newIndicatorLocation = "corner-top-left"
+local function getNewIndicatorLocation(info)
+	return newIndicatorLocation
+end
+
+local function setNewIndicatorLocation(info, indicatorLocation)
+	newIndicatorLocation = indicatorLocation
+end
+
+
 local function NewIndicator()
 	newIndicatorName = Grid2Options:GetValidatedName(newIndicatorName)
 	if (newIndicatorName and newIndicatorName ~= "") then
-		local info = {5, "TOPLEFT", "TOPLEFT", 1, -1}
+		local location = Grid2Options:GetLocation(newIndicatorLocation)
+		local info = {5, location.point, location.relPoint, location.x, location.y}
+
+		Grid2Options:RegisterIndicatorLocation(newIndicatorName, newIndicatorLocation)
 
 		local createFunc = funcCreateIndicatorList[newIndicatorType]
 		local indicator = createFunc(Grid2, newIndicatorName, unpack(info))
@@ -369,9 +383,18 @@ local function AddIndicatorsGroup(reset)
 			get = getNewIndicatorType,
 			set = setNewIndicatorType,
 		},
+		newIndicatorLocation = {
+		    type = 'select',
+			order = 5,
+			name = L["Location"],
+			desc = L["Select the location of the indicator"],
+		    values = Grid2Options.GetLocationValues,
+			get = getNewIndicatorLocation,
+			set = setNewIndicatorLocation,
+		},
 		newIndicator = {
 			type = "execute",
-			order = 5,
+			order = 9,
 			name = L["New Indicator"],
 			desc = L["Create a new indicator."],
 			func = NewIndicator,
