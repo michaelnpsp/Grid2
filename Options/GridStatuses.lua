@@ -166,8 +166,8 @@ function Grid2Options:RegisterIndicatorStatus(indicator, status)
 	if (not indicators[indicator.name]) then
 		indicators[indicator.name] = {}
 	end
-	local indicatorStatuses = indicators[indicator.name]
 
+	local indicatorStatuses = indicators[indicator.name]
 	if (indicatorStatuses[status.name]) then
 		Grid2:Print(string.format("WARNING ! Indicator %s already registered with status %s", indicator.name, status.name))
 		return
@@ -187,36 +187,143 @@ end
 
 
 
-local newStatusName = ""
+local newStatusBuffName = ""
 
-local function getNewStatusNameValue()
-	return newStatusName
-end
-
-local function setNewStatusNameValue(info, customName)
-	customName = Grid2Options:GetValidatedName(customName)
-	newStatusName = customName
-end
-
-local function NewStatus()
-	newStatusName = Grid2Options:GetValidatedName(newStatusName)
-	if (newStatusName and newStatusName ~= "") then
----		local status = {relIndicator = nil, point = "TOPLEFT", relPoint = "TOPLEFT", x = 0, y = 0, name = newIndicatorName}
---		Grid2.db.profile.setup.indicators[newIndicatorName] = indicator
---		AddIndicatorOptions(newIndicatorName, indicator)
+local function getBuffKey(name)
+	name = Grid2Options:GetValidatedName(name)
+	if (name and name ~= "") then
+		return "buff-" .. name
+	else
+		return nil
 	end
 end
 
-local function NewStatusDisabled()
-	newStatusName = Grid2Options:GetValidatedName(newStatusName)
-	if (newStatusName and newStatusName ~= "") then
---		local statuses = Grid2.db.profile.setup.indicators
-		if (not statuses[newStatusName]) then
+local function getNewStatusBuffNameValue()
+	return newStatusBuffName
+end
+
+local function setNewStatusBuffNameValue(info, buffName)
+	newStatusBuffName = buffName
+end
+
+local function NewStatusBuff()
+	statusKey = getBuffKey(newStatusBuffName)
+	if (statusKey) then
+		local data = {newStatusBuffName, true, 1, 1, 1,}
+
+		local buffs = Grid2.db.profile.setup.buffs
+		buffs[statusKey] = data
+
+		local status = Grid2:SetupAuraStatusBuff(statusKey, data)
+		Grid2Options:AddAura("Buff", statusKey, unpack(data))
+		Grid2Options:AddElementSubType("status", "buff", status, MakeStatusColorOption(status))
+	end
+end
+
+local function NewStatusBuffDisabled()
+	statusKey = getBuffKey(newStatusBuffName)
+	if (statusKey) then
+		local buffs = Grid2.db.profile.setup.buffs
+		if (not buffs[statusKey]) then
 			return false
 		end
 	end
 	return true
 end
+
+local function MakeStatusBuffCreateOptions(reset)
+	local options = {
+		newStatusBuffName = {
+			type = "input",
+			order = 1,
+			width = "full",
+			name = L["Name"],
+			usage = L["<CharacterOnlyString>"],
+			get = getNewStatusBuffNameValue,
+			set = setNewStatusBuffNameValue,
+		},
+		newStatusBuff = {
+			type = "execute",
+			order = 2,
+			name = L["New Status"],
+			desc = L["Create a new status."],
+			func = NewStatusBuff,
+			disabled = NewStatusBuffDisabled,
+		},
+	}
+	return options
+end
+
+
+
+local newStatusDebuffName = ""
+
+local function getDebuffKey(name)
+	name = Grid2Options:GetValidatedName(name)
+	if (name and name ~= "") then
+		return "debuff-" .. name
+	else
+		return nil
+	end
+end
+
+local function getNewStatusDebuffNameValue()
+	return newStatusDebuffName
+end
+
+local function setNewStatusDebuffNameValue(info, debuffName)
+	newStatusDebuffName = debuffName
+end
+
+local function NewStatusDebuff()
+	local statusKey = getDebuffKey(newStatusDebuffName)
+	if (statusKey) then
+		local data = {newStatusDebuffName, 1, 0.1, 0.1,}
+
+		local debuffs = Grid2.db.profile.setup.debuffs
+		debuffs[statusKey] = data
+
+		local status = Grid2:SetupAuraStatusDebuff(statusKey, data)
+		Grid2Options:AddAura("Debuff", statusKey, unpack(data))
+		Grid2Options:AddElementSubType("status", "debuff", status, MakeStatusColorOption(status))
+	end
+end
+
+local function NewStatusDebuffDisabled()
+	local statusKey = getDebuffKey(newStatusDebuffName)
+	if (statusKey) then
+		local debuffs = Grid2.db.profile.setup.debuffs
+		if (not debuffs[statusKey]) then
+			return false
+		end
+	end
+	return true
+end
+
+local function MakeStatusDebuffCreateOptions(reset)
+	local options = {
+		newStatusDebuffName = {
+			type = "input",
+			order = 1,
+			width = "full",
+			name = L["Name"],
+			usage = L["<CharacterOnlyString>"],
+			get = getNewStatusDebuffNameValue,
+			set = setNewStatusDebuffNameValue,
+		},
+		newStatusDebuff = {
+			type = "execute",
+			order = 2,
+			name = L["New Status"],
+			desc = L["Create a new status."],
+			func = NewStatusDebuff,
+			disabled = NewStatusDebuffDisabled,
+		},
+	}
+	return options
+end
+
+
 
 function ResetStatuses()
 	local setup = Grid2.db.profile.setup
@@ -227,28 +334,6 @@ end
 
 local function AddStatusesGroup(reset)
 	local options = {
-		name = {
-			type = "input",
-			order = 1,
-			width = "full",
-			name = L["Name"],
-			usage = L["<CharacterOnlyString>"],
-			get = getNewStatusNameValue,
-			set = setNewStatusNameValue,
-		},
-		newStatus = {
-			type = "execute",
-			order = 2,
-			name = L["New Status"],
-			desc = L["Create a new status."],
-			func = NewStatus,
-			disabled = NewStatusDisabled,
-		},
-		resetStatusesHeader = {
-			type = "header",
-			order = 10,
-			name = "",
-		},
 		resetStatuses = {
 			type = "execute",
 			order = 11,
@@ -259,6 +344,7 @@ local function AddStatusesGroup(reset)
 	}
 	Grid2Options:AddElementGroup("status", options, reset)
 end
+
 
 function Grid2Options:AddSetupStatusesOptions(setup, reset)
 	AddStatusesGroup(reset)
@@ -287,16 +373,21 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 	options = MakeStatusClassColorOptions()
 	Grid2Options:AddElement("status",  status, options)
 
-	for statusName, info in pairs(setup.buffs) do
-		local status = Grid2.statuses["buff-"..statusName] -- TODO: fix names more better.  Type should not get baked in.
+	options = MakeStatusBuffCreateOptions()
+	Grid2Options:AddElementSubTypeGroup("status", "buff", options, reset)
+	for statusKey, info in pairs(setup.buffs) do
+		local status = Grid2.statuses[statusKey] -- TODO: fix names more better.  Type should not get baked in.
 		if status then
-			Grid2Options:AddElement("status", status, MakeStatusColorOption(status))
+			Grid2Options:AddElementSubType("status", "buff", status, MakeStatusColorOption(status))
 		end
 	end
-	for statusName, info in pairs(setup.debuffs) do
-		local status = Grid2.statuses["debuff-"..statusName] -- TODO: fix names more better.  Type should not get baked in.
+
+	options = MakeStatusDebuffCreateOptions()
+	Grid2Options:AddElementSubTypeGroup("status", "debuff", options, reset)
+	for statusKey, info in pairs(setup.debuffs) do
+		local status = Grid2.statuses[statusKey] -- TODO: fix names more better.  Type should not get baked in.
 		if status then
-			Grid2Options:AddElement("status", status, MakeStatusColorOption(status))
+			Grid2Options:AddElementSubType("status", "debuff", status, MakeStatusColorOption(status))
 		end
 	end
 

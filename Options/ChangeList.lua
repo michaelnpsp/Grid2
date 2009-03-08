@@ -8,6 +8,7 @@
 --Create auras and debuffs
 --buffs-raid
 --directly use location for indicators instead of grafting it on like right now
+--finish default set of indicators and renaming them
 
 --location
 	--relative

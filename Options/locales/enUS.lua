@@ -15,6 +15,9 @@ L["location"] = true
 L["indicator"] = true
 L["status"] = true
 
+L["buff"] = true
+L["debuff"] = true
+
 L["Icon"] = true
 L["Square"] = true
 L["Text"] = true

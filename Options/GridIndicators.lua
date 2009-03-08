@@ -51,6 +51,8 @@ function Grid2Options.SetIndicatorStatus(info, statusKey, value)
 				Grid2Options:UnregisterIndicatorStatus(indicator, status)
 			end
 			Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
+			Grid2Frame:ResetAllFrames()
+			Grid2Frame:UpdateAllFrames()
 		end
 	end
 end
