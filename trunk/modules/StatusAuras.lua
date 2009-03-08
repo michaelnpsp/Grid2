@@ -181,7 +181,7 @@ function Grid2:CreateBuffStatus(name, mine, r, g, b, a)
 	assert(type(name) == "string")
 
 	StatusCount = StatusCount + 1
-	local status = Grid2.statusPrototype:new("buff-"..StatusCount)
+	local status = Grid2.statusPrototype:new("buff-"..StatusCount)-- what the...?
 
 	status.auraName = name
 	status.states = {}
