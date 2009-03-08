@@ -105,44 +105,44 @@ end
 function Grid2:SetupDefaultAuras(setup, class)
 	local auraSquare, buffSquare
 	if (class == "DEATHKNIGHT") then
-		setup.buffs.hornOfWinter = { 57330, true, 0.1, 0.1, 1, }
+		setup.buffs["buff-HornOfWinter"] = { 57330, true, 0.1, 0.1, 1, }
 
 		buffSquare = {
-			["buff-hornOfWinter"] = 99,
+			["buff-HornOfWinter"] = 99,
 		}
 	elseif (class == "DRUID") then
-		setup.buffs.lifebloom = { 33763, 2, 0, .5, 0, 0, .7, 0, .2, 1, .2 }
-		setup.buffs.rejuv = { 774, true, 0, 0, 1, }
-		setup.buffs.regrowth = { 8936, true, 1, .5, .1, }
+		setup.buffs["buff-Lifebloom"] = { 33763, 2, 0, .5, 0, 0, .7, 0, .2, 1, .2 }
+		setup.buffs["buff-Rejuv"] = { 774, true, 0, 0, 1, }
+		setup.buffs["buff-Regrowth"] = { 8936, true, 1, .5, .1, }
 		auraSquare = {
-			["buff-lifebloom"] = 99,
-			["buff-rejuv"] = 89,
-			["buff-regrowth"] = 79,
+			["buff-Lifebloom"] = 99,
+			["buff-Rejuv"] = 89,
+			["buff-Regrowth"] = 79,
 		}
 
-		setup.buffs.wildgrowth = { 53248, true, .4, .9, .4, }
-		auraSquare["buff-wildgrowth"] = 69
+		setup.buffs["buff-WildGrowth"] = { 53248, true, .4, .9, .4, }
+		auraSquare["buff-WildGrowth"] = 69
 	elseif (class == "MAGE") then
-		setup.buffs.iceArmor = { 7302, true, 1, 1, 1, }
-		setup.buffs.iceBarrier = { 11426, true, 1, 1, 1, }
+		setup.buffs["buff-IceArmor"] = { 7302, true, 1, 1, 1, }
+		setup.buffs["buff-IceBarrier"] = { 11426, true, 1, 1, 1, }
 
 		buffSquare = {
-			["buff-iceArmor"] = 99,
-			["buff-iceBarrier"] = 89,
+			["buff-IceArmor"] = 99,
+			["buff-IceBarrier"] = 89,
 		}
 	elseif (class == "PRIEST") then
-		setup.buffs.renew = { 139, true, 1, 1, 1, }
-		setup.debuffs.weakened = { 6788, 1, 0, 0, }
+		setup.buffs["buff-Renew"] = { 139, true, 1, 1, 1, }
+		setup.debuffs["debuff-Weakened"] = { 6788, 1, 0, 0, }
 
 		auraSquare = {
-			["buff-renew"] = 99,
-			["debuff-weakened"] = 89,
+			["buff-Renew"] = 99,
+			["debuff-Weakened"] = 89,
 		}
 	elseif (class == "PALADIN") then
-		setup.debuffs.forbearance = { 25771, 1, 0, 0, }
+		setup.debuffs["debuff-Forbearance"] = { 25771, 1, 0, 0, }
 
 		auraSquare = {
-			["debuff-forbearance"] = 99,
+			["debuff-Forbearance"] = 99,
 		}
 	end
 
@@ -275,22 +275,30 @@ function Grid2:SetupAuraDebuffColorHandler(status, info)
 	status.GetColor = loadstring(handler)()
 end
 
+function Grid2:SetupAuraStatusBuff(statusKey, info)
+	local status = self:CreateBuffStatus(unpack(info))
+	status.name = statusKey -- force name
+
+	self:SetupAuraBuffColorHandler(status, info)
+	self:RegisterStatus(status, { "color" })
+	return status
+end
+
+function Grid2:SetupAuraStatusDebuff(statusKey, info)
+	local status = self:CreateDebuffStatus(unpack(info))
+	status.name = statusKey -- force name
+
+	self:SetupAuraDebuffColorHandler(status, info)
+	self:RegisterStatus(status, { "color" })
+	return status
+end
+
 function Grid2:SetupAuraStatus(setup)
-	for statusName, info in pairs(setup.buffs) do
-		local name, mine = info[1], info[2]
-		local status = self:CreateBuffStatus(unpack(info))
-		status.name = "buff-"..statusName -- force name
-
-		self:SetupAuraBuffColorHandler(status, info)
-		self:RegisterStatus(status, { "color" })
+	for statusKey, info in pairs(setup.buffs) do
+		self:SetupAuraStatusBuff(statusKey, info)
 	end
-	for statusName, info in pairs(setup.debuffs) do
-		local name = info[1]
-		local status = self:CreateDebuffStatus(name)
-		status.name = "debuff-"..statusName -- force name
-
-		self:SetupAuraDebuffColorHandler(status, info)
-		self:RegisterStatus(status, { "color" })
+	for statusKey, info in pairs(setup.debuffs) do
+		self:SetupAuraStatusDebuff(statusKey, info)
 	end
 end
 
@@ -298,8 +306,8 @@ function Grid2:SetupStatus(setup)
 	for indicatorName, configs in pairs(setup.status) do
 		local indicator = self.indicators[indicatorName]
 		if indicator then
-			for statusName, priority in pairs(configs) do
-				local status = self.statuses[statusName]
+			for statusKey, priority in pairs(configs) do
+				local status = self.statuses[statusKey]
 				if status and tonumber(priority) then
 					indicator:RegisterStatus(status, priority)
 				end
@@ -316,3 +324,9 @@ function Grid2:Setup()
 	self:SetupAuraStatus(setup)
 	self:SetupStatus(setup)
 end
+
+--[[
+/dump Grid2.db.profile.setup.status
+/dump Grid2.db.profile.setup.buffs
+/dump Grid2.statuses["buff-ArcaneIntellect"]
+--]]

@@ -32,7 +32,7 @@ function indicator:RegisterStatus(status, priority)
 		Grid2:Print(string.format("WARNING ! Status %s already registered with indicator %s", status.name, self.name))
 		return
 	end
-	assert(Grid2:IsCompatiblePair(self, status))
+	assert(Grid2:IsCompatiblePair(self, status), status.name)
 	self.priorities[status] = priority
 	self.statuses[#self.statuses + 1] = status
 	table.sort(self.statuses, self.sortStatuses)
