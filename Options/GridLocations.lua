@@ -6,6 +6,10 @@ function Grid2Options:GetLocation(locationKey)
 	return location
 end
 
+function Grid2Options:RegisterIndicatorLocation(indicatorKey, locationKey)
+	Grid2.db.profile.setup.indicatorLocations[indicatorKey] = locationKey
+end
+
 local locationValues = {}
 function Grid2Options.GetLocationValues(info)
 	local locations = Grid2.db.profile.setup.locations
@@ -27,7 +31,7 @@ end
 
 function Grid2Options.SetIndicatorLocation(info, value)
 	local indicatorKey = info.arg
-	Grid2.db.profile.setup.indicatorLocations[indicatorKey] = value
+	Grid2Options:RegisterIndicatorLocation(indicatorKey, value)
 end
 
 -- Translate db <--> dropdown menu
