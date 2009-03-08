@@ -84,6 +84,72 @@ function Grid2Options:AddElementGroup(type, extraOptions, reset)
 	end
 end
 
+function Grid2Options:AddElementSubTypeGroup(type, subType, subTypeOptions, reset)
+	local group = self.options.Grid2.args[type]
+	if (not group) then
+		group = {
+			type = "group",
+			name = L[type] or type,
+			desc = L["Options for %s."]:format(type),
+			args = {},
+		}
+		self.options.Grid2.args[type] = group
+	end
+
+	local subGroup = group.args[subType]
+	local options = {}
+	if (reset or not subGroup) then
+		subGroup = {
+			type = "group",
+			name = L[subType] or subType,
+			desc = L["Options for %s."]:format(subType),
+			args = options,
+		}
+		group.args[subType] = subGroup
+	end
+	if (subTypeOptions) then
+		for name, option in pairs(subTypeOptions) do
+			options[name] = option
+		end
+	end
+	return subGroup
+end
+
+
+function Grid2Options:AddElementSubType(type, subType, element, extraOptions)
+	extraOptions = extraOptions or element.extraOptions
+	element.extraOptions = nil
+	if not extraOptions then return end
+
+	local group = self.options.Grid2.args[type]
+	if not group then
+		group = {
+			type = "group",
+			name = L[type] or type,
+			desc = L["Options for %s."]:format(type),
+			args = {},
+		}
+		self.options.Grid2.args[type] = group
+	end
+
+	local subGroup = group.args[subType]
+	if (not subGroup) then
+		subGroup = self:AddElementSubTypeGroup(type, subType)
+	end
+
+	local options = {}
+	subGroup.args[element.name] = {
+		type = "group",
+		name = element.name,
+		desc = L["Options for %s."]:format(type),
+		args = options,
+	}
+	for name, option in pairs(extraOptions) do
+		options[name] = option
+	end
+end
+
+
 function Grid2Options:AddAura(type, name, spell, owner, r, g, b, ...)
 	local group = self.options.Auras.args[type]
 	if not group then
