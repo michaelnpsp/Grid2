@@ -9,11 +9,18 @@ L["Show Tooltip"] = "Показать подсказки"
 L["Show unit tooltip.  Choose 'Always', 'Never', or 'OOC'."] = "Показывать подсказку единицы.  Выберите 'Всегда', 'Никогда', или 'Вне боя'."
 L["Always"] = "Всегда"
 L["Never"] = "Никогда"
-L["OOC"] = "OOC"
+L["OOC"] = "Вне боя"
 
-L["location"] = "location"
-L["indicator"] = "indicator"
-L["status"] = "status"
+L["location"] = "Расположение"
+L["indicator"] = "Индикатор"
+L["status"] = "Статус"
+
+L["buff"] = "Бафф"
+L["debuff"] = "Дебафф"
+
+L["Icon"] = "Иконка"
+L["Square"] = "Квадрат"
+L["Text"] = "Текст"
 
 L["Advanced"] = "Дополнительные"
 L["Advanced options."] = "Допонительные опции."
