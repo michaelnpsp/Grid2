@@ -28,12 +28,12 @@ end
 
 Aggro.defaultDB = {
 	profile = {
-		color = { r = 1, g = 0, b = 0, a = 1 },
+		color1 = { r = 1, g = 0, b = 0, a = 1 },
 	}
 }
 
 function Aggro:GetColor(unit)
-	local color = self.db.profile.color
+	local color = self.db.profile.color1
 	return color.r, color.g, color.b, color.a
 end
 

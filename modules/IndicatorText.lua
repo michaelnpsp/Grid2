@@ -45,7 +45,7 @@ end
 
 local Text_defaultDB = {
 	profile = {
-		textlength = 4,
+		textlength = 12,
 		fontSize = 8,
 		font = "Friz Quadrata TT",
 	}

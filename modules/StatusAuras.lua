@@ -58,12 +58,12 @@ local function MakeDebuffTypeStatus(type, color)
 
 	status.defaultDB = {
 		profile = {
-			color = { r=color.r, g=color.g, b=color.b },
+			color1 = { r=color.r, g=color.g, b=color.b },
 		}
 	}
 
 	function status:GetColor(unit)
-		local color = self.db.profile.color
+		local color = self.db.profile.color1
 		return color.r, color.g, color.b, color.a
 	end
 
@@ -176,29 +176,36 @@ do
 	end
 end
 
-function Grid2:CreateBuffStatus(name, mine, r, g, b, a)
-	if type(name) == "number" then name = GetSpellInfo(name) end
-	assert(type(name) == "string")
+-- spellName: spellId or localized spellName
+function Grid2:CreateBuffStatus(spellName, mine, ...)
+	local a
+	if (type(spellName) == "number") then
+		spellName = GetSpellInfo(spellName)
+	end
+	assert(type(spellName) == "string")
 
 	StatusCount = StatusCount + 1
 	local status = Grid2.statusPrototype:new("buff-"..StatusCount)-- what the...?
 
-	status.auraName = name
+	status.auraName = spellName
 	status.states = {}
 	status.textures = {}
 	status.counts = {}
 	status.expirations = {}
 	status.durations = {}
 
-	if (r and g and b) then
-		a = a or 1
---print("CreateBuffStatus", name, mine, r, g, b, a)
-	end
 	status.defaultDB = {
 		profile = {
-			color = { r = r, g = g, b = b, a = a },
 		}
 	}
+ 	local colorCount = select('#', ...) / 3
+ 	status.defaultDB.profile.colorCount = colorCount
+print("CreateBuffStatus", spellName, mine, colorCount, ...)
+ 	for i = 1, colorCount, 1 do
+ 		local componentIndex = i * 3
+ 		local color = { r = (select((componentIndex - 2), ...)), g = (select((componentIndex - 1), ...)), b = (select((componentIndex), ...)), a = 1 }
+ 		status.defaultDB.profile[("color" .. i)] = color
+ 	end
 
 	function status:OnEnable()
 		EnableAuraFrame(true)
@@ -228,13 +235,15 @@ function Grid2:CreateBuffStatus(name, mine, r, g, b, a)
 	return status -- status is not registered yet
 end
 
-function Grid2:CreateDebuffStatus(name, mine)
-	if type(name) == "number" then name = GetSpellInfo(name) end
-	assert(type(name) == "string")
+function Grid2:CreateDebuffStatus(spellName, mine)
+	if (type(spellName) == "number") then
+		spellName = GetSpellInfo(spellName)
+	end
+	assert(type(spellName) == "string")
 
 	StatusCount = StatusCount + 1
 	local status = Grid2.statusPrototype:new("debuff-"..StatusCount)
-	status.auraName = name
+	status.auraName = spellName
 	status.states = {}
 	status.textures = {}
 	status.counts = {}
@@ -304,7 +313,7 @@ do
 			end
 			i = i + 1
 		end
-		-- update the debuff cache and mark indicators that needs updating
+		-- update the debuff cache and mark indicators that need updating
 		for type, status in pairs(DebuffTypeStatus) do
 			if status.enabled then
 				local debuff = types[type]

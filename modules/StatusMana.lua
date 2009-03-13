@@ -66,7 +66,7 @@ local LowMana = Grid2.statusPrototype:new("lowmana")
 LowMana.defaultDB = {
 	profile = {
 		threshold = 0.2,
-		color = { r = 0, g = 0, b = 1, a = 1 },
+		color1 = { r = 0, g = 0, b = 1, a = 1 },
 	}
 }
 
@@ -83,7 +83,7 @@ function LowMana:IsActive(unit)
 end
 
 function LowMana:GetColor(unit)
-	local color = self.db.profile.color
+	local color = self.db.profile.color1
 	return color.r, color.g, color.b, color.a
 end
 

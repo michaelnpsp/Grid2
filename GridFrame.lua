@@ -64,21 +64,21 @@ local function GridFrame_Init(frame, width, height)
 	})
 	frame:SetBackdropBorderColor(0, 0, 0, 1)
 	frame:SetBackdropColor(0, 0, 0, 1)
-	
+
 	frame:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight")
 
 	for _, indicator in Grid2:IterateIndicators() do
 		indicator:Create(frame)
 	end
-	
+
 	frame:SetAttribute("initial-width", width)
 	frame:SetAttribute("initial-height", height)
 	-- set our left-click action
 	frame:SetAttribute("type1", "target")
 	frame:SetAttribute("*type1", "target")
-	
+
 	frame:Reset()
-	
+
 	-- set up click casting
 	ClickCastFrames = ClickCastFrames or {}
 	ClickCastFrames[frame] = true
@@ -140,8 +140,8 @@ Grid2Frame = Grid2:NewModule("Grid2Frame")
 
 Grid2Frame.defaultDB = {
 	profile = {
-		frameHeight = 26,
-		frameWidth = 26,
+		frameHeight = 36,
+		frameWidth = 56,
 		debug = false,
 		showTooltip = "OOC",
 	},
