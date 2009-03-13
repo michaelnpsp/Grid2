@@ -114,12 +114,12 @@ end
 
 Heals.defaultDB = {
 	profile = {
-		color = { r = 0, g = 1, b = 0, a = 1 },
+		color1 = { r = 0, g = 1, b = 0, a = 1 },
 	}
 }
 
 function Heals:GetColor(unit)
-	local color = self.db.profile.color
+	local color = self.db.profile.color1
 	return color.r, color.g, color.b, color.a
 end
 

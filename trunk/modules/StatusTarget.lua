@@ -2,7 +2,7 @@ local Target = Grid2.statusPrototype:new("target")
 
 Target.defaultDB = {
 	profile = {
-		color = { r = .8, g = .8, b = .8, a = 1 },
+		color1 = { r = .8, g = .8, b = .8, a = 1 },
 	}
 }
 
@@ -30,7 +30,7 @@ function Target:GetText(unit)
 end
 
 function Target:GetColor(unit)
-	local color = self.db.profile.color
+	local color = self.db.profile.color1
 	return color.r, color.g, color.b, color.a
 end
 

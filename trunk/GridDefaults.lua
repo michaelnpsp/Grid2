@@ -55,6 +55,9 @@ function Grid2:SetupDefaultIndicatorLocations(setup, class)
 		["corner-bottomright"] = "corner-bottom-right",
 		["buffs-mine"] = "side-bottom",
 	}
+	if (class == "DRUID") then
+		setup.indicatorLocations["regrowth"] = "side-top"
+	end
 end
 
 function Grid2:SetupDefaultIndicators(setup, class)
@@ -76,6 +79,10 @@ function Grid2:SetupDefaultIndicators(setup, class)
 		["name"] = { 3, "BOTTOM", "CENTER", 0, 4, },
 		["text-down"] = { 3, "TOP", "CENTER", 0, -4, },
 	}
+
+	if (class == "DRUID") then
+		setup.indicators.square["regrowth"] = { 5, "TOP", "TOP", 0, -1 }
+	end
 end
 
 function Grid2:SetupDefaultStatus(setup, class)
@@ -102,55 +109,111 @@ function Grid2:SetupDefaultStatus(setup, class)
 	setup.status.alpha = { range = 99 }
 end
 
+function Grid2:SetupIndicatorStatus(setupIndicator, indicatorKey, statusKey, priority)
+	local statuses = setupIndicator[indicatorKey]
+	if (not statuses) then
+		statuses = {}
+		setupIndicator[indicatorKey] = statuses
+	end
+	statuses[statusKey] = priority
+end
+
 function Grid2:SetupDefaultAuras(setup, class)
-	local auraSquare, buffSquare
+	local setupIndicator = setup.status
 	if (class == "DEATHKNIGHT") then
 		setup.buffs["buff-HornOfWinter"] = { 57330, true, 0.1, 0.1, 1, }
 
-		buffSquare = {
-			["buff-HornOfWinter"] = 99,
-		}
+		self:SetupIndicatorStatus(setupIndicator, "buffs-mine", "buff-HornOfWinter", 99)
 	elseif (class == "DRUID") then
+		setup.buffs["buff-AbolishPoison"] = { 2893, true, 1, .5, .1, }
 		setup.buffs["buff-Lifebloom"] = { 33763, 2, 0, .5, 0, 0, .7, 0, .2, 1, .2 }
-		setup.buffs["buff-Rejuv"] = { 774, true, 0, 0, 1, }
-		setup.buffs["buff-Regrowth"] = { 8936, true, 1, .5, .1, }
-		auraSquare = {
-			["buff-Lifebloom"] = 99,
-			["buff-Rejuv"] = 89,
-			["buff-Regrowth"] = 79,
-		}
-
+		setup.buffs["buff-Rejuv"] = { 774, 2, 1, .2, 1, }
+		setup.buffs["buff-Regrowth"] = { 8936, 2, .2, 1, .2, }
+		setup.buffs["buff-Thorns"] = { 467, false, .2, 1, .2, }
 		setup.buffs["buff-WildGrowth"] = { 53248, true, .4, .9, .4, }
-		auraSquare["buff-WildGrowth"] = 69
+
+		self:SetupIndicatorStatus(setupIndicator, "corner-topleft", "buff-Lifebloom", 99)
+		self:SetupIndicatorStatus(setupIndicator, "regrowth", "buff-Regrowth", 99)
+		self:SetupIndicatorStatus(setupIndicator, "corner-topright", "buff-Rejuv", 99)
+		self:SetupIndicatorStatus(setupIndicator, "corner-bottomright", "buff-AbolishPoison", 99)
+		self:SetupIndicatorStatus(setupIndicator, "buffs-mine", "buff-WildGrowth", 69)
 	elseif (class == "MAGE") then
+		setup.buffs["buff-AmplifyMagic"] = { 33946, false, 1, 1, 1, }
+		setup.buffs["buff-DampenMagic"] = { 33944, false, 1, 1, 1, }
+		setup.buffs["buff-FocusMagic"] = { 54646, false, .11, .22, .33, }
 		setup.buffs["buff-IceArmor"] = { 7302, true, 1, 1, 1, }
 		setup.buffs["buff-IceBarrier"] = { 11426, true, 1, 1, 1, }
 
-		buffSquare = {
-			["buff-IceArmor"] = 99,
-			["buff-IceBarrier"] = 89,
-		}
-	elseif (class == "PRIEST") then
-		setup.buffs["buff-Renew"] = { 139, true, 1, 1, 1, }
-		setup.debuffs["debuff-Weakened"] = { 6788, 1, 0, 0, }
-
-		auraSquare = {
-			["buff-Renew"] = 99,
-			["debuff-Weakened"] = 89,
-		}
+		self:SetupIndicatorStatus(setupIndicator, "buffs-mine", "buff-AmplifyMagic", 99)
+		self:SetupIndicatorStatus(setupIndicator, "buffs-mine", "buff-DampenMagic", 99)
+		self:SetupIndicatorStatus(setupIndicator, "buffs-mine", "buff-FocusMagic", 99)
+		self:SetupIndicatorStatus(setupIndicator, "buffs-mine", "buff-IceArmor", 99)
+		self:SetupIndicatorStatus(setupIndicator, "buffs-mine", "buff-IceBarrier", 89)
 	elseif (class == "PALADIN") then
+		setup.buffs["buff-BeaconOfLight"] = { 53654, true, 1, 1, 1, }
+		setup.buffs["buff-BlessingOfProtection"] = { 41450, true, 1, 1, 1, }
+		setup.buffs["buff-DivineIntervention"] = { 19752, true, 1, 1, 1, }
+		setup.buffs["buff-LightsBeacon"] = { 53651, true, 1, 1, 1, }
+
+		self:SetupIndicatorStatus(setupIndicator, "buffs-mine", "buff-BeaconOfLight", 99)
+		self:SetupIndicatorStatus(setupIndicator, "buffs-mine", "buff-BlessingOfProtection", 99)
+		self:SetupIndicatorStatus(setupIndicator, "buffs-mine", "buff-DivineIntervention", 99)
+		self:SetupIndicatorStatus(setupIndicator, "buffs-mine", "buff-LightsBeacon", 99)
+
 		setup.debuffs["debuff-Forbearance"] = { 25771, 1, 0, 0, }
 
-		auraSquare = {
-			["debuff-Forbearance"] = 99,
-		}
-	end
+		self:SetupIndicatorStatus(setupIndicator, "corner-topleft", "debuff-Forbearance", 99)
+	elseif (class == "PRIEST") then
+		setup.buffs["buff-Grace"] = { 47516, true, 1, 1, 1, }
+		setup.buffs["buff-DivineAegis"] = { 47509, false, 1, 1, 1, }
+		setup.buffs["buff-InnerFire"] = { 588, false, 1, 1, 1, }
+		setup.buffs["buff-PrayerOfMending"] = { 33076, true, 1, 1, 1, }
+		setup.buffs["buff-PowerWordShield"] = { 17, false, 1, 1, 1, }
+		setup.buffs["buff-Renew"] = { 139, true, 1, 1, 1, }
 
-	if (auraSquare) then
-		setup.status["corner-topleft"] = auraSquare
-	end
-	if (buffSquare) then
-		setup.status["buffs-mine"] = buffSquare
+		self:SetupIndicatorStatus(setupIndicator, "corner-bottomright", "buff-PrayerOfMending", 99)
+		self:SetupIndicatorStatus(setupIndicator, "corner-bottomright", "buff-PowerWordShield", 89)
+		self:SetupIndicatorStatus(setupIndicator, "corner-bottomright", "buff-DivineAegis", 79)
+		self:SetupIndicatorStatus(setupIndicator, "corner-bottomright", "buff-InnerFire", 79)
+		self:SetupIndicatorStatus(setupIndicator, "corner-topleft", "buff-Renew", 99)
+
+		setup.debuffs["debuff-WeakenedSoul"] = { 6788, 1, 0, 0, }
+
+		self:SetupIndicatorStatus(setupIndicator, "corner-topleft", "debuff-WeakenedSoul", 89)
+	elseif (class == "ROGUE") then
+		setup.buffs["buff-Evasion"] = { 5277, true, 0.1, 0.1, 1, }
+
+		self:SetupIndicatorStatus(setupIndicator, "buffs-mine", "buff-Evasion", 99)
+	elseif (class == "SHAMAN") then
+		setup.buffs["buff-Riptide"] = { 61295, true, 1, 1, 1, }
+		setup.buffs["buff-Earthliving"] = { 51945, false, 1, 1, 1, }
+		setup.buffs["buff-EarthShield"] = { 974, false, 1, 1, 1, }
+
+		self:SetupIndicatorStatus(setupIndicator, "corner-bottomright", "buff-Riptide", 99)
+		self:SetupIndicatorStatus(setupIndicator, "corner-bottomright", "buff-Earthliving", 99)
+		self:SetupIndicatorStatus(setupIndicator, "corner-bottomright", "buff-EarthShield", 99)
+	elseif (class == "WARLOCK") then
+		setup.buffs["buff-ShadowWard"] = { 6229, true, 1, 1, 1, }
+		setup.buffs["buff-SoulLink"] = { 19028, true, 1, 1, 1, }
+		setup.buffs["buff-DemonArmor"] = { 706, true, 1, 1, 1, }
+		setup.buffs["buff-DemonSkin"] = { 696, true, 1, 1, 1, }
+		setup.buffs["buff-FelArmor"] = { 28189, true, 1, 1, 1, }
+
+		self:SetupIndicatorStatus(setupIndicator, "buffs-mine", "buff-ShadowWard", 99)
+		self:SetupIndicatorStatus(setupIndicator, "buffs-mine", "buff-SoulLink", 99)
+		self:SetupIndicatorStatus(setupIndicator, "buffs-mine", "buff-FelArmor", 99)
+	elseif (class == "WARRIOR") then
+		setup.buffs["buff-BattleShout"] = { 2048, true, 0.1, 0.1, 1, }
+		setup.buffs["buff-CommandingShout"] = { 469, true, 0.1, 0.1, 1, }
+		setup.buffs["buff-LastStand"] = { 12975, true, 0.1, 0.1, 1, }
+		setup.buffs["buff-ShieldWall"] = { 871, true, 0.1, 0.1, 1, }
+		setup.buffs["buff-Vigilance"] = { 50720, true, 0.1, 0.1, 1, }
+
+		self:SetupIndicatorStatus(setupIndicator, "buffs-mine", "buff-BattleShout", 89)
+		self:SetupIndicatorStatus(setupIndicator, "buffs-mine", "buff-CommandingShout", 79)
+		self:SetupIndicatorStatus(setupIndicator, "buffs-mine", "buff-Vigilance", 99)
+		self:SetupIndicatorStatus(setupIndicator, "corner-bottomright", "buff-LastStand", 99)
+		self:SetupIndicatorStatus(setupIndicator, "corner-bottomright", "buff-ShieldWall", 89)
 	end
 end
 
@@ -237,41 +300,50 @@ function Grid2:SetupIndicators(setup)
 	end
 end
 
-function Grid2:SetupAuraBuffColorHandler(status, info)
-	local color_count = (#info - 2) / 3
-	if color_count <= 0 or #info ~= color_count * 3 + 2 then
-		local name = info[1]
-		self:Print("Invalid number of colors for buff %s", name)
-		return
-	end
+local handlerArray = {}
+function Grid2:UpdateColorHandler(status)
+	local profile = status.db.profile
+	local colorCount = profile.colorCount
 
-	local handler = "return function (self, unit)"
-	if color_count > 1 then
-		handler = handler.." local count = self:GetCount(unit)"
-		for i = 1, color_count - 1 do
-			handler = handler..(" if count == %d then return %s, %s, %s end"):format(i, unpack(info, i * 3, (i + 1) * 3 - 1))
+	wipe(handlerArray)
+	handlerArray[1] = "return function (self, unit)"
+	local index = 2
+	local color
+	if colorCount > 1 then
+		handlerArray[index] = " local count = self:GetCount(unit)"
+		index = index + 1
+		for i = 1, colorCount - 1 do
+			color = status.db.profile["color" .. i]
+			handlerArray[index] = (" if count == %d then return %s, %s, %s end"):format(i, color.r, color.g, color.b)
+			index = index + 1
 		end
 	end
-	handler = handler..(" return %s, %s, %s end"):format(unpack(info, color_count * 3))
+
+	color = status.db.profile[("color" .. colorCount)]
+--print("UpdateColorHandler", status.name, "color" .. colorCount, color.r, color.g, color.b)
+	handlerArray[index] = (" return %s, %s, %s end"):format(color.r, color.g, color.b)
+
+	local handler = table.concat(handlerArray)
 	status.GetColor = assert(loadstring(handler))()
+	return handler
 end
 
 function Grid2:SetupAuraDebuffColorHandler(status, info)
-	local color_count = (#info - 1) / 3
-	if color_count <= 0 then
+	local colorCount = (#info - 1) / 3
+	if colorCount <= 0 then
 		local name = info[1]
 		self:Print("Invalid number of colors for debuff %s", name)
 		return
 	end
 
 	local handler = "return function (self, unit)"
-	if color_count > 1 then
+	if colorCount > 1 then
 		handler = handler.." local count = self:GetCount(unit)"
-		for i = 1, color_count - 1 do
+		for i = 1, colorCount - 1 do
 			handler = handler.. ("if count == %d then return %s, %s, %s end"):format(unpack(info, i * 3 - 1, (i + 1) * 3 - 2))
 		end
 	end
-	handler = handler..(" return %s, %s, %s end"):format(unpack(info, color_count * 3 - 1))
+	handler = handler..(" return %s, %s, %s end"):format(unpack(info, colorCount * 3 - 1))
 	status.GetColor = loadstring(handler)()
 end
 
@@ -279,8 +351,8 @@ function Grid2:SetupAuraStatusBuff(statusKey, info)
 	local status = self:CreateBuffStatus(unpack(info))
 	status.name = statusKey -- force name
 
-	self:SetupAuraBuffColorHandler(status, info)
 	self:RegisterStatus(status, { "color" })
+	self:UpdateColorHandler(status)
 	return status
 end
 

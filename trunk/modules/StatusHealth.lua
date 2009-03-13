@@ -78,7 +78,7 @@ Grid2:RegisterStatus(Health, { "percent", "text" })
 LowHealth.defaultDB = {
 	profile = {
 		threshold = 0.4,
-		color = { r = 1, g = 0, b = 0, a = 1 },
+		color1 = { r = 1, g = 0, b = 0, a = 1 },
 	}
 }
 
@@ -95,7 +95,7 @@ function LowHealth:IsActive(unit)
 end
 
 function LowHealth:GetColor(unit)
-	local color = self.db.profile.color
+	local color = self.db.profile.color1
 	return color.r, color.g, color.b, color.a
 end
 

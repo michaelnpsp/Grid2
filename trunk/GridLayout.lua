@@ -27,14 +27,14 @@ local SecureHeaderTemplates = {
 }
 
 local GridLayoutHeaderClass = {
-	prototype = {}, 
+	prototype = {},
 	new = function (self, type)
 		NUM_HEADERS = NUM_HEADERS + 1
 		local frame
 		if type == "spacer" then
 			frame = CreateFrame("Frame", "Grid2LayoutHeader"..NUM_HEADERS, Grid2Layout.frame)
 		else
-			frame = CreateFrame("Frame", "Grid2LayoutHeader"..NUM_HEADERS, Grid2Layout.frame, 
+			frame = CreateFrame("Frame", "Grid2LayoutHeader"..NUM_HEADERS, Grid2Layout.frame,
 				assert(SecureHeaderTemplates[type]))
 			frame:SetAttribute("template", "SecureUnitButtonTemplate")
 			frame.initialConfigFunction = GridLayout_InitialConfigFunction
@@ -128,7 +128,7 @@ Grid2Layout.defaultDB = {
 		clamp = true,
 		FrameLock = false,
 		ClickThrough = false,
-	
+
 		Padding = 1,
 		Spacing = 10,
 		ScaleSize = 1.0,
@@ -184,9 +184,9 @@ function Grid2Layout:OnEnable()
 
 	self:RegisterMessage("Grid_GroupTypeChanged")
 	self:RegisterMessage("Grid_UpdateLayoutSize", "UpdateSize")
-	
+
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
-	
+
 	self.core.defaultModulePrototype.OnEnable(self)
 end
 
@@ -343,7 +343,7 @@ function Grid2Layout:ReloadLayout()
 		return
 	end
 	reloadLayoutQueued = false
-	
+
 	local layout = self.db.profile.layouts[self.partyType or "solo"]
 	self:LoadLayout(layout)
 end
@@ -372,7 +372,7 @@ function Grid2Layout:LoadLayout(layoutName)
 	if not layout then return end
 
 	self:Debug("LoadLayout", layoutName)
-	
+
 	for type, headers in pairs(self.groups) do
 		self.indexes[type] = 0
 		for _, g in ipairs(headers) do
@@ -382,7 +382,7 @@ function Grid2Layout:LoadLayout(layoutName)
 
 	local defaults = layout.defaults
 	local default_type = defaults and defaults.type or "raid"
-	
+
 	for i, l in ipairs(layout) do
 		local type = l.type or default_type
 		local headers = assert(self.groups[type])
@@ -393,7 +393,7 @@ function Grid2Layout:LoadLayout(layoutName)
 			headers[index] = layoutGroup
 		end
 		self.indexes[type] = index
-		
+
 		if type ~= "spacer" then
 			if defaults then
 				for attr, value in pairs(defaults) do
@@ -440,7 +440,7 @@ function Grid2Layout:UpdateSize()
 	local p = self.db.profile
 	local curWidth, curHeight, maxWidth, maxHeight = 0, 0, 0, 0
 	local Padding, Spacing = p.Padding, p.Spacing * 2
-	
+
 	for i = 1, self.indexes.spacer do
 		local f = self.groups.spacer[i]
 		f:SetWidth(GridFrame:GetFrameWidth())
@@ -500,7 +500,7 @@ function Grid2Layout:SavePosition()
 	local anchor = self.db.profile.anchor
 
 	local x, y
-	
+
 	if not f:GetLeft() or not f:GetWidth() then return end
 
 	if anchor == "CENTER" then
