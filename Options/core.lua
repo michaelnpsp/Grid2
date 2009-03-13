@@ -168,6 +168,7 @@ end
 function Grid2Options:AddModuleDebugMenu(name, module)
 	self.options.Grid2.args.debug.args[name] = {
 		type = "toggle",
+		order = 3,
 		name = name,
 		desc = L["Toggle debugging for %s."]:format(name),
 		get = function ()
@@ -191,6 +192,11 @@ function Grid2Options:AddResetDebugMenu()
 			Grid2DB = nil
 			ReloadUI()
 		end,
+	}
+	self.options.Grid2.args.debug.args.resetSpacer = {
+		type = "header",
+		order = 2,
+		name = "",
 	}
 end
 

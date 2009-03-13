@@ -257,7 +257,7 @@ local function AddLocationGroup(reset)
 			func = NewLocation,
 			disabled = NewLocationDisabled,
 		},
-		resetLocationsHeader = {
+		resetLocationsSpacer = {
 			type = "header",
 			order = 10,
 			name = "",

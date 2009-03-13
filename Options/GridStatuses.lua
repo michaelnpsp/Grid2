@@ -2,35 +2,54 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 local LG = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 
 
-local function MakeStatusColorOption(status, options)
-	options = options or {}
-	options.color = {
-		type = "color",
-		order = 10,
-		name = L["Color"],
-		desc = L["Color for %s."]:format(status.name),
-		get = function ()
-			local c = status.db.profile.color
-			return c.r, c.g, c.b, c.a
-		end,
-		set = function (_, r, g, b, a)
-			local c = status.db.profile.color
-			c.r, c.g, c.b, c.a = r, g, b, a
-			local info = {
-				status.name,
-				true,
-				r, g, b,
-			}
-			Grid2:SetupAuraBuffColorHandler(status, info)
-			for unit in Grid2:IterateRoster(true) do
-				status:UpdateIndicators(unit)
-			end
-		end,
-		hasAlpha = true
-	}
-	return options
+function Grid2Options.GetStatusColor(info)
+	local status = info.arg.status
+	local colorKey = "color"
+
+	local colorIndex = info.arg.colorIndex
+	colorKey = colorKey .. colorIndex
+
+	local c = status.db.profile[colorKey]
+	return c.r, c.g, c.b, c.a
 end
 
+function Grid2Options.SetStatusColor(info, r, g, b, a)
+	local status = info.arg.status
+	local colorKey = "color"
+
+	local colorIndex = info.arg.colorIndex
+	colorKey = colorKey .. colorIndex
+
+	local c = status.db.profile[colorKey]
+	c.r, c.g, c.b, c.a = r, g, b, a
+
+	Grid2:UpdateColorHandler(status)
+	for unit in Grid2:IterateRoster(true) do
+		status:UpdateIndicators(unit)
+	end
+end
+
+local function MakeStatusColorOption(status, options)
+	local profile = status.db.profile
+	local colorCount = profile.colorCount or 1
+	options = options or {}
+
+--print("MakeStatusColorOption", status.name, colorCount)
+
+	for i = 1, colorCount, 1 do
+		options["color" .. i] = {
+			type = "color",
+			order = (10 + i),
+			name = L["Color"],
+			desc = L["Color for %s."]:format(status.name),
+			get = Grid2Options.GetStatusColor,
+			set = Grid2Options.SetStatusColor,
+			hasAlpha = true,
+			arg = {status = status, colorIndex = i},
+		}
+	end
+	return options
+end
 
 local function MakeStatusThresholdOption(status, options)
 	options = options or {}
@@ -47,6 +66,27 @@ local function MakeStatusThresholdOption(status, options)
 		end,
 		set = function (_, v)
 			status.db.profile.threshold = v
+		end,
+	}
+	return options
+end
+
+
+local function MakeStatusBlinkThresholdOption(status, options)
+	options = options or {}
+	options.blinkThreshold = {
+		type = "range",
+		order = 20,
+		name = L["Threshold"],
+		desc = L["Threshold at which to activate the status."],
+		min = 0,
+		max = 10,
+		step = 1,
+		get = function ()
+			return status.db.profile.blinkThreshold
+		end,
+		set = function (_, v)
+			status.db.profile.blinkThreshold = v
 		end,
 	}
 	return options
@@ -378,7 +418,9 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 	for statusKey, info in pairs(setup.buffs) do
 		local status = Grid2.statuses[statusKey] -- TODO: fix names more better.  Type should not get baked in.
 		if status then
-			Grid2Options:AddElementSubType("status", "buff", status, MakeStatusColorOption(status))
+			options = MakeStatusColorOption(status)
+			options = MakeStatusBlinkThresholdOption(status, options)
+			Grid2Options:AddElementSubType("status", "buff", status, options)
 		end
 	end
 
@@ -387,7 +429,9 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 	for statusKey, info in pairs(setup.debuffs) do
 		local status = Grid2.statuses[statusKey] -- TODO: fix names more better.  Type should not get baked in.
 		if status then
-			Grid2Options:AddElementSubType("status", "debuff", status, MakeStatusColorOption(status))
+			options = MakeStatusColorOption(status)
+			options = MakeStatusBlinkThresholdOption(status, options)
+			Grid2Options:AddElementSubType("status", "debuff", status, options)
 		end
 	end
 
