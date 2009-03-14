@@ -353,6 +353,7 @@ function Grid2:SetupAuraStatusBuff(statusKey, info)
 
 	self:RegisterStatus(status, { "color" })
 	self:UpdateColorHandler(status)
+	self:UpdateBlinkHandler(status)
 	return status
 end
 

@@ -152,6 +152,7 @@ local function status_HasStateChanged(self, unit)
 end
 
 local AddTimeTracker
+local RemoveTimeTracker
 do
 	local timetracker
 	AddTimeTracker = function (status, value)
@@ -172,7 +173,29 @@ do
 		AddTimeTracker = function (status, value)
 			timetracker.tracked[status] = value
 		end
+		RemoveTimeTracker = function (status)
+			timetracker.tracked[status] = nil
+		end
 		return AddTimeTracker(status, value)
+	end
+
+end
+
+function Grid2:UpdateBlinkHandler(status)
+	local profile = status.db.profile
+	local blinkThreshold = profile.blinkThreshold
+
+	if (blinkThreshold) then
+--print("UpdateBlinkHandler blinkThreshold", blinkThreshold)
+		status.blinkThreshold = blinkThreshold
+		status.IsActive = status_IsActiveBlink
+		AddTimeTracker(status, blinkThreshold)
+	else
+		status.IsActive = status_IsActive
+		if (RemoveTimeTracker) then
+			status.blinkThreshold = nil
+			RemoveTimeTracker(status)
+		end
 	end
 end
 
@@ -200,7 +223,7 @@ function Grid2:CreateBuffStatus(spellName, mine, ...)
 	}
  	local colorCount = select('#', ...) / 3
  	status.defaultDB.profile.colorCount = colorCount
-print("CreateBuffStatus", spellName, mine, colorCount, ...)
+--print("CreateBuffStatus", spellName, mine, colorCount, ...)
  	for i = 1, colorCount, 1 do
  		local componentIndex = i * 3
  		local color = { r = (select((componentIndex - 2), ...)), g = (select((componentIndex - 1), ...)), b = (select((componentIndex), ...)), a = 1 }
@@ -219,11 +242,7 @@ print("CreateBuffStatus", spellName, mine, colorCount, ...)
 
 	status.Reset = status_Reset
 	if type(mine) == "number" then
-		status.blinkThreshold = mine
-		status.IsActive = status_IsActiveBlink
-		AddTimeTracker(status, mine)
-	else
-		status.IsActive = status_IsActive
+		status.defaultDB.profile.blinkThreshold = mine
 	end
 	status.GetIcon = status_GetIcon
 	status.GetCount = status_GetCount
