@@ -36,11 +36,16 @@ local function MakeStatusColorOption(status, options)
 
 --print("MakeStatusColorOption", status.name, colorCount)
 
+	local name = L["Color"]
 	for i = 1, colorCount, 1 do
+		if (colorCount > 1) then
+			name = L["Color %d"]:format(i)
+		end
 		options["color" .. i] = {
 			type = "color",
 			order = (10 + i),
-			name = L["Color"],
+			width = "half",
+			name = name,
 			desc = L["Color for %s."]:format(status.name),
 			get = Grid2Options.GetStatusColor,
 			set = Grid2Options.SetStatusColor,
@@ -74,19 +79,29 @@ end
 
 local function MakeStatusBlinkThresholdOption(status, options)
 	options = options or {}
+	options.blinkThresholdSpacer = {
+		type = "header",
+		order = 30,
+		name = "",
+	}
 	options.blinkThreshold = {
 		type = "range",
-		order = 20,
-		name = L["Threshold"],
-		desc = L["Threshold at which to activate the status."],
+		order = 31,
+		width = "full",
+		name = L["Blink Threshold"],
+		desc = L["Blink Threshold at which to start blinking the status."],
 		min = 0,
-		max = 10,
-		step = 1,
+		max = 30,
+		step = 0.1,
 		get = function ()
-			return status.db.profile.blinkThreshold
+			return status.db.profile.blinkThreshold or 0
 		end,
 		set = function (_, v)
+			if (v == 0) then
+				v = nil
+			end
 			status.db.profile.blinkThreshold = v
+			Grid2:UpdateBlinkHandler(status)
 		end,
 	}
 	return options

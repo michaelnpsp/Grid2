@@ -108,6 +108,8 @@ L["Align Point"] = true
 L["Align this point on the indicator"] = true
 L["Align relative to"] = true
 L["Align my align point relative to"] = true
+L["Blink Threshold"] = true
+L["Blink Threshold at which to start blinking the status."] = true
 L["Create a new indicator."] = true
 L["Create a new location for an indicator."] = true
 L["Create a new status."] = true
@@ -170,6 +172,7 @@ L["Blink Frequency"] = true
 L["Adjust the frequency of the Blink effect."] = true
 
 L["Color"] = true
+L["Color %d"] = true
 L["Color for %s."] = true
 L["Color Charmed Unit"] = true
 L["Color Units that are charmed."] = true
