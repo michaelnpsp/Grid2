@@ -406,7 +406,7 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 	local status, options
 
 	for _, name in ipairs{
-		"aggro", "heals", "lowmana", "target", "voice",
+		"aggro", "heals", "target", "voice",
 		"debuff-Magic", "debuff-Curse", "debuff-Disease", "debuff-Poison",
 	} do
 		status = Grid2.statuses[name]
@@ -415,14 +415,25 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 		end
 	end
 
+	status = Grid2.statuses.lowmana
+	if (status) then
+		options = MakeStatusColorOption(status)
+		options = MakeStatusThresholdOption(status, options)
+		Grid2Options:AddElement("status",  status, options)
+	end
+
 	status = Grid2.statuses.lowhealth
-	options = MakeStatusColorOption(status)
-	options = MakeStatusThresholdOption(status, options)
-	Grid2Options:AddElement("status",  status, options)
+	if (status) then
+		options = MakeStatusColorOption(status)
+		options = MakeStatusThresholdOption(status, options)
+		Grid2Options:AddElement("status",  status, options)
+	end
 
 	status = Grid2.statuses.healthdeficit
-	options = MakeStatusThresholdOption(status)
-	Grid2Options:AddElement("status",  status, options)
+	if (status) then
+		options = MakeStatusThresholdOption(status)
+		Grid2Options:AddElement("status",  status, options)
+	end
 
 	status = Grid2.statuses.classcolor
 	options = MakeStatusClassColorOptions()
