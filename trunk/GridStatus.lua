@@ -17,8 +17,8 @@ function status:RegisterIndicator(indicator)
 	local enabled = next(self.indicators)
 	self.indicators[indicator] = true
 	if not enabled then
-		self:OnEnable()
 		self.enabled = true
+		self:OnEnable()
 	end
 end
 
@@ -27,8 +27,8 @@ function status:UnregisterIndicator(indicator)
 	self.indicators[indicator] = nil
 	local enabled = next(self.indicators)
 	if not enabled then
-		self:OnDisable()
 		self.enabled = nil
+		self:OnDisable()
 	end
 end
 
