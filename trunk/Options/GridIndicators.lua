@@ -222,6 +222,13 @@ local function AddBarIndicatorOptions(Bar)
 	Grid2Options:AddElement("indicator", Bar, options)
 end
 
+local function AddBorderIndicatorOptions(Border)
+	local options = {}
+	Grid2Options:AddIndicatorStatusOptions(Border, options)
+
+	Grid2Options:AddElement("indicator", Border, options)
+end
+
 local function AddIconIndicatorOptions(Icon)
 	local options = {
 		iconsize = {
@@ -425,6 +432,8 @@ function Grid2Options:AddSetupIndicatorsOptions(setup, reset)
 		AddBarIndicatorOptions(Grid2.indicators[indicatorKey])
 		AddBarColorIndicatorOptions(Grid2.indicators[indicatorKey.."-color"])
 	end
+
+	AddBorderIndicatorOptions(Grid2.indicators.border)
 
 	Grid2Options:RegisterIndicators(indicators.square, "square", L["Square"], Grid2.CreateSquareIndicator, AddSquareIndicatorOptions)
 	Grid2Options:RegisterIndicators(indicators.icon, "icon", L["Icon"], Grid2.CreateIconIndicator, AddIconIndicatorOptions)
