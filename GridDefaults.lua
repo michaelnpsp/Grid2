@@ -303,13 +303,13 @@ end
 local handlerArray = {}
 function Grid2:UpdateColorHandler(status)
 	local profile = status.db.profile
-	local colorCount = profile.colorCount
+	local colorCount = profile.colorCount or 1
 
 	wipe(handlerArray)
 	handlerArray[1] = "return function (self, unit)"
 	local index = 2
 	local color
-	if colorCount > 1 then
+	if (colorCount > 1) then
 		handlerArray[index] = " local count = self:GetCount(unit)"
 		index = index + 1
 		for i = 1, colorCount - 1 do
@@ -330,14 +330,14 @@ end
 
 function Grid2:SetupAuraDebuffColorHandler(status, info)
 	local colorCount = (#info - 1) / 3
-	if colorCount <= 0 then
+	if (colorCount <= 0) then
 		local name = info[1]
 		self:Print("Invalid number of colors for debuff %s", name)
 		return
 	end
 
 	local handler = "return function (self, unit)"
-	if colorCount > 1 then
+	if (colorCount > 1) then
 		handler = handler.." local count = self:GetCount(unit)"
 		for i = 1, colorCount - 1 do
 			handler = handler.. ("if count == %d then return %s, %s, %s end"):format(unpack(info, i * 3 - 1, (i + 1) * 3 - 2))

@@ -6,9 +6,11 @@ do
 	local frame
 	local count = 0
 	local function Frame_OnEvent(self, event, unit)
-		if event ~= "UNIT_MANA" or UnitPowerType(unit) == 0 then
+		if (event ~= "UNIT_MANA" or UnitPowerType(unit) == 0) then
 			if Mana.enabled then Mana:UpdateIndicators(unit) end
-			if LowMana.enabled then LowMana:UpdateIndicators(unit) end
+			if (LowMana.enabled) then
+				LowMana:UpdateIndicators(unit)
+			end
 		end
 	end
 	function EnableManaFrame(enable)
@@ -61,7 +63,6 @@ end
 
 Grid2:RegisterStatus(Mana, { "percent" })
 
-local LowMana = Grid2.statusPrototype:new("lowmana")
 
 LowMana.defaultDB = {
 	profile = {
