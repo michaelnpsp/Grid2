@@ -178,6 +178,13 @@ local function AddTextIndicatorOptions(Text)
 	Grid2Options:AddElement("indicator", Text, options)
 end
 
+local function AddAlphaIndicatorOptions(status)
+	local options = {}
+	Grid2Options:AddIndicatorStatusOptions(status, options)
+
+	Grid2Options:AddElement("indicator", status, options)
+end
+
 local function AddBarIndicatorOptions(Bar)
 	local options = {
 		orientation = {
@@ -222,11 +229,11 @@ local function AddBarIndicatorOptions(Bar)
 	Grid2Options:AddElement("indicator", Bar, options)
 end
 
-local function AddBorderIndicatorOptions(Border)
+local function AddBorderIndicatorOptions(status)
 	local options = {}
-	Grid2Options:AddIndicatorStatusOptions(Border, options)
+	Grid2Options:AddIndicatorStatusOptions(status, options)
 
-	Grid2Options:AddElement("indicator", Border, options)
+	Grid2Options:AddElement("indicator", status, options)
 end
 
 local function AddIconIndicatorOptions(Icon)
@@ -433,6 +440,7 @@ function Grid2Options:AddSetupIndicatorsOptions(setup, reset)
 		AddBarColorIndicatorOptions(Grid2.indicators[indicatorKey.."-color"])
 	end
 
+	AddAlphaIndicatorOptions(Grid2.indicators.alpha)
 	AddBorderIndicatorOptions(Grid2.indicators.border)
 
 	Grid2Options:RegisterIndicators(indicators.square, "square", L["Square"], Grid2.CreateSquareIndicator, AddSquareIndicatorOptions)
