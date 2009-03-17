@@ -201,7 +201,6 @@ end
 
 -- spellName: spellId or localized spellName
 function Grid2:CreateBuffStatus(spellName, mine, ...)
-	local a
 	if (type(spellName) == "number") then
 		spellName = GetSpellInfo(spellName)
 	end
