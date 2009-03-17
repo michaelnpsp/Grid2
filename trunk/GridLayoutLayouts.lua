@@ -277,31 +277,31 @@ Grid2Layout:AddLayout(L["By Class"], {
 		groupFilter = "WARRIOR",
 	},
 	[2] = {
-		groupFilter = "PRIEST",
+		groupFilter = "DEATHKNIGHT",
 	},
 	[3] = {
-		groupFilter = "DRUID",
-	},
-	[4] = {
 		groupFilter = "PALADIN",
 	},
+	[4] = {
+		groupFilter = "DRUID",
+	},
 	[5] = {
-		groupFilter = "SHAMAN",
-	},
-	[6] = {
-		groupFilter = "MAGE",
-	},
-	[7] = {
-		groupFilter = "WARLOCK",
-	},
-	[8] = {
-		groupFilter = "HUNTER",
-	},
-	[9] = {
 		groupFilter = "ROGUE",
 	},
+	[6] = {
+		groupFilter = "SHAMAN",
+	},
+	[7] = {
+		groupFilter = "PRIEST",
+	},
+	[8] = {
+		groupFilter = "MAGE",
+	},
+	[9] = {
+		groupFilter = "WARLOCK",
+	},
 	[10] = {
-		groupFilter = "DEATHKNIGHT",
+		groupFilter = "HUNTER",
 	},
 })
 
@@ -315,31 +315,31 @@ Grid2Layout:AddLayout(L["By Class w/Pets"], {
 		groupFilter = "WARRIOR",
 	},
 	[2] = {
-		groupFilter = "PRIEST",
+		groupFilter = "DEATHKNIGHT",
 	},
 	[3] = {
-		groupFilter = "DRUID",
-	},
-	[4] = {
 		groupFilter = "PALADIN",
 	},
+	[4] = {
+		groupFilter = "DRUID",
+	},
 	[5] = {
-		groupFilter = "SHAMAN",
-	},
-	[6] = {
-		groupFilter = "MAGE",
-	},
-	[7] = {
-		groupFilter = "WARLOCK",
-	},
-	[8] = {
-		groupFilter = "HUNTER",
-	},
-	[9] = {
 		groupFilter = "ROGUE",
 	},
+	[6] = {
+		groupFilter = "SHAMAN",
+	},
+	[7] = {
+		groupFilter = "PRIEST",
+	},
+	[8] = {
+		groupFilter = "MAGE",
+	},
+	[9] = {
+		groupFilter = "WARLOCK",
+	},
 	[10] = {
-		groupFilter = "DEATHKNIGHT",
+		groupFilter = "HUNTER",
 	},
 	[11] = {
 		type = "raidpet",

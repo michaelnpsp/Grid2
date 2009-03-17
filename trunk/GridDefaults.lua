@@ -1,6 +1,4 @@
-function Grid2:MakeDefaultSetup(setup)
-	local class = select(2, UnitClass("player"))
-
+function Grid2:MakeDefaultSetup(setup, class)
 	if (not setup) then
 		setup = {}
 	end
@@ -347,11 +345,11 @@ function Grid2:SetupAuraDebuffColorHandler(status, info)
 	status.GetColor = loadstring(handler)()
 end
 
-function Grid2:SetupAuraStatusBuff(statusKey, info)
+function Grid2:SetupStatusAuraBuff(statusKey, info)
 	local status = self:CreateBuffStatus(unpack(info))
 	status.name = statusKey -- force name
 
-	self:RegisterStatus(status, { "color" })
+	self:RegisterStatus(status, { "color", "icon" })
 	self:UpdateColorHandler(status)
 	self:UpdateBlinkHandler(status)
 	return status
@@ -368,7 +366,7 @@ end
 
 function Grid2:SetupAuraStatus(setup)
 	for statusKey, info in pairs(setup.buffs) do
-		self:SetupAuraStatusBuff(statusKey, info)
+		self:SetupStatusAuraBuff(statusKey, info)
 	end
 	for statusKey, info in pairs(setup.debuffs) do
 		self:SetupAuraStatusDebuff(statusKey, info)
@@ -390,7 +388,8 @@ function Grid2:SetupStatus(setup)
 end
 
 function Grid2:Setup()
-	local setup = self:MakeDefaultSetup(self.db.profile.setup)
+	local class = select(2, UnitClass("player"))
+	local setup = self:MakeDefaultSetup(self.db.profile.setup, class)
 	self.db.profile.setup = setup
 
 	self:SetupIndicators(setup)
