@@ -29,7 +29,7 @@ function Grid2Options.SetStatusColor(info, r, g, b, a)
 	end
 end
 
-local function MakeStatusColorOption(status, options)
+function Grid2Options:MakeStatusColorOption(status, options)
 	local profile = status.db.profile
 	local colorCount = profile.colorCount or 1
 	options = options or {}
@@ -56,7 +56,7 @@ local function MakeStatusColorOption(status, options)
 	return options
 end
 
-local function MakeStatusThresholdOption(status, options)
+function Grid2Options:MakeStatusThresholdOption(status, options)
 	options = options or {}
 	options.threshold = {
 		type = "range",
@@ -77,7 +77,7 @@ local function MakeStatusThresholdOption(status, options)
 end
 
 
-local function MakeStatusBlinkThresholdOption(status, options)
+function Grid2Options:MakeStatusBlinkThresholdOption(status, options)
 	options = options or {}
 	options.blinkThresholdSpacer = {
 		type = "header",
@@ -262,21 +262,21 @@ local function setNewStatusBuffNameValue(info, buffName)
 end
 
 local function NewStatusBuff()
-	statusKey = getBuffKey(newStatusBuffName)
+	local statusKey = getBuffKey(newStatusBuffName)
 	if (statusKey) then
 		local data = {newStatusBuffName, true, 1, 1, 1,}
 
 		local buffs = Grid2.db.profile.setup.buffs
 		buffs[statusKey] = data
 
-		local status = Grid2:SetupAuraStatusBuff(statusKey, data)
+		local status = Grid2:SetupStatusAuraBuff(statusKey, data)
 		Grid2Options:AddAura("Buff", statusKey, unpack(data))
-		Grid2Options:AddElementSubType("status", "buff", status, MakeStatusColorOption(status))
+		Grid2Options:AddElementSubType("status", "buff", status, Grid2Options:MakeStatusColorOption(status))
 	end
 end
 
 local function NewStatusBuffDisabled()
-	statusKey = getBuffKey(newStatusBuffName)
+	local statusKey = getBuffKey(newStatusBuffName)
 	if (statusKey) then
 		local buffs = Grid2.db.profile.setup.buffs
 		if (not buffs[statusKey]) then
@@ -340,7 +340,7 @@ local function NewStatusDebuff()
 
 		local status = Grid2:SetupAuraStatusDebuff(statusKey, data)
 		Grid2Options:AddAura("Debuff", statusKey, unpack(data))
-		Grid2Options:AddElementSubType("status", "debuff", status, MakeStatusColorOption(status))
+		Grid2Options:AddElementSubType("status", "debuff", status, Grid2Options:MakeStatusColorOption(status))
 	end
 end
 
@@ -411,27 +411,27 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 	} do
 		status = Grid2.statuses[name]
 		if status then
-			Grid2Options:AddElement("status", status, MakeStatusColorOption(status))
+			Grid2Options:AddElement("status", status, Grid2Options:MakeStatusColorOption(status))
 		end
 	end
 
 	status = Grid2.statuses.lowmana
 	if (status) then
-		options = MakeStatusColorOption(status)
-		options = MakeStatusThresholdOption(status, options)
+		options = Grid2Options:MakeStatusColorOption(status)
+		options = Grid2Options:MakeStatusThresholdOption(status, options)
 		Grid2Options:AddElement("status",  status, options)
 	end
 
 	status = Grid2.statuses.lowhealth
 	if (status) then
-		options = MakeStatusColorOption(status)
-		options = MakeStatusThresholdOption(status, options)
+		options = Grid2Options:MakeStatusColorOption(status)
+		options = Grid2Options:MakeStatusThresholdOption(status, options)
 		Grid2Options:AddElement("status",  status, options)
 	end
 
 	status = Grid2.statuses.healthdeficit
 	if (status) then
-		options = MakeStatusThresholdOption(status)
+		options = Grid2Options:MakeStatusThresholdOption(status)
 		Grid2Options:AddElement("status",  status, options)
 	end
 
@@ -444,8 +444,8 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 	for statusKey, info in pairs(setup.buffs) do
 		local status = Grid2.statuses[statusKey] -- TODO: fix names more better.  Type should not get baked in.
 		if status then
-			options = MakeStatusColorOption(status)
-			options = MakeStatusBlinkThresholdOption(status, options)
+			options = Grid2Options:MakeStatusColorOption(status)
+			options = Grid2Options:MakeStatusBlinkThresholdOption(status, options)
 			Grid2Options:AddElementSubType("status", "buff", status, options)
 		end
 	end
@@ -455,8 +455,8 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 	for statusKey, info in pairs(setup.debuffs) do
 		local status = Grid2.statuses[statusKey] -- TODO: fix names more better.  Type should not get baked in.
 		if status then
-			options = MakeStatusColorOption(status)
-			options = MakeStatusBlinkThresholdOption(status, options)
+			options = Grid2Options:MakeStatusColorOption(status)
+			options = Grid2Options:MakeStatusBlinkThresholdOption(status, options)
 			Grid2Options:AddElementSubType("status", "debuff", status, options)
 		end
 	end
