@@ -2,9 +2,7 @@
 --I want to split the current <object>.name into <object>.<Object Type>Key (so indicatorKey, statusKey etc.) and <object>.name or maybe displayName which would be the possibly localized display name / renamed name / custom name someone typed in.
 --Fix health bar ordering / layering
 --Defaults system
---Grid2StatusGroupAura
 --Countdown
---Create auras and debuffs
 --buffs-raid
 --directly use location for indicators instead of grafting it on like right now
 --finish default set of indicators and renaming them
@@ -19,6 +17,10 @@
 --indicator
 	--create
 		--specify location up front
+	--delete
+	--rename
+--category
+	--create
 	--delete
 	--rename
 
