@@ -123,6 +123,11 @@ local function status_GetExpirationTime(self, unit)
 	return self.expirations[unit]
 end
 
+local function status_GetPercent(self, unit)
+	local color = self.db.profile.color1
+	return color.a
+end
+
 local function status_UpdateState(self, unit, auraName, iconTexture, count, duration, expiration)
 	if self.auraName == auraName then
 		self.states[unit] = true
@@ -247,6 +252,7 @@ function Grid2:CreateBuffStatus(spellName, mine, ...)
 	status.GetCount = status_GetCount
 	status.GetDuration = status_GetDuration
 	status.GetExpirationTime = status_GetExpirationTime
+	status.GetPercent = status_GetPercent
 	status.UpdateState = mine and status_UpdateStateMine or status_UpdateState
 	status.HasStateChanged = status_HasStateChanged
 
@@ -290,6 +296,7 @@ function Grid2:CreateDebuffStatus(spellName, mine)
 	status.GetCount = status_GetCount
 	status.GetDuration = status_GetDuration
 	status.GetExpirationTime = status_GetExpirationTime
+	status.GetPercent = status_GetPercent
 	status.UpdateState = status_UpdateState
 	status.HasStateChanged = status_HasStateChanged
 
