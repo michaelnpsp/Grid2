@@ -59,7 +59,9 @@ function Range:Grid_RangesUpdated()
 end
 
 function Range:OnDisable()
-	self.frame:Hide()
+	if (self.frame) then
+		self.frame:Hide()
+	end
 	self:UnregisterMessage("Grid_RangesUpdated")
 end
 
