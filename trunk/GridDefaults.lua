@@ -349,7 +349,7 @@ function Grid2:SetupStatusAuraBuff(statusKey, info)
 	local status = self:CreateBuffStatus(unpack(info))
 	status.name = statusKey -- force name
 
-	self:RegisterStatus(status, { "color", "icon" })
+	self:RegisterStatus(status, { "color", "icon", "percent" })
 	self:UpdateColorHandler(status)
 	self:UpdateBlinkHandler(status)
 	return status
@@ -360,7 +360,7 @@ function Grid2:SetupAuraStatusDebuff(statusKey, info)
 	status.name = statusKey -- force name
 
 	self:SetupAuraDebuffColorHandler(status, info)
-	self:RegisterStatus(status, { "color" })
+	self:RegisterStatus(status, { "color", "icon", "percent" })
 	return status
 end
 
