@@ -287,7 +287,7 @@ local function AddSquareIndicatorOptions(Square)
 end
 
 local function AddBarColorIndicatorOptions(BarColor)
-	Grid2Options:AddElement("indicator", BarColor, {
+	local options = {
 		invert = {
 			type = "toggle",
 			order = 12,
@@ -301,7 +301,9 @@ local function AddBarColorIndicatorOptions(BarColor)
 				Grid2Frame:WithAllFrames(function (f) BarColor:Update(f, f.unit) end)
 			end,
 		},
-	})
+	}
+	Grid2Options:AddIndicatorStatusOptions(BarColor, options)
+	Grid2Options:AddElement("indicator", BarColor, options)
 end
 
 
