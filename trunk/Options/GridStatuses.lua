@@ -203,17 +203,26 @@ local function MakeStatusClassColorOptions()
 end
 
 
-
-function Grid2Options:GetStatusValues(indicator)
-	local statusValues = {}
+-- For a given indicator fill in and return
+-- statusAvailable - available statuses that are not currently used
+-- create or recycle as needed
+function Grid2Options:GetAvailableStatusValues(indicator, statusAvailable)
+	statusAvailable = statusAvailable or {}
+	wipe(statusAvailable)
 
 	for statusKey, status in Grid2:IterateStatuses() do
 		if (Grid2:IsCompatiblePair(indicator, status)) then
-			statusValues[statusKey] = status.name
+			statusAvailable[statusKey] = status.name
 		end
 	end
 
-	return statusValues
+	local statusKey
+	for _, status in ipairs(indicator.statuses) do
+		statusKey = status.name
+		statusAvailable[statusKey] = nil
+	end
+
+	return statusAvailable
 end
 
 function Grid2Options:RegisterIndicatorStatus(indicator, status)
