@@ -1,6 +1,7 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 local media = LibStub("LibSharedMedia-3.0", true)
 
+local Grid2Options = Grid2Options
 
 -- List of indicator types that can be created
 local newIndicatorTypes = {}
@@ -25,9 +26,20 @@ function Grid2Options:RegisterIndicators(setupList, indicatorTypeKey, name, func
 	end
 end
 
+-- Wrapper for indicator:SetStatusPriority that sets priority in setup as well
+function Grid2Options:SetStatusPriority(indicator, status, priority)
+	local indicatorKey = indicator.name
+	local statusPriorities = Grid2.db.profile.setup.status[indicatorKey]
+	local statusKey = status.name
+	statusPriorities[statusKey] = priority
+
+	indicator:SetStatusPriority(status, priority)
+end
+
 
 function Grid2Options.GetIndicatorStatus(info, statusKey)
 	local indicator = info.arg
+	statusKey = statusKey or info[# info]
 
 	for key, status in Grid2:IterateStatuses() do
 		if (key == statusKey) then
@@ -37,6 +49,31 @@ function Grid2Options.GetIndicatorStatus(info, statusKey)
 
 	return false
 end
+
+function Grid2Options.SetIndicatorStatusCurrent(info, value)
+	local indicator = info.arg
+	local statusKey = info[# info]
+
+	for key, status in Grid2:IterateStatuses() do
+		if (key == statusKey) then
+			if (value) then
+				indicator:RegisterStatus(status, 99)
+				Grid2Options:RegisterIndicatorStatus(indicator, status)
+			else
+				indicator:UnregisterStatus(status)
+				Grid2Options:UnregisterIndicatorStatus(indicator, status)
+			end
+			Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
+			Grid2Frame:ResetAllFrames()
+			Grid2Frame:UpdateAllFrames()
+
+			local parentOption = info.options.args.indicator.args[indicator.name].args.statusesCurrent
+			wipe(parentOption.args)
+			Grid2Options:AddIndicatorCurrentStatusOptions(indicator, parentOption.args)
+		end
+	end
+end
+--/dump Grid2Options.options.Grid2.args.indicator.args.alpha
 
 function Grid2Options.SetIndicatorStatus(info, statusKey, value)
 	local indicator = info.arg
@@ -53,18 +90,134 @@ function Grid2Options.SetIndicatorStatus(info, statusKey, value)
 			Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
 			Grid2Frame:ResetAllFrames()
 			Grid2Frame:UpdateAllFrames()
+
+			local parentOption = info.options.args.indicator.args[indicator.name].args.statusesCurrent
+			wipe(parentOption.args)
+			Grid2Options:AddIndicatorCurrentStatusOptions(indicator, parentOption.args)
 		end
 	end
 end
 
+local function StatusShiftUp(info, indicator, lowerStatus)
+	for index, status in ipairs(indicator.statuses) do
+		if (lowerStatus == status) then
+			local newIndex = index - 1
+			if (newIndex > 0) then
+				local higherStatus = indicator.statuses[newIndex]
+				local higherPriority = indicator:GetStatusPriority(higherStatus)
+				local lowerPriority = indicator:GetStatusPriority(lowerStatus)
+--print("StatusShiftUp", lowerPriority, higherPriority, lowerStatus.name, higherStatus.name)
+				if (higherPriority == lowerPriority) then
+					if (higherPriority == 99) then
+						lowerPriority = lowerPriority - 1
+					else
+						higherPriority = higherPriority + 1
+					end
+				end
+--print("StatusShiftUp", lowerPriority, higherPriority, lowerStatus.name, higherStatus.name)
+				Grid2Options:SetStatusPriority(indicator, higherStatus, lowerPriority)
+				Grid2Options:SetStatusPriority(indicator, lowerStatus, higherPriority)
+
+				local parentOption = info.options.args.indicator.args[indicator.name].args.statusesCurrent
+				wipe(parentOption.args)
+				Grid2Options:AddIndicatorCurrentStatusOptions(indicator, parentOption.args)
+			end
+		end
+	end
+end
+
+local function StatusShiftDown(info, indicator, higherStatus)
+	for index, status in ipairs(indicator.statuses) do
+		if (higherStatus == status) then
+			local newIndex = index + 1
+			if (newIndex <= # indicator.statuses) then
+				local lowerStatus = indicator.statuses[newIndex]
+				local higherPriority = indicator:GetStatusPriority(higherStatus)
+				local lowerPriority = indicator:GetStatusPriority(lowerStatus)
+				if (higherPriority == lowerPriority) then
+					if (lowerPriority > 1) then
+						lowerPriority = lowerPriority - 1
+					else
+						higherPriority = higherPriority + 1
+					end
+				end
+--print("StatusShiftDown", lowerPriority, higherPriority, lowerStatus.name, higherStatus.name)
+				Grid2Options:SetStatusPriority(indicator, higherStatus, lowerPriority)
+				Grid2Options:SetStatusPriority(indicator, lowerStatus, higherPriority)
+
+				local parentOption = info.options.args.indicator.args[indicator.name].args.statusesCurrent
+				wipe(parentOption.args)
+				Grid2Options:AddIndicatorCurrentStatusOptions(indicator, parentOption.args)
+			end
+		end
+	end
+end
+
+function Grid2Options:AddIndicatorCurrentStatusOptions(indicator, options)
+	local statusKey, order
+	for index, status in ipairs(indicator.statuses) do
+		statusKey = status.name
+		order = 4 * index
+		options[statusKey] = {
+			type = "toggle",
+			order = order,
+			name = status.name,
+			desc = L["Select statuses to display with the indicator"],
+			get = Grid2Options.GetIndicatorStatus,
+			set = Grid2Options.SetIndicatorStatusCurrent,
+			arg = indicator,
+		}
+		options[statusKey .. "U"] = {
+		    type = "execute",
+			order = order + 1,
+			width = "half",
+		    name = L["+"],
+		    desc = L["Move the status higher in priority"],
+			icon = "Interface\\Buttons\\UI-MicroButton-Spellbook-Up",
+		    func = function (info)
+		    	StatusShiftUp(info, indicator, status)
+			end,
+			arg = indicator,
+		}
+		options[statusKey .. "D"] = {
+		    type = "execute",
+			order = order + 2,
+			width = "half",
+		    name = L["-"],
+		    desc = L["Move the status lower in priority"],
+			icon = "Interface\\Buttons\\UI-MicroButton-Spellbook-Down",
+		    func = function (info)
+		    	StatusShiftDown(info, indicator, status)
+			end,
+			arg = indicator,
+		}
+		options[statusKey .. "S"] = {
+			type = "header",
+			order = order + 3,
+			name = "",
+		}
+	end
+end
+
 function Grid2Options:AddIndicatorStatusOptions(indicator, options)
-	options.statuses = {
-	    type = 'multiselect',
-		order = 90,
-		name = L["Statuses"],
-		desc = L["Select statuses to display with the indicator"],
+	options.statusesCurrent = {
+		type = "group",
+		order = 100,
+		inline = true,
+		name = L["Current Statuses"],
+		desc = L["Current statuses of the indicator in order of priority"],
+		args = {},
+	}
+	Grid2Options:AddIndicatorCurrentStatusOptions(indicator, options.statusesCurrent.args)
+
+	options.statusesAvailable = {
+	    type = "multiselect",
+		order = 200,
+		name = L["Available Statuses"],
+		desc = L["Available statuses you may add to the indicator"],
 		values = function (info)
-			return Grid2Options:GetStatusValues(indicator)
+			local statusAvailable = Grid2Options:GetAvailableStatusValues(indicator)
+			return statusAvailable
 		end,
 		get = Grid2Options.GetIndicatorStatus,
 		set = Grid2Options.SetIndicatorStatus,

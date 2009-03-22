@@ -1,34 +1,54 @@
---Standardize the way buff and debuff Aura statuses get instantiated from info.
---I want to split the current <object>.name into <object>.<Object Type>Key (so indicatorKey, statusKey etc.) and <object>.name or maybe displayName which would be the possibly localized display name / renamed name / custom name someone typed in.
+--Bugs:
 --Fix health bar ordering / layering
+
+--Standardize the way buff and debuff Aura statuses get instantiated from info.
+--Split the current <object>.name into <object>.<Object Type>Key (so indicatorKey, statusKey etc.) and <object>.name or maybe displayName which would be the possibly localized display name / renamed name / custom name someone typed in.
 --Defaults system
---Countdown
---buffs-raid
 --directly use location for indicators instead of grafting it on like right now
 --finish default set of indicators and renaming them
---frame-level settings for indicators
 
+--TODO:
 --location
 	--relative
 --status
 	--create
 	--delete
 	--rename
+	--countdown
 --indicator
 	--create
 		--specify location up front
 	--delete
 	--rename
+	--priority editing for their statuses
+	--frame-level settings for indicators
 --category
 	--create
 	--delete
 	--rename
+--localization
+--individual setups
+	--class
+	--spec
 
---individual setups, not default
+--Ideas:
+--color picker
+	--show values
+	--web colors?
+	--drag & drop?
+--buffs-raid
+--group-swiftmend disable during swiftmend cooldown
 
 
-
-
+--Defaults:
+	--Setup
+		--Sets up the defaults (as in the metatable for AceDB)
+		--Queried values are instantiated from this if they do not exist (& thus user modified)
+		--Values are unaffected by a reload
+		--Values are a result of defaults set up by various plugins and modules
+	--Profile
+		--Actual values used by Grid2
+		--Changes survive reload
 
 --[[
 healing shaman goes something like this:
