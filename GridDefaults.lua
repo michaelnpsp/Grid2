@@ -373,11 +373,11 @@ function Grid2:SetupAuraStatus(setup)
 	end
 end
 
-function Grid2:SetupStatus(setup)
-	for indicatorName, configs in pairs(setup.status) do
-		local indicator = self.indicators[indicatorName]
+function Grid2:RegisterIndicatorStatuses(setup)
+	for indicatorKey, statusPriorities in pairs(setup.status) do
+		local indicator = self.indicators[indicatorKey]
 		if indicator then
-			for statusKey, priority in pairs(configs) do
+			for statusKey, priority in pairs(statusPriorities) do
 				local status = self.statuses[statusKey]
 				if status and tonumber(priority) then
 					indicator:RegisterStatus(status, priority)
@@ -394,11 +394,11 @@ function Grid2:Setup()
 
 	self:SetupIndicators(setup)
 	self:SetupAuraStatus(setup)
-	self:SetupStatus(setup)
+	self:RegisterIndicatorStatuses(setup)
 end
 
 --[[
-/dump Grid2.db.profile.setup.status
+/dump Grid2.db.profile.setup.status.alpha
 /dump Grid2.db.profile.setup.buffs
 /dump Grid2.statuses["buff-ArcaneIntellect"]
 --]]
