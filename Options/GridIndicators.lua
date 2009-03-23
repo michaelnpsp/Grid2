@@ -26,6 +26,14 @@ function Grid2Options:RegisterIndicators(setupList, indicatorTypeKey, name, func
 	end
 end
 
+function Grid2Options:UnregisterIndicator(indicatorKey)
+	local indicators = Grid2.db.profile.setup.indicators
+	indicators.square[indicatorKey] = nil
+	indicators.icon[indicatorKey] = nil
+	indicators.text[indicatorKey] = nil
+	Grid2Options:DeleteElement("indicator", indicatorKey)
+end
+
 -- Wrapper for indicator:SetStatusPriority that sets priority in setup as well
 function Grid2Options:SetStatusPriority(indicator, status, priority)
 	local indicatorKey = indicator.name
@@ -227,15 +235,19 @@ end
 
 
 local function DeleteIndicator(info)
---[[
-	local indicator = info.arg--.locationKey
-	local locations = Grid2.db.profile.setup.locations
-	locations[locationKey] = nil
+	local indicator = info.arg
+	local indicatorKey = indicator.name
 
+	--ToDo: Is this enough or does delete / create need to work multiple times for same indicatorKey?
+	for index, status in ipairs(indicator.statuses) do
+		indicator:UnregisterStatus(status)
+	end
+	Grid2Options:RegisterIndicatorLocation(indicatorKey, nil)
+
+	Grid2Frame:ResetAllFrames()
 	Grid2Frame:UpdateAllFrames()
-	local setup = Grid2.db.profile.setup
-	Grid2Options:AddSetupLocationOptions(setup, true)
---]]
+
+	Grid2Options:UnregisterIndicator(indicatorKey)
 end
 
 function Grid2Options:AddIndicatorDeleteOptions(indicator, options)
@@ -327,6 +339,7 @@ local function AddTextIndicatorOptions(Text)
 	end
 	Grid2Options:AddIndicatorLocationOptions(Text, options)
 	Grid2Options:AddIndicatorStatusOptions(Text, options)
+	Grid2Options:AddIndicatorDeleteOptions(Text, options)
 
 	Grid2Options:AddElement("indicator", Text, options)
 end
@@ -410,6 +423,7 @@ local function AddIconIndicatorOptions(Icon)
 	}
 	Grid2Options:AddIndicatorLocationOptions(Icon, options)
 	Grid2Options:AddIndicatorStatusOptions(Icon, options)
+	Grid2Options:AddIndicatorDeleteOptions(Icon, options)
 
 	Grid2Options:AddElement("indicator", Icon, options)
 end
@@ -435,6 +449,7 @@ local function AddSquareIndicatorOptions(Square)
 	}
 	Grid2Options:AddIndicatorLocationOptions(Square, options)
 	Grid2Options:AddIndicatorStatusOptions(Square, options)
+	Grid2Options:AddIndicatorDeleteOptions(Square, options)
 
 	Grid2Options:AddElement("indicator", Square, options)
 end
