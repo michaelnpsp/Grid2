@@ -80,6 +80,9 @@ L["TOPRIGHT"] = "右上"
 L["BOTTOMLEFT"] = "左下"
 L["BOTTOMRIGHT"] = "右下"
 
+L["Display status only if the buff is not active."] = "當缺少增益時提示。"
+L["Show if missing"] = "顯示缺少"
+
 L["Group Anchor"] = "隊伍錨點"
 L["Sets where groups are anchored relative to the layout frame."] = "設定佈局中隊伍的錨點。"
 L["Reset Position"] = "重置位置"

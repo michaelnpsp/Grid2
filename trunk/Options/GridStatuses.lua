@@ -71,6 +71,30 @@ function Grid2Options:MakeStatusThresholdOption(status, options)
 		end,
 		set = function (_, v)
 			status.db.profile.threshold = v
+			for unit in Grid2:IterateRoster(true) do
+				status:UpdateIndicators(unit)
+			end
+		end,
+	}
+	return options
+end
+
+
+function Grid2Options:MakeStatusMissingOption(status, options)
+	options = options or {}
+	options.threshold = {
+		type = "toggle",
+		name = L["Show if missing"],
+		desc = L["Display status only if the buff is not active."],
+		order = 110,
+		get = function ()
+			return status.db.profile.missing
+		end,
+		set = function (_, v)
+			status.db.profile.missing = v
+			for unit in Grid2:IterateRoster(true) do
+				status:UpdateIndicators(unit)
+			end
 		end,
 	}
 	return options
@@ -454,6 +478,7 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 		local status = Grid2.statuses[statusKey] -- TODO: fix names more better.  Type should not get baked in.
 		if status then
 			options = Grid2Options:MakeStatusColorOption(status)
+			options = Grid2Options:MakeStatusMissingOption(status, options)
 			options = Grid2Options:MakeStatusBlinkThresholdOption(status, options)
 			Grid2Options:AddElementSubType("status", "buff", status, options)
 		end
