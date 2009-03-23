@@ -93,17 +93,21 @@ local function status_Reset(self, unit)
 end
 
 local function status_IsActive(self, unit)
-	return self.states[unit]
+	if (self.db.profile.missing) then
+		return not self.states[unit]
+	else
+		return self.states[unit]
+	end
 end
 
 local GetTime = GetTime
 local function status_IsActiveBlink(self, unit)
 	if not self.states[unit] then
-		return
+		return self.db.profile.missing
 	elseif (self.expirations[unit] - GetTime()) < self.blinkThreshold then
 		return "blink"
 	else
-		return true
+		return not self.db.profile.missing
 	end
 end
 
@@ -191,7 +195,6 @@ function Grid2:UpdateBlinkHandler(status)
 	local blinkThreshold = profile.blinkThreshold
 
 	if (blinkThreshold) then
---print("UpdateBlinkHandler blinkThreshold", blinkThreshold)
 		status.blinkThreshold = blinkThreshold
 		status.IsActive = status_IsActiveBlink
 		AddTimeTracker(status, blinkThreshold)
@@ -227,7 +230,6 @@ function Grid2:CreateBuffStatus(spellName, mine, ...)
 	}
  	local colorCount = select('#', ...) / 3
  	status.defaultDB.profile.colorCount = colorCount
---print("CreateBuffStatus", spellName, mine, colorCount, ...)
  	for i = 1, colorCount, 1 do
  		local componentIndex = i * 3
  		local color = { r = (select((componentIndex - 2), ...)), g = (select((componentIndex - 1), ...)), b = (select((componentIndex), ...)), a = 1 }
