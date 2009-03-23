@@ -240,8 +240,7 @@ Grid2Layout:AddLayout(L["By Group 10 w/Pets"], {
 
 Grid2Layout:AddLayout(L["By Group 5"], {
 	meta = {
-		hraid = true,
-		raid = true,
+		party = true,
 		arena = true,
 	},
 	[1] = {
@@ -251,8 +250,7 @@ Grid2Layout:AddLayout(L["By Group 5"], {
 
 Grid2Layout:AddLayout(L["By Group 5 w/Pets"], {
 	meta = {
-		hraid = true,
-		raid = true,
+		party = true,
 		arena = true,
 	},
 	[1] = {
