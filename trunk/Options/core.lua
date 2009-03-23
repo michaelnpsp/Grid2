@@ -63,6 +63,14 @@ function Grid2Options:AddElement(type, element, extraOptions)
 	end
 end
 
+function Grid2Options:DeleteElement(type, elementKey)
+	local group = self.options.Grid2.args[type]
+	if not group then
+		return
+	end
+	group.args[elementKey] = nil
+end
+
 -- Adds meta options for the list of elements from AddElement
 -- If reset is true then discard the old options
 function Grid2Options:AddElementGroup(type, extraOptions, reset)
