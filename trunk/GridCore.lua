@@ -104,7 +104,13 @@ Grid2:SetDefaultModuleLibraries("AceEvent-3.0")
 
 function Grid2:InitializeElement(type, element)
 	if element.defaultDB and not element.db then
-		element.db = self.db:RegisterNamespace(type.."-"..element.name, element.defaultDB)
+		local name = type .. "-" .. element.name
+		if (self.db.children[name]) then
+			-- Hack in "UnregisterNamespace"
+			self.db.sv.namespaces[name] = nil
+			self.db.children[name] = nil
+		end
+		element.db = self.db:RegisterNamespace(name, element.defaultDB)
 	end
 	if Grid2Options then
 		Grid2Options:AddElement(type, element)
