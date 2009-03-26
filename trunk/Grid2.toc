@@ -53,6 +53,7 @@ GridFrame.lua
 GridLocation.lua
 GridIndicator.lua
 GridStatus.lua
+GridCategory.lua
 GridDefaults.lua
 
 modules.xml

@@ -9,6 +9,10 @@ function Grid2:MakeDefaultSetup(setup, class)
 	if (not setup.indicatorLocations) then
 		self:SetupDefaultIndicatorLocations(setup, class)
 	end
+	if (not setup.categories) then
+		setup.categories = {}
+		self:SetupDefaultIndicators(setup, class)
+	end
 	if (not setup.indicators) then
 		setup.indicators = {}
 		self:SetupDefaultIndicators(setup, class)
