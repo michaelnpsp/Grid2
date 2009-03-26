@@ -3,7 +3,6 @@ Grid2.locations = {}
 local location = {}
 
 function location:init(name)
-	LibStub("AceEvent-3.0"):Embed(self)
 	self.name = name
 end
 
