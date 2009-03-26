@@ -13,6 +13,7 @@ GridMedia.lua
 GridLocations.lua
 GridIndicators.lua
 GridStatuses.lua
+GridCategories.lua
 
 GridDefaults.lua
 

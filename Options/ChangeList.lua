@@ -38,7 +38,8 @@
 	--drag & drop?
 --buffs-raid
 --group-swiftmend disable during swiftmend cooldown
-
+--layout
+	--editable and reorderable
 
 --Defaults:
 	--Setup
