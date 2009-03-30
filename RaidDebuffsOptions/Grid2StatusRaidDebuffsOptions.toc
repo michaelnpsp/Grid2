@@ -1,0 +1,7 @@
+## Interface: 30000
+## Title: Grid2StatusRaidDebuffs Options
+## LoadOnDemand: 1
+## Dependencies: Grid2, Grid2StatusRaidDebuffs
+
+locales.xml
+Grid2StatusRaidDebuffsOptions.lua
