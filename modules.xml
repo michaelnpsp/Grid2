@@ -16,6 +16,7 @@
 <Script file="modules\StatusAggro.lua"/>
 <Script file="modules\StatusAuras.lua"/>
 <Script file="modules\StatusHeals.lua"/>
+<Script file="modules\StatusOffline.lua"/>
 <Script file="modules\StatusRange.lua"/>
 <Script file="modules\StatusVoiceComm.lua"/>
 

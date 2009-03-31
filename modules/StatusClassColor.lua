@@ -1,6 +1,7 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 
 local ClassColor = Grid2.statusPrototype:new("classcolor")
+local Charmed = Grid2.statusPrototype:new("charmed")
 
 ClassColor.defaultDB = {
 	profile = {
@@ -59,3 +60,48 @@ function ClassColor:GetColor(unit)
 end
 
 Grid2:RegisterStatus(ClassColor, { "color" })
+
+
+--TODO: Unify the callback registration?  What is better, single function callback with if statement dispatch or double callbacks?
+Charmed.defaultDB = {
+	profile = {
+		color1 = { r = 1, g = 0.1, b = 0.1, a = 1 },
+	}
+}
+
+function Charmed:OnEnable()
+	self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED", "UpdateUnit")
+	self:RegisterEvent("UNIT_PORTRAIT_UPDATE", "UpdateUnit")
+end
+
+function Charmed:UpdateUnit(_, unit)
+	self:UpdateIndicators(unit)
+end
+
+function Charmed:OnDisable()
+	self:UnregisterEvent("UNIT_CLASSIFICATION_CHANGED")
+	self:UnregisterEvent("UNIT_PORTRAIT_UPDATE")
+end
+
+function Charmed:IsActive(unit)
+	return UnitIsCharmed(unit)
+end
+
+function Charmed:GetColor(unit)
+	local color = self.db.profile.color1
+	return color.r, color.g, color.b, color.a
+end
+
+function Charmed:GetText(unit)
+	if (UnitIsCharmed(unit)) then
+		return L["Charmed"]
+	else
+		return nil
+	end
+end
+
+function Charmed:GetPercent(unit)
+	return UnitIsCharmed(unit) and 1 or self.db.profile.color1.a
+end
+
+Grid2:RegisterStatus(Charmed, { "color", "text", "percent" })
