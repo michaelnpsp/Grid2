@@ -104,6 +104,10 @@ L["center-right"] = "center-right"
 L["center-top"] = "center-top"
 L["center-bottom"] = "center-bottom"
 
+L["healing-impossible"] = "healing-impossible"
+L["healing-prevented"] = "healing-prevented"
+L["healing-reduced"] = "healing-reduced"
+
 L["<CharacterOnlyString>"] = true
 L["+"] = true
 L["-"] = true

@@ -448,6 +448,12 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 		end
 	end
 
+	status = Grid2.statuses.charmed
+	if (status) then
+		options = Grid2Options:MakeStatusColorOption(status)
+		Grid2Options:AddElement("status",  status, options)
+	end
+
 	status = Grid2.statuses.lowmana
 	if (status) then
 		options = Grid2Options:MakeStatusColorOption(status)
@@ -465,6 +471,12 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 	status = Grid2.statuses.healthdeficit
 	if (status) then
 		options = Grid2Options:MakeStatusThresholdOption(status)
+		Grid2Options:AddElement("status",  status, options)
+	end
+
+	status = Grid2.statuses.offline
+	if (status) then
+		options = Grid2Options:MakeStatusColorOption(status)
 		Grid2Options:AddElement("status",  status, options)
 	end
 
