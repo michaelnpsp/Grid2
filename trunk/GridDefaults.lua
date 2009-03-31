@@ -10,8 +10,7 @@ function Grid2:MakeDefaultSetup(setup, class)
 		self:SetupDefaultIndicatorLocations(setup, class)
 	end
 	if (not setup.categories) then
-		setup.categories = {}
-		self:SetupDefaultIndicators(setup, class)
+		self:SetupDefaultCategories(setup, class)
 	end
 	if (not setup.indicators) then
 		setup.indicators = {}
@@ -28,7 +27,15 @@ function Grid2:MakeDefaultSetup(setup, class)
 		self:SetupDebuffPriorities(setup, class)
 	end
 
-	return setup
+	return setup, class
+end
+
+function Grid2:SetupDefaultCategories(setup, class)
+	setup.categories = {
+		["healing-impossible"] = {death = 99, offline = 75, name = "healing-impossible"},
+		["healing-prevented"] = {name = "healing-prevented"},
+		["healing-reduced"] = {name = "healing-reduced"},
+	}
 end
 
 function Grid2:SetupDefaultLocations(setup, class)
@@ -90,8 +97,8 @@ end
 function Grid2:SetupDefaultStatus(setup, class)
 	setup.status["name"] = { healthdeficit = 90, name = 80, }
 	setup.status["name-color"] = { classcolor = 99 }
-	setup.status["text-down"] = { death = 99, heals = 80 }
-	setup.status["text-down-color"] = { death = 99, heals = 80 }
+	setup.status["text-down"] = { death = 99, heals = 80, offline = 75, charmed = 65 }
+	setup.status["text-down-color"] = { death = 99, heals = 80, offline = 75, charmed = 65 }
 
 	setup.status["bar-health"] = { health = 99 }
 	setup.status["bar-health-color"] = { classcolor = 99 }
@@ -108,7 +115,7 @@ function Grid2:SetupDefaultStatus(setup, class)
 	setup.status["corner-bottom-left"] = { aggro = 99 }
 	setup.status["corner-topright"] = { heals = 99 }
 
-	setup.status.alpha = { range = 99 }
+	setup.status.alpha = { death = 99, range = 98, offline = 97 }
 end
 
 function Grid2:SetupIndicatorStatus(setupIndicator, indicatorKey, statusKey, priority)
@@ -265,7 +272,13 @@ function Grid2:SetupDebuffPriorities(setup, class)
 		}
 	end
 	setup.status["corner-bottomright"] = debuffPriorities
-	setup.status["icon-center"] = debuffPriorities
+
+	if (debuffPriorities) then
+		local setupIndicator = setup.status
+		for statusKey, priority in pairs(debuffPriorities) do
+			self:SetupIndicatorStatus(setupIndicator, "icon-center", statusKey, priority)
+		end
+	end
 end
 
 function Grid2:SetupIndicators(setup)
@@ -392,8 +405,7 @@ function Grid2:RegisterIndicatorStatuses(setup)
 end
 
 function Grid2:Setup()
-	local class = select(2, UnitClass("player"))
-	local setup = self:MakeDefaultSetup(self.db.profile.setup, class)
+	local setup, class = self:MakeDefaultSetup(self.db.profile.setup, select(2, UnitClass("player")))
 	self.db.profile.setup = setup
 
 	self:SetupIndicators(setup)

@@ -143,6 +143,9 @@ function Grid2:OnInitialize()
 	for _, status in self:IterateStatuses() do
 		self:InitializeElement("status", status)
 	end
+	for _, category in self:IterateCategories() do
+		self:InitializeElement("category", category)
+	end
 
 	local media = LibStub("LibSharedMedia-3.0", true)
 	if media then

@@ -5,12 +5,6 @@ local LowHealth = Grid2.statusPrototype:new("lowhealth")
 local Death = Grid2.statusPrototype:new("death")
 local HealthDeficit = Grid2.statusPrototype:new("healthdeficit")
 
-Health.defaultDB = {
-	profile = {
-		deadAsFullHealth = true,
-	}
-}
-
 local UnitHealth = UnitHealth
 
 local function Frame_OnUnitHealthChanged(self, _, unit)
@@ -49,6 +43,12 @@ do
 		end
 	end
 end
+
+Health.defaultDB = {
+	profile = {
+		deadAsFullHealth = true,
+	}
+}
 
 function Health:OnEnable()
 	EnableHealthFrame(true)
@@ -113,6 +113,14 @@ function Death:IsActive(unit)
 	return UnitIsDeadOrGhost(unit)
 end
 
+function Death:GetColor(unit)
+	return 0.5, 0.5, 0.5, 1
+end
+
+function Death:GetPercent(unit)
+	return UnitIsDeadOrGhost(unit) and 1 or self.db.profile.color1.a
+end
+
 function Death:GetText(unit)
 	if UnitIsDead(unit) then
 		return L["DEAD"]
@@ -121,11 +129,7 @@ function Death:GetText(unit)
 	end
 end
 
-function Death:GetColor(unit)
-	return 0.5, 0.5, 0.5, 1
-end
-
-Grid2:RegisterStatus(Death, { "text", "color" })
+Grid2:RegisterStatus(Death, { "color", "percent", "text" })
 
 HealthDeficit.defaultDB = {
 	profile = {

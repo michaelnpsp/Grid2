@@ -1,6 +1,11 @@
 local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2", "enUS", true)
 if not L then return end
 
+--{{{ Actually used
+L["Border"] = true
+L["Charmed"] = true
+--}}}
+
 --{{{ GridCore
 L["Configure"] = true
 L["Configure Grid"] = true
@@ -11,7 +16,6 @@ L["Frame"] = true
 L["Options for GridFrame."] = true
 
 L["Indicators"] = true
-L["Border"] = true
 L["Health Bar"] = true
 L["Health Bar Color"] = true
 L["Center Text"] = true

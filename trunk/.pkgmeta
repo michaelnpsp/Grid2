@@ -24,3 +24,4 @@ move-folders:
 	Grid2/Options: Grid2Options
 	Grid2/Alert: Grid2Alert
 	Grid2/RaidDebuffs: Grid2StatusRaidDebuffs
+	Grid2/RaidDebuffsOptions: Grid2StatusRaidDebuffsOptions
