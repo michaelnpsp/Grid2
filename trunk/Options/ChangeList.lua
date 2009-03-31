@@ -52,6 +52,9 @@
 		--Changes survive reload
 
 --[[
+CopyTable() !!!
+
+
 healing shaman goes something like this:
 Frame is 60 x 50 with a single size 18 text, size 10 corners, and a size 20 icon, dark foreground with bright background
 Aggro - frame border, binary (no threat level coloring), priority 50

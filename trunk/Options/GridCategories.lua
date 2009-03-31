@@ -10,64 +10,6 @@ function Grid2Options:RegisterIndicatorCategory(indicatorKey, categoryKey)
 	Grid2.db.profile.setup.indicatorCategories[indicatorKey] = categoryKey
 end
 
-local categoryValues = {}
-function Grid2Options.GetCategoryValues(info)
-	local categories = Grid2.db.profile.setup.categories
-	wipe(categoryValues)
-
-	for categoryKey, category in pairs(categories) do
-		local name = L[category.name] or category.name
-		categoryValues[categoryKey] = name
-	end
-
-	return categoryValues
-end
-
-function Grid2Options.GetIndicatorCategory(info)
-	local indicatorKey = info.arg
-	local categoryKey = Grid2.db.profile.setup.indicatorCategories[indicatorKey]
-	return categoryKey
-end
-
-function Grid2Options.SetIndicatorCategory(info, value)
-	local indicatorKey = info.arg
-	Grid2Options:RegisterIndicatorCategory(indicatorKey, value)
-end
-
--- Translate db <--> dropdown menu
-local pointMap = {
-	TOPLEFT = "1",
-	LEFT = "2",
-	BOTTOMLEFT = "3",
-	TOP = "4",
-	CENTER = "5",
-	BOTTOM = "6",
-	TOPRIGHT = "7",
-	RIGHT = "8",
-	BOTTOMRIGHT = "9",
-	["1"] = "TOPLEFT",
-	["2"] = "LEFT",
-	["3"] = "BOTTOMLEFT",
-	["4"] = "TOP",
-	["5"] = "CENTER",
-	["6"] = "BOTTOM",
-	["7"] = "TOPRIGHT",
-	["8"] = "RIGHT",
-	["9"] = "BOTTOMRIGHT",
-}
-
-local pointValueList = {
-	["1"] = L["TOPLEFT"],
-	["2"] = L["LEFT"],
-	["3"] = L["BOTTOMLEFT"],
-	["4"] = L["TOP"],
-	["5"] = L["CENTER"],
-	["6"] = L["BOTTOM"],
-	["7"] = L["TOPRIGHT"],
-	["8"] = L["RIGHT"],
-	["9"] = L["BOTTOMRIGHT"],
-}
-
 local function getCategoryValue(info)
 	local categoryKey = info.arg.categoryKey
 	local category = info.arg.category
@@ -78,44 +20,6 @@ local function setCategoryValue(info, value)
 	local categoryKey = info.arg.categoryKey
 	local category = info.arg.category
 	category[info[# info]] = value
-	Grid2Frame:UpdateAllFrames()
-end
-
-local function getCategoryNameValue(info)
-	local categoryKey = info.arg.categoryKey
-	local category = info.arg.category
-	local defaultName = L[categoryKey]
-	local customName = category[info[# info]]
-	if (not customName and defaultName) then
-		return defaultName
-	else
-		return customName
-	end
-end
-
-local function setCategoryNameValue(info, customName)
-	local categoryKey = info.arg.categoryKey
-	local category = info.arg.category
-	local defaultName = L[categoryKey]
-	customName = Grid2Options:GetValidatedName(customName)
-	if (not defaultName or defaultName ~= customName) then
-		category[info[# info]] = customName
-	end
-	Grid2Frame:UpdateAllFrames()
-end
-
-local function getCategoryPointValue(info)
-	local categoryKey = info.arg.categoryKey
-	local category = info.arg.category
-	local point = category[info[# info]]
-	return pointMap[point]
-end
-
-local function setCategoryPointValue(info, value)
-	local categoryKey = info.arg.categoryKey
-	local category = info.arg.category
-	local point = pointMap[value]
-	category[info[# info]] = point
 	Grid2Frame:UpdateAllFrames()
 end
 
@@ -142,46 +46,6 @@ local function AddCategoryOptions(categoryKey, category)
 			set = setCategoryValue,
 			arg = passValue,
 		},
-		point = {
-		    type = 'select',
-			order = 73,
-			name = L["Align Point"],
-			desc = L["Align this point on the indicator"],
-		    values = pointValueList,
-			get = getCategoryPointValue,
-			set = setCategoryPointValue,
-			arg = passValue,
-		},
-		relPoint = {
-		    type = 'select',
-			order = 75,
-			name = L["Align relative to"],
-			desc = L["Align my align point relative to"],
-		    values = pointValueList,
-			get = getCategoryPointValue,
-			set = setCategoryPointValue,
-			arg = passValue,
-		},
-		x = {
-			type = "range",
-			order = 77,
-			name = L["X Offset"],
-			desc = L["X - Horizontal Offset"],
-			min = -50, max = 50, step = 1, bigStep = 1,
-			get = getCategoryValue,
-			set = setCategoryValue,
-			arg = passValue,
-		},
-		y = {
-			type = "range",
-			order = 79,
-			name = L["Y Offset"],
-			desc = L["Y - Vertical Offset"],
-			min = -50, max = 50, step = 1, bigStep = 1,
-			get = getCategoryValue,
-			set = setCategoryValue,
-			arg = passValue,
-		},
 		deleteHeader = {
 			type = "header",
 			order = 81,
@@ -196,6 +60,7 @@ local function AddCategoryOptions(categoryKey, category)
 		}
 	}
 
+--print("AddCategoryOptions", categoryKey, category.name)
 	Grid2Options:AddElement("category", category, options)
 end
 
@@ -284,4 +149,5 @@ function Grid2Options:AddSetupCategoryOptions(setup, reset)
 end
 
 Grid2Options:AddSetupCategoryOptions(Grid2.db.profile.setup)
+--/dump Grid2.db.profile.setup.categories
 
