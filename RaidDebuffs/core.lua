@@ -146,11 +146,16 @@ end)
 Grid2:RegisterStatus(status, { "icon" })
 
 local prev_MakeDefaultSetup = Grid2.MakeDefaultSetup
-function Grid2:MakeDefaultSetup(setup, class, ...)
-	prev_MakeDefaultSetup(self, setup, class, ...)
+function Grid2:MakeDefaultSetup(...)
+	local setup, class = prev_MakeDefaultSetup(self, ...)
 
 	local setupIndicator = setup.status
 	self:SetupIndicatorStatus(setupIndicator, "icon-center", "raid-debuffs", 1000)
 
---	self.indicators["icon-center"]:RegisterStatus(self.statuses["raid-debuffs"], 1000)
+	return setup, class
 end
+--[[
+/dump Grid2.db.profile.setup.status["icon-center"]
+/dump Grid2.db.profile.setup.status["corner-bottomright"]
+/dump Grid2.statuses["raid-debuffs"]
+--]]
