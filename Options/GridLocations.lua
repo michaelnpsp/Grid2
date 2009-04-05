@@ -270,7 +270,7 @@ local function AddLocationGroup(reset)
 			func = ResetLocations,
 		},
 	}
-	Grid2Options:AddElementGroup("location", options, reset)
+	Grid2Options:AddElementGroup("location", options, 70, reset)
 end
 
 

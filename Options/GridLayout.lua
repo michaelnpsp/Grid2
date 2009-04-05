@@ -4,6 +4,9 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 local ORDER_LAYOUT = 20
 local ORDER_DISPLAY = 30
 
+Grid2Layout.menuName = L["layout"]
+Grid2Layout.menuOrder = 20
+
 Grid2Options:AddModule("Grid2", "Grid2Layout", Grid2Layout, {
 	["display"] = {
 		type = "select",

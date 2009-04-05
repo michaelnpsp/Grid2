@@ -1,31 +1,47 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 local LG = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 
-function Grid2Options:GetCategory(categoryKey)
-	local category = Grid2.db.profile.setup.categories[categoryKey]
-	return category
+function Grid2Options:RegisterIndicatorCategory(indicatorKey, categoryKey)
+	Grid2.db.profile.setup.indicatorCategories[indicatorKey][categoryKey] = true
+	-- ToDo: replicate the statuses
 end
 
-function Grid2Options:RegisterIndicatorCategory(indicatorKey, categoryKey)
-	Grid2.db.profile.setup.indicatorCategories[indicatorKey] = categoryKey
+function Grid2Options:UnregisterIndicatorCategory(indicatorKey, categoryKey)
+	Grid2.db.profile.setup.indicatorCategories[indicatorKey][categoryKey] = nil
+	-- ToDo: remove the statuses
+end
+
+local function getCategoryNameValue(info)
+	local category = info.arg
+	local name = L[categoryKey.name] or categoryKey.name
+	return name
+end
+
+local function setCategoryNameValue(info, customName)
+	local category = info.arg
+	local name = L[categoryKey.name] or categoryKey.name
+	customName = Grid2Options:GetValidatedName(customName)
+	if (not name or name ~= customName) then
+		category.name = customName
+	end
+	Grid2Frame:UpdateAllFrames()
 end
 
 local function getCategoryValue(info)
-	local categoryKey = info.arg.categoryKey
-	local category = info.arg.category
+	local category = info.arg
 	return category[info[# info]]
 end
 
 local function setCategoryValue(info, value)
-	local categoryKey = info.arg.categoryKey
-	local category = info.arg.category
+	local category = info.arg
 	category[info[# info]] = value
 	Grid2Frame:UpdateAllFrames()
 end
 
 local function DeleteCategory(info)
-	local categoryKey = info.arg.categoryKey
-	local categories = Grid2.db.profile.setup.categories
+	local category = info.arg
+	local categoryKey = category.name
+	local categories = Grid2.db.account.categories
 	categories[categoryKey] = nil
 
 	Grid2Frame:UpdateAllFrames()
@@ -33,8 +49,177 @@ local function DeleteCategory(info)
 	Grid2Options:AddSetupCategoryOptions(setup, true)
 end
 
-local function AddCategoryOptions(categoryKey, category)
-	local passValue = {categoryKey = categoryKey, category = category}
+local function GetAvailableStatusValues(category, statusAvailable)
+	statusAvailable = statusAvailable or {}
+	wipe(statusAvailable)
+
+	for statusKey, status in Grid2:IterateStatuses() do
+		statusAvailable[statusKey] = status.name
+	end
+
+	local statusKey
+	for _, status in ipairs(category.statuses) do
+		statusKey = status.name
+		statusAvailable[statusKey] = nil
+	end
+
+	return statusAvailable
+end
+
+function Grid2Options.GetCategoryStatus(info, statusKey)
+	local category = info.arg
+
+	return category.priorities[statusKey]
+end
+
+function Grid2Options:RegisterCategoryStatus(category, status, priority)
+	category.priorities[status.name] = priority
+	category:RegisterStatus(status, priority)
+end
+
+function Grid2Options:UnregisterCategoryStatus(category, status)
+	category:UnregisterStatus(status)
+	category.priorities[status.name] = nil
+end
+
+function Grid2Options.SetCategoryStatusCurrent(info, value)
+	local category = info.arg
+	local statusKey = info[# info]
+
+	for key, status in Grid2:IterateStatuses() do
+		if (key == statusKey) then
+			Grid2Options:UnregisterCategoryStatus(category, status)
+			Grid2Frame:ResetAllFrames()
+			Grid2Frame:UpdateAllFrames()
+
+			local parentOption = info.options.args.category.args[category.name].args.statusesCurrent
+			wipe(parentOption.args)
+			Grid2Options:AddCategoryCurrentStatusOptions(category, parentOption.args)
+		end
+	end
+end
+
+function Grid2Options.SetCategoryStatus(info, statusKey, value)
+	local category = info.arg
+
+	for key, status in Grid2:IterateStatuses() do
+		if (key == statusKey) then
+			Grid2Options:RegisterCategoryStatus(category, status, 99)
+			Grid2Frame:ResetAllFrames()
+			Grid2Frame:UpdateAllFrames()
+
+			local parentOption = info.options.args.category.args[category.name].args.statusesCurrent
+			wipe(parentOption.args)
+			Grid2Options:AddCategoryCurrentStatusOptions(category, parentOption.args)
+		end
+	end
+end
+
+local function StatusShiftUp(object, lowerStatus)
+	for index, status in ipairs(object.statuses) do
+		if (lowerStatus == status) then
+			local newIndex = index - 1
+			if (newIndex > 0) then
+				local higherStatus = object.statuses[newIndex]
+				local higherPriority = object:GetStatusPriority(higherStatus)
+				local lowerPriority = object:GetStatusPriority(lowerStatus)
+--print("StatusShiftUp", lowerPriority, higherPriority, lowerStatus.name, higherStatus.name)
+				if (higherPriority == lowerPriority) then
+					if (higherPriority == 99) then
+						lowerPriority = lowerPriority - 1
+					else
+						higherPriority = higherPriority + 1
+					end
+				end
+--print("StatusShiftUp", lowerPriority, higherPriority, lowerStatus.name, higherStatus.name)
+				Grid2Options:SetStatusPriority(object, higherStatus, lowerPriority)
+				Grid2Options:SetStatusPriority(object, lowerStatus, higherPriority)
+				return true
+			end
+		end
+	end
+end
+
+local function StatusShiftDown(object, higherStatus)
+	for index, status in ipairs(object.statuses) do
+		if (higherStatus == status) then
+			local newIndex = index + 1
+			if (newIndex <= # object.statuses) then
+				local lowerStatus = object.statuses[newIndex]
+				local higherPriority = object:GetStatusPriority(higherStatus)
+				local lowerPriority = object:GetStatusPriority(lowerStatus)
+				if (higherPriority == lowerPriority) then
+					if (lowerPriority > 1) then
+						lowerPriority = lowerPriority - 1
+					else
+						higherPriority = higherPriority + 1
+					end
+				end
+--print("StatusShiftDown", lowerPriority, higherPriority, lowerStatus.name, higherStatus.name)
+				Grid2Options:SetStatusPriority(object, higherStatus, lowerPriority)
+				Grid2Options:SetStatusPriority(object, lowerStatus, higherPriority)
+				return true
+			end
+		end
+	end
+end
+
+function Grid2Options:AddCategoryCurrentStatusOptions(category, options)
+	local statusKey, order
+	for index, status in ipairs(category.statuses) do
+		statusKey = status.name
+		order = 4 * index
+		options[statusKey] = {
+			type = "toggle",
+			order = order,
+			name = status.name,
+			desc = L["Select statuses to display with the indicator"],
+			get = Grid2Options.GetCategoryStatus,
+			set = Grid2Options.SetCategoryStatusCurrent,
+			arg = category,
+		}
+		options[statusKey .. "U"] = {
+		    type = "execute",
+			order = order + 1,
+			width = "half",
+		    name = L["+"],
+		    desc = L["Move the status higher in priority"],
+			icon = "Interface\\Buttons\\UI-MicroButton-Spellbook-Up",
+		    func = function (info)
+		    	if (StatusShiftUp(category, status)) then
+					local parentOption = info.options.args.category.args[category.name].args.statusesCurrent
+					wipe(parentOption.args)
+					Grid2Options:AddCategoryCurrentStatusOptions(category, parentOption.args)
+				end
+			end,
+			arg = category,
+		}
+		options[statusKey .. "D"] = {
+		    type = "execute",
+			order = order + 2,
+			width = "half",
+		    name = L["-"],
+		    desc = L["Move the status lower in priority"],
+			icon = "Interface\\Buttons\\UI-MicroButton-Spellbook-Down",
+		    func = function (info)
+		    	if (StatusShiftDown(category, status)) then
+					local parentOption = info.options.args.category.args[category.name].args.statusesCurrent
+					wipe(parentOption.args)
+					Grid2Options:AddCategoryCurrentStatusOptions(category, parentOption.args)
+				end
+			end,
+			arg = category,
+		}
+		options[statusKey .. "S"] = {
+			type = "header",
+			order = order + 3,
+			name = "",
+		}
+	end
+end
+
+local function AddCategoryOptions(category)
+	local passValue = category
 	local options = {
 		name = {
 			type = "input",
@@ -57,10 +242,31 @@ local function AddCategoryOptions(categoryKey, category)
 		    name = L["Delete"],
 		    func = DeleteCategory,
 			arg = passValue,
+		},
+		statusesCurrent = {
+			type = "group",
+			order = 100,
+			inline = true,
+			name = L["Current Statuses"],
+			desc = L["Current statuses in order of priority"],
+			args = {},
+		},
+		statusesAvailable = {
+		    type = "multiselect",
+			order = 200,
+			name = L["Available Statuses"],
+			desc = L["Available statuses you may add"],
+			values = function (info)
+				local statusAvailable = GetAvailableStatusValues(category)
+				return statusAvailable
+			end,
+			get = Grid2Options.GetCategoryStatus,
+			set = Grid2Options.SetCategoryStatus,
+			arg = category,
 		}
 	}
+	Grid2Options:AddCategoryCurrentStatusOptions(category, options.statusesCurrent.args)
 
---print("AddCategoryOptions", categoryKey, category.name)
 	Grid2Options:AddElement("category", category, options)
 end
 
@@ -79,16 +285,17 @@ end
 local function NewCategory()
 	newCategoryName = Grid2Options:GetValidatedName(newCategoryName)
 	if (newCategoryName and newCategoryName ~= "") then
-		local category = {relIndicator = nil, point = "TOPLEFT", relPoint = "TOPLEFT", x = 0, y = 0, name = newCategoryName}
-		Grid2.db.profile.setup.categories[newCategoryName] = category
-		AddCategoryOptions(newCategoryName, category)
+		local categoryInfo = {name = newCategoryName, priorities = {}}
+		Grid2.db.account.categories[newCategoryName] = categoryInfo
+		local category = Grid2:CreateCategory(newCategoryName, categoryInfo.name, categoryInfo.priorities)
+		AddCategoryOptions(category)
 	end
 end
 
 local function NewCategoryDisabled()
 	newCategoryName = Grid2Options:GetValidatedName(newCategoryName)
 	if (newCategoryName and newCategoryName ~= "") then
-		local categories = Grid2.db.profile.setup.categories
+		local categories = Grid2.db.account.categories
 		if (not categories[newCategoryName]) then
 			return false
 		end
@@ -98,7 +305,7 @@ end
 
 function ResetCategories()
 	local setup = Grid2.db.profile.setup
-	Grid2:SetupDefaultCategories(setup)
+	Grid2:SetupDefaultCategories(Grid2.db.account)
 	Grid2Frame:UpdateAllFrames()
 	Grid2Options:AddSetupCategoryOptions(setup, true)
 end
@@ -135,19 +342,20 @@ local function AddCategoryGroup(reset)
 			func = ResetCategories,
 		},
 	}
-	Grid2Options:AddElementGroup("category", options, reset)
+	Grid2Options:AddElementGroup("category", options, 80, reset)
 end
 
 
 function Grid2Options:AddSetupCategoryOptions(setup, reset)
 	AddCategoryGroup(reset)
 
-	local categories = setup.categories
-	for key, category in pairs(categories) do
-		AddCategoryOptions(key, category)
+	for key, category in Grid2:IterateCategories() do
+		AddCategoryOptions(category)
 	end
 end
 
 Grid2Options:AddSetupCategoryOptions(Grid2.db.profile.setup)
---/dump Grid2.db.profile.setup.categories
+--[[
+/dump Grid2.db.account.categories
+--]]
 

@@ -56,6 +56,51 @@ function Grid2Options:MakeStatusColorOption(status, options)
 	return options
 end
 
+function Grid2Options:MakeStatusClassFilterOption(status, options)
+	options = options or {}
+	options.classFilter = {
+		type = "group",
+		order = 20,
+		name = L["Class Filter"],
+		desc = L["Threshold at which to activate the status."],
+		args = {},
+	}
+
+	local profile = status.db.profile
+	for _, type in ipairs{
+		"DEATHKNIGHT", "DRUID", "HUNTER", "MAGE", "PALADIN",
+		"PRIEST", "ROGUE", "SHAMAN", "WARLOCK", "WARRIOR",
+	} do
+		options.classFilter.args[type] = {
+			type = "toggle",
+			name = L[type],
+			desc = (L["Show on %s."]):format(L[type]),
+			get = function ()
+				return not (profile.classFilter and profile.classFilter[type])
+			end,
+			set = function (_, value)
+				local on = not value
+				if (on) then
+					if (not profile.classFilter) then
+						profile.classFilter = {}
+					end
+					profile.classFilter[type] = true
+				else
+					profile.classFilter[type] = nil
+					if (not next(profile.classFilter)) then
+						profile.classFilter = nil
+					end
+				end
+				for unit in Grid2:IterateRoster(true) do
+					status:UpdateIndicators(unit)
+				end
+			end,
+		}
+	end
+	return options
+end
+
+
 function Grid2Options:MakeStatusThresholdOption(status, options)
 	options = options or {}
 	options.threshold = {
@@ -202,13 +247,12 @@ local function MakeStatusClassColorOptions()
 	}
 	for _, type in ipairs{
 		LG["Beast"], LG["Demon"], LG["Humanoid"], LG["Elemental"],
-		"DRUID", "PALADIN", "MAGE",
-		"WARLOCK", "WARRIOR", "PRIEST",
-		"SHAMAN", "ROGUE", "HUNTER",
+		"DEATHKNIGHT", "DRUID", "HUNTER", "MAGE", "PALADIN",
+		"PRIEST", "ROGUE", "SHAMAN", "WARLOCK", "WARRIOR",
 	} do
 		options.colors.args[type] = {
 			type = "color",
-			name = (L["%s Color"]):format(type),
+			name = (L["%s Color"]):format(L[type]),
 			get = function ()
 				local c = profile.colors[type]
 				return c.r, c.g, c.b, c.a
@@ -304,7 +348,7 @@ local function NewStatusBuff()
 
 		local status = Grid2:SetupStatusAuraBuff(statusKey, data)
 		Grid2Options:AddAura("Buff", statusKey, unpack(data))
-		Grid2Options:AddElementSubType("status", "buff", status, Grid2Options:MakeStatusColorOption(status))
+		Grid2Options:AddElementSubType("status", "buff", status, Grid2Options:MakeStatusStandardBuffOptions(status))
 	end
 end
 
@@ -373,7 +417,7 @@ local function NewStatusDebuff()
 
 		local status = Grid2:SetupAuraStatusDebuff(statusKey, data)
 		Grid2Options:AddAura("Debuff", statusKey, unpack(data))
-		Grid2Options:AddElementSubType("status", "debuff", status, Grid2Options:MakeStatusColorOption(status))
+		Grid2Options:AddElementSubType("status", "debuff", status, Grid2Options:MakeStatusStandardDebuffOptions(status))
 	end
 end
 
@@ -430,7 +474,27 @@ local function AddStatusesGroup(reset)
 			func = ResetStatuses,
 		},
 	}
-	Grid2Options:AddElementGroup("status", options, reset)
+	Grid2Options:AddElementGroup("status", options, 60, reset)
+end
+
+
+--Package a standard set of options for buffs
+function Grid2Options:MakeStatusStandardBuffOptions(status, options)
+	options = options or {}
+	options = Grid2Options:MakeStatusColorOption(status)
+	options = Grid2Options:MakeStatusMissingOption(status, options)
+	options = Grid2Options:MakeStatusBlinkThresholdOption(status, options)
+	options = Grid2Options:MakeStatusClassFilterOption(status, options)
+	return options
+end
+
+--Package a standard set of options for debuffs
+function Grid2Options:MakeStatusStandardDebuffOptions(status, options)
+	options = options or {}
+	options = Grid2Options:MakeStatusColorOption(status)
+	options = Grid2Options:MakeStatusBlinkThresholdOption(status, options)
+	options = Grid2Options:MakeStatusClassFilterOption(status, options)
+	return options
 end
 
 
@@ -440,11 +504,19 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 
 	for _, name in ipairs{
 		"aggro", "heals", "target", "voice",
-		"debuff-Magic", "debuff-Curse", "debuff-Disease", "debuff-Poison",
 	} do
 		status = Grid2.statuses[name]
 		if status then
 			Grid2Options:AddElement("status", status, Grid2Options:MakeStatusColorOption(status))
+		end
+	end
+
+	for _, name in ipairs{
+		"debuff-Magic", "debuff-Curse", "debuff-Disease", "debuff-Poison",
+	} do
+		status = Grid2.statuses[name]
+		if status then
+			Grid2Options:AddElement("status", status, Grid2Options:MakeStatusStandardDebuffOptions(status))
 		end
 	end
 
@@ -488,10 +560,8 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 	Grid2Options:AddElementSubTypeGroup("status", "buff", options, reset)
 	for statusKey, info in pairs(setup.buffs) do
 		local status = Grid2.statuses[statusKey] -- TODO: fix names more better.  Type should not get baked in.
-		if status then
-			options = Grid2Options:MakeStatusColorOption(status)
-			options = Grid2Options:MakeStatusMissingOption(status, options)
-			options = Grid2Options:MakeStatusBlinkThresholdOption(status, options)
+		if (status) then
+			options = Grid2Options:MakeStatusStandardBuffOptions(status)
 			Grid2Options:AddElementSubType("status", "buff", status, options)
 		end
 	end
@@ -500,14 +570,13 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 	Grid2Options:AddElementSubTypeGroup("status", "debuff", options, reset)
 	for statusKey, info in pairs(setup.debuffs) do
 		local status = Grid2.statuses[statusKey] -- TODO: fix names more better.  Type should not get baked in.
-		if status then
-			options = Grid2Options:MakeStatusColorOption(status)
-			options = Grid2Options:MakeStatusBlinkThresholdOption(status, options)
+		if (status) then
+			options = Grid2Options:MakeStatusStandardDebuffOptions(status)
 			Grid2Options:AddElementSubType("status", "debuff", status, options)
 		end
 	end
 
-	Grid2Options:AddElement("status",  Grid2.statuses.health, {
+	Grid2Options:AddElement("status", Grid2.statuses.health, {
 		deadAsFullHealth = {
 			type = "toggle",
 			name = L["Show dead as having Full Health"],
@@ -520,7 +589,7 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 		},
 	})
 
-	Grid2Options:AddElement("status",  Grid2.statuses.range, {
+	Grid2Options:AddElement("status", Grid2.statuses.range, {
 		default = {
 			type = "range",
 			name = L["Default alpha"],
