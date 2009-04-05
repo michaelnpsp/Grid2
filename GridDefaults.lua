@@ -9,8 +9,13 @@ function Grid2:MakeDefaultSetup(setup, class)
 	if (not setup.indicatorLocations) then
 		self:SetupDefaultIndicatorLocations(setup, class)
 	end
-	if (not setup.categories) then
-		self:SetupDefaultCategories(setup, class)
+
+	if (not self.db.account) then
+		self.db.account = {}
+	end
+	if (not self.db.account.categories) then
+		self.db.account.categories = {}
+		self:SetupDefaultCategories(self.db.account.categories, class)
 	end
 	if (not setup.indicators) then
 		setup.indicators = {}
@@ -30,12 +35,25 @@ function Grid2:MakeDefaultSetup(setup, class)
 	return setup, class
 end
 
-function Grid2:SetupDefaultCategories(setup, class)
-	setup.categories = {
-		["healing-impossible"] = {death = 99, offline = 75, name = "healing-impossible"},
-		["healing-prevented"] = {name = "healing-prevented"},
-		["healing-reduced"] = {name = "healing-reduced"},
-	}
+
+local function SetupDefaultCategory(categories, categoryKey, categoryDefault)
+	if (not categories[categoryKey]) then
+		categories[categoryKey] = {priorities = {}}
+	end
+	local categoryInfo = categories[categoryKey]
+	categoryInfo.name = categoryDefault.name
+	local priorities = categoryInfo.priorities
+	wipe(priorities)
+	for statusKey, priority in pairs(categoryDefault.priorities) do
+		priorities[statusKey] = priority
+	end
+end
+
+-- Create the categories if necessary, otherwise reset the default ones only to their default values
+function Grid2:SetupDefaultCategories(categories, class)
+	SetupDefaultCategory(categories, "healing-impossible", {name = "healing-impossible", priorities = {death = 95, offline = 75}})
+	SetupDefaultCategory(categories, "healing-prevented", {name = "healing-prevented", priorities = {charmed = 65}})
+	SetupDefaultCategory(categories, "healing-reduced", {name = "healing-reduced", priorities = {}})
 end
 
 function Grid2:SetupDefaultLocations(setup, class)
@@ -315,6 +333,7 @@ function Grid2:SetupIndicators(setup)
 	end
 end
 
+
 local handlerArray = {}
 function Grid2:UpdateColorHandler(status)
 	local profile = status.db.profile
@@ -393,11 +412,32 @@ end
 function Grid2:RegisterIndicatorStatuses(setup)
 	for indicatorKey, statusPriorities in pairs(setup.status) do
 		local indicator = self.indicators[indicatorKey]
-		if indicator then
+		if (indicator) then
 			for statusKey, priority in pairs(statusPriorities) do
 				local status = self.statuses[statusKey]
-				if status and tonumber(priority) then
+				if (status and tonumber(priority)) then
 					indicator:RegisterStatus(status, priority)
+				end
+			end
+		end
+	end
+end
+
+
+function Grid2:CreateCategories(categories)
+	for categoryKey, categoryInfo in pairs(categories) do
+		self:CreateCategory(categoryKey, categoryInfo.name, categoryInfo.priorities)
+	end
+end
+
+function Grid2:RegisterCategoryStatuses(categories)
+	for categoryKey, categoryInfo in pairs(categories) do
+		local category = self.categories[categoryKey]
+		if (category) then
+			for statusKey, priority in pairs(categoryInfo.priorities) do
+				local status = self.statuses[statusKey]
+				if (status) then
+					category:RegisterStatus(status, priority)
 				end
 			end
 		end
@@ -411,10 +451,15 @@ function Grid2:Setup()
 	self:SetupIndicators(setup)
 	self:SetupAuraStatus(setup)
 	self:RegisterIndicatorStatuses(setup)
+
+	local categories = self.db.account.categories
+	self:CreateCategories(categories)
+	self:RegisterCategoryStatuses(categories)
 end
 
 --[[
 /dump Grid2.db.profile.setup.status.alpha
 /dump Grid2.db.profile.setup.buffs
+/dump Grid2.db.account
 /dump Grid2.statuses["buff-ArcaneIntellect"]
 --]]
