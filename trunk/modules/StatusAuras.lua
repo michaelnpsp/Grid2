@@ -93,7 +93,11 @@ local function status_Reset(self, unit)
 end
 
 local function status_IsActive(self, unit)
-	if (self.db.profile.missing) then
+	local profile = self.db.profile
+	if (profile.classFilter and profile.classFilter[select(2, UnitClass(unit))]) then
+		return nil
+	end
+	if (profile.missing) then
 		return not self.states[unit]
 	else
 		return self.states[unit]
@@ -102,12 +106,16 @@ end
 
 local GetTime = GetTime
 local function status_IsActiveBlink(self, unit)
+	local profile = self.db.profile
+	if (profile.classFilter and profile.classFilter[select(2, UnitClass(unit))]) then
+		return nil
+	end
 	if not self.states[unit] then
-		return self.db.profile.missing
+		return profile.missing
 	elseif (self.expirations[unit] - GetTime()) < self.blinkThreshold then
 		return "blink"
 	else
-		return not self.db.profile.missing
+		return not profile.missing
 	end
 end
 

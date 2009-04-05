@@ -2,11 +2,36 @@ Grid2.categories = {}
 
 local category = {}
 
-function category:init(name)
+function category:init(name, displayName, priorities)
+	self.statuses = {}
+	self.priorities = priorities
+	self.sortStatuses = function (a, b)
+		if (a == b) then
+			Grid2:Print(string.format("WARNING ! Status %s double registered", a.name))
+		end
+		return priorities[a.name] > priorities[b.name]
+	end
 	self.name = name
 end
 
-Grid2.locationPrototype = {
+function category:RegisterStatus(status, priority)
+	self.statuses[#self.statuses + 1] = status
+	table.sort(self.statuses, self.sortStatuses)
+end
+
+function category:UnregisterStatus(status)
+	if (not self.priorities[status.name]) then
+		return
+	end
+	for i, s in ipairs(self.statuses) do
+		if s == status then
+			table.remove(self.statuses, i)
+			break
+		end
+	end
+end
+
+Grid2.categoryPrototype = {
 	__index = category,
 	new = function (self, ...)
 		local e = setmetatable({}, self)
@@ -15,12 +40,15 @@ Grid2.locationPrototype = {
 	end,
 }
 
-function Grid2:RegisterCategory(category)
-	assert(not self.categories[category.name])
-	self.categories[category.name] = category
-	if self.db then
-		self:InitializeElement("category", category)
-	end
+function Grid2:RegisterCategory(categoryKey, category)
+	assert(not self.categories[categoryKey])
+	self.categories[categoryKey] = category
+end
+
+function Grid2:CreateCategory(categoryKey, displayName, priorities)
+	local category = self.categoryPrototype:new(categoryKey, displayName, priorities)
+	self:RegisterCategory(categoryKey, category)
+	return category
 end
 
 function Grid2:IterateCategories()

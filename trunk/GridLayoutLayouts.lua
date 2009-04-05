@@ -57,7 +57,7 @@ Grid2Layout:AddLayout(L["By Group 40"], {
 		pvp = true,
 	},
 	defaults = {
-		-- type = "raid", (can be "party", "partypet", "raid" or "raidpet")
+		-- type = "raid", (can be "party", "partypet", "raid", "raidpet", "spacer")
 		-- nameList = "",
 		-- groupFilter = "",
 		-- sortMethod = "INDEX", -- or "NAME"
