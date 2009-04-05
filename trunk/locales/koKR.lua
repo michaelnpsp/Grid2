@@ -1,6 +1,11 @@
 local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2", "koKR")
 if not L then return end
 
+--{{{ Actually used
+L["Border"] = "테두리"
+L["Charmed"] = "매혹"
+--}}}
+
 --{{{ GridCore
 L["Configure"] = "설정"
 L["Configure Grid"] = "Grid 옵션을 설정합니다."
@@ -11,7 +16,6 @@ L["Frame"] = "창"
 L["Options for GridFrame."] = "각 유닛 창의 표시를 위한 옵션을 설정합니다."
 
 L["Indicators"] = "지시기"
-L["Border"] = "테두리"
 L["Health Bar"] = "생명력 바"
 L["Health Bar Color"] = "생명력 바 색상"
 L["Center Text"] = "중앙 문자"
