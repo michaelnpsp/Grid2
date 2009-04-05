@@ -1,5 +1,19 @@
 ﻿local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2Options", "deDE")
 if not L then return end
 
+L["DEATHKNIGHT"] = "Todesritter"
+L["DRUID"] = "Druidin"
+L["HUNTER"] = "Jägerin"
+L["MAGE"] = "Magierin"
+L["PALADIN"] = "Paladin"
+L["PRIEST"] = "Priesterin"
+L["ROGUE"] = "Schurkin"
+L["SHAMAN"] = "Schamanin"
+L["WARLOCK"] = "Hexenmeisterin"
+L["WARRIOR"] = "Kriegerin"
+
+L["Class Filter"] = "Klassenfilter"
 L["Display status only if the buff is not active."] = "Zeigt den Status nur an, wenn der Stärkungszauber nicht aktiv ist."
 L["Show if missing"] = "Zeigen wenn es fehlt"
+L["Show on %s."] = "Zeige %s."
+L["Show status for the selected classes."] = "Zeigt den Status für die ausgwählte Klasse."

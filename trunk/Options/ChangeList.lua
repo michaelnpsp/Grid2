@@ -15,6 +15,7 @@
 	--delete
 	--rename
 	--countdown
+	--class filters
 --indicator
 	--create
 		--specify location up front

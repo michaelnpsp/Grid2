@@ -18,6 +18,7 @@ function Grid2Options:AddModule(parent, name, module, extraOptions)
 
 	local options = {
 		type = "group",
+		order = module.menuOrder or 400,
 		name = (module.menuName or module.name),
 		desc = L["Options for %s."]:format(module.name),
 		args = {},
@@ -72,14 +73,16 @@ function Grid2Options:DeleteElement(type, elementKey)
 end
 
 -- Adds meta options for the list of elements from AddElement
+-- Order < 100 is reserved for Grid elements
 -- If reset is true then discard the old options
-function Grid2Options:AddElementGroup(type, extraOptions, reset)
+function Grid2Options:AddElementGroup(type, extraOptions, order, reset)
 	if not extraOptions then return end
 
 	local group = self.options.Grid2.args[type]
 	if (reset or not group) then
 		group = {
 			type = "group",
+			order = order,
 			name = L[type] or type,
 			desc = L["Options for %s."]:format(type),
 			args = {},

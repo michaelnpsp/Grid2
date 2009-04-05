@@ -1,6 +1,8 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 
 local Grid2Blink = Grid2:GetModule("Grid2Blink")
+Grid2Blink.menuName = L["blink"]
+Grid2Blink.menuOrder = 300
 
 Grid2Options:AddModule("Grid2", "Grid2Blink", Grid2Blink, {
 	effect = {

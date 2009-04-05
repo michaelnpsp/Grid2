@@ -1,6 +1,9 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 --{{{  Grid2Frame AceOptions table
 
+Grid2Frame.menuName = L["frame"]
+Grid2Frame.menuOrder = 10
+
 Grid2Options:AddModule("Grid2", "Grid2Frame", Grid2Frame, {
 	["tooltip"] = {
 		type = "select",

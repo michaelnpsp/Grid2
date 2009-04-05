@@ -213,7 +213,7 @@ function Grid2Options:AddIndicatorStatusOptions(indicator, options)
 		order = 100,
 		inline = true,
 		name = L["Current Statuses"],
-		desc = L["Current statuses of the indicator in order of priority"],
+		desc = L["Current statuses in order of priority"],
 		args = {},
 	}
 	Grid2Options:AddIndicatorCurrentStatusOptions(indicator, options.statusesCurrent.args)
@@ -222,7 +222,7 @@ function Grid2Options:AddIndicatorStatusOptions(indicator, options)
 	    type = "multiselect",
 		order = 200,
 		name = L["Available Statuses"],
-		desc = L["Available statuses you may add to the indicator"],
+		desc = L["Available statuses you may add"],
 		values = function (info)
 			local statusAvailable = Grid2Options:GetAvailableStatusValues(indicator)
 			return statusAvailable
@@ -597,7 +597,7 @@ local function AddIndicatorsGroup(reset)
 			func = ResetIndicators,
 		},
 	}
-	Grid2Options:AddElementGroup("indicator", options, reset)
+	Grid2Options:AddElementGroup("indicator", options, 50, reset)
 end
 
 
