@@ -66,7 +66,7 @@ Grid2:RegisterStatus(Mana, { "percent" })
 
 LowMana.defaultDB = {
 	profile = {
-		threshold = 0.2,
+		threshold = 0.25,
 		color1 = { r = 0, g = 0, b = 1, a = 1 },
 	}
 }
