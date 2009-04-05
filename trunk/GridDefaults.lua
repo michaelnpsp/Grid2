@@ -76,10 +76,10 @@ end
 
 function Grid2:SetupDefaultIndicatorLocations(setup, class)
 	setup.indicatorLocations = {
-		["corner-topleft"] = "corner-top-left",
-		["corner-topright"] = "corner-top-right",
+		["corner-top-left"] = "corner-top-left",
+		["corner-top-right"] = "corner-top-right",
 		["corner-bottom-left"] = "corner-bottom-left",
-		["corner-bottomright"] = "corner-bottom-right",
+		["corner-bottom-right"] = "corner-bottom-right",
 		["side-bottom"] = "side-bottom",
 	}
 	if (class == "DRUID") then
@@ -94,9 +94,9 @@ function Grid2:SetupDefaultIndicators(setup, class)
 	}
 	setup.indicators.square = {
 		["corner-bottom-left"] = { 5, "BOTTOMLEFT", "BOTTOMLEFT", 1, 1 },
-		["corner-bottomright"] = { 5, "BOTTOMRIGHT", "BOTTOMRIGHT", -1, 1 },
-		["corner-topright"] = { 5, "TOPRIGHT", "TOPRIGHT", -1, -1 },
-		["corner-topleft"] = { 5, "TOPLEFT", "TOPLEFT", 1, -1 },
+		["corner-bottom-right"] = { 5, "BOTTOMRIGHT", "BOTTOMRIGHT", -1, 1 },
+		["corner-top-right"] = { 5, "TOPRIGHT", "TOPRIGHT", -1, -1 },
+		["corner-top-left"] = { 5, "TOPLEFT", "TOPLEFT", 1, -1 },
 		["side-bottom"] = { 5, "BOTTOM", "BOTTOM", 0, 1 },
 	}
 	setup.indicators.icon = {
@@ -115,7 +115,7 @@ end
 function Grid2:SetupDefaultStatus(setup, class)
 	setup.status["name"] = { healthdeficit = 90, name = 80, }
 	setup.status["name-color"] = { classcolor = 99 }
-	setup.status["text-down"] = { death = 99, heals = 80, offline = 75, charmed = 65 }
+	setup.status["text-down"] = { death = 95, offline = 75, charmed = 65, heals = 50 }
 	setup.status["text-down-color"] = { death = 99, heals = 80, offline = 75, charmed = 65 }
 
 	setup.status["bar-health"] = { health = 99 }
@@ -131,7 +131,6 @@ function Grid2:SetupDefaultStatus(setup, class)
 	}
 
 	setup.status["corner-bottom-left"] = { aggro = 99 }
-	setup.status["corner-topright"] = { heals = 99 }
 
 	setup.status.alpha = { death = 99, range = 98, offline = 97 }
 end
@@ -159,10 +158,10 @@ function Grid2:SetupDefaultAuras(setup, class)
 		setup.buffs["buff-Thorns"] = { 467, false, .2, 1, .2, }
 		setup.buffs["buff-WildGrowth"] = { 53248, true, .4, .9, .4, }
 
-		self:SetupIndicatorStatus(setupIndicator, "corner-topleft", "buff-Lifebloom", 99)
+		self:SetupIndicatorStatus(setupIndicator, "corner-top-left", "buff-Lifebloom", 99)
 		self:SetupIndicatorStatus(setupIndicator, "regrowth", "buff-Regrowth", 99)
-		self:SetupIndicatorStatus(setupIndicator, "corner-topright", "buff-Rejuv", 99)
-		self:SetupIndicatorStatus(setupIndicator, "corner-bottomright", "buff-AbolishPoison", 99)
+		self:SetupIndicatorStatus(setupIndicator, "corner-top-right", "buff-Rejuv", 99)
+		self:SetupIndicatorStatus(setupIndicator, "corner-bottom-right", "buff-AbolishPoison", 99)
 		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-WildGrowth", 69)
 	elseif (class == "MAGE") then
 		setup.buffs["buff-AmplifyMagic"] = { 33946, false, 1, 1, 1, }
@@ -189,7 +188,7 @@ function Grid2:SetupDefaultAuras(setup, class)
 
 		setup.debuffs["debuff-Forbearance"] = { 25771, 1, 0, 0, }
 
-		self:SetupIndicatorStatus(setupIndicator, "corner-topleft", "debuff-Forbearance", 99)
+		self:SetupIndicatorStatus(setupIndicator, "corner-top-left", "debuff-Forbearance", 99)
 	elseif (class == "PRIEST") then
 		setup.buffs["buff-Grace"] = { 47516, true, 1, 1, 1, }
 		setup.buffs["buff-DivineAegis"] = { 47509, false, 1, 1, 1, }
@@ -198,15 +197,15 @@ function Grid2:SetupDefaultAuras(setup, class)
 		setup.buffs["buff-PowerWordShield"] = { 17, false, 1, 1, 1, }
 		setup.buffs["buff-Renew"] = { 139, true, 1, 1, 1, }
 
-		self:SetupIndicatorStatus(setupIndicator, "corner-bottomright", "buff-PrayerOfMending", 99)
-		self:SetupIndicatorStatus(setupIndicator, "corner-bottomright", "buff-PowerWordShield", 89)
-		self:SetupIndicatorStatus(setupIndicator, "corner-bottomright", "buff-DivineAegis", 79)
-		self:SetupIndicatorStatus(setupIndicator, "corner-bottomright", "buff-InnerFire", 79)
-		self:SetupIndicatorStatus(setupIndicator, "corner-topleft", "buff-Renew", 99)
+		self:SetupIndicatorStatus(setupIndicator, "corner-top-left", "buff-Renew", 99)
+		self:SetupIndicatorStatus(setupIndicator, "corner-top-right", "buff-PrayerOfMending", 99)
+		self:SetupIndicatorStatus(setupIndicator, "corner-bottom-right", "buff-PowerWordShield", 99)
+		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-DivineAegis", 79)
+		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-InnerFire", 79)
 
 		setup.debuffs["debuff-WeakenedSoul"] = { 6788, 1, 0, 0, }
 
-		self:SetupIndicatorStatus(setupIndicator, "corner-topleft", "debuff-WeakenedSoul", 89)
+		self:SetupIndicatorStatus(setupIndicator, "corner-bottom-right", "debuff-WeakenedSoul", 89)
 	elseif (class == "ROGUE") then
 		setup.buffs["buff-Evasion"] = { 5277, true, 0.1, 0.1, 1, }
 
@@ -216,9 +215,9 @@ function Grid2:SetupDefaultAuras(setup, class)
 		setup.buffs["buff-Earthliving"] = { 51945, false, 1, 1, 1, }
 		setup.buffs["buff-EarthShield"] = { 974, false, 1, 1, 1, }
 
-		self:SetupIndicatorStatus(setupIndicator, "corner-bottomright", "buff-Riptide", 99)
-		self:SetupIndicatorStatus(setupIndicator, "corner-bottomright", "buff-Earthliving", 99)
-		self:SetupIndicatorStatus(setupIndicator, "corner-bottomright", "buff-EarthShield", 99)
+		self:SetupIndicatorStatus(setupIndicator, "corner-bottom-right", "buff-Riptide", 99)
+		self:SetupIndicatorStatus(setupIndicator, "corner-bottom-right", "buff-Earthliving", 99)
+		self:SetupIndicatorStatus(setupIndicator, "corner-bottom-right", "buff-EarthShield", 99)
 	elseif (class == "WARLOCK") then
 		setup.buffs["buff-ShadowWard"] = { 6229, true, 1, 1, 1, }
 		setup.buffs["buff-SoulLink"] = { 19028, true, 1, 1, 1, }
@@ -239,8 +238,8 @@ function Grid2:SetupDefaultAuras(setup, class)
 		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-BattleShout", 89)
 		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-CommandingShout", 79)
 		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-Vigilance", 99)
-		self:SetupIndicatorStatus(setupIndicator, "corner-bottomright", "buff-LastStand", 99)
-		self:SetupIndicatorStatus(setupIndicator, "corner-bottomright", "buff-ShieldWall", 89)
+		self:SetupIndicatorStatus(setupIndicator, "corner-bottom-right", "buff-LastStand", 99)
+		self:SetupIndicatorStatus(setupIndicator, "corner-bottom-right", "buff-ShieldWall", 89)
 	end
 end
 
@@ -250,15 +249,13 @@ function Grid2:SetupDebuffPriorities(setup, class)
 		debuffPriorities = {
 			["debuff-Curse"] = 90,
 			["debuff-Poison"] = 80,
-			["debuff-Magic"] = 40,
-			["debuff-Disease"] = 30,
 		}
-	elseif class == "PRIEST" then
+	elseif class == "MAGE" then
 		debuffPriorities = {
-			["debuff-Disease"] = 90,
-			["debuff-Magic"] = 80,
-			["debuff-Curse"] = 40,
-			["debuff-Poison"] = 30,
+			["debuff-Curse"] = 90,
+			["debuff-Disease"] = 40,
+			["debuff-Magic"] = 30,
+			["debuff-Poison"] = 20,
 		}
 	elseif class == "PALADIN" then
 		debuffPriorities = {
@@ -267,19 +264,17 @@ function Grid2:SetupDebuffPriorities(setup, class)
 			["debuff-Poison"] = 70,
 			["debuff-Curse"] = 40,
 		}
+	elseif class == "PRIEST" then
+		debuffPriorities = {
+			["debuff-Disease"] = 90,
+			["debuff-Magic"] = 80,
+		}
 	elseif class == "SHAMAN" then
 		debuffPriorities = {
 			["debuff-Poison"] = 90,
 			["debuff-Disease"] = 80,
 			["debuff-Curse"] = 50,
 			["debuff-Magic"] = 30,
-		}
-	elseif class == "MAGE" then
-		debuffPriorities = {
-			["debuff-Curse"] = 90,
-			["debuff-Disease"] = 40,
-			["debuff-Magic"] = 30,
-			["debuff-Poison"] = 20,
 		}
 	else
 		debuffPriorities = {
@@ -289,7 +284,7 @@ function Grid2:SetupDebuffPriorities(setup, class)
 			["debuff-Disease"] = 10,
 		}
 	end
-	setup.status["corner-bottomright"] = debuffPriorities
+	setup.status["corner-bottom-right"] = debuffPriorities
 
 	if (debuffPriorities) then
 		local setupIndicator = setup.status
