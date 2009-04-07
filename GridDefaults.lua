@@ -113,15 +113,16 @@ function Grid2:SetupDefaultIndicators(setup, class)
 end
 
 function Grid2:SetupDefaultStatus(setup, class)
+	local setupIndicator = setup.status
 	setup.status["name"] = { healthdeficit = 90, name = 80, }
 	setup.status["name-color"] = { classcolor = 99 }
 	setup.status["text-down"] = { death = 95, offline = 75, charmed = 65, heals = 50 }
 	setup.status["text-down-color"] = { death = 99, heals = 80, offline = 75, charmed = 65 }
 
 	setup.status["bar-health"] = { health = 99 }
-	setup.status["bar-health-color"] = { classcolor = 99 }
+	setup.status["bar-health-color"] = { classcolor = 90 }
 	setup.status["bar-heals"] = { heals = 99 }
-	setup.status["bar-heals-color"] = { heals = 99 }
+	setup.status["bar-heals-color"] = { heals = 89 }
 
 	setup.status.border = {
 		target = 99,
@@ -132,7 +133,9 @@ function Grid2:SetupDefaultStatus(setup, class)
 
 	setup.status["corner-bottom-left"] = { aggro = 99 }
 
-	setup.status.alpha = { death = 99, range = 98, offline = 97 }
+	self:SetupIndicatorStatus(setupIndicator, "alpha", "death", 99)
+	self:SetupIndicatorStatus(setupIndicator, "alpha", "range", 98)
+	self:SetupIndicatorStatus(setupIndicator, "alpha", "offline", 97)
 end
 
 function Grid2:SetupIndicatorStatus(setupIndicator, indicatorKey, statusKey, priority)
@@ -186,7 +189,7 @@ function Grid2:SetupDefaultAuras(setup, class)
 		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-DivineIntervention", 99)
 		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-LightsBeacon", 99)
 
-		setup.debuffs["debuff-Forbearance"] = { 25771, 1, 0, 0, }
+		setup.debuffs["debuff-Forbearance"] = { 25771, false, 1, 0, 0, }
 
 		self:SetupIndicatorStatus(setupIndicator, "corner-top-left", "debuff-Forbearance", 99)
 	elseif (class == "PRIEST") then
@@ -203,7 +206,7 @@ function Grid2:SetupDefaultAuras(setup, class)
 		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-DivineAegis", 79)
 		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-InnerFire", 79)
 
-		setup.debuffs["debuff-WeakenedSoul"] = { 6788, 1, 0, 0, }
+		setup.debuffs["debuff-WeakenedSoul"] = { 6788, false, 1, 0, 0, }
 
 		self:SetupIndicatorStatus(setupIndicator, "corner-bottom-right", "debuff-WeakenedSoul", 89)
 	elseif (class == "ROGUE") then
@@ -455,6 +458,7 @@ end
 --[[
 /dump Grid2.db.profile.setup.status.alpha
 /dump Grid2.db.profile.setup.buffs
+/dump Grid2.db.profile.setup.auraGroupDebuffs
 /dump Grid2.db.account
 /dump Grid2.statuses["buff-ArcaneIntellect"]
 --]]
