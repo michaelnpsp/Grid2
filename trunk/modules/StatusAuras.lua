@@ -269,7 +269,7 @@ function Grid2:CreateBuffStatus(spellName, mine, ...)
 	return status -- status is not registered yet
 end
 
-function Grid2:CreateDebuffStatus(spellName, mine)
+function Grid2:CreateDebuffStatus(spellName, mine, ...)
 	if (type(spellName) == "number") then
 		spellName = GetSpellInfo(spellName)
 	end
@@ -283,6 +283,18 @@ function Grid2:CreateDebuffStatus(spellName, mine)
 	status.counts = {}
 	status.expirations = {}
 	status.durations = {}
+
+	status.defaultDB = {
+		profile = {
+		}
+	}
+ 	local colorCount = select('#', ...) / 3
+ 	status.defaultDB.profile.colorCount = colorCount
+ 	for i = 1, colorCount, 1 do
+ 		local componentIndex = i * 3
+ 		local color = { r = (select((componentIndex - 2), ...)), g = (select((componentIndex - 1), ...)), b = (select((componentIndex), ...)), a = 1 }
+ 		status.defaultDB.profile[("color" .. i)] = color
+ 	end
 
 	function status:OnEnable()
 		EnableAuraFrame(true)
