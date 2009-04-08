@@ -1,3 +1,10 @@
+Grid2.healers = {
+	DRUID = true,
+	PALADIN = true,
+	PRIEST = true,
+	SHAMAN = true,
+}
+
 function Grid2:MakeDefaultSetup(setup, class)
 	if (not setup) then
 		setup = {}
@@ -116,8 +123,8 @@ function Grid2:SetupDefaultStatus(setup, class)
 	local setupIndicator = setup.status
 	setup.status["name"] = { healthdeficit = 90, name = 80, }
 	setup.status["name-color"] = { classcolor = 99 }
-	setup.status["text-down"] = { death = 95, offline = 75, charmed = 65, heals = 50 }
-	setup.status["text-down-color"] = { death = 99, heals = 80, offline = 75, charmed = 65 }
+	setup.status["text-down"] = { ["feign-death"] = 97, death = 95, offline = 93, charmed = 65, heals = 50 }
+	setup.status["text-down-color"] = { ["feign-death"] = 97, death = 95, offline = 93, charmed = 65, heals = 50 }
 
 	setup.status["bar-health"] = { health = 99 }
 	setup.status["bar-health-color"] = { classcolor = 90 }
@@ -149,6 +156,7 @@ end
 
 function Grid2:SetupDefaultAuras(setup, class)
 	local setupIndicator = setup.status
+
 	if (class == "DEATHKNIGHT") then
 		setup.buffs["buff-HornOfWinter"] = {57330, true, 0.1, 0.1, 1, 1}
 
