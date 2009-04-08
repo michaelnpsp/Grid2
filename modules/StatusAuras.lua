@@ -215,15 +215,12 @@ function Grid2:UpdateBlinkHandler(status)
 	end
 end
 
--- spellName: spellId or localized spellName
-function Grid2:CreateBuffStatus(spellName, mine, ...)
+
+function Grid2:CreateStatusCommon(status, spellName, mine, ...)
 	if (type(spellName) == "number") then
 		spellName = GetSpellInfo(spellName)
 	end
 	assert(type(spellName) == "string")
-
-	StatusCount = StatusCount + 1
-	local status = Grid2.statusPrototype:new("buff-"..StatusCount)-- what the...?
 
 	status.auraName = spellName
 	status.states = {}
@@ -236,13 +233,29 @@ function Grid2:CreateBuffStatus(spellName, mine, ...)
 		profile = {
 		}
 	}
- 	local colorCount = select('#', ...) / 3
+ 	local colorCount = select('#', ...) / 4
+	assert(colorCount * 4 == select('#', ...), "Color parameters need to be multiples of r,g,b,a")
  	status.defaultDB.profile.colorCount = colorCount
  	for i = 1, colorCount, 1 do
- 		local componentIndex = i * 3
- 		local color = { r = (select((componentIndex - 2), ...)), g = (select((componentIndex - 1), ...)), b = (select((componentIndex), ...)), a = 1 }
+ 		local componentIndex = i * 4
+ 		local color = { r = (select((componentIndex - 3), ...)), g = (select((componentIndex - 2), ...)), b = (select((componentIndex - 1), ...)), a = (select((componentIndex), ...)) }
  		status.defaultDB.profile[("color" .. i)] = color
  	end
+
+	status.Reset = status_Reset
+	status.GetIcon = status_GetIcon
+	status.GetCount = status_GetCount
+	status.GetDuration = status_GetDuration
+	status.GetExpirationTime = status_GetExpirationTime
+	status.GetPercent = status_GetPercent
+	status.HasStateChanged = status_HasStateChanged
+end
+
+-- spellName: spellId or localized spellName
+function Grid2:CreateBuffStatus(spellName, mine, ...)
+	StatusCount = StatusCount + 1
+	local status = Grid2.statusPrototype:new("buff-" .. StatusCount)
+	self:CreateStatusCommon(status, spellName, mine, ...)
 
 	function status:OnEnable()
 		EnableAuraFrame(true)
@@ -254,47 +267,19 @@ function Grid2:CreateBuffStatus(spellName, mine, ...)
 		BuffHandlers[self] = nil
 	end
 
-	status.Reset = status_Reset
-	if type(mine) == "number" then
+	if (type(mine) == "number") then
 		status.defaultDB.profile.blinkThreshold = mine
 	end
-	status.GetIcon = status_GetIcon
-	status.GetCount = status_GetCount
-	status.GetDuration = status_GetDuration
-	status.GetExpirationTime = status_GetExpirationTime
-	status.GetPercent = status_GetPercent
+
 	status.UpdateState = mine and status_UpdateStateMine or status_UpdateState
-	status.HasStateChanged = status_HasStateChanged
 
 	return status -- status is not registered yet
 end
 
 function Grid2:CreateDebuffStatus(spellName, mine, ...)
-	if (type(spellName) == "number") then
-		spellName = GetSpellInfo(spellName)
-	end
-	assert(type(spellName) == "string")
-
 	StatusCount = StatusCount + 1
-	local status = Grid2.statusPrototype:new("debuff-"..StatusCount)
-	status.auraName = spellName
-	status.states = {}
-	status.textures = {}
-	status.counts = {}
-	status.expirations = {}
-	status.durations = {}
-
-	status.defaultDB = {
-		profile = {
-		}
-	}
- 	local colorCount = select('#', ...) / 3
- 	status.defaultDB.profile.colorCount = colorCount
- 	for i = 1, colorCount, 1 do
- 		local componentIndex = i * 3
- 		local color = { r = (select((componentIndex - 2), ...)), g = (select((componentIndex - 1), ...)), b = (select((componentIndex), ...)), a = 1 }
- 		status.defaultDB.profile[("color" .. i)] = color
- 	end
+	local status = Grid2.statusPrototype:new("debuff-" .. StatusCount)
+	self:CreateStatusCommon(status, spellName, mine, ...)
 
 	function status:OnEnable()
 		EnableAuraFrame(true)
@@ -306,21 +291,15 @@ function Grid2:CreateDebuffStatus(spellName, mine, ...)
 		DebuffHandlers[self] = nil
 	end
 
-	status.Reset = status_Reset
-	if type(mine) == "number" then
+	if (type(mine) == "number") then
 		status.blinkThreshold = mine
 		status.IsActive = status_IsActiveBlink
 		AddTimeTracker(status, mine)
 	else
 		status.IsActive = status_IsActive
 	end
-	status.GetIcon = status_GetIcon
-	status.GetCount = status_GetCount
-	status.GetDuration = status_GetDuration
-	status.GetExpirationTime = status_GetExpirationTime
-	status.GetPercent = status_GetPercent
+
 	status.UpdateState = status_UpdateState
-	status.HasStateChanged = status_HasStateChanged
 
 	return status -- status is not registered yet
 end
