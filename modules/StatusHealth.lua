@@ -3,6 +3,7 @@ local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 local Health = Grid2.statusPrototype:new("health")
 local LowHealth = Grid2.statusPrototype:new("lowhealth")
 local Death = Grid2.statusPrototype:new("death")
+local FeignDeath = Grid2.statusPrototype:new("feign-death")
 local HealthDeficit = Grid2.statusPrototype:new("healthdeficit")
 
 local UnitHealth = UnitHealth
@@ -11,6 +12,7 @@ local function Frame_OnUnitHealthChanged(self, _, unit)
 	if Health.enabled then Health:UpdateIndicators(unit) end
 	if LowHealth.enabled then LowHealth:UpdateIndicators(unit) end
 	if Death.enabled then Death:UpdateIndicators(unit) end
+	if FeignDeath.enabled then FeignDeath:UpdateIndicators(unit) end
 	if HealthDeficit.enabled then HealthDeficit:UpdateIndicators(unit) end
 end
 
@@ -44,6 +46,8 @@ do
 	end
 end
 
+
+
 Health.defaultDB = {
 	profile = {
 		deadAsFullHealth = true,
@@ -75,6 +79,8 @@ end
 
 Grid2:RegisterStatus(Health, { "percent", "text" })
 
+
+
 LowHealth.defaultDB = {
 	profile = {
 		threshold = 0.4,
@@ -101,6 +107,14 @@ end
 
 Grid2:RegisterStatus(LowHealth, { "color" })
 
+
+
+Death.defaultDB = {
+	profile = {
+		color1 = { r = .5, g = .5, b = .5, a = 1 },
+	}
+}
+
 function Death:OnEnable()
 	EnableHealthFrame(true)
 end
@@ -114,11 +128,13 @@ function Death:IsActive(unit)
 end
 
 function Death:GetColor(unit)
-	return 0.5, 0.5, 0.5, 1
+	local color = self.db.profile.color1
+	return color.r, color.g, color.b, color.a
 end
 
 function Death:GetPercent(unit)
-	return UnitIsDeadOrGhost(unit) and 1 or self.db.profile.color1.a
+	local color = self.db.profile.color1
+	return UnitIsDeadOrGhost(unit) and 1 or color.a
 end
 
 function Death:GetText(unit)
@@ -130,6 +146,47 @@ function Death:GetText(unit)
 end
 
 Grid2:RegisterStatus(Death, { "color", "percent", "text" })
+
+
+
+FeignDeath.defaultDB = {
+	profile = {
+		color1 = { r = .5, g = .5, b = .5, a = 1 },
+	}
+}
+
+function FeignDeath:OnEnable()
+	EnableHealthFrame(true)
+end
+
+function FeignDeath:OnDisable()
+	EnableHealthFrame(false)
+end
+
+function FeignDeath:IsActive(unit)
+	return UnitIsFeignDeath(unit)
+end
+
+function FeignDeath:GetColor(unit)
+	local color = self.db.profile.color1
+	return color.r, color.g, color.b, color.a
+end
+
+function FeignDeath:GetPercent(unit)
+	return UnitIsFeignDeath(unit) and 1 or self.db.profile.color1.a
+end
+
+function FeignDeath:GetText(unit)
+	if UnitIsDead(unit) then
+		return L["DEAD"]
+	elseif UnitIsGhost(unit) then
+		return L["GHOST"]
+	end
+end
+
+Grid2:RegisterStatus(FeignDeath, { "color", "percent", "text" })
+
+
 
 HealthDeficit.defaultDB = {
 	profile = {
