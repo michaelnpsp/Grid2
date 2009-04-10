@@ -189,11 +189,11 @@ function Grid2:SetupDefaultAuras(setup, class)
 		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-HornOfWinter", 99)
 	elseif (class == "DRUID") then
 		setup.buffs["buff-AbolishPoison"] = {2893, true, 1, .5, .1, 1}
-		setup.buffs["buff-Lifebloom"] = {33763, 2, 0, .5, 0, 1, 0, .7, 0, 1, .2, 1, .2, 1}
-		setup.buffs["buff-Rejuv"] = {774, 2, 1, .2, 1, 1}
-		setup.buffs["buff-Regrowth"] = {8936, 2, .2, 1, .2, 1}
-		setup.buffs["buff-Thorns"] = {467, false, .2, 1, .2, 1}
-		setup.buffs["buff-WildGrowth"] = {53248, true, .4, .9, .4, 1}
+		setup.buffs["buff-Lifebloom"] = {33763, 2, 0, .5, 0, 1, .5, .8, .5, 1, 1, 1, 1, 1}
+		setup.buffs["buff-Rejuv"] = {774, 2, .5, 0, .3, 1}
+		setup.buffs["buff-Regrowth"] = {8936, 2, 0, .5, 0, 1}
+		setup.buffs["buff-Thorns"] = {467, false, .2, .05, .05, 1}
+		setup.buffs["buff-WildGrowth"] = {53248, true, .2, .9, .2, 1}
 
 		self:SetupIndicatorStatus(setupIndicator, "corner-top-left", "buff-Lifebloom", 99)
 		self:SetupIndicatorStatus(setupIndicator, "regrowth", "buff-Regrowth", 99)
@@ -201,8 +201,8 @@ function Grid2:SetupDefaultAuras(setup, class)
 		self:SetupIndicatorStatus(setupIndicator, "corner-bottom-right", "buff-AbolishPoison", 99)
 		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-WildGrowth", 69)
 	elseif (class == "MAGE") then
-		setup.buffs["buff-AmplifyMagic"] = {33946, false, 1, 1, 1, 1}
-		setup.buffs["buff-DampenMagic"] = {33944, false, 1, 1, 1, 1}
+		setup.buffs["buff-AmplifyMagic"] = {33946, false, 0, 0, 1, 1}
+		setup.buffs["buff-DampenMagic"] = {33944, false, .4, .2, 1, 1}
 		setup.buffs["buff-FocusMagic"] = {54646, false, .11, .22, .33, 1}
 		setup.buffs["buff-IceArmor"] = {7302, true, 1, 1, 1, 1}
 		setup.buffs["buff-IceBarrier"] = {11426, true, 1, 1, 1, 1}
