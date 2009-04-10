@@ -188,7 +188,7 @@ function Grid2:SetupDefaultAuras(setup, class)
 
 		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-HornOfWinter", 99)
 	elseif (class == "DRUID") then
-		setup.buffs["buff-AbolishPoison"] = {2893, true, 1, .5, .1, 1}
+		setup.buffs["buff-AbolishPoison"] = {2893, true, .9, 1, .6, 1}
 		setup.buffs["buff-Lifebloom"] = {33763, 2, 0, .5, 0, 1, .5, .8, .5, 1, 1, 1, 1, 1}
 		setup.buffs["buff-Rejuv"] = {774, 2, .5, 0, .3, 1}
 		setup.buffs["buff-Regrowth"] = {8936, 2, 0, .5, 0, 1}
