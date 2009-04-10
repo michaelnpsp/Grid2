@@ -91,7 +91,7 @@ end
 
 local BarColor_defaultDB = {
 	profile = {
-		invertBarColor = false,
+		invertBarColor = true,
 	}
 }
 
