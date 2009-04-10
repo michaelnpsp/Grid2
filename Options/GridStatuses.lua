@@ -503,7 +503,7 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 	local status, options
 
 	for _, name in ipairs{
-		"aggro", "heals", "target", "voice",
+		"aggro", "heals-incoming", "target", "voice",
 	} do
 		status = Grid2.statuses[name]
 		if status then
