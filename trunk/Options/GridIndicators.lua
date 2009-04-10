@@ -605,7 +605,7 @@ function Grid2Options:AddSetupIndicatorsOptions(setup, reset)
 	AddIndicatorsGroup(reset)
 
 	local indicators = setup.indicators
-	for indicatorKey in pairs(indicators.Bars) do
+	for indicatorKey in pairs(indicators.bar) do
 		AddBarIndicatorOptions(Grid2.indicators[indicatorKey])
 		AddBarColorIndicatorOptions(Grid2.indicators[indicatorKey.."-color"])
 	end
