@@ -8,7 +8,7 @@ local playerName = UnitName"player"
 local playerHealingTargetNames = {}
 local playerHealingSize
 
-local Heals = Grid2.statusPrototype:new("heals")
+local Heals = Grid2.statusPrototype:new("heals-incoming")
 
 local rosterCache = setmetatable({}, { __index = function (self, unit)
 	local name, realm = UnitName(unit)
