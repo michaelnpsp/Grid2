@@ -258,9 +258,9 @@ function Grid2:SetupDefaultAuras(setup, class)
 
 		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-Evasion", 99)
 	elseif (class == "SHAMAN") then
-		setup.buffs["buff-Riptide"] = {61295, true, .8, .5, 1, 1}
-		setup.buffs["buff-Earthliving"] = {51945, false, .8, 1, .55, 1}
-		setup.buffs["buff-EarthShield"] = {974, false, .3, .15, .15, 1}
+		setup.buffs["buff-Riptide"] = {61295, true, .8, .6, 1, 1}
+		setup.buffs["buff-Earthliving"] = {51945, false, .8, 1, .5, 1}
+		setup.buffs["buff-EarthShield"] = {974, false, 0.8, 0.8, 0.2, 1}
 
 		self:SetupIndicatorStatus(setupIndicator, "corner-top-left", "buff-Riptide", 99)
 		self:SetupIndicatorStatus(setupIndicator, "corner-top-left", "buff-Earthliving", 89)
