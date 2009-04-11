@@ -98,6 +98,8 @@ L["WARRIOR"] = "戰士"
 
 L["Class Filter"] = "職業過濾"
 L["Display status only if the buff is not active."] = "當缺少增益時提示。"
+L["Display status only if the buff was cast by you."] = "顯示只有你所施放的增益。"
+L["Show if mine"] = "顯示我的"
 L["Show if missing"] = "顯示缺少"
 L["Show on %s."] = "在%s上顯示。"
 L["Show status for the selected classes."] = "顯示選定職業的狀態。"

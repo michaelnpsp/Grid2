@@ -319,29 +319,37 @@ end
 
 
 
-local newStatusBuffName = ""
-
-local function getBuffKey(name)
+local function getBuffKey(name, mine)
 	name = Grid2Options:GetValidatedName(name)
 	if (name and name ~= "") then
-		return "buff-" .. name
+		return "buff-" .. name .. (mine and "-mine" or "")
 	else
 		return nil
 	end
 end
 
+local newStatusBuffName = ""
 local function getNewStatusBuffNameValue()
 	return newStatusBuffName
 end
-
 local function setNewStatusBuffNameValue(info, buffName)
 	newStatusBuffName = buffName
 end
 
+
+local newStatusBuffMine = true
+local function getNewStatusBuffMine()
+	return newStatusBuffMine
+end
+local function setNewStatusBuffMine(info, mine)
+	newStatusBuffMine = mine
+end
+
+
 local function NewStatusBuff()
-	local statusKey = getBuffKey(newStatusBuffName)
+	local statusKey = getBuffKey(newStatusBuffName, newStatusBuffMine)
 	if (statusKey) then
-		local data = {newStatusBuffName, true, 1, 1, 1,}
+		local data = {newStatusBuffName, newStatusBuffMine, 1, 1, 1, 1}
 
 		local buffs = Grid2.db.profile.setup.buffs
 		buffs[statusKey] = data
@@ -353,7 +361,7 @@ local function NewStatusBuff()
 end
 
 local function NewStatusBuffDisabled()
-	local statusKey = getBuffKey(newStatusBuffName)
+	local statusKey = getBuffKey(newStatusBuffName, newStatusBuffMine)
 	if (statusKey) then
 		local buffs = Grid2.db.profile.setup.buffs
 		if (not buffs[statusKey]) then
@@ -373,6 +381,14 @@ local function MakeStatusBuffCreateOptions(reset)
 			usage = L["<CharacterOnlyString>"],
 			get = getNewStatusBuffNameValue,
 			set = setNewStatusBuffNameValue,
+		},
+		newStatusBuffMine = {
+			type = "toggle",
+			order = 2,
+			name = L["Show if mine"],
+			desc = L["Display status only if the buff was cast by you."],
+			get = getNewStatusBuffMine,
+			set = setNewStatusBuffMine,
 		},
 		newStatusBuff = {
 			type = "execute",
@@ -410,7 +426,7 @@ end
 local function NewStatusDebuff()
 	local statusKey = getDebuffKey(newStatusDebuffName)
 	if (statusKey) then
-		local data = {newStatusDebuffName, 1, 0.1, 0.1,}
+		local data = {newStatusDebuffName, 1, 0.1, 0.1, 1}
 
 		local debuffs = Grid2.db.profile.setup.debuffs
 		debuffs[statusKey] = data

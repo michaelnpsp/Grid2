@@ -19,6 +19,8 @@ L["WARRIOR"] = "Guerrière"
 
 L["Class Filter"] = "Filtrer les classes"
 L["Display status only if the buff is not active."] = "Affiche le statut uniquement si le buff n'est pas actif."
+L["Display status only if the buff was cast by you."] = "Affiche le statut uniquement si le buff est le vôtre."
+L["Show if mine"] = "Afficher si le mien"
 L["Show if missing"] = "Afficher si manquant"
 L["Show on %s."] = "Affiche le statut pour la classe %s."
 L["Show status for the selected classes."] = "Affiche le statut pour les classes sélectionnées."
