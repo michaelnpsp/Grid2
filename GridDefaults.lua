@@ -185,67 +185,65 @@ function Grid2:SetupDefaultAuras(setup, class)
 	local setupIndicator = setup.status
 
 	if (class == "DEATHKNIGHT") then
-		setup.buffs["buff-HornOfWinter"] = {57330, true, 0.1, 0.1, 1, 1}
+		setup.buffs["buff-HornOfWinter-mine"] = {57330, true, 0.1, 0.1, 1, 1}
 
-		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-HornOfWinter", 99)
+		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-HornOfWinter-mine", 99)
 	elseif (class == "DRUID") then
-		setup.buffs["buff-AbolishPoison"] = {2893, true, .9, 1, .6, 1}
-		setup.buffs["buff-Lifebloom"] = {33763, 2, 0, .5, 0, 1, .5, .8, .5, 1, 1, 1, 1, 1}
-		setup.buffs["buff-Rejuv"] = {774, 2, .5, 0, .3, 1}
-		setup.buffs["buff-Regrowth"] = {8936, 2, 0, .5, 0, 1}
+		setup.buffs["buff-AbolishPoison-mine"] = {2893, true, .9, 1, .6, 1}
+		setup.buffs["buff-Lifebloom-mine"] = {33763, 2, 0, .5, 0, 1, .5, .8, .5, 1, 1, 1, 1, 1}
+		setup.buffs["buff-Rejuv-mine"] = {774, 2, .5, 0, .3, 1}
+		setup.buffs["buff-Regrowth-mine"] = {8936, 2, 0, .5, 0, 1}
 		setup.buffs["buff-Thorns"] = {467, false, .2, .05, .05, 1}
-		setup.buffs["buff-WildGrowth"] = {53248, true, .2, .9, .2, 1}
+		setup.buffs["buff-WildGrowth-mine"] = {53248, true, .2, .9, .2, 1}
 
-		self:SetupIndicatorStatus(setupIndicator, "corner-top-left", "buff-Lifebloom", 99)
-		self:SetupIndicatorStatus(setupIndicator, "regrowth", "buff-Regrowth", 99)
-		self:SetupIndicatorStatus(setupIndicator, "corner-top-right", "buff-Rejuv", 99)
-		self:SetupIndicatorStatus(setupIndicator, "corner-bottom-right", "buff-AbolishPoison", 99)
-		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-WildGrowth", 69)
+		self:SetupIndicatorStatus(setupIndicator, "corner-top-left", "buff-Lifebloom-mine", 99)
+		self:SetupIndicatorStatus(setupIndicator, "regrowth", "buff-Regrowth-mine", 99)
+		self:SetupIndicatorStatus(setupIndicator, "corner-top-right", "buff-Rejuv-mine", 99)
+		self:SetupIndicatorStatus(setupIndicator, "corner-bottom-right", "buff-AbolishPoison-mine", 99)
+		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-WildGrowth-mine", 69)
 	elseif (class == "MAGE") then
 		setup.buffs["buff-AmplifyMagic"] = {33946, false, 0, 0, 1, 1}
 		setup.buffs["buff-DampenMagic"] = {33944, false, .4, .2, 1, 1}
 		setup.buffs["buff-FocusMagic"] = {54646, false, .11, .22, .33, 1}
-		setup.buffs["buff-IceArmor"] = {7302, true, 1, 1, 1, 1}
-		setup.buffs["buff-IceBarrier"] = {11426, true, 1, 1, 1, 1}
+		setup.buffs["buff-IceArmor-mine"] = {7302, true, 1, 1, 1, 1}
+		setup.buffs["buff-IceBarrier-mine"] = {11426, true, 1, 1, 1, 1}
 
 		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-AmplifyMagic", 99)
 		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-DampenMagic", 99)
 		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-FocusMagic", 99)
-		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-IceArmor", 99)
-		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-IceBarrier", 89)
+		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-IceArmor-mine", 99)
+		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-IceBarrier-mine", 89)
 	elseif (class == "PALADIN") then
-		setup.buffs["buff-BeaconOfLight"] = {53654, true, 1, 1, 1, 1}
---		setup.buffs["buff-BlessingOfProtection"] = {41450, true, 1, 1, 1, 1}
-		setup.buffs["buff-DivineIntervention"] = {19752, true, 1, 1, 1, 1}
-		setup.buffs["buff-LightsBeacon"] = {53651, true, 1, 1, 1, 1}
-		setup.buffs["buff-DivineShield"] = {642, true, 1, 1, 1, 1}
-		setup.buffs["buff-DivineProtection"] = {498, true, 1, 1, 1, 1}
-		setup.buffs["buff-HandOfProtection"] = {1022, true, 1, 1, 1, 1}
+		setup.buffs["buff-BeaconOfLight-mine"] = {53654, true, 1, 1, 1, 1}
+		setup.buffs["buff-DivineIntervention"] = {19752, false, 1, 1, 1, 1}
+		setup.buffs["buff-LightsBeacon-mine"] = {53651, true, 1, 1, 1, 1}
+		setup.buffs["buff-DivineShield-mine"] = {642, true, 1, 1, 1, 1}
+		setup.buffs["buff-DivineProtection-mine"] = {498, true, 1, 1, 1, 1}
+		setup.buffs["buff-HandOfProtection-mine"] = {1022, true, 1, 1, 1, 1}
 
-		self:SetupIndicatorStatus(setupIndicator, "corner-top-left", "buff-BeaconOfLight", 99)
-		self:SetupIndicatorStatus(setupIndicator, "corner-top-left", "buff-LightsBeacon", 99)
+		self:SetupIndicatorStatus(setupIndicator, "corner-top-left", "buff-BeaconOfLight-mine", 99)
+		self:SetupIndicatorStatus(setupIndicator, "corner-top-left", "buff-LightsBeacon-mine", 99)
 
 		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-DivineIntervention", 99)
 
---		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-BlessingOfProtection", 99)
 		self:SetupIndicatorStatus(setupIndicator, "corner-top-right", "buff-DivineIntervention", 99)
-		self:SetupIndicatorStatus(setupIndicator, "corner-top-right", "buff-DivineShield", 97)
-		self:SetupIndicatorStatus(setupIndicator, "corner-top-right", "buff-DivineProtection", 95)
-		self:SetupIndicatorStatus(setupIndicator, "corner-top-right", "buff-HandOfProtection", 93)
+		self:SetupIndicatorStatus(setupIndicator, "corner-top-right", "buff-DivineShield-mine", 97)
+		self:SetupIndicatorStatus(setupIndicator, "corner-top-right", "buff-DivineProtection-mine", 95)
+		self:SetupIndicatorStatus(setupIndicator, "corner-top-right", "buff-HandOfProtection-mine", 93)
 
 		setup.debuffs["debuff-Forbearance"] = {25771, false, 1, 0, 0, 1}
 
 		self:SetupIndicatorStatus(setupIndicator, "corner-top-right", "debuff-Forbearance", 89)
 	elseif (class == "PRIEST") then
-		setup.buffs["buff-Grace"] = {47516, true, 1, 1, 1, 1}
+		setup.buffs["buff-Grace-mine"] = {47516, true, 1, 1, 1, 1}
 		setup.buffs["buff-DivineAegis"] = {47509, false, 1, 1, 1, 1}
 		setup.buffs["buff-InnerFire"] = {588, false, 1, 1, 1, 1}
-		setup.buffs["buff-PrayerOfMending"] = {33076, true, 1, 1, 1, 1}
+		setup.buffs["buff-PrayerOfMending-mine"] = {33076, true, 1, 1, 1, 1}
 		setup.buffs["buff-PowerWordShield"] = {17, false, 1, 1, 1, 1}
-		setup.buffs["buff-Renew"] = {139, true, 1, 1, 1, 1}
+		setup.buffs["buff-Renew-mine"] = {139, true, 1, 1, 1, 1}
 
-		self:SetupIndicatorStatus(setupIndicator, "corner-top-left", "buff-Renew", 99)
-		self:SetupIndicatorStatus(setupIndicator, "side-right", "buff-PrayerOfMending", 99)
+		self:SetupIndicatorStatus(setupIndicator, "corner-top-left", "buff-Renew-mine", 99)
+		self:SetupIndicatorStatus(setupIndicator, "side-right", "buff-PrayerOfMending-mine", 99)
 		self:SetupIndicatorStatus(setupIndicator, "corner-top-right", "buff-PowerWordShield", 99)
 		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-DivineAegis", 79)
 		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-InnerFire", 79)
@@ -254,27 +252,27 @@ function Grid2:SetupDefaultAuras(setup, class)
 
 		self:SetupIndicatorStatus(setupIndicator, "corner-top-right", "debuff-WeakenedSoul", 89)
 	elseif (class == "ROGUE") then
-		setup.buffs["buff-Evasion"] = {5277, true, 0.1, 0.1, 1, 1}
+		setup.buffs["buff-Evasion-mine"] = {5277, true, 0.1, 0.1, 1, 1}
 
-		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-Evasion", 99)
+		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-Evasion-mine", 99)
 	elseif (class == "SHAMAN") then
-		setup.buffs["buff-Riptide"] = {61295, true, .8, .6, 1, 1}
+		setup.buffs["buff-Riptide-mine"] = {61295, true, .8, .6, 1, 1}
 		setup.buffs["buff-Earthliving"] = {51945, false, .8, 1, .5, 1}
 		setup.buffs["buff-EarthShield"] = {974, false, 0.8, 0.8, 0.2, 1}
 
-		self:SetupIndicatorStatus(setupIndicator, "corner-top-left", "buff-Riptide", 99)
+		self:SetupIndicatorStatus(setupIndicator, "corner-top-left", "buff-Riptide-mine", 99)
 		self:SetupIndicatorStatus(setupIndicator, "corner-top-left", "buff-Earthliving", 89)
 		self:SetupIndicatorStatus(setupIndicator, "corner-top-right", "buff-EarthShield", 99)
 	elseif (class == "WARLOCK") then
-		setup.buffs["buff-ShadowWard"] = {6229, true, 1, 1, 1, 1}
-		setup.buffs["buff-SoulLink"] = {19028, true, 1, 1, 1, 1}
-		setup.buffs["buff-DemonArmor"] = {706, true, 1, 1, 1, 1}
-		setup.buffs["buff-DemonSkin"] = {696, true, 1, 1, 1, 1}
-		setup.buffs["buff-FelArmor"] = {28189, true, 1, 1, 1, 1}
+		setup.buffs["buff-ShadowWard-mine"] = {6229, true, 1, 1, 1, 1}
+		setup.buffs["buff-SoulLink-mine"] = {19028, true, 1, 1, 1, 1}
+		setup.buffs["buff-DemonArmor-mine"] = {706, true, 1, 1, 1, 1}
+		setup.buffs["buff-DemonSkin-mine"] = {696, true, 1, 1, 1, 1}
+		setup.buffs["buff-FelArmor-mine"] = {28189, true, 1, 1, 1, 1}
 
-		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-ShadowWard", 99)
-		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-SoulLink", 99)
-		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-FelArmor", 99)
+		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-ShadowWard-mine", 99)
+		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-SoulLink-mine", 99)
+		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-FelArmor-mine", 99)
 	elseif (class == "WARRIOR") then
 		setup.buffs["buff-BattleShout"] = {2048, true, 0.1, 0.1, 1, 1}
 		setup.buffs["buff-CommandingShout"] = {469, true, 0.1, 0.1, 1, 1}
