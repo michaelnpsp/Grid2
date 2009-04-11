@@ -15,7 +15,7 @@
 	--delete
 	--rename
 	--countdown
-	--class filters
+	--Cleanse Spirit check for Shaman debuff-Curse
 --indicator
 	--create
 		--specify location up front
@@ -70,7 +70,7 @@ My config : (I always note from lowest priority to highest)
 - Shadow Priest: (edit : yes, my spriest has the same set up as my healers, though I have to admit, depending on which healer one or two things do change.)
 * Frame - 35 x 35 - text 12px - size 7 corners - size 17 icon - default colors for frame (dark fg, bright bg)
 * center icon for debuffs I can cure or for debuffs that reduce/prevent healing (yes, even on my shadow priest, because I drop out of shadowform to help heal if needed)
-* center text : Inc. Heals - health deficit - death/FD/Ghost/Offline - Name
+* center text : Inc. Heals - health-deficit - death/FD/Ghost/Offline - Name
 * top left : aggro
 * top right : debuffs (magic, poison, disease, curse)
 * bottom left : green for heals-incoming
@@ -85,8 +85,8 @@ Depending on my role, I would change a few things, eg on non-healing classes, I 
 * center text : Missing HP - Dead/FD/Ghost/Offline/Afk - Name
 * top left : aggro
 * top right : Debuffs
-* bottom left : OOC Missing AI - Low Health - Low mana
-* bottom right : Low health
+* bottom left : OOC Missing AI - health-low - Low mana
+* bottom right : health-low
 * border : MCed - my target
 * range : frame alpha for decursing
 
@@ -111,9 +111,10 @@ Summarizing the healing priest layouts posted here I get the following:
 *healing-prevented : alpha [if StatusAuraGroup installed]
 *healing-reduced : corner-bottom-right [if StatusAuraGroup installed]
 *name : text-up
+*resurrected, res-incoming, soulstone : text-down [if StatusRes installed])
 *death, offline, charmed, heals-incoming : text-down
-resurrected, res-incoming, soulstone : text-down [if StatusRes installed])
-afk : text-down [if StatusAFK installed])
+*health-deficit : text-down
+*afk : text-down [if StatusAFK installed])
 *heals-incoming : bar-heals & text-down & text-down-color
 *group-hots : side-left
 
@@ -155,17 +156,17 @@ buff-LivingSeed :
 *buff-DivineAegis : side-bottom
 
 [B]shaman-specific[/B]
-buff-Riptide : side-left
-buff-Earthliving : corner-top-left
+buff-Riptide : corner-top-left
 *shield : corner-top-right
 [INDENT]*buff-EarthShield[/INDENT]
 *cure : icon-center
 [INDENT]*debuff-Poison
 *debuff-Disease
 *debuff-Curse (should check for Cleanse Spirit talent?)[/INDENT]
+[B]shaman-optional[/B]
+buff-Earthliving : corner-top-left
 
 [B]optional[/B]
-*healthdeficit (text-down)
 *lowmana : border (25%)
 *buffs-mine : side-bottom (show when missing, ooc only?) [if StatusAuraGroup installed]
 
@@ -180,7 +181,7 @@ Curse debuffs - frame border, priority 90
 Disease debuffs - frame border, priority 70
 Poison debuffs - frame border, priority 80
 Magic debuffs - top right corner, priority 40
-healing-prevented : border + health bar color + frame alpha, priority 60
+healing-prevented : border + bar-health-color + alpha, priority 60
 healing-reduced : top right corner, priority 60
 heals-incoming : incoming heal bar
 group-hots : corner-top-left , priority 80
@@ -189,15 +190,15 @@ Power Word: Shield - top left corner, priority 60
 buff-EarthShield - bottom right corner, priority 50
 buff-Riptide : bottom left corner, mine only, priority 80
 buff-Earthliving - bottom left corner, priority 50
-Health deficit - center text, priority 60
+health-deficit - center text, priority 60
 Unit name - center text, priority 40
 Feign Death - center text, priority 80
-Dead + Ghost + Offline + Feign Death - center text + health bar color, priority 80
+Dead + Ghost + Offline + Feign Death - center text +  bar-health-color, priority 80
 Resurrection incoming/received - center text, priority 90
 afk - center text, priority 50
-Charmed - health bar color, priority 80
-In vehicle - health bar color + frame alpha, priority 90
+charmed -  bar-health-color, priority 80
+In vehicle - bar-health-color + alpha, priority 90
 Ready check - center icon, priority 80
 raid-debuff : icon-center, priority 90
-Range (40yds) - frame alpha, priority 80
+Range (40yds) - alpha, priority 80
 --]]

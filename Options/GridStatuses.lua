@@ -533,14 +533,14 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 		Grid2Options:AddElement("status",  status, options)
 	end
 
-	status = Grid2.statuses.lowhealth
+	status = Grid2.statuses["health-low"]
 	if (status) then
 		options = Grid2Options:MakeStatusColorOption(status)
 		options = Grid2Options:MakeStatusThresholdOption(status, options)
 		Grid2Options:AddElement("status",  status, options)
 	end
 
-	status = Grid2.statuses.healthdeficit
+	status = Grid2.statuses["health-deficit"]
 	if (status) then
 		options = Grid2Options:MakeStatusThresholdOption(status)
 		Grid2Options:AddElement("status",  status, options)
