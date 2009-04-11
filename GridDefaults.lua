@@ -156,6 +156,7 @@ function Grid2:SetupDefaultStatus(setup, class)
 	self:SetupIndicatorStatus(setupIndicator, "text-down", "offline", 93)
 	self:SetupIndicatorStatus(setupIndicator, "text-down", "charmed", 65)
 	self:SetupIndicatorStatus(setupIndicator, "text-down", "heals-incoming", 55)
+	self:SetupIndicatorStatus(setupIndicator, "text-down", "health-deficit", 50)
 
 	self:SetupIndicatorStatus(setupIndicator, "text-down-color", "feign-death", 97)
 	self:SetupIndicatorStatus(setupIndicator, "text-down-color", "death", 95)
@@ -171,7 +172,7 @@ function Grid2:SetupDefaultStatus(setup, class)
 	self:SetupIndicatorStatus(setupIndicator, "border", "target", 99)
 	self:SetupIndicatorStatus(setupIndicator, "border", "voice", 89)
 	self:SetupIndicatorStatus(setupIndicator, "border", "lowmana", 79)
-	self:SetupIndicatorStatus(setupIndicator, "border", "lowhealth", 69)
+	self:SetupIndicatorStatus(setupIndicator, "border", "health-low", 69)
 
 	self:SetupIndicatorStatus(setupIndicator, "corner-bottom-left", "aggro", 99)
 
@@ -257,12 +258,12 @@ function Grid2:SetupDefaultAuras(setup, class)
 
 		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-Evasion", 99)
 	elseif (class == "SHAMAN") then
-		setup.buffs["buff-Riptide"] = {61295, true, 1, 1, 1, 1}
-		setup.buffs["buff-Earthliving"] = {51945, false, 1, 1, 1, 1}
-		setup.buffs["buff-EarthShield"] = {974, false, 1, 1, 1, 1}
+		setup.buffs["buff-Riptide"] = {61295, true, .8, .5, 1, 1}
+		setup.buffs["buff-Earthliving"] = {51945, false, .8, 1, .55, 1}
+		setup.buffs["buff-EarthShield"] = {974, false, .3, .15, .15, 1}
 
-		self:SetupIndicatorStatus(setupIndicator, "side-left", "buff-Riptide", 99)
-		self:SetupIndicatorStatus(setupIndicator, "corner-top-left", "buff-Earthliving", 99)
+		self:SetupIndicatorStatus(setupIndicator, "corner-top-left", "buff-Riptide", 99)
+		self:SetupIndicatorStatus(setupIndicator, "corner-top-left", "buff-Earthliving", 89)
 		self:SetupIndicatorStatus(setupIndicator, "corner-top-right", "buff-EarthShield", 99)
 	elseif (class == "WARLOCK") then
 		setup.buffs["buff-ShadowWard"] = {6229, true, 1, 1, 1, 1}

@@ -1,10 +1,10 @@
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 local Health = Grid2.statusPrototype:new("health")
-local LowHealth = Grid2.statusPrototype:new("lowhealth")
+local LowHealth = Grid2.statusPrototype:new("health-low")
 local Death = Grid2.statusPrototype:new("death")
 local FeignDeath = Grid2.statusPrototype:new("feign-death")
-local HealthDeficit = Grid2.statusPrototype:new("healthdeficit")
+local HealthDeficit = Grid2.statusPrototype:new("health-deficit")
 
 local UnitHealth = UnitHealth
 
