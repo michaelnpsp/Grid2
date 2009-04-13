@@ -392,7 +392,7 @@ local function MakeStatusBuffCreateOptions(reset)
 		},
 		newStatusBuff = {
 			type = "execute",
-			order = 2,
+			order = 5,
 			name = L["New Status"],
 			desc = L["Create a new status."],
 			func = NewStatusBuff,
