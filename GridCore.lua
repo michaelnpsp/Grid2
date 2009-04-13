@@ -30,6 +30,19 @@ Grid2.defaults = {
 }
 
 --}}}
+--{{{ AceTimer-3.0, embeded upon use
+
+function Grid2:ScheduleRepeatingTimer(...)
+	LibStub("AceTimer-3.0"):Embed(Grid2)
+	return self:ScheduleRepeatingTimer(...)
+end
+
+function Grid2:ScheduleTimer(...)
+	LibStub("AceTimer-3.0"):Embed(Grid2)
+	return self:ScheduleTimer(...)
+end
+
+--}}}
 --{{{  Module prototype
 
 local modulePrototype = {}

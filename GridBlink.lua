@@ -33,6 +33,7 @@ end
 
 function Grid2Blink:OnInitialize()
 	self.registry = {}
+	self.alpha = {}
 end
 
 function Grid2Blink:GetFrame()
@@ -49,18 +50,22 @@ end
 
 function Grid2Blink:Add(frame)
 	local registry = self.registry
-	if not registry[frame] then
+	if (not registry[frame]) then
 		if not next(registry) then self:GetFrame():Show() end
 		registry[frame] = 0
+		self.alpha[frame] = frame:GetAlpha()
 	end
 end
 
 function Grid2Blink:Remove(frame)
 	local registry = self.registry
-	if registry[frame] then
+	if (registry[frame]) then
 		registry[frame] = nil
-		frame:SetAlpha(1)
-		frame:Hide()
+
+		local alpha = self.alpha
+		frame:SetAlpha(alpha[frame])
+		alpha[frame] = nil
+--		frame:Hide()
 		if not next(registry) then self.frame:Hide() end
 	end
 end

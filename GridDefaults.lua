@@ -117,21 +117,28 @@ function Grid2:SetupDefaultIndicators(setup, class)
 
 	self:SetupIndicatorTypeLocation(setup, "square", "corner-bottom-left", "corner-bottom-left", {7, "BOTTOMLEFT", "BOTTOMLEFT", 1, 1})
 	self:SetupIndicatorTypeLocation(setup, "square", "corner-bottom-right", "corner-bottom-right", {7, "BOTTOMRIGHT", "BOTTOMRIGHT", -1, 1})
-	self:SetupIndicatorTypeLocation(setup, "square", "corner-top-right", "corner-top-right", {7, "TOPRIGHT", "TOPRIGHT", -1, -1})
-	self:SetupIndicatorTypeLocation(setup, "square", "corner-top-left", "corner-top-left", {7, "TOPLEFT", "TOPLEFT", 1, -1})
 	self:SetupIndicatorTypeLocation(setup, "square", "side-bottom", "side-bottom", {7, "BOTTOM", "BOTTOM", 0, 1})
 
-	self:SetupIndicatorTypeLocation(setup, "icon", "center-center", "center", {6, "CENTER"})
+	self:SetupIndicatorTypeLocation(setup, "icon", "center-icon", "center", {6, "CENTER"})
 
-	self:SetupIndicatorTypeLocation(setup, "text", "name", "center-top", {5, "BOTTOM", "CENTER", 0, 4})
-	self:SetupIndicatorTypeLocation(setup, "text", "text-down", "center-bottom", {5, "TOP", "CENTER", 0, -4})
+	self:SetupIndicatorTypeLocation(setup, "text", "name", "center-top", {5, "BOTTOM", "CENTER", 0, 4, nil})
+	self:SetupIndicatorTypeLocation(setup, "text", "text-down", "center-bottom", {5, "TOP", "CENTER", 0, -4, nil})
 
 	if (class == "DRUID") then
-		self:SetupIndicatorTypeLocation(setup, "square", "regrowth", "side-top", {7, "TOP", "TOP", 0, -1})
+		self:SetupIndicatorTypeLocation(setup, "text", "regrowth", "side-top", {7, "TOP", "TOP", 0, -1, true})
+		self:SetupIndicatorTypeLocation(setup, "text", "corner-top-left", "corner-top-left", {7, "TOPLEFT", "TOPLEFT", 1, -1, true})
+		self:SetupIndicatorTypeLocation(setup, "text", "corner-top-right", "corner-top-right", {7, "TOPRIGHT", "TOPRIGHT", -1, -1, true})
 	elseif (class == "PRIEST") then
 		self:SetupIndicatorTypeLocation(setup, "square", "side-right", "side-right", {7, "RIGHT", "RIGHT", -1, 0})
+		self:SetupIndicatorTypeLocation(setup, "square", "corner-top-left", "corner-top-left", {7, "TOPLEFT", "TOPLEFT", 1, -1})
+		self:SetupIndicatorTypeLocation(setup, "square", "corner-top-right", "corner-top-right", {7, "TOPRIGHT", "TOPRIGHT", -1, -1})
 	elseif (class == "SHAMAN") then
 		self:SetupIndicatorTypeLocation(setup, "square", "side-left", "side-left", {7, "LEFT", "LEFT", 1, 0})
+		self:SetupIndicatorTypeLocation(setup, "square", "corner-top-left", "corner-top-left", {7, "TOPLEFT", "TOPLEFT", 1, -1})
+		self:SetupIndicatorTypeLocation(setup, "square", "corner-top-right", "corner-top-right", {7, "TOPRIGHT", "TOPRIGHT", -1, -1})
+	else
+		self:SetupIndicatorTypeLocation(setup, "square", "corner-top-left", "corner-top-left", {7, "TOPLEFT", "TOPLEFT", 1, -1})
+		self:SetupIndicatorTypeLocation(setup, "square", "corner-top-right", "corner-top-right", {7, "TOPRIGHT", "TOPRIGHT", -1, -1})
 	end
 end
 
@@ -190,15 +197,18 @@ function Grid2:SetupDefaultAuras(setup, class)
 		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-HornOfWinter-mine", 99)
 	elseif (class == "DRUID") then
 		setup.buffs["buff-AbolishPoison-mine"] = {2893, true, .9, 1, .6, 1}
-		setup.buffs["buff-Lifebloom-mine"] = {33763, 2, 0, .5, 0, 1, .5, .8, .5, 1, 1, 1, 1, 1}
-		setup.buffs["buff-Rejuv-mine"] = {774, 2, .5, 0, .3, 1}
-		setup.buffs["buff-Regrowth-mine"] = {8936, 2, 0, .5, 0, 1}
+		setup.buffs["buff-Lifebloom-mine"] = {33763, true, 0, .5, 0, 1, .5, .8, .5, 1, 1, 1, 1, 1}
+		setup.buffs["buff-Rejuv-mine"] = {774, true, .5, 0, .3, 1}
+		setup.buffs["buff-Regrowth-mine"] = {8936, true, 0, .5, 0, 1}
 		setup.buffs["buff-Thorns"] = {467, false, .2, .05, .05, 1}
 		setup.buffs["buff-WildGrowth-mine"] = {53248, true, .2, .9, .2, 1}
 
 		self:SetupIndicatorStatus(setupIndicator, "corner-top-left", "buff-Lifebloom-mine", 99)
+		self:SetupIndicatorStatus(setupIndicator, "corner-top-left-color", "buff-Lifebloom-mine", 99)
 		self:SetupIndicatorStatus(setupIndicator, "regrowth", "buff-Regrowth-mine", 99)
+		self:SetupIndicatorStatus(setupIndicator, "regrowth-color", "buff-Regrowth-mine", 99)
 		self:SetupIndicatorStatus(setupIndicator, "corner-top-right", "buff-Rejuv-mine", 99)
+		self:SetupIndicatorStatus(setupIndicator, "corner-top-right-color", "buff-Rejuv-mine", 99)
 		self:SetupIndicatorStatus(setupIndicator, "corner-bottom-right", "buff-AbolishPoison-mine", 99)
 		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-WildGrowth-mine", 69)
 	elseif (class == "MAGE") then
@@ -378,14 +388,14 @@ function Grid2:UpdateColorHandler(status)
 		index = index + 1
 		for i = 1, colorCount - 1 do
 			color = status.db.profile["color" .. i]
-			handlerArray[index] = (" if count == %d then return %s, %s, %s end"):format(i, color.r, color.g, color.b)
+			handlerArray[index] = (" if count == %d then return %s, %s, %s, %s end"):format(i, color.r, color.g, color.b, color.a)
 			index = index + 1
 		end
 	end
 
 	color = status.db.profile[("color" .. colorCount)]
 --print("UpdateColorHandler", status.name, "color" .. colorCount, color.r, color.g, color.b)
-	handlerArray[index] = (" return %s, %s, %s end"):format(color.r, color.g, color.b)
+	handlerArray[index] = (" return %s, %s, %s, %s end"):format(color.r, color.g, color.b, color.a)
 
 	local handler = table.concat(handlerArray)
 	status.GetColor = assert(loadstring(handler))()
@@ -415,7 +425,7 @@ function Grid2:SetupStatusAuraBuff(statusKey, info)
 	local status = self:CreateBuffStatus(unpack(info))
 	status.name = statusKey -- force name
 
-	self:RegisterStatus(status, { "color", "icon", "percent" })
+	self:RegisterStatus(status, { "color", "icon", "percent", "duration" })
 	self:UpdateColorHandler(status)
 	self:UpdateBlinkHandler(status)
 	return status
