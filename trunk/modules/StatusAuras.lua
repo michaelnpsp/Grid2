@@ -88,6 +88,7 @@ local function status_Reset(self, unit)
 	self.prev_state = self:IsActive(unit)
 	self.new_state = nil
 	self.prev_count = self.counts[unit]
+	self.prev_expiration = self.expirations[unit]
 	self.states[unit] = nil
 	self.expirations[unit] = nil
 end
@@ -149,6 +150,7 @@ local function status_UpdateState(self, unit, auraName, iconTexture, count, dura
 		self.expirations[unit] = expiration
 		self.new_state = self:IsActive(unit)
 		self.new_count = count
+		self.new_expiration = expiration
 	end
 end
 
@@ -161,11 +163,12 @@ local function status_UpdateStateMine(self, unit, auraName, iconTexture, count, 
 		self.expirations[unit] = expiration
 		self.new_state = self:IsActive(unit)
 		self.new_count = count
+		self.new_expiration = expiration
 	end
 end
 
 local function status_HasStateChanged(self, unit)
-	return (self.new_state ~= self.prev_state) or (self.new_count ~= self.prev_count)
+	return (self.new_state ~= self.prev_state) or (self.new_count ~= self.prev_count) or (self.new_expiration ~= self.prev_expiration)
 end
 
 local AddTimeTracker
