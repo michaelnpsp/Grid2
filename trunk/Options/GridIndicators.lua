@@ -22,7 +22,7 @@ function Grid2Options:RegisterIndicators(setupList, indicatorTypeKey, name, func
 	funcCreateOptionsList[indicatorTypeKey] = funcCreateOptions
 
 	for indicatorKey in pairs(setupList) do
-		funcCreateOptions(Grid2.indicators[indicatorKey])
+		funcCreateOptions(indicatorKey)
 	end
 end
 
@@ -283,7 +283,8 @@ function Grid2Options:AddIndicatorLocationOptions(indicator, options)
 end
 
 
-local function AddTextIndicatorOptions(Text)
+local function AddTextIndicatorOptions(indicatorKey)
+	local Text = Grid2.indicators[indicatorKey]
 	local options = {
 		textlength = {
 			type = "range",
@@ -316,6 +317,19 @@ local function AddTextIndicatorOptions(Text)
 				Grid2Frame:WithAllFrames(function (f) Text:SetTextFont(f, font, v) end)
 			end,
 		},
+		duration = {
+			type = "toggle",
+			name = L["Show duration"],
+			desc = L["Show the time remaining."],
+			order = 80,
+			get = function ()
+				return Text.db.profile.duration
+			end,
+			set = function (_, v)
+				Text.db.profile.duration = v
+				Grid2Frame:UpdateAllFrames()
+			end,
+		}
 	}
 
 	if Grid2Options.AddMediaOption then
@@ -342,6 +356,16 @@ local function AddTextIndicatorOptions(Text)
 	Grid2Options:AddIndicatorDeleteOptions(Text, options)
 
 	Grid2Options:AddElement("indicator", Text, options)
+
+	local TextColor = Grid2.indicators[indicatorKey .. "-color"]
+	if (not TextColor) then
+		return
+	end
+
+	options = {}
+	Grid2Options:AddIndicatorStatusOptions(TextColor, options)
+
+	Grid2Options:AddElement("indicator", TextColor, options)
 end
 
 local function AddAlphaIndicatorOptions(status)
@@ -402,7 +426,8 @@ local function AddBorderIndicatorOptions(status)
 	Grid2Options:AddElement("indicator", status, options)
 end
 
-local function AddIconIndicatorOptions(Icon)
+local function AddIconIndicatorOptions(indicatorKey)
+	local Icon = Grid2.indicators[indicatorKey]
 	local options = {
 		iconsize = {
 			type = "range",
@@ -428,7 +453,8 @@ local function AddIconIndicatorOptions(Icon)
 	Grid2Options:AddElement("indicator", Icon, options)
 end
 
-local function AddSquareIndicatorOptions(Square)
+local function AddSquareIndicatorOptions(indicatorKey)
+	local Square = Grid2.indicators[indicatorKey]
 	local options = {
 		size = {
 			type = "range",
