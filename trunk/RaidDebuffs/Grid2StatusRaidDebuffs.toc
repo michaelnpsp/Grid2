@@ -1,5 +1,5 @@
-## Interface: 30000
-## Title: Grid 2 Raid Debuffs
+## Interface: 30100
+## Title: Grid2 Raid Debuffs
 ## Dependencies: Grid2
 
 embeds.xml
