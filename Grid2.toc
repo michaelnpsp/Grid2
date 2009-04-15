@@ -1,5 +1,5 @@
 ﻿## Interface: 30000
-## Title: Grid 2
+## Title: Grid2
 ## Notes: A modular, lightweight and screen-estate saving grid of party/raid unit frames
 ## Notes-ruRU: Модульный, легкий, отображающий на экране область группы/рейда в виде сетки.
 ## Notes-zhCN: 小巧的轻量级模块化队伍框架

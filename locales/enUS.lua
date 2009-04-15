@@ -95,6 +95,7 @@ L["By Group 15"] = true
 L["By Group 15 w/Pets"] = true
 L["By Group 10"] = true
 L["By Group 10 w/Pets"] = true
+L["By Class 25"] = true
 L["By Class"] = true
 L["By Class w/Pets"] = true
 L["Onyxia"] = true

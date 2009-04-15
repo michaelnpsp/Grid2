@@ -2,9 +2,9 @@
 
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
-local DEFAULT_PET_GROUPFILTER = "WARLOCK,HUNTER"
+local DEFAULT_PET_GROUPFILTER = "HUNTER,DEATHKNIGHT,WARLOCK"
 
-DEFAULT_PET_GROUPFILTER = nil -- for testing purpose
+--DEFAULT_PET_GROUPFILTER = nil -- for testing purpose
 --}}}
 
 Grid2Layout:AddLayout(L["None"], {
@@ -111,6 +111,31 @@ Grid2Layout:AddLayout(L["By Group 25"], {
 	},
 	[5] = {
 		groupFilter = "5",
+	},
+})
+
+Grid2Layout:AddLayout(L["By Class 25"], {
+	meta = {
+		hraid = true,
+		raid = true,
+		party = true,
+		pvp = true,
+		arena = true,
+		solo = true,
+	},
+	[1] = {
+		groupFilter = "1,2,3,4,5",
+		groupBy = "CLASS",
+		groupingOrder = "WARRIOR,DEATHKNIGHT,ROGUE,PALADIN,DRUID,SHAMAN,PRIEST,MAGE,WARLOCK,HUNTER",
+		unitsPerColumn = 5,
+		maxColumns = 5,
+	},
+	[2] = {
+		type = "raidpet",
+		groupFilter = DEFAULT_PET_GROUPFILTER,
+		unitsPerColumn = 5,
+		maxColumns = 5,
+		filterOnPet = true,
 	},
 })
 

@@ -119,7 +119,7 @@ function Grid2:SetupDefaultIndicators(setup, class)
 	self:SetupIndicatorTypeLocation(setup, "square", "corner-bottom-right", "corner-bottom-right", {7, "BOTTOMRIGHT", "BOTTOMRIGHT", -1, 1})
 	self:SetupIndicatorTypeLocation(setup, "square", "side-bottom", "side-bottom", {7, "BOTTOM", "BOTTOM", 0, 1})
 
-	self:SetupIndicatorTypeLocation(setup, "icon", "center-icon", "center", {6, "CENTER"})
+	self:SetupIndicatorTypeLocation(setup, "icon", "icon-center", "center", {6, "CENTER"})
 
 	self:SetupIndicatorTypeLocation(setup, "text", "name", "center-top", {5, "BOTTOM", "CENTER", 0, 4, nil})
 	self:SetupIndicatorTypeLocation(setup, "text", "text-down", "center-bottom", {5, "TOP", "CENTER", 0, -4, nil})
@@ -128,6 +128,8 @@ function Grid2:SetupDefaultIndicators(setup, class)
 		self:SetupIndicatorTypeLocation(setup, "text", "regrowth", "side-top", {7, "TOP", "TOP", 0, -1, true})
 		self:SetupIndicatorTypeLocation(setup, "text", "corner-top-left", "corner-top-left", {7, "TOPLEFT", "TOPLEFT", 1, -1, true})
 		self:SetupIndicatorTypeLocation(setup, "text", "corner-top-right", "corner-top-right", {7, "TOPRIGHT", "TOPRIGHT", -1, -1, true})
+		self:SetupIndicatorTypeLocation(setup, "icon", "icon-center-left", "center-left", {6, "CENTER"})
+		self:SetupIndicatorTypeLocation(setup, "icon", "icon-center-right", "center-right", {6, "CENTER"})
 	elseif (class == "PRIEST") then
 		self:SetupIndicatorTypeLocation(setup, "square", "side-right", "side-right", {7, "RIGHT", "RIGHT", -1, 0})
 		self:SetupIndicatorTypeLocation(setup, "square", "corner-top-left", "corner-top-left", {7, "TOPLEFT", "TOPLEFT", 1, -1})
@@ -299,43 +301,29 @@ function Grid2:SetupDefaultAuras(setup, class)
 end
 
 function Grid2:SetupDebuffPriorities(setup, class)
-	local debuffPriorities
-	if class == "DRUID" then
-	elseif class == "MAGE" then
-		debuffPriorities = {
-			["debuff-Curse"] = 90,
-		}
-	elseif class == "PALADIN" then
-		debuffPriorities = {
-			["debuff-Disease"] = 90,
-			["debuff-Magic"] = 80,
-			["debuff-Poison"] = 70,
-		}
-	elseif class == "PRIEST" then
-		debuffPriorities = {
-			["debuff-Disease"] = 90,
-			["debuff-Magic"] = 80,
-		}
-	elseif class == "SHAMAN" then
-		debuffPriorities = {
-			["debuff-Poison"] = 90,
-			["debuff-Disease"] = 80,
-			["debuff-Curse"] = 70,
-		}
-	else
-		debuffPriorities = {
-			["debuff-Magic"] = 40,
-			["debuff-Poison"] = 30,
-			["debuff-Curse"] = 20,
-			["debuff-Disease"] = 10,
-		}
-	end
+	local setupIndicator = setup.status
 
-	if (debuffPriorities) then
-		local setupIndicator = setup.status
-		for statusKey, priority in pairs(debuffPriorities) do
-			self:SetupIndicatorStatus(setupIndicator, "icon-center", statusKey, priority)
-		end
+	if class == "DRUID" then
+		self:SetupIndicatorStatus(setupIndicator, "icon-center-left", "debuff-Poison", 90)
+		self:SetupIndicatorStatus(setupIndicator, "icon-center-right", "debuff-Curse", 90)
+	elseif class == "MAGE" then
+		self:SetupIndicatorStatus(setupIndicator, "icon-center", "debuff-Curse", 90)
+	elseif class == "PALADIN" then
+		self:SetupIndicatorStatus(setupIndicator, "icon-center", "debuff-Disease", 90)
+		self:SetupIndicatorStatus(setupIndicator, "icon-center", "debuff-Magic", 80)
+		self:SetupIndicatorStatus(setupIndicator, "icon-center", "debuff-Poison", 70)
+	elseif class == "PRIEST" then
+		self:SetupIndicatorStatus(setupIndicator, "icon-center", "debuff-Disease", 90)
+		self:SetupIndicatorStatus(setupIndicator, "icon-center", "debuff-Magic", 80)
+	elseif class == "SHAMAN" then
+		self:SetupIndicatorStatus(setupIndicator, "icon-center", "debuff-Poison", 90)
+		self:SetupIndicatorStatus(setupIndicator, "icon-center", "debuff-Disease", 80)
+		self:SetupIndicatorStatus(setupIndicator, "icon-center", "debuff-Curse", 70)
+	else
+		self:SetupIndicatorStatus(setupIndicator, "icon-center", "debuff-Magic", 40)
+		self:SetupIndicatorStatus(setupIndicator, "icon-center", "debuff-Poison", 30)
+		self:SetupIndicatorStatus(setupIndicator, "icon-center", "debuff-Curse", 20)
+		self:SetupIndicatorStatus(setupIndicator, "icon-center", "debuff-Disease", 10)
 	end
 end
 
