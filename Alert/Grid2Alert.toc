@@ -1,5 +1,5 @@
-## Interface: 30000
-## Title: Grid 2 Alert
+## Interface: 30100
+## Title: Grid2 Alert
 ## Dependencies: Grid2
 
 embeds.xml
