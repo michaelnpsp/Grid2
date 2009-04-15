@@ -1,5 +1,5 @@
-## Interface: 30000
-## Title: Grid2StatusRaidDebuffs Options
+## Interface: 30100
+## Title: Grid2 StatusRaidDebuffs Options
 ## LoadOnDemand: 1
 ## Dependencies: Grid2, Grid2StatusRaidDebuffs
 
