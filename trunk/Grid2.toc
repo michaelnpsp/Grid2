@@ -4,25 +4,29 @@
 ## Notes-ruRU: Модульный, легкий, отображающий на экране область группы/рейда в виде сетки.
 ## Notes-zhCN: 小巧的轻量级模块化队伍框架
 ## Notes-zhTW: 精簡的團隊框架功能
-## Author: Pastamancer & Maia, Jerry
-## Version: $Rev$
-## X-ReleaseDate: "$Date$"
-## X-Website: http://wowace.com/projects/grid2/
-## X-Category: UnitFrame
+## Author: Pastamancer & Maia, Jerry, Toadkiller
 
+## OptionalDeps: Ace3, LibGratuity-3.0, LibBanzai-2.0, LibHealComm-3.0
+## X-Embeds: Ace3, LibGratuity-3.0, LibBanzai-2.0, LibHealComm-3.0
+## SavedVariables: Grid2DB
 ## DefaultState: disabled
 ## LoadOnDemand: 0
 
-## X-Embeds: Ace3, LibGratuity-3.0, LibBanzai-2.0, LibHealComm-3.0
-## OptionalDeps: Ace3, LibGratuity-3.0, LibBanzai-2.0, LibHealComm-3.0
+## Version: $Rev$
+## X-ReleaseDate: "$Date$"
+## X-Category: UnitFrame
+## X-Website: http://wowace.com/projects/grid2/
+## X-Curse-Packaged-Version:  v3.01.00.00 alpha
+## X-Curse-Project-Name: Grid2
+## X-Curse-Project-ID: grid2
+## X-Curse-Repository-ID: wow/grid2/mainline
 
-## SavedVariables: Grid2DB
 
-## Non-Ace Libraries
+# Non-Ace Libraries
 #libs\UTF8\utf8data.lua
 libs\UTF8\utf8.lua
 
-## Ace Libraries
+# Ace Libraries
 #@no-lib-strip@
 Libs\LibStub\LibStub.lua
 Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
