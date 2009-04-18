@@ -124,7 +124,7 @@ Grid2Layout.defaultDB = {
 			pvp = L["By Group 40"],
 			arena = L["By Group 10"],
 		},
-		horizontal = false,
+		horizontal = true,
 		clamp = true,
 		FrameLock = false,
 		ClickThrough = false,
@@ -142,9 +142,9 @@ Grid2Layout.defaultDB = {
 		BackgroundA = .65,
 
 		anchor = "TOPLEFT",
-		groupAnchor = "TOPLEFT",
+		groupAnchor = "BOTTOMRIGHT",
 
-		PosX = 500,
+		PosX = 300,
 		PosY = -400,
 	},
 }

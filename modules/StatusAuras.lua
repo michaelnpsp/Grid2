@@ -255,7 +255,7 @@ function Grid2:CreateStatusCommon(status, spellName, mine, ...)
 end
 
 -- spellName: spellId or localized spellName
-function Grid2:CreateBuffStatus(spellName, mine, ...)
+function Grid2:CreateBuffStatus(spellName, mine, missing, ...)
 	StatusCount = StatusCount + 1
 	local status = Grid2.statusPrototype:new("buff-" .. StatusCount)
 	self:CreateStatusCommon(status, spellName, mine, ...)
@@ -270,9 +270,11 @@ function Grid2:CreateBuffStatus(spellName, mine, ...)
 		BuffHandlers[self] = nil
 	end
 
+	local profile = status.defaultDB.profile
 	if (type(mine) == "number") then
-		status.defaultDB.profile.blinkThreshold = mine
+		profile.blinkThreshold = mine
 	end
+	profile.missing = missing
 
 	status.UpdateState = mine and status_UpdateStateMine or status_UpdateState
 

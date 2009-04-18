@@ -19,15 +19,27 @@ function GridFrameEvents:OnHide()
 end
 
 function GridFrameEvents:OnAttributeChanged(name, value)
-	if name == "unit" then
-		self.unit = value
-		if value then
-			Grid2Frame:Debug("updated", self:GetName(), name, value)
+	if (name == "unit") then
+		if (value) then
+			self.unit = value
+			local unitGUID = UnitGUID(value)
+			if (unitGUID ~= nil) then
+				self.unitGUID = unitGUID
+			end
+
+			Grid2Frame:Debug("updated", self:GetName(), name, value, "unitGUID", unitGUID)
 			Grid2Frame:UpdateIndicators(self)
 		else
-			Grid2Frame:Debug("removed", self:GetName(), name, value)
+			Grid2Frame:Debug("removed", self:GetName(), name, value, "unitGUID", unitGUID)
+
+			self.unitGUID = nil
+			self.unitName = nil
+			self.unit = nil
 		end
 		Grid2:SetFrameUnit(self, value)
+--ToDo: when does this arise and does it need handling?
+--	elseif name == "type1" and (not value or value == "") then
+--		self:SetAttribute("type1", "target")
 	end
 end
 
@@ -240,6 +252,7 @@ end
 
 function Grid2Frame:UpdateUnitFrame()
 	for _, frame in pairs(self.registeredFrames) do
+print("Grid2Frame:UpdateUnitFrame", frame.unit, unit)
 		if frame.unit == unit then
 			self:UpdateIndicators(frame)
 		end
