@@ -1,7 +1,18 @@
 ## Interface: 30100
-## Title: Grid2 StatusRaidDebuffs Options
-## LoadOnDemand: 1
+## Title: Grid2StatusRaidDebuffsOptions
+## Notes: Load on demand Options for Grid2StatusRaidDebuffs.
+
 ## Dependencies: Grid2, Grid2StatusRaidDebuffs
+## LoadOnDemand: 1
+
+## Version: $Rev$
+## X-ReleaseDate: "$Date$"
+## X-Category: UnitFrame
+## X-Website: http://wowace.com/projects/grid2/
+## X-Curse-Packaged-Version:  v3.01.00.00 alpha
+## X-Curse-Project-Name: Grid2
+## X-Curse-Project-ID: grid2
+## X-Curse-Repository-ID: wow/grid2/mainline
 
 locales.xml
 Grid2StatusRaidDebuffsOptions.lua
