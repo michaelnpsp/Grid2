@@ -1,7 +1,19 @@
 ## Interface: 30100
-## Title: Grid2 Raid Debuffs
+## Title: Grid2StatusRaidDebuffs
+## Notes: Adds a Raid Boss debuff status.
+
 ## Dependencies: Grid2
+## OptionalDeps: LibBabble-Zone-3.0
+## X-Embeds: LibBabble-Zone-3.0
+
+## Version: $Rev: 138 $
+## X-ReleaseDate: "$Date: 2009-04-14 23:42:17 -0700 (Tue, 14 Apr 2009) $"
+## X-Category: UnitFrame
+## X-Website: http://wowace.com/projects/grid2/
+## X-Curse-Packaged-Version:  v3.01.00.00 alpha
+## X-Curse-Project-Name: Grid2
+## X-Curse-Project-ID: grid2
+## X-Curse-Repository-ID: wow/grid2/mainline
 
 embeds.xml
-
 core.lua
