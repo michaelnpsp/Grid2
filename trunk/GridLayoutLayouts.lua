@@ -3,6 +3,7 @@
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 local DEFAULT_PET_GROUPFILTER = "HUNTER,DEATHKNIGHT,WARLOCK"
+local DEFAULT_GROUP_ORDER = "WARRIOR,DEATHKNIGHT,ROGUE,PALADIN,DRUID,SHAMAN,PRIEST,MAGE,WARLOCK,HUNTER"
 
 --DEFAULT_PET_GROUPFILTER = nil -- for testing purpose
 --}}}
@@ -68,27 +69,35 @@ Grid2Layout:AddLayout(L["By Group 40"], {
 	},
 	[1] = {
 		groupFilter = "1",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[2] = {
 		groupFilter = "2",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[3] = {
 		groupFilter = "3",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[4] = {
 		groupFilter = "4",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[5] = {
 		groupFilter = "5",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[6] = {
 		groupFilter = "6",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[7] = {
 		groupFilter = "7",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[8] = {
 		groupFilter = "8",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 })
 
@@ -99,18 +108,23 @@ Grid2Layout:AddLayout(L["By Group 25"], {
 	},
 	[1] = {
 		groupFilter = "1",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[2] = {
 		groupFilter = "2",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[3] = {
 		groupFilter = "3",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[4] = {
 		groupFilter = "4",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[5] = {
 		groupFilter = "5",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 })
 
@@ -126,7 +140,7 @@ Grid2Layout:AddLayout(L["By Class 25"], {
 	[1] = {
 		groupFilter = "1,2,3,4,5",
 		groupBy = "CLASS",
-		groupingOrder = "WARRIOR,DEATHKNIGHT,ROGUE,PALADIN,DRUID,SHAMAN,PRIEST,MAGE,WARLOCK,HUNTER",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 		unitsPerColumn = 5,
 		maxColumns = 5,
 	},
@@ -146,18 +160,23 @@ Grid2Layout:AddLayout(L["By Group 25 w/Pets"], {
 	},
 	[1] = {
 		groupFilter = "1",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[2] = {
 		groupFilter = "2",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[3] = {
 		groupFilter = "3",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[4] = {
 		groupFilter = "4",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[5] = {
 		groupFilter = "5",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[6] = {
 		type = "raidpet",
@@ -175,15 +194,19 @@ Grid2Layout:AddLayout(L["By Group 20"], {
 	},
 	[1] = {
 		groupFilter = "1",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[2] = {
 		groupFilter = "2",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[3] = {
 		groupFilter = "3",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[4] = {
 		groupFilter = "4",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 })
 
@@ -195,12 +218,15 @@ Grid2Layout:AddLayout(L["By Group 15"], {
 	},
 	[1] = {
 		groupFilter = "1",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[2] = {
 		groupFilter = "2",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[3] = {
 		groupFilter = "3",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 })
 
@@ -210,22 +236,25 @@ Grid2Layout:AddLayout(L["By Group 15 w/Pets"], {
 		raid = true,
 		pvp = true,
 	},
-	 [1] = {
-		 groupFilter = "1",
-	 },
-	 [2] = {
-		 groupFilter = "2",
-	 },
-	 [3] = {
-		 groupFilter = "3",
-	 },
-	 [4] = {
+	[1] = {
+		groupFilter = "1",
+		groupingOrder = DEFAULT_GROUP_ORDER,
+	},
+	[2] = {
+		groupFilter = "2",
+		groupingOrder = DEFAULT_GROUP_ORDER,
+	},
+	[3] = {
+		groupFilter = "3",
+		groupingOrder = DEFAULT_GROUP_ORDER,
+	},
+	[4] = {
 		type = "raidpet",
 		groupFilter = DEFAULT_PET_GROUPFILTER,
 		unitsPerColumn = 5,
 		maxColumns = 5,
 		filterOnPet = true,
-	 },
+	},
  })
 
 Grid2Layout:AddLayout(L["By Group 10"], {
@@ -236,9 +265,11 @@ Grid2Layout:AddLayout(L["By Group 10"], {
 	},
 	[1] = {
 		groupFilter = "1",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[2] = {
 		groupFilter = "2",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 })
 
@@ -250,9 +281,11 @@ Grid2Layout:AddLayout(L["By Group 10 w/Pets"], {
 	},
 	[1] = {
 		groupFilter = "1",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[2] = {
 		groupFilter = "2",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[3] = {
 		type = "raidpet",
@@ -270,6 +303,7 @@ Grid2Layout:AddLayout(L["By Group 5"], {
 	},
 	[1] = {
 		groupFilter = "1",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 })
 
@@ -280,6 +314,7 @@ Grid2Layout:AddLayout(L["By Group 5 w/Pets"], {
 	},
 	[1] = {
 		groupFilter = "1",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[2] = {
 		type = "raidpet",
@@ -378,30 +413,39 @@ Grid2Layout:AddLayout(L["Onyxia"], {
 	},
 	[1] = {
 		groupFilter = "1",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[2] = {
 		groupFilter = "3",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[3] = {
 		groupFilter = "5",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[4] = {
 		groupFilter = "7",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[5] = {
 		type  = "spacer",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[6] = {
 		groupFilter = "2",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[7] = {
 		groupFilter = "4",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[8] = {
 		groupFilter = "6",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[9] = {
 		groupFilter = "8",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 })
 
@@ -419,17 +463,22 @@ Grid2Layout:AddLayout(L["By Group 25 w/tanks"], {
 	},
 	[3] = {
 		groupFilter = "1",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[4] = {
 		groupFilter = "2",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[5] = {
 		groupFilter = "3",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[6] = {
 		groupFilter = "4",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[7] = {
 		groupFilter = "5",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	}
 })
