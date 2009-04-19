@@ -1,6 +1,19 @@
 ## Interface: 30100
-## Title: Grid2 Alert
+## Title: Grid2Alert
+## Notes: Audible Alerts for self-gain, self-lost, any-gain, all-lost of statuses.
+
 ## Dependencies: Grid2
+## OptionalDeps: LibSharedMedia-3.0, LibSink-2.0
+## X-Embeds: LibSharedMedia-3.0, LibSink-2.0
+
+## Version: $Rev: 138 $
+## X-ReleaseDate: "$Date: 2009-04-14 23:42:17 -0700 (Tue, 14 Apr 2009) $"
+## X-Category: UnitFrame
+## X-Website: http://wowace.com/projects/grid2/
+## X-Curse-Packaged-Version:  v3.01.00.00 alpha
+## X-Curse-Project-Name: Grid2
+## X-Curse-Project-ID: grid2
+## X-Curse-Repository-ID: wow/grid2/mainline
 
 embeds.xml
 
