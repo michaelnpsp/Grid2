@@ -309,6 +309,11 @@ function Grid2:CreateDebuffStatus(spellName, mine, ...)
 	return status -- status is not registered yet
 end
 
+local myUnits = {
+	player = true,
+	pet = true,
+	vehicle = true,
+}
 do
 	local indicators = {}
 	local types = {}
@@ -325,7 +330,9 @@ do
 		-- scan Debuffs and find the available debuff types
 		local i = 1
 		while true do
-			local name, _, iconTexture, count, debuffType, duration, expirationTime, isMine = UnitDebuff(unit, i)
+			local name, _, iconTexture, count, debuffType, duration, expirationTime, caster = UnitDebuff(unit, i)
+			local isMine = myUnits[caster]
+
 			if not name then break end
 			for status in pairs(DebuffHandlers) do
 				status:UpdateState(unit, name, iconTexture, count, duration, expirationTime, isMine)
@@ -337,7 +344,9 @@ do
 		end
 		i = 1
 		while true do
-			local name, _, iconTexture, count, debuffType, duration, expirationTime, isMine = UnitBuff(unit, i)
+			local name, _, iconTexture, count, debuffType, duration, expirationTime, caster = UnitBuff(unit, i)
+			local isMine = myUnits[caster]
+
 			if not name then break end
 			for status in pairs(BuffHandlers) do
 				status:UpdateState(unit, name, iconTexture, count, duration, expirationTime, isMine)

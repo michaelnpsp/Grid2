@@ -2,10 +2,8 @@
 
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
-local DEFAULT_PET_GROUPFILTER = "HUNTER,DEATHKNIGHT,WARLOCK"
 local DEFAULT_GROUP_ORDER = "WARRIOR,DEATHKNIGHT,ROGUE,PALADIN,DRUID,SHAMAN,PRIEST,MAGE,WARLOCK,HUNTER"
 
---DEFAULT_PET_GROUPFILTER = nil -- for testing purpose
 --}}}
 
 Grid2Layout:AddLayout(L["None"], {
@@ -43,9 +41,9 @@ Grid2Layout:AddLayout(L["Solo w/Pet"], {
 	},
 	[2] = {
 		type = "partypet",
-		groupFilter = DEFAULT_PET_GROUPFILTER,
 		showPlayer = true,
 		showSolo = true,
+--		useOwnerUnit = true,
 	}
 })
 
@@ -146,7 +144,6 @@ Grid2Layout:AddLayout(L["By Class 25"], {
 	},
 	[2] = {
 		type = "raidpet",
-		groupFilter = DEFAULT_PET_GROUPFILTER,
 		unitsPerColumn = 5,
 		maxColumns = 5,
 		filterOnPet = true,
@@ -180,7 +177,6 @@ Grid2Layout:AddLayout(L["By Group 25 w/Pets"], {
 	},
 	[6] = {
 		type = "raidpet",
-		groupFilter = DEFAULT_PET_GROUPFILTER,
 		unitsPerColumn = 5,
 		maxColumns = 5,
 		filterOnPet = true,
@@ -250,7 +246,6 @@ Grid2Layout:AddLayout(L["By Group 15 w/Pets"], {
 	},
 	[4] = {
 		type = "raidpet",
-		groupFilter = DEFAULT_PET_GROUPFILTER,
 		unitsPerColumn = 5,
 		maxColumns = 5,
 		filterOnPet = true,
@@ -289,7 +284,6 @@ Grid2Layout:AddLayout(L["By Group 10 w/Pets"], {
 	},
 	[3] = {
 		type = "raidpet",
-		groupFilter = DEFAULT_PET_GROUPFILTER,
 		unitsPerColumn = 5,
 		maxColumns = 5,
 		filterOnPet = true,
@@ -317,8 +311,7 @@ Grid2Layout:AddLayout(L["By Group 5 w/Pets"], {
 		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[2] = {
-		type = "raidpet",
-		groupFilter = DEFAULT_PET_GROUPFILTER,
+		type = "partypet",
 		unitsPerColumn = 5,
 		maxColumns = 5,
 		filterOnPet = true,
@@ -401,7 +394,6 @@ Grid2Layout:AddLayout(L["By Class w/Pets"], {
 	},
 	[11] = {
 		type = "raidpet",
-		groupFilter = DEFAULT_PET_GROUPFILTER,
 		filterOnPet = true,
 	},
 })
