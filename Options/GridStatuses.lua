@@ -349,7 +349,7 @@ end
 local function NewStatusBuff()
 	local statusKey = getBuffKey(newStatusBuffName, newStatusBuffMine)
 	if (statusKey) then
-		local data = {newStatusBuffName, newStatusBuffMine, 1, 1, 1, 1}
+		local data = {newStatusBuffName, newStatusBuffMine, nil, 1, 1, 1, 1}
 
 		local buffs = Grid2.db.profile.setup.buffs
 		buffs[statusKey] = data

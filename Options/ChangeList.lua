@@ -15,6 +15,8 @@
 	--delete
 	--rename
 	--countdown
+		--adjust decimals setting (global)
+		--decimals threshold
 	--Cleanse Spirit check for Shaman debuff-Curse
 --indicator
 	--create
@@ -201,4 +203,42 @@ In vehicle - bar-health-color + alpha, priority 90
 Ready check - center icon, priority 80
 raid-debuff : icon-center, priority 90
 Range (40yds) - alpha, priority 80
+
+
+With this in mind, we're making the following change to UnitAura, UnitBuff, and UnitDebuff:
+
+name, rank, icon, count, debuffType, duration, expirationTime, caster, isStealable = UnitAura("unit", index or ["name", "rank"][, "filter"])
+name, rank, icon, count, debuffType, duration, expirationTime, caster, isStealable = UnitBuff("unit", index or ["name", "rank"][, "filter"])
+name, rank, icon, count, debuffType, duration, expirationTime, caster, isStealable = UnitDebuff("unit", index or ["name", "rank"][, "filter"])
+
+The isMine return value has been changed to caster, where caster is the unit token of the unit that applied the aura. This works for all unit tokens, including "pet" and its incarnations, "focus", and "target".
+
+Most importantly, if the aura was applied by a unit that does not have a token (for instance, a vehicle) but is controlled by one that does (the player), this function will return the token of the unit's controller. In other words, if I'm a shaman and I cast Totem of Wrath, which applies the Totem of Wrath buff, the buff will return the "player" token as its caster unit because totems don't have their own unit tokens.
+
+Auras will also be sorted by the game code in a similar fashion such that the first n auras returned by the unit aura functions will be auras applied by either the player or a unit the player controls or owns (e.g. vehicles, pets, totems).
+
+EDIT: I previously stated the "caster" return for the new UnitAura functions could not be an arena unit token. This is incorrect. The new UnitAura functions will return "arena" tokens when appropriate.
+
+
+
+On a different topic - The last PTR build included a bunch of changes to the secure handlers code, they're summarized as follows:
+1) The SetUpAnimation method that was added in 3.0.8 has been removed (since there's now animation support directly in the UI objects) - Note that the animation API's dont require secure code so there's no explicit functions for them in the secure environment.
+2) Many of the information gathering frame methods removed in 3.0.8 have been restored, as has the Show/Hide driver.
+3) There's a new driver for performing auto-hide of frames based on mouse hover. Testing today has revealed that there are some bugs which severely limit its usefulness right now (i.e. it's broken), but it should get fixed in a future build.
+
+The hover driver works as follows:
+You can register a frame for auto-hiding, specifying an expiration time. Once the mouse enters and then leaves the frame, and stays out of the frame for the expiration time, the frame will be automatically hidden. If the mouse re-enters the frame the expiration time resets.
+If the frame is hidden explicitly (and stays hidden for at least one update cycle) then the auto hide is cancelled.
+If the frame has moved between when it was registered and when the hiding would occur, the hide is cancelled.
+Finally for complex scenarios you can add additional regions to the hover boundary, by adding additional frames to be included in the 'is over' calculation. For a number of reasons the rects of the frames are captured at point of registration and not re-queried afterwards, neither is the visibility of these additional frames important. This provides a fairly flexible way of supporting more or less arbitrary shapes (though there is an overhead in getting too clever, the driver has to check all of the rects)
+
+The methods to control hover registration for normal code (operable when not in combat) are:
+
+RegisterAutoHide(frame, duration) -- Registers a frame for auto-hiding. The duration is in seconds, any previous registration for that frame is replaced.
+UnregisterAutoHide(frame) -- Cancels the auto-hiding for a frame.
+AddToAutoHide(frame, child) -- Adds the rect of a child to the auto-hide footprint of a frame. This can only be called immediately after registration (before the next OnUpdate cycle).
+
+As noted above, the current implementation has a ocuple of bugs which render it largely unusuable right now.
+
+
 --]]
