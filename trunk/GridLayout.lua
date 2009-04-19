@@ -113,7 +113,7 @@ Grid2Layout.defaultDB = {
 
 		FrameDisplay = "Always",
 		layouts = {
-			solo = L["Solo"],
+			solo = L["Solo w/Pet"],
 			party = L["Solo w/Pet"],
 			raid = L["By Group 10 w/Pets"],
 			hraid = L["By Group 25 w/Pets"],
