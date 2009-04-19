@@ -48,22 +48,18 @@ local GridLayoutHeaderClass = {
 	end
 }
 
+local HeaderAttributes = {
+	"showPlayer", "showSolo", "nameList", "groupFilter", "strictFiltering",
+	"sortDir", "groupBy", "groupingOrder", "maxColumns", "unitsPerColumn",
+	"startingIndex", "columnSpacing", "columnAnchorPoint", "toggleForVehicle",
+	"allowVehicleTarget", "useOwnerUnit", "filterOnPet"
+}
 function GridLayoutHeaderClass.prototype:Reset()
 	if self.initialConfigFunction then
-		self:SetAttribute("showPlayer", nil)
-		self:SetAttribute("showSolo", nil)
-		self:SetAttribute("nameList", nil)
-		self:SetAttribute("groupFilter", nil)
-		self:SetAttribute("strictFiltering", nil)
 		self:SetAttribute("sortMethod", "NAME")
-		self:SetAttribute("sortDir", nil)
-		self:SetAttribute("groupBy", nil)
-		self:SetAttribute("groupingOrder", nil)
-		self:SetAttribute("maxColumns", nil)
-		self:SetAttribute("unitsPerColumn", nil)
-		self:SetAttribute("startingIndex", nil)
-		self:SetAttribute("columnSpacing", nil)
-		self:SetAttribute("columnAnchorPoint", nil)
+		for _, attr in ipairs(HeaderAttributes) do
+			self:SetAttribute(attr, nil)
+		end
 	end
 	self:Hide()
 end
