@@ -5,7 +5,7 @@ local ORDER_LAYOUT = 20
 local ORDER_DISPLAY = 30
 
 Grid2Layout.menuName = L["layout"]
-Grid2Layout.menuOrder = 20
+Grid2Layout.menuOrder = 10
 
 Grid2Options:AddModule("Grid2", "Grid2Layout", Grid2Layout, {
 	["display"] = {
