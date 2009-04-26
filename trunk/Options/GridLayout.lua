@@ -74,6 +74,22 @@ Grid2Options:AddModule("Grid2", "Grid2Layout", Grid2Layout, {
 					  end,
 				values = {},
 			},
+			raid40 = {
+				type = "select",
+				name = L["Raid 40 Layout"],
+				desc = L["Select which layout to use for raid."],
+				order = 3,
+				get = function ()
+						  return Grid2Layout.db.profile.layouts.raid40
+					  end,
+				set = function (_, v)
+						  Grid2Layout.db.profile.layouts.raid40 = v
+						  if Grid2Layout.partyType == "raid40" then
+							Grid2Layout:LoadLayout(v)
+						  end
+					  end,
+				values = {},
+			},
 			hraid = {
 				type = "select",
 				name = L["Heroic Raid Layout"],

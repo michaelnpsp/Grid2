@@ -24,8 +24,8 @@ function Grid2Options.SetStatusColor(info, r, g, b, a)
 	c.r, c.g, c.b, c.a = r, g, b, a
 
 	Grid2:UpdateColorHandler(status)
-	for unit in Grid2:IterateRoster(true) do
-		status:UpdateIndicators(unit)
+	for guid, unitid in Grid2:IterateRoster() do
+		status:UpdateIndicators(unitid)
 	end
 end
 
@@ -91,8 +91,8 @@ function Grid2Options:MakeStatusClassFilterOption(status, options)
 						profile.classFilter = nil
 					end
 				end
-				for unit in Grid2:IterateRoster(true) do
-					status:UpdateIndicators(unit)
+				for guid, unitid in Grid2:IterateRoster() do
+					status:UpdateIndicators(unitid)
 				end
 			end,
 		}
@@ -116,8 +116,8 @@ function Grid2Options:MakeStatusThresholdOption(status, options)
 		end,
 		set = function (_, v)
 			status.db.profile.threshold = v
-			for unit in Grid2:IterateRoster(true) do
-				status:UpdateIndicators(unit)
+			for guid, unitid in Grid2:IterateRoster() do
+				status:UpdateIndicators(unitid)
 			end
 		end,
 	}
@@ -137,8 +137,8 @@ function Grid2Options:MakeStatusMissingOption(status, options)
 		end,
 		set = function (_, v)
 			status.db.profile.missing = v
-			for unit in Grid2:IterateRoster(true) do
-				status:UpdateIndicators(unit)
+			for guid, unitid in Grid2:IterateRoster() do
+				status:UpdateIndicators(unitid)
 			end
 		end,
 	}
@@ -207,8 +207,8 @@ local function MakeStatusClassColorOptions()
 					set = function (_, r, g, b, a)
 						local c = profile.colors.HOSTILE
 						c.r, c.g, c.b, c.a = r, g, b, a
-						for unit in Grid2:IterateRoster(true) do
-							status:UpdateIndicators(unit)
+						for guid, unitid in Grid2:IterateRoster() do
+							status:UpdateIndicators(unitid)
 						end
 					end,
 				},
@@ -222,8 +222,8 @@ local function MakeStatusClassColorOptions()
 					set = function (_, r, g, b, a)
 						local c = profile.colors.UNKNOWN_UNIT
 						c.r, c.g, c.b, c.a = r, g, b, a
-						for unit in Grid2:IterateRoster(true) do
-							status:UpdateIndicators(unit)
+						for guid, unitid in Grid2:IterateRoster() do
+							status:UpdateIndicators(unitid)
 						end
 					end,
 				},
@@ -237,8 +237,8 @@ local function MakeStatusClassColorOptions()
 					set = function (_, r, g, b, a)
 						local c = profile.colors.UNKNOWN_PET
 						c.r, c.g, c.b, c.a = r, g, b, a
-						for unit in Grid2:IterateRoster(true) do
-							status:UpdateIndicators(unit)
+						for guid, unitid in Grid2:IterateRoster() do
+							status:UpdateIndicators(unitid)
 						end
 					end,
 				},
@@ -260,8 +260,8 @@ local function MakeStatusClassColorOptions()
 			set = function (_, r, g, b, a)
 				local c = profile.colors[type]
 				c.r, c.g, c.b, c.a = r, g, b, a
-				for unit in Grid2:IterateRoster(true) do
-					status:UpdateIndicators(unit)
+				for guid, unitid in Grid2:IterateRoster() do
+					status:UpdateIndicators(unitid)
 				end
 			end,
 		}
