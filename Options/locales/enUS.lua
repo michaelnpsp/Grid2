@@ -50,6 +50,7 @@ L["Select which layout to use for solo."] = true
 L["Party Layout"] = true
 L["Select which layout to use for party."] = true
 L["Raid Layout"] = true
+L["Raid 40 Layout"] = true
 L["Select which layout to use for raid."] = true
 L["Heroic Raid Layout"] = true
 L["Select which layout to use for raid in heroic mode."] = true
