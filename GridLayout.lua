@@ -51,9 +51,10 @@ local GridLayoutHeaderClass = {
 local HeaderAttributes = {
 	"showPlayer", "showSolo", "nameList", "groupFilter", "strictFiltering",
 	"sortDir", "groupBy", "groupingOrder", "maxColumns", "unitsPerColumn",
-	"startingIndex", "columnSpacing", "columnAnchorPoint", "toggleForVehicle",
+	"startingIndex", "columnSpacing", "columnAnchorPoint",
 	"allowVehicleTarget", "useOwnerUnit", "filterOnPet"
 }
+--, "toggleForVehicle"
 function GridLayoutHeaderClass.prototype:Reset()
 	if self.initialConfigFunction then
 		self:SetAttribute("sortMethod", "NAME")
@@ -114,11 +115,12 @@ Grid2Layout.defaultDB = {
 		FrameDisplay = "Always",
 		layouts = {
 			solo = L["Solo w/Pet"],
-			party = L["Solo w/Pet"],
+			party = L["By Group 5 w/Pets"],
 			raid = L["By Group 10 w/Pets"],
 			hraid = L["By Group 25 w/Pets"],
 			pvp = L["By Group 40"],
-			arena = L["By Group 10"],
+			raid40 = L["By Group 40"],
+			arena = L["By Group 5 w/Pets"],
 		},
 		horizontal = true,
 		clamp = true,

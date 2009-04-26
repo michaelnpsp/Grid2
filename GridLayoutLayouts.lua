@@ -6,6 +6,15 @@ local DEFAULT_GROUP_ORDER = "WARRIOR,DEATHKNIGHT,ROGUE,PALADIN,DRUID,SHAMAN,PRIE
 
 --}}}
 
+-- nameList = [STRING] -- a comma separated list of player names (not used if 'groupFilter' is set)
+-- groupFilter = [1-8, STRING] -- a comma seperated list of raid group numbers and/or uppercase class names and/or uppercase roles
+-- strictFiltering = [BOOLEAN] - if true, then characters must match both a group and a class from the groupFilter list
+-- groupBy = [nil, "GROUP", "CLASS", "ROLE"] - specifies a "grouping" type to apply before regular sorting (Default: nil)
+-- groupingOrder = [STRING] - specifies the order of the groupings (ie. "1,2,3,4,5,6,7,8")
+
+-- useOwnerUnit = [BOOLEAN] - if true, then the owner's unit string is set on managed's frames "unit" attribute (instead of pet's)
+-- filterOnPet = [BOOLEAN] - if true, then pet names are used when sorting/filtering the list
+
 Grid2Layout:AddLayout(L["None"], {
 	meta = {
 		hraid = true,
@@ -43,6 +52,7 @@ Grid2Layout:AddLayout(L["Solo w/Pet"], {
 		type = "partypet",
 		showPlayer = true,
 		showSolo = true,
+		filterOnPet = true,
 --		useOwnerUnit = true,
 	}
 })
@@ -53,10 +63,11 @@ Grid2Layout:AddLayout(L["By Group 40"], {
 	meta = {
 		hraid = true,
 		raid = true,
+		raid40 = true,
 		pvp = true,
 	},
 	defaults = {
-		-- type = "raid", (can be "party", "partypet", "raid", "raidpet", "spacer")
+		-- type = "raid", (can be "party", "partypet", "raid", "raid40", "raidpet", "spacer")
 		-- nameList = "",
 		-- groupFilter = "",
 		-- sortMethod = "INDEX", -- or "NAME"
@@ -138,6 +149,30 @@ Grid2Layout:AddLayout(L["By Class 25"], {
 	[1] = {
 		groupFilter = "1,2,3,4,5",
 		groupBy = "CLASS",
+		groupingOrder = DEFAULT_GROUP_ORDER,
+		unitsPerColumn = 5,
+		maxColumns = 5,
+	},
+	[2] = {
+		type = "raidpet",
+		unitsPerColumn = 5,
+		maxColumns = 5,
+		filterOnPet = true,
+	},
+})
+
+Grid2Layout:AddLayout(L["By Role 25"], {
+	meta = {
+		hraid = true,
+		raid = true,
+		party = true,
+		pvp = true,
+		arena = true,
+		solo = true,
+	},
+	[1] = {
+		groupFilter = "1,2,3,4,5",
+		groupBy = "ROLE",
 		groupingOrder = DEFAULT_GROUP_ORDER,
 		unitsPerColumn = 5,
 		maxColumns = 5,

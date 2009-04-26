@@ -12,8 +12,8 @@ end
 
 function Target:PLAYER_TARGET_CHANGED(_, unit)
 	-- potentially costly. May need to use a cache here.
-	for unit in Grid2:IterateRoster(true) do
-		self:UpdateIndicators(unit)
+	for guid, unitid in Grid2:IterateRoster() do
+		self:UpdateIndicators(unitid)
 	end
 end
 
