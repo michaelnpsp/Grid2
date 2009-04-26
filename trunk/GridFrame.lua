@@ -38,8 +38,8 @@ function GridFrameEvents:OnAttributeChanged(name, value)
 		end
 		Grid2:SetFrameUnit(self, value)
 --ToDo: when does this arise and does it need handling?
---	elseif name == "type1" and (not value or value == "") then
---		self:SetAttribute("type1", "target")
+	elseif name == "type1" and (not value or value == "") then
+		self:SetAttribute("type1", "target")
 	end
 end
 
@@ -88,6 +88,7 @@ local function GridFrame_Init(frame, width, height)
 	-- set our left-click action
 	frame:SetAttribute("type1", "target")
 	frame:SetAttribute("*type1", "target")
+	frame:SetAttribute("toggleForVehicle", true)
 
 	frame:Reset()
 
@@ -112,7 +113,7 @@ function GridFramePrototype:OnEnter()
 				(self.unit and UnitIsDeadOrGhost(self.unit)))) then
 
 		UnitFrame_OnEnter(self)
-		self:SetScript("OnUpdate", UnitFrame_OnUpdate)
+--		self:SetScript("OnUpdate", UnitFrame_OnUpdate)
 	else
 		self:OnLeave()
 	end
@@ -120,7 +121,7 @@ end
 
 function GridFramePrototype:OnLeave()
 	UnitFrame_OnLeave(self)
-	self:SetScript("OnUpdate", nil)
+--	self:SetScript("OnUpdate", nil)
 end
 
 function GridFramePrototype:LayoutIndicators()
@@ -140,6 +141,10 @@ function GridFramePrototype:SetBar(value, max)
 		max = 100
 	end
 	self.Bar:SetValue(value/max*100)
+end
+
+function GridFramePrototype:GetModifiedUnit()
+	return SecureButton_GetModifiedUnit(self)
 end
 
 --}}}
@@ -170,9 +175,14 @@ function Grid2Frame:OnInitialize()
 end
 
 function Grid2Frame:OnEnable()
-	self:RegisterMessage("Grid_StatusGained", "UpdateUnitFrame")
-	self:RegisterMessage("Grid_StatusLost", "UpdateUnitFrame")
+	self:RegisterMessage("Grid_StatusGained", "UpdateFrameUnits")
+	self:RegisterMessage("Grid_StatusLost", "UpdateFrameUnits")
+	self:RegisterMessage("PLAYER_ENTERING_WORLD", "UpdateFrameUnits")
+	self:RegisterMessage("UNIT_ENTERED_VEHICLE", "UpdateFrameUnits")
+	self:RegisterMessage("UNIT_EXITED_VEHICLE", "UpdateFrameUnits")
+	self:RegisterMessage("Grid_RosterUpdated", "UpdateFrameUnits")
 	self:ResetAllFrames()
+	self:UpdateFrameUnits()
 	self:UpdateAllFrames()
 end
 
@@ -184,6 +194,7 @@ end
 function Grid2Frame:Reset()
 	self.core.defaultModulePrototype.Reset(self)
 	self:ResetAllFrames()
+	self:UpdateFrameUnits()
 	self:UpdateAllFrames()
 end
 
@@ -222,9 +233,9 @@ end
 
 do
 	local update_handler = function (f)
-		if f.unit then
+--		if f.unit then
 			Grid2Frame:UpdateIndicators(f)
-		end
+--		end
 	end
 	function Grid2Frame:UpdateAllFrames()
 		self:WithAllFrames(update_handler)
@@ -240,7 +251,7 @@ function Grid2Frame:GetFrameHeight()
 end
 
 function Grid2Frame:UpdateIndicators(frame)
-	local unitid = frame.unit or frame:GetAttribute("unit")
+	local unitid = frame.unit
 	if not unitid then return end
 
 	for _, indicator in self.core:IterateIndicators() do
@@ -250,11 +261,33 @@ end
 
 --{{{ Event handlers
 
-function Grid2Frame:UpdateUnitFrame()
-	for _, frame in pairs(self.registeredFrames) do
-print("Grid2Frame:UpdateUnitFrame", frame.unit, unit)
-		if frame.unit == unit then
-			self:UpdateIndicators(frame)
+function Grid2Frame:UpdateFrameUnits()
+	for frameName, frame in pairs(self.registeredFrames) do
+		if (frame:IsVisible()) then
+			local old_unit = frame.unit
+			local old_guid = frame.unitGUID
+			local unitid = frame:GetModifiedUnit()
+			local unitGUID = unitid and UnitGUID(unitid) or nil
+
+			if (old_unit ~= unitid or old_guid ~= unitGUID) then
+				self:Debug("Updating", frame_name, "to", unitid, unitGUID,
+						   "was", old_unit, old_guid)
+
+				if (unitid) then
+					frame.unit = unitid
+					frame.unitGUID = unitGUID
+
+					if (unitGUID) then
+						self:UpdateIndicators(frame)
+					end
+				else
+					frame.unit = nil
+					frame.unitGUID = nil
+
+					frame:Reset() -- ToDo: is this right?
+--					self:ClearIndicators(frame)
+				end
+			end
 		end
 	end
 end

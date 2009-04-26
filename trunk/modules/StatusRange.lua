@@ -14,11 +14,11 @@ local cache = {}
 local GetRangeValue
 
 local function Update()
-	for unit in Grid2:IterateRoster(true) do
-		local value = GetRangeValue(unit)
-		if value ~= cache[unit] then
-			cache[unit] = value
-			Range:UpdateIndicators(unit)
+	for guid, unitid in Grid2:IterateRoster() do
+		local value = GetRangeValue(unitid)
+		if value ~= cache[unitid] then
+			cache[unitid] = value
+			Range:UpdateIndicators(unitid)
 		end
 	end
 end

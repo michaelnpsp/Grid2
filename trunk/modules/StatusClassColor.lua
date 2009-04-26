@@ -43,10 +43,10 @@ end
 function ClassColor:UnitColor(unit)
 	local p = self.db.profile
 	local colors = p.colors
-	if not Grid2:UnitIsPet(unit) then
+	if (not Grid2:UnitIsPet(unit)) then
 		local _, c = UnitClass(unit)
 		return colors[c or "UNKNOWN_UNIT"] or colors.UNKNOWN_UNIT
-	elseif UnitIsCharmed(unit) and p.colorHostile then
+	elseif (UnitIsCharmed(unit) and p.colorHostile and UnitIsEnemy("player", unit)) then
 		return colors.HOSTILE
 	else
 		local c = UnitCreatureType(unit)

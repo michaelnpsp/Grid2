@@ -20,11 +20,11 @@ local rosterCache = setmetatable({}, { __index = function (self, unit)
 end})
 
 local invRosterCache = setmetatable({}, { __index = function (self, name)
-	for unit in Grid2:IterateRoster(true) do
-		local n = rosterCache[unit]
+	for guid, unitid in Grid2:IterateRoster() do
+		local n = rosterCache[unitid]
 		if not n then return end
-		self[n] = unit
-		if name == n then return unit end
+		self[n] = unitid
+		if name == n then return unitid end
 	end
 end})
 

@@ -188,8 +188,17 @@ end
 function Grid2:OnEnable()
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED", "RosterUpdated")
 	self:RegisterEvent("RAID_ROSTER_UPDATED", "RosterUpdated")
-	self:RegisterEvent("UNIT_PET")
+--	self:RegisterEvent("UNIT_PET")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+
+
+	self:RegisterEvent("UNIT_PET", "UpdateRoster")
+--	self:RegisterEvent("PARTY_MEMBERS_CHANGED", "UpdateRoster")
+--	self:RegisterEvent("RAID_ROSTER_UPDATE", "UpdateRoster")
+
+	self:RegisterEvent("UNIT_NAME_UPDATE", "UpdateRoster")
+	self:RegisterEvent("UNIT_PORTRAIT_UPDATE", "UpdateRoster")
+
 
 	self.db.RegisterCallback(self, "OnProfileChanged")
 
@@ -245,12 +254,15 @@ function Grid2:PLAYER_ENTERING_WORLD()
 end
 
 function Grid2:RosterUpdated()
-	local instType = select(2, IsInInstance())
+	local _, instType = IsInInstance()
 
-	if instType == "none" then
-		if GetNumRaidMembers() > 0 then
+	if (instType == "none") then
+		local raidMembers = GetNumRaidMembers()
+		if (raidMembers > 25) then
+			instType = "raid40"
+		elseif (raidMembers > 0) then
 			instType = "raid"
-		elseif GetNumPartyMembers() > 0 then
+		elseif (GetNumPartyMembers() > 0) then
 			instType = "party"
 		else
 			instType = "solo"

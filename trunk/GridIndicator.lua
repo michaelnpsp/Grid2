@@ -69,7 +69,7 @@ function indicator:GetCurrentStatus(unit)
 			if state then
 				if status:HasRange() then
 					if not range then
-						range = GridRange:GetUnitRange(unitid)
+						range = GridRange:GetUnitRange(unit)
 					end
 					if status:IsInRange(unit, range) then
 						return status, state
