@@ -50,6 +50,7 @@ L["Select which layout to use for solo."] = "솔로잉에 사용하기 위한 �
 L["Party Layout"] = "파티 배치"
 L["Select which layout to use for party."] = "파티에 사용하기 위한 배치를 선택합니다."
 L["Raid Layout"] = "공격대 배치"
+L["Raid 40 Layout"] = "40인 공격대 배치"
 L["Select which layout to use for raid."] = "공격대에 사용하기 위한 배치를 선택합니다."
 L["Heroic Raid Layout"] = "영웅 공격대 배치"
 L["Select which layout to use for raid in heroic mode."] = "영웅 던전에 사용하기 위한 배치를 선택합니다."
