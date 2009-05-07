@@ -1,6 +1,4 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
-local LG = LibStub("AceLocale-3.0"):GetLocale("Grid2")
-
 
 function Grid2Options.GetStatusColor(info)
 	local status = info.arg.status
@@ -246,19 +244,20 @@ local function MakeStatusClassColorOptions()
 		},
 	}
 	for _, type in ipairs{
-		LG["Beast"], LG["Demon"], LG["Humanoid"], LG["Elemental"],
+		"Beast", "Demon", "Humanoid", "Elemental",
 		"DEATHKNIGHT", "DRUID", "HUNTER", "MAGE", "PALADIN",
 		"PRIEST", "ROGUE", "SHAMAN", "WARLOCK", "WARRIOR",
 	} do
+		local translation = L[type]
 		options.colors.args[type] = {
 			type = "color",
-			name = (L["%s Color"]):format(L[type]),
+			name = (L["%s Color"]):format(translation),
 			get = function ()
-				local c = profile.colors[type]
+				local c = profile.colors[translation]
 				return c.r, c.g, c.b, c.a
 			end,
 			set = function (_, r, g, b, a)
-				local c = profile.colors[type]
+				local c = profile.colors[translation]
 				c.r, c.g, c.b, c.a = r, g, b, a
 				for guid, unitid in Grid2:IterateRoster() do
 					status:UpdateIndicators(unitid)
@@ -537,6 +536,12 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 	end
 
 	status = Grid2.statuses.charmed
+	if (status) then
+		options = Grid2Options:MakeStatusColorOption(status)
+		Grid2Options:AddElement("status",  status, options)
+	end
+
+	status = Grid2.statuses.death
 	if (status) then
 		options = Grid2Options:MakeStatusColorOption(status)
 		Grid2Options:AddElement("status",  status, options)
