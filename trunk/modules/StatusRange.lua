@@ -2,7 +2,7 @@ local Range = Grid2.statusPrototype:new("range")
 
 Range.defaultDB = {
 	profile = {
-		default = 0.6,
+		default = 0.25,
 		elapsed = 0.1,
 		ranges = {
 			[40] = 1,

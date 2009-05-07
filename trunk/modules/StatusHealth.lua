@@ -111,7 +111,7 @@ Grid2:RegisterStatus(LowHealth, { "color" })
 
 Death.defaultDB = {
 	profile = {
-		color1 = { r = .5, g = .5, b = .5, a = 1 },
+		color1 = { r = .5, g = .5, b = .5, a = .25 },
 	}
 }
 
