@@ -50,7 +50,7 @@ end
 
 Health.defaultDB = {
 	profile = {
-		deadAsFullHealth = true,
+		deadAsFullHealth = nil,
 	}
 }
 
@@ -67,7 +67,7 @@ function Health:IsActive(unit)
 end
 
 function Health:GetPercent(unit)
-	if self.db.profile.deadAsFullHealth and UnitIsDeadOrGhost(unit) then
+	if (self.db.profile.deadAsFullHealth and UnitIsDeadOrGhost(unit)) then
 		return 1
 	end
 	return UnitHealth(unit) / UnitHealthMax(unit)
@@ -134,7 +134,7 @@ end
 
 function Death:GetPercent(unit)
 	local color = self.db.profile.color1
-	return UnitIsDeadOrGhost(unit) and 1 or color.a
+	return UnitIsDeadOrGhost(unit) and color.a or 1
 end
 
 function Death:GetText(unit)
@@ -173,7 +173,8 @@ function FeignDeath:GetColor(unit)
 end
 
 function FeignDeath:GetPercent(unit)
-	return UnitIsFeignDeath(unit) and 1 or self.db.profile.color1.a
+	local color = self.db.profile.color1
+	return UnitIsFeignDeath(unit) and color.a or 1
 end
 
 function FeignDeath:GetText(unit)

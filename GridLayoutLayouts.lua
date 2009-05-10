@@ -30,11 +30,13 @@ Grid2Layout:AddLayout(L["Solo"], {
 	meta = {
 		solo = true,
 		party = true,
+		arena = true,
 	},
 	[1] = {
 		type = "party",
 		showPlayer = true,
 		showSolo = true,
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 })
 
@@ -42,17 +44,20 @@ Grid2Layout:AddLayout(L["Solo w/Pet"], {
 	meta = {
 		solo = true,
 		party = true,
+		arena = true,
 	},
 	[1] = {
 		type = "party",
 		showPlayer = true,
 		showSolo = true,
+		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[2] = {
 		type = "partypet",
 		showPlayer = true,
 		showSolo = true,
 		filterOnPet = true,
+		groupingOrder = DEFAULT_GROUP_ORDER,
 --		useOwnerUnit = true,
 	}
 })
@@ -147,6 +152,8 @@ Grid2Layout:AddLayout(L["By Class 25"], {
 		solo = true,
 	},
 	[1] = {
+		showSolo = true,
+		showPlayer = true,
 		groupFilter = "1,2,3,4,5",
 		groupBy = "CLASS",
 		groupingOrder = DEFAULT_GROUP_ORDER,
@@ -169,8 +176,12 @@ Grid2Layout:AddLayout(L["By Role 25"], {
 		pvp = true,
 		arena = true,
 		solo = true,
+		showSolo = true,
+		showPlayer = true,
 	},
 	[1] = {
+		showSolo = true,
+		showPlayer = true,
 		groupFilter = "1,2,3,4,5",
 		groupBy = "ROLE",
 		groupingOrder = DEFAULT_GROUP_ORDER,
@@ -331,7 +342,9 @@ Grid2Layout:AddLayout(L["By Group 5"], {
 		arena = true,
 	},
 	[1] = {
-		groupFilter = "1",
+		showPlayer = true,
+		showParty = true,
+		showRaid = true,
 		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 })
@@ -342,7 +355,9 @@ Grid2Layout:AddLayout(L["By Group 5 w/Pets"], {
 		arena = true,
 	},
 	[1] = {
-		groupFilter = "1",
+		showPlayer = true,
+		showParty = true,
+		showRaid = true,
 		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[2] = {
