@@ -199,9 +199,9 @@ function Grid2:SetupDefaultAuras(setup, class)
 		self:SetupIndicatorStatus(setupIndicator, "side-bottom", "buff-HornOfWinter-mine", 99)
 	elseif (class == "DRUID") then
 		setup.buffs["buff-AbolishPoison-mine"] = {2893, true, nil, .9, 1, .6, 1}
-		setup.buffs["buff-Lifebloom-mine"] = {33763, true, nil, 0, .5, 0, 1, .5, .8, .5, 1, 1, 1, 1, 1}
-		setup.buffs["buff-Rejuv-mine"] = {774, true, nil, .5, 0, .3, 1}
-		setup.buffs["buff-Regrowth-mine"] = {8936, true, nil, 0, .5, 0, 1}
+		setup.buffs["buff-Lifebloom-mine"] = {33763, true, nil, .2, .7, .2, 1, .6, .9, .6, 1, 1, 1, 1, 1}
+		setup.buffs["buff-Rejuv-mine"] = {774, true, nil, 1, 0, .6, 1}
+		setup.buffs["buff-Regrowth-mine"] = {8936, true, nil, .5, 1, 0, 1}
 		setup.buffs["buff-Thorns"] = {467, false, true, .2, .05, .05, 1}
 		setup.buffs["buff-WildGrowth-mine"] = {53248, true, nil, .2, .9, .2, 1}
 

@@ -262,6 +262,9 @@ function Grid2:RosterUpdated()
 			instType = "raid40"
 		elseif (raidMembers > 0) then
 			instType = "raid"
+			if (raidMembers > 15) then
+				instType = "hraid"
+			end
 		elseif (GetNumPartyMembers() > 0) then
 			instType = "party"
 		else
@@ -273,7 +276,7 @@ function Grid2:RosterUpdated()
 
 	self:Debug("RosterUpdated", groupType, "=>", instType)
 
-	if groupType ~= instType then
+	if (groupType ~= instType) then
 		groupType = instType
 		self:SendMessage("Grid_GroupTypeChanged", groupType)
 	end
