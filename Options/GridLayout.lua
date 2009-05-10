@@ -58,11 +58,27 @@ Grid2Options:AddModule("Grid2", "Grid2Layout", Grid2Layout, {
 					  end,
 				values = {},
 			},
+			arena = {
+				type = "select",
+				name = L["Arena Layout"],
+				desc = L["Select which layout to use for arenas."],
+				order = 3,
+				get = function ()
+						  return Grid2Layout.db.profile.layouts.arena
+					  end,
+				set = function (_, v)
+						  Grid2Layout.db.profile.layouts.arena = v
+						  if Grid2Layout.partyType == "arena" then
+							Grid2Layout:LoadLayout(v)
+						  end
+					  end,
+				values = {},
+			},
 			raid = {
 				type = "select",
 				name = L["Raid Layout"],
 				desc = L["Select which layout to use for raid."],
-				order = 3,
+				order = 4,
 				get = function ()
 						  return Grid2Layout.db.profile.layouts.raid
 					  end,
@@ -78,7 +94,7 @@ Grid2Options:AddModule("Grid2", "Grid2Layout", Grid2Layout, {
 				type = "select",
 				name = L["Raid 40 Layout"],
 				desc = L["Select which layout to use for raid."],
-				order = 3,
+				order = 6,
 				get = function ()
 						  return Grid2Layout.db.profile.layouts.raid40
 					  end,
@@ -94,7 +110,7 @@ Grid2Options:AddModule("Grid2", "Grid2Layout", Grid2Layout, {
 				type = "select",
 				name = L["Heroic Raid Layout"],
 				desc = L["Select which layout to use for raid in heroic mode."],
-				order = 3,
+				order = 5,
 				get = function ()
 						  return Grid2Layout.db.profile.layouts.hraid
 					  end,
@@ -110,29 +126,13 @@ Grid2Options:AddModule("Grid2", "Grid2Layout", Grid2Layout, {
 				type = "select",
 				name = L["Battleground Layout"],
 				desc = L["Select which layout to use for battlegrounds."],
-				order = 4,
+				order = 7,
 				get = function ()
 						  return Grid2Layout.db.profile.layouts.pvp
 					  end,
 				set = function (_, v)
 						  Grid2Layout.db.profile.layouts.pvp = v
 						  if Grid2Layout.partyType == "pvp" then
-							Grid2Layout:LoadLayout(v)
-						  end
-					  end,
-				values = {},
-			},
-			arena = {
-				type = "select",
-				name = L["Arena Layout"],
-				desc = L["Select which layout to use for arenas."],
-				order = 5,
-				get = function ()
-						  return Grid2Layout.db.profile.layouts.arena
-					  end,
-				set = function (_, v)
-						  Grid2Layout.db.profile.layouts.arena = v
-						  if Grid2Layout.partyType == "arena" then
 							Grid2Layout:LoadLayout(v)
 						  end
 					  end,
