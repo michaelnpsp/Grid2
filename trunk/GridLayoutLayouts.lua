@@ -176,8 +176,6 @@ Grid2Layout:AddLayout(L["By Role 25"], {
 		pvp = true,
 		arena = true,
 		solo = true,
-		showSolo = true,
-		showPlayer = true,
 	},
 	[1] = {
 		showSolo = true,
