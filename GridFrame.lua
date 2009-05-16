@@ -21,24 +21,25 @@ end
 function GridFrameEvents:OnAttributeChanged(name, value)
 	if (name == "unit") then
 		if (value) then
-			self.unit = value
-			local unitGUID = UnitGUID(value)
+			local unitid = self:GetModifiedUnit()
+			self.unit = unitid
+			local unitGUID = UnitGUID(unitid)
 			if (unitGUID ~= nil) then
 				self.unitGUID = unitGUID
 			end
 
-			Grid2Frame:Debug("updated", self:GetName(), name, value, "unitGUID", unitGUID)
+			Grid2Frame:Debug("updated", self:GetName(), name, value, unitid, "unitGUID", unitGUID)
 			Grid2Frame:UpdateIndicators(self)
 		else
-			Grid2Frame:Debug("removed", self:GetName(), name, value, "unitGUID", unitGUID)
+			Grid2Frame:Debug("removed", self:GetName(), name, self.unit, "unitGUID", unitGUID)
 
 			self.unitGUID = nil
-			self.unitName = nil
 			self.unit = nil
 		end
 		Grid2:SetFrameUnit(self, value)
 --ToDo: when does this arise and does it need handling?
 	elseif name == "type1" and (not value or value == "") then
+print("***type1 set to target, value: <", value, ">")
 		self:SetAttribute("type1", "target")
 	end
 end
@@ -252,7 +253,14 @@ end
 
 function Grid2Frame:UpdateIndicators(frame)
 	local unitid = frame.unit
-	if not unitid then return end
+assert(unitid == frame:GetModifiedUnit(), "Grid2Frame:UpdateIndicators non matching unitid")
+	if (not unitid) then
+		unitid = frame:GetModifiedUnit()
+		if (not unitid) then
+			return
+		end
+print("Grid2Frame:UpdateIndicators had a GetModifiedUnit", unitid)
+	end
 
 	for _, indicator in self.core:IterateIndicators() do
 		indicator:Update(frame, unitid)
@@ -320,7 +328,7 @@ function Grid2Frame:ListRegisteredFrames()
 			frame.unit == frame:GetAttribute("unit") and
 					"|cff00ff00"..(frame.unit or "nil").."|r" or
 					"|cffff0000"..(frame.unit or "nil").."|r",
-				"|cff00ff00"..(UnitName(frame.unit) or "nil").."|r",
+				"|cff00ff00"..(frame.unit and UnitName(frame.unit) or "nil").."|r",
 			frame:GetAttribute("type1"),
 			frame:GetAttribute("*type1"),
 			frameStatus)
