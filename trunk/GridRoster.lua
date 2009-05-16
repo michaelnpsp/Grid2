@@ -175,17 +175,17 @@ function Grid2:IterateRoster()
 end
 
 function Grid2:UnitIsPet(unitid)
+--[[
 	if (unitid) then
 		return bit.band(UnitGUID(unitid):sub(1, 5), 0x00f) == 0x004
 	end
---[[
+--]]
 	local owner = owner_of_unit[unitid]
 	if (owner and pet_of_unit[owner] == unitid) then
 		return true
 	else
 		return false
 	end
---]]
 end
 
 -- roster updating
