@@ -320,10 +320,14 @@ Grid2Layout:AddLayout(L["By Group 10 w/Pets"], {
 	},
 	[1] = {
 		groupFilter = "1",
+		showPlayer = true,
+		showRaid = true,
 		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[2] = {
 		groupFilter = "2",
+		showPlayer = true,
+		showRaid = true,
 		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[3] = {
