@@ -4,7 +4,7 @@ local Offline = Grid2.statusPrototype:new("offline")
 
 Offline.defaultDB = {
 	profile = {
-		color1 = { r = 1, g = 0, b = 0, a = 0.5 },
+		color1 = { r = 1, g = 1, b = 1, a = 1 },
 	}
 }
 

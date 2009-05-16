@@ -10,8 +10,7 @@ function Target:OnEnable()
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
 end
 
-function Target:PLAYER_TARGET_CHANGED(_, unit)
-	-- potentially costly. May need to use a cache here.
+function Target:PLAYER_TARGET_CHANGED(event)
 	for guid, unitid in Grid2:IterateRoster() do
 		self:UpdateIndicators(unitid)
 	end
@@ -22,6 +21,7 @@ function Target:OnDisable()
 end
 
 function Target:IsActive(unit)
+--print("Target:IsActive", unit, UnitIsUnit(unit, "target"))
 	return UnitIsUnit(unit, "target")
 end
 

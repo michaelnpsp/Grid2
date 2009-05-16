@@ -80,7 +80,7 @@ function LowMana:OnDisable()
 end
 
 function LowMana:IsActive(unit)
-	return UnitPowerType(unit) == 0 and Mana:GetPercent(unit) < self.db.profile.threshold
+	return (UnitPowerType(unit) == 0) and (Mana:GetPercent(unit) < self.db.profile.threshold)
 end
 
 function LowMana:GetColor(unit)
