@@ -204,6 +204,11 @@ L["Low HP threshold"] = "Порог \"Мало ЗД\""
 L["Set the HP % for the low HP warning."] = "Установить % для предупреждения о том что у игрока мало здоровья."
 
 --}}}
+--{{{ GridStatusPvp
+L["PvP"] = "PvP"
+L["FFA"] = "FFA"
+
+--}}}
 --{{{ GridStatusRange
 L["Range"] = "Расстояние"
 L["Range check frequency"] = "Частота проверки растояния"

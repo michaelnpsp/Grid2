@@ -198,6 +198,11 @@ L["Low HP threshold"] = "低生命值临界点"
 L["Set the HP % for the low HP warning."] = "设置低生命值警报的临界点。"
 
 --}}}
+--{{{ GridStatusPvp
+L["PvP"] = "PvP"
+L["FFA"] = "FFA"
+
+--}}}
 --{{{ GridStatusRange
 L["Range"] = "距离"
 L["Range check frequency"] = "距离检测的频率"
