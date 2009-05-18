@@ -1,6 +1,16 @@
 ﻿local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2Options", "deDE")
 if not L then return end
 
+L["healing-impossible"] = "healing-impossible"
+L["healing-prevented"] = "healing-prevented"
+L["healing-reduced"] = "healing-reduced"
+L["pvp"] = "pvp"
+
+L["Beast"] = "Beast"
+L["Demon"] = "Demon"
+L["Humanoid"] = "Humanoid"
+L["Elemental"] = "Elemental"
+
 L["DEATHKNIGHT"] = "Todesritter"
 L["DRUID"] = "Druidin"
 L["HUNTER"] = "Jägerin"

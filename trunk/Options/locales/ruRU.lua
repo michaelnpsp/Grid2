@@ -107,6 +107,7 @@ L["center-bottom"] = "по центру-внизу"
 L["healing-impossible"] = "исцеление-невозможно"
 L["healing-prevented"] = "исцеление-предотвращёно"
 L["healing-reduced"] = "исцеление-подавлено"
+L["pvp"] = "pvp"
 
 L["Beast"] = "Животное"
 L["Demon"] = "Демон"

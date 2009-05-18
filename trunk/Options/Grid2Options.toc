@@ -1,5 +1,5 @@
 ## Interface: 30100
-## Title: Grid2 Options
+## Title: Grid2Options
 ## LoadOnDemand: 1
 ## Dependencies: Grid2
 
