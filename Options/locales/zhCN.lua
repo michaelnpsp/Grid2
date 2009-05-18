@@ -79,6 +79,7 @@ L["TOPLEFT"] = "左上"
 L["TOPRIGHT"] = "右上"
 L["BOTTOMLEFT"] = "左下"
 L["BOTTOMRIGHT"] = "右下"
+L["pvp"] = "pvp"
 
 L["Beast"] = "野兽"
 L["Demon"] = "恶魔"

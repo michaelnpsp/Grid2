@@ -111,6 +111,7 @@ L["center-bottom"] = "center-bottom"
 L["healing-impossible"] = "healing-impossible"
 L["healing-prevented"] = "healing-prevented"
 L["healing-reduced"] = "healing-reduced"
+L["pvp"] = "pvp"
 
 L["Beast"] = true
 L["Demon"] = true

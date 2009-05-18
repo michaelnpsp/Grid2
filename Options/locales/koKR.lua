@@ -111,6 +111,7 @@ L["center-bottom"] = "중앙-하단"
 L["healing-impossible"] = "치유-불가"
 L["healing-prevented"] = "치유-방해"
 L["healing-reduced"] = "치유-감소"
+L["pvp"] = "pvp"
 
 L["Beast"] = "야수형"
 L["Demon"] = "악마형"

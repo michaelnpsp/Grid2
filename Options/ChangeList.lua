@@ -1,3 +1,10 @@
+-- C:\Users\Dirk\Documents\dev\LibPeriodicTable-3.1\lua5.1.exe C:\Users\Dirk\Documents\dev\LibPeriodicTable-3.1\dataminer.lua ClassSpell.Druid.Restoration
+-- C:\Users\Dirk\Documents\dev\LibPeriodicTable-3.1\lua5.1.exe C:\Users\Dirk\Documents\dev\LibPeriodicTable-3.1\dataminer.lua Misc.Usable.Starts
+-- C:\Users\Dirk\Documents\dev\LibPeriodicTable-3.1\lua5.1.exe C:\Users\Dirk\Documents\dev\LibPeriodicTable-3.1\dataminer.lua Consumable
+-- C:\Users\Dirk\Documents\dev\LibPeriodicTable-3.1\lua5.1.exe C:\Users\Dirk\Documents\dev\LibPeriodicTable-3.1\dataminer.lua Gear
+-- C:\Users\Dirk\Documents\dev\LibPeriodicTable-3.1\lua5.1.exe C:\Users\Dirk\Documents\dev\LibPeriodicTable-3.1\dataminer.lua Misc
+-- C:\Users\Dirk\Documents\dev\LibPeriodicTable-3.1\lua5.1.exe C:\Users\Dirk\Documents\dev\LibPeriodicTable-3.1\dataminer.lua Tradeskill
+
 --Bugs:
 --Fix health bar ordering / layering
 
@@ -33,6 +40,7 @@
 --individual setups
 	--class
 	--spec
+--use blizzard threat api instead of banzai
 
 --Ideas:
 --color picker
@@ -241,4 +249,25 @@ AddToAutoHide(frame, child) -- Adds the rect of a child to the auto-hide footpri
 As noted above, the current implementation has a ocuple of bugs which render it largely unusuable right now.
 
 
+GetCursorInfo() and GetActionInfo() now correctly work with companions.
+GetCursorInfo() returns "companion", <companion index>, "MOUNT/CRITTER"
+GetActionInfo() returns "companion", <companion index>, "MOUNT/CRITTER", <creature spell id>
+<companion index> is the value used in GetCompanionInfo("type", index) and <creature spell id> is the same as the third return of GetCompanionInfo().
+At that, GetActionInfo() was changed so it also returns the spellID of spells as the 4th return too.
+
+
+The new macro option is "spec" and the possible values are 1 and 2 as follows:
+/cast [spec:1] Lightning Bolt; Healing Wave
+
+
+It's just a way of doing frame recycling instead of having to create a new frame every single time, it'll try and reuse an already created one. http://wowcompares.com/0109742/FrameXML/UIPanelTemplates.lua see bottom of file.
+
+
+StaticPopupDialogs["PARTY_INVITE"].OnHide = function(self) self:Hide(); end
+That stops invite canceling when you hide the frame regardless, you can just save OnHide's value and then set it to nil when you accept the invite and then reset it right after and it works fine.
+
+/dump (UnitGUID("player"))
+/dump bit.band(UnitGUID("player"):sub(1, 5), 0x00f) == 0x004
+
 --]]
+
