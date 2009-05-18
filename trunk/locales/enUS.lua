@@ -204,6 +204,11 @@ L["Low HP threshold"] = true
 L["Set the HP % for the low HP warning."] = true
 
 --}}}
+--{{{ GridStatusPvp
+L["PvP"] = true
+L["FFA"] = true
+
+--}}}
 --{{{ GridStatusRange
 L["Range"] = true
 L["Range check frequency"] = true

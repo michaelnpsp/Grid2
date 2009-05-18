@@ -56,13 +56,43 @@ Grid2Layout:AddLayout(L["Solo w/Pet"], {
 		type = "partypet",
 		showPlayer = true,
 		showSolo = true,
-		filterOnPet = true,
+--		filterOnPet = true,
 		groupingOrder = DEFAULT_GROUP_ORDER,
 --		useOwnerUnit = true,
 	}
 })
 
+Grid2Layout:AddLayout(L["By Group 5"], {
+	meta = {
+		party = true,
+		arena = true,
+	},
+	[1] = {
+		showPlayer = true,
+		showParty = true,
+		showRaid = true,
+		groupingOrder = DEFAULT_GROUP_ORDER,
+	},
+})
 
+Grid2Layout:AddLayout(L["By Group 5 w/Pets"], {
+	meta = {
+		party = true,
+		arena = true,
+	},
+	[1] = {
+		showPlayer = true,
+		showParty = true,
+		showRaid = true,
+		groupingOrder = DEFAULT_GROUP_ORDER,
+	},
+	[2] = {
+		type = "partypet",
+		unitsPerColumn = 5,
+		maxColumns = 5,
+--		filterOnPet = true,
+	},
+})
 
 Grid2Layout:AddLayout(L["By Group 40"], {
 	meta = {
@@ -332,38 +362,6 @@ Grid2Layout:AddLayout(L["By Group 10 w/Pets"], {
 	},
 	[3] = {
 		type = "raidpet",
-		unitsPerColumn = 5,
-		maxColumns = 5,
-		filterOnPet = true,
-	},
-})
-
-Grid2Layout:AddLayout(L["By Group 5"], {
-	meta = {
-		party = true,
-		arena = true,
-	},
-	[1] = {
-		showPlayer = true,
-		showParty = true,
-		showRaid = true,
-		groupingOrder = DEFAULT_GROUP_ORDER,
-	},
-})
-
-Grid2Layout:AddLayout(L["By Group 5 w/Pets"], {
-	meta = {
-		party = true,
-		arena = true,
-	},
-	[1] = {
-		showPlayer = true,
-		showParty = true,
-		showRaid = true,
-		groupingOrder = DEFAULT_GROUP_ORDER,
-	},
-	[2] = {
-		type = "partypet",
 		unitsPerColumn = 5,
 		maxColumns = 5,
 		filterOnPet = true,

@@ -52,7 +52,7 @@ local HeaderAttributes = {
 	"showPlayer", "showSolo", "nameList", "groupFilter", "strictFiltering",
 	"sortDir", "groupBy", "groupingOrder", "maxColumns", "unitsPerColumn",
 	"startingIndex", "columnSpacing", "columnAnchorPoint",
-	"allowVehicleTarget", "useOwnerUnit", "filterOnPet"
+	"allowVehicleTarget", "toggleForVehicle", "useOwnerUnit", "filterOnPet"
 }
 --, "toggleForVehicle"
 function GridLayoutHeaderClass.prototype:Reset()
@@ -61,6 +61,9 @@ function GridLayoutHeaderClass.prototype:Reset()
 		for _, attr in ipairs(HeaderAttributes) do
 			self:SetAttribute(attr, nil)
 		end
+--		self:SetAttribute("allowVehicleTarget", true)
+--		self:SetAttribute("toggleForVehicle", true)
+		self:SetAttribute("useOwnerUnit", true)
 	end
 	self:Hide()
 end

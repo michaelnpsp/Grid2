@@ -296,7 +296,9 @@ function Grid2:SetFrameUnit(frame, unit)
 		self.framesByUnit[unit] = frame
 	end
 end
-
+-- /dump Grid2.framesByUnit["pet"]
+-- /dump Grid2.framesByUnit["pet"]:GetAttribute("type1")
+-- /dump Grid2.framesByUnit["pet"]:GetAttribute("unit")
 function Grid2:GetUnitFrame(unit)
 	return self.framesByUnit[unit]
 end

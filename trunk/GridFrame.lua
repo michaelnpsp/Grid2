@@ -21,9 +21,11 @@ end
 function GridFrameEvents:OnAttributeChanged(name, value)
 	if (name == "unit") then
 		if (value) then
-			local unitid = self:GetModifiedUnit()
-			self.unit = unitid
-			local unitGUID = UnitGUID(unitid)
+--			local unitid = self:GetModifiedUnit()
+--			self.unit = unitid
+			self.unit = value
+--			local unitGUID = UnitGUID(unitid)
+			local unitGUID = UnitGUID(value)
 			if (unitGUID ~= nil) then
 				self.unitGUID = unitGUID
 			end
@@ -37,10 +39,13 @@ function GridFrameEvents:OnAttributeChanged(name, value)
 			self.unit = nil
 		end
 		Grid2:SetFrameUnit(self, value)
+	elseif (name == "type1" and (not value or value == "")) then
 --ToDo: when does this arise and does it need handling?
-	elseif name == "type1" and (not value or value == "") then
-print("***type1 set to target, value: <", value, ">")
+print("type1 set to target, value: <", value, "> ******")
 		self:SetAttribute("type1", "target")
+	elseif (name == "*type1" and (not value or value == "")) then
+print("*type1 set to target, value: <", value, "> ******")
+		self:SetAttribute("*type1", "target")
 	end
 end
 
@@ -253,9 +258,9 @@ end
 
 function Grid2Frame:UpdateIndicators(frame)
 	local unitid = frame.unit
-assert(unitid == frame:GetModifiedUnit(), "Grid2Frame:UpdateIndicators non matching unitid")
+--assert(unitid == frame:GetModifiedUnit(), "Grid2Frame:UpdateIndicators non matching unitid")
 	if (not unitid) then
-		unitid = frame:GetModifiedUnit()
+--		unitid = frame:GetModifiedUnit()
 		if (not unitid) then
 			return
 		end
@@ -272,17 +277,18 @@ end
 function Grid2Frame:UpdateFrameUnits()
 	for frameName, frame in pairs(self.registeredFrames) do
 		if (frame:IsVisible()) then
-			local old_unit = frame.unit
+--			local old_unit = frame.unit
+			local unitid = frame.unit
 			local old_guid = frame.unitGUID
-			local unitid = frame:GetModifiedUnit()
+--			local unitid = frame:GetModifiedUnit()
 			local unitGUID = unitid and UnitGUID(unitid) or nil
 
-			if (old_unit ~= unitid or old_guid ~= unitGUID) then
-				self:Debug("Updating", frame_name, "to", unitid, unitGUID,
-						   "was", old_unit, old_guid)
+--			if (old_unit ~= unitid or old_guid ~= unitGUID) then
+			if (old_guid ~= unitGUID) then
+--				self:Debug("Updating", frame_name, "to", unitid, unitGUID, "was", old_unit, old_guid)
 
 				if (unitid) then
-					frame.unit = unitid
+--					frame.unit = unitid
 					frame.unitGUID = unitGUID
 
 					if (unitGUID) then
