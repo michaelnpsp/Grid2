@@ -178,7 +178,7 @@ end
 
 function Grid2:OnChatCommand(input)
 	self:LoadOptions()
-	if Grid2Options then
+	if (Grid2Options) then
 		Grid2Options:OnChatCommand(input)
 	else
 		self:Print("You need the Grid2Options addon available to be able to configure Grid2.")

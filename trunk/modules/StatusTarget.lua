@@ -8,6 +8,8 @@ Target.defaultDB = {
 
 function Target:OnEnable()
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
+	self:RegisterEvent("Grid_UnitJoined")
+	self:RegisterEvent("Grid_UnitChanged")
 end
 
 function Target:PLAYER_TARGET_CHANGED(event)
@@ -16,8 +18,18 @@ function Target:PLAYER_TARGET_CHANGED(event)
 	end
 end
 
+function Target:Grid_UnitJoined(_, unitid, guid)
+	return self:UpdateIndicators(unitid)
+end
+
+function Target:Grid_UnitChanged(_, unitid, guid)
+	return self:UpdateIndicators(unitid)
+end
+
 function Target:OnDisable()
 	self:UnregisterEvent("PLAYER_TARGET_CHANGED")
+	self:UnregisterEvent("Grid_UnitJoined")
+	self:UnregisterEvent("Grid_UnitChanged")
 end
 
 function Target:IsActive(unit)

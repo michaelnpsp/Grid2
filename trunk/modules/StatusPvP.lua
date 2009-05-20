@@ -8,18 +8,13 @@ PvP.defaultDB = {
 	}
 }
 
-local function Frame_OnEvent(self, event, ...)
+local function Frame_OnEvent(self, event, unitid)
 	if (PvP.enabled) then
 		if (event == "RAID_ROSTER_UPDATE") then
-			local unit = ...
-			PvP:UpdateIndicators(unit)
+			PvP:UpdateIndicators(unitid)
 		elseif (event == "UNIT_FACTION") then
-			local unit = ...
-			local guid = Grid2:GetGUIDByFullName(unit)
-			local unitid = Grid2:GetUnitidByGUID(guid)
 			PvP:UpdateIndicators(unitid)
 		elseif (event == "Grid_UnitJoined") then
-			local guid, unitid = ...
 			PvP:UpdateIndicators(unitid)
 		else -- ZONE_CHANGED_NEW_AREA
 			for guid, unitid in Grid2:IterateRoster() do
@@ -92,17 +87,18 @@ local factionText, ffaText
 do
 	local faction = UnitFactionGroup("player")
 	if (faction == "Horde") then
---		factionTexture = [[Interface\PVPFrame\PVP-Currency-Horde]]
-		factionTexture = [[Interface\TargetingFrame\UI-PVP-Horde]]
+		factionTexture = [[Interface\PVPFrame\PVP-Currency-Horde]]
+--		factionTexture = [[Interface\TargetingFrame\UI-PVP-Horde]]
 		factionTexCoord = {0.08, 0.58, 0.045, 0.545}
 	else
---		factionTexture = [[Interface\PVPFrame\PVP-Currency-Alliance]]
-		factionTexture = [[Interface\TargetingFrame\UI-PVP-Alliance]]
+		factionTexture = [[Interface\PVPFrame\PVP-Currency-Alliance]]
+--		factionTexture = [[Interface\TargetingFrame\UI-PVP-Alliance]]
 		factionTexCoord = {0.07, 0.58, 0.06, 0.57}
 	end
 	factionText = L["PvP"]
 
 	ffaTexture = [[Interface\TargetingFrame\UI-PVP-FFA]]
+	--ToDo: add a TexCoord callback
 	ffaTexCoord = {0.05, 0.605, 0.015, 0.57}
 	ffaText = L["FFA"]
 end
@@ -117,6 +113,10 @@ function PvP:GetIcon(unitid)
 	end
 end
 
+function PvP:GetPercent(unitid)
+	return (UnitIsPVP(unitid) or UnitIsPVPFreeForAll(unitid)) and self.db.profile.color1.a
+end
+
 function PvP:GetText(unitid)
 	if (UnitIsPVP(unitid)) then
 		return factionText
@@ -127,9 +127,5 @@ function PvP:GetText(unitid)
 	end
 end
 
-function PvP:GetPercent(unitid)
-	return (UnitIsPVP(unitid) or UnitIsPVPFreeForAll(unitid)) and self.db.profile.color1.a
-end
-
-Grid2:RegisterStatus(PvP, { "color", "text", "percent" })
+Grid2:RegisterStatus(PvP, { "color", "icon", "percent", "text" })
 

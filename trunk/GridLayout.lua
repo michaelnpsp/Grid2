@@ -63,7 +63,7 @@ function GridLayoutHeaderClass.prototype:Reset()
 		end
 --		self:SetAttribute("allowVehicleTarget", true)
 --		self:SetAttribute("toggleForVehicle", true)
-		self:SetAttribute("useOwnerUnit", true)
+--		self:SetAttribute("useOwnerUnit", true)
 	end
 	self:Hide()
 end

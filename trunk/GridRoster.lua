@@ -252,7 +252,7 @@ do
 
 		for guid in pairs(units_to_remove) do
 			updated = true
-			self:SendMessage("Grid_UnitLeft", guid)
+			self:SendMessage("Grid_UnitLeft", roster.unitid[guid], guid)
 
 			for attr, attr_tbl in pairs(roster) do
 				attr_tbl[guid] = nil
@@ -263,14 +263,14 @@ do
 
 		for guid in pairs(units_added) do
 			updated = true
-			self:SendMessage("Grid_UnitJoined", guid, roster.unitid[guid])
-
+			self:SendMessage("Grid_UnitJoined", roster.unitid[guid], guid)
+--print("Grid2:UpdateRoster()", roster.unitid[guid], guid)
 			units_added[guid] = nil
 		end
 
 		for guid in pairs(units_updated) do
 			updated = true
-			self:SendMessage("Grid_UnitChanged", guid, roster.unitid[guid])
+			self:SendMessage("Grid_UnitChanged", roster.unitid[guid], guid)
 
 			units_updated[guid] = nil
 		end

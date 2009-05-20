@@ -37,10 +37,12 @@ do
 				frame:SetScript("OnEvent", nil)
 				frame:UnregisterEvent("UNIT_HEALTH")
 				frame:UnregisterEvent("UNIT_MAXHEALTH")
+				frame:UnregisterEvent("Grid_UnitJoined")
 			else
 				frame:SetScript("OnEvent", Frame_OnUnitHealthChanged)
 				frame:RegisterEvent("UNIT_HEALTH")
 				frame:RegisterEvent("UNIT_MAXHEALTH")
+				frame:RegisterEvent("Grid_UnitJoined")
 			end
 		end
 	end
