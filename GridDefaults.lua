@@ -251,10 +251,10 @@ function Grid2:SetupDefaultAuras(setup, class)
 
 		self:SetupIndicatorStatus(setupIndicator, "corner-top-right", "debuff-Forbearance", 89)
 	elseif (class == "PRIEST") then
-		setup.buffs["buff-Grace-mine"] = {47516, true, nil, 1, 1, 1, 1}
+		setup.buffs["buff-Grace-mine"] = {47516, true, nil, .6, .6, .6, 1, .8, .8, .8, 1, 1, 1, 1, 1}
 		setup.buffs["buff-DivineAegis"] = {47509, false, nil, 1, 1, 1, 1}
 		setup.buffs["buff-InnerFire"] = {588, false, true, 1, 1, 1, 1}
-		setup.buffs["buff-PrayerOfMending-mine"] = {33076, true, nil, 1, 1, 1, 1}
+		setup.buffs["buff-PrayerOfMending-mine"] = {33076, true, nil, 1, .2, .2, 1, 1, 1, .4, .4, 1, .6, .6, 1, 1, .8, .8, 1, 1, 1, 1, 1}
 		setup.buffs["buff-PowerWordShield"] = {17, false, nil, 1, 1, 1, 1}
 		setup.buffs["buff-Renew-mine"] = {139, true, nil, 1, 1, 1, 1}
 
