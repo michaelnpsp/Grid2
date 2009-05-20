@@ -22,7 +22,7 @@ function Grid2Options:RegisterIndicators(setupList, indicatorTypeKey, name, func
 	funcCreateOptionsList[indicatorTypeKey] = funcCreateOptions
 
 	for indicatorKey in pairs(setupList) do
-		funcCreateOptions(indicatorKey)
+		funcCreateOptions(Grid2.indicators[indicatorKey])
 	end
 end
 
@@ -163,47 +163,49 @@ end
 
 function Grid2Options:AddIndicatorCurrentStatusOptions(indicator, options)
 	local statusKey, order
-	for index, status in ipairs(indicator.statuses) do
-		statusKey = status.name
-		order = 4 * index
-		options[statusKey] = {
-			type = "toggle",
-			order = order,
-			name = status.name,
-			desc = L["Select statuses to display with the indicator"],
-			get = Grid2Options.GetIndicatorStatus,
-			set = Grid2Options.SetIndicatorStatusCurrent,
-			arg = indicator,
-		}
-		options[statusKey .. "U"] = {
-		    type = "execute",
-			order = order + 1,
-			width = "half",
-		    name = L["+"],
-		    desc = L["Move the status higher in priority"],
-			icon = "Interface\\Buttons\\UI-MicroButton-Spellbook-Up",
-		    func = function (info)
-		    	StatusShiftUp(info, indicator, status)
-			end,
-			arg = indicator,
-		}
-		options[statusKey .. "D"] = {
-		    type = "execute",
-			order = order + 2,
-			width = "half",
-		    name = L["-"],
-		    desc = L["Move the status lower in priority"],
-			icon = "Interface\\Buttons\\UI-MicroButton-Spellbook-Down",
-		    func = function (info)
-		    	StatusShiftDown(info, indicator, status)
-			end,
-			arg = indicator,
-		}
-		options[statusKey .. "S"] = {
-			type = "header",
-			order = order + 3,
-			name = "",
-		}
+	if (indicator.statuses) then
+		for index, status in ipairs(indicator.statuses) do
+			statusKey = status.name
+			order = 4 * index
+			options[statusKey] = {
+				type = "toggle",
+				order = order,
+				name = status.name,
+				desc = L["Select statuses to display with the indicator"],
+				get = Grid2Options.GetIndicatorStatus,
+				set = Grid2Options.SetIndicatorStatusCurrent,
+				arg = indicator,
+			}
+			options[statusKey .. "U"] = {
+			    type = "execute",
+				order = order + 1,
+				width = "half",
+			    name = L["+"],
+			    desc = L["Move the status higher in priority"],
+				icon = "Interface\\Buttons\\UI-MicroButton-Spellbook-Up",
+			    func = function (info)
+			    	StatusShiftUp(info, indicator, status)
+				end,
+				arg = indicator,
+			}
+			options[statusKey .. "D"] = {
+			    type = "execute",
+				order = order + 2,
+				width = "half",
+			    name = L["-"],
+			    desc = L["Move the status lower in priority"],
+				icon = "Interface\\Buttons\\UI-MicroButton-Spellbook-Down",
+			    func = function (info)
+			    	StatusShiftDown(info, indicator, status)
+				end,
+				arg = indicator,
+			}
+			options[statusKey .. "S"] = {
+				type = "header",
+				order = order + 3,
+				name = "",
+			}
+		end
 	end
 end
 
@@ -283,8 +285,8 @@ function Grid2Options:AddIndicatorLocationOptions(indicator, options)
 end
 
 
-local function AddTextIndicatorOptions(indicatorKey)
-	local Text = Grid2.indicators[indicatorKey]
+local function AddTextIndicatorOptions(Text)
+--	local Text = Grid2.indicators[indicatorKey]
 	local options = {
 		textlength = {
 			type = "range",
@@ -357,7 +359,7 @@ local function AddTextIndicatorOptions(indicatorKey)
 
 	Grid2Options:AddElement("indicator", Text, options)
 
-	local TextColor = Grid2.indicators[indicatorKey .. "-color"]
+	local TextColor = Grid2.indicators[Text.name .. "-color"]
 	if (not TextColor) then
 		return
 	end
@@ -426,8 +428,8 @@ local function AddBorderIndicatorOptions(status)
 	Grid2Options:AddElement("indicator", status, options)
 end
 
-local function AddIconIndicatorOptions(indicatorKey)
-	local Icon = Grid2.indicators[indicatorKey]
+local function AddIconIndicatorOptions(Icon)
+--	local Icon = Grid2.indicators[indicatorKey]
 	local options = {
 		iconsize = {
 			type = "range",
@@ -453,8 +455,8 @@ local function AddIconIndicatorOptions(indicatorKey)
 	Grid2Options:AddElement("indicator", Icon, options)
 end
 
-local function AddSquareIndicatorOptions(indicatorKey)
-	local Square = Grid2.indicators[indicatorKey]
+local function AddSquareIndicatorOptions(Square)
+--	local Square = Grid2.indicators[indicatorKey]
 	local options = {
 		size = {
 			type = "range",
@@ -645,3 +647,4 @@ function Grid2Options:AddSetupIndicatorsOptions(setup, reset)
 end
 
 Grid2Options:AddSetupIndicatorsOptions(Grid2.db.profile.setup)
+-- /dump Grid2.db.profile.setup.indicators.square

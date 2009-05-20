@@ -37,26 +37,26 @@ function Grid2Options:AddModule(parent, name, module, extraOptions)
 	self:AddModuleDebugMenu(name, module)
 end
 
-function Grid2Options:AddElement(type, element, extraOptions)
+function Grid2Options:AddElement(elementType, element, extraOptions)
 	extraOptions = extraOptions or element.extraOptions
 	element.extraOptions = nil
 	if not extraOptions then return end
 
-	local group = self.options.Grid2.args[type]
+	local group = self.options.Grid2.args[elementType]
 	if not group then
 		group = {
 			type = "group",
-			name = L[type] or type,
-			desc = L["Options for %s."]:format(type),
+			name = L[elementType] or elementType,
+			desc = L["Options for %s."]:format(elementType),
 			args = {},
 		}
-		self.options.Grid2.args[type] = group
+		self.options.Grid2.args[elementType] = group
 	end
 	local options = {}
 	group.args[element.name] = {
 		type = "group",
 		name = element.name,
-		desc = L["Options for %s."]:format(type),
+		desc = L["Options for %s."]:format(elementType),
 		args = options,
 	}
 	for name, option in pairs(extraOptions) do
