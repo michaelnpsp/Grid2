@@ -19,6 +19,8 @@
 <Script file="modules\StatusOffline.lua"/>
 <Script file="modules\StatusPvP.lua"/>
 <Script file="modules\StatusRange.lua"/>
+<Script file="modules\StatusReadyCheck.lua"/>
+<Script file="modules\StatusVehicle.lua"/>
 <Script file="modules\StatusVoiceComm.lua"/>
 
 </Ui>

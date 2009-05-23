@@ -9,8 +9,8 @@ L["Charmed"] = true
 --{{{ GridCore
 L["Configure"] = true
 L["Configure Grid"] = true
-
 --}}}
+
 --{{{ GridFrame
 L["Frame"] = true
 L["Options for GridFrame."] = true
@@ -36,8 +36,8 @@ L["Enable %s indicator"] = true
 L["Toggle the %s indicator."] = true
 L["Orientation of Text"] = true
 L["Set frame text orientation."] = true
-
 --}}}
+
 --{{{ GridLayout
 L["Layout"] = true
 L["Options for GridLayout."] = true
@@ -79,8 +79,8 @@ L["Color for %s."] = true
 -- Advanced options
 L["Advanced"] = true
 L["Advanced options."] = true
-
 --}}}
+
 --{{{ GridLayoutLayouts
 L["None"] = true
 L["Solo"] = true
@@ -101,13 +101,13 @@ L["By Class"] = true
 L["By Class w/Pets"] = true
 L["Onyxia"] = true
 L["By Group 25 w/tanks"] = true
-
 --}}}
+
 --{{{ GridRange
 -- used for getting spell range from tooltip
 L["(%d+) yd range"] = true
-
 --}}}
+
 --{{{ GridStatus
 L["Status"] = true
 L["Statuses"] = true
@@ -122,13 +122,13 @@ L["Range filter"] = true
 L["Range filter for %s"] = true
 L["Enable"] = true
 L["Enable %s"] = true
-
 --}}}
+
 --{{{ GridStatusAggro
 L["Aggro"] = true
 L["Aggro alert"] = true
-
 --}}}
+
 --{{{ GridStatusAuras
 L["Auras"] = true
 L["Debuff type: %s"] = true
@@ -155,21 +155,21 @@ L["Show if missing"] = true
 L["Display status only if the buff is not active."] = true
 L["Filter Abolished units"] = true
 L["Skip units that have an active Abolish buff."] = true
-
 --}}}
+
 --{{{ GridStatusName
 L["Unit Name"] = true
 L["Color by class"] = true
-
 --}}}
+
 --{{{ GridStatusMana
 L["Mana"] = true
 L["Low Mana"] = true
 L["Mana threshold"] = true
 L["Set the percentage for the low mana warning."] = true
 L["Low Mana warning"] = true
-
 --}}}
+
 --{{{ GridStatusHeals
 L["Heals"] = true
 L["Incoming heals"] = true
@@ -178,8 +178,8 @@ L["Ignore heals cast by you."] = true
 L["(.+) begins to cast (.+)."] = true
 L["(.+) gains (.+) Mana from (.+)'s Life Tap."] = true
 L["^Corpse of (.+)$"] = true
-
 --}}}
+
 --{{{ GridStatusHealth
 L["Low HP"] = true
 L["DEAD"] = true
@@ -202,13 +202,13 @@ L["Only show deficit above % damage."] = true
 L["Color deficit based on class."] = true
 L["Low HP threshold"] = true
 L["Set the HP % for the low HP warning."] = true
-
 --}}}
+
 --{{{ GridStatusPvp
 L["PvP"] = true
 L["FFA"] = true
-
 --}}}
+
 --{{{ GridStatusRange
 L["Range"] = true
 L["Range check frequency"] = true
@@ -218,15 +218,25 @@ L["OOR"] = true
 L["Range to track"] = true
 L["Range in yard beyond which the status will be lost."] = true
 L["%d yards"] = true
-
 --}}}
+
+--{{{ GridStatusReadyCheck
+L["?"] = true
+L["R"] = true
+L["X"] = true
+L["AFK"] = true
+--}}}
+
 --{{{ GridStatusTarget
 L["Target"] = true
 L["Your Target"] = true
-
 --}}}
+
+--{{{ GridStatusVehicle
+L["vehicle"] = true
+--}}}
+
 --{{{ GridStatusVoiceComm
 L["Voice Chat"] = true
 L["Talking"] = true
-
 --}}}

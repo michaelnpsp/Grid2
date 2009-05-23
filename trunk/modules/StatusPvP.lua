@@ -1,6 +1,7 @@
+local PvP = Grid2.statusPrototype:new("pvp")
+
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
-local PvP = Grid2.statusPrototype:new("pvp")
 
 PvP.defaultDB = {
 	profile = {
@@ -8,68 +9,33 @@ PvP.defaultDB = {
 	}
 }
 
-local function Frame_OnEvent(self, event, unitid)
-	if (PvP.enabled) then
-		if (event == "RAID_ROSTER_UPDATE") then
-			PvP:UpdateIndicators(unitid)
-		elseif (event == "UNIT_FACTION") then
-			PvP:UpdateIndicators(unitid)
-		elseif (event == "Grid_UnitJoined") then
-			PvP:UpdateIndicators(unitid)
-		else -- ZONE_CHANGED_NEW_AREA
-			for guid, unitid in Grid2:IterateRoster() do
-				PvP:UpdateIndicators(unitid)
-			end
-		end
-	end
+function frame:RAID_ROSTER_UPDATE(event, unitid)
+	PvP:UpdateIndicators(unitid)
 end
 
-local EnableRosterFrame
-do
-	local frame
-	local count = 0
-	function EnableRosterFrame(enable)
-		local prev = (count == 0)
-		if enable then
-			count = count + 1
-		else
-			count = count - 1
-		end
-		assert(count >= 0)
-		local curr = (count == 0)
-		if prev ~= curr then
-			if not frame then
-				frame = CreateFrame("Frame", nil, Grid2LayoutFrame)
-			end
-			if curr then
-				frame:SetScript("OnEvent", nil)
-				frame:UnregisterEvent("RAID_ROSTER_UPDATE")
-				frame:UnregisterEvent("UNIT_FACTION")
-				frame:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
-				frame:UnregisterEvent("Grid_UnitJoined")
-			else
-				frame:SetScript("OnEvent", Frame_OnEvent)
-				frame:RegisterEvent("RAID_ROSTER_UPDATE")
-				frame:RegisterEvent("UNIT_FACTION")
-				frame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-				frame:RegisterEvent("Grid_UnitJoined")
-			end
-		end
+function frame:ZONE_CHANGED_NEW_AREA(event)
+	for guid, unitid in Grid2:IterateRoster() do
+		PvP:UpdateIndicators(unitid)
 	end
 end
-
 
 function PvP:OnEnable()
-	EnableRosterFrame(true)
+	self:RegisterEvent("RAID_ROSTER_UPDATE", "RAID_ROSTER_UPDATE")
+	self:RegisterEvent("UNIT_FACTION", "RAID_ROSTER_UPDATE")
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "ZONE_CHANGED_NEW_AREA")
+	self:RegisterEvent("Grid_UnitJoined", "RAID_ROSTER_UPDATE")
 end
 
 function PvP:OnDisable()
-	EnableRosterFrame(false)
+	self:UnregisterEvent("RAID_ROSTER_UPDATE")
+	self:UnregisterEvent("UNIT_FACTION")
+	self:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
+	self:UnregisterEvent("Grid_UnitJoined")
 end
 
 function PvP:IsActive(unitid)
-	local _, instanceType = IsInInstance()
-	if (instanceType == "pvp" or instanceType == "arena") then
+	local inInstance, instanceType = IsInInstance()
+	if (inInstance) then
 		return nil
 	else
 		return UnitIsPVP(unitid) or UnitIsPVPFreeForAll(unitid)
@@ -88,12 +54,10 @@ do
 	local faction = UnitFactionGroup("player")
 	if (faction == "Horde") then
 		factionTexture = [[Interface\PVPFrame\PVP-Currency-Horde]]
---		factionTexture = [[Interface\TargetingFrame\UI-PVP-Horde]]
-		factionTexCoord = {0.08, 0.58, 0.045, 0.545}
+--		factionTexCoord = {0.08, 0.58, 0.045, 0.545}
 	else
 		factionTexture = [[Interface\PVPFrame\PVP-Currency-Alliance]]
---		factionTexture = [[Interface\TargetingFrame\UI-PVP-Alliance]]
-		factionTexCoord = {0.07, 0.58, 0.06, 0.57}
+--		factionTexCoord = {0.07, 0.58, 0.06, 0.57}
 	end
 	factionText = L["PvP"]
 

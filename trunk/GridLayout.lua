@@ -411,7 +411,7 @@ function Grid2Layout:LoadLayout(layoutName)
 				if attr == "unitsPerColumn" then
 					layoutGroup:SetAttribute("unitsPerColumn", value)
 					layoutGroup:SetAttribute("columnSpacing", p.Padding)
-					layoutGroup:SetAttribute("columnAnchorPoint",  getColumnAnchorPoint(p.groupAnchor, p.horizontal))
+					layoutGroup:SetAttribute("columnAnchorPoint", getColumnAnchorPoint(p.groupAnchor, p.horizontal))
 				elseif attr ~= "type" then
 					layoutGroup:SetAttribute(attr, value)
 				end

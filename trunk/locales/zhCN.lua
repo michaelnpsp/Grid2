@@ -4,8 +4,8 @@ if not L then return end
 --{{{ GridCore
 L["Configure"] = "配置"
 L["Configure Grid"] = "配置 Grid"
-
 --}}}
+
 --{{{ GridFrame
 L["Frame"] = "框架"
 L["Options for GridFrame."] = "Grid 框架选项"
@@ -32,8 +32,8 @@ L["Enable %s indicator"] = "启用%s指示器"
 L["Toggle the %s indicator."] = "打开/关闭%s指示器。"
 L["Orientation of Text"] = "文字排列方式"
 L["Set frame text orientation."] = "设置框架文字排列方式。"
-
 --}}}
+
 --{{{ GridLayout
 L["Layout"] = "布局"
 L["Options for GridLayout."] = "Grid 布局选项。"
@@ -75,8 +75,8 @@ L["Color for %s."] = "%s的颜色。"
 -- Advanced options
 L["Advanced"] = "高级"
 L["Advanced options."] = "高级选项。"
-
 --}}}
+
 --{{{ GridLayoutLayouts
 L["None"] = "无"
 L["Solo"] = "单人"
@@ -95,13 +95,13 @@ L["By Class"] = "职业"
 L["By Class w/Pets"] = "职业以及宠物"
 L["Onyxia"] = "单数双数队伍排列"
 L["By Group 25 w/tanks"] = "25人团队及 Tank"
-
 --}}}
+
 --{{{ GridRange
 -- used for getting spell range from tooltip
 L["(%d+) yd range"] = "(%d+)码距离"
-
 --}}}
+
 --{{{ GridStatus
 L["Status"] = "状态"
 L["Statuses"] = "状态"
@@ -116,13 +116,13 @@ L["Range filter"] = "距离过滤"
 L["Range filter for %s"] = "%s的距离过滤"
 L["Enable"] = "启用"
 L["Enable %s"] = "启用%s"
-
 --}}}
+
 --{{{ GridStatusAggro
 L["Aggro"] = "仇恨"
 L["Aggro alert"] = "仇恨警报"
-
 --}}}
+
 --{{{ GridStatusAuras
 L["Auras"] = "光环"
 L["Debuff type: %s"] = "减益类型：%s"
@@ -149,21 +149,21 @@ L["Show if missing"] = "缺少时显示"
 L["Display status only if the buff is not active."] = "仅在增益缺少时才显示状态。"
 L["Filter Abolished units"] = "过滤无效单位"
 L["Skip units that have an active Abolish buff."] = "忽略单位上存在无效效果。" --try...
-
 --}}}
+
 --{{{ GridStatusName
 L["Unit Name"] = "单位名字"
 L["Color by class"] = "使用职业颜色"
-
 --}}}
+
 --{{{ GridStatusMana
 L["Mana"] = "法力"
 L["Low Mana"] = "低法力"
 L["Mana threshold"] = "法力临界点"
 L["Set the percentage for the low mana warning."] = "设置低法力警报的临界点。"
 L["Low Mana warning"] = "低法力警报"
-
 --}}}
+
 --{{{ GridStatusHeals
 L["Heals"] = "治疗"
 L["Incoming heals"] = "正被治疗"
@@ -172,8 +172,8 @@ L["Ignore heals cast by you."] = "忽略对自己施放的治疗。"
 L["(.+) begins to cast (.+)."] = "(.+)开始施放(.+)。" --test
 L["(.+) gains (.+) Mana from (.+)'s Life Tap."] = "(.+)从(.+)的生命分流获得(.+)点法力值。" --test
 L["^Corpse of (.+)$"] = "(.+)的尸体。$" --test
-
 --}}}
+
 --{{{ GridStatusHealth
 L["Low HP"] = "低"
 L["DEAD"] = "死"
@@ -196,13 +196,13 @@ L["Only show deficit above % damage."] = "只显示已经损失了%的生命值�
 L["Color deficit based on class."] = "用职业颜色来显示损失的生命值。"
 L["Low HP threshold"] = "低生命值临界点"
 L["Set the HP % for the low HP warning."] = "设置低生命值警报的临界点。"
-
 --}}}
+
 --{{{ GridStatusPvp
 L["PvP"] = "PvP"
 L["FFA"] = "FFA"
-
 --}}}
+
 --{{{ GridStatusRange
 L["Range"] = "距离"
 L["Range check frequency"] = "距离检测的频率"
@@ -212,15 +212,25 @@ L["OOR"] = "远"
 L["Range to track"] = "距离跟踪"
 L["Range in yard beyond which the status will be lost."] = "超出距离以外的状态都将丢失。"
 L["%d yards"] = "%d码"
-
 --}}}
+
+--{{{ GridStatusReadyCheck
+L["?"] = "？"
+L["R"] = "是"
+L["X"] = "否"
+L["AFK"] = "暂离"
+--}}}
+
 --{{{ GridStatusTarget
 L["Target"] = "目标"
 L["Your Target"] = "你的目标"
-
 --}}}
+
+--{{{ GridStatusVehicle
+L["vehicle"] = "vehicle"
+--}}}
+
 --{{{ GridStatusVoiceComm
 L["Voice Chat"] = "语音"
 L["Talking"] = "正在说话"
-
 --}}}

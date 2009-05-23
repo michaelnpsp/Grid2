@@ -9,8 +9,8 @@ L["Charmed"] = "Зачарованный"
 --{{{ GridCore
 L["Configure"] = "Настройки"
 L["Configure Grid"] = "Настройка Grid"
-
 --}}}
+
 --{{{ GridFrame
 L["Frame"] = "Области"
 L["Options for GridFrame."] = "Опции для областей Grid"
@@ -36,8 +36,8 @@ L["Enable %s indicator"] = "Включить %s индикатор"
 L["Toggle the %s indicator."] = "Переключить %s индикатор"
 L["Orientation of Text"] = "Ориентация текста"
 L["Set frame text orientation."] = "Настройка области ориентации текста"
-
 --}}}
+
 --{{{ GridLayout
 L["Layout"] = "Расположение"
 L["Options for GridLayout."] = "Опции для GridLayout"
@@ -79,8 +79,8 @@ L["Color for %s."] = "Цвет для %s."
 -- Advanced options
 L["Advanced"] = "Дополниельные"
 L["Advanced options."] = "Дополнительные опции"
-
 --}}}
+
 --{{{ GridLayoutLayouts
 L["None"] = "Нет"
 L["Solo"] = "Соло"
@@ -101,13 +101,13 @@ L["By Class"] = "По классам"
 L["By Class w/Pets"] = "По классам с питомцами"
 L["Onyxia"] = "Для Ониксии"
 L["By Group 25 w/tanks"] = "Группой из 25 чел. с танками"
-
 --}}}
+
 --{{{ GridRange
 -- used for getting spell range from tooltip
 L["(%d+) yd range"] = "Радиус действия: (%d+) м"
-
 --}}}
+
 --{{{ GridStatus
 L["Status"] = "Статус"
 L["Statuses"] = "Статусы"
@@ -122,13 +122,13 @@ L["Range filter"] = "Фильтр радиуса"
 L["Range filter for %s"] = "Фильтр радиуса для %s"
 L["Enable"] = "Включено"
 L["Enable %s"] = "Включено %s"
-
 --}}}
+
 --{{{ GridStatusAggro
 L["Aggro"] = "Угроза"
 L["Aggro alert"] = "Сигнал угрозы"
-
 --}}}
+
 --{{{ GridStatusAuras
 L["Auras"] = "Ауры"
 L["Debuff type: %s"] = "Тип Дебаффа: %s"
@@ -155,21 +155,21 @@ L["Show if missing"] = "Показывать если пропущен"
 L["Display status only if the buff is not active."] = "Показывать статус только если баффы не активны"
 L["Filter Abolished units"] = "Фильтр персонажей находящихся под исцелением"
 L["Skip units that have an active Abolish buff."] = "Пропускает персонажей на которых есть активное Устранение баффа."
-
 --}}}
+
 --{{{ GridStatusName
 L["Unit Name"] = "Имя игрока"
 L["Color by class"] = "Цвет классов"
-
 --}}}
+
 --{{{ GridStatusMana
 L["Mana"] = "Мана"
 L["Low Mana"] = "Мало маны"
 L["Mana threshold"] = "Порог маны"
 L["Set the percentage for the low mana warning."] = "Установить процент для предупреждения об окончании маны."
 L["Low Mana warning"] = "Предупреждение о заканчивающейся мане"
-
 --}}}
+
 --{{{ GridStatusHeals
 L["Heals"] = "Лечение"
 L["Incoming heals"] = "Поступающее лечение"
@@ -178,8 +178,8 @@ L["Ignore heals cast by you."] = "Игнорировать лечение сам
 L["(.+) begins to cast (.+)."] = "(.+) применяет (.+)?" --test
 L["(.+) gains (.+) Mana from (.+)'s Life Tap."] = "(.+) получает (.+) маны от (.+) Жизнеотвода" --test
 L["^Corpse of (.+)$"] = "Труп (.+)"
-
 --}}}
+
 --{{{ GridStatusHealth
 L["Low HP"] = "Мало ЗД"
 L["DEAD"] = "ТРУП"
@@ -202,13 +202,13 @@ L["Only show deficit above % damage."] = "Показывать дефицит т
 L["Color deficit based on class."] = "Цвет дефицита в зависимости от класса"
 L["Low HP threshold"] = "Порог \"Мало ЗД\""
 L["Set the HP % for the low HP warning."] = "Установить % для предупреждения о том что у игрока мало здоровья."
-
 --}}}
+
 --{{{ GridStatusPvp
 L["PvP"] = "PvP"
 L["FFA"] = "FFA"
-
 --}}}
+
 --{{{ GridStatusRange
 L["Range"] = "Расстояние"
 L["Range check frequency"] = "Частота проверки растояния"
@@ -218,15 +218,25 @@ L["OOR"] = "OOR"
 L["Range to track"] = "Диапозон отслеживания"
 L["Range in yard beyond which the status will be lost."] = "Диапозон вметрах выдя  за который статус будет утерян."
 L["%d yards"] = "%d м."
-
 --}}}
+
+--{{{ GridStatusReadyCheck
+L["?"] = "?"
+L["R"] = "R"
+L["X"] = "X"
+L["AFK"] = "Отсутствует"
+--}}}
+
 --{{{ GridStatusTarget
 L["Target"] = "Цель"
 L["Your Target"] = "Ваша Цель"
-
 --}}}
+
+--{{{ GridStatusVehicle
+L["vehicle"] = "vehicle"
+--}}}
+
 --{{{ GridStatusVoiceComm
 L["Voice Chat"] = "Голосовой чат"
 L["Talking"] = "Говорит"
-
 --}}}
