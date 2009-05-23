@@ -7,8 +7,26 @@ L["Beast"] = "Bête"
 L["Demon"] = "Démon"
 L["Humanoid"] = "Humanoïde"
 L["Elemental"] = "Elementaire"
+
 --{{{ GridStatusPvp
 L["PvP"] = "PvP"
 L["FFA"] = "FFA"
 
+--}}}
+
+--{{{ GridStatusReadyCheck
+L["?"] = "?"
+L["R"] = "V"
+L["X"] = "X"
+L["AFK"] = "ABS"
+--}}}
+
+--{{{ GridStatusTarget
+--}}}
+
+--{{{ GridStatusVehicle
+L["vehicle"] = "vehicle"
+--}}}
+
+--{{{ GridStatusVoiceComm
 --}}}

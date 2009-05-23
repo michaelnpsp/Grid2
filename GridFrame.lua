@@ -276,7 +276,7 @@ end
 
 function Grid2Frame:UpdateFrameUnits()
 	for frameName, frame in pairs(self.registeredFrames) do
-		if (frame:IsVisible()) then
+--		if (frame:IsVisible()) then
 --			local old_unit = frame.unit
 			local unitid = frame.unit
 			local old_guid = frame.unitGUID
@@ -302,7 +302,7 @@ function Grid2Frame:UpdateFrameUnits()
 --					self:ClearIndicators(frame)
 				end
 			end
-		end
+--		end
 	end
 end
 

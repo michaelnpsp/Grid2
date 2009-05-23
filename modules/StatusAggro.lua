@@ -8,9 +8,9 @@ local cache = {}
 
 local function update(aggro, name, ...)
 	for i = 1, select("#", ...) do
-		local unit = select(i, ...)
-		cache[unit] = aggro ~= 0
-		Aggro:UpdateIndicators(unit)
+		local unitid = select(i, ...)
+		cache[unitid] = aggro ~= 0
+		Aggro:UpdateIndicators(unitid)
 	end
 end
 
@@ -22,8 +22,8 @@ function Aggro:OnDisable()
 	Banzai:UnregisterCallback(update)
 end
 
-function Aggro:IsActive(unit)
-	return cache[unit] and "blink"
+function Aggro:IsActive(unitid)
+	return cache[unitid] and "blink"
 end
 
 Aggro.defaultDB = {
@@ -32,9 +32,13 @@ Aggro.defaultDB = {
 	}
 }
 
-function Aggro:GetColor(unit)
+function Aggro:GetColor(unitid)
 	local color = self.db.profile.color1
 	return color.r, color.g, color.b, color.a
 end
 
-Grid2:RegisterStatus(Aggro, { "color" })
+function Aggro:GetIcon(unitid)
+	return [[Interface\RaidFrame\UI-RaidFrame-Threat]]
+end
+
+Grid2:RegisterStatus(Aggro, { "color", "icon" })

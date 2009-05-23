@@ -42,6 +42,11 @@ function Grid2:ScheduleTimer(...)
 	return self:ScheduleTimer(...)
 end
 
+function Grid2:CancelTimer(...)
+	LibStub("AceTimer-3.0"):Embed(Grid2)
+	return self:CancelTimer(...)
+end
+
 --}}}
 --{{{  Module prototype
 

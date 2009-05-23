@@ -9,8 +9,8 @@ L["Charmed"] = "매혹"
 --{{{ GridCore
 L["Configure"] = "설정"
 L["Configure Grid"] = "Grid 옵션을 설정합니다."
-
 --}}}
+
 --{{{ GridFrame
 L["Frame"] = "창"
 L["Options for GridFrame."] = "각 유닛 창의 표시를 위한 옵션을 설정합니다."
@@ -36,8 +36,8 @@ L["Enable %s indicator"] = "%s 지시기 사용"
 L["Toggle the %s indicator."] = "%s 지시기를 사용합니다."
 L["Orientation of Text"] = "문자의 방향"
 L["Set frame text orientation."] = "프레임 문자의 방향을 설정합니다."
-
 --}}}
+
 --{{{ GridLayout
 L["Layout"] = "배치"
 L["Options for GridLayout."] = "배치 창과 그룹 배치를 위한 옵션을 설정합니다."
@@ -79,8 +79,8 @@ L["Color for %s."] = "%s 색상"
 -- Advanced options
 L["Advanced"] = "고급"
 L["Advanced options."] = "고급 옵션을 설정합니다."
-
 --}}}
+
 --{{{ GridLayoutLayouts
 L["None"] = "없음"
 L["Solo"] = "솔로잉"
@@ -101,13 +101,13 @@ L["By Class"] = "직업별"
 L["By Class w/Pets"] = "직업별, 소환수"
 L["Onyxia"] = "오닉시아"
 L["By Group 25 w/tanks"] = "25인 공격대, 탱커"
-
 --}}}
+
 --{{{ GridRange
 -- used for getting spell range from tooltip
 L["(%d+) yd range"] = "(%d+)미터"
-
 --}}}
+
 --{{{ GridStatus
 L["Status"] = "상태"
 L["Statuses"] = "%s|1을;를; 위한 옵션을 설정합니다."
@@ -122,13 +122,13 @@ L["Range filter"] = "범위 필터"
 L["Range filter for %s"] = "%s|1을;를; 위한 거리 필터"
 L["Enable"] = "사용"
 L["Enable %s"] = "%s|1을;를; 사용"
-
 --}}}
+
 --{{{ GridStatusAggro
 L["Aggro"] = "어그로"
 L["Aggro alert"] = "어그로 경고"
-
 --}}}
+
 --{{{ GridStatusAuras
 L["Auras"] = "오라"
 L["Debuff type: %s"] = "디버프 타입: %s"
@@ -155,21 +155,21 @@ L["Show if missing"] = "사라짐 표시"
 L["Display status only if the buff is not active."] = "버프가 사라졌을 경우에만 상태를 표시합니다."
 L["Filter Abolished units"] = "해제 유닛 필터"
 L["Skip units that have an active Abolish buff."] = "버프를 해제할 수 있는 유닛을 무시합니다."
-
 --}}}
+
 --{{{ GridStatusName
 L["Unit Name"] = "유닛 이름"
 L["Color by class"] = "직업별 색상"
-
 --}}}
+
 --{{{ GridStatusMana
 L["Mana"] = "마나"
 L["Low Mana"] = "마나 낮음"
 L["Mana threshold"] = "마나 수치"
 L["Set the percentage for the low mana warning."] = "마나 낮음 경고를 위한 백분율을 설정합니다."
 L["Low Mana warning"] = "마나 낮음 경고"
-
 --}}}
+
 --{{{ GridStatusHeals
 L["Heals"] = "치유"
 L["Incoming heals"] = "치유 받음"
@@ -178,8 +178,8 @@ L["Ignore heals cast by you."] = "자신의 치유 시전은 무시합니다."
 L["(.+) begins to cast (.+)."] = "(.+)|1이;가; (.+)|1을;를; 시전합니다."
 L["(.+) gains (.+) Mana from (.+)'s Life Tap."] = "(.+)|1이;가; (.+)의 생명력 전환으로 (.+) 마나를 얻었습니다."	--check
 L["^Corpse of (.+)$"] = "^(.+)의 시체$"	--check
-
 --}}}
+
 --{{{ GridStatusHealth
 L["Low HP"] = "생명력 낮음"
 L["DEAD"] = "죽음"
@@ -202,13 +202,13 @@ L["Only show deficit above % damage."] = "결손량을 표시할 백분율(%)을
 L["Color deficit based on class."] = "직업에 기준을 둔 결손 색상을 사용합니다."
 L["Low HP threshold"] = "생명력 낮음 수치"
 L["Set the HP % for the low HP warning."] = "생명력 낮음 경고를 위한 백분율(%)을 설정합니다."
-
 --}}}
+
 --{{{ GridStatusPvp
 L["PvP"] = "PvP"
 L["FFA"] = "FFA"
-
 --}}}
+
 --{{{ GridStatusRange
 L["Range"] = "거리"
 L["Range check frequency"] = "거리 체크 빈도"
@@ -218,13 +218,24 @@ L["OOR"] = "범위 벗어남"
 L["Range to track"] = "범위 추적"
 L["Range in yard beyond which the status will be lost."] = "범위가 사정 거리 밖에 있으면 상태 정보를 가져 올수 없습니다."
 L["%d yards"] = "%d 미터"
-
 --}}}
+
+--{{{ GridStatusReadyCheck
+L["?"] = "?"
+L["R"] = "R"
+L["X"] = "X"
+L["AFK"] = "자리비움"
+--}}}
+
 --{{{ GridStatusTarget
 L["Target"] = "대상"
 L["Your Target"] = "당신의 대상"
-
 --}}}
+
+--{{{ GridStatusVehicle
+L["vehicle"] = "vehicle"
+--}}}
+
 --{{{ GridStatusVoiceComm
 L["Voice Chat"] = "음성 대화"
 L["Talking"] = "대화중"
