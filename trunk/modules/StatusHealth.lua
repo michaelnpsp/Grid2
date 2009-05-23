@@ -125,29 +125,33 @@ function Death:OnDisable()
 	EnableHealthFrame(false)
 end
 
-function Death:IsActive(unit)
-	return UnitIsDeadOrGhost(unit)
+function Death:IsActive(unitid)
+	return UnitIsDeadOrGhost(unitid)
 end
 
-function Death:GetColor(unit)
+function Death:GetColor(unitid)
 	local color = self.db.profile.color1
 	return color.r, color.g, color.b, color.a
 end
 
-function Death:GetPercent(unit)
-	local color = self.db.profile.color1
-	return UnitIsDeadOrGhost(unit) and color.a or 1
+function Death:GetIcon(unitid)
+	return [[Interface\TargetingFrame\UI-TargetingFrame-Skull]]
 end
 
-function Death:GetText(unit)
-	if UnitIsDead(unit) then
+function Death:GetPercent(unitid)
+	local color = self.db.profile.color1
+	return UnitIsDeadOrGhost(unitid) and color.a or 1
+end
+
+function Death:GetText(unitid)
+	if (UnitIsDead(unitid)) then
 		return L["DEAD"]
-	elseif UnitIsGhost(unit) then
+	elseif UnitIsGhost(unitid) then
 		return L["GHOST"]
 	end
 end
 
-Grid2:RegisterStatus(Death, { "color", "percent", "text" })
+Grid2:RegisterStatus(Death, { "color", "icon", "percent", "text" })
 
 
 
