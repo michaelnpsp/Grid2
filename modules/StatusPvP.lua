@@ -9,11 +9,11 @@ PvP.defaultDB = {
 	}
 }
 
-function frame:RAID_ROSTER_UPDATE(event, unitid)
+function PvP:RAID_ROSTER_UPDATE(event, unitid)
 	PvP:UpdateIndicators(unitid)
 end
 
-function frame:ZONE_CHANGED_NEW_AREA(event)
+function PvP:ZONE_CHANGED_NEW_AREA(event)
 	for guid, unitid in Grid2:IterateRoster() do
 		PvP:UpdateIndicators(unitid)
 	end
