@@ -8,68 +8,37 @@ Offline.defaultDB = {
 	}
 }
 
-local function Frame_RAID_ROSTER_UPDATE(self, _, unit)
-	if (Offline.enabled) then
-		Offline:UpdateIndicators(unit)
-	end
+function Offline:RAID_ROSTER_UPDATE(self, event, unitid)
+	self:UpdateIndicators(unitid)
 end
-
-local EnableRosterFrame
-do
-	local frame
-	local count = 0
-	function EnableRosterFrame(enable)
-		local prev = (count == 0)
-		if enable then
-			count = count + 1
-		else
-			count = count - 1
-		end
-		assert(count >= 0)
-		local curr = (count == 0)
-		if prev ~= curr then
-			if not frame then
-				frame = CreateFrame("Frame", nil, Grid2LayoutFrame)
-			end
-			if curr then
-				frame:SetScript("OnEvent", nil)
-				frame:UnregisterEvent("RAID_ROSTER_UPDATE")
-			else
-				frame:SetScript("OnEvent", Frame_RAID_ROSTER_UPDATE)
-				frame:RegisterEvent("RAID_ROSTER_UPDATE")
-			end
-		end
-	end
-end
-
 
 function Offline:OnEnable()
-	EnableRosterFrame(true)
+	self:RegisterEvent("RAID_ROSTER_UPDATE", "RAID_ROSTER_UPDATE")
 end
 
 function Offline:OnDisable()
-	EnableRosterFrame(false)
+	self:UnregisterEvent("RAID_ROSTER_UPDATE")
 end
 
-function Offline:IsActive(unit)
-	return not UnitIsConnected(unit)
+function Offline:IsActive(unitid)
+	return not UnitIsConnected(unitid)
 end
 
-function Offline:GetColor(unit)
+function Offline:GetColor(unitid)
 	local color = self.db.profile.color1
 	return color.r, color.g, color.b, color.a
 end
 
-function Offline:GetText(unit)
-	if (UnitIsConnected(unit)) then
+function Offline:GetPercent(unitid)
+	return (not UnitIsConnected(unitid)) and self.db.profile.color1.a
+end
+
+function Offline:GetText(unitid)
+	if (UnitIsConnected(unitid)) then
 		return nil
 	else
 		return L["Offline"]
 	end
 end
 
-function Offline:GetPercent(unit)
-	return UnitIsConnected(unit) and 1 or self.db.profile.color1.a
-end
-
-Grid2:RegisterStatus(Offline, { "color", "text", "percent" })
+Grid2:RegisterStatus(Offline, { "color", "percent", "text" })
