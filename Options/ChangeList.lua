@@ -8,11 +8,11 @@
 --Bugs:
 --Fix health bar ordering / layering
 
---Standardize the way buff and debuff Aura statuses get instantiated from info.
 --Split the current <object>.name into <object>.<Object Type>Key (so indicatorKey, statusKey etc.) and <object>.name or maybe displayName which would be the possibly localized display name / renamed name / custom name someone typed in.
 --Defaults system
 --directly use location for indicators instead of grafting it on like right now
 --finish default set of indicators and renaming them
+
 
 --TODO:
 --location
@@ -25,13 +25,18 @@
 		--adjust decimals setting (global)
 		--decimals threshold
 	--Cleanse Spirit check for Shaman debuff-Curse
+	--StatusRaidDebuffs
+		--access to individual debuffs
+		--duration
+		--stack counts
 --indicator
 	--create
 		--specify location up front
 	--delete
 	--rename
-	--priority editing for their statuses
+	--fix priority editing for statuses
 	--frame-level settings for indicators
+	--border size adjustment
 --category
 	--create
 	--delete

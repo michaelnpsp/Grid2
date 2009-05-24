@@ -1,10 +1,28 @@
 ﻿local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2Options", "esMX")
 if not L then return end
 
+L["charmed"] = "charmed"
+L["classcolor"] = "classcolor"
+L["death"] = "death"
+L["feign-death"] = "feign-death"
 L["healing-impossible"] = "healing-impossible"
 L["healing-prevented"] = "healing-prevented"
 L["healing-reduced"] = "healing-reduced"
+L["heals-incoming"] = "heals-incoming"
+L["health"] = "health"
+L["health-deficit"] = "health-deficit"
+L["health-low"] = "health-low"
+L["lowmana"] = "lowmana"
+L["mana"] = "mana"
+L["name"] = "name"
+L["offline"] = "offline"
 L["pvp"] = "pvp"
+L["range"] = "range"
+L["ready-check"] = "ready-check"
+L["target"] = "target"
+L["threat"] = "threat"
+L["vehicle"] = "vehicle"
+L["voice"] = "voice"
 
 L["Beast"] = "Beast"
 L["Demon"] = "Demon"
