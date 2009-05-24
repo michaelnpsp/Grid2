@@ -152,7 +152,10 @@ function Grid2:MakeDefaultSetup(...)
 	local setup, class = prev_MakeDefaultSetup(self, ...)
 
 	local setupIndicator = setup.status
-	self:SetupIndicatorStatus(setupIndicator, "icon-center", "raid-debuffs", 1000)
+	if (not setup.status.raidDebuffs) then
+		self:SetupIndicatorStatus(setupIndicator, "icon-center", "raid-debuffs", 1000)
+		setup.status.raidDebuffs = true
+	end
 
 	return setup, class
 end
