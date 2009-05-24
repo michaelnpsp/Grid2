@@ -1,6 +1,6 @@
-local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
-
 local Offline = Grid2.statusPrototype:new("offline")
+
+local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 Offline.defaultDB = {
 	profile = {
@@ -8,7 +8,7 @@ Offline.defaultDB = {
 	}
 }
 
-function Offline:RAID_ROSTER_UPDATE(self, event, unitid)
+function Offline:RAID_ROSTER_UPDATE(event, unitid)
 	self:UpdateIndicators(unitid)
 end
 
