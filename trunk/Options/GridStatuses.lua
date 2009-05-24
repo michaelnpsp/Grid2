@@ -99,16 +99,20 @@ function Grid2Options:MakeStatusClassFilterOption(status, options)
 end
 
 
-function Grid2Options:MakeStatusThresholdOption(status, options)
+function Grid2Options:MakeStatusThresholdOption(status, options, min, max, step)
+	min = min or 0
+	max = max or 1
+	step = step or 0.01
+
 	options = options or {}
 	options.threshold = {
 		type = "range",
 		order = 20,
 		name = L["Threshold"],
 		desc = L["Threshold at which to activate the status."],
-		min = 0,
-		max = 1,
-		step = 0.01,
+		min = min,
+		max = max,
+		step = step,
 		get = function ()
 			return status.db.profile.threshold
 		end,
@@ -518,7 +522,7 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 	local status, options
 
 	for _, name in ipairs{
-		"aggro", "heals-incoming", "target", "voice",
+		"threat", "heals-incoming", "target", "voice",
 	} do
 		status = Grid2.statuses[name]
 		if status then
@@ -538,50 +542,63 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 	status = Grid2.statuses.charmed
 	if (status) then
 		options = Grid2Options:MakeStatusColorOption(status)
-		Grid2Options:AddElement("status",  status, options)
+		Grid2Options:AddElement("status", status, options)
 	end
 
 	status = Grid2.statuses.death
 	if (status) then
 		options = Grid2Options:MakeStatusColorOption(status)
-		Grid2Options:AddElement("status",  status, options)
+		Grid2Options:AddElement("status", status, options)
 	end
 
 	status = Grid2.statuses.lowmana
 	if (status) then
 		options = Grid2Options:MakeStatusColorOption(status)
 		options = Grid2Options:MakeStatusThresholdOption(status, options)
-		Grid2Options:AddElement("status",  status, options)
+		Grid2Options:AddElement("status", status, options)
 	end
 
 	status = Grid2.statuses["health-low"]
 	if (status) then
 		options = Grid2Options:MakeStatusColorOption(status)
 		options = Grid2Options:MakeStatusThresholdOption(status, options)
-		Grid2Options:AddElement("status",  status, options)
+		Grid2Options:AddElement("status", status, options)
 	end
 
 	status = Grid2.statuses["health-deficit"]
 	if (status) then
 		options = Grid2Options:MakeStatusThresholdOption(status)
-		Grid2Options:AddElement("status",  status, options)
+		Grid2Options:AddElement("status", status, options)
 	end
 
 	status = Grid2.statuses.offline
 	if (status) then
 		options = Grid2Options:MakeStatusColorOption(status)
-		Grid2Options:AddElement("status",  status, options)
+		Grid2Options:AddElement("status", status, options)
 	end
 
 	status = Grid2.statuses.pvp
 	if (status) then
 		options = Grid2Options:MakeStatusColorOption(status)
-		Grid2Options:AddElement("status",  status, options)
+		Grid2Options:AddElement("status", status, options)
+	end
+
+	status = Grid2.statuses["ready-check"]
+	if (status) then
+		options = Grid2Options:MakeStatusColorOption(status)
+		options = Grid2Options:MakeStatusThresholdOption(status, options, 1, 20, 1)
+		Grid2Options:AddElement("status", status, options)
+	end
+
+	status = Grid2.statuses.vehicle
+	if (status) then
+		options = Grid2Options:MakeStatusColorOption(status)
+		Grid2Options:AddElement("status", status, options)
 	end
 
 	status = Grid2.statuses.classcolor
 	options = MakeStatusClassColorOptions()
-	Grid2Options:AddElement("status",  status, options)
+	Grid2Options:AddElement("status", status, options)
 
 	options = MakeStatusBuffCreateOptions()
 	Grid2Options:AddElementSubTypeGroup("status", "buff", options, reset)
