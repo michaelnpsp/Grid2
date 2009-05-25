@@ -22,6 +22,8 @@ L["Frame Width"] = "框架宽度"
 L["Adjust the width of each unit's frame."] = "调整个体框架的宽度。"
 L["Frame Height"] = "框架高度"
 L["Adjust the height of each unit's frame."] = "调整个体框架的高度。"
+L["Border Size"] = "Frame Border"
+L["Adjust the border of each unit's frame."] = "Adjust the border of each unit's frame."
 
 L["Options for %s."] = "%s状态的选项。"
 L["Toggle debugging for %s."] = "打开/关闭%s的除错。"
@@ -130,8 +132,8 @@ L["Show status for the selected classes."] = "显示选定职业的状态。"
 L["Show the time remaining."] = "显示的剩余时间。"
 
 L["Group Anchor"] = "队伍锚点"
+L["Position and Anchor"] = "Position and Anchor"
 L["Sets where groups are anchored relative to the layout frame."] = "设置布局中队伍的锚点。"
-L["Reset Position"] = "重置位置"
 L["Resets the layout frame's position and anchor."] = "重置布局框架的位置和锚点。"
 
 L["Center Text Length"] = "中间文字长度"

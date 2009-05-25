@@ -33,6 +33,8 @@ L["Frame Width"] = "창 너비"
 L["Adjust the width of each unit's frame."] = "각 유닛의 창 너비를 조정합니다."
 L["Frame Height"] = "창 높이"
 L["Adjust the height of each unit's frame."] = "각 유닛의 창 높이를 조정합니다."
+L["Border Size"] = "Frame Border"
+L["Adjust the border of each unit's frame."] = "Adjust the border of each unit's frame."
 
 L["Options for %s."] = "%s|1을;를; 위한 옵션을 설정합니다."
 L["Toggle debugging for %s."] = "%s|1을;를; 위해 디버깅을 사용합니다."
@@ -207,8 +209,8 @@ L["Y Offset"] = "Y 간격"
 L["Y - Vertical Offset"] = "Y - 세로 간격"
 
 L["Group Anchor"] = "그룹 위치"
+L["Position and Anchor"] = "Position and Anchor"
 L["Sets where groups are anchored relative to the layout frame."] = "그룹 배치 창의 위치를 설정합니다."
-L["Reset Position"] = "위치 초기화"
 L["Resets the layout frame's position and anchor."] = "배경 창의 위치와 앵커를 초기화 합니다."
 
 L["Center Text Length"] = "중앙 문자 길이"

@@ -3,6 +3,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 
 local ORDER_LAYOUT = 20
 local ORDER_DISPLAY = 30
+local ORDER_ANCHOR = 40
 
 Grid2Layout.menuName = L["layout"]
 Grid2Layout.menuOrder = 10
@@ -153,19 +154,6 @@ Grid2Options:AddModule("Grid2", "Grid2Layout", Grid2Layout, {
 				  Grid2Layout:ReloadLayout()
 			  end,
 	},
-	["clamp"] = {
-		type = "toggle",
-		name = L["Clamped to screen"],
-		desc = L["Toggle whether to permit movement out of screen."],
-		order = ORDER_LAYOUT + 5,
-		get = function ()
-				  return Grid2Layout.db.profile.clamp
-			  end,
-		set = function ()
-				  Grid2Layout.db.profile.clamp = not Grid2Layout.db.profile.clamp
-				  Grid2Layout:SetClamp()
-			  end,
-	},
 	["lock"] = {
 		type = "toggle",
 		name = L["Frame lock"],
@@ -281,45 +269,56 @@ Grid2Options:AddModule("Grid2", "Grid2Layout", Grid2Layout, {
 			  end,
 		hasAlpha = true
 	},
-	["advanced"] = {
-		type = "group",
-		name = L["Advanced"],
-		desc = L["Advanced options."],
-		order = -1,
-		args = {
-			["layoutanchor"] = {
-				type = "select",
-				name = L["Layout Anchor"],
-				desc = L["Sets where Grid is anchored relative to the screen."],
-				order = 1,
-				get = function () return Grid2Layout.db.profile.anchor end,
-				set = function (_, v)
-						  Grid2Layout.db.profile.anchor = v
-						  Grid2Layout:SavePosition()
-						  Grid2Layout:RestorePosition()
-					  end,
-				values={["CENTER"] = L["CENTER"], ["TOP"] = L["TOP"], ["BOTTOM"] = L["BOTTOM"], ["LEFT"] = L["LEFT"], ["RIGHT"] = L["RIGHT"], ["TOPLEFT"] = L["TOPLEFT"], ["TOPRIGHT"] = L["TOPRIGHT"], ["BOTTOMLEFT"] = L["BOTTOMLEFT"], ["BOTTOMRIGHT"] = L["BOTTOMRIGHT"] },
-			},
-			["groupanchor"] = {
-				type = "select",
-				name = L["Group Anchor"],
-				desc = L["Sets where groups are anchored relative to the layout frame."],
-				order = 2,
-				get = function () return Grid2Layout.db.profile.groupAnchor end,
-				set = function (_, v)
-						  Grid2Layout.db.profile.groupAnchor = v
-						  Grid2Layout:ReloadLayout()
-					  end,
-				values={["TOPLEFT"] = L["TOPLEFT"], ["TOPRIGHT"] = L["TOPRIGHT"], ["BOTTOMLEFT"] = L["BOTTOMLEFT"], ["BOTTOMRIGHT"] = L["BOTTOMRIGHT"] },
-			},
-			["reset"] = {
-				type = "execute",
-				name = L["Reset Position"],
-				desc = L["Resets the layout frame's position and anchor."],
-				order = -1,
-				func = function () Grid2Layout:ResetPosition() end,
-			},
-		},
+
+	["AnchorHeader"] = {
+		type = "header",
+		order = ORDER_ANCHOR,
+		name = L["Position and Anchor"],
+	},
+	["layoutanchor"] = {
+		type = "select",
+		name = L["Layout Anchor"],
+		desc = L["Sets where Grid is anchored relative to the screen."],
+		order = ORDER_ANCHOR + 1,
+		get = function () return Grid2Layout.db.profile.anchor end,
+		set = function (_, v)
+				  Grid2Layout.db.profile.anchor = v
+				  Grid2Layout:SavePosition()
+				  Grid2Layout:RestorePosition()
+			  end,
+		values={["CENTER"] = L["CENTER"], ["TOP"] = L["TOP"], ["BOTTOM"] = L["BOTTOM"], ["LEFT"] = L["LEFT"], ["RIGHT"] = L["RIGHT"], ["TOPLEFT"] = L["TOPLEFT"], ["TOPRIGHT"] = L["TOPRIGHT"], ["BOTTOMLEFT"] = L["BOTTOMLEFT"], ["BOTTOMRIGHT"] = L["BOTTOMRIGHT"] },
+	},
+	["groupanchor"] = {
+		type = "select",
+		name = L["Group Anchor"],
+		desc = L["Sets where groups are anchored relative to the layout frame."],
+		order = ORDER_ANCHOR + 2,
+		get = function () return Grid2Layout.db.profile.groupAnchor end,
+		set = function (_, v)
+				  Grid2Layout.db.profile.groupAnchor = v
+				  Grid2Layout:ReloadLayout()
+			  end,
+		values={["TOPLEFT"] = L["TOPLEFT"], ["TOPRIGHT"] = L["TOPRIGHT"], ["BOTTOMLEFT"] = L["BOTTOMLEFT"], ["BOTTOMRIGHT"] = L["BOTTOMRIGHT"] },
+	},
+	["clamp"] = {
+		type = "toggle",
+		name = L["Clamped to screen"],
+		desc = L["Toggle whether to permit movement out of screen."],
+		order = ORDER_ANCHOR + 3,
+		get = function ()
+				  return Grid2Layout.db.profile.clamp
+			  end,
+		set = function ()
+				  Grid2Layout.db.profile.clamp = not Grid2Layout.db.profile.clamp
+				  Grid2Layout:SetClamp()
+			  end,
+	},
+	["reset"] = {
+		type = "execute",
+		name = L["Reset"],
+		desc = L["Resets the layout frame's position and anchor."],
+		order = ORDER_ANCHOR + 4,
+		func = function () Grid2Layout:ResetPosition() end,
 	},
 })
 

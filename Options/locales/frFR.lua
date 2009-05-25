@@ -1,6 +1,9 @@
 ﻿local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2Options", "frFR")
 if not L then return end
 
+L["Border Size"] = "Frame Border"
+L["Adjust the border of each unit's frame."] = "Adjust the border of each unit's frame."
+
 L["charmed"] = "charmed"
 L["classcolor"] = "classcolor"
 L["death"] = "death"
