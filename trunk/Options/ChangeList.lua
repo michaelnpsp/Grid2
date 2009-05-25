@@ -45,7 +45,6 @@
 --individual setups
 	--class
 	--spec
---use blizzard threat api instead of banzai
 
 --Ideas:
 --color picker

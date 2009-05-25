@@ -33,6 +33,8 @@ L["Frame Width"] = true
 L["Adjust the width of each unit's frame."] = true
 L["Frame Height"] = true
 L["Adjust the height of each unit's frame."] = true
+L["Border Size"] = true
+L["Adjust the border of each unit's frame."] = true
 
 L["Options for %s."] = true
 L["Toggle debugging for %s."] = true
@@ -207,8 +209,8 @@ L["Y Offset"] = true
 L["Y - Vertical Offset"] = true
 
 L["Group Anchor"] = true
+L["Position and Anchor"] = true
 L["Sets where groups are anchored relative to the layout frame."] = true
-L["Reset Position"] = true
 L["Resets the layout frame's position and anchor."] = true
 
 L["Center Text Length"] = true

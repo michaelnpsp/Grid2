@@ -33,6 +33,8 @@ L["Frame Width"] = "Ширина Области"
 L["Adjust the width of each unit's frame."] = "Настроить ширину области."
 L["Frame Height"] = "Высота Области"
 L["Adjust the height of each unit's frame."] = "Настроить высоту области."
+L["Border Size"] = "Frame Border"
+L["Adjust the border of each unit's frame."] = "Adjust the border of each unit's frame."
 
 L["Options for %s."] = " Опции для %s."
 L["Toggle debugging for %s."] = "Показать отладку для %s."
@@ -207,8 +209,8 @@ L["Y Offset"] = "Смещение по У"
 L["Y - Vertical Offset"] = "У - смещение по вертикале"
 
 L["Group Anchor"] = "Якорь группы"
+L["Position and Anchor"] = "Position and Anchor"
 L["Sets where groups are anchored relative to the layout frame."] = "Настройка местоположения якорей групп относительно расположения области."
-L["Reset Position"] = "Обновить позицию"
 L["Resets the layout frame's position and anchor."] = "Обновляет позицию области и якоря."
 
 L["Center Text Length"] = "Длина текста в центре"
