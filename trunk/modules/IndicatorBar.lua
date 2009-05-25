@@ -23,7 +23,8 @@ local function Bar_Create(self, parent)
 end
 
 local function Bar_Layout(self, parent)
-	local inset = self.db.profile.inset or 2
+	local frameBorder = Grid2Frame.db.profile.frameBorder * 2
+	local inset = frameBorder
 	local w, h = parent:GetWidth() - inset, parent:GetHeight() - inset
 	local Bar, BarBG = parent[self.nameFG], parent[self.nameBG]
 	Bar:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
@@ -60,7 +61,6 @@ local Bar_defaultDB = {
 	profile = {
 		orientation = "VERTICAL",
 		texture = "Gradient",
-		inset = 2
 	}
 }
 

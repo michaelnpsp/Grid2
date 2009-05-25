@@ -75,10 +75,11 @@ local function GridFrame_Init(frame, width, height)
 		frame:SetScript(event, handler)
 	end
 
+	local frameBorder = Grid2Frame.db.profile.frameBorder
 	frame:SetBackdrop({
 		bgFile = "Interface\\Addons\\Grid2\\white16x16", tile = true, tileSize = 16,
-		edgeFile = "Interface\\Addons\\Grid2\\white16x16", edgeSize = 1,
-		insets = {left = 1, right = 1, top = 1, bottom = 1},
+		edgeFile = "Interface\\Addons\\Grid2\\white16x16", edgeSize = frameBorder,
+		insets = {left = frameBorder, right = frameBorder, top = frameBorder, bottom = frameBorder},
 	})
 	frame:SetBackdropBorderColor(0, 0, 0, 1)
 	frame:SetBackdropColor(0, 0, 0, 1)
@@ -165,6 +166,7 @@ Grid2Frame.defaultDB = {
 	profile = {
 		frameHeight = 36,
 		frameWidth = 56,
+		frameBorder = 2,
 		debug = false,
 		showTooltip = "OOC",
 	},

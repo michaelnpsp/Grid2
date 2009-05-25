@@ -6,8 +6,8 @@
 ## Notes-zhTW: 精簡的團隊框架功能
 ## Author: Pastamancer & Maia, Jerry, Toadkiller
 
-## OptionalDeps: Ace3, LibGratuity-3.0, LibBanzai-2.0, LibHealComm-3.0
-## X-Embeds: Ace3, LibGratuity-3.0, LibBanzai-2.0, LibHealComm-3.0
+## OptionalDeps: Ace3, LibGratuity-3.0, LibHealComm-3.0
+## X-Embeds: Ace3, LibGratuity-3.0, LibHealComm-3.0
 ## SavedVariables: Grid2DB
 ## DefaultState: disabled
 ## LoadOnDemand: 0
@@ -16,7 +16,7 @@
 ## X-ReleaseDate: "$Date$"
 ## X-Category: UnitFrame
 ## X-Website: http://wowace.com/projects/grid2/
-## X-Curse-Packaged-Version:  v3.01.00.00 alpha
+## X-Curse-Packaged-Version:  v3.01.02.01 alpha
 ## X-Curse-Project-Name: Grid2
 ## X-Curse-Project-ID: grid2
 ## X-Curse-Repository-ID: wow/grid2/mainline
@@ -39,7 +39,6 @@ Libs\AceGUI-3.0\AceGUI-3.0.xml
 Libs\AceConfig-3.0\AceConfig-3.0.xml
 Libs\AceLocale-3.0\AceLocale-3.0.xml
 Libs\LibGratuity-3.0\lib.xml
-Libs\LibBanzai-2.0\lib.xml
 Libs\LibHealComm-3.0\lib.xml
 #@end-no-lib-strip@
 

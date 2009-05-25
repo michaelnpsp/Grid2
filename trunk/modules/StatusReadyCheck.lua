@@ -32,7 +32,7 @@ function ReadyCheck:READY_CHECK(event, originator)
                 else
                     checkStatus[unitid] = "ready"
                 end
-				ReadyCheck:UpdateIndicators(unitid)
+				self:UpdateIndicators(unitid)
             end
         end
     end
@@ -46,7 +46,7 @@ function ReadyCheck:READY_CHECK_CONFIRM(event, id, confirm)
         else
             checkStatus[unitid] = "not_ready"
         end
-		ReadyCheck:UpdateIndicators(unitid)
+		self:UpdateIndicators(unitid)
     end
 end
 
@@ -57,7 +57,7 @@ function ReadyCheck:READY_CHECK_FINISHED()
                 checkStatus[unitid] = "afk"
             end
         end
-		ReadyCheck:UpdateIndicators(unitid)
+		self:UpdateIndicators(unitid)
     end
     timerClearStatus = Grid2:ScheduleTimer(self.ClearStatus, ReadyCheck.db.profile.threshold or 0, self)
 end
@@ -96,7 +96,7 @@ function ReadyCheck:ClearStatus()
     readyChecking = nil
     wipe(checkStatus)
 	for guid, unitid in Grid2:IterateRoster() do
-		ReadyCheck:UpdateIndicators(unitid)
+		self:UpdateIndicators(unitid)
 	end
 end
 

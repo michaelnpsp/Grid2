@@ -186,7 +186,7 @@ function Grid2:SetupDefaultStatus(setup, class)
 	self:SetupIndicatorStatus(setupIndicator, "border", "health-low", 69)
 	self:SetupIndicatorStatus(setupIndicator, "border", "pvp", 45)
 
-	self:SetupIndicatorStatus(setupIndicator, "corner-bottom-left", "aggro", 99)
+	self:SetupIndicatorStatus(setupIndicator, "corner-bottom-left", "threat", 99)
 
 	self:SetupIndicatorStatus(setupIndicator, "alpha", "death", 99)
 	self:SetupIndicatorStatus(setupIndicator, "alpha", "range", 98)
