@@ -2,7 +2,7 @@ local Grid2Alert = Grid2:NewModule("Grid2Alert", "LibSink-2.0")
 
 local media = LibStub("LibSharedMedia-3.0")
 
-media:Register("sound", "Aggro", "Interface\\Addons\\Grid2Alert\\sounds\\aggro.wav")
+media:Register("sound", "threat", "Interface\\Addons\\Grid2Alert\\sounds\\aggro.wav")
 media:Register("sound", "Detox", "Sound\\interface\\AuctionWindowOpen.wav")
 
 local function Alert_Enable(self)
@@ -113,10 +113,10 @@ Grid2Alert.defaultDB = {
 		debug = false,
 		alerts = {
 			Aggro = {
-				status = "aggro",
+				status = "threat",
 				type = "self-gain",
 				message = "Aggro !",
-				sound = "Aggro",
+				sound = "threat",
 				min_pause = 0.5,
 			},
 			Detox = {
