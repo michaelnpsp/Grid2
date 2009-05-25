@@ -10,12 +10,12 @@ PvP.defaultDB = {
 }
 
 function PvP:RAID_ROSTER_UPDATE(event, unitid)
-	PvP:UpdateIndicators(unitid)
+	self:UpdateIndicators(unitid)
 end
 
 function PvP:ZONE_CHANGED_NEW_AREA(event)
 	for guid, unitid in Grid2:IterateRoster() do
-		PvP:UpdateIndicators(unitid)
+		self:UpdateIndicators(unitid)
 	end
 end
 

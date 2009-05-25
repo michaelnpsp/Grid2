@@ -1,44 +1,65 @@
-local Banzai = LibStub("LibBanzai-2.0", true)
-if not Banzai then return end
+local Threat = Grid2.statusPrototype:new("threat")
 
-local select = select
-local Aggro = Grid2.statusPrototype:new("aggro")
 
-local cache = {}
-
-local function update(aggro, name, ...)
-	for i = 1, select("#", ...) do
-		local unitid = select(i, ...)
-		cache[unitid] = aggro ~= 0
-		Aggro:UpdateIndicators(unitid)
-	end
-end
-
-function Aggro:OnEnable()
-	Banzai:RegisterCallback(update)
-end
-
-function Aggro:OnDisable()
-	Banzai:UnregisterCallback(update)
-end
-
-function Aggro:IsActive(unitid)
-	return cache[unitid] and "blink"
-end
-
-Aggro.defaultDB = {
+Threat.defaultDB = {
 	profile = {
 		color1 = { r = 1, g = 0, b = 0, a = 1 },
+		color2 = { r = .5, g = 1, b = 1, a = 1 },
+		color3 = { r = 1, g = 1, b = 1, a = 1 },
 	}
 }
 
-function Aggro:GetColor(unitid)
-	local color = self.db.profile.color1
-	return color.r, color.g, color.b, color.a
+function Threat:UpdateUnit(event, unitid)
+	-- unitid can be nil which is so wtf
+	if (unitid) then
+		self:UpdateIndicators(unitid)
+	end
 end
 
-function Aggro:GetIcon(unitid)
+function Threat:UpdateAllUnits()
+	for guid, unitid in Grid2:IterateRoster() do
+		self:UpdateIndicators(unitid)
+	end
+end
+
+function Threat:OnEnable()
+	self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", "UpdateUnit")
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "UpdateAllUnits")
+end
+
+function Threat:OnDisable()
+	self:UnregisterEvent("UNIT_THREAT_SITUATION_UPDATE")
+	self:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
+end
+
+-- 1 = not tanking, higher threat than tank
+-- 2 = insecurely tanking.
+-- 3 = securely tanking something
+function Threat:IsActive(unitid)
+	local threat = unitid and UnitThreatSituation(unitid)
+	if (threat and threat > 0) then
+		return "blink"
+	end
+end
+
+function Threat:GetColor(unitid)
+	local color
+	local threat = UnitThreatSituation(unitid)
+	return (GetThreatStatusColor(threat))
+--[[
+	if (threat == 1) then
+		color = self.db.profile.color1
+	elseif (threat == 2) then
+		color = self.db.profile.color2
+	elseif (threat == 3) then
+		color = self.db.profile.color3
+	end
+
+	return color.r, color.g, color.b, color.a--]]
+end
+
+function Threat:GetIcon(unitid)
 	return [[Interface\RaidFrame\UI-RaidFrame-Threat]]
 end
 
-Grid2:RegisterStatus(Aggro, { "color", "icon" })
+Grid2:RegisterStatus(Threat, { "color", "icon" })

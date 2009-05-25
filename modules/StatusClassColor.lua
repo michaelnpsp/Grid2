@@ -27,8 +27,8 @@ function ClassColor:OnEnable()
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE", "UpdateUnit")
 end
 
-function ClassColor:UpdateUnit(_, unit)
-	self:UpdateIndicators(unit)
+function ClassColor:UpdateUnit(_, unitid)
+	self:UpdateIndicators(unitid)
 end
 
 function ClassColor:OnDisable()
@@ -74,8 +74,8 @@ function Charmed:OnEnable()
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE", "UpdateUnit")
 end
 
-function Charmed:UpdateUnit(_, unit)
-	self:UpdateIndicators(unit)
+function Charmed:UpdateUnit(_, unitid)
+	self:UpdateIndicators(unitid)
 end
 
 function Charmed:OnDisable()

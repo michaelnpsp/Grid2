@@ -11,12 +11,12 @@ Vehicle.defaultDB = {
 
 function Vehicle:PLAYER_ENTERING_WORLD(event)
 	for guid, unitid in Grid2:IterateRoster() do
-		Vehicle:UpdateIndicators(unitid)
+		self:UpdateIndicators(unitid)
 	end
 end
 
 function Vehicle:UNIT_ENTERED_VEHICLE(event, unitid)
-	Vehicle:UpdateIndicators(unitid)
+	self:UpdateIndicators(unitid)
 end
 
 function Vehicle:OnEnable()
