@@ -8,19 +8,19 @@
 <Script file="modules\IndicatorIcon.lua"/>
 <Script file="modules\IndicatorSquare.lua"/>
 
-<Script file="modules\StatusName.lua"/>
 <Script file="modules\StatusHealth.lua"/>
 <Script file="modules\StatusMana.lua"/>
 <Script file="modules\StatusClassColor.lua"/>
-<Script file="modules\StatusTarget.lua"/>
-<Script file="modules\StatusAggro.lua"/>
 <Script file="modules\StatusAuras.lua"/>
 <Script file="modules\StatusHeals.lua"/>
+<Script file="modules\StatusName.lua"/>
 <Script file="modules\StatusOffline.lua"/>
 <Script file="modules\StatusPvP.lua"/>
 <Script file="modules\StatusRange.lua"/>
 <Script file="modules\StatusReadyCheck.lua"/>
 <Script file="modules\StatusRole.lua"/>
+<Script file="modules\StatusTarget.lua"/>
+<Script file="modules\StatusThreat.lua"/>
 <Script file="modules\StatusVehicle.lua"/>
 <Script file="modules\StatusVoiceComm.lua"/>
 
