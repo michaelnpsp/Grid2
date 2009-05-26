@@ -296,6 +296,33 @@ Grid2Layout:AddLayout(L["By Role 25"], {
 	},
 })
 
+Grid2Layout:AddLayout(L["By Class 25 Wide"], {
+	meta = {
+		raid40 = true,
+		hraid = true,
+		raid = true,
+		party = true,
+		solo = true,
+		pvp = true,
+		arena = true,
+	},
+	[1] = {
+		showSolo = true,
+		showPlayer = true,
+		groupFilter = "1,2,3,4,5",
+		groupBy = "CLASS",
+		groupingOrder = DEFAULT_GROUP_ORDER,
+		unitsPerColumn = 25,
+		maxColumns = 1,
+	},
+	[2] = {
+		type = "raidpet",
+		unitsPerColumn = 25,
+		maxColumns = 1,
+		filterOnPet = true,
+	},
+})
+
 Grid2Layout:AddLayout(L["By Group 20"], {
 	meta = {
 		hraid = true,

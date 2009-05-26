@@ -49,8 +49,12 @@ local function Icon_OnUpdate(self, parent, unit, status)
 	if (status) then
 		Icon.Icon:SetTexture(status:GetIcon(unit))
 		Icon:Show()
-		if status.GetColor then
-			Icon:SetBackdropBorderColor(status:GetColor(unit))
+		if (status.GetColor) then
+			if (status.GetBorder and status:GetBorder(unit) > 0) then
+				Icon:SetBackdropBorderColor(status:GetColor(unit))
+			else
+				Icon:SetBackdropBorderColor(0, 0, 0, 0)
+			end
 		else
 			Icon:SetBackdropBorderColor(1, 0, 0)
 		end

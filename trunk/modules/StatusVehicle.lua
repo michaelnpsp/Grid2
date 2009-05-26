@@ -37,12 +37,12 @@ function Vehicle:IsActive(unitid)
 	return UnitHasVehicleUI(unitid)
 end
 
-function Vehicle:GetColor(unit)
+function Vehicle:GetColor(unitid)
 	local color = self.db.profile.color1
 	return color.r, color.g, color.b, color.a
 end
 
-function Vehicle:GetIcon(unit)
+function Vehicle:GetIcon(unitid)
 	return [[Interface\Vehicles\UI-Vehicles-Raid-Icon]]
 end
 
