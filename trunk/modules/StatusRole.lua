@@ -35,7 +35,9 @@ function Role:OnDisable()
 end
 
 function Role:IsActive(unitid)
-	return GetPartyAssignment("MAINASSIST", unitid) or GetPartyAssignment("MAINTANK", unitid)
+	if (UnitExists(unitid) and not Grid2:UnitIsPet(unitid)) then
+		return GetPartyAssignment("MAINASSIST", unitid) or GetPartyAssignment("MAINTANK", unitid)
+	end
 end
 
 function Role:GetBorder(unitid)
@@ -43,46 +45,48 @@ function Role:GetBorder(unitid)
 end
 
 function Role:GetColor(unitid)
-	local color
-	if (GetPartyAssignment("MAINASSIST", unitid)) then
-		color = self.db.profile.color1
-	elseif (GetPartyAssignment("MAINTANK", unitid)) then
-		color = self.db.profile.color2
-	else
-		return nil
-	end
-	return color.r, color.g, color.b, color.a
+--	if (not Grid2:UnitIsPet(unitid)) then
+		local color
+		if (GetPartyAssignment("MAINASSIST", unitid)) then
+			color = self.db.profile.color1
+		elseif (GetPartyAssignment("MAINTANK", unitid)) then
+			color = self.db.profile.color2
+		else
+			return nil
+		end
+		return color.r, color.g, color.b, color.a
+--	end
 end
 
 
 local assistIcon = "Interface\\GroupFrame\\UI-Group-MainAssistIcon"
 local tankIcon = "Interface\\GroupFrame\\UI-Group-MainTankIcon"
---[[
-local assistIcon = "Interface\\RaidFrame\\UI-RaidFrame-MainAssist"
-local tankIcon = "Interface\\RaidFrame\\UI-RaidFrame-MainTank"
---]]
 
 function Role:GetIcon(unitid)
-	if (GetPartyAssignment("MAINASSIST", unitid)) then
-		return assistIcon
-	elseif (GetPartyAssignment("MAINTANK", unitid)) then
-		return tankIcon
-	else
-		return nil
-	end
+--	if (UnitExists(unitid)) then
+		if (GetPartyAssignment("MAINASSIST", unitid)) then
+			return assistIcon
+		elseif (GetPartyAssignment("MAINTANK", unitid)) then
+			return tankIcon
+		else
+			return nil
+		end
+--	end
 end
 
 
 local assistString = MAIN_ASSIST
 local tankString = MAIN_TANK
 function Role:GetText(unitid)
-	if (GetPartyAssignment("MAINASSIST", unitid)) then
-		return assistString
-	elseif (GetPartyAssignment("MAINTANK", unitid)) then
-		return tankString
-	else
-		return nil
-	end
+--	if (UnitExists(unitid)) then
+		if (GetPartyAssignment("MAINASSIST", unitid)) then
+			return assistString
+		elseif (GetPartyAssignment("MAINTANK", unitid)) then
+			return tankString
+		else
+			return nil
+		end
+--	end
 end
 
 Grid2:RegisterStatus(Role, { "color", "icon", "text" })
