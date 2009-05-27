@@ -21,11 +21,11 @@ end
 function GridFrameEvents:OnAttributeChanged(name, value)
 	if (name == "unit") then
 		if (value) then
---			local unitid = self:GetModifiedUnit()
---			self.unit = unitid
-			self.unit = value
---			local unitGUID = UnitGUID(unitid)
-			local unitGUID = UnitGUID(value)
+			local unitid = self:GetModifiedUnit()
+			self.unit = unitid
+			local unitGUID = UnitGUID(unitid)
+--			self.unit = value
+--			local unitGUID = UnitGUID(value)
 			if (unitGUID ~= nil) then
 				self.unitGUID = unitGUID
 			end
@@ -95,7 +95,6 @@ local function GridFrame_Init(frame, width, height)
 	-- set our left-click action
 	frame:SetAttribute("type1", "target")
 	frame:SetAttribute("*type1", "target")
-	frame:SetAttribute("toggleForVehicle", true)
 
 	frame:Reset()
 
@@ -183,11 +182,9 @@ function Grid2Frame:OnInitialize()
 end
 
 function Grid2Frame:OnEnable()
-	self:RegisterMessage("Grid_StatusGained", "UpdateFrameUnits")
-	self:RegisterMessage("Grid_StatusLost", "UpdateFrameUnits")
-	self:RegisterMessage("PLAYER_ENTERING_WORLD", "UpdateFrameUnits")
-	self:RegisterMessage("UNIT_ENTERED_VEHICLE", "UpdateFrameUnits")
-	self:RegisterMessage("UNIT_EXITED_VEHICLE", "UpdateFrameUnits")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateFrameUnits")
+	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "UpdateFrameUnits")
+	self:RegisterEvent("UNIT_EXITED_VEHICLE", "UpdateFrameUnits")
 	self:RegisterMessage("Grid_RosterUpdated", "UpdateFrameUnits")
 	self:ResetAllFrames()
 	self:UpdateFrameUnits()
@@ -259,10 +256,11 @@ function Grid2Frame:GetFrameHeight()
 end
 
 function Grid2Frame:UpdateIndicators(frame)
-	local unitid = frame.unit
+--	local unitid = frame.unit
+	local unitid = frame:GetModifiedUnit()
 --assert(unitid == frame:GetModifiedUnit(), "Grid2Frame:UpdateIndicators non matching unitid")
 	if (not unitid) then
---		unitid = frame:GetModifiedUnit()
+		unitid = frame:GetModifiedUnit()
 		if (not unitid) then
 			return
 		end
@@ -280,12 +278,12 @@ function Grid2Frame:UpdateFrameUnits()
 	for frameName, frame in pairs(self.registeredFrames) do
 --		if (frame:IsVisible()) then
 --			local old_unit = frame.unit
-			local unitid = frame.unit
-			local old_guid = frame.unitGUID
 --			local unitid = frame:GetModifiedUnit()
-			local unitGUID = unitid and UnitGUID(unitid) or nil
-
 --			if (old_unit ~= unitid or old_guid ~= unitGUID) then
+
+			local unitid = frame.unit
+			local unitGUID = unitid and UnitGUID(unitid) or nil
+			local old_guid = frame.unitGUID
 			if (old_guid ~= unitGUID) then
 --				self:Debug("Updating", frame_name, "to", unitid, unitGUID, "was", old_unit, old_guid)
 

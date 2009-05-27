@@ -8,8 +8,8 @@ Target.defaultDB = {
 
 function Target:OnEnable()
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
-	self:RegisterEvent("Grid_UnitJoined")
-	self:RegisterEvent("Grid_UnitChanged")
+	self:RegisterMessage("Grid_UnitJoined")
+	self:RegisterMessage("Grid_UnitChanged")
 end
 
 function Target:PLAYER_TARGET_CHANGED(event)
@@ -28,20 +28,21 @@ end
 
 function Target:OnDisable()
 	self:UnregisterEvent("PLAYER_TARGET_CHANGED")
-	self:UnregisterEvent("Grid_UnitJoined")
-	self:UnregisterEvent("Grid_UnitChanged")
+	self:UnregisterMessage("Grid_UnitJoined")
+	self:UnregisterMessage("Grid_UnitChanged")
 end
 
-function Target:IsActive(unit)
---print("Target:IsActive", unit, UnitIsUnit(unit, "target"))
-	return UnitIsUnit(unit, "target")
+function Target:IsActive(unitid)
+--print("Target:IsActive", unitid, UnitIsUnit(unitid, "target"))
+	return UnitIsUnit(unitid, "target")
 end
+--/dump UnitIsUnit("pet1", "target")
 
-function Target:GetText(unit)
+function Target:GetText(unitid)
 	return "target"
 end
 
-function Target:GetColor(unit)
+function Target:GetColor(unitid)
 	local color = self.db.profile.color1
 	return color.r, color.g, color.b, color.a
 end

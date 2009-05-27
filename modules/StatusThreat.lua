@@ -45,8 +45,8 @@ end
 function Threat:GetColor(unitid)
 	local color
 	local threat = UnitThreatSituation(unitid)
-	return (GetThreatStatusColor(threat))
---[[
+--	return (GetThreatStatusColor(threat))
+---[[
 	if (threat == 1) then
 		color = self.db.profile.color1
 	elseif (threat == 2) then
@@ -55,7 +55,8 @@ function Threat:GetColor(unitid)
 		color = self.db.profile.color3
 	end
 
-	return color.r, color.g, color.b, color.a--]]
+	return color.r, color.g, color.b, color.a
+--]]
 end
 
 function Threat:GetIcon(unitid)

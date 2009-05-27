@@ -25,13 +25,13 @@ end
 function Role:OnEnable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateAllUnits")
 	self:RegisterEvent("RAID_ROSTER_UPDATE", "UpdateUnit")
-	self:RegisterEvent("Grid_UnitJoined", "UpdateUnit")
+	self:RegisterMessage("Grid_UnitJoined", "UpdateUnit")
 end
 
 function Role:OnDisable()
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	self:UnregisterEvent("RAID_ROSTER_UPDATE")
-	self:UnregisterEvent("Grid_UnitJoined")
+	self:UnregisterMessage("Grid_UnitJoined")
 end
 
 function Role:IsActive(unitid)

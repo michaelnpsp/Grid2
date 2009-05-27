@@ -31,11 +31,10 @@ local GridLayoutHeaderClass = {
 	new = function (self, type)
 		NUM_HEADERS = NUM_HEADERS + 1
 		local frame
-		if type == "spacer" then
+		if (type == "spacer") then
 			frame = CreateFrame("Frame", "Grid2LayoutHeader"..NUM_HEADERS, Grid2Layout.frame)
 		else
-			frame = CreateFrame("Frame", "Grid2LayoutHeader"..NUM_HEADERS, Grid2Layout.frame,
-				assert(SecureHeaderTemplates[type]))
+			frame = CreateFrame("Frame", "Grid2LayoutHeader"..NUM_HEADERS, Grid2Layout.frame, assert(SecureHeaderTemplates[type]))
 			frame:SetAttribute("template", "SecureUnitButtonTemplate")
 			frame.initialConfigFunction = GridLayout_InitialConfigFunction
 		end
@@ -48,11 +47,41 @@ local GridLayoutHeaderClass = {
 	end
 }
 
+--[[
+showRaid = [BOOLEAN] -- true if the header should be shown while in a raid
+showParty = [BOOLEAN] -- true if the header should be shown while in a party and not in a raid
+showPlayer = [BOOLEAN] -- true if the header should show the player when not in a raid
+showSolo = [BOOLEAN] -- true if the header should be shown while not in a group (implies showPlayer)
+nameList = [STRING] -- a comma separated list of player names (not used if 'groupFilter' is set)
+groupFilter = [1-8, STRING] -- a comma seperated list of raid group numbers and/or uppercase class names and/or uppercase roles
+strictFiltering = [BOOLEAN] - if true, then characters must match both a group and a class from the groupFilter list
+point = [STRING] -- a valid XML anchoring point (Default: "TOP")
+xOffset = [NUMBER] -- the x-Offset to use when anchoring the unit buttons (Default: 0)
+yOffset = [NUMBER] -- the y-Offset to use when anchoring the unit buttons (Default: 0)
+sortMethod = ["INDEX", "NAME"] -- defines how the group is sorted (Default: "INDEX")
+sortDir = ["ASC", "DESC"] -- defines the sort order (Default: "ASC")
+template = [STRING] -- the XML template to use for the unit buttons
+templateType = [STRING] - specifies the frame type of the managed subframes (Default: "Button")
+groupBy = [nil, "GROUP", "CLASS", "ROLE"] - specifies a "grouping" type to apply before regular sorting (Default: nil)
+groupingOrder = [STRING] - specifies the order of the groupings (ie. "1,2,3,4,5,6,7,8")
+maxColumns = [NUMBER] - maximum number of columns the header will create (Default: 1)
+unitsPerColumn = [NUMBER or nil] - maximum units that will be displayed in a singe column, nil is infinate (Default: nil)
+startingIndex = [NUMBER] - the index in the final sorted unit list at which to start displaying units (Default: 1)
+columnSpacing = [NUMBER] - the ammount of space between the rows/columns (Default: 0)
+columnAnchorPoint = [STRING] - the anchor point of each new column (ie. use LEFT for the columns to grow to the right)
+
+allowVehicleTarget = [BOOLEAN] - clicking on a vehicle selects it
+toggleForVehicle = [BOOLEAN] - GetModifiedUnit will return owner of the vehicle
+
+useOwnerUnit = [BOOLEAN] - if true, then the owner's unit string is set on managed frames "unit" attribute (instead of pet's)
+filterOnPet = [BOOLEAN] - if true, then pet names are used when sorting/filtering the list
+--]]
 local HeaderAttributes = {
 	"showPlayer", "showSolo", "nameList", "groupFilter", "strictFiltering",
 	"sortDir", "groupBy", "groupingOrder", "maxColumns", "unitsPerColumn",
 	"startingIndex", "columnSpacing", "columnAnchorPoint",
-	"allowVehicleTarget", "toggleForVehicle", "useOwnerUnit", "filterOnPet"
+	"useOwnerUnit", "filterOnPet",
+--	"allowVehicleTarget", "toggleForVehicle"
 }
 --, "toggleForVehicle"
 function GridLayoutHeaderClass.prototype:Reset()
@@ -61,7 +90,7 @@ function GridLayoutHeaderClass.prototype:Reset()
 		for _, attr in ipairs(HeaderAttributes) do
 			self:SetAttribute(attr, nil)
 		end
---		self:SetAttribute("allowVehicleTarget", true)
+		self:SetAttribute("allowVehicleTarget", true)
 --		self:SetAttribute("toggleForVehicle", true)
 --		self:SetAttribute("useOwnerUnit", true)
 	end
