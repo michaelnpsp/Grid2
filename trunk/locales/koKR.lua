@@ -234,7 +234,7 @@ L["Your Target"] = "당신의 대상"
 --}}}
 
 --{{{ GridStatusVehicle
-L["vehicle"] = "vehicle"
+L["vehicle"] = "탈것"
 --}}}
 
 --{{{ GridStatusVoiceComm
