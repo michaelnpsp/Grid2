@@ -116,11 +116,7 @@ local function StatusShiftUp(info, indicator, lowerStatus)
 				local lowerPriority = indicator:GetStatusPriority(lowerStatus)
 --print("StatusShiftUp", lowerPriority, higherPriority, lowerStatus.name, higherStatus.name)
 				if (higherPriority == lowerPriority) then
-					if (higherPriority == 99) then
-						lowerPriority = lowerPriority - 1
-					else
-						higherPriority = higherPriority + 1
-					end
+					higherPriority = higherPriority + 1
 				end
 --print("StatusShiftUp", lowerPriority, higherPriority, lowerStatus.name, higherStatus.name)
 				Grid2Options:SetStatusPriority(indicator, higherStatus, lowerPriority)
@@ -143,11 +139,7 @@ local function StatusShiftDown(info, indicator, higherStatus)
 				local higherPriority = indicator:GetStatusPriority(higherStatus)
 				local lowerPriority = indicator:GetStatusPriority(lowerStatus)
 				if (higherPriority == lowerPriority) then
-					if (lowerPriority > 1) then
-						lowerPriority = lowerPriority - 1
-					else
-						higherPriority = higherPriority + 1
-					end
+					lowerPriority = lowerPriority - 1
 				end
 --print("StatusShiftDown", lowerPriority, higherPriority, lowerStatus.name, higherStatus.name)
 				Grid2Options:SetStatusPriority(indicator, higherStatus, lowerPriority)
