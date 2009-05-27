@@ -23,14 +23,14 @@ function PvP:OnEnable()
 	self:RegisterEvent("RAID_ROSTER_UPDATE", "RAID_ROSTER_UPDATE")
 	self:RegisterEvent("UNIT_FACTION", "RAID_ROSTER_UPDATE")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "ZONE_CHANGED_NEW_AREA")
-	self:RegisterEvent("Grid_UnitJoined", "RAID_ROSTER_UPDATE")
+	self:RegisterMessage("Grid_UnitJoined", "RAID_ROSTER_UPDATE")
 end
 
 function PvP:OnDisable()
 	self:UnregisterEvent("RAID_ROSTER_UPDATE")
 	self:UnregisterEvent("UNIT_FACTION")
 	self:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
-	self:UnregisterEvent("Grid_UnitJoined")
+	self:UnregisterMessage("Grid_UnitJoined")
 end
 
 function PvP:IsActive(unitid)

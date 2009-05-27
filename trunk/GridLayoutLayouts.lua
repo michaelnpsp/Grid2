@@ -448,7 +448,7 @@ Grid2Layout:AddLayout(L["Onyxia"], {
 		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[5] = {
-		type  = "spacer",
+		type = "spacer",
 		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[6] = {
@@ -479,7 +479,7 @@ Grid2Layout:AddLayout(L["By Group 25 w/tanks"], {
 		groupingOrder = "MAINTANK,MAINASSIST",
 	},
 	[2] = {
-		type  = "spacer",
+		type = "spacer",
 	},
 	[3] = {
 		groupFilter = "1",

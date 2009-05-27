@@ -80,7 +80,7 @@ function ReadyCheck:RAID_ROSTER_UPDATE()
     end
 end
 
-function ReadyCheck:Grid_PartyTransition(current_state, old_state)
+function ReadyCheck:Grid_GroupTypeChanged(current_state, old_state)
     -- If you leave the group, you may not receive the READY_CHECK_FINISHED event.
     self:CheckClearStatus()
 end
@@ -107,7 +107,7 @@ function ReadyCheck:OnEnable()
 	self:RegisterEvent("READY_CHECK_FINISHED", "READY_CHECK_FINISHED")
 	self:RegisterEvent("PARTY_LEADER_CHANGED", "PARTY_LEADER_CHANGED")
 	self:RegisterEvent("RAID_ROSTER_UPDATE", "RAID_ROSTER_UPDATE")
-	self:RegisterEvent("Grid_PartyTransition", "Grid_PartyTransition")
+	self:RegisterMessage("Grid_GroupTypeChanged", "Grid_GroupTypeChanged")
 end
 
 function ReadyCheck:OnDisable()
@@ -116,7 +116,7 @@ function ReadyCheck:OnDisable()
 	self:UnregisterEvent("READY_CHECK_FINISHED")
 	self:UnregisterEvent("PARTY_LEADER_CHANGED")
 	self:UnregisterEvent("RAID_ROSTER_UPDATE")
-	self:UnregisterEvent("Grid_PartyTransition")
+	self:UnregisterMessage("Grid_GroupTypeChanged")
 	Grid2:CancelTimer(timerClearStatus, true)
 	timerClearStatus = nil
 end
