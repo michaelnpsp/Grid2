@@ -96,7 +96,7 @@ L["By Group 15 w/Pets"] = "Для группы из 15 чел. с питомца
 L["By Group 10"] = "Для группы из 10 чел."
 L["By Group 10 w/Pets"] = "Для группы из 10 чел. с питомцами"
 L["By Class 25"] = "По классам 25"
-L["By Class 25 Wide"] = "По классам 25 Wide"
+L["By Class 25 Wide"] = "По классам 25-широкий"
 L["By Role 25"] = "По роле 25"
 L["By Class"] = "По классам"
 L["By Class w/Pets"] = "По классам с питомцами"
@@ -223,7 +223,7 @@ L["%d yards"] = "%d м."
 
 --{{{ GridStatusReadyCheck
 L["?"] = "?"
-L["R"] = "R"
+L["R"] = "Г"
 L["X"] = "X"
 L["AFK"] = "Отсутствует"
 --}}}
@@ -234,7 +234,7 @@ L["Your Target"] = "Ваша Цель"
 --}}}
 
 --{{{ GridStatusVehicle
-L["vehicle"] = "vehicle"
+L["vehicle"] = "Транспортное средство"
 --}}}
 
 --{{{ GridStatusVoiceComm
