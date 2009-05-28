@@ -87,6 +87,7 @@ Grid2Layout:AddLayout(L["By Group 5 w/Pets"], {
 		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[2] = {
+		showPlayer = true,
 		type = "partypet",
 		unitsPerColumn = 5,
 		maxColumns = 5,
@@ -132,6 +133,9 @@ Grid2Layout:AddLayout(L["By Group 10 w/Pets"], {
 	},
 	[3] = {
 		type = "raidpet",
+		showPlayer = true,
+		showParty = true,
+		showRaid = true,
 		unitsPerColumn = 5,
 		maxColumns = 5,
 --		filterOnPet = true,
@@ -178,6 +182,9 @@ Grid2Layout:AddLayout(L["By Group 15 w/Pets"], {
 	},
 	[4] = {
 		type = "raidpet",
+		showPlayer = true,
+		showParty = true,
+		showRaid = true,
 		unitsPerColumn = 5,
 		maxColumns = 5,
 		filterOnPet = true,
@@ -238,6 +245,9 @@ Grid2Layout:AddLayout(L["By Group 25 w/Pets"], {
 	},
 	[6] = {
 		type = "raidpet",
+		showPlayer = true,
+		showParty = true,
+		showRaid = true,
 		unitsPerColumn = 5,
 		maxColumns = 5,
 		filterOnPet = true,
@@ -264,6 +274,9 @@ Grid2Layout:AddLayout(L["By Class 25"], {
 	},
 	[2] = {
 		type = "raidpet",
+		showPlayer = true,
+		showParty = true,
+		showRaid = true,
 		unitsPerColumn = 5,
 		maxColumns = 5,
 		filterOnPet = true,
@@ -290,13 +303,16 @@ Grid2Layout:AddLayout(L["By Role 25"], {
 	},
 	[2] = {
 		type = "raidpet",
+		showPlayer = true,
+		showParty = true,
+		showRaid = true,
 		unitsPerColumn = 5,
 		maxColumns = 5,
 		filterOnPet = true,
 	},
 })
 
-Grid2Layout:AddLayout(L["By Class 25 Wide"], {
+Grid2Layout:AddLayout(L["By Class 1 x 25 Wide"], {
 	meta = {
 		raid40 = true,
 		hraid = true,
@@ -317,8 +333,41 @@ Grid2Layout:AddLayout(L["By Class 25 Wide"], {
 	},
 	[2] = {
 		type = "raidpet",
+		showPlayer = true,
+		showParty = true,
+		showRaid = true,
 		unitsPerColumn = 25,
 		maxColumns = 1,
+		filterOnPet = true,
+	},
+})
+
+Grid2Layout:AddLayout(L["By Class 2 x 15 Wide"], {
+	meta = {
+		raid40 = true,
+		hraid = true,
+		raid = true,
+		party = true,
+		solo = true,
+		pvp = true,
+		arena = true,
+	},
+	[1] = {
+		showSolo = true,
+		showPlayer = true,
+		groupFilter = "1,2,3,4,5,6",
+		groupBy = "CLASS",
+		groupingOrder = DEFAULT_GROUP_ORDER,
+		unitsPerColumn = 15,
+		maxColumns = 2,
+	},
+	[2] = {
+		type = "raidpet",
+		showPlayer = true,
+		showParty = true,
+		showRaid = true,
+		unitsPerColumn = 15,
+		maxColumns = 2,
 		filterOnPet = true,
 	},
 })
@@ -422,6 +471,9 @@ Grid2Layout:AddLayout(L["By Class w/Pets"], {
 	},
 	[11] = {
 		type = "raidpet",
+		showPlayer = true,
+		showParty = true,
+		showRaid = true,
 		filterOnPet = true,
 	},
 })

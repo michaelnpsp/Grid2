@@ -205,6 +205,7 @@ end
 
 function Grid2Frame:RegisterFrame(frame)
 	self:Debug("RegisterFrame", frame:GetName())
+--print("RegisterFrame", frame:GetName())
 
 	GridFrame_Init(frame, self:GetFrameWidth(), self:GetFrameHeight())
 	self.registeredFrames[frame:GetName()] = frame
@@ -256,15 +257,10 @@ function Grid2Frame:GetFrameHeight()
 end
 
 function Grid2Frame:UpdateIndicators(frame)
---	local unitid = frame.unit
 	local unitid = frame:GetModifiedUnit()
---assert(unitid == frame:GetModifiedUnit(), "Grid2Frame:UpdateIndicators non matching unitid")
+--print("Grid2Frame:UpdateIndicators unitid", unitid)
 	if (not unitid) then
-		unitid = frame:GetModifiedUnit()
-		if (not unitid) then
-			return
-		end
-print("Grid2Frame:UpdateIndicators had a GetModifiedUnit", unitid)
+		return
 	end
 
 	for _, indicator in self.core:IterateIndicators() do
@@ -276,33 +272,32 @@ end
 
 function Grid2Frame:UpdateFrameUnits()
 	for frameName, frame in pairs(self.registeredFrames) do
---		if (frame:IsVisible()) then
---			local old_unit = frame.unit
---			local unitid = frame:GetModifiedUnit()
---			if (old_unit ~= unitid or old_guid ~= unitGUID) then
+		local old_unit = frame.unit
+		local unitid = frame:GetModifiedUnit()
+		local unitGUID = unitid and UnitGUID(unitid) or nil
+		local old_guid = frame.unitGUID
+		if (old_unit ~= unitid or old_guid ~= unitGUID) then
 
-			local unitid = frame.unit
-			local unitGUID = unitid and UnitGUID(unitid) or nil
-			local old_guid = frame.unitGUID
-			if (old_guid ~= unitGUID) then
+--			local unitid = frame.unit
+--			local unitGUID = unitid and UnitGUID(unitid) or nil
+--			local old_guid = frame.unitGUID
+--			if (old_guid ~= unitGUID) then
+
 --				self:Debug("Updating", frame_name, "to", unitid, unitGUID, "was", old_unit, old_guid)
+			if (unitid) then
+				frame.unit = unitid
+				frame.unitGUID = unitGUID
 
-				if (unitid) then
---					frame.unit = unitid
-					frame.unitGUID = unitGUID
-
-					if (unitGUID) then
-						self:UpdateIndicators(frame)
-					end
-				else
-					frame.unit = nil
-					frame.unitGUID = nil
-
-					frame:Reset() -- ToDo: is this right?
---					self:ClearIndicators(frame)
+				if (unitGUID) then
+					self:UpdateIndicators(frame)
 				end
+			else
+				frame.unit = nil
+				frame.unitGUID = nil
+
+				frame:Reset() -- ToDo: is this right?
 			end
---		end
+		end
 	end
 end
 
@@ -311,8 +306,8 @@ end
 --{{ Debugging
 
 function Grid2Frame:ListRegisteredFrames()
-	self:Debug("--[ BEGIN Registered Frame List ]--")
-	self:Debug("FrameName", "UnitId", "UnitName", "Status")
+	print("--[ BEGIN Registered Frame List ]--")
+	print("FrameName", "UnitId", "UnitName", "Status")
 	for frameName, frame in pairs(self.registeredFrames) do
 		local frameStatus = "|cff00ff00"
 
@@ -327,7 +322,7 @@ function Grid2Frame:ListRegisteredFrames()
 
 		frameStatus = frameStatus .. "|r"
 
-		self:Debug(
+		print(
 			frameName == frame:GetName() and
 				"|cff00ff00"..frameName.."|r" or
 				"|cffff0000"..frameName.."|r",
@@ -339,7 +334,7 @@ function Grid2Frame:ListRegisteredFrames()
 			frame:GetAttribute("*type1"),
 			frameStatus)
 	end
-	Grid2Frame:Debug("--[ END Registered Frame List ]--")
+	print("--[ END Registered Frame List ]--")
 end
 
 --}}}
