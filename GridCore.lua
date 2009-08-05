@@ -275,7 +275,7 @@ function Grid2:RosterUpdated()
 		else
 			instType = "solo"
 		end
-	elseif instType == "raid" and GetCurrentDungeonDifficulty() > 1 then
+	elseif instType == "raid" and GetDungeonDifficulty() > 1 then
 		instType = "hraid"
 	end
 
