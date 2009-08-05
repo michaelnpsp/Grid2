@@ -2,8 +2,8 @@ local Name = Grid2.statusPrototype:new("name")
 
 function Name:OnEnable()
 	self:RegisterEvent("UNIT_NAME_UPDATE")
-	self:RegisterMessage("Grid_UnitJoined")
-	self:RegisterMessage("Grid_UnitChanged")
+--	self:RegisterMessage("Grid_UnitJoined")
+--	self:RegisterMessage("Grid_UnitChanged")
 end
 
 function Name:UNIT_NAME_UPDATE(_, unitid)
@@ -20,8 +20,8 @@ end
 
 function Name:OnDisable()
 	self:UnregisterEvent("UNIT_NAME_UPDATE")
-	self:UnregisterMessage("Grid_UnitJoined")
-	self:UnregisterMessage("Grid_UnitChanged")
+--	self:UnregisterMessage("Grid_UnitJoined")
+--	self:UnregisterMessage("Grid_UnitChanged")
 end
 
 function Name:IsActive(unit)
