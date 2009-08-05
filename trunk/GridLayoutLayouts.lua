@@ -56,9 +56,8 @@ Grid2Layout:AddLayout(L["Solo w/Pet"], {
 		type = "partypet",
 		showPlayer = true,
 		showSolo = true,
---		filterOnPet = true,
 		groupingOrder = DEFAULT_GROUP_ORDER,
---		useOwnerUnit = true,
+		allowVehicleTarget = true,
 	}
 })
 
@@ -85,13 +84,15 @@ Grid2Layout:AddLayout(L["By Group 5 w/Pets"], {
 		showParty = true,
 		showRaid = true,
 		groupingOrder = DEFAULT_GROUP_ORDER,
+		allowVehicleTarget = true,
+		toggleForVehicle = true,
 	},
 	[2] = {
 		showPlayer = true,
 		type = "partypet",
 		unitsPerColumn = 5,
 		maxColumns = 5,
---		filterOnPet = true,
+		allowVehicleTarget = true,
 	},
 })
 
@@ -138,7 +139,7 @@ Grid2Layout:AddLayout(L["By Group 10 w/Pets"], {
 		showRaid = true,
 		unitsPerColumn = 5,
 		maxColumns = 5,
---		filterOnPet = true,
+		allowVehicleTarget = true,
 	},
 })
 
@@ -187,7 +188,7 @@ Grid2Layout:AddLayout(L["By Group 15 w/Pets"], {
 		showRaid = true,
 		unitsPerColumn = 5,
 		maxColumns = 5,
-		filterOnPet = true,
+		allowVehicleTarget = true,
 	},
  })
 
@@ -250,7 +251,7 @@ Grid2Layout:AddLayout(L["By Group 25 w/Pets"], {
 		showRaid = true,
 		unitsPerColumn = 5,
 		maxColumns = 5,
-		filterOnPet = true,
+		allowVehicleTarget = true,
 	},
 })
 
@@ -279,7 +280,7 @@ Grid2Layout:AddLayout(L["By Class 25"], {
 		showRaid = true,
 		unitsPerColumn = 5,
 		maxColumns = 5,
-		filterOnPet = true,
+		allowVehicleTarget = true,
 	},
 })
 
@@ -308,7 +309,7 @@ Grid2Layout:AddLayout(L["By Role 25"], {
 		showRaid = true,
 		unitsPerColumn = 5,
 		maxColumns = 5,
-		filterOnPet = true,
+		allowVehicleTarget = true,
 	},
 })
 
@@ -338,7 +339,7 @@ Grid2Layout:AddLayout(L["By Class 1 x 25 Wide"], {
 		showRaid = true,
 		unitsPerColumn = 25,
 		maxColumns = 1,
-		filterOnPet = true,
+		allowVehicleTarget = true,
 	},
 })
 
@@ -368,7 +369,7 @@ Grid2Layout:AddLayout(L["By Class 2 x 15 Wide"], {
 		showRaid = true,
 		unitsPerColumn = 15,
 		maxColumns = 2,
-		filterOnPet = true,
+		allowVehicleTarget = true,
 	},
 })
 
@@ -474,7 +475,7 @@ Grid2Layout:AddLayout(L["By Class w/Pets"], {
 		showPlayer = true,
 		showParty = true,
 		showRaid = true,
-		filterOnPet = true,
+		allowVehicleTarget = true,
 	},
 })
 
