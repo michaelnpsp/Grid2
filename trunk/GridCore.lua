@@ -267,7 +267,7 @@ function Grid2:RosterUpdated()
 			instType = "raid40"
 		elseif (raidMembers > 0) then
 			instType = "raid"
-			if (raidMembers > 15) then
+			if (raidMembers > 10) then
 				instType = "hraid"
 			end
 		elseif (GetNumPartyMembers() > 0) then
