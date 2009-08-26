@@ -3,6 +3,7 @@ local Threat = Grid2.statusPrototype:new("threat")
 
 Threat.defaultDB = {
 	profile = {
+		colorCount = 3,
 		color1 = { r = 1, g = 0, b = 0, a = 1 },
 		color2 = { r = .5, g = 1, b = 1, a = 1 },
 		color3 = { r = 1, g = 1, b = 1, a = 1 },
