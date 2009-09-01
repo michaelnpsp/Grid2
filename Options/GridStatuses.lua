@@ -172,7 +172,7 @@ function Grid2Options:MakeStatusBlinkThresholdOption(status, options)
 				v = nil
 			end
 			status.db.profile.blinkThreshold = v
-			Grid2:UpdateBlinkHandler(status)
+			status:UpdateBlinkThreshold()
 		end,
 	}
 	return options

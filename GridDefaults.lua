@@ -421,7 +421,9 @@ function Grid2:SetupStatusAuraBuff(statusKey, info)
 
 	self:RegisterStatus(status, { "color", "icon", "percent", "duration" })
 	self:UpdateColorHandler(status)
-	self:UpdateBlinkHandler(status)
+	if status.UpdateBlinkThreshold then
+		status:UpdateBlinkThreshold()
+	end
 	return status
 end
 
@@ -431,6 +433,9 @@ function Grid2:SetupAuraStatusDebuff(statusKey, info)
 
 	self:SetupAuraDebuffColorHandler(status, info)
 	self:RegisterStatus(status, { "color", "icon", "percent" })
+	if status.UpdateBlinkThreshold then
+		status:UpdateBlinkThreshold()
+	end
 	return status
 end
 
