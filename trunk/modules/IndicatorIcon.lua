@@ -68,8 +68,12 @@ local function Icon_OnUpdate(self, parent, unit, status)
 		end
 		if (status.GetExpirationTime and status.GetDuration) then
 			local expirationTime, duration = status:GetExpirationTime(unit), status:GetDuration(unit)
-			Icon.Cooldown:SetCooldown(expirationTime - duration, duration)
-			Icon.Cooldown:Show()
+			if expirationTime and duration then
+				Icon.Cooldown:SetCooldown(expirationTime - duration, duration)
+				Icon.Cooldown:Show()
+			else
+				Icon.Cooldown:Hide()
+			end
 		else
 			Icon.Cooldown:Hide()
 		end

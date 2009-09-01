@@ -53,20 +53,16 @@ local function Alert_UpdateSelfLost(self, unit, isActive)
 end
 
 local function Alert_UpdateAnyGain(self, unit, isActive)
-	if UnitIsUnit(unit, "player") then
-		if isActive and self.count == 0 then
-			self:TriggerAlert(unit)
-		end
-		self.count = self.count + (isActive and 1 or -1)
+	if isActive and self.count == 0 then
+		self:TriggerAlert(unit)
 	end
+	self.count = self.count + (isActive and 1 or -1)
 end
 
 local function Alert_UpdateAllLost(self, unit, isActive)
-	if UnitIsUnit(unit, "player") then
-		self.count = self.count + (isActive and 1 or -1)
-		if not isActive and self.count == 0 then
-			self:TriggerAlert(unit)
-		end
+	self.count = self.count + (isActive and 1 or -1)
+	if not isActive and self.count == 0 then
+		self:TriggerAlert(unit)
 	end
 end
 

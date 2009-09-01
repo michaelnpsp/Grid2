@@ -1,12 +1,9 @@
-local update
+local AuraFrame_OnEvent
 
 local EnableAuraFrame
 do
 	local frame
 	local count = 0
-	local function Frame_OnEvent(self, event, unit)
-		update(unit)
-	end
 	function EnableAuraFrame(enable)
 		local prev = (count == 0)
 		if enable then
@@ -25,7 +22,7 @@ do
 				frame:UnregisterEvent("UNIT_AURA")
 				frame:UnregisterEvent("UNIT_AURASTATE")
 			else
-				frame:SetScript("OnEvent", Frame_OnEvent)
+				frame:SetScript("OnEvent", AuraFrame_OnEvent)
 				frame:RegisterEvent("UNIT_AURA")
 				frame:RegisterEvent("UNIT_AURASTATE")
 			end
@@ -174,15 +171,16 @@ end
 local AddTimeTracker
 local RemoveTimeTracker
 do
+	local next = next
 	local timetracker
 	AddTimeTracker = function (status, value)
 		timetracker = CreateFrame("Frame", nil, Grid2LayoutFrame)
 		timetracker.tracked = {}
 		timetracker:SetScript("OnUpdate", function (self, elapsed)
 			local time = GetTime()
-			for status, value in pairs(self.tracked) do
+			for status, value in next, self.tracked do
 				local expirations = status.expirations
-				for unit, expiration in pairs(expirations) do
+				for unit, expiration in next, expirations do
 					local timeLeft = expiration - time
 					if (timeLeft < value) ~= (timeLeft + elapsed < value) then
 						status:UpdateIndicators(unit)
@@ -192,34 +190,35 @@ do
 		end)
 		AddTimeTracker = function (status, value)
 			timetracker.tracked[status] = value
+			timetracker:Show()
 		end
 		RemoveTimeTracker = function (status)
 			timetracker.tracked[status] = nil
+			if not next(timetracker.tracked) then
+				timetracker:Hide()
+			end
 		end
 		return AddTimeTracker(status, value)
 	end
 
 end
 
-function Grid2:UpdateBlinkHandler(status)
-	local profile = status.db.profile
-	local blinkThreshold = profile.blinkThreshold
-
-	if (blinkThreshold) then
-		status.blinkThreshold = blinkThreshold
-		status.IsActive = status_IsActiveBlink
-		AddTimeTracker(status, blinkThreshold)
+local function status_UpdateBlinkThreshold()
+	local blinkThreshold = self.db.profile.blinkThreshold
+	if blinkThreshold then
+		self.blinkThreshold = blinkThreshold
+		self.IsActive = status_IsActiveBlink
+		AddTimeTracker(self, blinkThreshold)
 	else
-		status.IsActive = status_IsActive
-		if (RemoveTimeTracker) then
-			status.blinkThreshold = nil
+		self.blinkThreshold = nil
+		self.IsActive = status_IsActive
+		if RemoveTimeTracker then
 			RemoveTimeTracker(status)
 		end
 	end
 end
 
-
-function Grid2:CreateStatusCommon(status, spellName, mine, ...)
+local function CreateAuraStatusCommon(status, spellName, mine, ...)
 	if (type(spellName) == "number") then
 		spellName = GetSpellInfo(spellName)
 	end
@@ -252,13 +251,14 @@ function Grid2:CreateStatusCommon(status, spellName, mine, ...)
 	status.GetExpirationTime = status_GetExpirationTime
 	status.GetPercent = status_GetPercent
 	status.HasStateChanged = status_HasStateChanged
+	status.UpdateBlinkThreshold = status_UpdateBlinkThreshold
 end
 
 -- spellName: spellId or localized spellName
 function Grid2:CreateBuffStatus(spellName, mine, missing, ...)
 	StatusCount = StatusCount + 1
 	local status = Grid2.statusPrototype:new("buff-" .. StatusCount)
-	self:CreateStatusCommon(status, spellName, mine, ...)
+	CreateAuraStatusCommon(status, spellName, mine, ...)
 
 	function status:OnEnable()
 		EnableAuraFrame(true)
@@ -284,7 +284,7 @@ end
 function Grid2:CreateDebuffStatus(spellName, mine, ...)
 	StatusCount = StatusCount + 1
 	local status = Grid2.statusPrototype:new("debuff-" .. StatusCount)
-	self:CreateStatusCommon(status, spellName, mine, ...)
+	CreateAuraStatusCommon(status, spellName, mine, ...)
 
 	function status:OnEnable()
 		EnableAuraFrame(true)
@@ -309,32 +309,33 @@ function Grid2:CreateDebuffStatus(spellName, mine, ...)
 	return status -- status is not registered yet
 end
 
-local myUnits = {
-	player = true,
-	pet = true,
-	vehicle = true,
-}
 do
 	local indicators = {}
 	local types = {}
-	function update(unit)
+	local next = next
+	local myUnits = {
+		player = true,
+		pet = true,
+		vehicle = true,
+	}
+	function AuraFrame_OnEvent(_, _, unit)
 		local parent = Grid2:GetUnitFrame(unit)
 		if not parent then return end
 
-		for status in pairs(DebuffHandlers) do
+		for status in next, DebuffHandlers do
 			status:Reset(unit)
 		end
-		for status in pairs(BuffHandlers) do
+		for status in next, BuffHandlers do
 			status:Reset(unit)
 		end
 		-- scan Debuffs and find the available debuff types
 		local i = 1
 		while true do
 			local name, _, iconTexture, count, debuffType, duration, expirationTime, caster = UnitDebuff(unit, i)
-			local isMine = myUnits[caster]
-
 			if not name then break end
-			for status in pairs(DebuffHandlers) do
+
+			local isMine = myUnits[caster]
+			for status in next, DebuffHandlers do
 				status:UpdateState(unit, name, iconTexture, count, duration, expirationTime, isMine)
 			end
 			i = i + 1
@@ -345,22 +346,22 @@ do
 		i = 1
 		while true do
 			local name, _, iconTexture, count, debuffType, duration, expirationTime, caster = UnitBuff(unit, i)
-			local isMine = myUnits[caster]
-
 			if not name then break end
-			for status in pairs(BuffHandlers) do
+
+			local isMine = myUnits[caster]
+			for status in next, BuffHandlers do
 				status:UpdateState(unit, name, iconTexture, count, duration, expirationTime, isMine)
 			end
 			i = i + 1
 		end
 		-- update the debuff cache and mark indicators that need updating
-		for type, status in pairs(DebuffTypeStatus) do
+		for type, status in next, DebuffTypeStatus do
 			if status.enabled then
 				local debuff = types[type]
 				local cache = DebuffCache[type]
 				if cache[unit] ~= debuff then
 					cache[unit] = debuff
-					for indicator in pairs(status.indicators) do
+					for indicator in next, status.indicators do
 						indicators[indicator] = true
 					end
 				end
@@ -368,24 +369,22 @@ do
 			types[type] = nil
 		end
 
-		for status in pairs(DebuffHandlers) do
+		for status in next, DebuffHandlers do
 			if status:HasStateChanged(unit) then
-				for indicator in pairs(status.indicators) do
+				for indicator in next, status.indicators do
 					indicators[indicator] = true
 				end
 			end
 		end
-		for status in pairs(BuffHandlers) do
+		for status in next, BuffHandlers do
 			if status:HasStateChanged(unit) then
-				for indicator in pairs(status.indicators) do
+				for indicator in next, status.indicators do
 					indicators[indicator] = true
 				end
 			end
 		end
 		-- Update indicators that needs updating only once.
-		while true do
-			local indicator = next(indicators)
-			if not indicator then break end
+		for indicator in next, indicators do
 			indicators[indicator] = nil
 			indicator:Update(parent, unit)
 		end
