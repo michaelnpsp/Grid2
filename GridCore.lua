@@ -201,7 +201,7 @@ function Grid2:OnEnable()
 --	self:RegisterEvent("PARTY_MEMBERS_CHANGED", "UpdateRoster")
 --	self:RegisterEvent("RAID_ROSTER_UPDATE", "UpdateRoster")
 
-	self:RegisterEvent("UNIT_NAME_UPDATE", "UpdateRoster")
+-- Avoid title rotation and mount unmount spam	self:RegisterEvent("UNIT_NAME_UPDATE", "UpdateRoster")
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE", "UpdateRoster")
 
 
