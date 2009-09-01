@@ -17,6 +17,7 @@ local DEFAULT_GROUP_ORDER = "WARRIOR,DEATHKNIGHT,ROGUE,PALADIN,DRUID,SHAMAN,PRIE
 
 Grid2Layout:AddLayout(L["None"], {
 	meta = {
+		raid40 = true,
 		hraid = true,
 		raid = true,
 		party = true,
@@ -194,6 +195,7 @@ Grid2Layout:AddLayout(L["By Group 15 w/Pets"], {
 
 Grid2Layout:AddLayout(L["By Group 25"], {
 	meta = {
+		raid40 = true,
 		hraid = true,
 		raid = true,
 	},
@@ -221,6 +223,7 @@ Grid2Layout:AddLayout(L["By Group 25"], {
 
 Grid2Layout:AddLayout(L["By Group 25 w/Pets"], {
 	meta = {
+		raid40 = true,
 		hraid = true,
 		raid = true,
 	},
@@ -257,6 +260,7 @@ Grid2Layout:AddLayout(L["By Group 25 w/Pets"], {
 
 Grid2Layout:AddLayout(L["By Class 25"], {
 	meta = {
+		raid40 = true,
 		hraid = true,
 		raid = true,
 		party = true,
@@ -286,6 +290,7 @@ Grid2Layout:AddLayout(L["By Class 25"], {
 
 Grid2Layout:AddLayout(L["By Role 25"], {
 	meta = {
+		raid40 = true,
 		hraid = true,
 		raid = true,
 		party = true,
@@ -398,6 +403,7 @@ Grid2Layout:AddLayout(L["By Group 20"], {
 
 Grid2Layout:AddLayout(L["By Class"], {
 	meta = {
+		raid40 = true,
 		hraid = true,
 		raid = true,
 		pvp = true,
@@ -436,6 +442,7 @@ Grid2Layout:AddLayout(L["By Class"], {
 
 Grid2Layout:AddLayout(L["By Class w/Pets"], {
 	meta = {
+		raid40 = true,
 		hraid = true,
 		raid = true,
 		pvp = true,
@@ -481,6 +488,7 @@ Grid2Layout:AddLayout(L["By Class w/Pets"], {
 
 Grid2Layout:AddLayout(L["Onyxia"], {
 	meta = {
+		raid40 = true,
 		hraid = true,
 		raid = true,
 	},
@@ -524,6 +532,7 @@ Grid2Layout:AddLayout(L["Onyxia"], {
 
 Grid2Layout:AddLayout(L["By Group 25 w/tanks"], {
 	meta = {
+		raid40 = true,
 		hraid = true,
 		raid = true,
 	},
@@ -558,9 +567,9 @@ Grid2Layout:AddLayout(L["By Group 25 w/tanks"], {
 
 Grid2Layout:AddLayout(L["By Group 40"], {
 	meta = {
+		raid40 = true,
 		hraid = true,
 		raid = true,
-		raid40 = true,
 		pvp = true,
 	},
 	defaults = {
