@@ -70,6 +70,8 @@ function Grid2:SetupDefaultLocations(setup, class)
 		["side-right"] = {relIndicator = nil, point = "RIGHT", relPoint = "RIGHT", x = -1, y = 0, name = "side-right"},
 		["side-top"] = {relIndicator = nil, point = "TOP", relPoint = "TOP", x = 0, y = -1, name = "side-top"},
 		["side-bottom"] = {relIndicator = nil, point = "BOTTOM", relPoint = "BOTTOM", x = 0, y = 1, name = "side-bottom"},
+		["side-bottom-left"] = {relIndicator = nil, point = "RIGHT", relPoint = "BOTTOM", x = -2, y = 1, name = "side-bottom-left"},
+		["side-bottom-right"] = {relIndicator = nil, point = "LEFT", relPoint = "BOTTOM", x = 2, y = 1, name = "side-bottom-right"},
 		["center"] = {relIndicator = nil, point = "CENTER", relPoint = "CENTER", x = 0, y = 0, name = "center"},
 		["center-left"] = {relIndicator = "center", point = "RIGHT", relPoint = "CENTER", x = 1, y = 0, name = "center-left"},
 		["center-right"] = {relIndicator = "center", point = "LEFT", relPoint = "CENTER", x = -1, y = 0, name = "center-right"},
