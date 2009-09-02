@@ -5,7 +5,7 @@
 ## Dependencies: Grid2, Grid2StatusRaidDebuffs
 ## LoadOnDemand: 1
 
-## Version: $Rev$
+## Version: 3.2.0.@project-revision@
 ## X-ReleaseDate: "$Date$"
 ## X-Category: UnitFrame
 ## X-Website: http://wowace.com/projects/grid2/
