@@ -203,7 +203,7 @@ do
 
 end
 
-local function status_UpdateBlinkThreshold()
+local function status_UpdateBlinkThreshold(self)
 	local blinkThreshold = self.db.profile.blinkThreshold
 	if blinkThreshold then
 		self.blinkThreshold = blinkThreshold
