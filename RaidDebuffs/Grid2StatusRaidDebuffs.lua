@@ -82,6 +82,7 @@ local spellDB = {
 		--Anub'arak
 		67574,--Pursued by Anub'arak
 		66240, 67630, 68646, 68647,--Leeching Swarm (10, 25, 10H, 25H)
+		66013, 67700, 68509, 68510,--Penetrating Cold (10, 25, 10H, 25H)
 	},
 }
 
