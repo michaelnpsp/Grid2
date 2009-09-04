@@ -213,7 +213,7 @@ local function status_UpdateBlinkThreshold(self)
 		self.blinkThreshold = nil
 		self.IsActive = status_IsActive
 		if RemoveTimeTracker then
-			RemoveTimeTracker(status)
+			RemoveTimeTracker(self)
 		end
 	end
 end
