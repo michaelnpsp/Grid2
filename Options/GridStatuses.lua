@@ -1,5 +1,7 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 
+local LOCALIZED_CLASS_NAMES_MALE = LOCALIZED_CLASS_NAMES_MALE
+
 function Grid2Options.GetStatusColor(info)
 	local status = info.arg.status
 	local colorKey = "color"
@@ -65,16 +67,13 @@ function Grid2Options:MakeStatusClassFilterOption(status, options)
 	}
 
 	local profile = status.db.profile
-	for _, type in ipairs{
-		"DEATHKNIGHT", "DRUID", "HUNTER", "MAGE", "PALADIN",
-		"PRIEST", "ROGUE", "SHAMAN", "WARLOCK", "WARRIOR",
-	} do
-		options.classFilter.args[type] = {
+	for classType, className in pairs(LOCALIZED_CLASS_NAMES_FEMALE) do
+		options.classFilter.args[classType] = {
 			type = "toggle",
-			name = L[type],
-			desc = (L["Show on %s."]):format(L[type]),
+			name = className,
+			desc = (L["Show on %s."]):format(className),
 			get = function ()
-				return not (profile.classFilter and profile.classFilter[type])
+				return not (profile.classFilter and profile.classFilter[classType])
 			end,
 			set = function (_, value)
 				local on = not value
@@ -82,9 +81,9 @@ function Grid2Options:MakeStatusClassFilterOption(status, options)
 					if (not profile.classFilter) then
 						profile.classFilter = {}
 					end
-					profile.classFilter[type] = true
+					profile.classFilter[classType] = true
 				else
-					profile.classFilter[type] = nil
+					profile.classFilter[classType] = nil
 					if (not next(profile.classFilter)) then
 						profile.classFilter = nil
 					end
