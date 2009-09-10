@@ -212,14 +212,8 @@ L["FFA"] = true
 --}}}
 
 --{{{ GridStatusRange
-L["Range"] = true
-L["Range check frequency"] = true
-L["Seconds between range checks"] = true
 L["Out of Range"] = true
 L["OOR"] = true
-L["Range to track"] = true
-L["Range in yard beyond which the status will be lost."] = true
-L["%d yards"] = true
 --}}}
 
 --{{{ GridStatusReadyCheck

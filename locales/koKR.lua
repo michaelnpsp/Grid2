@@ -212,14 +212,11 @@ L["FFA"] = "FFA"
 --}}}
 
 --{{{ GridStatusRange
-L["Range"] = "거리"
 L["Range check frequency"] = "거리 체크 빈도"
 L["Seconds between range checks"] = "거리 체크의 시간(초)를 설정합니다."
 L["Out of Range"] = "범위 벗어남"
 L["OOR"] = "범위 벗어남"
 L["Range to track"] = "범위 추적"
-L["Range in yard beyond which the status will be lost."] = "범위가 사정 거리 밖에 있으면 상태 정보를 가져 올수 없습니다."
-L["%d yards"] = "%d 미터"
 --}}}
 
 --{{{ GridStatusReadyCheck

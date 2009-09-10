@@ -204,14 +204,11 @@ L["FFA"] = "FFA"
 --}}}
 
 --{{{ GridStatusRange
-L["Range"] = "距离"
 L["Range check frequency"] = "距离检测的频率"
 L["Seconds between range checks"] = "多少秒检测一次距离"
 L["Out of Range"] = "超出距离"
 L["OOR"] = "远"
 L["Range to track"] = "距离跟踪"
-L["Range in yard beyond which the status will be lost."] = "超出距离以外的状态都将丢失。"
-L["%d yards"] = "%d码"
 --}}}
 
 --{{{ GridStatusReadyCheck
