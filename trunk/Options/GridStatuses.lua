@@ -639,34 +639,59 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 		},
 	})
 
-	Grid2Options:AddElement("status", Grid2.statuses.range, {
+	status = Grid2.statuses.range
+	Grid2Options:AddElement("status", status, {
 		default = {
 			type = "range",
+			order = 10,
 			name = L["Default alpha"],
 			desc = L["Default alpha value when units are way out of range."],
 			min = 0,
 			max = 1,
 			step = 0.01,
 			get = function ()
-				return Grid2.statuses.range.db.profile.default
+				return status.db.profile.default
 			end,
 			set = function (_, v)
-				Grid2.statuses.range.db.profile.default = v
+				status.db.profile.default = v
 			end,
 		},
 		update = {
 			type = "range",
+			order = 20,
 			name = L["Update rate"],
 			desc = L["Rate at which the range gets updated"],
 			min = 0,
 			max = 5,
 			step = 0.1,
 			get = function ()
-				return Grid2.statuses.range.db.profile.elapsed
+				return status.db.profile.elapsed
 			end,
 			set = function (_, v)
-				Grid2.statuses.range.db.profile.elapsed = v
+				status.db.profile.elapsed = v
 			end,
+		},
+		range = {
+			type = "select",
+			order = 30,
+			name = L["Range"],
+			desc = L["Range in yards beyond which the status will be lost."],
+			get = function ()
+				return status.db.profile.range
+			end,
+			set = function (_, v)
+				status.db.profile.range = v
+				status:Grid_RangesUpdated()
+				for guid, unitid in Grid2:IterateRoster() do
+					status:UpdateIndicators(unitid)
+				end
+			end,
+			values = {
+				[10] = (L["%d yards"]:format(10)),
+				[28] = (L["%d yards"]:format(28)),
+				[40] = (L["%d yards"]:format(40)),
+				[100] = (L["%d yards"]:format(100)),
+			},
 		},
 	})
 
