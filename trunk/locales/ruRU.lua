@@ -212,14 +212,11 @@ L["FFA"] = "FFA"
 --}}}
 
 --{{{ GridStatusRange
-L["Range"] = "Расстояние"
 L["Range check frequency"] = "Частота проверки растояния"
 L["Seconds between range checks"] = "Частота проверки в секундах"
 L["Out of Range"] = "Из Диапозона"
 L["OOR"] = "OOR"
 L["Range to track"] = "Диапозон отслеживания"
-L["Range in yard beyond which the status will be lost."] = "Диапозон вметрах выдя  за который статус будет утерян."
-L["%d yards"] = "%d м."
 --}}}
 
 --{{{ GridStatusReadyCheck
