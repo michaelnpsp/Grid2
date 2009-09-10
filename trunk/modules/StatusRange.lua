@@ -4,9 +4,7 @@ Range.defaultDB = {
 	profile = {
 		default = 0.25,
 		elapsed = 0.1,
-		ranges = {
-			[40] = 1,
-		},
+		range = 40,
 	},
 }
 
@@ -29,8 +27,7 @@ function Range:OnEnable()
 end
 
 function Range:Grid_RangesUpdated()
-	-- @FIXME: based of config
-	local check = GridRange:GetRangeCheck(40) or GridRange:GetRangeCheck(28)
+	local check = GridRange:GetRangeCheck(Range.db.profile.range)
 	local rezCheck = GridRange:GetRezCheck()
 	if rezCheck then
 		GetRangeValue = function (unit)
