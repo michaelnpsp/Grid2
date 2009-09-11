@@ -688,7 +688,7 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 			values = {
 				[10] = (L["%d yards"]:format(10)),
 				[28] = (L["%d yards"]:format(28)),
-				[40] = (L["%d yards"]:format(40)),
+				[38] = (L["%d yards"]:format(38)),
 				[100] = (L["%d yards"]:format(100)),
 			},
 		},
