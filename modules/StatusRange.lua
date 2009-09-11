@@ -4,7 +4,7 @@ Range.defaultDB = {
 	profile = {
 		default = 0.25,
 		elapsed = 0.1,
-		range = 40,
+		range = 38,
 	},
 }
 
