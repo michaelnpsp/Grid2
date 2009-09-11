@@ -55,6 +55,10 @@ local function checkRange28(unit)
 	return CheckInteractDistance(unit, 4)
 end
 
+local function checkRange38(unit)
+	return UnitInRange(unit)
+end
+
 local function checkRange100(unit)
 	return UnitIsVisible(unit)
 end
@@ -63,6 +67,7 @@ local function initRanges()
 	ranges, checks = {}, {}
 	addRange(10, checkRange10)
 	addRange(28, checkRange28)
+	addRange(38, checkRange38)
 	addRange(100, checkRange100)
 end
 
