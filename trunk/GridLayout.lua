@@ -264,6 +264,38 @@ function Grid2Layout:StopMoveFrame()
 	end
 end
 
+-- locked = nil : toggle
+-- locked = false : disable movement
+-- locked = true : enable movement
+function Grid2Layout:FrameLock(locked)
+	local p = self.db.profile
+	if (locked == nil) then
+		p.FrameLock = not p.FrameLock
+	else
+		p.FrameLock = locked
+	end
+	if (not p.FrameLock and p.ClickThrough) then
+		p.ClickThrough = false
+		self.frame:EnableMouse(true)
+	end
+end
+
+--
+-- ConfigMode support
+--
+
+-- Create the global table if it does not exist yet
+CONFIGMODE_CALLBACKS = CONFIGMODE_CALLBACKS or {}
+
+-- Declare our handler
+CONFIGMODE_CALLBACKS["Grid2"] = function(action)
+	if (action == "ON") then
+		Grid2Layout:FrameLock(false)
+	elseif (action == "OFF") then
+		Grid2Layout:FrameLock(true)
+	end
+end
+
 function Grid2Layout:CreateFrame()
 	-- create main frame to hold all our gui elements
 	local f = CreateFrame("Frame", "Grid2LayoutFrame", UIParent)
