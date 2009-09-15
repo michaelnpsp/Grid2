@@ -1,6 +1,14 @@
 ﻿local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2", "zhCN")
 if not L then return end
 
+--{{{ Actually used
+L["Border"] = "边框"
+L["Charmed"] = "Charmed"
+L["Drink"] = "Drink"
+L["Food"] = "Food"
+L["Grid2"] = "Grid2"
+--}}}
+
 --{{{ GridCore
 L["Configure"] = "配置"
 L["Configure Grid"] = "配置 Grid"
@@ -11,7 +19,6 @@ L["Frame"] = "框架"
 L["Options for GridFrame."] = "Grid 框架选项"
 
 L["Indicators"] = "提示器"
-L["Border"] = "边框"
 L["Health Bar"] = "生命条"
 L["Health Bar Color"] = "生命条颜色"
 L["Center Text"] = "中心文字"
