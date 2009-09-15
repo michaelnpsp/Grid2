@@ -4,6 +4,9 @@ if not L then return end
 --{{{ Actually used
 L["Border"] = "테두리"
 L["Charmed"] = "매혹"
+L["Drink"] = "음료"
+L["Food"] = "음식"
+L["Grid2"] = "Grid2"
 --}}}
 
 --{{{ GridCore

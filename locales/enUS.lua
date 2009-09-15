@@ -4,6 +4,8 @@ if not L then return end
 --{{{ Actually used
 L["Border"] = true
 L["Charmed"] = true
+L["Drink"] = true
+L["Food"] = true
 L["Grid2"] = true
 --}}}
 

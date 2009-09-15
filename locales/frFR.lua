@@ -1,6 +1,14 @@
 ﻿local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2", "frFR")
 if not L then return end
 
+--{{{ Actually used
+L["Border"] = "Border"
+L["Charmed"] = "Charmed"
+L["Drink"] = "Drink"
+L["Food"] = "Food"
+L["Grid2"] = "Grid2"
+--}}}
+
 L["(%d+) yd range"] = "portée de (%d+) m."
 
 L["Beast"] = "Bête"

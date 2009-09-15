@@ -4,6 +4,9 @@ if not L then return end
 --{{{ Actually used
 L["Border"] = "Края"
 L["Charmed"] = "Зачарованный"
+L["Drink"] = "Drink"
+L["Food"] = "Food"
+L["Grid2"] = "Grid2"
 --}}}
 
 --{{{ GridCore
