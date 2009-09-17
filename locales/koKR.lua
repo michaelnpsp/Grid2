@@ -99,8 +99,8 @@ L["By Group 15 w/Pets"] = "15인 공격대, 소환수"
 L["By Group 10"] = "10인 공격대"
 L["By Group 10 w/Pets"] = "10인 공격대, 소환수"
 L["By Class 25"] = "25인 직업별"
-L["By Class 1 x 25 Wide"] = "1 x 25인 직업별 Wide"
-L["By Class 2 x 15 Wide"] = "2 x 15인 직업별 Wide"
+L["By Class 1 x 25 Wide"] = "1 x 25인 직업별"
+L["By Class 2 x 15 Wide"] = "2 x 15인 직업별"
 L["By Role 25"] = "25인 역할별"
 L["By Class"] = "직업별"
 L["By Class w/Pets"] = "직업별, 소환수"
@@ -215,11 +215,8 @@ L["FFA"] = "FFA"
 --}}}
 
 --{{{ GridStatusRange
-L["Range check frequency"] = "거리 체크 빈도"
-L["Seconds between range checks"] = "거리 체크의 시간(초)를 설정합니다."
 L["Out of Range"] = "범위 벗어남"
 L["OOR"] = "범위 벗어남"
-L["Range to track"] = "범위 추적"
 --}}}
 
 --{{{ GridStatusReadyCheck
