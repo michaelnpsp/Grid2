@@ -4,8 +4,8 @@ if not L then return end
 --{{{ Actually used
 L["Border"] = "Края"
 L["Charmed"] = "Зачарованный"
-L["Drink"] = "Drink"
-L["Food"] = "Food"
+L["Drink"] = "Питье"
+L["Food"] = "Пища"
 L["Grid2"] = "Grid2"
 --}}}
 
@@ -136,7 +136,7 @@ L["Aggro alert"] = "Сигнал угрозы"
 
 --{{{ GridStatusAuras
 L["Auras"] = "Ауры"
-L["Debuff type: %s"] = "Тип Дебаффа: %s"
+L["Debuff type: %s"] = "Тип дебаффа: %s"
 L["Poison"] = "Яды"
 L["Disease"] = "Болезнь"
 L["Magic"] = "Магия"
