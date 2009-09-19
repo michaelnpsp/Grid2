@@ -200,6 +200,9 @@ end
 function Grid2:SetupDefaultAuras(setup, class)
 	local setupIndicator = setup.status
 
+	setup.buffs["buff-Drink"] = {L["Drink"], true, nil, 0.8, 0.8, 1, 1}
+	setup.buffs["buff-Food"] = {L["Food"], true, nil, 1, 1, 0.6, 1}
+
 	if (class == "DEATHKNIGHT") then
 		setup.buffs["buff-HornOfWinter-mine"] = {57330, true, true, 0.1, 0.1, 1, 1}
 
