@@ -233,7 +233,7 @@ do
 			for status, value in next, self.tracked do
 				for unit, expiration in next, status.expirations do
 					local timeLeft = expiration - time
-					if timeLeft < value ~= timeLeft + elapsed < value then
+					if (timeLeft < value) ~= (timeLeft + elapsed < value) then
 						status:UpdateIndicators(unit)
 					end
 				end
