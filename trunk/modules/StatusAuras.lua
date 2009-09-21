@@ -81,6 +81,49 @@ end
 
 local StatusCount = 0
 local BuffHandlers, DebuffHandlers = {}, {}
+
+local MakeStatusFilter
+do
+	local filter_mt = {
+		__index = function (self, unit)
+			local _, class = UnitClass(unit)
+			local result = self.source[class]
+			self[unit] = result
+		end,
+	}
+	local filters = {}
+	MakeStatusFilter = function(status)
+		local source, dest = status.db.profile.classFilter, status.filtered
+		if not source then
+			if dest then
+				filters[dest] = nil
+				status.filtered = nil
+				dest = nil
+			end
+		elseif dest then
+			wipe(dest)
+			dest.source = source
+		else
+			dest = setmetatable({source = status.db.profile.classFilter}, filter_mt)
+			status.filtered = dest
+			filters[dest] = true
+		end
+		return dest
+	end
+
+	local next = next
+	local Grid2_UnitIsPet = Grid2.UnitIsPet
+	local function status_ClearFilterUnit(_, unit)
+		if Grid2_UnitIsPet(nil, unit) then return end -- hackish
+		for filter in next, filters do
+			filter[unit] = nil
+		end
+	end
+
+	Grid2.RegisterMessage(filter_mt, "Grid_UnitJoined", status_ClearFilterUnit)
+	Grid2.RegisterMessage(filter_mt, "Grid_UnitChanged", status_ClearFilterUnit)
+end
+
 local function status_Reset(self, unit)
 	self.prev_state = self:IsActive(unit)
 	self.new_state = nil
@@ -90,30 +133,40 @@ local function status_Reset(self, unit)
 	self.expirations[unit] = nil
 end
 
-local function status_IsActive(self, unit)
-	local profile = self.db.profile
-	if (profile.classFilter and profile.classFilter[select(2, UnitClass(unit))]) then
-		return nil
-	end
-	if (profile.missing) then
-		return not self.states[unit]
-	else
-		return self.states[unit]
-	end
+local function status_IsInactive(self, unit) -- used for "missing" status
+	local filtered = self.filtered
+	if filtered and filtered[unit] then return nil end
+	return not self.states[unit]
 end
 
-local GetTime = GetTime
-local function status_IsActiveBlink(self, unit)
-	local profile = self.db.profile
-	if (profile.classFilter and profile.classFilter[select(2, UnitClass(unit))]) then
-		return nil
+local function status_IsActive(self, unit)
+	local filtered = self.filtered
+	if filtered and filtered[unit] then return nil end
+	return self.states[unit]
+end
+
+local status_IsActiveBlink, status_IsInactiveBlink
+do
+	local GetTime = GetTime
+	status_IsActiveBlink = function (self, unit)
+		local filtered = self.filtered
+		if (filtered and filtered[unit]) or not self.states[unit] then return nil end
+		if self.expirations[unit] - GetTime() < self.blinkThreshold then
+			return "blink"
+		else
+			return true
+		end
 	end
-	if not self.states[unit] then
-		return profile.missing
-	elseif (self.expirations[unit] - GetTime()) < self.blinkThreshold then
-		return "blink"
-	else
-		return not profile.missing
+	status_IsInactiveBlink = function (self, unit)
+		-- does this really make sense ?
+		local filtered = self.filtered
+		if filtered and filtered[unit] then return nil end
+		if not self.states[unit] then return true end
+		if self.expirations[unit] - GetTime() < self.blinkThreshold then
+			return "blink"
+		else
+			return false
+		end
 	end
 end
 
@@ -168,8 +221,7 @@ local function status_HasStateChanged(self, unit)
 	return (self.new_state ~= self.prev_state) or (self.new_count ~= self.prev_count) or (self.new_expiration ~= self.prev_expiration)
 end
 
-local AddTimeTracker
-local RemoveTimeTracker
+local AddTimeTracker, RemoveTimeTracker
 do
 	local next = next
 	local timetracker
@@ -179,10 +231,9 @@ do
 		timetracker:SetScript("OnUpdate", function (self, elapsed)
 			local time = GetTime()
 			for status, value in next, self.tracked do
-				local expirations = status.expirations
-				for unit, expiration in next, expirations do
+				for unit, expiration in next, status.expirations do
 					local timeLeft = expiration - time
-					if (timeLeft < value) ~= (timeLeft + elapsed < value) then
+					if timeLeft < value ~= timeLeft + elapsed < value then
 						status:UpdateIndicators(unit)
 					end
 				end
@@ -200,18 +251,19 @@ do
 		end
 		return AddTimeTracker(status, value)
 	end
-
 end
 
-local function status_UpdateBlinkThreshold(self)
-	local blinkThreshold = self.db.profile.blinkThreshold
+local function status_UpdateProfileData(self)
+	local p = self.db.profile
+	MakeStatusFilter(self)
+	local blinkThreshold, missing = p.blinkThreshold, p.missing
 	if blinkThreshold then
 		self.blinkThreshold = blinkThreshold
-		self.IsActive = status_IsActiveBlink
+		self.IsActive = missing and status_IsInactiveBlink or status_IsActiveBlink
 		AddTimeTracker(self, blinkThreshold)
 	else
 		self.blinkThreshold = nil
-		self.IsActive = status_IsActive
+		self.IsActive = missing and status_IsInactive or status_IsActive
 		if RemoveTimeTracker then
 			RemoveTimeTracker(self)
 		end
@@ -251,7 +303,7 @@ local function CreateAuraStatusCommon(status, spellName, mine, ...)
 	status.GetExpirationTime = status_GetExpirationTime
 	status.GetPercent = status_GetPercent
 	status.HasStateChanged = status_HasStateChanged
-	status.UpdateBlinkThreshold = status_UpdateBlinkThreshold
+	status.UpdateProfileData = status_UpdateProfileData
 end
 
 -- spellName: spellId or localized spellName
@@ -261,6 +313,7 @@ function Grid2:CreateBuffStatus(spellName, mine, missing, ...)
 	CreateAuraStatusCommon(status, spellName, mine, ...)
 
 	function status:OnEnable()
+		self:UpdateProfileData()
 		EnableAuraFrame(true)
 		BuffHandlers[self] = true
 	end
@@ -282,11 +335,13 @@ function Grid2:CreateBuffStatus(spellName, mine, missing, ...)
 end
 
 function Grid2:CreateDebuffStatus(spellName, mine, ...)
+	-- is "mine" ever used here as "mine" ?
 	StatusCount = StatusCount + 1
 	local status = Grid2.statusPrototype:new("debuff-" .. StatusCount)
 	CreateAuraStatusCommon(status, spellName, mine, ...)
 
 	function status:OnEnable()
+		self:UpdateProfileData()
 		EnableAuraFrame(true)
 		DebuffHandlers[self] = true
 	end
@@ -296,12 +351,8 @@ function Grid2:CreateDebuffStatus(spellName, mine, ...)
 		DebuffHandlers[self] = nil
 	end
 
-	if (type(mine) == "number") then
-		status.blinkThreshold = mine
-		status.IsActive = status_IsActiveBlink
-		AddTimeTracker(status, mine)
-	else
-		status.IsActive = status_IsActive
+	if type(mine) == "number" then
+		status.defaultDB.profile.blinkThreshold = mine
 	end
 
 	status.UpdateState = status_UpdateState

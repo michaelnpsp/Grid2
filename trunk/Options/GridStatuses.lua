@@ -67,7 +67,7 @@ function Grid2Options:MakeStatusClassFilterOption(status, options)
 	}
 
 	local profile = status.db.profile
-	for classType, className in pairs(LOCALIZED_CLASS_NAMES_FEMALE) do
+	for classType, className in pairs(LOCALIZED_CLASS_NAMES_MALE) do
 		options.classFilter.args[classType] = {
 			type = "toggle",
 			name = className,
@@ -88,6 +88,7 @@ function Grid2Options:MakeStatusClassFilterOption(status, options)
 						profile.classFilter = nil
 					end
 				end
+				status:UpdateProfileData()
 				for guid, unitid in Grid2:IterateRoster() do
 					status:UpdateIndicators(unitid)
 				end
@@ -138,6 +139,7 @@ function Grid2Options:MakeStatusMissingOption(status, options)
 		end,
 		set = function (_, v)
 			status.db.profile.missing = v
+			status:UpdateProfileData()
 			for guid, unitid in Grid2:IterateRoster() do
 				status:UpdateIndicators(unitid)
 			end
@@ -171,7 +173,7 @@ function Grid2Options:MakeStatusBlinkThresholdOption(status, options)
 				v = nil
 			end
 			status.db.profile.blinkThreshold = v
-			status:UpdateBlinkThreshold()
+			status:UpdateProfileData()
 		end,
 	}
 	return options
