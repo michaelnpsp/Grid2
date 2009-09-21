@@ -1,3 +1,5 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("Grid2")
+
 Grid2.healers = {
 	DRUID = true,
 	PALADIN = true,
