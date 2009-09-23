@@ -1,11 +1,11 @@
-## Interface: 30100
+## Interface: 30200
 ## Title: Grid2AlertOptions
 ## Notes: Load on demand Options for Grid2Alert.
 
 ## Dependencies: Grid2, Grid2Alert
 ## LoadOnDemand: 1
 
-## Version: @project-revision@
+## Version: 3.2.0.@project-revision@
 ## X-ReleaseDate: "$Date$"
 ## X-Category: UnitFrame
 ## X-Website: http://wowace.com/projects/grid2/
