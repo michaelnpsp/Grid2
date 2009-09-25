@@ -156,10 +156,6 @@ local function TextColor_OnUpdate(self, parent, unit, status)
 end
 
 function Grid2:CreateTextIndicator(indicatorKey, level, anchor, anchorRel, offsetx, offsety, duration)
-	if type(level) == "string" then
-print(indicatorKey, level, anchor, anchorRel, offsetx, offsety, duration)
-		level, anchor, anchorRel, offsetx, offsety, duration = 0, level, anchor, anchorRel, offsetx, offsety
-	end
 	local Text = self.indicatorPrototype:new(indicatorKey)
 
 	Text.frameLevel = level
