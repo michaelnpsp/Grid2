@@ -31,17 +31,6 @@ function category:UnregisterStatus(status)
 	end
 end
 
-function category:SetStatusPriority(status, priority)
-	if not self.priorities[status] then return end
-	self.priorities[status] = priority
-	table.sort(self.statuses, self.sortStatuses)
-end
-
-function category:GetStatusPriority(status)
-	return self.priorities[status]
-end
-
-
 Grid2.categoryPrototype = {
 	__index = category,
 	new = function (self, ...)

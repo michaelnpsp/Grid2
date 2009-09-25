@@ -638,4 +638,5 @@ function Grid2Options:AddSetupIndicatorsOptions(setup, reset)
 	Grid2Options:RegisterIndicators(indicators.text, "text", L["Text"], Grid2.CreateTextIndicator, AddTextIndicatorOptions)
 end
 
+Grid2Options:AddSetupIndicatorsOptions(Grid2.db.profile.setup)
 -- /dump Grid2.db.profile.setup.indicators.square
