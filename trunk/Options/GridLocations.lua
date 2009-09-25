@@ -282,6 +282,3 @@ function Grid2Options:AddSetupLocationOptions(setup, reset)
 		AddLocationOptions(key, location)
 	end
 end
-
-Grid2Options:AddSetupLocationOptions(Grid2.db.profile.setup)
-
