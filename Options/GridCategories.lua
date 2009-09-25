@@ -354,7 +354,6 @@ function Grid2Options:AddSetupCategoryOptions(setup, reset)
 	end
 end
 
-Grid2Options:AddSetupCategoryOptions(Grid2.db.profile.setup)
 --[[
 /dump Grid2.db.account.categories
 --]]

@@ -697,5 +697,3 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 	})
 
 end
-
-Grid2Options:AddSetupStatusesOptions(Grid2.db.profile.setup)
