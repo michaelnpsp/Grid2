@@ -194,7 +194,9 @@ function Grid2Options:AddModuleDebugMenu(name, module)
 end
 
 function Grid2Options:AddResetDebugMenu()
-	self.options.Grid2.args.debug.args.reset = {
+	local opt = self.options.Grid2.args.debug.args
+
+	opt.reset = {
 		type = "execute",
 		order = 1,
 		name = L["Reset"],
@@ -204,9 +206,19 @@ function Grid2Options:AddResetDebugMenu()
 			ReloadUI()
 		end,
 	}
-	self.options.Grid2.args.debug.args.resetSpacer = {
-		type = "header",
+	opt.resetSetup = {
+		type = "execute",
 		order = 2,
+		name = L["Reset Setup"],
+		desc = L["Reset current setup and ReloadUI."],
+		func = function ()
+			Grid2.db.profile.setup = nil
+			ReloadUI()
+		end,
+	}
+	opt.resetSpacer = {
+		type = "header",
+		order = 3,
 		name = "",
 	}
 end
@@ -228,7 +240,11 @@ function Grid2Options:Initialize()
 	end
 	self:AddModuleDebugMenu("Grid2", Grid2)
 	self:AddResetDebugMenu()
+
 	InitializeModuleOptions(Grid2)
+
+	self:InitializeSetup()
+
 	for _, location in Grid2:IterateLocations() do
 		self:AddElement("location", location)
 	end
@@ -244,6 +260,23 @@ function Grid2Options:Initialize()
 	end
 
 	self.Initialize = nil
+end
+
+function Grid2Options:InitializeSetup()
+	local setup = Grid2.db.profile.setup
+	if setup then
+		self:AddSetupLocationOptions(setup)
+		self:AddSetupIndicatorsOptions(setup)
+		self:AddSetupStatusesOptions(setup)
+		self:AddSetupCategoryOptions(setup)
+
+		for name, data in pairs(setup.buffs) do
+			Grid2Options:AddAura("Buff", name, unpack(data))
+		end
+		for name, data in pairs(setup.debuffs) do
+			Grid2Options:AddAura("Debuff", name, unpack(data))
+		end
+	end
 end
 
 function Grid2Options:OnChatCommand(input)
