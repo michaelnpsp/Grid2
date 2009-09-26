@@ -23,7 +23,7 @@ function Grid2Options.SetStatusColor(info, r, g, b, a)
 	local c = status.db.profile[colorKey]
 	c.r, c.g, c.b, c.a = r, g, b, a
 
-	Grid2:UpdateColorHandler(status)
+	Grid2:MakeBuffColorHandler(status)
 	for guid, unitid in Grid2:IterateRoster() do
 		status:UpdateIndicators(unitid)
 	end
@@ -697,5 +697,3 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 	})
 
 end
-
-Grid2Options:AddSetupStatusesOptions(Grid2.db.profile.setup)
