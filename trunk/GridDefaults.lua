@@ -151,16 +151,28 @@ function Grid2:RegisterCategoryStatuses(categories)
 	end
 end
 
-function Grid2:Setup()
+
+-- Plugin cores hook this function to call and blend in their default options
+-- (Since they may get added after the core defaults are created)
+function Grid2:GetCurrentSetup(class)
 	local setup = self.db.profile.setup
 	
 	-- Create or upgrade defaults
-	if not setup then
+	if (not setup) then
+		-- Plugins hook this function to load their options
 		self:LoadOptions()
-		local _, class = UnitClass("player")
+
 		setup = Grid2Options:MakeDefaultSetup(class)
+
 		self.db.profile.setup = setup
 	end
+	
+	return setup, class
+end
+
+function Grid2:Setup()
+	local _, class = UnitClass("player")
+	local setup = self:GetCurrentSetup(class)
 
 	-- Create objects
 	self:SetupIndicators(setup)
