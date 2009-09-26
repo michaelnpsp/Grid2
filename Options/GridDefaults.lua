@@ -1,7 +1,14 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 
+Grid2Options.healers = {
+	DRUID = true,
+	PALADIN = true,
+	PRIEST = true,
+	SHAMAN = true,
+}
+
 function Grid2Options:MakeDefaultSetup(class)
-	if not Grid2.db.global.categories then
+	if (not Grid2.db.global.categories) then
 		local categories = {}
 		self:SetupDefaultCategories(categories, class)
 		Grid2.db.global.categories = categories
