@@ -192,7 +192,7 @@ end
 
 function Grid2:OnEnable()
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED", "RosterUpdated")
-	self:RegisterEvent("RAID_ROSTER_UPDATED", "RosterUpdated")
+	self:RegisterEvent("RAID_ROSTER_UPDATE", "RosterUpdated")
 --	self:RegisterEvent("UNIT_PET")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 
