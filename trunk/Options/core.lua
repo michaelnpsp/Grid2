@@ -8,7 +8,8 @@ local Grid2Options = {
 			desc = L["Options for %s."]:format("Auras"),
 			args = {},
 		},
-	}
+	},
+	plugins = {},
 }
 
 function Grid2Options:AddModule(parent, name, module, extraOptions)
@@ -265,6 +266,7 @@ end
 function Grid2Options:InitializeSetup()
 	local setup = Grid2.db.profile.setup
 	if setup then
+--[[
 		self:AddSetupLocationOptions(setup)
 		self:AddSetupIndicatorsOptions(setup)
 		self:AddSetupStatusesOptions(setup)
@@ -276,8 +278,25 @@ function Grid2Options:InitializeSetup()
 		for name, data in pairs(setup.debuffs) do
 			Grid2Options:AddAura("Debuff", name, unpack(data))
 		end
+--]]
 	end
 end
+
+-- Plugins can overide this to add their options
+function Grid2Options:MakeOptions(setup)
+	self:AddSetupLocationOptions(setup)
+	self:AddSetupIndicatorsOptions(setup)
+	self:AddSetupStatusesOptions(setup)
+	self:AddSetupCategoryOptions(setup)
+
+	for name, data in pairs(setup.buffs) do
+		Grid2Options:AddAura("Buff", name, unpack(data))
+	end
+	for name, data in pairs(setup.debuffs) do
+		Grid2Options:AddAura("Debuff", name, unpack(data))
+	end
+end
+
 
 function Grid2Options:OnChatCommand(input)
     if not input or input:trim() == "" then
