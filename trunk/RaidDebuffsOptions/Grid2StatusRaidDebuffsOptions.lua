@@ -1,4 +1,5 @@
 local Grid2StatusRaidDebuffsOptions = {}
+Grid2Options.plugins["Grid2StatusRaidDebuffsOptions"] = Grid2StatusRaidDebuffsOptions
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 local LG = LibStub("AceLocale-3.0"):GetLocale("Grid2")
@@ -25,7 +26,9 @@ local function MakeStatusRaidDebuffsOptions(reset)
 end
 
 
-function Grid2StatusRaidDebuffsOptions:AddSetupStatusesOptions(setup, reset)
+local prev_MakeOptions = Grid2Options.MakeOptions
+function Grid2Options:MakeOptions(setup, reset, ...)
+	prev_MakeOptions(self, setup, reset, ...)
 	local status, options
 
 	options = MakeStatusRaidDebuffsOptions()
@@ -42,4 +45,3 @@ function Grid2StatusRaidDebuffsOptions:AddSetupStatusesOptions(setup, reset)
 
 end
 
-Grid2StatusRaidDebuffsOptions:AddSetupStatusesOptions(Grid2.db.profile.setup)
