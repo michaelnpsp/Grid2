@@ -1,5 +1,4 @@
 function Grid2:SetupIndicators(setup)
-print("Grid2:SetupIndicators")
 	for indicatorKey, info in pairs(setup.indicators.bar) do
 		self:CreateBarIndicator(indicatorKey, unpack(info))
 	end
@@ -172,6 +171,8 @@ end
 
 function Grid2:Setup()
 	local _, class = UnitClass("player")
+
+	-- Get / Create setup
 	local setup = self:GetCurrentSetup(class)
 
 	-- Create objects
@@ -182,6 +183,11 @@ function Grid2:Setup()
 	local categories = self.db.global.categories
 	self:CreateCategories(categories)
 	self:RegisterCategoryStatuses(categories)
+	
+	-- Add options if config loaded
+	if (Grid2Options) then
+		Grid2Options:MakeOptions(setup)
+	end
 end
 
 --[[
