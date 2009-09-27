@@ -234,6 +234,14 @@ function GSRD:UpdateZoneSpells(zone)
 	end
 end
 
+
+status.defaultDB = {
+	profile = {
+		color1 = { r = .5, g = .5, b = .5, a = 1 },
+	}
+}
+
+
 function status:OnEnable()
 	frame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 	GSRD:UpdateZoneSpells()
@@ -335,18 +343,39 @@ end)
 
 Grid2:RegisterStatus(status, { "icon" })
 
-local prev_MakeDefaultSetup = Grid2.MakeDefaultSetup
-function Grid2:MakeDefaultSetup(...)
-	local setup, class = prev_MakeDefaultSetup(self, ...)
 
-	local setupIndicator = setup.status
-	if (not setup.status.raidDebuffs) then
-		self:SetupIndicatorStatus(setupIndicator, "icon-center", "raid-debuffs", 1000)
-		setup.status.raidDebuffs = true
+
+-- Hook the loading of options so our associated lod options get loaded at the right time.
+local prev_LoadOptions = Grid2.LoadOptions
+function Grid2:LoadOptions(...)
+	prev_LoadOptions(self, ...)
+
+	local Grid2StatusRaidDebuffsOptions = Grid2Options.plugins["Grid2StatusRaidDebuffsOptions"]
+	if (Grid2StatusRaidDebuffsOptions) then
+		return
+	end
+	if (not IsAddOnLoaded("Grid2StatusRaidDebuffsOptions")) then
+		LoadAddOn("Grid2StatusRaidDebuffsOptions")
+	end
+end
+
+-- Hook GetCurrentSetup to blend in default options.
+local prev_GetCurrentSetup = Grid2.GetCurrentSetup
+function Grid2:GetCurrentSetup(...)
+	local setup, class = prev_GetCurrentSetup(self, ...)
+	if (not setup.Grid2StatusRaidDebuffs) then
+		Grid2:LoadOptions()
+
+		local Grid2StatusRaidDebuffsOptions = Grid2Options.plugins["Grid2StatusRaidDebuffsOptions"]
+		if (Grid2StatusRaidDebuffsOptions) then
+			Grid2StatusRaidDebuffsOptions:MakeDefaultSetup(setup, class)
+		end
+		setup.Grid2StatusRaidDebuffs = true
 	end
 
 	return setup, class
 end
+
 --[[
 /dump Grid2.db.profile.setup.status["icon-center"]
 /dump Grid2.db.profile.setup.status["corner-bottomright"]
