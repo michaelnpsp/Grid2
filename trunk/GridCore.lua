@@ -145,6 +145,9 @@ function Grid2:OnInitialize()
 	local prev_OnShow = optionsFrame:GetScript("OnShow")
 	optionsFrame:SetScript("OnShow", function (self, ...)
 		Grid2:LoadOptions()
+		if (Grid2Options) then
+			Grid2Options:MakeOptions(Grid2.db.profile.setup)
+		end
 		self:SetScript("OnShow", prev_OnShow)
 		return prev_OnShow(self, ...)
 	end)
@@ -184,6 +187,7 @@ end
 function Grid2:OnChatCommand(input)
 	self:LoadOptions()
 	if (Grid2Options) then
+		Grid2Options:MakeOptions(Grid2.db.profile.setup)
 		Grid2Options:OnChatCommand(input)
 	else
 		self:Print("You need the Grid2Options addon available to be able to configure Grid2.")
