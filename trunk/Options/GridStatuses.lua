@@ -358,7 +358,7 @@ local function NewStatusBuff()
 		local buffs = Grid2.db.profile.setup.buffs
 		buffs[statusKey] = data
 
-		local status = Grid2:SetupStatusAuraBuff(statusKey, data)
+		local status = Grid2:SetupBuffStatus(statusKey, data)
 		Grid2Options:AddAura("Buff", statusKey, unpack(data))
 		Grid2Options:AddElementSubType("status", "buff", status, Grid2Options:MakeStatusStandardBuffOptions(status))
 	end
@@ -435,7 +435,7 @@ local function NewStatusDebuff()
 		local debuffs = Grid2.db.profile.setup.debuffs
 		debuffs[statusKey] = data
 
-		local status = Grid2:SetupAuraStatusDebuff(statusKey, data)
+		local status = Grid2:SetupDebuffStatus(statusKey, data)
 		Grid2Options:AddAura("Debuff", statusKey, unpack(data))
 		Grid2Options:AddElementSubType("status", "debuff", status, Grid2Options:MakeStatusStandardDebuffOptions(status))
 	end
