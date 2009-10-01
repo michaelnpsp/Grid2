@@ -4,7 +4,7 @@ Range.defaultDB = {
 	profile = {
 		default = 0.25,
 		elapsed = 0.1,
-		range = 38,
+		range = 40,
 	},
 }
 
@@ -24,11 +24,20 @@ end
 
 function Range:OnEnable()
 	self:RegisterMessage("Grid_RangesUpdated")
+
+	-- if already initialized
+	local check = GridRange:GetRangeCheck(Range.db.profile.range)
+	local rezCheck = GridRange:GetRezCheck()
+	
+	if (check or rezCheck) then
+		self:Grid_RangesUpdated()
+	end
 end
 
 function Range:Grid_RangesUpdated()
 	local check = GridRange:GetRangeCheck(Range.db.profile.range)
 	local rezCheck = GridRange:GetRezCheck()
+
 	if rezCheck then
 		GetRangeValue = function (unit)
 			return (check(unit) or rezCheck(unit)) and 1
@@ -38,6 +47,7 @@ function Range:Grid_RangesUpdated()
 			return check(unit) and 1
 		end
 	end
+
 	Update()
 	if not self.frame then
 		local f = CreateFrame("Frame", nil, Grid2LayoutFrame)
