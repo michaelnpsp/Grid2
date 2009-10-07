@@ -18,6 +18,7 @@ function GridFrameEvents:OnHide()
 	Grid2Frame:SendMessage("Grid_UpdateLayoutSize")
 end
 
+local warned
 function GridFrameEvents:OnAttributeChanged(name, value)
 	if (name == "unit") then
 		if (value) then
@@ -39,13 +40,14 @@ function GridFrameEvents:OnAttributeChanged(name, value)
 			self.unit = nil
 		end
 		Grid2:SetFrameUnit(self, value)
-	elseif (name == "type1" and (not value or value == "")) then
---ToDo: when does this arise and does it need handling?
-print("type1 set to target, value: <", value, "> ******")
-		self:SetAttribute("type1", "target")
-	elseif (name == "*type1" and (not value or value == "")) then
-print("*type1 set to target, value: <", value, "> ******")
-		self:SetAttribute("*type1", "target")
+	elseif (name == "type1" or name == "*type1") and (not value or value == "") then
+		if not warned then
+			local message = ("%q has been set to %q, forcing to \"target\" instead."):format(name, tostring(value))
+			local _, ret = pcall(error, message, 3)
+			geterrorhandler()(ret)
+			warned = true
+		end
+		self:SetAttribute(name, "target")
 	end
 end
 
