@@ -6,8 +6,8 @@
 ## Notes-zhTW: 精簡的團隊框架功能
 ## Author: Pastamancer & Maia, Jerry, Toadkiller
 
-## OptionalDeps: Ace3, LibGratuity-3.0, LibHealComm-3.0
-## X-Embeds: Ace3, LibGratuity-3.0, LibHealComm-3.0
+## OptionalDeps: Ace3, LibGratuity-3.0, LibHealComm-4.0
+## X-Embeds: Ace3, LibGratuity-3.0, LibHealComm-4.0
 ## SavedVariables: Grid2DB
 ## DefaultState: disabled
 ## LoadOnDemand: 0
@@ -35,7 +35,7 @@ Libs\AceGUI-3.0\AceGUI-3.0.xml
 Libs\AceConfig-3.0\AceConfig-3.0.xml
 Libs\AceLocale-3.0\AceLocale-3.0.xml
 Libs\LibGratuity-3.0\lib.xml
-Libs\LibHealComm-3.0\lib.xml
+Libs\LibHealComm-4.0\lib.xml
 #@end-no-lib-strip@
 
 #Locales
