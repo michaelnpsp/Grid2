@@ -641,7 +641,7 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 	})
 
 	status = Grid2.statuses.range
-	Grid2Options:AddElement("status", status, {
+	local options = {
 		default = {
 			type = "range",
 			order = 10,
@@ -687,13 +687,10 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 					status:UpdateIndicators(unitid)
 				end
 			end,
-			values = {
-				[10] = (L["%d yards"]:format(10)),
-				[28] = (L["%d yards"]:format(28)),
-				[40] = (L["%d yards"]:format(40)),
-				[100] = (L["%d yards"]:format(100)),
-			},
+			values = GridRange:GetAvailableRangeList(),
 		},
-	})
+	}
+	Grid2Options.RegisterMessage(options, "Grid_RangesUpdated", function () options.range.values = GridRange:GetAvailableRangeList() end)
+	Grid2Options:AddElement("status", status, options)
 
 end
