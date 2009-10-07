@@ -39,7 +39,7 @@ end
 local function addRange(range, check)
 	-- 100 yards is the farthest possible range
 	if range > 100 then return end
-	
+
 	if not checks[range] then
 		ranges[#ranges + 1] = range
 		table.sort(ranges)
@@ -138,10 +138,10 @@ end
 
 function GridRange:GetAvailableRangeList()
 	if not ranges or rangelist then return rangelist end
-	
+
 	rangelist = {}
 	for _, r in ipairs(ranges) do
-		rangelist[tostring(r)] = L["%d yards"]:format(r)
+		rangelist[r] = L["%d yards"]:format(r)
 	end
 	return rangelist
 end
