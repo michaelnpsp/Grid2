@@ -1,115 +1,72 @@
-local HealComm = LibStub:GetLibrary("LibHealComm-3.0", true)
+local HealComm = LibStub:GetLibrary("LibHealComm-4.0", true)
 if not HealComm then return end
-local next = next
+
+local UnitGUID = UnitGUID
+local Grid2 = Grid2
 local select = select
 
-local playerName = UnitName"player"
+-- These probably should be configurable
+local HEALCOMM_FLAGS = HealComm.CASTED_HEALS
+local HEALCOMM_TIMEFRAME = nil
+local HEALCOMM_INCLUDE_PLAYER_HEALS = false
 
-local playerHealingTargetNames = {}
-local playerHealingSize
+-- As with healcomm-3.0, we only report active healing for other healers than player.
+local get_active_heal_amount
+if HEALCOMM_INCLUDE_PLAYER_HEALS then
+	get_active_heal_amount = function (unit)
+		return HealComm:GetHealAmount(UnitGUID(unit), HEALCOMM_FLAGS, HEALCOMM_TIMEFRAME)
+	end
+else
+	get_active_heal_amount = function (unit)
+		return HealComm:GetOthersHealAmount(UnitGUID(unit), HEALCOMM_FLAGS, HEALCOMM_TIMEFRAME)
+	end
+end
+
+local function get_effective_heal_amount(unit)
+	local guid = UnitGUID(unit)
+	local heal = HealComm:GetHealAmount(guid, HEALCOMM_FLAGS, HEALCOMM_TIMEFRAME)
+	return heal and heal * HealComm:GetHealModifier(guid) or 0
+end
 
 local Heals = Grid2.statusPrototype:new("heals-incoming")
 
-local rosterCache = setmetatable({}, { __index = function (self, unit)
-	local name, realm = UnitName(unit)
-	if realm and realm ~= "" then
-		name = name .. "-" .. realm
-	end
-	self[unit] = name
-	return name
-end})
-
-local invRosterCache = setmetatable({}, { __index = function (self, name)
-	for guid, unitid in Grid2:IterateRoster() do
-		local n = rosterCache[unitid]
-		if not n then return end
-		self[n] = unitid
-		if name == n then return unitid end
-	end
-end})
-
-function Heals:Grid_RosterUpdated()
-	while true do
-		local unit = next(rosterCache)
-		if not unit then break end
-		rosterCache[unit] = nil
-	end
-	while true do
-		local name = next(invRosterCache)
-		if not name then break end
-		invRosterCache[name] = nil
-	end
-end
-
-function Heals:Grid_PetChanged(pet)
-	local name = rawget(rosterCache, pet)
-	if name then
-		rosterCache[pet] = nil
-		invRosterCache[name] = nil
-	end
-end
-
 function Heals:OnEnable()
-	HealComm.RegisterCallback(self, "HealComm_DirectHealStart", "Update")
-	HealComm.RegisterCallback(self, "HealComm_DirectHealStop", "Update")
-	HealComm.RegisterCallback(self, "HealComm_DirectHealDelayed", "Update")
-	HealComm.RegisterCallback(self, "HealComm_HealModifierUpdate", "Update")
-
-	self:RegisterMessage("Grid_RosterUpdated")
-	self:RegisterMessage("Grid_PetChanged")
+	HealComm.RegisterCallback(self, "HealComm_HealStarted", "Update")
+	HealComm.RegisterCallback(self, "HealComm_HealUpdated", "Update")
+	HealComm.RegisterCallback(self, "HealComm_HealDelayed", "Update")
+	HealComm.RegisterCallback(self, "HealComm_HealStopped", "Update")
+	HealComm.RegisterCallback(self, "HealComm_ModifierChanged", "UpdateModifier")
 end
 
 function Heals:OnDisable()
-	HealComm.UnregisterCallback(self, "HealComm_DirectHealStart")
-	HealComm.UnregisterCallback(self, "HealComm_DirectHealStop")
-	HealComm.UnregisterCallback(self, "HealComm_DirectHealDelayed")
-	HealComm.UnregisterCallback(self, "HealComm_HealModifierUpdate")
-
-	self:UnregisterMessage("Grid_RosterUpdated")
-	self:UnregisterMessage("Grid_PetChanged")
+	HealComm.UnregisterCallback(self, "HealComm_HealStarted")
+	HealComm.UnregisterCallback(self, "HealComm_HealUpdated")
+	HealComm.UnregisterCallback(self, "HealComm_HealDelayed")
+	HealComm.UnregisterCallback(self, "HealComm_HealStopped")
+	HealComm.UnregisterCallback(self, "HealComm_ModifierChanged")
 end
 
-function Heals:Update(event, healerName, healSize, endTime, ...)
-	if healerName == playerName then
-		if event == 'HealComm_DirectHealStart' then
-			playerHealingSize = healSize > 0 and healSize
-			wipe(playerHealingTargetNames)
-			for i = 1, select("#", ...) do
-				playerHealingTargetNames[select(i, ...)] = true
-			end
-		else
-			playerHealingSize = nil
+function Heals:Update(event, healerGuid, _, _, _, ...)
+	for i = 1, select("#", ...) do
+		local guid = select(i, ...)
+		local unit = Grid2:GetUnitidByGUID(guid)
+		if unit then
+			self:UpdateIndicators(unit)
 		end
 	end
+end
 
-	for i = 1, select("#", ...) do
-		local name = select(i, ...)
-		local unit = invRosterCache[name]
+function Heals:UpdateModifier(event, guid)
+	local unit = Grid2:GetUnitidByGUID(guid)
+	if unit then
 		self:UpdateIndicators(unit)
 	end
 end
 
+
 function Heals:IsActive(unit)
-	local name = rosterCache[unit]
-	if playerHealingSize and playerHealingTargetNames[name] then return true end
-	local heal = HealComm:UnitIncomingHealGet(name, GetTime() + 100)
+	local heal = get_active_heal_amount(unit)
 	return heal and heal > 0
-end
-
-function Heals:GetHealingOnUnit(unit)
-	local name = rosterCache[unit]
-
-	local heal
-	if playerHealingSize and playerHealingTargetNames[name] then
-		heal = playerHealingSize
-	else
-		heal = 0
-	end
-
-	otherHeals = HealComm:UnitIncomingHealGet(name, GetTime() + 100)
-	if otherHeals then heal = heal + otherHeals end
-	heal = heal * HealComm:UnitHealModifierGet(name)
-	return heal
 end
 
 Heals.defaultDB = {
@@ -124,12 +81,11 @@ function Heals:GetColor(unit)
 end
 
 function Heals:GetText(unit)
-	return Grid2:GetShortNumber(self:GetHealingOnUnit(unit), true)
+	return Grid2:GetShortNumber(get_effective_heal_amount(unit), true)
 end
 
 function Heals:GetPercent(unit)
-	-- @FIXME: I don't like +UnitHealth here
-	return (self:GetHealingOnUnit(unit) + UnitHealth(unit)) / UnitHealthMax(unit)
+	return (get_effective_heal_amount(unit) + UnitHealth(unit)) / UnitHealthMax(unit)
 end
 
 Grid2:RegisterStatus(Heals, { "color", "text", "percent" })
