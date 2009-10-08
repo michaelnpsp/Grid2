@@ -641,6 +641,16 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 	})
 
 	status = Grid2.statuses.range
+	
+	local function GetAvailableRangeList()
+		local rangelist = {}
+		for r in GridRange:AvailableRangeIterator() do
+			rangelist[r] = L["%d yards"]:format(r)
+		end
+		return rangelist
+	end
+
+
 	local options = {
 		default = {
 			type = "range",
@@ -687,10 +697,10 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 					status:UpdateIndicators(unitid)
 				end
 			end,
-			values = GridRange:GetAvailableRangeList(),
+			values = GetAvailableRangeList(),
 		},
 	}
-	Grid2Options.RegisterMessage(options, "Grid_RangesUpdated", function () options.range.values = GridRange:GetAvailableRangeList() end)
+	Grid2.RegisterMessage(options, "Grid_RangesUpdated", function () options.range.values = GetAvailableRangeList() end)
 	Grid2Options:AddElement("status", status, options)
 
 end
