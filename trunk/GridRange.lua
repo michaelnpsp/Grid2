@@ -10,7 +10,7 @@ local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 GridRange = Grid2:NewModule("GridRange")
 
-local ranges, checks, rangelist
+local ranges, checks
 local select = select
 local IsSpellInRange = IsSpellInRange
 local CheckInteractDistance = CheckInteractDistance
@@ -108,7 +108,6 @@ function GridRange:ScanSpellbook()
 	end
 
 	self:SendMessage("Grid_RangesUpdated")
-	rangelist = nil
 end
 
 function GridRange:OnEnable()
@@ -134,16 +133,6 @@ end
 
 function GridRange:GetRangeCheck(range)
 	return checks and checks[range]
-end
-
-function GridRange:GetAvailableRangeList()
-	if not ranges or rangelist then return rangelist end
-
-	rangelist = {}
-	for _, r in ipairs(ranges) do
-		rangelist[r] = L["%d yards"]:format(r)
-	end
-	return rangelist
 end
 
 function GridRange:AvailableRangeIterator()
