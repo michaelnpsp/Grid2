@@ -5,22 +5,18 @@ local UnitGUID = UnitGUID
 local Grid2 = Grid2
 local select = select
 
--- These probably should be configurable
 local HEALCOMM_FLAGS = HealComm.CASTED_HEALS
 local HEALCOMM_TIMEFRAME = nil
-local HEALCOMM_INCLUDE_PLAYER_HEALS = false
 
--- As with healcomm-3.0, we only report active healing for other healers than player.
-local get_active_heal_amount
-if HEALCOMM_INCLUDE_PLAYER_HEALS then
-	get_active_heal_amount = function (unit)
-		return HealComm:GetHealAmount(UnitGUID(unit), HEALCOMM_FLAGS, HEALCOMM_TIMEFRAME)
-	end
-else
-	get_active_heal_amount = function (unit)
-		return HealComm:GetOthersHealAmount(UnitGUID(unit), HEALCOMM_FLAGS, HEALCOMM_TIMEFRAME)
-	end
+local function get_active_heal_amount_with_user(unit)
+	return HealComm:GetHealAmount(UnitGUID(unit), HEALCOMM_FLAGS, HEALCOMM_TIMEFRAME)
 end
+
+local function get_active_heal_amount_without_user(unit)
+	return HealComm:GetOthersHealAmount(UnitGUID(unit), HEALCOMM_FLAGS, HEALCOMM_TIMEFRAME)
+end
+
+local get_active_heal_amount = get_active_heal_amount_without_user
 
 local function get_effective_heal_amount(unit)
 	local guid = UnitGUID(unit)
@@ -30,12 +26,31 @@ end
 
 local Heals = Grid2.statusPrototype:new("heals-incoming")
 
+Heals.defaultDB = {
+	profile = {
+		includePlayerHeals = false,
+		-- timeFrame = nil,
+		flags = HealComm.CASTED_HEALS,
+	}
+}
+
+function Heals:UpdateProfileData()
+	if self.db then
+		HEALCOMM_FLAGS = self.db.profile.flags
+		HEALCOMM_TIMEFRAME = self.db.profile.timeFrame
+		get_active_heal_amount = self.db.profile.includePlayerHeals
+			and get_active_heal_amount_with_user
+			or  get_active_heal_amount_without_user
+	end
+end
+
 function Heals:OnEnable()
 	HealComm.RegisterCallback(self, "HealComm_HealStarted", "Update")
 	HealComm.RegisterCallback(self, "HealComm_HealUpdated", "Update")
 	HealComm.RegisterCallback(self, "HealComm_HealDelayed", "Update")
 	HealComm.RegisterCallback(self, "HealComm_HealStopped", "Update")
 	HealComm.RegisterCallback(self, "HealComm_ModifierChanged", "UpdateModifier")
+	self:UpdateProfileData()
 end
 
 function Heals:OnDisable()
