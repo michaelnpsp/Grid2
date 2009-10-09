@@ -31,6 +31,7 @@ Heals.defaultDB = {
 		includePlayerHeals = false,
 		-- timeFrame = nil,
 		flags = HealComm.CASTED_HEALS,
+		color1 = { r = 0, g = 1, b = 0, a = 1 },
 	}
 }
 
@@ -83,12 +84,6 @@ function Heals:IsActive(unit)
 	local heal = get_active_heal_amount(unit)
 	return heal and heal > 0
 end
-
-Heals.defaultDB = {
-	profile = {
-		color1 = { r = 0, g = 1, b = 0, a = 1 },
-	}
-}
 
 function Heals:GetColor(unit)
 	local color = self.db.profile.color1
