@@ -57,7 +57,7 @@ function Grid2Options:AddElement(elementType, element, extraOptions)
 	group.args[element.name] = {
 		type = "group",
 		name = element.name,
-		desc = L["Options for %s."]:format(elementType),
+		desc = L["Options for %s."]:format(element.name),
 		args = options,
 	}
 	for name, option in pairs(extraOptions) do
