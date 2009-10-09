@@ -263,3 +263,11 @@ L["Update rate"] = true
 L["Rate at which the range gets updated"] = true
 L["Invert Bar Color"] = true
 L["Swap foreground/background colors on bars."] = true
+
+L["Include player heals"] = true
+L["Display status for the player's heals."] = true
+L["Type of Heals taken into account"] = true
+L["Select the type of healing spell taken into account for the amount of incoming heals calculated."] = true
+L["Casted heals, both direct and channeled"] = true
+L["Direct heals only."] = true
+L["All heals, including casted and HoTs"] = true

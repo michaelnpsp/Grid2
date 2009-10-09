@@ -517,13 +517,56 @@ function Grid2Options:MakeStatusStandardDebuffOptions(status, options)
 	return options
 end
 
+local function AddStatusOptions_HealsIncoming(status, options)
+	options = options or {}
+	options.includePlayerHeals = {
+		type = "toggle",
+		name = L["Include player heals"],
+		desc = L["Display status for the player's heals."],
+		order = 110,
+		get = function ()
+			return status.db.profile.includePlayerHeals
+		end,
+		set = function (_, v)
+			status.db.profile.includePlayerHeals = v
+			status:UpdateProfileData()
+		end,
+	}
+
+	local HealComm = LibStub:GetLibrary("LibHealComm-4.0") -- we know it's available at this point
+
+	options.healTypes = {
+		type = "select",
+		name = L["Type of Heals taken into account"],
+		desc = L["Select the type of healing spell taken into account for the amount of incoming heals calculated."],
+		order = 120,
+		get = function ()
+			return status.db.profile.flags
+		end,
+		set = function (_, v)
+			status.db.profile.flags = v
+			if v == HealComm.ALL_HEALS then
+				status.db.profile.timeFrame = 4
+			else
+				status.db.profile.timeFrame = nil
+			end
+			status:UpdateProfileData()
+		end,
+		values = {
+			[HealComm.CASTED_HEALS] = L["Casted heals, both direct and channeled"],
+			[HealComm.DIRECT_HEALS] = L["Direct heals only."],
+			[HealComm.ALL_HEALS] = L["All heals, including casted and HoTs"],
+		},
+	}
+
+end
 
 function Grid2Options:AddSetupStatusesOptions(setup, reset)
 	AddStatusesGroup(reset)
 	local status, options
 
 	for _, name in ipairs{
-		"threat", "heals-incoming", "target", "voice",
+		"threat", "target", "voice",
 	} do
 		status = Grid2.statuses[name]
 		if status then
@@ -538,6 +581,13 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 		if status then
 			Grid2Options:AddElement("status", status, Grid2Options:MakeStatusStandardDebuffOptions(status))
 		end
+	end
+
+	status = Grid2.statuses["heals-incoming"]
+	if status then
+		options = Grid2Options:MakeStatusColorOption(status)
+		options = AddStatusOptions_HealsIncoming(status, options)
+		Grid2Options:AddElement("status", status, options)
 	end
 
 	status = Grid2.statuses.charmed
@@ -641,7 +691,7 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 	})
 
 	status = Grid2.statuses.range
-	
+
 	local function GetAvailableRangeList()
 		local rangelist = {}
 		for r in GridRange:AvailableRangeIterator() do
