@@ -2,6 +2,7 @@ local HealComm = LibStub:GetLibrary("LibHealComm-4.0", true)
 if not HealComm then return end
 
 local UnitGUID = UnitGUID
+local GetTime = GetTime
 local Grid2 = Grid2
 local select = select
 
@@ -9,18 +10,21 @@ local HEALCOMM_FLAGS = HealComm.CASTED_HEALS
 local HEALCOMM_TIMEFRAME = nil
 
 local function get_active_heal_amount_with_user(unit)
-	return HealComm:GetHealAmount(UnitGUID(unit), HEALCOMM_FLAGS, HEALCOMM_TIMEFRAME)
+	local time = HEALCOMM_TIMEFRAME and GetTime() + HEALCOMM_TIMEFRAME
+	return HealComm:GetHealAmount(UnitGUID(unit), HEALCOMM_FLAGS, time)
 end
 
 local function get_active_heal_amount_without_user(unit)
-	return HealComm:GetOthersHealAmount(UnitGUID(unit), HEALCOMM_FLAGS, HEALCOMM_TIMEFRAME)
+	local time = HEALCOMM_TIMEFRAME and GetTime() + HEALCOMM_TIMEFRAME
+	return HealComm:GetOthersHealAmount(UnitGUID(unit), HEALCOMM_FLAGS, time)
 end
 
 local get_active_heal_amount = get_active_heal_amount_without_user
 
 local function get_effective_heal_amount(unit)
 	local guid = UnitGUID(unit)
-	local heal = HealComm:GetHealAmount(guid, HEALCOMM_FLAGS, HEALCOMM_TIMEFRAME)
+	local time = HEALCOMM_TIMEFRAME and GetTime() + HEALCOMM_TIMEFRAME
+	local heal = HealComm:GetHealAmount(guid, HEALCOMM_FLAGS, time)
 	return heal and heal * HealComm:GetHealModifier(guid) or 0
 end
 
