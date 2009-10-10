@@ -88,7 +88,9 @@ function Grid2Options:MakeStatusClassFilterOption(status, options)
 						profile.classFilter = nil
 					end
 				end
-				status:UpdateProfileData()
+				if status.UpdateProfileData then
+					status:UpdateProfileData()
+				end
 				for guid, unitid in Grid2:IterateRoster() do
 					status:UpdateIndicators(unitid)
 				end
@@ -139,7 +141,9 @@ function Grid2Options:MakeStatusMissingOption(status, options)
 		end,
 		set = function (_, v)
 			status.db.profile.missing = v
-			status:UpdateProfileData()
+			if status.UpdateProfileData then
+				status:UpdateProfileData()
+			end
 			for guid, unitid in Grid2:IterateRoster() do
 				status:UpdateIndicators(unitid)
 			end
@@ -173,7 +177,9 @@ function Grid2Options:MakeStatusBlinkThresholdOption(status, options)
 				v = nil
 			end
 			status.db.profile.blinkThreshold = v
-			status:UpdateProfileData()
+			if status.UpdateProfileData then
+				status:UpdateProfileData()
+			end
 		end,
 	}
 	return options
