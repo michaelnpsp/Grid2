@@ -84,8 +84,15 @@ end
 
 local Grid2Blink = Grid2:GetModule("Grid2Blink")
 function indicator:SetBlinkingState(frame, state)
-	if self.blinking ~= state then
-		self.blinking = state
+	local blinking = self.blinking
+	local current = blinking and blinking[frame] or false
+	
+	if current ~= state then
+		if not blinking then
+			blinking = {}
+			self.blinking = blinking
+		end
+		blinking[frame] = state
 		if state then
 			Grid2Blink:Add(frame)
 		else
