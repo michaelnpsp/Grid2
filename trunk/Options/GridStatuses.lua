@@ -565,6 +565,7 @@ local function AddStatusOptions_HealsIncoming(status, options)
 		},
 	}
 
+	return options
 end
 
 function Grid2Options:AddSetupStatusesOptions(setup, reset)
@@ -592,7 +593,7 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 	status = Grid2.statuses["heals-incoming"]
 	if status then
 		options = Grid2Options:MakeStatusColorOption(status)
-		AddStatusOptions_HealsIncoming(status, options)
+		options = AddStatusOptions_HealsIncoming(status, options)
 		Grid2Options:AddElement("status", status, options)
 	end
 
