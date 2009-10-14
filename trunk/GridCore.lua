@@ -265,22 +265,26 @@ end
 function Grid2:RosterUpdated()
 	local _, instType = IsInInstance()
 
-	if (instType == "none") then
+	if instType == "none" then
 		local raidMembers = GetNumRaidMembers()
-		if (raidMembers > 25) then
+		if raidMembers > 25 then
 			instType = "raid40"
-		elseif (raidMembers > 0) then
+		elseif raidMembers > 10 then
+			instType = "hraid"
+		elseif raidMembers > 0 then
 			instType = "raid"
-			if (raidMembers > 10) then
-				instType = "hraid"
-			end
-		elseif (GetNumPartyMembers() > 0) then
+		elseif GetNumPartyMembers() > 0 then
 			instType = "party"
 		else
 			instType = "solo"
 		end
-	elseif instType == "raid" and GetDungeonDifficulty() > 1 then
-		instType = "hraid"
+	else
+		if instType == "raid" and GetDungeonDifficulty() > 1 then
+			instType = "hraid"
+		end
+		if GetNumPartyMembers() == 0 and GetNumRaidMembers() == 0 then
+			instType = "solo"
+		end
 	end
 
 	self:Debug("RosterUpdated", groupType, "=>", instType)
