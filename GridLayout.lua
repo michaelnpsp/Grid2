@@ -500,6 +500,7 @@ function Grid2Layout:UpdateSize()
 	local curWidth, curHeight, maxWidth, maxHeight = 0, 0, 0, 0
 	local Padding, Spacing = p.Padding, p.Spacing * 2
 
+	local GridFrame = Grid2:GetModule("Grid2Frame")
 	for i = 1, self.indexes.spacer do
 		local f = self.groups.spacer[i]
 		f:SetWidth(GridFrame:GetFrameWidth())
