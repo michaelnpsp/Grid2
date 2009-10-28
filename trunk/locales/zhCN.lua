@@ -106,7 +106,7 @@ L["By Group 25 w/tanks"] = "25人团队及 Tank"
 
 --{{{ GridRange
 -- used for getting spell range from tooltip
-L["(%d+) yd range"] = "(%d+)码距离"
+L["(%d+) yd range"] = "(%d+)码射程"
 --}}}
 
 --{{{ GridStatus
