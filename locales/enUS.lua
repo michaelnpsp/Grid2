@@ -9,6 +9,8 @@ L["Food"] = true
 L["Grid2"] = true
 --}}}
 
+
+
 --{{{ GridCore
 L["Configure"] = true
 L["Configure Grid"] = true
@@ -85,6 +87,7 @@ L["Advanced options."] = true
 --}}}
 
 --{{{ GridLayoutLayouts
+-- ToDo: move into options
 L["None"] = true
 L["Solo"] = true
 L["Solo w/Pet"] = true
@@ -98,6 +101,7 @@ L["By Group 15"] = true
 L["By Group 15 w/Pets"] = true
 L["By Group 10"] = true
 L["By Group 10 w/Pets"] = true
+L["By Group 4 x 10 Wide"] = true
 L["By Class 25"] = true
 L["By Class 1 x 25 Wide"] = true
 L["By Class 2 x 15 Wide"] = true

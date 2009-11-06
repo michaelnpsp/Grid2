@@ -83,13 +83,13 @@ Grid2Layout:AddLayout(L["By Group 5 w/Pets"], {
 	[1] = {
 		showPlayer = true,
 		showParty = true,
-		showRaid = true,
 		groupingOrder = DEFAULT_GROUP_ORDER,
 		allowVehicleTarget = true,
 		toggleForVehicle = true,
 	},
 	[2] = {
 		showPlayer = true,
+		showParty = true,
 		type = "partypet",
 		unitsPerColumn = 5,
 		maxColumns = 5,
@@ -106,10 +106,16 @@ Grid2Layout:AddLayout(L["By Group 10"], {
 	[1] = {
 		groupFilter = "1",
 		groupingOrder = DEFAULT_GROUP_ORDER,
+		showPlayer = true,
+		showParty = true,
+		showRaid = true,
 	},
 	[2] = {
 		groupFilter = "2",
 		groupingOrder = DEFAULT_GROUP_ORDER,
+		showPlayer = true,
+		showParty = true,
+		showRaid = true,
 	},
 })
 
@@ -376,6 +382,64 @@ Grid2Layout:AddLayout(L["By Class 2 x 15 Wide"], {
 		maxColumns = 2,
 		allowVehicleTarget = true,
 	},
+})
+
+Grid2Layout:AddLayout(L["By Group 4 x 10 Wide"], {
+    meta = {
+        raid40 = true,
+        hraid = true,
+        raid = true,
+        party = true,
+        solo = true,
+        pvp = true,
+        arena = true,
+    },
+    [1] = {
+        showSolo = true,
+        showPlayer = true,
+        groupFilter = "1,2",
+        groupBy = "GROUP",
+        groupingOrder = DEFAULT_GROUP_ORDER,
+        unitsPerColumn = 10,
+        maxColumns = 4,
+    },
+    [2] = {
+        showSolo = true,
+        showPlayer = true,
+        groupFilter = "3,4",
+        groupBy = "GROUP",
+        groupingOrder = DEFAULT_GROUP_ORDER,
+        unitsPerColumn = 10,
+        maxColumns = 4,
+    },
+    [3] = {
+        showSolo = true,
+        showPlayer = true,
+        groupFilter = "5,6",
+        groupBy = "GROUP",
+        groupingOrder = DEFAULT_GROUP_ORDER,
+        unitsPerColumn = 10,
+        maxColumns = 4,
+    },
+    [4] = {
+        showSolo = true,
+        showPlayer = true,
+        groupFilter = "7,8",
+        groupBy = "GROUP",
+        groupingOrder = DEFAULT_GROUP_ORDER,
+        unitsPerColumn = 10,
+        maxColumns = 4,
+    },
+    [5] = {
+        type = "raidpet",
+        showPlayer = true,
+        showParty = true,
+        showRaid = true,
+        unitsPerColumn = 10,
+        maxColumns = 4,
+        allowVehicleTarget = true,
+    },
+    
 })
 
 Grid2Layout:AddLayout(L["By Group 20"], {
