@@ -265,7 +265,7 @@ end
 function Grid2:RosterUpdated()
 	local _, instType = IsInInstance()
 
-	if instType == "none" then
+	if (instType == "none") then
 		local raidMembers = GetNumRaidMembers()
 		if raidMembers > 25 then
 			instType = "raid40"
@@ -279,10 +279,13 @@ function Grid2:RosterUpdated()
 			instType = "solo"
 		end
 	else
-		if instType == "raid" and GetDungeonDifficulty() > 1 then
-			instType = "hraid"
+		if (instType == "raid") then
+			local raidDifficulty, somethingElse = GetRaidDifficulty()
+			if (raidDifficulty == 2 or raidDifficulty == 4) then
+				instType = "hraid"
+			end
 		end
-		if GetNumPartyMembers() == 0 and GetNumRaidMembers() == 0 then
+		if (GetNumPartyMembers() == 0 and GetNumRaidMembers() == 0) then
 			instType = "solo"
 		end
 	end
