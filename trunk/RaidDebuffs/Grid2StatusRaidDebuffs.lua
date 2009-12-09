@@ -118,6 +118,7 @@ local spellDB = {
 		66013, 67700, 68509, 68510,--Penetrating Cold (10, 25, 10H, 25H)
 		67847, 67721,--Expose Weakness
 		66012,--Freezing Slash
+		67863,--Acid-Drenched Mandibles(25H)
 	},
 	[BZ["Ulduar"]] = {
 		--Trash
@@ -199,6 +200,29 @@ local spellDB = {
 		--Koralon	
 		67332, 66684,--Flaming Cinder (10, 25)
 	},
+	[BZ["Icecrown Citadel"]] = {
+		--Lord Marrowgar
+		70823,--Coldflame
+		69065,--Impaled
+		70835,--Bone Storm
+
+		--Lady Deathwhisper
+		72109,--Death and Decay
+		71289,--Dominate Mind
+		71204,--Touch of Insignificance
+		67934,--Frost Fever
+		71237,--Curse of Torpor
+		72491,--Necrotic Strike
+
+		--Gunship Battle
+		69651,--Wounding Strike
+
+		--Deathbringer Saurfang
+		72293,--Mark of the Fallen Champion
+		72442,--Boiling Blood
+		72449,--Rune of Blood
+		72769,--Scent of Blood (heroic)
+		},
 }
 
 local GSRD = Grid2:NewModule("StatusRaidDebuffs")
