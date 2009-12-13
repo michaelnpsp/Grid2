@@ -212,7 +212,7 @@ local spellDB = {
 		71204,--Touch of Insignificance
 		67934,--Frost Fever
 		71237,--Curse of Torpor
-		72491,--Necrotic Strike
+		72491,71951,72490,72491,72492,--Necrotic Strike
 
 		--Gunship Battle
 		69651,--Wounding Strike
