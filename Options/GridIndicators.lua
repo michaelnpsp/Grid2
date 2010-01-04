@@ -316,11 +316,14 @@ local function AddTextIndicatorOptions(Text)
 			name = L["Show duration"],
 			desc = L["Show the time remaining."],
 			order = 80,
+			-- @FIXME: Probably should find another way of saving this.
 			get = function ()
-				return Text.db.profile.duration
+				local info = Grid2.db.profile.setup.indicators.text[Text.name]
+				return info and info[6]
 			end,
 			set = function (_, v)
-				Text.db.profile.duration = v
+				Text.duration = v
+				Grid2.db.profile.setup.indicators.text[Text.name][6] = duration
 				Grid2Frame:UpdateAllFrames()
 			end,
 		}

@@ -74,7 +74,7 @@ end
 
 local function Text_OnUpdate(self, parent, unit, status)
 	local Text = parent[self.name]
-	local duration = self.db.profile.duration
+	local duration = self.duration
 
 	if (status) then
 		local content
@@ -171,7 +171,7 @@ function Grid2:CreateTextIndicator(indicatorKey, level, anchor, anchorRel, offse
 	Text.defaultDB = Text_defaultDB
 
 	self:RegisterIndicator(Text, { "text", "duration" })
-	Text.db.profile.duration = duration
+	Text.duration = duration
 
 	local TextColor = self.indicatorPrototype:new(indicatorKey.."-color")
 
