@@ -4,9 +4,7 @@ local ReadyCheck = Grid2.statusPrototype:new("ready-check")
 
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
-local checkStatus = {}
-local readyChecking, raidAssist, timerClearStatus
-
+local readyChecking, timerClearStatus
 
 ReadyCheck.defaultDB = {
 	profile = {
@@ -19,33 +17,22 @@ ReadyCheck.defaultDB = {
 }
 
 function ReadyCheck:READY_CHECK(event, originator)
-    if (raidAssist or IsPartyLeader()) then
-        Grid2:CancelTimer(timerClearStatus, true)
+    if IsRaidLeader() or IsRaidOfficer() or IsPartyLeader() then
+        if timerClearStatus then Grid2:CancelTimer(timerClearStatus, true) end
 		timerClearStatus = nil
         readyChecking = true
-        local originatorguid = Grid2:GetGUIDByFullName(originator)
 
         for guid, unitid in Grid2:IterateRoster() do
             if (not Grid2:GetOwnerUnitidByGUID(guid)) then
-                if (guid ~= originatorguid) then
-                    checkStatus[unitid] = "waiting"
-                else
-                    checkStatus[unitid] = "ready"
-                end
 				self:UpdateIndicators(unitid)
             end
         end
     end
 end
 
-function ReadyCheck:READY_CHECK_CONFIRM(event, id, confirm)
-    if (readyChecking) then
+function ReadyCheck:READY_CHECK_CONFIRM(event, id)
+    if readyChecking then
         local unitid = ((GetNumRaidMembers() > 0) and ("raid"..id)) or ("party"..id)
-        if (confirm == 1) then
-            checkStatus[unitid] = "ready"
-        else
-            checkStatus[unitid] = "not_ready"
-        end
 		self:UpdateIndicators(unitid)
     end
 end
@@ -53,11 +40,8 @@ end
 function ReadyCheck:READY_CHECK_FINISHED()
     for guid, unitid in Grid2:IterateRoster() do
         if (not Grid2:GetOwnerUnitidByGUID(guid)) then
-            if (checkStatus[unitid] == "waiting") then
-                checkStatus[unitid] = "afk"
-            end
+			self:UpdateIndicators(unitid)
         end
-		self:UpdateIndicators(unitid)
     end
     timerClearStatus = Grid2:ScheduleTimer(self.ClearStatus, ReadyCheck.db.profile.threshold or 0, self)
 end
@@ -71,12 +55,9 @@ function ReadyCheck:RAID_ROSTER_UPDATE()
     -- If you lose raid assist, you may not receive the READY_CHECK_FINISHED event.
     if (GetNumRaidMembers() > 0) then
         local newAssist = IsRaidLeader() or IsRaidOfficer()
-        if (readyChecking and newAssist ~= raidAssist) then
+        if readyChecking and not newAssist then
             timerClearStatus = Grid2:ScheduleTimer(self.ClearStatus, 0, self)
         end
-        raidAssist = newAssist
-    else
-        raidAssist = nil
     end
 end
 
@@ -87,16 +68,18 @@ end
 
 function ReadyCheck:CheckClearStatus()
     -- Unfortunately, GetReadyCheckTimeLeft() only returns integral values.
-    if (readyChecking and GetReadyCheckTimeLeft() == 0) then
+    if readyChecking and GetReadyCheckTimeLeft() == 0 then
         timerClearStatus = Grid2:ScheduleTimer(self.ClearStatus, 0, self)
     end
 end
 
 function ReadyCheck:ClearStatus()
-    readyChecking = nil
-    wipe(checkStatus)
-	for guid, unitid in Grid2:IterateRoster() do
-		self:UpdateIndicators(unitid)
+	if readyChecking then
+		readyChecking = nil
+		for guid, unitid in Grid2:IterateRoster() do
+			self:UpdateIndicators(unitid)
+		end
+		timerClearStatus = nil
 	end
 end
 
@@ -122,19 +105,19 @@ function ReadyCheck:OnDisable()
 end
 
 function ReadyCheck:IsActive(unitid)
-	return checkStatus[unitid]
+	return readyChecking and GetReadyCheckStatus(unitid)
 end
 
 local colors = {
     waiting =  "color1",
     ready = "color2",
-    not_ready = "color3",
+    notready = "color3",
     afk = "color4",
 }
 function ReadyCheck:GetColor(unitid)
-	local state = checkStatus[unitid]
-	if (state) then
-	local color = self.db.profile[colors[state]]
+	local state = GetReadyCheckStatus(unitid)
+	if state then
+		local color = self.db.profile[colors[state]]
 		return color.r, color.g, color.b, color.a
 	end
 end
@@ -142,12 +125,12 @@ end
 local icons = {
     waiting =  READY_CHECK_WAITING_TEXTURE,
     ready = READY_CHECK_READY_TEXTURE,
-    not_ready = READY_CHECK_NOT_READY_TEXTURE,
+    notready = READY_CHECK_NOT_READY_TEXTURE,
     afk = READY_CHECK_AFK_TEXTURE,
 }
 function ReadyCheck:GetIcon(unitid)
-	local state = checkStatus[unitid]
-	if (state) then
+	local state = GetReadyCheckStatus(unitid)
+	if state then
 		return icons[state]
 	end
 end
@@ -155,12 +138,12 @@ end
 local texts = {
     waiting =  L["?"],
     ready = L["R"],
-    not_ready = L["X"],
+    notready = L["X"],
     afk = L["AFK"],
 }
 function ReadyCheck:GetText(unitid)
-	local state = checkStatus[unitid]
-	if (state) then
+	local state = GetReadyCheckStatus(unitid)
+	if state then
 		return texts[state]
 	end
 end
@@ -210,14 +193,14 @@ local readyCheckOptions = {
         get = function () return getstatuscolor("ready") end,
         set = function (r, g, b, a) setstatuscolor("ready", r, g, b, a) end,
     },
-    ["not_ready"] = {
+    ["notready"] = {
         type = "color",
         name = L["Not Ready color"],
         desc = L["Color for Not Ready."],
         order = 88,
         hasAlpha = true,
-        get = function () return getstatuscolor("not_ready") end,
-        set = function (r, g, b, a) setstatuscolor("not_ready", r, g, b, a) end,
+        get = function () return getstatuscolor("notready") end,
+        set = function (r, g, b, a) setstatuscolor("notready", r, g, b, a) end,
     },
     ["afk"] = {
         type = "color",
