@@ -30,9 +30,8 @@ function ReadyCheck:READY_CHECK(event, originator)
     end
 end
 
-function ReadyCheck:READY_CHECK_CONFIRM(event, id)
+function ReadyCheck:READY_CHECK_CONFIRM(event, unitid)
     if readyChecking then
-        local unitid = ((GetNumRaidMembers() > 0) and ("raid"..id)) or ("party"..id)
 		self:UpdateIndicators(unitid)
     end
 end
