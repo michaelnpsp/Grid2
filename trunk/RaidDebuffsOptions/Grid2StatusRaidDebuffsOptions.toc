@@ -1,11 +1,11 @@
-## Interface: 30200
+## Interface: 30300
 ## Title: Grid2StatusRaidDebuffsOptions
 ## Notes: Load on demand Options for Grid2StatusRaidDebuffs.
 
 ## Dependencies: Grid2, Grid2StatusRaidDebuffs
 ## LoadOnDemand: 1
 
-## Version: 3.2.0.@project-revision@
+## Version: 3.3.0.@project-revision@
 ## X-ReleaseDate: "$Date$"
 ## X-Category: UnitFrame
 ## X-Website: http://wowace.com/projects/grid2/
