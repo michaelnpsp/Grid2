@@ -195,19 +195,11 @@ function Grid2:OnChatCommand(input)
 end
 
 function Grid2:OnEnable()
-	self:RegisterEvent("PARTY_MEMBERS_CHANGED", "RosterUpdated")
-	self:RegisterEvent("RAID_ROSTER_UPDATE", "RosterUpdated")
---	self:RegisterEvent("UNIT_PET")
+	self:RegisterEvent("PARTY_MEMBERS_CHANGED", "GroupChanged")
+	self:RegisterEvent("RAID_ROSTER_UPDATE", "GroupChanged")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
-
-
-	self:RegisterEvent("UNIT_PET", "UpdateRoster")
---	self:RegisterEvent("PARTY_MEMBERS_CHANGED", "UpdateRoster")
---	self:RegisterEvent("RAID_ROSTER_UPDATE", "UpdateRoster")
-
--- Avoid title rotation and mount unmount spam	self:RegisterEvent("UNIT_NAME_UPDATE", "UpdateRoster")
-	self:RegisterEvent("UNIT_PORTRAIT_UPDATE", "UpdateRoster")
-
+	self:RegisterEvent("UNIT_PET", "UpdateRosterPet")
+	self:RegisterEvent("UNIT_NAME_UPDATE", "UpdateRosterName")
 
 	self.db.RegisterCallback(self, "OnProfileChanged")
 
@@ -259,13 +251,13 @@ local groupType
 function Grid2:PLAYER_ENTERING_WORLD()
 	-- this is needed to trigger an update when switching from one BG directly to another
 	groupType = nil
-	return self:RosterUpdated()
+	return self:GroupChanged()
 end
 
-function Grid2:RosterUpdated()
+function Grid2:GroupChanged()
 	local _, instType = IsInInstance()
 
-	if (instType == "none") then
+	if instType == "none" then
 		local raidMembers = GetNumRaidMembers()
 		if raidMembers > 25 then
 			instType = "raid40"
@@ -279,20 +271,20 @@ function Grid2:RosterUpdated()
 			instType = "solo"
 		end
 	else
-		if (instType == "raid") then
-			local raidDifficulty, somethingElse = GetRaidDifficulty()
-			if (raidDifficulty == 2 or raidDifficulty == 4) then
+		if instType == "raid" then
+			local raidDifficulty = GetRaidDifficulty()
+			if raidDifficulty == 2 or raidDifficulty == 4 then
 				instType = "hraid"
 			end
 		end
-		if (GetNumPartyMembers() == 0 and GetNumRaidMembers() == 0) then
+		if GetNumPartyMembers() == 0 and GetNumRaidMembers() == 0 then
 			instType = "solo"
 		end
 	end
 
-	self:Debug("RosterUpdated", groupType, "=>", instType)
+	self:Debug("GroupChanged", groupType, "=>", instType)
 
-	if (groupType ~= instType) then
+	if groupType ~= instType then
 		groupType = instType
 		self:SendMessage("Grid_GroupTypeChanged", groupType)
 	end
