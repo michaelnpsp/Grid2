@@ -684,8 +684,9 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 		end
 	end
 
-	Grid2Options:AddElement("status", Grid2.statuses.health, {
-		deadAsFullHealth = {
+	status = Grid2.statuses.health
+	options = Grid2Options:MakeStatusColorOption(status)
+	options.deadAsFullHealth = {
 			type = "toggle",
 			name = L["Show dead as having Full Health"],
 			get = function ()
@@ -694,8 +695,8 @@ function Grid2Options:AddSetupStatusesOptions(setup, reset)
 			set = function (_, v)
 				Grid2.statuses.health.db.profile.deadAsFullHealth = v
 			end,
-		},
-	})
+		}
+	Grid2Options:AddElement("status", status, options )
 
 	status = Grid2.statuses.range
 

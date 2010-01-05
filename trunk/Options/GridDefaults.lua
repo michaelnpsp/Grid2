@@ -172,6 +172,7 @@ function Grid2Options:SetupDefaultStatus(setup, class)
 
 	self:SetupIndicatorStatus(setupIndicator, "bar-health", "health", 99)
 	self:SetupIndicatorStatus(setupIndicator, "bar-health-color", "classcolor", 99)
+	self:SetupIndicatorStatus(setupIndicator, "bar-health-color", "health", 85)
 	self:SetupIndicatorStatus(setupIndicator, "bar-heals", "heals-incoming", 99)
 	self:SetupIndicatorStatus(setupIndicator, "bar-heals-color", "heals-incoming", 99)
 
