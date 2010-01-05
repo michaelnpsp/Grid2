@@ -1,4 +1,4 @@
-﻿## Interface: 30200
+﻿## Interface: 30300
 ## Title: Grid2
 ## Notes: A modular, lightweight and screen-estate saving grid of party/raid unit frames
 ## Notes-ruRU: Модульный, легкий, отображающий на экране область группы/рейда в виде сетки.
@@ -12,7 +12,7 @@
 ## DefaultState: disabled
 ## LoadOnDemand: 0
 
-## Version: 3.2.0.@project-revision@
+## Version: 3.3.0.@project-revision@
 ## X-ReleaseDate: "$Date$"
 ## X-Category: UnitFrame
 ## X-Website: http://wowace.com/projects/grid2/
