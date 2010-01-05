@@ -1,70 +1,14 @@
-local validRaidUnits, validPartyUnits, unitPets = {}, {}, { player = "pet" }
-
 local UnitExists = UnitExists
 local UnitName = UnitName
 local UnitGUID = UnitGUID
 
---[[
-function Grid2:UnitIsPet(unit)
-	return roster[unit] == false
-end
+-- indexed by unit ID
+local roster_names = {}
+local roster_realms = {}
+local roster_guids = {}
+-- indexed by GUID
+local roster_units = {}
 
-function Grid2:UpdateRoster()
-	for guid, unit in pairs(roster.unitid) do
-		units_to_remove[guid] = true
-	end
-
-	local units
-	if (GetNumRaidMembers() > 0) then
-		units = validRaidUnits
-	else
-		units = validPartyUnits
-	end
-
-	for unit in pairs(units) do
-		local exists = UnitExists(unit)
-		roster[unit] = exists
-		if exists then
-			local pet = unitPets[unit]
-			roster[pet] = UnitExists(pet) and false
-		end
-	end
-
-	roster.pet = UnitExists("pet") and false
-	self:SendMessage("Grid_RosterUpdated")
-end
-
-function Grid2:UNIT_PET(_, unit)
-	local pet = unitPets[unit]
-	if not pet then return end
-	local exists = UnitExists(pet)
-	roster[pet] = exists and false
-	self:SendMessage("Grid_PetChanged", pet, unit, exists)
-end
---]]
-
-
-
-
-
-
-
-
-
-
-
--- roster[attribute_name][guid] = value
-local roster = {
-	name = {},
-	realm = {},
-	unitid = {},
-	guid = {},
-}
-
--- for debugging
-Grid2.roster = roster
-
---
 local my_realm = GetRealmName()
 
 -- unit tables
@@ -94,34 +38,11 @@ do
 	end
 end
 
---[[
-function GridRoster:OnInitialize()
-	-- empty roster
-	for attr, attr_tbl in pairs(roster) do
-		for k in pairs(attr_tbl) do
-			attr_tbl[k] = nil
-		end
-	end
-end
-
-function GridRoster:OnEnable()
-	self:RegisterEvent("PLAYER_ENTERING_WORLD")
-	self:RegisterEvent("UNIT_PET", "UpdateRoster")
-	self:RegisterEvent("PARTY_MEMBERS_CHANGED", "UpdateRoster")
-	self:RegisterEvent("RAID_ROSTER_UPDATE", "UpdateRoster")
-
-	self:RegisterEvent("UNIT_NAME_UPDATE", "UpdateRoster")
-	self:RegisterEvent("UNIT_PORTRAIT_UPDATE", "UpdateRoster")
-
-	self:UpdateRoster()
-end
---]]
-
 --ToDo: Is this actually used
 function Grid2:GetGUIDByName(name, realm)
 	if realm == my_realm or realm == "" then realm = nil end
-	for guid, unit_name in pairs(roster.name) do
-		if name == unit_name and roster.realm[guid] == realm then
+	for unit, unit_name in pairs(roster_names) do
+		if name == unit_name and roster_realms[unit] == realm then
 			return guid
 		end
 	end
@@ -129,7 +50,10 @@ end
 
 --ToDo: Is this actually used
 function Grid2:GetNameByGUID(guid)
-	return roster.name[guid], roster.realm[guid]
+	local unit = roster_units[guid]
+	if unit then
+		return roster_names[unit], roster_realms[unit]
+	end
 end
 
 --ToDo: Is this actually used
@@ -150,11 +74,11 @@ function Grid2:GetFullNameByGUID(guid)
 end
 
 function Grid2:GetUnitidByGUID(guid)
-	return roster.unitid[guid]
+	return roster_units[guid]
 end
 
 function Grid2:GetOwnerUnitidByGUID(guid)
-	local unitid = roster.unitid[guid]
+	local unitid = roster_units[guid]
 	return owner_of_unit[unitid]
 end
 
@@ -167,25 +91,15 @@ function Grid2:GetOwnerUnitidByUnitid(unitid)
 end
 
 function Grid2:IsGUIDInRaid(guid)
-	return roster.guid[guid] ~= nil
+	return roster_units[guid]
 end
 
 function Grid2:IterateRoster()
-	return pairs(roster.unitid)
+	return next, roster_units
 end
 
 function Grid2:UnitIsPet(unitid)
---[[
-	if (unitid) then
-		return bit.band(UnitGUID(unitid):sub(1, 5), 0x00f) == 0x004
-	end
---]]
-	local owner = owner_of_unit[unitid]
-	if (owner and pet_of_unit[owner] == unitid) then
-		return true
-	else
-		return false
-	end
+	return owner_of_unit[unitid]
 end
 
 -- roster updating
@@ -198,84 +112,131 @@ do
 		local name, realm = UnitName(unit)
 		local guid = UnitGUID(unit)
 
-		if guid then
-			if (realm == "") then
-				realm = nil
+		if realm == "" then realm = nil end
+
+		units_to_remove[unit] = nil
+
+		local old_name = roster_names[unit]
+		local old_realm = roster_realms[unit]
+
+		if not old_name then
+			units_added[unit] = guid
+		elseif old_name ~= name or old_realm ~= realm then
+			units_updated[unit] = guid
+		end
+
+		roster_names[unit] = name
+		roster_realms[unit] = realm
+		roster_guids[unit] = guid
+		roster_units[guid] = unit
+	end
+
+	function Grid2:UpdateRosterName(unit)
+		local name, realm = UnitName(unit)
+		local guid = UnitGUID(unit)
+
+		if realm == "" then realm = nil end
+
+		local old_name = roster_names[unit]
+		local old_realm = roster_realms[unit]
+
+		roster_names[unit] = name
+		roster_realms[unit] = realm
+
+		if old_name ~= name or old_realm ~= realm then
+			self:SendMessage("Grid_UnitChanged", unit, guid)
+			self:SendMessage("Grid_RosterUpdated")
+		end
+	end
+
+	function Grid2:UpdateRosterPet(owner)
+		local unit = pet_of_unit[owner]
+		if UnitExists(unit) then
+			local name, realm = UnitName(unit)
+			local guid = UnitGUID(unit)
+
+			if realm == "" then realm = nil end
+
+			local updated, exists = false, roster_guids[unit]
+
+			if name ~= roster_names[unit] then
+				roster_names[unit] = name
+				updated = true
 			end
-
-			if (units_to_remove[guid]) then
-				units_to_remove[guid] = nil
-
-				local old_name = roster.name[guid]
-				local old_realm = roster.realm[guid]
-				local old_unitid = roster.unitid[guid]
-
-				if old_name ~= name or old_realm ~= realm or
-					old_unitid ~= unit then
-					units_updated[guid] = true
-				end
-			else
-				units_added[guid] = true
+			if realm ~= roster_realms[unit] then
+				roster_realms[unit] = realm
+				updated = true
 			end
+			local old_guid = roster_guids[unit]
+			if guid ~= old_guid then
+				assert (roster_units[old_guid] == unit)
+				roster_units[old_guid] = nil
+				roster_units[guid] = unit
+				updated = true
+			end
+			if updated then
+				self:SendMessage(exists and "Grid_UnitChanged" or "Grid_UnitJoined", unit, guid)
+				self:SendMessage("Grid_RosterUpdated")
+			end
+		else
+			local old_guid = roster_guids[unit]
+			if old_guid then
+				roster_names[unit] = nil
+				roster_realms[unit] = nil
+				roster_guids[unit] = nil
+				roster_units[old_guid] = nil
 
-			roster.name[guid] = name
-			roster.realm[guid] = realm
-			roster.unitid[guid] = unit
-			roster.guid[guid] = guid
+				self:SendMessage("Grid_UnitLeft", unit, old_guid)
+				self:SendMessage("Grid_RosterUpdated")
+			end
 		end
 	end
 
 	function Grid2:UpdateRoster()
-		for guid, unit in pairs(roster.unitid) do
-			units_to_remove[guid] = true
+		for unit, guid in pairs(roster_guids) do
+			units_to_remove[unit] = guid
 		end
 
-		local units
-		if (GetNumRaidMembers() == 0) then
-			units = party_units
-		else
-			units = raid_units
-		end
+		local units = (GetNumRaidMembers() == 0) and party_units or raid_units
 
 		for _, unit in ipairs(units) do
-			if unit and UnitExists(unit) then
-				UpdateUnit(unit)
+			if not UnitExists(unit) then break end
+			UpdateUnit(unit)
 
-				local unitpet = pet_of_unit[unit]
-				if unitpet and UnitExists(unitpet) then
-					UpdateUnit(unitpet)
-				end
+			local unitpet = pet_of_unit[unit]
+			if UnitExists(unitpet) then
+				UpdateUnit(unitpet)
 			end
 		end
 
 		local updated = false
 
-		for guid in pairs(units_to_remove) do
+		for unit, guid in pairs(units_to_remove) do
 			updated = true
-			self:SendMessage("Grid_UnitLeft", roster.unitid[guid], guid)
 
-			for attr, attr_tbl in pairs(roster) do
-				attr_tbl[guid] = nil
-			end
+			roster_names[unit] = nil
+			roster_realms[unit] = nil
+			roster_guids[unit] = nil
+			roster_units[guid] = nil
+
+			self:SendMessage("Grid_UnitLeft", unit, guid)
 
 			units_to_remove[guid] = nil
 		end
 
-		for guid in pairs(units_added) do
+		for unit, guid in pairs(units_added) do
 			updated = true
-			self:SendMessage("Grid_UnitJoined", roster.unitid[guid], guid)
---print("Grid2:UpdateRoster()", roster.unitid[guid], guid)
-			units_added[guid] = nil
+			self:SendMessage("Grid_UnitJoined", unit, guid)
+			units_added[unit] = nil
 		end
 
-		for guid in pairs(units_updated) do
+		for unit, guid in pairs(units_updated) do
 			updated = true
-			self:SendMessage("Grid_UnitChanged", roster.unitid[guid], guid)
-
-			units_updated[guid] = nil
+			self:SendMessage("Grid_UnitChanged", unit, guid)
+			units_updated[unit] = nil
 		end
 
-		if (updated) then
+		if updated then
 			self:SendMessage("Grid_RosterUpdated")
 		end
 	end
