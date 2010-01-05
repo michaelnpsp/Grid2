@@ -1,4 +1,4 @@
-## Interface: 30200
+## Interface: 30300
 ## Title: Grid2Alert
 ## Notes: Audible Alerts for self-gain, self-lost, any-gain, all-lost of statuses.
 
@@ -6,11 +6,14 @@
 ## OptionalDeps: LibSharedMedia-3.0, LibSink-2.0
 ## X-Embeds: LibSharedMedia-3.0, LibSink-2.0
 
-## Version: v3.2.2.@project-revision@
+## Version: v3.3.0.@project-revision@
 ## X-ReleaseDate: "$Date: 2009-04-14 23:42:17 -0700 (Tue, 14 Apr 2009) $"
 ## X-Category: UnitFrame
 ## X-Website: http://wowace.com/projects/grid2/
 
-embeds.xml
+#@no-lib-strip@
+Libs\LibSharedMedia-3.0\lib.xml
+Libs\LibSink-2.0\lib.xml
+#@end-no-lib-strip@
 
 core.lua
