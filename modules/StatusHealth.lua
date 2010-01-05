@@ -52,6 +52,7 @@ end
 
 Health.defaultDB = {
 	profile = {
+		color1 = { r = 0, g = 1, b = 0, a = 1 },
 		deadAsFullHealth = nil,
 	}
 }
@@ -79,8 +80,12 @@ function Health:GetText(unit)
 	return Grid2:GetShortNumber(UnitHealth(unit))
 end
 
-Grid2:RegisterStatus(Health, { "percent", "text" })
+function Health:GetColor(unit)
+	local color = self.db.profile.color1
+	return color.r, color.g, color.b, color.a
+end
 
+Grid2:RegisterStatus(Health, { "percent", "text", "color" })
 
 
 LowHealth.defaultDB = {
