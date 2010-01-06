@@ -335,12 +335,18 @@ local function AddTextIndicatorOptions(Text)
 			order = 70,
 			name = L["Font"],
 			desc = L["Adjust the font settings"],
-			get = function ()
-				return Text.db.profile.font
+			get = function (info)
+				local v = Text.db.profile.font
+				for i, t in ipairs(info.option.values) do
+					if v == t then return i end
+					end
+
+				return 0
 			end,
-			set = function (_, v)
-				Text.db.profile.font = v
-				local font = media:Fetch("font", v)
+			set = function (info, value)
+				local font = info.option.values[value]
+				Text.db.profile.font = font
+				local font = media:Fetch("font", font)
 				local fontsize = Text.db.profile.fontSize
 				Grid2Frame:WithAllFrames(function (f) Text:SetTextFont(f, font, fontsize) end)
 			end,

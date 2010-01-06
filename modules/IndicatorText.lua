@@ -4,7 +4,7 @@ local GetTime = GetTime
 
 local function Text_Create(self, parent)
 	local media = LibStub("LibSharedMedia-3.0", true)
-	local font = media and media:Fetch("font", Grid2Frame.db.profile.font) or STANDARD_TEXT_FONT
+	local font = media and media:Fetch("font", self.db.profile.font or Grid2Frame.db.profile.font) or STANDARD_TEXT_FONT
 
 	local f = CreateFrame("Frame", nil, parent)
 	f:SetAllPoints()
