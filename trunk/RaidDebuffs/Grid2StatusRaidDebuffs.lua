@@ -222,6 +222,19 @@ local spellDB = {
 		72442,--Boiling Blood
 		72449,--Rune of Blood
 		72769,--Scent of Blood (heroic)
+
+		--Festergut
+		69290,71222,73033,73034,--Blighted Spore
+		72272,72273,72274,72276,72277,--Vile Gas?
+		73019,73020,73173,73174,--Vile Gas?
+		72219,72551,72552,72553,--Gastric Bloat
+
+		--Rotface
+		69674,71224,73022,73023,--Mutated Infection
+
+		--Professor Putricide
+		70672,72455,72832,72833,--Gaseous Bloat
+		70911,72854,72855,72856,--Unbound Plague
 		},
 }
 
