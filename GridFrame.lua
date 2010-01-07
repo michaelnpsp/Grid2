@@ -22,21 +22,13 @@ local warned
 function GridFrameEvents:OnAttributeChanged(name, value)
 	if (name == "unit") then
 		if (value) then
-			local unitid = self:GetModifiedUnit()
-			self.unit = unitid
-			local unitGUID = UnitGUID(unitid)
---			self.unit = value
---			local unitGUID = UnitGUID(value)
-			if (unitGUID ~= nil) then
-				self.unitGUID = unitGUID
-			end
+			local unit = self:GetModifiedUnit()
+			self.unit = unit
 
-			Grid2Frame:Debug("updated", self:GetName(), name, value, unitid, "unitGUID", unitGUID)
+			Grid2Frame:Debug("updated", self:GetName(), name, value, unit)
 			Grid2Frame:UpdateIndicators(self)
 		else
-			Grid2Frame:Debug("removed", self:GetName(), name, self.unit, "unitGUID", unitGUID)
-
-			self.unitGUID = nil
+			Grid2Frame:Debug("removed", self:GetName(), name, self.unit)
 			self.unit = nil
 		end
 		Grid2:SetFrameUnit(self, value)
@@ -185,9 +177,9 @@ end
 
 function Grid2Frame:OnEnable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateFrameUnits")
-	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "UpdateFrameUnits")
-	self:RegisterEvent("UNIT_EXITED_VEHICLE", "UpdateFrameUnits")
-	self:RegisterMessage("Grid_RosterUpdated", "UpdateFrameUnits")
+	self:RegisterMessage("Grid_UnitChanged", "UpdateFrameUnit")
+	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "UpdateFrameUnit")
+	self:RegisterEvent("UNIT_EXITED_VEHICLE", "UpdateFrameUnit")
 	self:ResetAllFrames()
 	self:UpdateFrameUnits()
 	self:UpdateAllFrames()
@@ -229,8 +221,7 @@ end
 
 do
 	local resize_handler = function (f, w, h)
-		f:SetWidth(w)
-		f:SetHeight(h)
+		f:SetSize(w, h)
 	end
 	function Grid2Frame:ResizeAllFrames()
 		local w, h = self:GetFrameWidth(), self:GetFrameHeight()
@@ -259,14 +250,11 @@ function Grid2Frame:GetFrameHeight()
 end
 
 function Grid2Frame:UpdateIndicators(frame)
-	local unitid = frame:GetModifiedUnit()
---print("Grid2Frame:UpdateIndicators unitid", unitid)
-	if (not unitid) then
-		return
-	end
+	local unit = frame.unit
+	if not unit then return end
 
 	for _, indicator in self.core:IterateIndicators() do
-		indicator:Update(frame, unitid)
+		indicator:Update(frame, unit)
 	end
 end
 
@@ -275,31 +263,21 @@ end
 function Grid2Frame:UpdateFrameUnits()
 	for frameName, frame in pairs(self.registeredFrames) do
 		local old_unit = frame.unit
-		local unitid = frame:GetModifiedUnit()
-		local unitGUID = unitid and UnitGUID(unitid) or nil
-		local old_guid = frame.unitGUID
-		if (old_unit ~= unitid or old_guid ~= unitGUID) then
-
---			local unitid = frame.unit
---			local unitGUID = unitid and UnitGUID(unitid) or nil
---			local old_guid = frame.unitGUID
---			if (old_guid ~= unitGUID) then
-
---				self:Debug("Updating", frame_name, "to", unitid, unitGUID, "was", old_unit, old_guid)
-			if (unitid) then
-				frame.unit = unitid
-				frame.unitGUID = unitGUID
-
-				if (unitGUID) then
-					self:UpdateIndicators(frame)
-				end
-			else
-				frame.unit = nil
-				frame.unitGUID = nil
-
-				frame:Reset() -- ToDo: is this right?
-			end
+		local unit = frame:GetModifiedUnit()
+		if old_unit ~= unit then
+			frame.unit = unit
+			self:UpdateIndicators(frame)
 		end
+	end
+end
+
+function Grid2Frame:UpdateFrameUnit(_, unit)
+	local frame = Grid2:GetFrameUnit(unit)
+	if not frame then return end
+	local old, new = frame.unit, frame:GetModifiedUnit()
+	if old ~= new then
+		frame.unit = new
+		self:UpdateIndicators(frame)
 	end
 end
 
