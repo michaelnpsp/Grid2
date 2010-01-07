@@ -29,16 +29,16 @@ function Range:OnEnable()
 	self:Grid_RangesUpdated()
 end
 
-function Range:Grid_UnitJoined(unit)
+function Range:Grid_UnitJoined(_, unit)
 	cache[unit] = CheckUnitRange(unit)
 	self:UpdateIndicators(unit)
 end
 
-function Range:Grid_UnitLeft(unit)
+function Range:Grid_UnitLeft(_, unit)
 	cache[unit] = nil
 end
 
-function Range:Grid_UnitChanged(unit)
+function Range:Grid_UnitChanged(_, unit)
 	cache[unit] = CheckUnitRange(unit)
 	self:UpdateIndicators(unit)
 end

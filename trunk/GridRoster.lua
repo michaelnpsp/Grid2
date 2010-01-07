@@ -131,7 +131,7 @@ do
 		roster_units[guid] = unit
 	end
 
-	function Grid2:UpdateRosterName(unit)
+	function Grid2:UNIT_NAME_UPDATE(_, unit)
 		local name, realm = UnitName(unit)
 		local guid = UnitGUID(unit)
 
@@ -149,7 +149,7 @@ do
 		end
 	end
 
-	function Grid2:UpdateRosterPet(owner)
+	function Grid2:UNIT_PET(_, owner)
 		local unit = pet_of_unit[owner]
 		if UnitExists(unit) then
 			local name, realm = UnitName(unit)

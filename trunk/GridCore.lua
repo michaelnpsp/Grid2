@@ -198,8 +198,9 @@ function Grid2:OnEnable()
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED", "GroupChanged")
 	self:RegisterEvent("RAID_ROSTER_UPDATE", "GroupChanged")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
-	self:RegisterEvent("UNIT_PET", "UpdateRosterPet")
-	self:RegisterEvent("UNIT_NAME_UPDATE", "UpdateRosterName")
+	-- roster
+	self:RegisterEvent("UNIT_PET")
+	self:RegisterEvent("UNIT_NAME_UPDATE")
 
 	self.db.RegisterCallback(self, "OnProfileChanged")
 
