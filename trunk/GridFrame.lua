@@ -272,7 +272,7 @@ function Grid2Frame:UpdateFrameUnits()
 end
 
 function Grid2Frame:UpdateFrameUnit(_, unit)
-	local frame = Grid2:GetFrameUnit(unit)
+	local frame = Grid2:GetUnitFrame(unit)
 	if not frame then return end
 	local old, new = frame.unit, frame:GetModifiedUnit()
 	if old ~= new then

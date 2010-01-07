@@ -323,7 +323,7 @@ local function AddTextIndicatorOptions(Text)
 			end,
 			set = function (_, v)
 				Text.duration = v
-				Grid2.db.profile.setup.indicators.text[Text.name][6] = duration
+				Grid2.db.profile.setup.indicators.text[Text.name][6] = v
 				Grid2Frame:UpdateAllFrames()
 			end,
 		}
