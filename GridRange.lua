@@ -55,19 +55,14 @@ local function checkRange28(unit)
 	return CheckInteractDistance(unit, 4)
 end
 
-local function checkRange40(unit)
-	return UnitInRange(unit)
-end
-
-local function checkRange100(unit)
-	return UnitIsVisible(unit)
-end
+local checkRange38 = UnitInRange
+local checkRange100 = UnitIsVisible
 
 local function initRanges()
 	ranges, checks = {}, {}
 	addRange(10, checkRange10)
 	addRange(28, checkRange28)
-	addRange(40, checkRange40)
+	addRange(38, checkRange38)
 	addRange(100, checkRange100)
 end
 
@@ -132,7 +127,23 @@ function GridRange:GetRezCheck()
 end
 
 function GridRange:GetRangeCheck(range)
-	return checks and checks[range]
+	if not checks then return end
+	local check = checks[range]
+	if not check then
+		local closest_range
+		for _, r in ipairs(ranges) do
+			if r < range then
+				closest_range = r
+			else
+				break
+			end
+		end
+		if closest_range then
+			range = closest_range
+			check = checks[range]
+		end
+	end
+	return check, range
 end
 
 function GridRange:AvailableRangeIterator()
