@@ -168,9 +168,11 @@ do
 				updated = true
 			end
 			local old_guid = roster_guids[unit]
-			if old_guid and guid ~= old_guid then
-				assert (roster_units[old_guid] == unit)
-				roster_units[old_guid] = nil
+			if guid ~= old_guid then
+				if old_guid then
+					assert (roster_units[old_guid] == unit)
+					roster_units[old_guid] = nil
+				end
 				roster_units[guid] = unit
 				updated = true
 			end
