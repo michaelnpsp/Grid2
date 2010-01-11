@@ -46,39 +46,48 @@ end
 local GetTime = GetTime
 local function Icon_OnUpdate(self, parent, unit, status)
 	local Icon = parent[self.name]
-	if (status) then
-		Icon.Icon:SetTexture(status:GetIcon(unit))
-		Icon:Show()
-		if (status.GetColor) then
-			if (status.GetBorder and status:GetBorder(unit) > 0) then
-				Icon:SetBackdropBorderColor(status:GetColor(unit))
-			else
-				Icon:SetBackdropBorderColor(0, 0, 0, 0)
-			end
+	if not status then
+		Icon:Hide()
+		return
+	end
+	Icon.Icon:SetTexture(status:GetIcon(unit))
+	Icon:Show()
+	if status.GetTexCoord then
+		Icon.Icon:SetTexCoord(status:GetTexCoord(unit))
+	else
+		Icon.Icon:SetTexCoord(0.05, 0.95, 0.05, 0.95)
+	end
+	if (status.GetColor) then
+		local r, g, b, a = status:GetColor(unit)
+
+		if (status.GetBorder and status:GetBorder(unit) > 0) then
+			Icon:SetBackdropBorderColor(r, g, b, a)
 		else
-			Icon:SetBackdropBorderColor(1, 0, 0)
+			Icon:SetBackdropBorderColor(0, 0, 0, 0)
 		end
-		if status.GetCount then
-			local count = status:GetCount(unit)
-			if not count or count <= 1 then count = "" end
-			Icon.Text:SetText(count)
-			Icon.Text:Show()
-		else
-			Icon.Text:Hide()
-		end
-		if (status.GetExpirationTime and status.GetDuration) then
-			local expirationTime, duration = status:GetExpirationTime(unit), status:GetDuration(unit)
-			if expirationTime and duration then
-				Icon.Cooldown:SetCooldown(expirationTime - duration, duration)
-				Icon.Cooldown:Show()
-			else
-				Icon.Cooldown:Hide()
-			end
+		Icon.Icon:SetAlpha(a or 1)
+	else
+		Icon:SetBackdropBorderColor(1, 0, 0)
+		Icon.Icon:SetAlpha(1)
+	end
+	if status.GetCount then
+		local count = status:GetCount(unit)
+		if not count or count <= 1 then count = "" end
+		Icon.Text:SetText(count)
+		Icon.Text:Show()
+	else
+		Icon.Text:Hide()
+	end
+	if (status.GetExpirationTime and status.GetDuration) then
+		local expirationTime, duration = status:GetExpirationTime(unit), status:GetDuration(unit)
+		if expirationTime and duration then
+			Icon.Cooldown:SetCooldown(expirationTime - duration, duration)
+			Icon.Cooldown:Show()
 		else
 			Icon.Cooldown:Hide()
 		end
 	else
-		Icon:Hide()
+		Icon.Cooldown:Hide()
 	end
 end
 
