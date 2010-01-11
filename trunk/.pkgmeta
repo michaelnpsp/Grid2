@@ -14,7 +14,6 @@ externals:
 	Libs/AceConfig-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConfig-3.0
 	Libs/AceLocale-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceLocale-3.0
 	Libs/AceTimer-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceTimer-3.0
-	Libs/LibGratuity-3.0: svn://svn.wowace.com/wow/libgratuity-3-0/mainline/trunk
 	Libs/LibHealComm-4.0: git://git.wowace.com/wow/libhealcomm-4-0/mainline.git
 	Libs/UTF8: http://grid.13th-floor.org/svn/trunk/UTF8
 	Alert/Libs/LibSharedMedia-3.0: svn://svn.wowace.com/wow/libsharedmedia-3-0/mainline/trunk/LibSharedMedia-3.0
