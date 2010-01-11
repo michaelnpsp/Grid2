@@ -170,7 +170,8 @@ do
 			local old_guid = roster_guids[unit]
 			if guid ~= old_guid then
 				if old_guid then
-					assert (roster_units[old_guid] == unit)
+					-- Potentially, it could be problematic to have guid "moving around" between frames.
+					-- assert (not roster_units[old_guid] or roster_units[old_guid] == unit)
 					roster_units[old_guid] = nil
 				end
 				roster_units[guid] = unit
