@@ -67,8 +67,6 @@ local function initRanges()
 end
 
 function GridRange:ScanSpellbook()
-	local gratuity = LibStub:GetLibrary("LibGratuity-3.0")
-
 	initRanges()
 
 	-- using IsSpellInRange doesn't work for dead players.
@@ -91,12 +89,14 @@ function GridRange:ScanSpellbook()
 			rezCheck = function (unit) return UnitIsDead(unit) and IsSpellInRange(index, BOOKTYPE_SPELL, unit) == 1 end
 		end
 		if not invalidSpells[name] and IsSpellInRange(i, BOOKTYPE_SPELL, "player") then
-			gratuity:SetSpell(i, BOOKTYPE_SPELL)
-			local range = select(3, gratuity:Find(L["(%d+) yd range"], 2, 2))
+			local _, _, _, _, _, _, _, _, range = GetSpellInfo(name)
 			if range then
-				local index = i -- we have to create an upvalue
-				addRange(tonumber(range), function (unit) return IsSpellInRange(index, BOOKTYPE_SPELL, unit) == 1 end)
-				self:Debug("%d %s (%s) has range %s", i, name, rank, range)
+				range = math.floor(range + 0.5)
+				if range > 0 then
+					local index = i -- we have to create an upvalue
+					addRange(tonumber(range), function (unit) return IsSpellInRange(index, BOOKTYPE_SPELL, unit) == 1 end)
+					self:Debug("%d %s (%s) has range %s", i, name, rank, range)
+				end
 			end
 		end
 		i = i + 1
