@@ -10,34 +10,63 @@ Role.defaultDB = {
 	}
 }
 
+local role_cache = {}
+function Role:_GetUnitRole(unit)
+	if not UnitExists(unit) then return end
+	if Grid2:UnitIsParty(unit) then
+		if GetPartyAssignment("MAINTANK", unit) then
+			return "MAINTANK"
+		elseif GetPartyAssignment("MAINASSIST", unit) then
+			return "MAINASSIST"
+		end
+	else
+        local role = select(10, GetRaidRosterInfo(index))
+		return role
+	end
+end
+
 function Role:UpdateAllUnits(event)
 	for guid, unitid in Grid2:IterateRoster() do
 		if (UnitExists(unitid)) then
-			self:UpdateIndicators(unitid)
+			local prev = role_cache[unitid]
+			local new = self:_GetUnitRole(unitid)
+			if new ~= prev then
+				role_cache[unitid] = new
+				self:UpdateIndicators(unitid)
+			end
 		end
 	end
 end
 
-function Role:UpdateUnit(event, unitid)
-	self:UpdateIndicators(unitid)
+function Role:Grid_UnitJoined(_, unitid)
+	local prev = role_cache[unitid]
+	local new = self:_GetUnitRole(unitid)
+	if new ~= prev then
+		role_cache[unitid] = new
+		self:UpdateIndicators(unitid)
+	end
+end
+
+function Role:Grid_UnitLeft(_, unitid)
+	role_cache[unitid] = nil
 end
 
 function Role:OnEnable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateAllUnits")
-	self:RegisterEvent("RAID_ROSTER_UPDATE", "UpdateUnit")
-	self:RegisterMessage("Grid_UnitJoined", "UpdateUnit")
+	self:RegisterEvent("RAID_ROSTER_UPDATE", "UpdateAllUnits")
+	self:RegisterMessage("Grid_UnitJoined")
+	self:RegisterMessage("Grid_UnitLeft")
 end
 
 function Role:OnDisable()
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	self:UnregisterEvent("RAID_ROSTER_UPDATE")
 	self:UnregisterMessage("Grid_UnitJoined")
+	self:UnregisterMessage("Grid_UnitLeft")
 end
 
 function Role:IsActive(unitid)
-	if (UnitExists(unitid) and not Grid2:UnitIsPet(unitid)) then
-		return GetPartyAssignment("MAINASSIST", unitid) or GetPartyAssignment("MAINTANK", unitid)
-	end
+	return role_cache[unitid]
 end
 
 function Role:GetBorder(unitid)
@@ -45,48 +74,36 @@ function Role:GetBorder(unitid)
 end
 
 function Role:GetColor(unitid)
---	if (not Grid2:UnitIsPet(unitid)) then
-		local color
-		if (GetPartyAssignment("MAINASSIST", unitid)) then
-			color = self.db.profile.color1
-		elseif (GetPartyAssignment("MAINTANK", unitid)) then
-			color = self.db.profile.color2
-		else
-			return nil
-		end
-		return color.r, color.g, color.b, color.a
---	end
+	local color
+	local role = role_cache[unitid]
+	if role == "MAINASSIST" then
+		color = self.db.profile.color1
+	elseif role == "MAINTANK" then
+		color = self.db.profile.color2
+	else
+		return nil
+	end
+	return color.r, color.g, color.b, color.a
 end
-
-
-local assistIcon = "Interface\\GroupFrame\\UI-Group-MainAssistIcon"
-local tankIcon = "Interface\\GroupFrame\\UI-Group-MainTankIcon"
 
 function Role:GetIcon(unitid)
---	if (UnitExists(unitid)) then
-		if (GetPartyAssignment("MAINASSIST", unitid)) then
-			return assistIcon
-		elseif (GetPartyAssignment("MAINTANK", unitid)) then
-			return tankIcon
-		else
-			return nil
-		end
---	end
+	local role = role_cache[unitid]
+	if role == "MAINASSIST" then
+		return "Interface\\GroupFrame\\UI-Group-MainAssistIcon"
+	elseif role == "MAINTANK" then
+		return "Interface\\GroupFrame\\UI-Group-MainTankIcon"
+	end
 end
-
 
 local assistString = MAIN_ASSIST
 local tankString = MAIN_TANK
 function Role:GetText(unitid)
---	if (UnitExists(unitid)) then
-		if (GetPartyAssignment("MAINASSIST", unitid)) then
-			return assistString
-		elseif (GetPartyAssignment("MAINTANK", unitid)) then
-			return tankString
-		else
-			return nil
-		end
---	end
+	local role = role_cache[unitid]
+	if role == "MAINASSIST" then
+		return assistString
+	elseif role == "MAINTANK" then
+		return tankString
+	end
 end
 
 Grid2:RegisterStatus(Role, { "color", "icon", "text" })
