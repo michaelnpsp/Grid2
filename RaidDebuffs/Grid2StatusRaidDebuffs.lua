@@ -245,27 +245,22 @@ local frame = CreateFrame("Frame")
 local spells = {}
 
 function GSRD:UpdateZoneSpells(zone)
-	wipe(spells)
+	spells = {}
+	local spell_order = 1
 	local zone = zone or GetRealZoneText()
 	local db = spellDB[zone]
 	if db then
 		for _, spellId in ipairs(db) do
 			local name = GetSpellInfo(spellId)
 			if name then
-				local found
-				for _, s in ipairs(spells) do
-					if s == name then
-						found = true
-						break
-					end
-				end
-				if not found then
-					spells[#spells + 1] = name
+				if not spells[name] then
+					spells[name] = spell_order
+					spell_order = spell_order + 1
 				end
 			end
 		end
 	end
-	if #spells == 0 then
+	if spell_order == 1 then
 		frame:UnregisterEvent("UNIT_AURA")
 	else
 		frame:RegisterEvent("UNIT_AURA")
@@ -325,24 +320,20 @@ local ipairs = ipairs
 frame:SetScript("OnEvent", function (self, event, ...)
 	if event == "UNIT_AURA" then
 		local unit = ...
-		local spellIndex
+		local spellOrder
 		local auraIndex
 		local index = 1
 		while true do
 			local name = UnitDebuff(unit, index)
 			if not name then break end
-			for i, n in ipairs(spells) do
-				if name == n then
-					if not spellIndex or i < spellIndex then
-						auraIndex = index
-						spellIndex = i
-					end
-					break
-				end
+			local order = spells[name]
+			if order and (not spellOrder or order < spellOrder) then
+				auraIndex = index
+				spellOrder = order
 			end
 			index = index + 1
 		end
-		if spellIndex then
+		if auraIndex then
 			local p_state = states[unit]
 			local p_texture = textures[unit]
 			local p_count = counts[unit]
