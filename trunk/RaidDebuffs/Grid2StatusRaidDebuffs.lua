@@ -9,7 +9,7 @@ local spellDB = {
 	[BZ["Black Temple"]] = { 34654, 39674, 41150, 41168, 39837, 40239, 40251, 40604, 40481, 40508, 42005, 41303, 41410, 41376, 40860, 41001, 41485, 41472, 41914, 41917, 40585, 40932, },
 	[BZ["Sunwell Plateau"]] = { 46561, 46562, 46266, 46557, 46560, 46543, 46427, 45032, 45034, 45018, 46384, 45150, 45855, 45662, 45402, 45717, 45256, 45333, 46771, 45270, 45347, 45348, 45996, 45442, 45641, 45885, 45737, 45740, 45741, },
 	[BZ["Naxxramas"]] = {
-		--Trash	
+		--Trash
 		55314,--Strangulate
 
 		--Anub'Rekhan
@@ -36,7 +36,7 @@ local spellDB = {
 		28169,--Mutating Injection (NH)
 
 		--Gluth
-		54378,--Mortal Wound (NH)			
+		54378,--Mortal Wound (NH)
 		29306,--Infected Wound (NH)
 
 		--Thaddius
@@ -45,7 +45,7 @@ local spellDB = {
 
 		--Instructor Razuvious
 		55550,--Jagged Knife (NH)
-					
+
 		--Sapphiron
 		28522,--Icebolt (NH)
 		28542, 55665,--Life Drain (N, H)
@@ -56,16 +56,16 @@ local spellDB = {
 		27808,--Frost Blast (NH)
 	},
 	[BZ["The Eye of Eternity"]] = {
-		--Malygos	
+		--Malygos
 		56272, 60072,--Arcane Breath (N, H)
 		57407, 60936,--Surge of Power (N, H)
 	},
 	[BZ["The Obsidian Sanctum"]] = {
-		--Trash	
+		--Trash
 		39647,--Curse of Mending
 		58936,--Rain of Fire
 
-		--Sartharion	
+		--Sartharion
 		60708,--Fade Armor (N, H)
 		57491,--Flame Tsunami (N, H)
 	},
@@ -127,42 +127,42 @@ local spellDB = {
 		63615,--Ravage Armor (NH)
 		62283, 62438,--Iron Roots (N, H)
 		63169, 63549,--Petrify Joints (N, H)
-					
+
 		--Razorscale
 		64771,--Fuse Armor (NH)
-					
+
 		--Ignis the Furnace Master
 		62548, 63476,--Scorch (N, H)
 		62680, 63472,--Flame Jet (N, H)
 		62717, 63477,--Slag Pot (N, H)
-					
+
 		--XT-002
 		63024, 64234,--Gravity Bomb (N, H)
 		63018, 65121,--Light Bomb (N, H)
-					
+
 		--The Assembly of Iron
 		61888, 64637,--Overwhelming Power (N, H)
 		62269, 63490,--Rune of Death (N, H)
 		61903, 63493,--Fusion Punch (N, H)
 		61912, 63494,--Static Disruption(N, H)
-					
+
 		--Kologarn
 		64290, 64292,--Stone Grip (N, H)
 		63355, 64002,--Crunch Armor (N, H)
-		62055,--Brittle Skin (NH)			
-			
+		62055,--Brittle Skin (NH)
+
 		--Hodir
 		62469,--Freeze (NH)
 		61969, 61990,--Flash Freeze (N, H)
 		62188,--Biting Cold (NH)
-					
+
 		--Thorim
-		62042,--Stormhammer (NH)				
+		62042,--Stormhammer (NH)
 		62130,--Unbalancing Strike (NH)
 		62526,--Rune Detonation (NH)
 		62470,--Deafening Thunder (NH)
 		62331, 62418,--Impale (N, H)
-			
+
 		--Freya
 		62532,--Conservator's Grip (NH)
 		62589, 63571,--Nature's Fury (N, H)
@@ -197,7 +197,7 @@ local spellDB = {
 		64412,--Phase Punch
 	},
 	[BZ["Vault of Archavon"]] = {
-		--Koralon	
+		--Koralon
 		67332, 66684,--Flaming Cinder (10, 25)
 	},
 	[BZ["Icecrown Citadel"]] = {
@@ -228,6 +228,7 @@ local spellDB = {
 		72272,72273,72274,72276,72277,--Vile Gas?
 		73019,73020,73173,73174,--Vile Gas?
 		72219,72551,72552,72553,--Gastric Bloat
+		69278,69279,71221, -- Gas Spore
 
 		--Rotface
 		69674,71224,73022,73023,--Mutated Infection
