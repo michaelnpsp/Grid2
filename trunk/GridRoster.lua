@@ -102,6 +102,18 @@ function Grid2:UnitIsPet(unitid)
 	return owner_of_unit[unitid]
 end
 
+function Grid2:UnitIsParty(unit)
+	for _, v in next, party_units do
+		if unit == v then return true end
+	end
+end
+
+function Grid2:UnitIsRaid(unit)
+	for _, v in next, raid_units do
+		if unit == v then return true end
+	end
+end
+
 -- roster updating
 do
 	local units_to_remove = {}
