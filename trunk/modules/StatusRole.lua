@@ -10,6 +10,11 @@ Role.defaultDB = {
 	}
 }
 
+local raid_indexes = {}
+for i = 1, 40 do
+	raid_indexes["raid"..i] = i
+end
+
 local role_cache = {}
 function Role:_GetUnitRole(unit)
 	if not UnitExists(unit) then return end
@@ -20,8 +25,7 @@ function Role:_GetUnitRole(unit)
 			return "MAINASSIST"
 		end
 	else
-        local role = select(10, GetRaidRosterInfo(index))
-		return role
+        return select(10, GetRaidRosterInfo(raid_indexes[unit]))
 	end
 end
 
