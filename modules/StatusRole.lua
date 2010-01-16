@@ -26,7 +26,7 @@ function Role:_GetUnitRole(unit)
 		end
 	else
 		local index = raid_indexes[unit]
-		if index then return select(10, GetRaidRosterInfo()) end
+		if index then return select(10, GetRaidRosterInfo(index)) end
 	end
 end
 
