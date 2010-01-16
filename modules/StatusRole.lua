@@ -25,7 +25,8 @@ function Role:_GetUnitRole(unit)
 			return "MAINASSIST"
 		end
 	else
-        return select(10, GetRaidRosterInfo(raid_indexes[unit]))
+		local index = raid_indexes[unit]
+		if index then return select(10, GetRaidRosterInfo()) end
 	end
 end
 
