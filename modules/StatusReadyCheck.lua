@@ -105,12 +105,12 @@ function ReadyCheck:GetReadyCheckStatus(unit)
 	local state = GetReadyCheckStatus(unit)
 	if not state then
 		--we're in the window where we need to persist the readystate
-		state = readyStatuses[unitid]
+		state = readyStatuses[unit]
 		--with the blizz UI, if a player is AFK then they will display blank
 		-- while everyone else is tick / cross. Emulate that here
 		if state == "waiting" then state = "afk" end
 	else
-		readyStatuses[unitid] = state
+		readyStatuses[unit] = state
 	end
 	return state
 end
