@@ -232,11 +232,30 @@ local spellDB = {
 
 		--Rotface
 		69674,71224,73022,73023,--Mutated Infection
+		69508,--Slime Spray
+		30494,69776,69778,71208,--Sticky Ooze
 
 		--Professor Putricide
 		70672,72455,72832,72833,--Gaseous Bloat
 		70911,72854,72855,72856,--Unbound Plague
-		},
+		69774,72836,72837,72838,--Volatile Ooze Adhesive
+
+		--Blood-Queen Lana'thel
+		71623,71624,71625,71626,72264,72265,72266,72267,--Delirious Slash
+		70949,--Essence of the Blood Queen (hand icon)
+		70867,70871,70872,70879,70950,71473,71525,71530,71531,71532,71533,--Essence of the Blood Queen (bite icon)
+		72151,72648,72650,72649,--Frenzied Bloodthirst (bite icon)
+		71474,70877,--Frenzied Bloodthirst (red bite icon)
+		71340,71341,--Pact of the Darkfallen
+		72985,--Swarming Shadows (pink icon)
+		71267,71268,72635,72636,72637,--Swarming Shadows (black purple icon)
+		71264,71265,71266,71277,72638,72639,72640,72890,--Swarming Shadows (swirl icon)
+		70923,70924,73015,--Uncontrollable Frenzy
+
+		--Blood Prince Council
+		71807,72796,72797,72798,--Glittering Sparks
+		71911,71822,--Shadow Resonance
+	},
 }
 
 local GSRD = Grid2:NewModule("StatusRaidDebuffs")
