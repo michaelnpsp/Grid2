@@ -328,6 +328,16 @@ function Grid2:CreateBuffStatus(spellName, mine, missing, ...)
 		profile.blinkThreshold = mine
 	end
 	profile.missing = missing
+	if missing then
+		-- Initialize the texture for "missing" status
+		-- as the texture is shown when the aura is not set
+		local _, _, texture = GetSpellInfo(spellname)
+		if texture then
+			for _, unit in Grid2:IterateRoster() do
+				status.textures[unit] = texture
+			end
+		end
+	end
 
 	status.UpdateState = mine and status_UpdateStateMine or status_UpdateState
 
