@@ -30,17 +30,17 @@ L["Top Left Corner"] = "Ecke oben Links"
 L["Top Right Corner"] = "Ecke oben Rechts"
 L["Bottom Left Corner"] = "Ecke unten Links"
 L["Bottom Right Corner"] = "Ecke unten Rechts"
-L["Frame Alpha"] = "Frame Alpha"
+L["Frame Alpha"] = "Frame/Rahmen Alpha"
 
 L["Options for %s indicator."] = "Optionen für %s Indikator"
-L["Statuses"] = "Zustand"
-L["Toggle status display."] = "einschalten/ausschalten Zustands Display"
+L["Statuses"] = "Status/Zustand"
+L["Toggle status display."] = "einschalten/ausschalten Status Display"
 
 -- Advanced options
 L["Enable %s indicator"] = "Aktiviert %s indikator"
-L["Toggle the %s indicator."] = "Schaltet den %s um."
+L["Toggle the %s indicator."] = "einschalten/ausschalten %s Indikator."
 L["Orientation of Text"] = "Ausrichtung des Textes"
-L["Set frame text orientation."] = "Setze Rahmen Text Ausrichtung"
+L["Set frame text orientation."] = "Ausrichtung vom Rahmen Text"
 --}}}
 
 --{{{ GridLayout
@@ -52,13 +52,13 @@ L["Raid Layout"] = "Raid Layout"
 L["Select which raid layout to use."] = "Auswahl welches Raid Layout genutzt werden soll"
 L["Show Party in Raid"] = "Zeige deine Gruppe im Raid"
 L["Show party/self as an extra group."] = "Zeige 5er Gruppe/selbst als eine extra Gruppe"
-L["Show Pets for Party"] = "Zeige die Pets in einer 5er Gruppe"
-L["Show the pets for the party below the party itself."] = " Zeige Pets der 5er Gruppe unter dem Gruppen Fenster"
+L["Show Pets for Party"] = "Zeige die Begleiter in einer 5er Gruppe"
+L["Show the pets for the party below the party itself."] = " Zeige Begleiter der 5er Gruppe unter dem Gruppen Fenster"
 
 -- Display options
-L["Pet color"] = "Pet Farbe"
-L["Set the color of pet units."] = "Setzt eine Farbe für die Begleiter Einheiten"
-L["Pet coloring"] = "Begleiter Farbe"
+L["Pet color"] = "Begleiter Farbe"
+L["Set the color of pet units."] = "Setze eine Farbe für die Begleiter Einheiten"
+L["Pet coloring"] = "Begleiter Farbanpassung"
 L["Set the coloring strategy of pet units."] = "Legt fest, wie die Begleiter eingefÃ¤rbt werden."
 L["By Owner Class"] = "Nach Besitzer Klasse"
 L["By Creature Type"] = "Nach Kreatur Art"
@@ -98,7 +98,7 @@ L["By Group 25"] = "25er Gruppe"
 L["By Group 25 w/Pets"] = "25er Gruppe mit Begleiter"
 L["By Group 20"] = "20er Gruppe"
 L["By Group 15"] = "15er Gruppe"
-L["By Group 15 w/Pets"] = "15 Gruppe mit Begleiter"
+L["By Group 15 w/Pets"] = "15er Gruppe mit Begleiter"
 L["By Group 10"] = "10er Gruppe"
 L["By Group 10 w/Pets"] = "10er Gruppe mit Begleiter"
 L["By Group 4 x 10 Wide"] = "Gruppe 4 x 10 Breit"
@@ -107,7 +107,7 @@ L["By Class 1 x 25 Wide"] = "Nach Klasse 1 x 25 Breit"
 L["By Class 2 x 15 Wide"] = "Nach Klasse 2x 15 Breit"
 L["By Role 25"] = "25er nach Rolle"
 L["By Class"] = "Nach Klasse"
-L["By Class w/Pets"] = "Nach Klasse mit Pets"
+L["By Class w/Pets"] = "Nach Klasse mit Begleiter"
 L["Onyxia"] = "Onyxia"
 L["By Group 25 w/tanks"] = "25er Gruppe mit Tanks"
 --}}}
@@ -118,8 +118,8 @@ L["(%d+) yd range"] = "(%d+) yd Reichweite"
 --}}}
 
 --{{{ GridStatus
-L["Status"] = "Status"
-L["Statuses"] = "Statuse"
+L["Status"] = "Status/Zustand"
+L["Statuses"] = "Statuse/Zustände"
 
 -- module prototype
 L["Status: %s"] = "Status %s"
@@ -134,8 +134,8 @@ L["Enable %s"] = "Aktiviert %s"
 --}}}
 
 --{{{ GridStatusAggro
-L["Aggro"] = "Aggro"
-L["Aggro alert"] = "Aggro Alarm"
+L["Aggro"] = "Bedrohung"
+L["Aggro alert"] = "Bedrohungs Alarm"
 --}}}
 
 --{{{ GridStatusAuras
@@ -160,7 +160,7 @@ L["Buff: %s"] = "Buff: %s"
 L["Class Filter"] = "Klassen Filter"
 L["Show status for the selected classes."] = "Zeigt den Status der ausgewählten Klasse"
 L["Show on %s."] = "Zeigt auf %s."
-L["Show if missing"] = "Zeigt ob fehlt"
+L["Show if missing"] = "Zeigt an ob fehlt"
 L["Display status only if the buff is not active."] = "Anzeige Status nur wenn Buff nicht Aktiv"
 L["Filter Abolished units"] = "Filter aufhebbarer Einheiten"
 L["Skip units that have an active Abolish buff."] = "Überspringe Einheiten mit aktiven aufhebbarem Buff"
@@ -193,7 +193,7 @@ L["^Corpse of (.+)$"] = "^Körper von .+)$"
 L["Low HP"] = "Wenig HP"
 L["DEAD"] = "Tot"
 L["GHOST"] = "Geist"
-L["FD"] = "FD"
+L["FD"] = "Totstellen"
 L["Offline"] = "Offline"
 L["Unit health"] = "Einheit Heilung"
 L["Health deficit"] = "Heilungs defizit"
