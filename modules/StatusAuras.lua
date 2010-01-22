@@ -331,7 +331,7 @@ function Grid2:CreateBuffStatus(spellName, mine, missing, ...)
 	if missing then
 		-- Initialize the texture for "missing" status
 		-- as the texture is shown when the aura is not set
-		local _, _, texture = GetSpellInfo(spellname)
+		local _, _, texture = GetSpellInfo(spellName)
 		if texture then
 			for _, unit in Grid2:IterateRoster() do
 				status.textures[unit] = texture
