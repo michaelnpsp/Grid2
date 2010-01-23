@@ -43,7 +43,7 @@ function Grid2:GetGUIDByName(name, realm)
 	if realm == my_realm or realm == "" then realm = nil end
 	for unit, unit_name in pairs(roster_names) do
 		if name == unit_name and roster_realms[unit] == realm then
-			return guid
+			return roster_guids[unit]
 		end
 	end
 end
