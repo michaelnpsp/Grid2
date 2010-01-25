@@ -12,6 +12,8 @@ local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 local function GridLayout_InitialConfigFunction(frame)
 	Grid2Frame:RegisterFrame(frame)
+	frame:SetAttribute("useparent-allowVehicleTarget", "1")
+	frame:SetAttribute("useparent-toggleForVehicle", "1")
 end
 
 --}}}
