@@ -9,7 +9,7 @@
 ## OptionalDeps: Ace3, LibHealComm-4.0
 ## X-Embeds: Ace3, LibHealComm-4.0
 ## SavedVariables: Grid2DB
-## DefaultState: disabled
+## DefaultState: enabled
 ## LoadOnDemand: 0
 
 ## Version: 3.3.0.@project-revision@
