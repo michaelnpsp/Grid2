@@ -43,6 +43,17 @@ local function Alert_UpdateSelfGain(self, unit, isActive)
 	end
 end
 
+local function Alert_UpdateSelfGainAggro(self, unit, isActive)
+	if UnitIsUnit(unit, "player") then
+		-- Override so that it only triggers when the player as aggro
+		isActive = isActive and UnitThreatSituation(unit) > 1
+		if not self.active and isActive then
+			self:TriggerAlert(unit)
+		end
+		self.active = isActive
+	end
+end
+
 local function Alert_UpdateSelfLost(self, unit, isActive)
 	if UnitIsUnit(unit, "player") then
 		if self.active and not isActive then
@@ -81,6 +92,8 @@ local function Alert_Initialize(self, type)
 	elseif type == "all-lost" then
 		self.count = 0
 		self.Update = Alert_UpdateAllLost
+	elseif type == "self-gain-aggro" then
+		self.Update = Alert_UpdateSelfGainAggro
 	else
 		Grid2:Print("ERROR ! invalid alert type", type)
 	end
@@ -110,7 +123,7 @@ Grid2Alert.defaultDB = {
 		alerts = {
 			Aggro = {
 				status = "threat",
-				type = "self-gain",
+				type = "self-gain-aggro",
 				message = "Aggro !",
 				sound = "threat",
 				min_pause = 0.5,
