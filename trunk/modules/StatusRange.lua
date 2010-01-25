@@ -12,19 +12,19 @@ local cache = {}
 local CheckUnitRange
 
 local function Update()
-	for guid, unitid in Grid2:IterateRoster() do
-		local value = CheckUnitRange(unitid)
-		if value ~= cache[unitid] then
-			cache[unitid] = value
-			Range:UpdateIndicators(unitid)
+	for _, unit in Grid2:IterateRoster() do
+		local value = CheckUnitRange(unit)
+		if value ~= cache[unit] then
+			cache[unit] = value
+			Range:UpdateIndicators(unit)
 		end
 	end
 end
 
 function Range:OnEnable()
 	self:RegisterMessage("Grid_RangesUpdated")
-	self:RegisterMessage("Grid_UnitChanged")
 	self:RegisterMessage("Grid_UnitJoined")
+	self:RegisterMessage("Grid_UnitChanged", "Grid_UnitJoined")
 	self:RegisterMessage("Grid_UnitLeft")
 	self:Grid_RangesUpdated()
 end
@@ -36,11 +36,6 @@ end
 
 function Range:Grid_UnitLeft(_, unit)
 	cache[unit] = nil
-end
-
-function Range:Grid_UnitChanged(_, unit)
-	cache[unit] = CheckUnitRange(unit)
-	self:UpdateIndicators(unit)
 end
 
 function Range:GetFrame()
@@ -60,21 +55,28 @@ function Range:GetFrame()
 end
 
 function Range:Grid_RangesUpdated()
-	local check = GridRange:GetRangeCheck(Range.db.profile.range)
+	local queried_range = Range.db.profile.range
+	local check, actual_range, spell = GridRange:GetRangeCheck(queried_range or 40)
 	local rezCheck = GridRange:GetRezCheck()
 
-	if rezCheck then
-		CheckUnitRange = function (unit)
-			return (check(unit) or rezCheck(unit)) and 1
-		end
+	if not check then
+		print("Grid2 Range updated. No range check function returned, this is an error.")
+		CheckUnitRange = function () return 1 end
+		if self.frame then self.frame:Hide() end
 	else
-		CheckUnitRange = function (unit)
-			return check(unit) and 1
+		print(("Grid2 Range updated. %d queried and %d obtained (from %s)."):format(queried_range or -1, actual_range or -1, spell or "*API*"))
+		if rezCheck then
+			CheckUnitRange = function (unit)
+				return (check(unit) or rezCheck(unit)) and 1
+			end
+		else
+			CheckUnitRange = function (unit)
+				return check(unit) and 1
+			end
 		end
+		self:GetFrame():Show()
 	end
-
 	Update()
-	self:GetFrame():Show()
 end
 
 function Range:OnDisable()

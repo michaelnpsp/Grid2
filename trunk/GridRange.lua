@@ -10,7 +10,7 @@ local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 GridRange = Grid2:NewModule("GridRange")
 
-local ranges, checks
+local ranges, checks, spells
 local select = select
 local IsSpellInRange = IsSpellInRange
 local CheckInteractDistance = CheckInteractDistance
@@ -18,8 +18,8 @@ local UnitIsVisible = UnitIsVisible
 local BOOKTYPE_SPELL = BOOKTYPE_SPELL
 
 local invalidSpells = {
-	[GetSpellInfo(136)] = true,
-	[GetSpellInfo(755)] = true,
+	[GetSpellInfo(136)] = true, -- Mend Pet
+	[GetSpellInfo(755)] = true, -- Health Funnel
 }
 
 local rezSpell, rezCheck
@@ -36,7 +36,7 @@ do
 	end
 end
 
-local function addRange(range, check)
+local function addRange(range, check, spell)
 	-- 100 yards is the farthest possible range
 	if range > 100 then return end
 
@@ -44,6 +44,9 @@ local function addRange(range, check)
 		ranges[#ranges + 1] = range
 		table.sort(ranges)
 		checks[range] = check
+		if spell then
+			spells[range] = spell
+		end
 	end
 end
 
@@ -67,17 +70,18 @@ local function initRanges()
 end
 
 function GridRange:ScanSpellbook()
-	initRanges()
-
 	-- using IsSpellInRange doesn't work for dead players.
 	-- reschedule the spell scanning for when the player is alive
 	if UnitIsDeadOrGhost("player") then
 		self:RegisterEvent("PLAYER_UNGHOST", "ScanSpellbook")
 		self:RegisterEvent("PLAYER_ALIVE", "ScanSpellbook")
+		return
 	else
 		self:UnregisterEvent("PLAYER_UNGHOST")
 		self:UnregisterEvent("PLAYER_ALIVE")
 	end
+
+	initRanges()
 
 	local i = 1
 	while true do
@@ -94,7 +98,7 @@ function GridRange:ScanSpellbook()
 				range = math.floor(range + 0.5)
 				if range > 0 then
 					local index = i -- we have to create an upvalue
-					addRange(tonumber(range), function (unit) return IsSpellInRange(index, BOOKTYPE_SPELL, unit) == 1 end)
+					addRange(tonumber(range), function (unit) return IsSpellInRange(index, BOOKTYPE_SPELL, unit) == 1 end, name)
 					self:Debug("%d %s (%s) has range %s", i, name, rank, range)
 				end
 			end
@@ -109,8 +113,8 @@ function GridRange:OnEnable()
 	self.core.defaultModulePrototype.OnEnable(self)
 
 	self:ScanSpellbook()
+	self:RegisterEvent("SPELLS_CHANGED", "ScanSpellbook")
 	self:RegisterEvent("LEARNED_SPELL_IN_TAB", "ScanSpellbook")
-	self:RegisterEvent("CHARACTER_POINTS_CHANGED", "ScanSpellbook")
 end
 
 function GridRange:GetUnitRange(unit)
@@ -143,7 +147,7 @@ function GridRange:GetRangeCheck(range)
 			check = checks[range]
 		end
 	end
-	return check, range
+	return check, range, spells[range]
 end
 
 function GridRange:AvailableRangeIterator()
