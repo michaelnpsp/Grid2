@@ -62,7 +62,7 @@ local checkRange38 = UnitInRange
 local checkRange100 = UnitIsVisible
 
 local function initRanges()
-	ranges, checks = {}, {}
+	ranges, checks, spells = {}, {}, {}
 	addRange(10, checkRange10)
 	addRange(28, checkRange28)
 	addRange(38, checkRange38)
