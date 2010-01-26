@@ -38,6 +38,7 @@ Grid2Layout:AddLayout(L["Solo"], {
 		showPlayer = true,
 		showSolo = true,
 		groupingOrder = DEFAULT_GROUP_ORDER,
+		toggleForVehicle = true,
 	},
 })
 
@@ -72,6 +73,7 @@ Grid2Layout:AddLayout(L["By Group 5"], {
 		showParty = true,
 		showRaid = true,
 		groupingOrder = DEFAULT_GROUP_ORDER,
+		toggleForVehicle = true,
 	},
 })
 
@@ -84,8 +86,6 @@ Grid2Layout:AddLayout(L["By Group 5 w/Pets"], {
 		showPlayer = true,
 		showParty = true,
 		groupingOrder = DEFAULT_GROUP_ORDER,
-		allowVehicleTarget = true,
-		toggleForVehicle = true,
 	},
 	[2] = {
 		showPlayer = true,
@@ -109,6 +109,7 @@ Grid2Layout:AddLayout(L["By Group 10"], {
 		showPlayer = true,
 		showParty = true,
 		showRaid = true,
+		toggleForVehicle = true,
 	},
 	[2] = {
 		groupFilter = "2",
@@ -116,6 +117,7 @@ Grid2Layout:AddLayout(L["By Group 10"], {
 		showPlayer = true,
 		showParty = true,
 		showRaid = true,
+		toggleForVehicle = true,
 	},
 })
 
@@ -159,14 +161,17 @@ Grid2Layout:AddLayout(L["By Group 15"], {
 	[1] = {
 		groupFilter = "1",
 		groupingOrder = DEFAULT_GROUP_ORDER,
+		toggleForVehicle = true,
 	},
 	[2] = {
 		groupFilter = "2",
 		groupingOrder = DEFAULT_GROUP_ORDER,
+		toggleForVehicle = true,
 	},
 	[3] = {
 		groupFilter = "3",
 		groupingOrder = DEFAULT_GROUP_ORDER,
+		toggleForVehicle = true,
 	},
 })
 
@@ -208,22 +213,27 @@ Grid2Layout:AddLayout(L["By Group 25"], {
 	[1] = {
 		groupFilter = "1",
 		groupingOrder = DEFAULT_GROUP_ORDER,
+		toggleForVehicle = true,
 	},
 	[2] = {
 		groupFilter = "2",
 		groupingOrder = DEFAULT_GROUP_ORDER,
+		toggleForVehicle = true,
 	},
 	[3] = {
 		groupFilter = "3",
 		groupingOrder = DEFAULT_GROUP_ORDER,
+		toggleForVehicle = true,
 	},
 	[4] = {
 		groupFilter = "4",
 		groupingOrder = DEFAULT_GROUP_ORDER,
+		toggleForVehicle = true,
 	},
 	[5] = {
 		groupFilter = "5",
 		groupingOrder = DEFAULT_GROUP_ORDER,
+		toggleForVehicle = true,
 	},
 })
 
@@ -439,7 +449,7 @@ Grid2Layout:AddLayout(L["By Group 4 x 10 Wide"], {
         maxColumns = 4,
         allowVehicleTarget = true,
     },
-    
+
 })
 
 Grid2Layout:AddLayout(L["By Group 20"], {
@@ -450,18 +460,22 @@ Grid2Layout:AddLayout(L["By Group 20"], {
 	[1] = {
 		groupFilter = "1",
 		groupingOrder = DEFAULT_GROUP_ORDER,
+		toggleForVehicle = true,
 	},
 	[2] = {
 		groupFilter = "2",
 		groupingOrder = DEFAULT_GROUP_ORDER,
+		toggleForVehicle = true,
 	},
 	[3] = {
 		groupFilter = "3",
 		groupingOrder = DEFAULT_GROUP_ORDER,
+		toggleForVehicle = true,
 	},
 	[4] = {
 		groupFilter = "4",
 		groupingOrder = DEFAULT_GROUP_ORDER,
+		toggleForVehicle = true,
 	},
 })
 
@@ -474,33 +488,43 @@ Grid2Layout:AddLayout(L["By Class"], {
 	},
 	[1] = {
 		groupFilter = "WARRIOR",
+		toggleForVehicle = true,
 	},
 	[2] = {
 		groupFilter = "DEATHKNIGHT",
+		toggleForVehicle = true,
 	},
 	[3] = {
 		groupFilter = "PALADIN",
+		toggleForVehicle = true,
 	},
 	[4] = {
 		groupFilter = "DRUID",
+		toggleForVehicle = true,
 	},
 	[5] = {
 		groupFilter = "ROGUE",
+		toggleForVehicle = true,
 	},
 	[6] = {
 		groupFilter = "SHAMAN",
+		toggleForVehicle = true,
 	},
 	[7] = {
 		groupFilter = "PRIEST",
+		toggleForVehicle = true,
 	},
 	[8] = {
 		groupFilter = "MAGE",
+		toggleForVehicle = true,
 	},
 	[9] = {
 		groupFilter = "WARLOCK",
+		toggleForVehicle = true,
 	},
 	[10] = {
 		groupFilter = "HUNTER",
+		toggleForVehicle = true,
 	},
 })
 
@@ -559,38 +583,45 @@ Grid2Layout:AddLayout(L["Onyxia"], {
 	[1] = {
 		groupFilter = "1",
 		groupingOrder = DEFAULT_GROUP_ORDER,
+		toggleForVehicle = true,
 	},
 	[2] = {
 		groupFilter = "3",
 		groupingOrder = DEFAULT_GROUP_ORDER,
+		toggleForVehicle = true,
 	},
 	[3] = {
 		groupFilter = "5",
 		groupingOrder = DEFAULT_GROUP_ORDER,
+		toggleForVehicle = true,
 	},
 	[4] = {
 		groupFilter = "7",
 		groupingOrder = DEFAULT_GROUP_ORDER,
+		toggleForVehicle = true,
 	},
 	[5] = {
 		type = "spacer",
-		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[6] = {
 		groupFilter = "2",
 		groupingOrder = DEFAULT_GROUP_ORDER,
+		toggleForVehicle = true,
 	},
 	[7] = {
 		groupFilter = "4",
 		groupingOrder = DEFAULT_GROUP_ORDER,
+		toggleForVehicle = true,
 	},
 	[8] = {
 		groupFilter = "6",
 		groupingOrder = DEFAULT_GROUP_ORDER,
+		toggleForVehicle = true,
 	},
 	[9] = {
 		groupFilter = "8",
 		groupingOrder = DEFAULT_GROUP_ORDER,
+		toggleForVehicle = true,
 	},
 })
 
@@ -637,46 +668,32 @@ Grid2Layout:AddLayout(L["By Group 40"], {
 		pvp = true,
 	},
 	defaults = {
-		-- type = "raid", (can be "party", "partypet", "raid", "raid40", "raidpet", "spacer")
-		-- nameList = "",
-		-- groupFilter = "",
-		-- sortMethod = "INDEX", -- or "NAME"
-		-- sortDir = "ASC", -- or "DESC"
-		-- strictFiltering = false,
-		-- unitsPerColumn = 5, -- treated specifically to do the right thing when available
-		-- maxColumns = 5, -- mandatory if unitsPerColumn is set, or defaults to 1
+		groupingOrder = DEFAULT_GROUP_ORDER,
+		toggleForVehicle = true,
 	},
 	[1] = {
 		groupFilter = "1",
-		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[2] = {
 		groupFilter = "2",
-		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[3] = {
 		groupFilter = "3",
-		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[4] = {
 		groupFilter = "4",
-		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[5] = {
 		groupFilter = "5",
-		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[6] = {
 		groupFilter = "6",
-		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[7] = {
 		groupFilter = "7",
-		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[8] = {
 		groupFilter = "8",
-		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 })
 
