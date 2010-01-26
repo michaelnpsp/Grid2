@@ -293,23 +293,27 @@ function Grid2:GroupChanged()
 	self:UpdateRoster()
 end
 
-Grid2.framesByUnit = {}
+local frames_of_unit = setmetatable({}, { __index = function (self, key)
+	local result = {}
+	rawset(self, key, result)
+	return result
+end})
+
+local unit_of_frame = {}
 function Grid2:SetFrameUnit(frame, unit)
-	for key, value in pairs(self.framesByUnit) do
-		if value == frame then
-			self.framesByUnit[key] = nil
-			break
-		end
+	local prev_unit = unit_of_frame[frame]
+	if prev_unit then
+		local frames = frames_of_unit[prev_unit]
+		frames[frame] = nil
 	end
 	if unit then
-		self.framesByUnit[unit] = frame
+		frames_of_unit[unit][frame] = true
 	end
+	unit_of_frame[frame] = unit
 end
--- /dump Grid2.framesByUnit["pet"]
--- /dump Grid2.framesByUnit["pet"]:GetAttribute("type1")
--- /dump Grid2.framesByUnit["pet"]:GetAttribute("unit")
-function Grid2:GetUnitFrame(unit)
-	return self.framesByUnit[unit]
+
+function Grid2:GetUnitFrames(unit)
+	return frames_of_unit[unit]
 end
 
 --}}}

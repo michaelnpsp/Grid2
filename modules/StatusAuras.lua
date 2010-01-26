@@ -380,8 +380,8 @@ do
 		vehicle = true,
 	}
 	function AuraFrame_OnEvent(_, _, unit)
-		local parent = Grid2:GetUnitFrame(unit)
-		if not parent then return end
+		local frames = Grid2:GetUnitFrames(unit)
+		if not next(frames) then return end
 
 		for status in next, DebuffHandlers do
 			status:Reset(unit)
@@ -447,7 +447,9 @@ do
 		-- Update indicators that needs updating only once.
 		for indicator in next, indicators do
 			indicators[indicator] = nil
-			indicator:Update(parent, unit)
+			for frame in next, frames do
+				indicator:Update(frame, unit)
+			end
 		end
 	end
 end

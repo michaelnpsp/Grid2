@@ -33,8 +33,7 @@ function status:UnregisterIndicator(indicator)
 end
 
 function status:UpdateIndicators(unit)
-	local parent = Grid2:GetUnitFrame(unit)
-	if parent then
+	for parent in next, Grid2:GetUnitFrames(unit) do
 		for indicator in pairs(self.indicators) do
 			indicator:Update(parent, unit)
 		end
