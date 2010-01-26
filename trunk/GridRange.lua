@@ -81,6 +81,7 @@ function GridRange:ScanSpellbook()
 		self:UnregisterEvent("PLAYER_ALIVE")
 	end
 
+	local prev_ranges, prev_spells = ranges, spells
 	initRanges()
 
 	local i = 1
@@ -89,16 +90,16 @@ function GridRange:ScanSpellbook()
 		if not name then break end
 		-- beneficial spell with a range
 		if name == rezSpell then
-			local index = i
-			rezCheck = function (unit) return UnitIsDead(unit) and IsSpellInRange(index, BOOKTYPE_SPELL, unit) == 1 end
+			local rez_spell = name
+			rezCheck = function (unit) return UnitIsDead(unit) and IsSpellInRange(rez_spell, unit) == 1 end
 		end
-		if not invalidSpells[name] and IsSpellInRange(i, BOOKTYPE_SPELL, "player") then
+		if not invalidSpells[name] and IsSpellInRange(name, "player") then
 			local _, _, _, _, _, _, _, _, range = GetSpellInfo(name)
 			if range then
 				range = math.floor(range + 0.5)
 				if range > 0 then
-					local index = i -- we have to create an upvalue
-					addRange(tonumber(range), function (unit) return IsSpellInRange(index, BOOKTYPE_SPELL, unit) == 1 end, name)
+					local check_spell = name -- we have to create an upvalue
+					addRange(tonumber(range), function (unit) return IsSpellInRange(check_spell, unit) == 1 end, name)
 					self:Debug("%d %s (%s) has range %s", i, name, rank, range)
 				end
 			end
@@ -106,7 +107,19 @@ function GridRange:ScanSpellbook()
 		i = i + 1
 	end
 
-	self:SendMessage("Grid_RangesUpdated")
+	local changed
+	if not prev_ranges or #ranges ~= #prev_ranges then
+		changed = true
+	else
+		for _, range in ipairs(ranges) do
+			if prev_spells[range] ~= spells[range] then
+				changed = true
+			end
+		end
+	end
+	if changed then
+		self:SendMessage("Grid_RangesUpdated")
+	end
 end
 
 function GridRange:OnEnable()
