@@ -9,6 +9,8 @@ L["Food"] = "Nourriture"
 --L["Grid2"] = true
 --}}}
 
+
+
 --{{{ GridCore
 L["Configure"] = "Configurer"
 L["Configure Grid"] = "Configurer Grid"
@@ -85,6 +87,7 @@ L["Advanced options."] = "Options Avancées."
 --}}}
 
 --{{{ GridLayoutLayouts
+-- ToDo: move into options
 L["None"] = "Aucun"
 L["Solo"] = "Seul"
 L["Solo w/Pet"] = "Seul avec familier"
@@ -98,6 +101,7 @@ L["By Group 15"] = "Groupe de 15"
 L["By Group 15 w/Pets"] = "Groupe de 15 avec familier"
 L["By Group 10"] = "Groupe de 10"
 L["By Group 10 w/Pets"] = "Groupe de 10 avec familier"
+L["By Group 4 x 10 Wide"] = "Par groupe de 4 x 10 Large"
 L["By Class 25"] = "Par classe 25"
 L["By Class 1 x 25 Wide"] = "Par classe 1 x 25 Large"
 L["By Class 2 x 15 Wide"] = "Par classe 2 x 15 Large"
@@ -181,7 +185,7 @@ L["Incoming heals"] = "Soins entrants"
 L["Ignore Self"] = "S'ignorer"
 L["Ignore heals cast by you."] = "Ignorer les soins incantés par vous."
 L["(.+) begins to cast (.+)."] = "(.+) commence à incanter (.+)."
--- L["(.+) gains (.+) Mana from (.+)'s Life Tap."] = "(.+) gagne (.+) Mana de (.+)'s Life Tap."
+L["(.+) gains (.+) Mana from (.+)'s Life Tap."] = "(.+) gagne (.+) Mana de (.+)'s connexion."
 L["^Corpse of (.+)$"] = "^Corps de (.+)$"
 --}}}
 
