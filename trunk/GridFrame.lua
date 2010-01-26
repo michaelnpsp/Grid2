@@ -259,9 +259,9 @@ function Grid2Frame:UpdateIndicators(frame)
 end
 
 --{{{ Event handlers
-
+local next = next
 function Grid2Frame:UpdateFrameUnits()
-	for frameName, frame in pairs(self.registeredFrames) do
+	for frameName, frame in next, self.registeredFrames do
 		local old_unit = frame.unit
 		local unit = frame:GetModifiedUnit()
 		if old_unit ~= unit then
@@ -272,12 +272,12 @@ function Grid2Frame:UpdateFrameUnits()
 end
 
 function Grid2Frame:UpdateFrameUnit(_, unit)
-	local frame = Grid2:GetUnitFrame(unit)
-	if not frame then return end
-	local old, new = frame.unit, frame:GetModifiedUnit()
-	if old ~= new then
-		frame.unit = new
-		self:UpdateIndicators(frame)
+	for frame in next, Grid2:GetUnitFrames(unit) do
+		local old, new = frame.unit, frame:GetModifiedUnit()
+		if old ~= new then
+			frame.unit = new
+			self:UpdateIndicators(frame)
+		end
 	end
 end
 
