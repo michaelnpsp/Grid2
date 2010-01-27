@@ -8,16 +8,20 @@ Offline.defaultDB = {
 	}
 }
 
-function Offline:RAID_ROSTER_UPDATE(event, unitid)
-	self:UpdateIndicators(unitid)
+function Offline:Grid_UnitJoined(_, unit)
+	self:UpdateIndicators(unit)
 end
 
 function Offline:OnEnable()
-	self:RegisterEvent("RAID_ROSTER_UPDATE", "RAID_ROSTER_UPDATE")
+	self:RegisterMessage("Grid_UnitJoined")
+	self:RegisterMessage("Grid_UnitChanged", "Grid_UnitJoined")
+	self:RegisterEvent("UNIT_FLAGS", "Grid_UnitJoined")
 end
 
 function Offline:OnDisable()
-	self:UnregisterEvent("RAID_ROSTER_UPDATE")
+	self:UnregisterMessage("Grid_UnitJoined")
+	self:UnregisterMessage("Grid_UnitChanged")
+	self:UnregisterEvent("UNIT_FLAGS")
 end
 
 function Offline:IsActive(unitid)
