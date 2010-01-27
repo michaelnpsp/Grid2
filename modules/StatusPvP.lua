@@ -9,8 +9,8 @@ PvP.defaultDB = {
 	}
 }
 
-function PvP:RAID_ROSTER_UPDATE(event, unitid)
-	self:UpdateIndicators(unitid)
+function PvP:Grid_UnitJoined(_, unit)
+	self:UpdateIndicators(unit)
 end
 
 function PvP:ZONE_CHANGED_NEW_AREA(event)
@@ -20,17 +20,17 @@ function PvP:ZONE_CHANGED_NEW_AREA(event)
 end
 
 function PvP:OnEnable()
-	self:RegisterEvent("RAID_ROSTER_UPDATE", "RAID_ROSTER_UPDATE")
-	self:RegisterEvent("UNIT_FACTION", "RAID_ROSTER_UPDATE")
+	self:RegisterMessage("Grid_UnitJoined")
+	self:RegisterMessage("Grid_UnitChanged", "Grid_UnitJoined")
+	self:RegisterEvent("UNIT_FACTION", "Grid_UnitJoined")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "ZONE_CHANGED_NEW_AREA")
---	self:RegisterMessage("Grid_UnitJoined", "RAID_ROSTER_UPDATE")
 end
 
 function PvP:OnDisable()
-	self:UnregisterEvent("RAID_ROSTER_UPDATE")
 	self:UnregisterEvent("UNIT_FACTION")
 	self:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
---	self:UnregisterMessage("Grid_UnitJoined")
+	self:UnregisterMessage("Grid_UnitJoined")
+	self:UnregisterMessage("Grid_UnitChanged")
 end
 
 function PvP:IsActive(unitid)

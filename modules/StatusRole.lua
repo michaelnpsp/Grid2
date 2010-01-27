@@ -43,15 +43,6 @@ function Role:UpdateAllUnits(event)
 	end
 end
 
-function Role:Grid_UnitJoined(_, unitid)
-	local prev = role_cache[unitid]
-	local new = self:_GetUnitRole(unitid)
-	if new ~= prev then
-		role_cache[unitid] = new
-		self:UpdateIndicators(unitid)
-	end
-end
-
 function Role:Grid_UnitLeft(_, unitid)
 	role_cache[unitid] = nil
 end
@@ -59,14 +50,12 @@ end
 function Role:OnEnable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateAllUnits")
 	self:RegisterEvent("RAID_ROSTER_UPDATE", "UpdateAllUnits")
-	self:RegisterMessage("Grid_UnitJoined")
 	self:RegisterMessage("Grid_UnitLeft")
 end
 
 function Role:OnDisable()
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	self:UnregisterEvent("RAID_ROSTER_UPDATE")
-	self:UnregisterMessage("Grid_UnitJoined")
 	self:UnregisterMessage("Grid_UnitLeft")
 end
 
