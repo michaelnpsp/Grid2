@@ -225,8 +225,8 @@ local spellDB = {
 
 		--Festergut
 		69290,71222,73033,73034,--Blighted Spore
-		72272,72273,72274,72276,72277,--Vile Gas?
-		73019,73020,73173,73174,--Vile Gas?
+		69248,72274,--Vile Gas?
+		71218,72272,72273,73020,73019,69240,--Vile Gas?
 		72219,72551,72552,72553,--Gastric Bloat
 		69278,69279,71221, -- Gas Spore
 
@@ -237,8 +237,14 @@ local spellDB = {
 
 		--Professor Putricide
 		70672,72455,72832,72833,--Gaseous Bloat
+		70341,--Slime Puddle (Spray)
+		70342,70346,72869,72868,--Slime Puddle (Pool)
 		70911,72854,72855,72856,--Unbound Plague
 		69774,72836,72837,72838,--Volatile Ooze Adhesive
+
+		--Blood Prince Council
+		71807,72796,72797,72798,--Glittering Sparks
+		71911,71822,--Shadow Resonance
 
 		--Blood-Queen Lana'thel
 		71623,71624,71625,71626,72264,72265,72266,72267,--Delirious Slash
@@ -252,9 +258,24 @@ local spellDB = {
 		71264,71265,71266,71277,72638,72639,72640,72890,--Swarming Shadows (swirl icon)
 		70923,70924,73015,--Uncontrollable Frenzy
 
-		--Blood Prince Council
-		71807,72796,72797,72798,--Glittering Sparks
-		71911,71822,--Shadow Resonance
+		--Valithria Dreamwalker
+		70873,--Emerald Vigor
+
+		--Sindragosa
+		70106,--Chilled to the Bone
+		69766,--Instability
+		69762,--Unchained Magic
+		70126,--Frost Beacon
+		71665,--Asphyxiation
+		70127,72528,72529,72530,--Mystic Buffet
+
+		--Lich King
+		73780,--Infest
+		73785,--Necrotic Plague
+		73790,--Pain and Suffering
+
+		--Trash
+		70435,71154,--Rend Flesh
 	},
 }
 
