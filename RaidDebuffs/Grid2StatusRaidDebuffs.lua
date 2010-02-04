@@ -199,6 +199,9 @@ local spellDB = {
 	[BZ["Vault of Archavon"]] = {
 		--Koralon
 		67332, 66684,--Flaming Cinder (10, 25)
+
+		--Toravon the Ice Watcher
+		72004,72098,72120,72121,--Frostbite
 	},
 	[BZ["Icecrown Citadel"]] = {
 		--Lord Marrowgar
@@ -233,10 +236,12 @@ local spellDB = {
 		--Rotface
 		69674,71224,73022,73023,--Mutated Infection
 		69508,--Slime Spray
-		30494,69776,69778,71208,--Sticky Ooze
+		30494,69774,69776,69778,71208,--Sticky Ooze
 
 		--Professor Putricide
 		70672,72455,72832,72833,--Gaseous Bloat
+		72549,--Malleable Goo
+		72454,--Mutated Plague
 		70341,--Slime Puddle (Spray)
 		70342,70346,72869,72868,--Slime Puddle (Pool)
 		70911,72854,72855,72856,--Unbound Plague
@@ -260,6 +265,9 @@ local spellDB = {
 
 		--Valithria Dreamwalker
 		70873,--Emerald Vigor
+		70744,71733,72017,72018,--Acid Burst
+		70751,71738,72021,72022,--Corrosion
+		70633,71283,72025,72026,--Gut Spray
 
 		--Sindragosa
 		70106,--Chilled to the Bone
@@ -270,11 +278,17 @@ local spellDB = {
 		70127,72528,72529,72530,--Mystic Buffet
 
 		--Lich King
-		73780,--Infest
-		73785,--Necrotic Plague
-		73790,--Pain and Suffering
+		70541,73779,73780,73781,--Infest
+		70337,70338,73785,73786,73787,73912,73913,73914,--Necrotic Plague
+		72133,73788,73789,73790,--Pain and Suffering
+		68981,--Remorseless Winter
+		69242,--Soul Shriek
 
 		--Trash
+		71089,--Bubbling Pus
+		69483,--Dark Reckoning
+		71163,--Devour Humanoid
+		71127,--Mortal Wound
 		70435,71154,--Rend Flesh
 	},
 }
