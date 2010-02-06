@@ -1,37 +1,25 @@
-local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
+local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options", true)
 local LG = LibStub("AceLocale-3.0"):GetLocale("Grid2")
+local DBL = LibStub:GetLibrary("LibDBLayers-1.0")
 
-function Grid2Options:GetLocation(locationKey)
-	local location = Grid2.db.profile.setup.locations[locationKey]
+function Grid2Options:GetLocation(baseKey)
+	local locations = Grid2.locations
+	local location = locations[baseKey]
 	return location
 end
 
-function Grid2Options:RegisterIndicatorLocation(indicatorKey, locationKey)
-	Grid2.db.profile.setup.indicatorLocations[indicatorKey] = locationKey
-end
-
-local locationValues = {}
-function Grid2Options.GetLocationValues(info)
-	local locations = Grid2.db.profile.setup.locations
-	wipe(locationValues)
-
-	for locationKey, location in pairs(locations) do
-		local name = L[location.name] or location.name
-		locationValues[locationKey] = name
+local layerValues
+Grid2Options.locationLayers = {}
+function Grid2Options.GetLocationLayerValues()
+	if (not layerValues) then
+		layerValues = {}
+		for layer, index in pairs(DBL:GetLayerOrder(Grid2.dblData, "locations")) do
+			local name = L[layer] or layer
+			layerValues[index] = name
+			Grid2Options.locationLayers[index] = layer
+		end
 	end
-
-	return locationValues
-end
-
-function Grid2Options.GetIndicatorLocation(info)
-	local indicatorKey = info.arg
-	local locationKey = Grid2.db.profile.setup.indicatorLocations[indicatorKey]
-	return locationKey
-end
-
-function Grid2Options.SetIndicatorLocation(info, value)
-	local indicatorKey = info.arg
-	Grid2Options:RegisterIndicatorLocation(indicatorKey, value)
+	return layerValues
 end
 
 -- Translate db <--> dropdown menu
@@ -69,23 +57,29 @@ local pointValueList = {
 }
 
 local function getLocationValue(info)
-	local locationKey = info.arg.locationKey
-	local location = info.arg.location
+	local baseKey = info.arg
+	local location = Grid2.locations[baseKey]
 	return location[info[# info]]
 end
 
 local function setLocationValue(info, value)
-	local locationKey = info.arg.locationKey
-	local location = info.arg.location
+	local baseKey = info.arg
+	local location = Grid2.locations[baseKey]
+	local dbx = DBL:GetOptionsDbx(Grid2.dblData, "locations", baseKey)
+
 	location[info[# info]] = value
+	dbx[info[# info]] = value
+
+	--ToDo: Update Indicators
 	Grid2Frame:UpdateAllFrames()
 end
 
 local function getLocationNameValue(info)
-	local locationKey = info.arg.locationKey
-	local location = info.arg.location
-	local defaultName = L[locationKey]
+	local baseKey = info.arg
+	local location = Grid2.locations[baseKey]
+	local defaultName = L[baseKey]
 	local customName = location[info[# info]]
+
 	if (not customName and defaultName) then
 		return defaultName
 	else
@@ -94,43 +88,66 @@ local function getLocationNameValue(info)
 end
 
 local function setLocationNameValue(info, customName)
-	local locationKey = info.arg.locationKey
-	local location = info.arg.location
-	local defaultName = L[locationKey]
+	local baseKey = info.arg
+	local location = Grid2.locations[baseKey]
+	local dbx = DBL:GetOptionsDbx(Grid2.dblData, "locations", baseKey)
+	local defaultName = L[baseKey]
+
 	customName = Grid2Options:GetValidatedName(customName)
 	if (not defaultName or defaultName ~= customName) then
 		location[info[# info]] = customName
+		dbx[info[# info]] = customName
 	end
+
 	Grid2Frame:UpdateAllFrames()
 end
 
 local function getLocationPointValue(info)
-	local locationKey = info.arg.locationKey
-	local location = info.arg.location
+	local baseKey = info.arg
+	local location = Grid2.locations[baseKey]
 	local point = location[info[# info]]
 	return pointMap[point]
 end
 
 local function setLocationPointValue(info, value)
-	local locationKey = info.arg.locationKey
-	local location = info.arg.location
+	local baseKey = info.arg
+	local location = Grid2.locations[baseKey]
+	local dbx = DBL:GetOptionsDbx(Grid2.dblData, "locations", baseKey)
 	local point = pointMap[value]
-	location[info[# info]] = point
+	local key = info[# info]
+
+	location[key] = point
+	dbx[key] = point
+
 	Grid2Frame:UpdateAllFrames()
 end
 
 local function DeleteLocation(info)
-	local locationKey = info.arg.locationKey
-	local locations = Grid2.db.profile.setup.locations
-	locations[locationKey] = nil
+	local baseKey = info.arg
+	local location = Grid2.locations[baseKey]
+	local dblData = Grid2.dblData
 
+	-- Remove from options
+	local layer = DBL:GetObjectLayer(dblData, "locations", baseKey)
+	DBL:DeleteLayerObject(dblData, "locations", layer, baseKey)
+	DBL:FlattenSetupType(dblData, "locations")
+	
+	-- Remove from runtime
+	local dbx = DBL:GetRuntimeDbx(dblData, "locations", baseKey)
+	Grid2.locations[baseKey] = nil
+	
+	Grid2Frame:ResetAllFrames()
 	Grid2Frame:UpdateAllFrames()
-	local setup = Grid2.db.profile.setup
-	Grid2Options:AddSetupLocationOptions(setup, true)
+
+	Grid2Options:DeleteElement("location", baseKey)
+	Grid2Options:MakeLocationOptions(dblData)
 end
 
-local function AddLocationOptions(locationKey, location)
-	local passValue = {locationKey = locationKey, location = location}
+local function AddLocationOptions(baseKey)
+	local location = Grid2.locations[baseKey]
+	assert(location, "nil location " .. baseKey)
+	local dbx = DBL:GetOptionsDbx(Grid2.dblData, "locations", baseKey)
+	local passValue = baseKey
 	local options = {
 		name = {
 			type = "input",
@@ -211,19 +228,41 @@ local function setNewLocationNameValue(info, customName)
 	newLocationName = customName
 end
 
+local newObjectLayerIndex = 1
+local function getNewObjectLayer(info)
+	return newObjectLayerIndex
+end
+
+local function setNewObjectLayer(info, index)
+	newObjectLayerIndex = index
+end
+
+
 local function NewLocation()
 	newLocationName = Grid2Options:GetValidatedName(newLocationName)
 	if (newLocationName and newLocationName ~= "") then
-		local location = {relIndicator = nil, point = "TOPLEFT", relPoint = "TOPLEFT", x = 0, y = 0, name = newLocationName}
-		Grid2.db.profile.setup.locations[newLocationName] = location
-		AddLocationOptions(newLocationName, location)
+		local baseKey = newLocationName
+		local dblData = Grid2.dblData
+		local layer = Grid2Options.locationLayers[newObjectLayerIndex]
+
+		--Create default settings
+		DBL:SetupLayerObject(dblData, "locations", layer, baseKey, {relIndicator = nil, point = "TOPLEFT", relPoint = "TOPLEFT", x = 0, y = 0, name = newLocationName})
+
+		--Create the new object in options settings then flatten so it is copied to runtime settings
+		DBL:FlattenSetupType(dblData, "locations")
+		
+		--Find the flattened dbx
+		local dbx = DBL:GetRuntimeDbx(dblData, "locations", baseKey)
+		Grid2.locations[baseKey] = dbx
+		
+		AddLocationOptions(baseKey)
 	end
 end
-
+		
 local function NewLocationDisabled()
 	newLocationName = Grid2Options:GetValidatedName(newLocationName)
 	if (newLocationName and newLocationName ~= "") then
-		local locations = Grid2.db.profile.setup.locations
+		local locations = Grid2.dblData.setupSrc.locations
 		if (not locations[newLocationName]) then
 			return false
 		end
@@ -235,7 +274,7 @@ function ResetLocations()
 	local setup = Grid2.db.profile.setup
 	Grid2:SetupDefaultLocations(setup)
 	Grid2Frame:UpdateAllFrames()
-	Grid2Options:AddSetupLocationOptions(setup, true)
+	Grid2Options:MakeLocationOptions(locations, objects, Grid2.dblData.layerOrder.locations, true)
 end
 
 local function AddLocationGroup(reset)
@@ -249,9 +288,18 @@ local function AddLocationGroup(reset)
 			get = getNewLocationNameValue,
 			set = setNewLocationNameValue,
 		},
+		newObjectLayer = {
+		    type = 'select',
+			order = 5,
+			name = L["Layer"],
+			desc = L["Layer level of the indicator.  Higher layers (like Class or Spec) supercede lower ones like Account."],
+		    values = Grid2Options.GetLocationLayerValues,
+			get = getNewObjectLayer,
+			set = setNewObjectLayer,
+		},
 		newLocation = {
 			type = "execute",
-			order = 2,
+			order = 9,
 			name = L["New Location"],
 			desc = L["Create a new location for an indicator."],
 			func = NewLocation,
@@ -274,11 +322,13 @@ local function AddLocationGroup(reset)
 end
 
 
-function Grid2Options:AddSetupLocationOptions(setup, reset)
+function Grid2Options:MakeLocationOptions(dblData, reset)
 	AddLocationGroup(reset)
 
-	local locations = setup.locations
-	for key, location in pairs(locations) do
-		AddLocationOptions(key, location)
+	for baseKey, location in pairs(Grid2.locations) do
+		AddLocationOptions(baseKey)
 	end
 end
+
+
+
