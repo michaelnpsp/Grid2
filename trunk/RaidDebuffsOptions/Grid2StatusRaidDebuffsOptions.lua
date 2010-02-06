@@ -2,63 +2,32 @@ local Grid2StatusRaidDebuffsOptions = {}
 Grid2Options.plugins["Grid2StatusRaidDebuffsOptions"] = Grid2StatusRaidDebuffsOptions
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
-local LG = LibStub("AceLocale-3.0"):GetLocale("Grid2")
+local DBL = LibStub:GetLibrary("LibDBLayers-1.0")
 
-function Grid2StatusRaidDebuffsOptions:MakeDefaultSetup(setup, class)
-	local setupIndicator = setup.status
-	if (not setup.raidDebuffs) then
-		Grid2Options:SetupIndicatorStatus(setupIndicator, "icon-center", "raid-debuffs", 1000)
-		setup.raidDebuffs = true
+function Grid2StatusRaidDebuffsOptions.UpgradeDefaults(dblData)
+	local versionsSrc = dblData.versionsSrc
+
+	if (versionsSrc.Grid2StatusRaidDebuffsOptions < 1) then
+		DBL:SetupLayerObject(dblData, "statuses", "account", "raid-debuffs", {type = "raid-debuffs", color1 = {r=1,g=.5,b=1,a=1}})
+		DBL:SetupMapObject(dblData, "statusMap", "account", "icon-center", "raid-debuffs", 1000)
+
+		versionsSrc.Grid2StatusRaidDebuffsOptions = 1
 	end
 end
 
-function ResetRaidDebuffsStatuses()
-	local setup = Grid2.db.profile.setup
---	Grid2:SetupDefaultStatus(setup)
-	Grid2Frame:UpdateAllFrames()
-	Grid2StatusRaidDebuffsOptions:AddSetupStatusesOptions(setup, true)
-end
 
-local function MakeStatusRaidDebuffsOptions(reset)
-	local options = {
-		resetRaidDebuffsStatuses = {
-			type = "execute",
-			order = 11,
-			name = L["Reset Statuses"],
-			desc = L["Reset statuses to defaults."],
-			func = ResetRaidDebuffsStatuses,
-		},
-	}
+local function MakeStatusOptions(self, status, options)
+	options = options or {}
+	options = self:MakeStatusColorOption(status, options)
+	options = self:MakeStatusMissingOption(status, options)
+	options = self:MakeStatusBlinkThresholdOption(status, options)
 	return options
 end
 
+local prev_MakeStatusOptions = Grid2Options.MakeStatusOptions
+function Grid2Options:MakeStatusOptions(dblData, reset, ...)
+	self:AddOptionHandler("raid-debuffs", MakeStatusOptions)
 
-local prev_MakeOptions = Grid2Options.MakeOptions
-function Grid2Options:MakeOptions(setup, reset, ...)
-	prev_MakeOptions(self, setup, reset, ...)
-	local status, options
-
-	status = Grid2.statuses["raid-debuffs"]
-	if (status) then
---		options = MakeStatusRaidDebuffsOptions()
-		options = Grid2Options:MakeStatusColorOption(status)
-		options = Grid2Options:MakeStatusMissingOption(status, options)
-		options = Grid2Options:MakeStatusBlinkThresholdOption(status, options)
-		Grid2Options:AddElement("status", status, options)
-	end
-
---[[
-	options = MakeStatusRaidDebuffsOptions()
-	Grid2Options:AddElementSubTypeGroup("status", "raid-debuffs", options, reset)
-	for statusKey, info in pairs(setup.raidDebuffs) do
-		local status = Grid2.statuses[statusKey] -- TODO: fix names more better.  Type should not get baked in.
-		if status then
-			options = Grid2Options:MakeStatusColorOption(status)
-			options = Grid2Options:MakeStatusMissingOption(status, options)
-			options = Grid2Options:MakeStatusBlinkThresholdOption(status, options)
-			Grid2Options:AddElementSubType("status", "raid-debuffs", status, options)
-		end
-	end
---]]
+	prev_MakeStatusOptions(self, dblData, reset, ...)
 end
 
