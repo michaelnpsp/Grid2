@@ -2,7 +2,7 @@ local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 local function Bar_Create(self, parent)
 	local media = LibStub("LibSharedMedia-3.0", true)
-	local texture = media and media:Fetch("statusbar", self.db.profile.texture) or "Interface\\Addons\\Grid2\\gradient32x32"
+	local texture = media and media:Fetch("statusbar", self.dbx.texture) or "Interface\\Addons\\Grid2\\gradient32x32"
 
 
 	local BarBG = parent:CreateTexture()
@@ -48,7 +48,7 @@ local function Bar_OnUpdate(self, parent, unit, status)
 end
 
 local function Bar_SetOrientation(self, parent, orientation)
-	orientation = orientation or self.db.profile.orientation
+	orientation = orientation or self.dbx.orientation
 	parent[self.nameFG]:SetOrientation(orientation)
 end
 
@@ -56,13 +56,6 @@ local function Bar_SetTexture(self, parent, texture)
 	parent[self.nameBG]:SetTexture(texture)
 	parent[self.nameFG]:SetStatusBarTexture(texture)
 end
-
-local Bar_defaultDB = {
-	profile = {
-		orientation = "VERTICAL",
-		texture = "Gradient",
-	}
-}
 
 local function BarColor_Create(self, parent)
 end
@@ -80,7 +73,7 @@ end
 
 local function BarColor_SetBarColor(self, parent, r, g, b, a)
 	local Bar, BarBG = parent[self.nameFG], parent[self.nameBG]
-	if self.db.profile.invertBarColor then
+	if self.dbx.invertBarColor then
 		Bar:SetStatusBarColor(r, g, b, a)
 		BarBG:SetVertexColor(0, 0, 0, 0)
 	else
@@ -89,45 +82,49 @@ local function BarColor_SetBarColor(self, parent, r, g, b, a)
 	end
 end
 
-local BarColor_defaultDB = {
-	profile = {
-		invertBarColor = true,
-	}
-}
+local function Create(indicatorKey, dbx)
+	local colorKey = indicatorKey .. "-color"
+	local location = Grid2.locations[dbx.location]
 
-function Grid2:CreateBarIndicator(indicatorKey, level, anchor, anchorRel, offsetx, offsety)
-	if type(level) == "string" then
-		level, anchor, anchorRel, offsetx, offsety = 0, level, anchor, anchorRel, offsetx
-	end
-	local Bar = self.indicatorPrototype:new(indicatorKey)
+	local Bar = Grid2.indicatorPrototype:new(indicatorKey)
 	Bar.nameFG = indicatorKey
-	Bar.nameBG = indicatorKey.."-background"
+	Bar.nameBG = colorKey
 
-	Bar.frameLevel = level
-	Bar.anchor = anchor
-	Bar.anchorRel = anchorRel
-	Bar.offsetx = offsetx
-	Bar.offsety = offsety
+	Bar.frameLevel = dbx.level
+	Bar.anchor = location.point
+	Bar.anchorRel = location.relPoint
+	Bar.offsetx = location.x
+	Bar.offsety = location.y
 	Bar.Create = Bar_Create
 	Bar.Layout = Bar_Layout
 	Bar.GetBlinkFrame = Bar_GetBlinkFrame
 	Bar.OnUpdate = Bar_OnUpdate
 	Bar.SetOrientation = Bar_SetOrientation
 	Bar.SetTexture = Bar_SetTexture
-	Bar.defaultDB = Bar_defaultDB
 
-	self:RegisterIndicator(Bar, { "percent" })
+	Bar.dbx = dbx
+	Grid2:RegisterIndicator(Bar, { "percent" })
 
-	local BarColor = self.indicatorPrototype:new(indicatorKey.."-color")
+	local BarColor = Grid2.indicatorPrototype:new(colorKey)
 	BarColor.nameFG = Bar.nameFG
 	BarColor.nameBG = Bar.nameBG
 	BarColor.Create = BarColor_Create
 	BarColor.Layout = BarColor_Layout
 	BarColor.OnUpdate = BarColor_OnUpdate
 	BarColor.SetBarColor = BarColor_SetBarColor
-	BarColor.defaultDB = BarColor_defaultDB
 
-	self:RegisterIndicator(BarColor, { "color" })
+	BarColor.dbx = dbx
+	Grid2:RegisterIndicator(BarColor, { "color" })
 
 	return Bar, BarColor
 end
+
+Grid2.setupFunc["bar"] = Create
+
+
+--ToDo: Is there a better way to handle this dual indicator creation?
+local function CreateColor(indicatorKey, dbx)
+--	BarColor.dbx = dbx
+end
+Grid2.setupFunc["bar-color"] = CreateColor
+

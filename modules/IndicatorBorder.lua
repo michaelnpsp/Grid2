@@ -14,4 +14,10 @@ function Border:OnUpdate(parent, unit, status)
 	end
 end
 
-Grid2:RegisterIndicator(Border, { "color" })
+local function Create(indicatorKey, dbx)
+	Border.dbx = dbx
+	Grid2:RegisterIndicator(Border, { "color" })
+	return Border
+end
+
+Grid2.setupFunc["border"] = Create

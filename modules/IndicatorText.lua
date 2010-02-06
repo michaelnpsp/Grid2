@@ -4,13 +4,13 @@ local GetTime = GetTime
 
 local function Text_Create(self, parent)
 	local media = LibStub("LibSharedMedia-3.0", true)
-	local font = media and media:Fetch("font", self.db.profile.font or Grid2Frame.db.profile.font) or STANDARD_TEXT_FONT
+	local font = media and media:Fetch("font", self.dbx.font or Grid2Frame.db.profile.font) or STANDARD_TEXT_FONT
 
 	local f = CreateFrame("Frame", nil, parent)
 	f:SetAllPoints()
 	local t = f:CreateFontString(nil, "OVERLAY")
 	t:SetFontObject(GameFontHighlightSmall)
-	t:SetFont(font, self.db.profile.fontSize)
+	t:SetFont(font, self.dbx.fontSize)
 	t:SetJustifyH("CENTER")
 	t:SetJustifyV("CENTER")
 	parent[self.name] = t
@@ -74,7 +74,7 @@ end
 
 local function Text_OnUpdate(self, parent, unit, status)
 	local Text = parent[self.name]
-	local duration = self.duration
+	local duration = self.dbx.duration
 
 	if (status) then
 		local content
@@ -109,7 +109,7 @@ local function Text_OnUpdate(self, parent, unit, status)
 			content = status:GetText(unit)
 		end
 		if (content and content ~= "") then
-			Text:SetText(string_sub(content, 1, self.db.profile.textlength))
+			Text:SetText(string_sub(content, 1, self.dbx.textlength))
 			Text:Show()
 		else
 			Text:Hide()
@@ -127,17 +127,8 @@ local function Text_OnUpdate(self, parent, unit, status)
 end
 
 local function Text_SetTextFont(self, parent, font, size)
-	parent[self.name]:SetFont(font ,size)
+	parent[self.name]:SetFont(font, size)
 end
-
-local Text_defaultDB = {
-	profile = {
-		textlength = 12,
-		fontSize = 8,
-		font = "Friz Quadrata TT",
-	}
-}
-
 
 
 local TextColor_Create = function (self)
@@ -151,36 +142,49 @@ local function TextColor_OnUpdate(self, parent, unit, status)
 	if (status) then
 		Text:SetTextColor(status:GetColor(unit))
 	else
+if (not Text.SetTextColor) then
+print("TextColor_OnUpdate", self.textname, unit, Text)
+end
 		Text:SetTextColor(1, 1, 1, 1)
 	end
 end
 
-function Grid2:CreateTextIndicator(indicatorKey, level, anchor, anchorRel, offsetx, offsety, duration)
-	local Text = self.indicatorPrototype:new(indicatorKey)
+local function Create(indicatorKey, dbx)
+	local colorKey = indicatorKey .. "-color"
+	local location = Grid2.locations[dbx.location]
 
-	Text.frameLevel = level
-	Text.anchor = anchor
-	Text.anchorRel = anchorRel
-	Text.offsetx = offsetx
-	Text.offsety = offsety
+	local Text = Grid2.indicatorPrototype:new(indicatorKey)
+	Text.frameLevel = dbx.level
+	Text.anchor = location.point
+	Text.anchorRel = location.relPoint
+	Text.offsetx = location.x
+	Text.offsety = location.y
 	Text.Create = Text_Create
 	Text.GetBlinkFrame = Text_GetBlinkFrame
 	Text.Layout = Text_Layout
 	Text.OnUpdate = Text_OnUpdate
 	Text.SetTextFont = Text_SetTextFont
-	Text.defaultDB = Text_defaultDB
 
-	self:RegisterIndicator(Text, { "text", "duration" })
-	Text.duration = duration
+	Text.dbx = dbx
+	Grid2:RegisterIndicator(Text, { "text", "duration" })
 
-	local TextColor = self.indicatorPrototype:new(indicatorKey.."-color")
-
+	local TextColor = Grid2.indicatorPrototype:new(colorKey)
 	TextColor.textname = indicatorKey
 	TextColor.Create = TextColor_Create
 	TextColor.Layout = TextColor_Layout
 	TextColor.OnUpdate = TextColor_OnUpdate
 
-	self:RegisterIndicator(TextColor, { "color" })
+	TextColor.dbx = dbx
+	Grid2:RegisterIndicator(TextColor, { "color" })
 
 	return Text, TextColor
 end
+
+Grid2.setupFunc["text"] = Create
+
+--ToDo: Is there a better way to handle this dual indicator creation?
+local function CreateColor(indicatorKey, dbx)
+--	TextColor.dbx = dbx
+end
+Grid2.setupFunc["text-color"] = CreateColor
+

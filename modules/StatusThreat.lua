@@ -1,15 +1,6 @@
 local Threat = Grid2.statusPrototype:new("threat")
 
 
-Threat.defaultDB = {
-	profile = {
-		colorCount = 3,
-		color1 = { r = 1, g = 0, b = 0, a = 1 },
-		color2 = { r = .5, g = 1, b = 1, a = 1 },
-		color3 = { r = 1, g = 1, b = 1, a = 1 },
-	}
-}
-
 function Threat:UpdateUnit(event, unitid)
 	-- unitid can be nil which is so wtf
 	if (unitid) then
@@ -46,22 +37,27 @@ end
 function Threat:GetColor(unitid)
 	local color
 	local threat = UnitThreatSituation(unitid)
---	return (GetThreatStatusColor(threat))
----[[
+
 	if (threat == 1) then
-		color = self.db.profile.color1
+		color = self.dbx.color1
 	elseif (threat == 2) then
-		color = self.db.profile.color2
+		color = self.dbx.color2
 	elseif (threat == 3) then
-		color = self.db.profile.color3
+		color = self.dbx.color3
 	end
 
 	return color.r, color.g, color.b, color.a
---]]
 end
 
 function Threat:GetIcon(unitid)
 	return [[Interface\RaidFrame\UI-RaidFrame-Threat]]
 end
 
-Grid2:RegisterStatus(Threat, { "color", "icon" })
+local function Create(baseKey, dbx)
+	Grid2:RegisterStatus(Threat, {"color", "icon"}, baseKey, dbx)
+
+	return Threat
+end
+
+Grid2.setupFunc["threat"] = Create
+

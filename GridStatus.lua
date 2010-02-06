@@ -48,6 +48,13 @@ function status:IsInRange(unitid, range)
 	return not self.range or (range and self.range >= range)
 end
 
+function status:UpdateDB(dbx)
+	-- ToDo: copy if it already exists
+	-- ToDo: update if it changed
+	self.dbx = dbx
+print("status:UpdateDB", self.name)
+end
+
 Grid2.statusPrototype = {
 	__index = status,
 	new = function (self, ...)
@@ -57,18 +64,27 @@ Grid2.statusPrototype = {
 	end,
 }
 
-function Grid2:RegisterStatus(status, types)
-	assert(not self.statuses[status.name])
-	self.statuses[status.name] = status
-	for _, type in ipairs(types) do
-		local t = self.statusTypes[type]
-		if not t then
-			t = {}
-			self.statusTypes[type] = t
+function Grid2:RegisterStatus(status, types, baseKey, dbx)
+	local name = status.name
+	if (baseKey and baseKey ~= name) then
+		self.statuses[name] = nil
+		status.name = baseKey
+	else
+		self.statuses[name] = status
+		for _, type in ipairs(types) do
+			local t = self.statusTypes[type]
+			if not t then
+				t = {}
+				self.statusTypes[type] = t
+			end
+			t[#t+1] = status
 		end
-		t[#t+1] = status
 	end
+	status.dbx = dbx
+	
+--Old
 	if self.db then
+--		print("Grid2:RegisterStatus bad old style db", baseKey)
 		self:InitializeElement("status", status)
 	end
 end

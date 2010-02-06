@@ -28,22 +28,14 @@ local function get_effective_heal_amount(unit)
 	return heal and heal * HealComm:GetHealModifier(guid) or 0
 end
 
-local Heals = Grid2.statusPrototype:new("heals-incoming")
 
-Heals.defaultDB = {
-	profile = {
-		includePlayerHeals = false,
-		-- timeFrame = nil,
-		flags = HealComm.CASTED_HEALS,
-		color1 = { r = 0, g = 1, b = 0, a = 1 },
-	}
-}
+local Heals = Grid2.statusPrototype:new("heals-incoming")
 
 function Heals:UpdateProfileData()
 	if self.db then
-		HEALCOMM_FLAGS = self.db.profile.flags
-		HEALCOMM_TIMEFRAME = self.db.profile.timeFrame
-		get_active_heal_amount = self.db.profile.includePlayerHeals
+		HEALCOMM_FLAGS = self.dbx.flags
+		HEALCOMM_TIMEFRAME = self.dbx.timeFrame
+		get_active_heal_amount = self.dbx.includePlayerHeals
 			and get_active_heal_amount_with_user
 			or  get_active_heal_amount_without_user
 	end
@@ -90,7 +82,7 @@ function Heals:IsActive(unit)
 end
 
 function Heals:GetColor(unit)
-	local color = self.db.profile.color1
+	local color = self.dbx.color1
 	return color.r, color.g, color.b, color.a
 end
 
@@ -102,4 +94,10 @@ function Heals:GetPercent(unit)
 	return (get_effective_heal_amount(unit) + UnitHealth(unit)) / UnitHealthMax(unit)
 end
 
-Grid2:RegisterStatus(Heals, { "color", "text", "percent" })
+local function Create(baseKey, dbx)
+	Grid2:RegisterStatus(Heals, {"color", "text", "percent"}, baseKey, dbx)
+
+	return Heals
+end
+
+Grid2.setupFunc["heals-incoming"] = Create

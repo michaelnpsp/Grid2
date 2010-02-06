@@ -3,13 +3,6 @@ local Role = Grid2.statusPrototype:new("role")
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 
-Role.defaultDB = {
-	profile = {
-		color1 = { r = 1, g = 1, b = .5, a = 1 },
-		color2 = { r = .5, g = 1, b = 1, a = 1 },
-	}
-}
-
 local raid_indexes = {}
 for i = 1, 40 do
 	raid_indexes["raid"..i] = i
@@ -71,9 +64,9 @@ function Role:GetColor(unitid)
 	local color
 	local role = role_cache[unitid]
 	if role == "MAINASSIST" then
-		color = self.db.profile.color1
+		color = self.dbx.color1
 	elseif role == "MAINTANK" then
-		color = self.db.profile.color2
+		color = self.dbx.color2
 	else
 		return nil
 	end
@@ -100,4 +93,10 @@ function Role:GetText(unitid)
 	end
 end
 
-Grid2:RegisterStatus(Role, { "color", "icon", "text" })
+local function Create(baseKey, dbx)
+	Grid2:RegisterStatus(Role, {"color", "icon", "text"}, baseKey, dbx)
+
+	return Role
+end
+
+Grid2.setupFunc["role"] = Create

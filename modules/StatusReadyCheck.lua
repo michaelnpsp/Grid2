@@ -7,16 +7,6 @@ local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 local readyChecking, timerClearStatus
 local readyStatuses = {}
 
-ReadyCheck.defaultDB = {
-	profile = {
-		color1 = { r = 1, g = 1, b = 0, a = 1 },
-		color2 = { r = 0, g = 1, b = 0, a = 1 },
-		color3 = { r = 1, g = 0, b = 0, a = 1 },
-		color4 = { r = 1, g = 0, b = 0, a = 1 },
-		threshold = 10,
-	}
-}
-
 function ReadyCheck:READY_CHECK(event, originator)
     if IsRaidLeader() or IsRaidOfficer() or IsPartyLeader() then
         if timerClearStatus then
@@ -46,7 +36,7 @@ function ReadyCheck:READY_CHECK_FINISHED()
 			self:UpdateIndicators(unit)
         end
     end
-    timerClearStatus = Grid2:ScheduleTimer(self.ClearStatus, ReadyCheck.db.profile.threshold or 0, self)
+    timerClearStatus = Grid2:ScheduleTimer(self.ClearStatus, ReadyCheck.dbx.threshold or 0, self)
 end
 
 function ReadyCheck:RAID_ROSTER_UPDATE()
@@ -124,7 +114,7 @@ local colors = {
 function ReadyCheck:GetColor(unitid)
 	local state = self:GetReadyCheckStatus(unitid)
 	if state then
-		local color = self.db.profile[colors[state]]
+		local color = self.dbx[colors[state]]
 		return color.r, color.g, color.b, color.a
 	end
 end
@@ -155,78 +145,10 @@ function ReadyCheck:GetText(unitid)
 	end
 end
 
-Grid2:RegisterStatus(ReadyCheck, { "color", "icon", "text" })
+local function Create(baseKey, dbx)
+	Grid2:RegisterStatus(ReadyCheck, {"color", "icon", "text"}, baseKey, dbx)
 
---[[
-local function getstatuscolor(key)
-    local color = GridStatusReadyCheck.db.profile.ready_check.colors[key]
-    return color.r, color.g, color.b, color.a
+	return ReadyCheck
 end
 
-local function setstatuscolor(key, r, g, b, a)
-    local color = GridStatusReadyCheck.db.profile.ready_check.colors[key]
-    color.r = r
-    color.g = g
-    color.b = b
-    color.a = a or 1
-    color.ignore = true
-end
-
---{{{ additional options
-local readyCheckOptions = {
-    ["waiting"] = {
-        type = "color",
-        name = L["Waiting color"],
-        desc = L["Color for Waiting."],
-        order = 86,
-        hasAlpha = true,
-        get = function () return getstatuscolor("waiting") end,
-        set = function (r, g, b, a) setstatuscolor("waiting", r, g, b, a) end,
-    },
-    ["ready"] = {
-        type = "color",
-        name = L["Ready color"],
-        desc = L["Color for Ready."],
-        order = 87,
-        hasAlpha = true,
-        get = function () return getstatuscolor("ready") end,
-        set = function (r, g, b, a) setstatuscolor("ready", r, g, b, a) end,
-    },
-    ["notready"] = {
-        type = "color",
-        name = L["Not Ready color"],
-        desc = L["Color for Not Ready."],
-        order = 88,
-        hasAlpha = true,
-        get = function () return getstatuscolor("notready") end,
-        set = function (r, g, b, a) setstatuscolor("notready", r, g, b, a) end,
-    },
-    ["afk"] = {
-        type = "color",
-        name = L["AFK color"],
-        desc = L["Color for AFK."],
-        order = 89,
-        hasAlpha = true,
-        get = function () return getstatuscolor("afk") end,
-        set = function (r, g, b, a) setstatuscolor("afk", r, g, b, a) end,
-    },
-    ["delay"] = {
-        type = "range",
-        name = L["Delay"],
-        desc = L["Set the delay until ready check results are cleared."],
-        max = 10,
-        min = 0,
-        step = 1,
-        get = function()
-            return GridStatusReadyCheck.db.profile.ready_check.delay
-        end,
-        set = function(v)
-            GridStatusReadyCheck.db.profile.ready_check.delay = v
-        end,
-    },
-
-    ["color"] = false,
-    ["range"] = false,
-}
---}}}
---]]
+Grid2.setupFunc["ready-check"] = Create

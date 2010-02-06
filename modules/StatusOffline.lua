@@ -2,12 +2,6 @@ local Offline = Grid2.statusPrototype:new("offline")
 
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
-Offline.defaultDB = {
-	profile = {
-		color1 = { r = 1, g = 1, b = 1, a = 1 },
-	}
-}
-
 function Offline:Grid_UnitJoined(_, unit)
 	self:UpdateIndicators(unit)
 end
@@ -29,12 +23,12 @@ function Offline:IsActive(unitid)
 end
 
 function Offline:GetColor(unitid)
-	local color = self.db.profile.color1
+	local color = self.dbx.color1
 	return color.r, color.g, color.b, color.a
 end
 
 function Offline:GetPercent(unitid)
-	return (not UnitIsConnected(unitid)) and self.db.profile.color1.a
+	return (not UnitIsConnected(unitid)) and self.dbx.color1.a
 end
 
 function Offline:GetText(unitid)
@@ -45,4 +39,10 @@ function Offline:GetText(unitid)
 	end
 end
 
-Grid2:RegisterStatus(Offline, { "color", "percent", "text" })
+local function Create(baseKey, dbx)
+	Grid2:RegisterStatus(Offline, {"color", "percent", "text"}, baseKey, dbx)
+
+	return Offline
+end
+
+Grid2.setupFunc["offline"] = Create

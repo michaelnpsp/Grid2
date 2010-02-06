@@ -31,15 +31,15 @@ function Voice:IsActive(unit)
 	return cache[unit]
 end
 
-Voice.defaultDB = {
-	profile = {
-		color1 = { r = 1, g = 1, b = 0, a = 1 },
-	}
-}
-
 function Voice:GetColor(unit)
 	local color = self.db.profile.color1
 	return color.r, color.g, color.b, color.a
 end
 
-Grid2:RegisterStatus(Voice, { "color" })
+local function Create(baseKey, dbx)
+	Grid2:RegisterStatus(Voice, {"color"}, baseKey, dbx)
+
+	return Voice
+end
+
+Grid2.setupFunc["voice"] = Create

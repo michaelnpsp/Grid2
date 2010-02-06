@@ -10,9 +10,9 @@
 
 <Script file="modules\StatusHealth.lua"/>
 <Script file="modules\StatusMana.lua"/>
+<Script file="modules\StatusHeals.lua"/>
 <Script file="modules\StatusClassColor.lua"/>
 <Script file="modules\StatusAuras.lua"/>
-<Script file="modules\StatusHeals.lua"/>
 <Script file="modules\StatusName.lua"/>
 <Script file="modules\StatusOffline.lua"/>
 <Script file="modules\StatusPvP.lua"/>
