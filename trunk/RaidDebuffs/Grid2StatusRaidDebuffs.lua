@@ -1,3 +1,4 @@
+local DBL = LibStub:GetLibrary("LibDBLayers-1.0")
 
 local BZ = LibStub("LibBabble-Zone-3.0"):GetLookupTable()
 local spellDB = {
@@ -198,7 +199,10 @@ local spellDB = {
 	},
 	[BZ["Vault of Archavon"]] = {
 		--Koralon
-		67332, 66684,--Flaming Cinder (10, 25)
+		67332,66684,--Flaming Cinder (10, 25)
+
+		--Toravon the Ice Watcher
+		72004,72098,72120,72121,--Frostbite
 
 		--Toravon the Ice Watcher
 		72004,72098,72120,72121,--Frostbite
@@ -321,14 +325,6 @@ function GSRD:UpdateZoneSpells(zone)
 	end
 end
 
-
-status.defaultDB = {
-	profile = {
-		color1 = { r = .5, g = .5, b = .5, a = 1 },
-	}
-}
-
-
 function status:OnEnable()
 	frame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 	GSRD:UpdateZoneSpells()
@@ -424,39 +420,37 @@ frame:SetScript("OnEvent", function (self, event, ...)
 	end
 end)
 
-Grid2:RegisterStatus(status, { "icon" })
+local function Create(baseKey, dbx)
+	Grid2:RegisterStatus(status, {"icon"}, baseKey, dbx)
+
+	return status
+end
+
+Grid2.setupFunc["raid-debuffs"] = Create
 
 
 
 -- Hook the loading of options so our associated lod options get loaded at the right time.
 local prev_LoadOptions = Grid2.LoadOptions
-function Grid2:LoadOptions(...)
-	prev_LoadOptions(self, ...)
+function Grid2:LoadOptions(dblData, ...)
+	local upgrade = prev_LoadOptions(self, dblData, ...)
+
+	upgrade = DBL:LoadOptions("Grid2StatusRaidDebuffsOptions", dblData, nil, "account", 1) or upgrade
+	
+	return upgrade
+end
+
+-- Hook UpgradeDefaults to blend in default options if current ones are old.
+local prev_UpgradeDefaults = Grid2.UpgradeDefaults
+function Grid2:UpgradeDefaults(dblData, ...)
+	local flatten = prev_UpgradeDefaults(self, dblData, ...)
 
 	local Grid2StatusRaidDebuffsOptions = Grid2Options.plugins["Grid2StatusRaidDebuffsOptions"]
 	if (Grid2StatusRaidDebuffsOptions) then
-		return
+		flatten = DBL:UpgradeDefaults("Grid2StatusRaidDebuffsOptions", dblData, Grid2StatusRaidDebuffsOptions.UpgradeDefaults, "account", 1) or flatten
 	end
-	if (not IsAddOnLoaded("Grid2StatusRaidDebuffsOptions")) then
-		LoadAddOn("Grid2StatusRaidDebuffsOptions")
-	end
-end
-
--- Hook GetCurrentSetup to blend in default options.
-local prev_GetCurrentSetup = Grid2.GetCurrentSetup
-function Grid2:GetCurrentSetup(...)
-	local setup, class = prev_GetCurrentSetup(self, ...)
-	if (not setup.Grid2StatusRaidDebuffs) then
-		Grid2:LoadOptions()
-
-		local Grid2StatusRaidDebuffsOptions = Grid2Options.plugins["Grid2StatusRaidDebuffsOptions"]
-		if (Grid2StatusRaidDebuffsOptions) then
-			Grid2StatusRaidDebuffsOptions:MakeDefaultSetup(setup, class)
-		end
-		setup.Grid2StatusRaidDebuffs = true
-	end
-
-	return setup, class
+	
+	return flatten
 end
 
 --[[
