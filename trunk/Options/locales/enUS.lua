@@ -1,4 +1,4 @@
-local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2Options", "enUS", true)
+local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2Options", "enUS", true, true)
 if not L then return end
 
 L["Debug"] = true
@@ -78,6 +78,7 @@ L["Adjust frame spacing."] = true
 L["Scale"] = true
 L["Adjust Grid scale."] = true
 
+L["Alpha"] = true
 L["Border"] = true
 L["Adjust border color and alpha."] = true
 L["Background"] = true
@@ -101,8 +102,14 @@ L["corner-top-right"] = "corner-top-right"
 L["corner-bottom-left"] = "corner-bottom-left"
 L["corner-bottom-right"] = "corner-bottom-right"
 L["side-left"] = "side-left"
+L["side-left-top"] = "side-left-top"
+L["side-left-bottom"] = "side-left-bottom"
 L["side-right"] = "side-right"
+L["side-right-top"] = "side-right-top"
+L["side-right-bottom"] = "side-right-bottom"
 L["side-top"] = "side-top"
+L["side-top-left"] = "side-top-left"
+L["side-top-right"] = "side-top-right"
 L["side-bottom"] = "side-bottom"
 L["side-bottom-left"] = "side-bottom-left"
 L["side-bottom-right"] = "side-bottom-right"
@@ -150,6 +157,24 @@ L["ROGUE"] = "Rogue"
 L["SHAMAN"] = "Shaman"
 L["WARLOCK"] = "Warlock"
 L["WARRIOR"] = "Warrior"
+
+--Account Layer
+L["account"] = true
+
+--Class Layer
+L["druid"] = true
+L["paladin"] = true
+L["priest"] = true
+L["shaman"] = true
+
+--Spec Layer
+L["tree"] = true
+L["holy1"] = true
+L["holy2"] = true
+L["resto"] = true
+
+L["Layer"] = true
+L["Layer level of the indicator.  Higher layers (like Class or Spec) supercede lower ones like Account."] = true
 
 L["<CharacterOnlyString>"] = true
 L["+"] = true
@@ -263,6 +288,18 @@ L["Update rate"] = true
 L["Rate at which the range gets updated"] = true
 L["Invert Bar Color"] = true
 L["Swap foreground/background colors on bars."] = true
+
+L["ready-check"] = true
+L["Delay"] = true
+L["Set the delay until ready check results are cleared."] = true
+L["Waiting color"] = true
+L["Color for Waiting."] = true
+L["Ready color"] = true
+L["Color for Ready."] = true
+L["Not Ready color"] = true
+L["Color for Not Ready."] = true
+L["AFK color"] = true
+L["Color for AFK."] = true
 
 L["Include player heals"] = true
 L["Display status for the player's heals."] = true

@@ -1,5 +1,7 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 
+local DBL = LibStub:GetLibrary("LibDBLayers-1.0")
+
 local Grid2Options = {
 	options = {
 		Auras = {
@@ -10,7 +12,15 @@ local Grid2Options = {
 		},
 	},
 	plugins = {},
+	typeMakeOptions = {},
+	optionParams = {},
 }
+
+function Grid2Options:AddOptionHandler(typeKey, funcMakeOptions, optionParams)
+	Grid2Options.typeMakeOptions[typeKey] = funcMakeOptions
+	Grid2Options.optionParams[typeKey] = optionParams
+end
+
 
 function Grid2Options:AddModule(parent, name, module, extraOptions)
 	extraOptions = extraOptions or module.extraOptions
@@ -204,6 +214,7 @@ function Grid2Options:AddResetDebugMenu()
 		desc = L["Reset and ReloadUI."],
 		func = function ()
 			Grid2DB = nil
+			Grid2OptionsDB = nil
 			ReloadUI()
 		end,
 	}
@@ -231,6 +242,12 @@ function Grid2Options:AddLayout(layoutName, layout)
 end
 
 function Grid2Options:Initialize()
+	self = self or Grid2Options
+	Grid2OptionsDB = Grid2OptionsDB or {}
+	Grid2Options.dblData = DBL:InitializeOptions("Grid2", Grid2OptionsDB)
+--print("Grid2Options:Initialize", Grid2.dblData, Grid2Options.dblData, Grid2Options.dblData.setupSrc)
+
+--old
 	LibStub("AceConfig-3.0"):RegisterOptionsTable("Grid2", self.options.Grid2)
 
 	local function InitializeModuleOptions(parent)
@@ -243,8 +260,6 @@ function Grid2Options:Initialize()
 	self:AddResetDebugMenu()
 
 	InitializeModuleOptions(Grid2)
-
-	self:InitializeSetup()
 
 	for _, location in Grid2:IterateLocations() do
 		self:AddElement("location", location)
@@ -263,47 +278,26 @@ function Grid2Options:Initialize()
 	self.Initialize = nil
 end
 
-function Grid2Options:InitializeSetup()
-	local setup = Grid2.db.profile.setup
-	if setup then
---[[
-		self:AddSetupLocationOptions(setup)
-		self:AddSetupIndicatorsOptions(setup)
-		self:AddSetupStatusesOptions(setup)
-		self:AddSetupCategoryOptions(setup)
-
-		for name, data in pairs(setup.buffs) do
-			Grid2Options:AddAura("Buff", name, unpack(data))
-		end
-		for name, data in pairs(setup.debuffs) do
-			Grid2Options:AddAura("Debuff", name, unpack(data))
-		end
---]]
-	end
-end
-
 -- Plugins can overide this to add their options
-function Grid2Options:MakeOptions(setup)
-	self:AddSetupLocationOptions(setup)
-	self:AddSetupIndicatorsOptions(setup)
-	self:AddSetupStatusesOptions(setup)
-	self:AddSetupCategoryOptions(setup)
-
-	for name, data in pairs(setup.buffs) do
-		Grid2Options:AddAura("Buff", name, unpack(data))
-	end
-	for name, data in pairs(setup.debuffs) do
-		Grid2Options:AddAura("Debuff", name, unpack(data))
-	end
+function Grid2Options:MakeOptions(dblData)
+	self:MakeLocationOptions(dblData)
+	self:MakeIndicatorOptions(dblData)
+	self:MakeStatusOptions(dblData)
+	-- self:AddSetupCategoryOptions(setup)
 end
 
 
 function Grid2Options:OnChatCommand(input)
-    if not input or input:trim() == "" then
+    if (not input or input:trim() == "") then
         InterfaceOptionsFrame_OpenToCategory(Grid2.optionsFrame)
     else
-        LibStub("AceConfigCmd-3.0").HandleCommand(Grid2, "grid2", "Grid2", input)
-    end
+--        LibStub("AceConfigCmd-3.0").HandleCommand(Grid2, "grid2", "Grid2", input)
+		if (LibStub("AceConfigDialog-3.0").OpenFrames["Grid2"]) then
+			LibStub("AceConfigDialog-3.0"):Close("Grid2")
+		else
+			LibStub("AceConfigDialog-3.0"):Open("Grid2")
+		end
+   end
 end
 
 function Grid2Options:GetValidatedName(name)
