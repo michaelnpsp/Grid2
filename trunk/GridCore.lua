@@ -4,6 +4,7 @@
 --{{{ Libraries
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2")
+local DBL = LibStub:GetLibrary("LibDBLayers-1.0")
 
 --}}}
 --{{{ Grid2
@@ -28,6 +29,12 @@ Grid2.defaults = {
 		debug = false,
 	}
 }
+
+--}}}
+--{{{ type
+
+Grid2.setupFunc = {}	-- type setup functions for non-unique objects: "buff" statuses / "icon" indicators / etc.
+Grid2.objectMap = {}	-- map to unique objects: "debuff-Poison" / "name" / "border" / etc.
 
 --}}}
 --{{{ AceTimer-3.0, embedded upon use
@@ -144,9 +151,10 @@ function Grid2:OnInitialize()
 
 	local prev_OnShow = optionsFrame:GetScript("OnShow")
 	optionsFrame:SetScript("OnShow", function (self, ...)
-		Grid2:LoadOptions()
+		local dblData = Grid2.dblData
+		Grid2:LoadOptions(dblData)
 		if (Grid2Options) then
-			Grid2Options:MakeOptions(Grid2.db.profile.setup)
+			Grid2Options:MakeOptions(dblData)
 		end
 		self:SetScript("OnShow", prev_OnShow)
 		return prev_OnShow(self, ...)
@@ -174,23 +182,39 @@ function Grid2:OnInitialize()
 	end
 end
 
-function Grid2:LoadOptions()
-	if Grid2Options then return end
-	if not IsAddOnLoaded("Grid2Options") then
+-- Do not hook
+function Grid2:LoadGrid2Options()
+	if (Grid2Options) then return end
+
+	if (not IsAddOnLoaded("Grid2Options")) then
 		LoadAddOn("Grid2Options")
-		if Grid2Options then
+		if (Grid2Options) then
 			Grid2Options:Initialize()
 		end
 	end
 end
 
+-- This function gets hooked
+function Grid2:LoadOptions(dblData)
+	local upgrade
+	
+	if (dblData) then
+		upgrade = DBL:LoadOptions("Grid2Options", dblData, "Initialize", "account", 1, dblData.classKey, 1, dblData.specKey, 1) or upgrade
+	else
+		Grid2:LoadGrid2Options()
+		upgrade = true
+	end
+	
+	return upgrade
+end
+
 function Grid2:OnChatCommand(input)
-	self:LoadOptions()
+	Grid2:LoadOptions()
 	if (Grid2Options) then
-		Grid2Options:MakeOptions(Grid2.db.profile.setup)
+		Grid2Options:MakeOptions(Grid2.dblData)
 		Grid2Options:OnChatCommand(input)
 	else
-		self:Print("You need the Grid2Options addon available to be able to configure Grid2.")
+		Grid2:Print("You need the Grid2Options addon available to be able to configure Grid2.")
 	end
 end
 

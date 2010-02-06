@@ -3,12 +3,6 @@ local PvP = Grid2.statusPrototype:new("pvp")
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 
-PvP.defaultDB = {
-	profile = {
-		color1 = { r = 0, g = 1, b = 1, a = .75 },
-	}
-}
-
 function PvP:Grid_UnitJoined(_, unit)
 	self:UpdateIndicators(unit)
 end
@@ -43,7 +37,7 @@ function PvP:IsActive(unitid)
 end
 
 function PvP:GetColor(unit)
-	local color = self.db.profile.color1
+	local color = self.dbx.color1
 	return color.r, color.g, color.b, color.a
 end
 
@@ -78,7 +72,7 @@ function PvP:GetIcon(unitid)
 end
 
 function PvP:GetPercent(unitid)
-	return (UnitIsPVP(unitid) or UnitIsPVPFreeForAll(unitid)) and self.db.profile.color1.a
+	return (UnitIsPVP(unitid) or UnitIsPVPFreeForAll(unitid)) and self.dbx.color1.a
 end
 
 function PvP:GetText(unitid)
@@ -91,5 +85,11 @@ function PvP:GetText(unitid)
 	end
 end
 
-Grid2:RegisterStatus(PvP, { "color", "icon", "percent", "text" })
+local function Create(baseKey, dbx)
+	Grid2:RegisterStatus(PvP, {"color", "icon", "percent", "text"}, baseKey, dbx)
+
+	return PvP
+end
+
+Grid2.setupFunc["pvp"] = Create
 

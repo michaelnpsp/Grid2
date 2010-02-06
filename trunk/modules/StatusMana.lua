@@ -61,15 +61,15 @@ function Mana:GetText(unit)
 	return Grid2:GetShortNumber(UnitMana(unit))
 end
 
-Grid2:RegisterStatus(Mana, { "percent" })
+local function Create(baseKey, dbx)
+	Grid2:RegisterStatus(Mana, {"percent"}, baseKey, dbx)
+
+	return Mana
+end
+
+Grid2.setupFunc["mana"] = Create
 
 
-LowMana.defaultDB = {
-	profile = {
-		threshold = 0.25,
-		color1 = { r = 0, g = 0, b = 1, a = 1 },
-	}
-}
 
 function LowMana:OnEnable()
 	EnableManaFrame(true)
@@ -80,12 +80,18 @@ function LowMana:OnDisable()
 end
 
 function LowMana:IsActive(unit)
-	return (UnitPowerType(unit) == 0) and (Mana:GetPercent(unit) < self.db.profile.threshold)
+	return (UnitPowerType(unit) == 0) and (Mana:GetPercent(unit) < self.dbx.threshold)
 end
 
 function LowMana:GetColor(unit)
-	local color = self.db.profile.color1
+	local color = self.dbx.color1
 	return color.r, color.g, color.b, color.a
 end
 
-Grid2:RegisterStatus(LowMana, { "color" })
+local function Create(baseKey, dbx)
+	Grid2:RegisterStatus(LowMana, {"color"}, baseKey, dbx)
+
+	return LowMana
+end
+
+Grid2.setupFunc["lowmana"] = Create

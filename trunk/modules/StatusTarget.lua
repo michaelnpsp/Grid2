@@ -1,11 +1,5 @@
 local Target = Grid2.statusPrototype:new("target")
 
-Target.defaultDB = {
-	profile = {
-		color1 = { r = .8, g = .8, b = .8, a = 1 },
-	}
-}
-
 function Target:OnEnable()
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
 	self:RegisterMessage("Grid_UnitJoined")
@@ -43,8 +37,14 @@ function Target:GetText(unitid)
 end
 
 function Target:GetColor(unitid)
-	local color = self.db.profile.color1
+	local color = self.dbx.color1
 	return color.r, color.g, color.b, color.a
 end
 
-Grid2:RegisterStatus(Target, { "color", "text" })
+local function Create(baseKey, dbx)
+	Grid2:RegisterStatus(Target, {"color", "text"}, baseKey, dbx)
+
+	return Target
+end
+
+Grid2.setupFunc["target"] = Create

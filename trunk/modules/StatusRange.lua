@@ -1,13 +1,5 @@
 local Range = Grid2.statusPrototype:new("range")
 
-Range.defaultDB = {
-	profile = {
-		default = 0.25,
-		elapsed = 0.1,
-		range = 40,
-	},
-}
-
 local cache = {}
 local CheckUnitRange
 
@@ -43,7 +35,7 @@ function Range:GetFrame()
 	f.elapsed = 0
 	f:SetScript("OnUpdate", function (self, elapsed)
 		elapsed = elapsed + self.elapsed
-		if elapsed > Range.db.profile.elapsed then
+		if elapsed > Range.dbx.elapsed then
 			elapsed = 0
 			Update()
 		end
@@ -55,7 +47,7 @@ function Range:GetFrame()
 end
 
 function Range:Grid_RangesUpdated()
-	local queried_range = Range.db.profile.range
+	local queried_range = Range.dbx.range
 	local check, actual_range, spell = GridRange:GetRangeCheck(queried_range or 40)
 	local rezCheck = GridRange:GetRezCheck()
 
@@ -94,7 +86,13 @@ function Range:IsActive(unit)
 end
 
 function Range:GetPercent(unit)
-	return cache[unit] or self.db.profile.default
+	return cache[unit] or self.dbx.default
 end
 
-Grid2:RegisterStatus(Range, { "percent" })
+local function Create(baseKey, dbx)
+	Grid2:RegisterStatus(Range, {"percent"}, baseKey, dbx)
+
+	return Range
+end
+
+Grid2.setupFunc["range"] = Create

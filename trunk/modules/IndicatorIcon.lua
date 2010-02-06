@@ -21,7 +21,7 @@ local function Icon_Create(self, parent)
 	f.Text = Text
 	Text:SetAllPoints()
 	Text:SetFontObject(GameFontHighlightSmall)
-	Text:SetFont(Text:GetFont(), self.db.profile.fontSize)
+	Text:SetFont(Text:GetFont(), self.dbx.fontSize)
 	Text:SetJustifyH("CENTER")
 	Text:SetJustifyV("CENTER")
 	Text:Hide()
@@ -34,7 +34,7 @@ local function Icon_Layout(self, parent)
 	Icon:ClearAllPoints()
 	Icon:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
 	Icon:SetPoint(self.anchor, parent, self.anchorRel, self.offsetx, self.offsety)
-	local iconSize = self.db.profile.iconSize
+	local iconSize = self.dbx.iconSize
 	Icon:SetWidth(iconSize)
 	Icon:SetHeight(iconSize)
 end
@@ -97,31 +97,24 @@ local function Icon_SetIconSize(self, parent, iconSize)
 	Icon:SetHeight(iconSize)
 end
 
-local Icon_defaultDB = {
-	profile = {
-		iconSize = 16,
-		fontSize = 8,
-	}
-}
+local function CreateIcon(indicatorKey, dbx)
+	local location = Grid2.locations[dbx.location]
 
-function Grid2:CreateIconIndicator(indicatorKey, level, anchor, anchorRel, offsetx, offsety)
-	if type(level) == "string" then
-		level, anchor, anchorRel, offsetx, offsety = 0, level, anchor, anchorRel, offsetx
-	end
-	local Icon = self.indicatorPrototype:new(indicatorKey)
-
-	Icon.frameLevel = level
-	Icon.anchor = anchor
-	Icon.anchorRel = anchorRel
-	Icon.offsetx = offsetx
-	Icon.offsety = offsety
+	local Icon = Grid2.indicatorPrototype:new(indicatorKey)
+	Icon.frameLevel = dbx.level
+	Icon.anchor = location.point
+	Icon.anchorRel = location.relPoint
+	Icon.offsetx = location.x
+	Icon.offsety = location.y
 	Icon.Create = Icon_Create
 	Icon.GetBlinkFrame = Icon_GetBlinkFrame
 	Icon.Layout = Icon_Layout
 	Icon.OnUpdate = Icon_OnUpdate
 	Icon.SetIconSize = Icon_SetIconSize
-	Icon.defaultDB = Icon_defaultDB
 
-	self:RegisterIndicator(Icon, { "icon" })
+	Icon.dbx = dbx
+	Grid2:RegisterIndicator(Icon, { "icon" })
 	return Icon
 end
+
+Grid2.setupFunc["icon"] = CreateIcon

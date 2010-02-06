@@ -1,7 +1,7 @@
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
-local Health = Grid2.statusPrototype:new("health")
-local LowHealth = Grid2.statusPrototype:new("health-low")
+local HealthCurrent = Grid2.statusPrototype:new("health-current")
+local HealthLow = Grid2.statusPrototype:new("health-low")
 local Death = Grid2.statusPrototype:new("death")
 local FeignDeath = Grid2.statusPrototype:new("feign-death")
 local HealthDeficit = Grid2.statusPrototype:new("health-deficit")
@@ -9,8 +9,8 @@ local HealthDeficit = Grid2.statusPrototype:new("health-deficit")
 local UnitHealth = UnitHealth
 
 local function Frame_OnUnitHealthChanged(self, _, unit)
-	if Health.enabled then Health:UpdateIndicators(unit) end
-	if LowHealth.enabled then LowHealth:UpdateIndicators(unit) end
+	if HealthCurrent.enabled then HealthCurrent:UpdateIndicators(unit) end
+	if HealthLow.enabled then HealthLow:UpdateIndicators(unit) end
 	if Death.enabled then Death:UpdateIndicators(unit) end
 	if FeignDeath.enabled then FeignDeath:UpdateIndicators(unit) end
 	if HealthDeficit.enabled then HealthDeficit:UpdateIndicators(unit) end
@@ -50,77 +50,70 @@ end
 
 
 
-Health.defaultDB = {
-	profile = {
-		color1 = { r = 0, g = 1, b = 0, a = 1 },
-		deadAsFullHealth = nil,
-	}
-}
-
-function Health:OnEnable()
+function HealthCurrent:OnEnable()
 	EnableHealthFrame(true)
 end
 
-function Health:OnDisable()
+function HealthCurrent:OnDisable()
 	EnableHealthFrame(false)
 end
 
-function Health:IsActive(unit)
+function HealthCurrent:IsActive(unit)
 	return true
 end
 
-function Health:GetPercent(unit)
-	if (self.db.profile.deadAsFullHealth and UnitIsDeadOrGhost(unit)) then
+function HealthCurrent:GetPercent(unit)
+	if (self.dbx.deadAsFullHealth and UnitIsDeadOrGhost(unit)) then
 		return 1
 	end
 	return UnitHealth(unit) / UnitHealthMax(unit)
 end
 
-function Health:GetText(unit)
+function HealthCurrent:GetText(unit)
 	return Grid2:GetShortNumber(UnitHealth(unit))
 end
 
-function Health:GetColor(unit)
-	local color = self.db.profile.color1
+function HealthCurrent:GetColor(unit)
+	local color = self.dbx.color1
 	return color.r, color.g, color.b, color.a
 end
 
-Grid2:RegisterStatus(Health, { "percent", "text", "color" })
+local function CreateHealthCurrent(baseKey, dbx)
+	Grid2:RegisterStatus(HealthCurrent, {"percent", "text", "color"}, baseKey, dbx)
+
+	return HealthCurrent
+end
+
+Grid2.setupFunc["health-current"] = CreateHealthCurrent
 
 
-LowHealth.defaultDB = {
-	profile = {
-		threshold = 0.4,
-		color1 = { r = 1, g = 0, b = 0, a = 1 },
-	}
-}
 
-function LowHealth:OnEnable()
+function HealthLow:OnEnable()
 	EnableHealthFrame(true)
 end
 
-function LowHealth:OnDisable()
+function HealthLow:OnDisable()
 	EnableHealthFrame(false)
 end
 
-function LowHealth:IsActive(unit)
-	return Health:GetPercent(unit) < self.db.profile.threshold
+function HealthLow:IsActive(unit)
+	return HealthCurrent:GetPercent(unit) < self.dbx.threshold
 end
 
-function LowHealth:GetColor(unit)
-	local color = self.db.profile.color1
+function HealthLow:GetColor(unit)
+	local color = self.dbx.color1
 	return color.r, color.g, color.b, color.a
 end
 
-Grid2:RegisterStatus(LowHealth, { "color" })
+local function CreateHealthLow(baseKey, dbx)
+	Grid2:RegisterStatus(HealthLow, {"color"}, baseKey, dbx)
+
+	return HealthLow
+end
+
+Grid2.setupFunc["health-low"] = CreateHealthLow
 
 
-
-Death.defaultDB = {
-	profile = {
-		color1 = { r = 1, g = 1, b = 1, a = 1 },
-	}
-}
 
 function Death:OnEnable()
 	EnableHealthFrame(true)
@@ -135,7 +128,7 @@ function Death:IsActive(unitid)
 end
 
 function Death:GetColor(unitid)
-	local color = self.db.profile.color1
+	local color = self.dbx.color1
 	return color.r, color.g, color.b, color.a
 end
 
@@ -144,7 +137,7 @@ function Death:GetIcon(unitid)
 end
 
 function Death:GetPercent(unitid)
-	local color = self.db.profile.color1
+	local color = self.dbx.color1
 	return UnitIsDeadOrGhost(unitid) and color.a or 1
 end
 
@@ -156,15 +149,15 @@ function Death:GetText(unitid)
 	end
 end
 
-Grid2:RegisterStatus(Death, { "color", "icon", "percent", "text" })
+local function CreateDeath(baseKey, dbx)
+	Grid2:RegisterStatus(Death, {"color", "icon", "percent", "text"}, baseKey, dbx)
+
+	return Death
+end
+
+Grid2.setupFunc["death"] = CreateDeath
 
 
-
-FeignDeath.defaultDB = {
-	profile = {
-		color1 = { r = 1, g = .5, b = 1, a = 1 },
-	}
-}
 
 function FeignDeath:OnEnable()
 	EnableHealthFrame(true)
@@ -179,12 +172,12 @@ function FeignDeath:IsActive(unit)
 end
 
 function FeignDeath:GetColor(unit)
-	local color = self.db.profile.color1
+	local color = self.dbx.color1
 	return color.r, color.g, color.b, color.a
 end
 
 function FeignDeath:GetPercent(unit)
-	local color = self.db.profile.color1
+	local color = self.dbx.color1
 	return UnitIsFeignDeath(unit) and color.a or 1
 end
 
@@ -196,15 +189,15 @@ function FeignDeath:GetText(unit)
 	end
 end
 
-Grid2:RegisterStatus(FeignDeath, { "color", "percent", "text" })
+local function CreateFeignDeath(baseKey, dbx)
+	Grid2:RegisterStatus(FeignDeath, {"color", "percent", "text"}, baseKey, dbx)
+
+	return FeignDeath
+end
+
+Grid2.setupFunc["feign-death"] = CreateFeignDeath
 
 
-
-HealthDeficit.defaultDB = {
-	profile = {
-		threshold = 0.2,
-	}
-}
 
 function HealthDeficit:OnEnable()
 	EnableHealthFrame(true)
@@ -215,11 +208,17 @@ function HealthDeficit:OnDisable()
 end
 
 function HealthDeficit:IsActive(unit)
-	return (1 - Health:GetPercent(unit)) > self.db.profile.threshold
+	return (1 - HealthCurrent:GetPercent(unit)) > self.dbx.threshold
 end
 
 function HealthDeficit:GetText(unit)
 	return Grid2:GetShortNumber(UnitHealth(unit) - UnitHealthMax(unit))
 end
 
-Grid2:RegisterStatus(HealthDeficit, {"text"})
+local function CreateHealthDeficit(baseKey, dbx)
+	Grid2:RegisterStatus(HealthDeficit, {"text"}, baseKey, dbx)
+
+	return HealthDeficit
+end
+
+Grid2.setupFunc["health-deficit"] = CreateHealthDeficit

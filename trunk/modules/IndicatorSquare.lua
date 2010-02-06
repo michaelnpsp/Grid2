@@ -2,7 +2,7 @@ local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 local function Square_Create(self, parent)
 	local Square = CreateFrame("Frame", nil, parent)
-	local cornerSize = self.db.profile.cornerSize
+	local cornerSize = self.dbx.cornerSize
 	Square:SetWidth(cornerSize) -- @FIXME merge the sizes ?
 	Square:SetHeight(cornerSize)
 	Square:SetBackdrop({
@@ -23,7 +23,7 @@ local function Square_Layout(self, parent)
 	Square:ClearAllPoints()
 	Square:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
 	Square:SetPoint(self.anchor, parent, self.anchorRel, self.offsetx, self.offsety)
-	local cornerSize = self.db.profile.cornerSize
+	local cornerSize = self.dbx.cornerSize
 	Square:SetWidth(cornerSize) -- @FIXME merge the sizes ?
 	Square:SetHeight(cornerSize)
 end
@@ -44,31 +44,38 @@ local function Square_SetSize(self, parent, size)
 	Square:SetHeight(size)
 end
 
-local Square_defaultDB = {
-	profile = {
-		cornerSize = 5,
-	}
-}
-
-function Grid2:CreateSquareIndicator(indicatorKey, level, anchor, anchorRel, offsetx, offsety)
-	if type(level) == "string" then
-		level, anchor, anchorRel, offsetx, offsety = 0, level, anchor, anchorRel, offsetx
-	end
-	local Square = self.indicatorPrototype:new(indicatorKey)
-
-	Square.frameLevel = level
-	Square.anchor = anchor
-	Square.anchorRel = anchorRel
-	Square.offsetx = offsetx
-	Square.offsety = offsety
-	Square.Create = Square_Create
-	Square.GetBlinkFrame = Square_GetBlinkFrame
-	Square.Layout = Square_Layout
-	Square.OnUpdate = Square_OnUpdate
-	Square.SetSize = Square_SetSize
-	Square.defaultDB = Square_defaultDB
-
-	self:RegisterIndicator(Square, { "color" })
-
-	return Square
+local function Square_UpdateDB(self, dbx)
+	-- ToDo: copy if it already exists
+	-- ToDo: update if it changed
+if (self.dbx) then
+	print("Square_UpdateDB self.dbx:", self.dbx, self.dbx.cornerSize, "dbx:", dbx, dbx.cornerSize)
 end
+
+	local location = Grid2.locations[dbx.location]
+
+	self.frameLevel = dbx.level
+	self.anchor = location.point
+	self.anchorRel = location.relPoint
+	self.offsetx = location.x
+	self.offsety = location.y
+	self.Create = Square_Create
+	self.GetBlinkFrame = Square_GetBlinkFrame
+	self.Layout = Square_Layout
+	self.OnUpdate = Square_OnUpdate
+	self.SetSize = Square_SetSize
+	self.UpdateDB = Square_UpdateDB
+
+	self.dbx = dbx
+end
+
+
+local function Create(indicatorKey, dbx)
+	local indicator = Grid2.indicatorPrototype:new(indicatorKey)
+
+	Square_UpdateDB(indicator, dbx)
+	
+	Grid2:RegisterIndicator(indicator, { "square" })
+	return indicator
+end
+
+Grid2.setupFunc["square"] = Create

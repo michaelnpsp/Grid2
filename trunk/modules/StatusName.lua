@@ -32,4 +32,10 @@ function Name:GetText(unit)
 	return UnitName(unit)
 end
 
-Grid2:RegisterStatus(Name, { "text" })
+local function Create(baseKey, dbx)
+	Grid2:RegisterStatus(Name, {"text"}, baseKey, dbx)
+
+	return Name
+end
+
+Grid2.setupFunc["name"] = Create

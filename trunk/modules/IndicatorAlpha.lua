@@ -9,7 +9,13 @@ function Alpha:Layout(parent)
 end
 
 function Alpha:OnUpdate(parent, unit, status)
-	parent:SetAlpha(status and status:GetPercent(unit) or 1)
+	parent:SetAlpha(status and status:GetPercent(unit) or Alpha.dbx.color1.a)
 end
 
-Grid2:RegisterIndicator(Alpha, { "percent" })
+local function Create(indicatorKey, dbx)
+	Alpha.dbx = dbx
+	Grid2:RegisterIndicator(Alpha, { "percent" })
+	return Alpha
+end
+
+Grid2.setupFunc["alpha"] = Create

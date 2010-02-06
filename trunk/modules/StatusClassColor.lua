@@ -3,24 +3,6 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 local ClassColor = Grid2.statusPrototype:new("classcolor")
 local Charmed = Grid2.statusPrototype:new("charmed")
 
-ClassColor.defaultDB = {
-	profile = {
-		colorHostile = true,
-		colors = {
-			HOSTILE = { r = 1, g = 0.1, b = 0.1, a = 1 },
-			UNKNOWN_UNIT = { r = 0.5, g = 0.5, b = 0.5, a = 1 },
-			UNKNOWN_PET = { r = 0, g = 1, b = 0, a = 1 },
-			[L["Beast"]] = { r = 0.93725490196078, g = 0.75686274509804, b = 0.27843137254902, a = 1 },
-			[L["Demon"]] = { r = 0.54509803921569, g = 0.25490196078431, b = 0.68627450980392, a = 1 },
-			[L["Humanoid"]] = { r = 0.91764705882353, g = 0.67450980392157, b = 0.84705882352941, a = 1 },
-			[L["Elemental"]] = { r = 0.1, g = 0.3, b = 0.9, a = 1 },
-		},
-	}
-}
-
-for class, color in pairs(RAID_CLASS_COLORS) do
-	ClassColor.defaultDB.profile.colors[class] = { r = color.r, g = color.g, b = color.b, a = 1 }
-end
 
 function ClassColor:OnEnable()
 	self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED", "UpdateUnit")
@@ -41,7 +23,7 @@ function ClassColor:IsActive(unit)
 end
 
 function ClassColor:UnitColor(unit)
-	local p = self.db.profile
+	local p = self.dbx
 	local colors = p.colors
 	if (not Grid2:UnitIsPet(unit)) then
 		local _, c = UnitClass(unit)
@@ -59,15 +41,15 @@ function ClassColor:GetColor(unit)
 	return color.r, color.g, color.b, color.a
 end
 
-Grid2:RegisterStatus(ClassColor, { "color" })
+local function CreateClassColor(baseKey, dbx)
+	Grid2:RegisterStatus(ClassColor, {"color"}, baseKey, dbx)
+
+	return ClassColor
+end
+
+Grid2.setupFunc["classcolor"] = CreateClassColor
 
 
---TODO: Unify the callback registration?  What is better, single function callback with if statement dispatch or double callbacks?
-Charmed.defaultDB = {
-	profile = {
-		color1 = { r = 1, g = 0.1, b = 0.1, a = 1 },
-	}
-}
 
 function Charmed:OnEnable()
 	self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED", "UpdateUnit")
@@ -88,7 +70,7 @@ function Charmed:IsActive(unit)
 end
 
 function Charmed:GetColor(unit)
-	local color = self.db.profile.color1
+	local color = self.dbx.color1
 	return color.r, color.g, color.b, color.a
 end
 
@@ -101,7 +83,13 @@ function Charmed:GetText(unit)
 end
 
 function Charmed:GetPercent(unit)
-	return UnitIsCharmed(unit) and 1 or self.db.profile.color1.a
+	return UnitIsCharmed(unit) and 1 or self.dbx.color1.a
 end
 
-Grid2:RegisterStatus(Charmed, { "color", "text", "percent" })
+local function  CreateCharmed(baseKey, dbx)
+	Grid2:RegisterStatus(Charmed, { "color", "text", "percent" }, baseKey, dbx)
+	
+	return Charmed
+end
+
+Grid2.setupFunc["charmed"] =  CreateCharmed

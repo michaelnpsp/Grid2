@@ -28,18 +28,23 @@ do
 			end
 		end
 	end
+	Grid2.EnableAuraFrame = EnableAuraFrame
 end
 
 local DebuffCache = {}
-local function MakeDebuffTypeStatus(type, color)
-	local name = "debuff-"..type
+local DebuffTypeStatus = {}
+
+function CreateDebuffType(baseKey, dbx)
+	local type = dbx.subType
 
 	local c = {}
 	DebuffCache[type] = c
 
-	local status = Grid2.statusPrototype:new(name)
+	local status = Grid2.statusPrototype:new(baseKey)
+	DebuffTypeStatus[type] = status
 
 	status.debuffType = type
+	status.dbx = dbx
 
 	function status:OnEnable()
 		EnableAuraFrame(true)
@@ -53,14 +58,8 @@ local function MakeDebuffTypeStatus(type, color)
 		return c[unit] ~= nil
 	end
 
-	status.defaultDB = {
-		profile = {
-			color1 = { r=color.r, g=color.g, b=color.b },
-		}
-	}
-
 	function status:GetColor(unit)
-		local color = self.db.profile.color1
+		local color = self.dbx.color1
 		return color.r, color.g, color.b, color.a
 	end
 
@@ -68,15 +67,8 @@ local function MakeDebuffTypeStatus(type, color)
 		return c[unit]
 	end
 
-	Grid2:RegisterStatus(status, { "color", "icon" })
+	Grid2:RegisterStatus(status, { "color", "icon" }, baseKey, dbx)
 	return status
-end
-
-local DebuffTypeStatus = {}
-for name, color in pairs(DebuffTypeColor) do
-	if name ~= "none" then
-		DebuffTypeStatus[name] = MakeDebuffTypeStatus(name, color)
-	end
 end
 
 local StatusCount = 0
@@ -93,7 +85,8 @@ do
 	}
 	local filters = {}
 	MakeStatusFilter = function(status)
-		local source, dest = status.db.profile.classFilter, status.filtered
+		local dbx = status.dbx
+		local source, dest = dbx.classFilter, status.filtered
 		if not source then
 			if dest then
 				filters[dest] = nil
@@ -104,7 +97,7 @@ do
 			wipe(dest)
 			dest.source = source
 		else
-			dest = setmetatable({source = status.db.profile.classFilter}, filter_mt)
+			dest = setmetatable({source = dbx.classFilter}, filter_mt)
 			status.filtered = dest
 			filters[dest] = true
 		end
@@ -187,7 +180,7 @@ local function status_GetExpirationTime(self, unit)
 end
 
 local function status_GetPercent(self, unit)
-	local color = self.db.profile.color1
+	local color = self.dbx.color1
 	return color.a
 end
 
@@ -254,9 +247,9 @@ do
 end
 
 local function status_UpdateProfileData(self)
-	local p = self.db.profile
+	local dbx = self.dbx
 	MakeStatusFilter(self)
-	local blinkThreshold, missing = p.blinkThreshold, p.missing
+	local blinkThreshold, missing = dbx.blinkThreshold, dbx.missing
 	if blinkThreshold then
 		self.blinkThreshold = blinkThreshold
 		self.IsActive = missing and status_IsInactiveBlink or status_IsActiveBlink
@@ -270,7 +263,11 @@ local function status_UpdateProfileData(self)
 	end
 end
 
-local function CreateAuraStatusCommon(status, spellName, mine, ...)
+
+function Grid2.CreateAuraCommon(baseKey, dbx)
+	local status = Grid2.statusPrototype:new(baseKey)
+
+	local spellName = dbx.spellName
 	if (type(spellName) == "number") then
 		spellName = GetSpellInfo(spellName)
 	end
@@ -283,19 +280,6 @@ local function CreateAuraStatusCommon(status, spellName, mine, ...)
 	status.expirations = {}
 	status.durations = {}
 
-	status.defaultDB = {
-		profile = {
-		}
-	}
- 	local colorCount = select('#', ...) / 4
-	assert(colorCount * 4 == select('#', ...), "Color parameters need to be multiples of r,g,b,a")
- 	status.defaultDB.profile.colorCount = colorCount
- 	for i = 1, colorCount, 1 do
- 		local componentIndex = i * 4
- 		local color = { r = (select((componentIndex - 3), ...)), g = (select((componentIndex - 2), ...)), b = (select((componentIndex - 1), ...)), a = (select((componentIndex), ...)) }
- 		status.defaultDB.profile[("color" .. i)] = color
- 	end
-
 	status.Reset = status_Reset
 	status.GetIcon = status_GetIcon
 	status.GetCount = status_GetCount
@@ -304,13 +288,13 @@ local function CreateAuraStatusCommon(status, spellName, mine, ...)
 	status.GetPercent = status_GetPercent
 	status.HasStateChanged = status_HasStateChanged
 	status.UpdateProfileData = status_UpdateProfileData
+	
+	return status
 end
 
--- spellName: spellId or localized spellName
-function Grid2:CreateBuffStatus(spellName, mine, missing, ...)
-	StatusCount = StatusCount + 1
-	local status = Grid2.statusPrototype:new("buff-" .. StatusCount)
-	CreateAuraStatusCommon(status, spellName, mine, ...)
+local statusTypes = { "color", "icon" }
+function Grid2.CreateBuff(baseKey, dbx, statusTypesOverride)
+	local status = Grid2.CreateAuraCommon(baseKey, dbx)
 
 	function status:OnEnable()
 		self:UpdateProfileData()
@@ -323,15 +307,10 @@ function Grid2:CreateBuffStatus(spellName, mine, missing, ...)
 		BuffHandlers[self] = nil
 	end
 
-	local profile = status.defaultDB.profile
-	if (type(mine) == "number") then
-		profile.blinkThreshold = mine
-	end
-	profile.missing = missing
-	if missing then
+	if (dbx.missing) then
 		-- Initialize the texture for "missing" status
 		-- as the texture is shown when the aura is not set
-		local _, _, texture = GetSpellInfo(spellName)
+		local _, _, texture = GetSpellInfo(status.auraName)
 		if texture then
 			for _, unit in Grid2:IterateRoster() do
 				status.textures[unit] = texture
@@ -339,16 +318,17 @@ function Grid2:CreateBuffStatus(spellName, mine, missing, ...)
 		end
 	end
 
-	status.UpdateState = mine and status_UpdateStateMine or status_UpdateState
+	status.UpdateState = dbx.mine and status_UpdateStateMine or status_UpdateState
 
-	return status -- status is not registered yet
+	Grid2:RegisterStatus(status, statusTypesOverride or statusTypes, baseKey, dbx)
+	Grid2:MakeBuffColorHandler(status)
+	status:UpdateProfileData()
+
+	return status
 end
 
-function Grid2:CreateDebuffStatus(spellName, mine, ...)
-	-- is "mine" ever used here as "mine" ?
-	StatusCount = StatusCount + 1
-	local status = Grid2.statusPrototype:new("debuff-" .. StatusCount)
-	CreateAuraStatusCommon(status, spellName, mine, ...)
+function Grid2.CreateDebuff(baseKey, dbx, statusTypesOverride)
+	local status = Grid2.CreateAuraCommon(baseKey, dbx)
 
 	function status:OnEnable()
 		self:UpdateProfileData()
@@ -361,14 +341,18 @@ function Grid2:CreateDebuffStatus(spellName, mine, ...)
 		DebuffHandlers[self] = nil
 	end
 
-	if type(mine) == "number" then
-		status.defaultDB.profile.blinkThreshold = mine
-	end
-
 	status.UpdateState = status_UpdateState
 
-	return status -- status is not registered yet
+	Grid2:RegisterStatus(status, statusTypesOverride or statusTypes, baseKey, dbx)
+	Grid2:MakeDebuffColorHandler(status)
+
+	return status
 end
+
+Grid2.setupFunc["buff"] = Grid2.CreateBuff
+Grid2.setupFunc["debuff"] = Grid2.CreateDebuff
+Grid2.setupFunc["debuffType"] = CreateDebuffType
+
 
 do
 	local indicators = {}

@@ -1,42 +1,78 @@
-function Grid2:SetupIndicators(setup)
-	for indicatorKey, info in pairs(setup.indicators.bar) do
-		self:CreateBarIndicator(indicatorKey, unpack(info))
-	end
-	local locationKey, location
-	for indicatorKey, info in pairs(setup.indicators.square) do
-		locationKey = setup.indicatorLocations[indicatorKey]
-		location = setup.locations[locationKey]
-		if (location) then
-			info[2], info[3], info[4], info[5] = location.point, location.relPoint, location.x, location.y
-		end
+local DBL = LibStub:GetLibrary("LibDBLayers-1.0")
 
-		self:CreateSquareIndicator(indicatorKey, unpack(info))
-	end
-	for indicatorKey, info in pairs(setup.indicators.icon) do
-		locationKey = setup.indicatorLocations[indicatorKey]
-		location = setup.locations[locationKey]
-		if (location) then
-			info[2], info[3], info[4], info[5] = location.point, location.relPoint, location.x, location.y
-		end
-
-		self:CreateIconIndicator(indicatorKey, unpack(info))
-	end
-	for indicatorKey, info in pairs(setup.indicators.text) do
-		locationKey = setup.indicatorLocations[indicatorKey]
-		location = setup.locations[locationKey]
-		if (location) then
-			info[2], info[3], info[4], info[5] = location.point, location.relPoint, location.x, location.y
-		end
-
-		self:CreateTextIndicator(indicatorKey, unpack(info))
+function Grid2:SetupLocations(setup, objects)
+	local locations = Grid2.locations
+	for baseKey, layer in pairs(setup) do
+		local dbx = objects[layer][baseKey]
+--print("SetupLocations:", layer, baseKey, dbx)
+		locations[baseKey] = dbx
 	end
 end
+
+function Grid2:SetupIndicators(setup, objects)
+	for baseKey, layer in pairs(setup) do
+		local dbx = objects[layer][baseKey]
+		local setupFunc = self.setupFunc[dbx.type]
+--print("SetupIndicators:", layer, baseKey, dbx.type, dbx.location, self.setupFunc[dbx.type])
+		if (setupFunc) then
+			setupFunc(baseKey, dbx)
+		else
+print("      *Could not find setupFunc for indicator", baseKey)
+		end
+	end
+end
+
+function Grid2:SetupStatuses(setup, objects)
+	for baseKey, layer in pairs(setup) do
+		local dbx = objects[layer][baseKey]
+--print("SetupStatuses:", layer, baseKey, dbx.type, self.setupFunc[dbx.type])
+		if (dbx.object) then
+			local object = self.objectMap[dbx.object]
+			if (object) then
+				if (object.UpdateDB) then
+					object.UpdateDB(dbx)
+					print("SetupStatuses UpdateDB -->", baseKey)
+				end
+			else
+				print("SetupStatuses did not find", dbx.object)
+			end
+		else
+--print("SetupStatuses:", baseKey, dbx.type, self.setupFunc[dbx.type])
+			self.setupFunc[dbx.type](baseKey, dbx)
+		end
+	end
+end
+
+function Grid2:SetupStatusMap(setup, objects)
+	for baseKey, layer in pairs(setup) do
+		local map = objects[layer][baseKey]
+		local indicator = self.indicators[baseKey]
+--print("SetupStatusMap:", layer, baseKey, indicator)
+		if (indicator) then
+			for statusKey, priority in pairs(map) do
+				local status = self.statuses[statusKey]
+				if (status and tonumber(priority)) then
+					indicator:RegisterStatus(status, priority)
+				else
+print("      ***failed mapping:", statusKey, "status:", status, "priority:", priority)
+				end
+			end
+		else
+print("      ***Could not find mapped indicator baseKey:", baseKey, "layerKey:", layer)
+		end
+	end
+end
+--[[
+/dump Grid2.statuses["soulstone"]
+--]]
+
+
 
 
 local handlerArray = {}
 function Grid2:MakeBuffColorHandler(status)
-	local profile = status.db.profile
-	local colorCount = profile.colorCount or 1
+	local dbx = status.dbx
+	local colorCount = dbx.colorCount or 1
 
 	wipe(handlerArray)
 	handlerArray[1] = "return function (self, unit)"
@@ -46,14 +82,13 @@ function Grid2:MakeBuffColorHandler(status)
 		handlerArray[index] = " local count = self:GetCount(unit)"
 		index = index + 1
 		for i = 1, colorCount - 1 do
-			color = status.db.profile["color" .. i]
+			color = dbx["color" .. i]
 			handlerArray[index] = (" if count == %d then return %s, %s, %s, %s end"):format(i, color.r, color.g, color.b, color.a)
 			index = index + 1
 		end
 	end
 
-	color = status.db.profile[("color" .. colorCount)]
---print("MakeBuffColorHandler", status.name, "color" .. colorCount, color.r, color.g, color.b)
+	color = dbx[("color" .. colorCount)]
 	handlerArray[index] = (" return %s, %s, %s, %s end"):format(color.r, color.g, color.b, color.a)
 
 	local handler = table.concat(handlerArray)
@@ -61,32 +96,36 @@ function Grid2:MakeBuffColorHandler(status)
 	return handler
 end
 
-function Grid2:MakeDebuffColorHandler(status, info)
-	local colorCount = (#info - 1) / 3
+function Grid2:MakeDebuffColorHandler(status)
+	local dbx = status.dbx
+	local colorCount = dbx.colorCount or 1
 	if (colorCount <= 0) then
-		local name = info[1]
-		self:Print("Invalid number of colors for debuff %s", name)
+		self:Print("Invalid number of colors for debuff %s", status.name)
 		return
 	end
 
 	wipe(handlerArray)
 	handlerArray[1] = "return function (self, unit)"
 	local index = 2
+	local color
 	if (colorCount > 1) then
 		handlerArray[index] = " local count = self:GetCount(unit)"
 		index = index + 1
 		for i = 1, colorCount - 1 do
-			handlerArray[index] = ("if count == %d then return %s, %s, %s end"):format(unpack(info, i * 3 - 1, (i + 1) * 3 - 2))
+			color = dbx["color" .. i]
+			handlerArray[index] = ("if count == %d then return %s, %s, %s, %s end"):format(i, color.r, color.g, color.b, color.a)
 			index = index + 1
 		end
 	end
-	handlerArray[index] = (" return %s, %s, %s end"):format(unpack(info, colorCount * 3 - 1))
+	color = dbx[("color" .. colorCount)]
+	handlerArray[index] = (" return %s, %s, %s, %s end"):format(color.r, color.g, color.b, color.a)
 
 	local handler = table.concat(handlerArray)
 	status.GetColor = assert(loadstring(handler))()
 	return handler
 end
 
+--[[
 function Grid2:SetupBuffStatus(statusKey, info)
 	local status = self:CreateBuffStatus(unpack(info))
 	status.name = statusKey -- force name
@@ -106,7 +145,6 @@ function Grid2:SetupDebuffStatus(statusKey, info)
 	status:UpdateProfileData()
 	return status
 end
-
 function Grid2:SetupAuraStatus(setup)
 	for statusKey, info in pairs(setup.buffs) do
 		self:SetupBuffStatus(statusKey, info)
@@ -115,7 +153,7 @@ function Grid2:SetupAuraStatus(setup)
 		self:SetupDebuffStatus(statusKey, info)
 	end
 end
-
+--]]
 function Grid2:RegisterIndicatorStatuses(setup)
 	for indicatorKey, statusPriorities in pairs(setup.status) do
 		local indicator = self.indicators[indicatorKey]
@@ -151,49 +189,66 @@ function Grid2:RegisterCategoryStatuses(categories)
 end
 
 
--- Plugin cores hook this function to call and blend in their default options
--- (Since they may get added after the core defaults are created)
-function Grid2:GetCurrentSetup(class)
-	local setup = self.db.profile.setup
+local realmKey = GetRealmName()
+local charKey = UnitName("player") .. " - " .. realmKey
+local _, classKey = UnitClass("player")
+
+local dblData
+
+-- Plugins hook this to check if they need to call their options side to update their defaults.
+function Grid2:UpgradeDefaults(dblData)
+	local flatten
 	
-	-- Create or upgrade defaults
-	if (not setup) then
-		-- Plugins hook this function to load their options
-		self:LoadOptions()
-
-		setup = Grid2Options:MakeDefaultSetup(class)
-
-		self.db.profile.setup = setup
+	if (Grid2Options) then
+		flatten = DBL:UpgradeDefaults("Grid2Options", dblData, Grid2Options.UpgradeDefaults, "account", 1, dblData.classKey, 1) or flatten
 	end
-	
-	return setup, class
+
+	return flatten
+end
+
+function Grid2:GetSetupObjects()
+	local Grid2DB = Grid2DB or {}
+	self.dblData = DBL:InitializeRuntime("Grid2", Grid2DB)
+
+	-- Load options for old versions (defaults versions to 0)
+	local upgrade = self:LoadOptions(self.dblData)
+
+	if (upgrade) then
+		-- Upgrade defaults for those old versions
+		local flatten = self:UpgradeDefaults(self.dblData)
+
+		-- Flatten and move the defaults from Grid2OptionsDB to Grid2DB
+		if (flatten) then
+			Grid2Options:FlattenDefaults(self.dblData)
+		end
+	end
+
+	-- Local Grid2DB objects are up to date and ready for use
+	local profileCurrentKey = self.dblData.profileCurrentKey
+	local setup = Grid2DB["setup-flat"]
+	local objects = Grid2DB["objects"]
+
+	assert(setup, "nil setup")
+	assert(objects, "nil objects")
+	return setup, objects, profileCurrentKey
 end
 
 function Grid2:Setup()
-	local _, class = UnitClass("player")
+-- New Setup
+	local setup, objects, profileCurrentKey = self:GetSetupObjects()
+	self:SetupLocations(setup.locations[profileCurrentKey], objects.locations)
+	self:SetupIndicators(setup.indicators[profileCurrentKey], objects.indicators)
+	self:SetupStatuses(setup.statuses[profileCurrentKey], objects.statuses)
 
-	-- Get / Create setup
-	local setup = self:GetCurrentSetup(class)
-
-	-- Create objects
-	self:SetupIndicators(setup)
-	self:SetupAuraStatus(setup)
-	self:RegisterIndicatorStatuses(setup)
-
-	local categories = self.db.global.categories
-	self:CreateCategories(categories)
-	self:RegisterCategoryStatuses(categories)
-	
-	-- Add options if config loaded
-	if (Grid2Options) then
-		Grid2Options:MakeOptions(setup)
-	end
+--[[
+/dump Grid2.statuses["death"]
+local categories = self.dbx.categories
+self:CreateCategories(categories)
+self:RegisterCategoryStatuses(categories)
+--]]
+	self:SetupStatusMap(setup.statusMap[profileCurrentKey], objects.statusMap)
 end
 
 --[[
-/dump Grid2.db.profile.setup.status.alpha
-/dump Grid2.db.profile.setup.buffs
-/dump Grid2.db.profile.setup.auraGroupDebuffs
-/dump Grid2.db.account
 /dump Grid2.statuses["buff-ArcaneIntellect"]
 --]]
