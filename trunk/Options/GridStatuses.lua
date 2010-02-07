@@ -103,20 +103,24 @@ function Grid2Options.GetStatusColor(info)
 end
 
 function Grid2Options.SetStatusColor(info, r, g, b, a)
-	local status = info.arg.status
+	local passValue = info.arg
+	local status = passValue.status
 	local dbx = DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name)
 	local colorKey = "color"
 
-	local colorIndex = info.arg.colorIndex
+	local colorIndex = passValue.colorIndex
 	colorKey = colorKey .. colorIndex
 
 	local c = status.dbx[colorKey]
 	c.r, c.g, c.b, c.a = r, g, b, a
-	
+
 	c = dbx[colorKey]
 	c.r, c.g, c.b, c.a = r, g, b, a
 
-	Grid2:MakeBuffColorHandler(status)
+	local privateColorHandler = passValue.privateColorHandler
+	if (not privateColorHandler) then
+		Grid2:MakeBuffColorHandler(status)
+	end
 	for guid, unitid in Grid2:IterateRoster() do
 		status:UpdateIndicators(unitid)
 	end
@@ -130,6 +134,7 @@ function Grid2Options:MakeStatusColorOption(status, options, optionParams)
 
 	local name = L["Color"]
 	local desc = L["Color for %s."]:format(status.name)
+	local privateColorHandler = optionParams and optionParams.privateColorHandler
 	for i = 1, colorCount, 1 do
 		local colorKey = "color" .. i
 		if (optionParams and optionParams[colorKey]) then
@@ -154,7 +159,7 @@ function Grid2Options:MakeStatusColorOption(status, options, optionParams)
 			get = Grid2Options.GetStatusColor,
 			set = Grid2Options.SetStatusColor,
 			hasAlpha = true,
-			arg = {status = status, colorIndex = i},
+			arg = {status = status, colorIndex = i, privateColorHandler = privateColorHandler},
 		}
 	end
 	return options
