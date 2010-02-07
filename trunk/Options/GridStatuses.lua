@@ -786,6 +786,8 @@ function Grid2Options:MakeStatusToggleOption(status, options, optionParams, togg
 		set = function (_, v)
 			status.dbx[toggleKey] = v
 			DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name)[toggleKey] = v
+
+			Grid2Frame:UpdateAllFrames()
 		end,
 	}
 	
