@@ -274,6 +274,7 @@ local spellDB = {
 		70633,71283,72025,72026,--Gut Spray
 
 		--Sindragosa
+		70107,--Permeating Chill
 		70106,--Chilled to the Bone
 		69766,--Instability
 		69762,--Unchained Magic
