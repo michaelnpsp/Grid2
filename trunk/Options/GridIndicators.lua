@@ -11,12 +11,6 @@ function Grid2Options.GetNewIndicatorTypes()
 	return newIndicatorTypes
 end
 
-function Grid2Options:FlattenIndicatorStatuses(dblData)
-	local dblData = Grid2.dblData
-
-	DBL:FlattenMap(dblData, "statusMap", "indicators", "statuses")
-end
-
 function Grid2Options:UpdateIndicator(indicator)
 	local indicatorKey = indicator.name
 	local dblData = Grid2.dblData
@@ -52,7 +46,7 @@ function Grid2Options:RegisterIndicatorStatus(indicator, status)
 
 	local priority = Grid2Options:GetNewStatusPriority(indicator)
 	DBL:SetupMapObject(dblData, "statusMap", layer, baseKey, statusKey, priority)
-	Grid2Options:FlattenIndicatorStatuses(dblData)
+	DBL:FlattenMap(dblData, "statusMap", "indicators", "statuses")
 
 	return priority
 end
@@ -64,7 +58,7 @@ function Grid2Options:UnregisterIndicatorStatus(indicator, status)
 	local layer = DBL:GetObjectLayer(Grid2.dblData, "indicators", baseKey)
 
 	DBL:DeleteMapObject(dblData, "statusMap", layer, baseKey, statusKey)
-	Grid2Options:FlattenIndicatorStatuses(dblData)
+	DBL:FlattenMap(dblData, "statusMap", "indicators", "statuses")
 end
 
 
@@ -156,7 +150,7 @@ local function StatusShiftUp(info, indicator, lowerStatus)
 -- print("StatusShiftUp", lowerPriority, higherPriority, lowerStatus.name, higherStatus.name)
 				Grid2Options:SetStatusPriority(indicator, higherStatus, lowerPriority)
 				Grid2Options:SetStatusPriority(indicator, lowerStatus, higherPriority)
-				Grid2Options:FlattenIndicatorStatuses(Grid2.dblData)
+				DBL:FlattenMap(Grid2.dblData, "statusMap", "indicators", "statuses")
 
 				local parentOption = info.options.args.indicator.args[indicator.name].args.statusesCurrent
 				wipe(parentOption.args)
@@ -181,7 +175,7 @@ local function StatusShiftDown(info, indicator, higherStatus)
 -- print("StatusShiftDown", lowerPriority, higherPriority, lowerStatus.name, higherStatus.name)
 				Grid2Options:SetStatusPriority(indicator, higherStatus, lowerPriority)
 				Grid2Options:SetStatusPriority(indicator, lowerStatus, higherPriority)
-				Grid2Options:FlattenIndicatorStatuses(Grid2.dblData)
+				DBL:FlattenMap(Grid2.dblData, "statusMap", "indicators", "statuses")
 
 				local parentOption = info.options.args.indicator.args[indicator.name].args.statusesCurrent
 				wipe(parentOption.args)
