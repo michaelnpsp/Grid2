@@ -174,7 +174,7 @@ L["holy2"] = true
 L["resto"] = true
 
 L["Layer"] = true
-L["Layer level of the indicator.  Higher layers (like Class or Spec) supercede lower ones like Account."] = true
+L["Layer level.  Higher layers (like Class or Spec) supercede lower ones like Account."] = true
 
 L["<CharacterOnlyString>"] = true
 L["+"] = true

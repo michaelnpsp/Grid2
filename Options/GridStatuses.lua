@@ -24,7 +24,7 @@ function Grid2Options:MakeStatusLayerOptions(status, options)
 	    type = 'select',
 		order = 5,
 		name = L["Layer"],
-		desc = L["Layer level of the indicator.  Higher layers (like Class or Spec) supercede lower ones like Account."],
+		desc = L["Layer level.  Higher layers (like Class or Spec) supercede lower ones like Account."],
 	    values = Grid2Options.GetStatusLayerValues,
 		get = function ()
 			local layer = DBL:GetObjectLayer(Grid2.dblData, "statuses", baseKey)
