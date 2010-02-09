@@ -9,6 +9,8 @@ L["Food"] = "음식"
 L["Grid2"] = "Grid2"
 --}}}
 
+
+
 --{{{ GridCore
 L["Configure"] = "설정"
 L["Configure Grid"] = "Grid 옵션을 설정합니다."
@@ -85,6 +87,7 @@ L["Advanced options."] = "고급 옵션을 설정합니다."
 --}}}
 
 --{{{ GridLayoutLayouts
+-- ToDo: move into options
 L["None"] = "없음"
 L["Solo"] = "솔로잉"
 L["Solo w/Pet"] = "솔로잉, 소환수"
@@ -98,6 +101,7 @@ L["By Group 15"] = "15인 공격대"
 L["By Group 15 w/Pets"] = "15인 공격대, 소환수"
 L["By Group 10"] = "10인 공격대"
 L["By Group 10 w/Pets"] = "10인 공격대, 소환수"
+L["By Group 4 x 10 Wide"] = "4 x 10인 공격대"
 L["By Class 25"] = "25인 직업별"
 L["By Class 1 x 25 Wide"] = "1 x 25인 직업별"
 L["By Class 2 x 15 Wide"] = "2 x 15인 직업별"
@@ -238,5 +242,4 @@ L["vehicle"] = "탈것"
 --{{{ GridStatusVoiceComm
 L["Voice Chat"] = "음성 대화"
 L["Talking"] = "대화중"
-
 --}}}
