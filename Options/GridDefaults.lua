@@ -342,7 +342,7 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				versions.priest.Grid2Options = 1
 			end
 		elseif (layer == "rogue") then
-			if (versions.druid.Grid2Options < 1) then
+			if (versions.rogue.Grid2Options < 1) then
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-Evasion-mine", {type = "buff", spellName = 5277, mine = true, color1 = {r=.1,g=.1,b=1,a=1}})
 
 				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Magic", 40)
@@ -350,10 +350,10 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Curse", 20)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Disease", 10)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-Evasion-mine", 99)
-				versions.druid.Grid2Options = 1
+				versions.rogue.Grid2Options = 1
 			end
 		elseif (layer == "shaman") then
-			if (versions.druid.Grid2Options < 1) then
+			if (versions.shaman.Grid2Options < 1) then
 				DBL:SetupLayerObject(dblData, "indicators", layer, "side-left", {type = "square", level = 9, location = "side-left", cornerSize = 5,})
 				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-left", {type = "square", level = 9, location = "corner-top-left", cornerSize = 5,})
 				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-right", {type = "square", level = 9, location = "corner-top-right", cornerSize = 5,})
@@ -369,10 +369,10 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-left", "buff-Riptide-mine", 99)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-left", "buff-Earthliving", 89)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right", "buff-EarthShield", 99)
-				versions.druid.Grid2Options = 1
+				versions.shaman.Grid2Options = 1
 			end
 		elseif (layer == "warlock") then
-			if (versions.druid.Grid2Options < 1) then
+			if (versions.warlock.Grid2Options < 1) then
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-ShadowWard-mine", {type = "buff", spellName = 6229, mine = true, color1 = {r=1,g=1,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-SoulLink-mine", {type = "buff", spellName = 19028, mine = true, color1 = {r=1,g=1,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-DemonArmor-mine", {type = "buff", spellName = 706, mine = true, color1 = {r=1,g=1,b=1,a=1}})
@@ -387,10 +387,10 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-ShadowWard-mine", 99)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-SoulLink-mine", 99)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-FelArmor-mine", 99)
-				versions.druid.Grid2Options = 1
+				versions.warlock.Grid2Options = 1
 			end
 		elseif (layer == "warrior") then
-			if (versions.druid.Grid2Options < 1) then
+			if (versions.warrior.Grid2Options < 1) then
 				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-bottom-right", {type = "square", level = 3, location = "corner-bottom-right", cornerSize = 5,})
 
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-BattleShout", {type = "buff", spellName = 2048, mine = true, color1 = {r=.1,g=.1,b=1,a=1}})
@@ -409,85 +409,9 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-Vigilance", 99)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-bottom-right", "buff-LastStand", 99)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-bottom-right", "buff-ShieldWall", 89)
-				versions.druid.Grid2Options = 1
+				versions.warrior.Grid2Options = 1
 			end
 		end
 	end
 end
-
-
--- Old Setup
---[[
-function Grid2Options:MakeDefaultSetup(class)
-	if (not Grid2.db.global.categories) then
-		local categories = {}
-		self:SetupDefaultCategories(categories, class)
-		Grid2.db.global.categories = categories
-	end
-
-	local setup = {
-		indicators = {},
-		status = {},
-		buffs = {},
-		debuffs = {},
-	}
-
---	self:SetupDefaultLocations(setup, class)
-	self:SetupDefaultIndicators(setup, class)
-	self:SetupDefaultStatus(setup, class)
-	self:SetupDefaultAuras(setup, class)
-	self:SetupDebuffPriorities(setup, class)
-
-	return setup
-end
-
-function Grid2Options:SetupDefaultCategory(categories, categoryKey, categoryDefault)
-	if (not categories[categoryKey]) then
-		categories[categoryKey] = {priorities = {}}
-	end
-	local categoryInfo = categories[categoryKey]
-	categoryInfo.name = categoryDefault.name
-	local priorities = categoryInfo.priorities
-	wipe(priorities)
-	for statusKey, priority in pairs(categoryDefault.priorities) do
-		priorities[statusKey] = priority
-	end
-end
-
--- Create the categories if necessary, otherwise reset the default ones only to their default values
-function Grid2Options:SetupDefaultCategories(categories, class)
-	self:SetupDefaultCategory(categories, "healing-impossible", {name = "healing-impossible", priorities = {death = 95, offline = 75}})
-	self:SetupDefaultCategory(categories, "healing-prevented", {name = "healing-prevented", priorities = {charmed = 65}})
-	self:SetupDefaultCategory(categories, "healing-reduced", {name = "healing-reduced", priorities = {}})
-end
-
-
--- ToDo: choose between location & indicatorInfo specified location info.
--- ToDo: avoid duplicates, use existing one if under different type. Grid2.indicatorTypes
-
-function Grid2Options:SetupIndicatorTypeLocation(setup, type, indicatorKey, locationKey, indicatorInfo)
-	--link location if indicator does not have one yet.
-	local indicatorLocations = setup.indicatorLocations
-	if (not indicatorLocations) then
-		indicatorLocations = {}
-		setup.indicatorLocations = indicatorLocations
-	end
-
-	if (not indicatorLocations[indicatorKey]) then
-		indicatorLocations[indicatorKey] = locationKey
-	end
-
-	--setup type
-	if (not setup.indicators) then
-		setup.indicators = {}
-	end
-	local indicatorType = setup.indicators[type]
-	if (not indicatorType) then
-		indicatorType = {}
-		setup.indicators[type] = indicatorType
-	end
-	indicatorType[indicatorKey] = indicatorInfo
-end
---]]
-
 
