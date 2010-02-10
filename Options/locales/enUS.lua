@@ -225,6 +225,7 @@ L["Reset Locations"] = true
 L["Reset locations to the default list."] = true
 L["Reset Statuses"] = true
 L["Reset statuses to defaults."] = true
+L["Reset to defaults."] = true
 L["Select statuses to display with the indicator"] = true
 L["Select the location of the indicator"] = true
 L["Show duration"] = true
