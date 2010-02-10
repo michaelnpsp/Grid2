@@ -112,6 +112,7 @@ local function Create(indicatorKey, dbx)
 	BarColor.Layout = BarColor_Layout
 	BarColor.OnUpdate = BarColor_OnUpdate
 	BarColor.SetBarColor = BarColor_SetBarColor
+	BarColor.barKey = indicatorKey
 
 	BarColor.dbx = dbx
 	Grid2:RegisterIndicator(BarColor, { "color" })
@@ -124,7 +125,6 @@ Grid2.setupFunc["bar"] = Create
 
 --ToDo: Is there a better way to handle this dual indicator creation?
 local function CreateColor(indicatorKey, dbx)
---	BarColor.dbx = dbx
 end
 Grid2.setupFunc["bar-color"] = CreateColor
 
