@@ -176,6 +176,9 @@ L["resto"] = true
 L["Layer"] = true
 L["Layer level.  Higher layers (like Class or Spec) supercede lower ones like Account."] = true
 
+L["Opacity"] = true
+L["Set the opacity."] = true
+
 L["<CharacterOnlyString>"] = true
 L["+"] = true
 L["-"] = true
