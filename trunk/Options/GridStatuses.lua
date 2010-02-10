@@ -19,6 +19,8 @@ function Grid2Options.GetStatusLayerValues()
 end
 
 function Grid2Options:MakeStatusLayerOptions(status, options)
+	options = options or {}
+
 	local baseKey = status.name
 	options.layer = {
 	    type = 'select',
@@ -47,6 +49,8 @@ function Grid2Options:MakeStatusLayerOptions(status, options)
 			end
 		end,
 	}
+	
+	return options
 end
 
 
@@ -73,7 +77,6 @@ local function DeleteStatus(info)
 	Grid2Options:DeleteElement("status", baseKey)
 end
 
-
 function Grid2Options:AddStatusDeleteOptions(status, options)
 	if (options.delete) then
 		options.delete.arg = status
@@ -86,6 +89,63 @@ function Grid2Options:AddStatusDeleteOptions(status, options)
 			arg = status,
 		}
 	end
+end
+
+
+
+
+function Grid2Options.GetStatusOpacity(info)
+	local status = info.arg
+	return status.dbx.opacity
+end
+
+function Grid2Options.SetStatusOpacity(info, a)
+	local status = info.arg
+	local dbx = DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name)
+
+	status.dbx.opacity = a
+	dbx.opacity = a
+
+	local colorCount = status.dbx.colorCount or 1
+	for i = 1, colorCount, 1 do
+		local colorKey = "color" .. i
+		local c = status.dbx[colorKey]
+		c.a = a
+
+		c = dbx[colorKey]
+		c.a = a
+	end
+
+	Grid2Frame:UpdateAllFrames()
+end
+
+function Grid2Options:MakeStatusOpacityOptions(status, options, optionParams)
+	options = options or {}
+
+	local name = optionParams and optionParams.opacity or L["Opacity"]
+	local desc = optionParams and optionParams.opacityDesc or L["Set the opacity."]
+
+	if (options.opacity) then
+		options.opacity.arg = status
+		options.opacity.name = name
+		options.opacity.desc = desc
+	else
+		options.opacity = {
+			type = "range",
+			order = 101,
+			name = name,
+			desc = desc,
+			min = 0,
+			max = 1,
+			step = 0.01,
+			bigStep = 0.05,
+			get = Grid2Options.GetStatusOpacity,
+			set = Grid2Options.SetStatusOpacity,
+			arg = status,
+		}
+	end
+	
+	return options
 end
 
 
@@ -126,12 +186,11 @@ function Grid2Options.SetStatusColor(info, r, g, b, a)
 	end
 end
 
-function Grid2Options:MakeStatusColorOption(status, options, optionParams)
-	local colorCount = status.dbx.colorCount or 1
+function Grid2Options:MakeStatusColorOptions(status, options, optionParams)
 	options = options or {}
 
 --print("MakeStatusColorOption", status.name, colorCount)
-
+	local colorCount = status.dbx.colorCount or 1
 	local name = L["Color"]
 	local desc = L["Color for %s."]:format(status.name)
 	local privateColorHandler = optionParams and optionParams.privateColorHandler
@@ -162,11 +221,13 @@ function Grid2Options:MakeStatusColorOption(status, options, optionParams)
 			arg = {status = status, colorIndex = i, privateColorHandler = privateColorHandler},
 		}
 	end
+
 	return options
 end
 
-function Grid2Options:MakeStatusClassFilterOption(status, options, optionParams)
+function Grid2Options:MakeStatusClassFilterOptions(status, options, optionParams)
 	options = options or {}
+
 	options.classFilter = {
 		type = "group",
 		order = 20,
@@ -217,18 +278,28 @@ function Grid2Options:MakeStatusClassFilterOption(status, options, optionParams)
 			end,
 		}
 	end
+
+	return options
+end
+
+function Grid2Options:MakeStatusStandardOptions(status, options, optionParams)
+	options = options or {}
+
+	options = Grid2Options:MakeStatusColorOptions(status, options, optionParams)
+	options = Grid2Options:MakeStatusLayerOptions(status, options, optionParams)
+
 	return options
 end
 
 
-function Grid2Options:MakeStatusThresholdOption(status, options, optionParams, min, max, step)
+function Grid2Options:MakeStatusThresholdOptions(status, options, optionParams, min, max, step)
+	options = options or {}
+
 	min = min or 0
 	max = max or 1
 	step = step or 0.01
-	local name = optionParams and optionParams["threshold"] or L["Threshold"]
-	local desc = optionParams and optionParams["thresholdDesc"] or L["Threshold at which to activate the status."]
-
-	options = options or {}
+	local name = optionParams and optionParams.threshold or L["Threshold"]
+	local desc = optionParams and optionParams.thresholdDesc or L["Threshold at which to activate the status."]
 	options.threshold = {
 		type = "range",
 		order = 20,
@@ -248,19 +319,30 @@ function Grid2Options:MakeStatusThresholdOption(status, options, optionParams, m
 			end
 		end,
 	}
+
 	return options
 end
 
-function Grid2Options:MakeStatusColorThresholdOption(status, options, optionParams)
+function Grid2Options:MakeStatusColorThresholdOptions(status, options, optionParams)
 	options = options or {}
 
-	options = Grid2Options:MakeStatusColorOption(status, options, optionParams)
-	options = Grid2Options:MakeStatusThresholdOption(status, options, optionParams)
+	options = Grid2Options:MakeStatusColorOptions(status, options, optionParams)
+	options = Grid2Options:MakeStatusThresholdOptions(status, options, optionParams)
+	options = Grid2Options:MakeStatusLayerOptions(status, options, optionParams)
 
 	return options
 end
 
-function Grid2Options:MakeStatusRangeOption(status, options, optionParams)
+function Grid2Options:MakeStatusHealthDeficitOptions(status, options, optionParams)
+	options = options or {}
+
+	options = Grid2Options:MakeStatusThresholdOptions(status, options, optionParams)
+	options = Grid2Options:MakeStatusLayerOptions(status, options, optionParams)
+
+	return options
+end
+
+function Grid2Options:MakeStatusRangeOptions(status, options, optionParams)
 	options = options or {}
 
 	local function GetAvailableRangeList()
@@ -326,17 +408,19 @@ function Grid2Options:MakeStatusRangeOption(status, options, optionParams)
 	return options
 end
 
-function Grid2Options:MakeStatusReadyCheckOption(status, options, optionParams)
+function Grid2Options:MakeStatusReadyCheckOptions(status, options, optionParams)
 	options = options or {}
 
-	options = Grid2Options:MakeStatusColorOption(status, options, optionParams)
-	options = Grid2Options:MakeStatusThresholdOption(status, options, optionParams, 1, 20, 1)
+	options = Grid2Options:MakeStatusColorOptions(status, options, optionParams)
+	options = Grid2Options:MakeStatusThresholdOptions(status, options, optionParams, 1, 20, 1)
+	options = Grid2Options:MakeStatusLayerOptions(status, options, optionParams)
 
 	return options
 end
 
-function Grid2Options:MakeStatusMissingOption(status, options, optionParams)
+function Grid2Options:MakeStatusMissingOptions(status, options, optionParams)
 	options = options or {}
+
 	options.threshold = {
 		type = "toggle",
 		name = L["Show if missing"],
@@ -357,12 +441,14 @@ function Grid2Options:MakeStatusMissingOption(status, options, optionParams)
 			end
 		end,
 	}
+
 	return options
 end
 
 
-function Grid2Options:MakeStatusBlinkThresholdOption(status, options, optionParams)
+function Grid2Options:MakeStatusBlinkThresholdOptions(status, options, optionParams)
 	options = options or {}
+
 	options.blinkThresholdSpacer = {
 		type = "header",
 		order = 30,
@@ -391,6 +477,7 @@ function Grid2Options:MakeStatusBlinkThresholdOption(status, options, optionPara
 			end
 		end,
 	}
+
 	return options
 end
 
@@ -398,7 +485,8 @@ end
 function Grid2Options:MakeStatusClassColorOptions(status, options, optionParams)
 	options = options or {}
 
-	local profile = status.dbx
+	options = Grid2Options:MakeStatusLayerOptions(status, options, optionParams)
+
 	options.hostile = {
 		type = "toggle",
 		name = L["Color Charmed Unit"],
@@ -772,7 +860,7 @@ end
 
 
 --Package a standard set of options for buffs
-function Grid2Options:MakeStatusToggleOption(status, options, optionParams, toggleKey)
+function Grid2Options:MakeStatusToggleOptions(status, options, optionParams, toggleKey)
 	options = options or {}
 
 	local name = optionParams and optionParams[toggleKey] or L[toggleKey] or toggleKey
@@ -798,7 +886,7 @@ end
 function Grid2Options:MakeStatusHealthCurrentOptions(status, options, optionParams)
 	options = options or {}
 
-	options = Grid2Options:MakeStatusToggleOption(status, options, optionParams, "deadAsFullHealth")
+	options = Grid2Options:MakeStatusToggleOptions(status, options, optionParams, "deadAsFullHealth")
 	
 	return options
 end
@@ -806,10 +894,12 @@ end
 --Package a standard set of options for buffs
 function Grid2Options:MakeStatusStandardBuffOptions(status, options, optionParams)
 	options = options or {}
-	options = Grid2Options:MakeStatusColorOption(status, options, optionParams)
-	options = Grid2Options:MakeStatusMissingOption(status, options, optionParams)
-	options = Grid2Options:MakeStatusBlinkThresholdOption(status, options, optionParams)
-	options = Grid2Options:MakeStatusClassFilterOption(status, options, optionParams)
+
+	options = Grid2Options:MakeStatusColorOptions(status, options, optionParams)
+	options = Grid2Options:MakeStatusMissingOptions(status, options, optionParams)
+	options = Grid2Options:MakeStatusBlinkThresholdOptions(status, options, optionParams)
+	options = Grid2Options:MakeStatusClassFilterOptions(status, options, optionParams)
+	options = Grid2Options:MakeStatusLayerOptions(status, options, optionParams)
 
 	--Add as a subtype.
 	return options, "buff"
@@ -818,18 +908,20 @@ end
 --Package a standard set of options for debuffs
 function Grid2Options:MakeStatusStandardDebuffOptions(status, options, optionParams)
 	options = options or {}
-	options = Grid2Options:MakeStatusColorOption(status, options, optionParams)
-	options = Grid2Options:MakeStatusBlinkThresholdOption(status, options, optionParams)
-	options = Grid2Options:MakeStatusClassFilterOption(status, options, optionParams)
+
+	options = Grid2Options:MakeStatusColorOptions(status, options, optionParams)
+	options = Grid2Options:MakeStatusBlinkThresholdOptions(status, options, optionParams)
+	options = Grid2Options:MakeStatusClassFilterOptions(status, options, optionParams)
+	options = Grid2Options:MakeStatusLayerOptions(status, options, optionParams)
 
 	--Add as a subtype.
 	return options, "debuff"
 end
 
-function Grid2Options:MakeStatusHealsIncomingOption(status, options, optionParams)
+function Grid2Options:MakeStatusHealsIncomingOptions(status, options, optionParams)
 	options = options or {}
 
-	options = Grid2Options:MakeStatusColorOption(status, options, optionParams)
+	options = Grid2Options:MakeStatusColorOptions(status, options, optionParams)
 
 	options.includePlayerHeals = {
 		type = "toggle",
@@ -886,35 +978,35 @@ end
 
 			
 --No options for the status
-function Grid2Options:MakeStatusNoOption(status, options, optionParams)
+function Grid2Options:MakeStatusNoOptions(status, options, optionParams)
 end
 
 function Grid2Options:MakeStatusOptions(dblData, reset)
 	AddStatusesGroup(reset)
 
-	self:AddOptionHandler("charmed", Grid2Options.MakeStatusColorOption)
+	self:AddOptionHandler("charmed", Grid2Options.MakeStatusStandardOptions)
 	self:AddOptionHandler("classcolor", Grid2Options.MakeStatusClassColorOptions)
 
 	self:AddOptionHandler("buff", Grid2Options.MakeStatusStandardBuffOptions)
 	self:AddOptionHandler("debuff", Grid2Options.MakeStatusStandardDebuffOptions)
 	self:AddOptionHandler("debuffType", Grid2Options.MakeStatusStandardDebuffOptions)
 
-	self:AddOptionHandler("death", Grid2Options.MakeStatusColorOption)
-	self:AddOptionHandler("feign-death", Grid2Options.MakeStatusColorOption)
+	self:AddOptionHandler("death", Grid2Options.MakeStatusStandardOptions)
+	self:AddOptionHandler("feign-death", Grid2Options.MakeStatusStandardOptions)
 	self:AddOptionHandler("health-current", Grid2Options.MakeStatusHealthCurrentOptions, {
 			deadAsFullHealth = L["Show dead as having Full Health"],
 	})
-	self:AddOptionHandler("health-deficit", Grid2Options.MakeStatusThresholdOption)
-	self:AddOptionHandler("heals-incoming", Grid2Options.MakeStatusHealsIncomingOption)
-	self:AddOptionHandler("health-low", Grid2Options.MakeStatusColorThresholdOption)
+	self:AddOptionHandler("health-deficit", Grid2Options.MakeStatusHealthDeficitOptions)
+	self:AddOptionHandler("heals-incoming", Grid2Options.MakeStatusHealsIncomingOptions)
+	self:AddOptionHandler("health-low", Grid2Options.MakeStatusColorThresholdOptions)
 
-	self:AddOptionHandler("lowmana", Grid2Options.MakeStatusColorThresholdOption)
-	self:AddOptionHandler("mana", Grid2Options.MakeStatusNoOption)
-	self:AddOptionHandler("name", Grid2Options.MakeStatusNoOption)
-	self:AddOptionHandler("offline", Grid2Options.MakeStatusColorOption)
-	self:AddOptionHandler("pvp", Grid2Options.MakeStatusColorOption)
-	self:AddOptionHandler("range", Grid2Options.MakeStatusRangeOption)
-	self:AddOptionHandler("ready-check", Grid2Options.MakeStatusReadyCheckOption, {
+	self:AddOptionHandler("lowmana", Grid2Options.MakeStatusColorThresholdOptions)
+	self:AddOptionHandler("mana", Grid2Options.MakeStatusNoOptions)
+	self:AddOptionHandler("name", Grid2Options.MakeStatusNoOptions)
+	self:AddOptionHandler("offline", Grid2Options.MakeStatusStandardOptions)
+	self:AddOptionHandler("pvp", Grid2Options.MakeStatusStandardOptions)
+	self:AddOptionHandler("range", Grid2Options.MakeStatusRangeOptions)
+	self:AddOptionHandler("ready-check", Grid2Options.MakeStatusReadyCheckOptions, {
 			color1 = L["Waiting color"],
 			colorDesc1 = L["Color for Waiting."],
 			color2 = L["Ready color"],
@@ -926,11 +1018,11 @@ function Grid2Options:MakeStatusOptions(dblData, reset)
 			threshold = L["Delay"],
 			thresholdDesc = L["Set the delay until ready check results are cleared."],
 	})
-	self:AddOptionHandler("role", Grid2Options.MakeStatusColorOption)
-	self:AddOptionHandler("threat", Grid2Options.MakeStatusColorOption)
-	self:AddOptionHandler("target", Grid2Options.MakeStatusColorOption)
-	self:AddOptionHandler("vehicle", Grid2Options.MakeStatusColorOption)
-	self:AddOptionHandler("voice", Grid2Options.MakeStatusColorOption)
+	self:AddOptionHandler("role", Grid2Options.MakeStatusStandardOptions)
+	self:AddOptionHandler("threat", Grid2Options.MakeStatusStandardOptions)
+	self:AddOptionHandler("target", Grid2Options.MakeStatusStandardOptions)
+	self:AddOptionHandler("vehicle", Grid2Options.MakeStatusStandardOptions)
+	self:AddOptionHandler("voice", Grid2Options.MakeStatusStandardOptions)
 
 	Grid2Options:AddElementSubTypeGroup("status", "buff", MakeStatusBuffCreateOptions(), reset)
 	Grid2Options:AddElementSubTypeGroup("status", "debuff", MakeStatusDebuffCreateOptions(), reset)
