@@ -16,11 +16,11 @@ function Grid2StatusRaidDebuffsOptions.UpgradeDefaults(dblData)
 end
 
 
-local function MakeStatusOptions(self, status, options)
+local function MakeStatusOptions(self, status, options, optionParams)
 	options = options or {}
-	options = self:MakeStatusColorOption(status, options)
-	options = self:MakeStatusMissingOption(status, options)
-	options = self:MakeStatusBlinkThresholdOption(status, options)
+	options = self:MakeStatusStandardOptions(status, options, optionParams)
+	options = self:MakeStatusMissingOptions(status, options, optionParams)
+	options = self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
 	return options
 end
 
