@@ -608,7 +608,11 @@ local function AddBarColorIndicatorOptions(indicator)
 			end,
 			set = function (_, v)
 				indicator.dbx.invertBarColor = v
-				DBL:GetOptionsDbx(Grid2.dblData, "indicators", baseKey).invertBarColor = v
+				
+				--Apply changes to the bar dbx
+				local indicatorKey = indicator.barKey
+				DBL:GetOptionsDbx(Grid2.dblData, "indicators", indicatorKey).invertBarColor = v
+
 				Grid2Frame:WithAllFrames(function (f) indicator:Update(f, f.unit) end)
 			end,
 		},

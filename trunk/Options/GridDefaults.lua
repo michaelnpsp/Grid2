@@ -109,14 +109,14 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				DBL:SetupLayerObject(dblData, "indicators", layer, "health", {type = "bar", level = 2, location = "center", orientation = "VERTICAL", texture = "Gradient", invertBarColor = true})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "health", "health-current", 99)
 
-				DBL:SetupLayerObject(dblData, "indicators", layer, "health-color", {type = "bar-color", invertBarColor = true})
+				DBL:SetupLayerObject(dblData, "indicators", layer, "health-color", {type = "bar-color"})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "health-color", "classcolor", 99)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "health-color", "health-current", 85)
 
 				DBL:SetupLayerObject(dblData, "indicators", layer, "heals", {type = "bar", level = 1, location = "center", orientation = "VERTICAL", texture = "Gradient", invertBarColor = true})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "heals", "heals-incoming", 99)
 
-				DBL:SetupLayerObject(dblData, "indicators", layer, "heals-color", {type = "bar-color", invertBarColor = true})
+				DBL:SetupLayerObject(dblData, "indicators", layer, "heals-color", {type = "bar-color"})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "heals-color", "heals-incoming", 99)
 
 
