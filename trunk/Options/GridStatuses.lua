@@ -49,7 +49,12 @@ function Grid2Options:MakeStatusLayerOptions(status, options)
 			end
 		end,
 	}
-	
+	options.layerSpacer = {
+		type = "header",
+		order = 6,
+		name = "",
+	}
+
 	return options
 end
 
@@ -491,7 +496,7 @@ function Grid2Options:MakeStatusClassColorOptions(status, options, optionParams)
 		type = "toggle",
 		name = L["Color Charmed Unit"],
 		desc = L["Color Units that are charmed."],
-		order = 1,
+		order = 7,
 		tristate = true,
 		get = function ()
 			return status.dbx.colorHostile
@@ -886,6 +891,7 @@ end
 function Grid2Options:MakeStatusHealthCurrentOptions(status, options, optionParams)
 	options = options or {}
 
+	options = Grid2Options:MakeStatusLayerOptions(status, options, optionParams)
 	options = Grid2Options:MakeStatusToggleOptions(status, options, optionParams, "deadAsFullHealth")
 	
 	return options
@@ -921,7 +927,7 @@ end
 function Grid2Options:MakeStatusHealsIncomingOptions(status, options, optionParams)
 	options = options or {}
 
-	options = Grid2Options:MakeStatusColorOptions(status, options, optionParams)
+	options = Grid2Options:MakeStatusStandardOptions(status, options, optionParams)
 
 	options.includePlayerHeals = {
 		type = "toggle",
