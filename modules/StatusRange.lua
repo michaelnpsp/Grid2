@@ -56,7 +56,7 @@ function Range:Grid_RangesUpdated()
 		CheckUnitRange = function () return 1 end
 		if self.frame then self.frame:Hide() end
 	else
-		print(("Grid2 Range updated. %d queried and %d obtained (from %s)."):format(queried_range or -1, actual_range or -1, spell or "*API*"))
+		-- print(("Grid2 Range updated. %d queried and %d obtained (from %s)."):format(queried_range or -1, actual_range or -1, spell or "*API*"))
 		if rezCheck then
 			CheckUnitRange = function (unit)
 				return (check(unit) or rezCheck(unit)) and 1
