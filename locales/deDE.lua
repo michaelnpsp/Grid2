@@ -72,9 +72,9 @@ L["Color options for class and pets."] = "Farb Optionen für Klassen und Begleit
 L["Fallback colors"] = "Rücksicherungs Farben"
 L["Color of unknown units or pets."] = "Farbe für unbekannte Einheiten oder Begleiter"
 L["Unknown Unit"] = "Unbekannte Einheit"
-L["The color of unknown units."] = "Die Farbe für unbekannte Einheiten"
+L["The color of unknown units."] = "Farbe für unbekannte Einheiten"
 L["Unknown Pet"] = "Unbekannte Begleiter"
-L["The color of unknown pets."] = "Die Farbe für unbekannte Begleiter"
+L["The color of unknown pets."] = "Farbe für unbekannte Begleiter"
 L["Class colors"] = "Klassen Farben"
 L["Color of player unit classes."] = "Farbe für Spieler Einheit Klassen"
 L["Creature type colors"] = "Kreaturen Typ Farbe"
@@ -130,7 +130,7 @@ L["Priority for %s"] = "Priorität für %s"
 L["Range filter"] = "Reichweiten Filter"
 L["Range filter for %s"] = "Reichweiten Filter für %s"
 L["Enable"] = "Aktiviert"
-L["Enable %s"] = "Aktiviert %s"
+L["Enable %s"] = "Aktiviere %s"
 --}}}
 
 --{{{ GridStatusAggro
@@ -209,7 +209,7 @@ L["Color health based on class."] = "Gesundheitsanzeige Farbe basierend auf Klas
 L["Health threshold"] = "Gesundheits Grenzwert"
 L["Only show deficit above % damage."] = "Zeige nur Defizit über % Schaden"
 L["Color deficit based on class."] = "Farben defizit basierend auf Klasse"
-L["Low HP threshold"] = "Wenig Gesundheit Grenzwert"
+L["Low HP threshold"] = "Grenzwert wenig Gesundheit"
 L["Set the HP % for the low HP warning."] = "Setzt die Gesundheit % für die wenig Gesundheit Warnung"
 --}}}
 
