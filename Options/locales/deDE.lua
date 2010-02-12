@@ -9,7 +9,7 @@ L["Show Tooltip"] = "Zeige Tooltip"
 L["Show unit tooltip.  Choose 'Always', 'Never', or 'OOC'."] = "Zeige Einheiten Tooltip. Wähle:'Immer', 'Nie', oder 'OOC'"
 L["Always"] = "Immer"
 L["Never"] = "Nie"
-L["OOC"] = "Ausserhalb des Kampfes"
+L["OOC"] = "Ausserhalb des Kampfes 'OOC'"
 
 L["blink"] = "Blink"
 L["category"] = "Kategorie"
@@ -151,6 +151,28 @@ L["SHAMAN"] = "Schamanin"
 L["WARLOCK"] = "Hexenmeisterin"
 L["WARRIOR"] = "Kriegerin"
 
+--Account Layer
+L["account"] = "Account"
+
+--Class Layer
+L["druid"] = "Druide"
+L["paladin"] = "Paladin"
+L["priest"] = "Priester"
+L["shaman"] = "Schamane"
+
+--Spec Layer
+L["tree"] = "Baum"
+L["holy1"] = "Heilig 1"
+L["holy2"] = "Heilig 2"
+L["resto"] = "Wiederherstellung"
+
+L["Layer"] = "Layer"
+L["Layer level.  Higher layers (like Class or Spec) supercede lower ones like Account."] = "Layer Level. Höhere Layer (Wie Klasse oder Talent) ersetzen geringere wie Account"
+
+L["Opacity"] = "Durchsichtigkeit"
+L["Set the opacity."] = "Einstellung Durchsichtigkeit"
+
+
 L["<CharacterOnlyString>"] = "<CharacterOnlyString>"
 L["+"] = "+"
 L["-"] = "-"
@@ -217,8 +239,8 @@ L["Y - Vertical Offset"] = "Y - Vertical Offset"
 
 L["Group Anchor"] = "Gruppe Befestigungspunkt"
 L["Position and Anchor"] = "Position und Befestigungspunkt"
-L["Sets where groups are anchored relative to the layout frame."] = "Setzt fest wo die Gruppen befestigt werden in der Relation zum Layout Frame"
-L["Resets the layout frame's position and anchor."] = "Resetet die Layout Frame Position und Befestigungspunkte"
+L["Sets where groups are anchored relative to the layout frame."] = "Setzt fest wo die Gruppen befestigt werden in der Relation zum Layout Rahmen"
+L["Resets the layout frame's position and anchor."] = "Resetet die Layout Rahmen Position und Befestigungspunkte"
 
 L["Center Text Length"] = "Text Länge Mitte"
 L["Number of characters to show on Center Text indicator."] = "Anzahl der Buchstaben die im mittleren Text angezeigt werden."
