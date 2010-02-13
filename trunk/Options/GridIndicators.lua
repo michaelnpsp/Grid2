@@ -17,7 +17,10 @@ function Grid2Options:UpdateIndicator(indicator)
 
 	local dbx = DBL:GetRuntimeDbx(dblData, "indicators", indicatorKey)
 	if (indicator.UpdateDB) then
-		indicator:UpdateDB(dbx)
+		local create = indicator:UpdateDB(dbx)
+		if (create) then
+			Grid2Frame:WithAllFrames(function (f) indicator:Create(f) end)
+		end
 	end
 end
 --[[
@@ -344,6 +347,59 @@ end
 
 
 
+Grid2Options.typeMorphValues = {
+	icon = {icon = L["icon"], square = L["square"], text = L["text"]},
+	square = {icon = L["icon"], square = L["square"], text = L["text"]},
+	text = {icon = L["icon"], square = L["square"], text = L["text"]},
+}
+
+function Grid2Options.GetIndicatorTypeValues(info)
+	local indicator = info.arg
+	local typeKey = indicator.dbx.type
+	local typeMorphValues = Grid2Options.typeMorphValues
+	
+	if (not typeMorphValues[typeKey]) then
+		typeMorphValues[typeKey] = {}
+		typeMorphValues[typeKey][typeKey] = L[typeKey]
+	end
+	
+	return Grid2Options.typeMorphValues[typeKey]
+end
+
+function Grid2Options.GetIndicatorType(info)
+	local indicator = info.arg
+	
+	return indicator.dbx.type
+end
+
+function Grid2Options.SetIndicatorType(info, value)
+	local indicator = info.arg
+	local baseKey = indicator.name
+	local morph = indicator.dbx.type ~= value
+	
+	indicator.dbx.type = value
+	DBL:GetOptionsDbx(Grid2.dblData, "indicators", baseKey).type = value
+	
+	Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
+	Grid2Options:UpdateIndicator(indicator)
+end
+
+function Grid2Options:MakeIndicatorTypeOptions(indicator, options, optionParams)
+	local baseKey = indicator.name
+	options.type = {
+	    type = 'select',
+		order = 3,
+		name = L["Type"],
+		desc = L["Type of indicator"],
+	    values = Grid2Options.GetIndicatorTypeValues,
+	    get = Grid2Options.GetIndicatorType,
+	    set = Grid2Options.SetIndicatorType,
+		arg = indicator,
+	}
+end
+
+
+
 local locationValues = {}
 function Grid2Options.GetLocationValues()
 	wipe(locationValues)
@@ -455,6 +511,7 @@ local function AddTextIndicatorOptions(indicator)
 		Grid2Options:AddMediaOption("font", fontOption)
 		options.font = fontOption
 	end
+	Grid2Options:MakeIndicatorTypeOptions(indicator, options)
 	Grid2Options:AddIndicatorLocationOptions(indicator, options)
 	Grid2Options:AddIndicatorLayerOptions(indicator, options)
 	Grid2Options:AddIndicatorStatusOptions(indicator, options)
@@ -557,6 +614,7 @@ local function AddIconIndicatorOptions(indicator)
 			end,
 		},
 	}
+	Grid2Options:MakeIndicatorTypeOptions(indicator, options)
 	Grid2Options:AddIndicatorLocationOptions(indicator, options)
 	Grid2Options:AddIndicatorLayerOptions(indicator, options)
 	Grid2Options:AddIndicatorStatusOptions(indicator, options)
@@ -586,6 +644,7 @@ local function AddSquareIndicatorOptions(indicator)
 			end,
 		},
 	}
+	Grid2Options:MakeIndicatorTypeOptions(indicator, options)
 	Grid2Options:AddIndicatorLocationOptions(indicator, options)
 	Grid2Options:AddIndicatorLayerOptions(indicator, options)
 	Grid2Options:AddIndicatorStatusOptions(indicator, options)
@@ -806,9 +865,9 @@ function Grid2Options:MakeIndicatorOptions(dblData, reset)
 	self:AddOptionHandler("bar-color", AddBarColorIndicatorOptions)
 	self:AddOptionHandler("border", AddBorderIndicatorOptions)
 
-	self:AddCreatableOptionHandler("square", L["Square"], AddSquareIndicatorOptions)
-	self:AddCreatableOptionHandler("icon", L["Icon"], AddIconIndicatorOptions)
-	self:AddCreatableOptionHandler("text", L["Text"], AddTextIndicatorOptions)
+	self:AddCreatableOptionHandler("icon", L["icon"], AddIconIndicatorOptions)
+	self:AddCreatableOptionHandler("square", L["square"], AddSquareIndicatorOptions)
+	self:AddCreatableOptionHandler("text", L["text"], AddTextIndicatorOptions)
 	self:AddOptionHandler("text-color", Grid2Options.MakeNoIndicatorOptions)
 
 	local setup = DBL:GetRuntimeSetup(dblData, "indicators")
