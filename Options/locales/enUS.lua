@@ -22,9 +22,9 @@ L["status"] = true
 L["buff"] = true
 L["debuff"] = true
 
-L["Icon"] = true
-L["Square"] = true
-L["Text"] = true
+L["icon"] = true
+L["square"] = true
+L["text"] = true
 
 L["Advanced"] = true
 L["Advanced options."] = true
@@ -162,10 +162,16 @@ L["WARRIOR"] = "Warrior"
 L["account"] = true
 
 --Class Layer
+L["deathknight"] = true
 L["druid"] = true
+L["hunter"] = true
+L["mage"] = true
 L["paladin"] = true
 L["priest"] = true
+L["rogue"] = true
 L["shaman"] = true
+L["warlock"] = true
+L["warrior"] = true
 
 --Spec Layer
 L["tree"] = true
@@ -237,6 +243,7 @@ L["Show the time remaining."] = true
 L["Threshold"] = true
 L["Threshold at which to activate the status."] = true
 L["Type"] = true
+L["Type of indicator"] = true
 L["Type of indicator to create"] = true
 L["Up"] = true
 L["X Offset"] = true
