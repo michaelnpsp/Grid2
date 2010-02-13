@@ -50,7 +50,7 @@ local function Square_UpdateDB(self, dbx)
 if (self.dbx) then
 	print("Square_UpdateDB self.dbx:", self.dbx, self.dbx.cornerSize, "dbx:", dbx, dbx.cornerSize)
 end
-
+	local oldType = self.dbx and self.dbx.type or dbx.type
 	local location = Grid2.locations[dbx.location]
 
 	self.frameLevel = dbx.level
@@ -66,6 +66,10 @@ end
 	self.UpdateDB = Square_UpdateDB
 
 	self.dbx = dbx
+	
+	if (oldType ~= dbx.type) then
+		return true
+	end
 end
 
 

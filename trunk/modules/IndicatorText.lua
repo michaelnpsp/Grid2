@@ -142,39 +142,50 @@ local function TextColor_OnUpdate(self, parent, unit, status)
 	if (status) then
 		Text:SetTextColor(status:GetColor(unit))
 	else
-if (not Text.SetTextColor) then
-print("TextColor_OnUpdate", self.textname, unit, Text)
-end
 		Text:SetTextColor(1, 1, 1, 1)
 	end
 end
 
-local function Create(indicatorKey, dbx)
-	local colorKey = indicatorKey .. "-color"
+local function Text_UpdateDB(self, dbx)
+	local oldType = self.dbx and self.dbx.type or dbx.type
 	local location = Grid2.locations[dbx.location]
 
-	local Text = Grid2.indicatorPrototype:new(indicatorKey)
-	Text.frameLevel = dbx.level
-	Text.anchor = location.point
-	Text.anchorRel = location.relPoint
-	Text.offsetx = location.x
-	Text.offsety = location.y
-	Text.Create = Text_Create
-	Text.GetBlinkFrame = Text_GetBlinkFrame
-	Text.Layout = Text_Layout
-	Text.OnUpdate = Text_OnUpdate
-	Text.SetTextFont = Text_SetTextFont
+	self.frameLevel = dbx.level
+	self.anchor = location.point
+	self.anchorRel = location.relPoint
+	self.offsetx = location.x
+	self.offsety = location.y
+	self.Create = Text_Create
+	self.GetBlinkFrame = Text_GetBlinkFrame
+	self.Layout = Text_Layout
+	self.OnUpdate = Text_OnUpdate
+	self.SetTextFont = Text_SetTextFont
+	self.UpdateDB = Text_UpdateDB
 
-	Text.dbx = dbx
+	self.dbx = dbx
+	
+	if (oldType ~= dbx.type) then
+		return true
+	end
+end
+
+local function TextColor_UpdateDB(self, dbx)
+	self.Create = TextColor_Create
+	self.Layout = TextColor_Layout
+	self.OnUpdate = TextColor_OnUpdate
+
+	self.dbx = dbx
+end
+
+local function Create(indicatorKey, dbx)
+	local Text = Grid2.indicatorPrototype:new(indicatorKey)
+	Text_UpdateDB(Text, dbx)
 	Grid2:RegisterIndicator(Text, { "text", "duration" })
 
+	local colorKey = indicatorKey .. "-color"
 	local TextColor = Grid2.indicatorPrototype:new(colorKey)
+	TextColor_UpdateDB(TextColor, dbx)
 	TextColor.textname = indicatorKey
-	TextColor.Create = TextColor_Create
-	TextColor.Layout = TextColor_Layout
-	TextColor.OnUpdate = TextColor_OnUpdate
-
-	TextColor.dbx = dbx
 	Grid2:RegisterIndicator(TextColor, { "color" })
 
 	return Text, TextColor
@@ -184,7 +195,6 @@ Grid2.setupFunc["text"] = Create
 
 --ToDo: Is there a better way to handle this dual indicator creation?
 local function CreateColor(indicatorKey, dbx)
---	TextColor.dbx = dbx
 end
 Grid2.setupFunc["text-color"] = CreateColor
 
