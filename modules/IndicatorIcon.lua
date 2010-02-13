@@ -97,24 +97,37 @@ local function Icon_SetIconSize(self, parent, iconSize)
 	Icon:SetHeight(iconSize)
 end
 
-local function CreateIcon(indicatorKey, dbx)
+local function Icon_UpdateDB(self, dbx)
+	local oldType = self.dbx and self.dbx.type or dbx.type
 	local location = Grid2.locations[dbx.location]
 
-	local Icon = Grid2.indicatorPrototype:new(indicatorKey)
-	Icon.frameLevel = dbx.level
-	Icon.anchor = location.point
-	Icon.anchorRel = location.relPoint
-	Icon.offsetx = location.x
-	Icon.offsety = location.y
-	Icon.Create = Icon_Create
-	Icon.GetBlinkFrame = Icon_GetBlinkFrame
-	Icon.Layout = Icon_Layout
-	Icon.OnUpdate = Icon_OnUpdate
-	Icon.SetIconSize = Icon_SetIconSize
+	self.frameLevel = dbx.level
+	self.anchor = location.point
+	self.anchorRel = location.relPoint
+	self.offsetx = location.x
+	self.offsety = location.y
+	self.Create = Icon_Create
+	self.GetBlinkFrame = Icon_GetBlinkFrame
+	self.Layout = Icon_Layout
+	self.OnUpdate = Icon_OnUpdate
+	self.SetIconSize = Icon_SetIconSize
+	self.UpdateDB = Icon_UpdateDB
 
-	Icon.dbx = dbx
-	Grid2:RegisterIndicator(Icon, { "icon" })
-	return Icon
+	self.dbx = dbx
+	
+	if (oldType ~= dbx.type) then
+		return true
+	end
+end
+
+
+local function CreateIcon(indicatorKey, dbx)
+	local indicator = Grid2.indicatorPrototype:new(indicatorKey)
+
+	Icon_UpdateDB(indicator, dbx)
+
+	Grid2:RegisterIndicator(indicator, { "icon" })
+	return indicator
 end
 
 Grid2.setupFunc["icon"] = CreateIcon
