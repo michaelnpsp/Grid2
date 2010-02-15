@@ -32,7 +32,7 @@ function Voice:IsActive(unit)
 end
 
 function Voice:GetColor(unit)
-	local color = self.db.profile.color1
+	local color = self.dbx.color1
 	return color.r, color.g, color.b, color.a
 end
 
