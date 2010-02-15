@@ -13,16 +13,16 @@ L["Food"] = "Essen"
 
 --{{{ GridCore
 L["Configure"] = "Konfiguration"
-L["Configure Grid"] = "Konfiguration Grid"
+L["Configure Grid"] = "Grid2 Konfiguration"
 --}}}
 
 --{{{ GridFrame
 L["Frame"] = "Rahmen"
-L["Options for GridFrame."] = "Optionen für Grid Rahmen"
+L["Options for GridFrame."] = "Optionen für den Grid2 Rahmen"
 
 L["Indicators"] = "Indikatoren"
 L["Health Bar"] = "Gesundheitsleiste"
-L["Health Bar Color"] = "Gesundheitsleisten Farbe"
+L["Health Bar Color"] = "Farbe der Gesundheitsleiste"
 L["Center Text"] = "Center Text"
 L["Center Text 2"] = "Center Text 2"
 L["Center Icon"] = "Center Icon"
@@ -34,18 +34,18 @@ L["Frame Alpha"] = "Frame/Rahmen Alpha"
 
 L["Options for %s indicator."] = "Optionen für %s Indikator"
 L["Statuses"] = "Status/Zustand"
-L["Toggle status display."] = "einschalten/ausschalten Status Display"
+L["Toggle status display."] = "Einschalten/Ausschalten Status Display"
 
 -- Advanced options
 L["Enable %s indicator"] = "Aktiviert %s indikator"
-L["Toggle the %s indicator."] = "einschalten/ausschalten %s Indikator."
+L["Toggle the %s indicator."] = "Einschalten/Ausschalten %s Indikator."
 L["Orientation of Text"] = "Ausrichtung des Textes"
-L["Set frame text orientation."] = "Ausrichtung vom Rahmen Text"
+L["Set frame text orientation."] = "Ausrichtung des Rahmen Textes"
 --}}}
 
 --{{{ GridLayout
 L["Layout"] = "Layout"
-L["Options for GridLayout."] = "Optionen für GridLayout"
+L["Options for GridLayout."] = "Optionen für das GridLayout"
 
 -- Layout options
 L["Raid Layout"] = "Raid Layout"
@@ -146,7 +146,7 @@ L["Disease"] = "Krankheit"
 L["Magic"] = "Magie"
 L["Curse"] = "Fluch"
 L["Ghost"] = "Geist"
-L["Add new Buff"] = "Neuen Buff zufügen"
+L["Add new Buff"] = "Neuen Buff hizufügen"
 L["Adds a new buff to the status module"] = "Fügt einen neuen Buff zum Status Module"
 L["<buff name>"] = "<Buff Name>"
 L["Add new Debuff"] = "Fügt einen neuen Debuff hinzu"
@@ -158,9 +158,9 @@ L["Remove %s from the menu"] = "Entfernt %s aus dem Menue"
 L["Debuff: %s"] = "Debuff: %s"
 L["Buff: %s"] = "Buff: %s"
 L["Class Filter"] = "Klassen Filter"
-L["Show status for the selected classes."] = "Zeigt den Status der ausgewählten Klasse"
+L["Show status for the selected classes."] = "Zeigt den Status der ausgewählten Klassen"
 L["Show on %s."] = "Zeigt auf %s."
-L["Show if missing"] = "Zeigt an ob fehlt"
+L["Show if missing"] = "Zeige an ob fehlt"
 L["Display status only if the buff is not active."] = "Anzeige Status nur wenn Buff nicht Aktiv"
 L["Filter Abolished units"] = "Filter aufhebbarer Einheiten"
 L["Skip units that have an active Abolish buff."] = "Überspringe Einheiten mit aktiven aufhebbarem Buff"
