@@ -192,6 +192,7 @@ do
 			end
 			if updated then
 				self:SendMessage(exists and "Grid_UnitChanged" or "Grid_UnitJoined", unit, guid)
+				self:SendMessage("Grid_UnitUpdate", unit, guid)
 				self:SendMessage("Grid_RosterUpdated")
 			end
 		else
