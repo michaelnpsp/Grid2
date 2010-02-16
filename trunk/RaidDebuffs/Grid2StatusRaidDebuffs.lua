@@ -208,6 +208,14 @@ local spellDB = {
 		72004,72098,72120,72121,--Frostbite
 	},
 	[BZ["Icecrown Citadel"]] = {
+		--Trash
+		70450,--Blood Mirror
+		71089,--Bubbling Pus
+		69483,--Dark Reckoning
+		71163,--Devour Humanoid
+		71127,--Mortal Wound
+		70435,71154,--Rend Flesh
+
 		--Lord Marrowgar
 		70823,--Coldflame
 		69065,--Impaled
@@ -283,18 +291,11 @@ local spellDB = {
 		70127,72528,72529,72530,--Mystic Buffet
 
 		--Lich King
-		70541,73779,73780,73781,--Infest
-		70337,70338,73785,73786,73787,73912,73913,73914,--Necrotic Plague
 		72133,73788,73789,73790,--Pain and Suffering
 		68981,--Remorseless Winter
 		69242,--Soul Shriek
-
-		--Trash
-		71089,--Bubbling Pus
-		69483,--Dark Reckoning
-		71163,--Devour Humanoid
-		71127,--Mortal Wound
-		70435,71154,--Rend Flesh
+		70541,73779,73780,73781,--Infest
+		70337,70338,73785,73786,73787,73912,73913,73914,--Necrotic Plague
 	},
 }
 
@@ -326,21 +327,31 @@ function GSRD:UpdateZoneSpells(zone)
 	end
 end
 
-function status:OnEnable()
-	frame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-	GSRD:UpdateZoneSpells()
-end
-
-function status:OnDisable()
-	frame:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
-end
-
 local states = {}
 local textures = {}
 local counts = {}
 local types = {}
 local durations = {}
 local expirations = {}
+
+function status:Grid_UnitLeft(_, unit)
+	states[unit] = nil
+	textures[unit] = nil
+	counts[unit] = nil
+	durations[unit] = nil
+	expirations[unit] = nil
+end
+
+function status:OnEnable()
+	frame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+	self:RegisterMessage("Grid_UnitLeft")
+	GSRD:UpdateZoneSpells()
+end
+
+function status:OnDisable()
+	frame:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
+	self:UnregisterMessage("Grid_UnitLeft")
+end
 
 function status:IsActive(unit)
 	return states[unit]
