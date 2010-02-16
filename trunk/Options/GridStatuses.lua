@@ -1024,8 +1024,18 @@ function Grid2Options:MakeStatusOptions(dblData, reset)
 			threshold = L["Delay"],
 			thresholdDesc = L["Set the delay until ready check results are cleared."],
 	})
-	self:AddOptionHandler("role", Grid2Options.MakeStatusStandardOptions)
-	self:AddOptionHandler("threat", Grid2Options.MakeStatusStandardOptions)
+	self:AddOptionHandler("role", Grid2Options.MakeStatusStandardOptions, {
+			color1 = L["MAIN_ASSIST"],
+			color2 = L["MAIN_TANK"],
+	})
+	self:AddOptionHandler("threat", Grid2Options.MakeStatusStandardOptions, {
+			color1 = L["Not Tanking"],
+			colorDesc1 = L["Higher threat than tank."],
+			color2 = L["Insecurely Tanking"],
+			colorDesc2 = L["Tanking without having highest threat."],
+			color3 = L["Securely Tanking"],
+			colorDesc3 = L["Tanking with highest threat."],
+	})
 	self:AddOptionHandler("target", Grid2Options.MakeStatusStandardOptions)
 	self:AddOptionHandler("vehicle", Grid2Options.MakeStatusStandardOptions)
 	self:AddOptionHandler("voice", Grid2Options.MakeStatusStandardOptions)
