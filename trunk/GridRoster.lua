@@ -118,6 +118,7 @@ end
 do
 	local units_to_remove = {}
 	local units_added = {}
+	local units_changed = {}
 	local units_updated = {}
 
 	local function UpdateUnit(unit)
@@ -134,7 +135,7 @@ do
 		if not old_name then
 			units_added[unit] = guid
 		elseif old_name ~= name or old_realm ~= realm then
-			units_updated[unit] = guid
+			units_changed[unit] = guid
 		end
 
 		roster_names[unit] = name
@@ -242,12 +243,19 @@ do
 		for unit, guid in pairs(units_added) do
 			updated = true
 			self:SendMessage("Grid_UnitJoined", unit, guid)
+			units_updated[unit] = guid
 			units_added[unit] = nil
 		end
 
-		for unit, guid in pairs(units_updated) do
+		for unit, guid in pairs(units_changed) do
 			updated = true
 			self:SendMessage("Grid_UnitChanged", unit, guid)
+			units_updated[unit] = guid
+			units_changed[unit] = nil
+		end
+
+		for unit, guid in pairs(units_updated) do
+			self:SendMessage("Grid_UnitUpdate", unit, guid)
 			units_updated[unit] = nil
 		end
 

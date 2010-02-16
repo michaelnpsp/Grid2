@@ -36,8 +36,8 @@ function Role:UpdateAllUnits(event)
 	end
 end
 
-function Role:Grid_UnitLeft(_, unitid)
-	role_cache[unitid] = nil
+function Role:Grid_UnitLeft(_, unit)
+	role_cache[unit] = nil
 end
 
 function Role:OnEnable()

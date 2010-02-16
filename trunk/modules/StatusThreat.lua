@@ -1,16 +1,16 @@
 local Threat = Grid2.statusPrototype:new("threat")
 
 
-function Threat:UpdateUnit(event, unitid)
-	-- unitid can be nil which is so wtf
-	if (unitid) then
-		self:UpdateIndicators(unitid)
+function Threat:UpdateUnit(event, unit)
+	-- unit can be nil which is so wtf
+	if (unit) then
+		self:UpdateIndicators(unit)
 	end
 end
 
 function Threat:UpdateAllUnits()
-	for guid, unitid in Grid2:IterateRoster() do
-		self:UpdateIndicators(unitid)
+	for guid, unit in Grid2:IterateRoster() do
+		self:UpdateIndicators(unit)
 	end
 end
 
@@ -27,16 +27,16 @@ end
 -- 1 = not tanking, higher threat than tank
 -- 2 = insecurely tanking.
 -- 3 = securely tanking something
-function Threat:IsActive(unitid)
-	local threat = unitid and UnitThreatSituation(unitid)
+function Threat:IsActive(unit)
+	local threat = unit and UnitThreatSituation(unit)
 	if (threat and threat > 0) then
 		return "blink"
 	end
 end
 
-function Threat:GetColor(unitid)
+function Threat:GetColor(unit)
 	local color
-	local threat = UnitThreatSituation(unitid)
+	local threat = UnitThreatSituation(unit)
 
 	if (threat == 1) then
 		color = self.dbx.color1
@@ -49,7 +49,7 @@ function Threat:GetColor(unitid)
 	return color.r, color.g, color.b, color.a
 end
 
-function Threat:GetIcon(unitid)
+function Threat:GetIcon(unit)
 	return [[Interface\RaidFrame\UI-RaidFrame-Threat]]
 end
 
