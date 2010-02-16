@@ -177,7 +177,9 @@ end
 
 function Grid2Frame:OnEnable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateFrameUnits")
-	self:RegisterMessage("Grid_UnitChanged", "UpdateFrameUnit")
+	self:RegisterMessage("Grid_UnitUpdate", "UpdateFrameUnitNow")
+	-- self:RegisterMessage("Grid_UnitChanged", "UpdateFrameUnit")
+	-- self:RegisterMessage("Grid_UnitJoined", "UpdateFrameUnit")
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "UpdateFrameUnit")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE", "UpdateFrameUnit")
 	self:ResetAllFrames()
@@ -278,6 +280,14 @@ function Grid2Frame:UpdateFrameUnit(_, unit)
 			frame.unit = new
 			self:UpdateIndicators(frame)
 		end
+	end
+end
+
+function Grid2Frame:UpdateFrameUnitNow(_, unit)
+	for frame in next, Grid2:GetUnitFrames(unit) do
+		local old, new = frame.unit, frame:GetModifiedUnit()
+		frame.unit = new
+		self:UpdateIndicators(frame)
 	end
 end
 

@@ -3,7 +3,7 @@ local PvP = Grid2.statusPrototype:new("pvp")
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 
-function PvP:Grid_UnitJoined(_, unit)
+function PvP:UNIT_FACTION(_, unit)
 	self:UpdateIndicators(unit)
 end
 
@@ -14,17 +14,17 @@ function PvP:ZONE_CHANGED_NEW_AREA(event)
 end
 
 function PvP:OnEnable()
-	self:RegisterMessage("Grid_UnitJoined")
-	self:RegisterMessage("Grid_UnitChanged", "Grid_UnitJoined")
-	self:RegisterEvent("UNIT_FACTION", "Grid_UnitJoined")
+	-- self:RegisterMessage("Grid_UnitJoined", "UNIT_FACTION")
+	-- self:RegisterMessage("Grid_UnitChanged", "UNIT_FACTION")
+	self:RegisterEvent("UNIT_FACTION")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "ZONE_CHANGED_NEW_AREA")
 end
 
 function PvP:OnDisable()
 	self:UnregisterEvent("UNIT_FACTION")
 	self:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
-	self:UnregisterMessage("Grid_UnitJoined")
-	self:UnregisterMessage("Grid_UnitChanged")
+	-- self:UnregisterMessage("Grid_UnitJoined")
+	-- self:UnregisterMessage("Grid_UnitChanged")
 end
 
 function PvP:IsActive(unitid)

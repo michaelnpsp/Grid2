@@ -23,7 +23,7 @@ end
 
 function Range:Grid_UnitJoined(_, unit)
 	cache[unit] = CheckUnitRange(unit)
-	self:UpdateIndicators(unit)
+	-- self:UpdateIndicators(unit)
 end
 
 function Range:Grid_UnitLeft(_, unit)

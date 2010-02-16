@@ -91,7 +91,7 @@ function ReadyCheck:IsActive(unit)
 end
 
 function ReadyCheck:GetReadyCheckStatus(unit)
-	if not readyChecking then return end
+	if not readyChecking then return nil end
 	local state = GetReadyCheckStatus(unit)
 	if not state then
 		--we're in the window where we need to persist the readystate
