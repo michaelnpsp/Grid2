@@ -84,6 +84,18 @@ L["Adjust border color and alpha."] = true
 L["Background"] = true
 L["Adjust background color and alpha."] = true
 
+--role
+L["MAIN_ASSIST"] = MAIN_ASSIST
+L["MAIN_TANK"] = MAIN_TANK
+
+--threat
+L["Not Tanking"] = true
+L["Higher threat than tank."] = true
+L["Insecurely Tanking"] = true
+L["Tanking without having highest threat."] = true
+L["Securely Tanking"] = true
+L["Tanking with highest threat."] = true
+
 L["Layout Anchor"] = true
 L["Sets where Grid is anchored relative to the screen."] = true
 

@@ -226,7 +226,11 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-right-color", {type = "text-color"})
 
 				DBL:SetupLayerObject(dblData, "indicators", layer, "center-left", {type = "icon", level = 9, location = "center-left", iconSize = 16, fontSize = 8,})
+				DBL:SetupMapObject(dblData, "statusMap", layer, "center-left", "debuff-Poison", 90)
+
 				DBL:SetupLayerObject(dblData, "indicators", layer, "center-right", {type = "icon", level = 9, location = "center-right", iconSize = 16, fontSize = 8,})
+				DBL:SetupMapObject(dblData, "statusMap", layer, "center-right", "debuff-Curse", 80)
+
 				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-bottom-right", {type = "square", level = 3, location = "corner-bottom-right", cornerSize = 5,})
 
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-AbolishPoison-mine", {type = "buff", spellName = 2893, mine = true, blinkThreshold = 3, color1 = {r=.9,g=1,b=.6,a=1}})
@@ -235,9 +239,6 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-Regrowth-mine", {type = "buff", spellName = 8936, mine = true, color1 = {r=.5,g=1,b=0,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-Thorns", {type = "buff", spellName = 467, missing = true, color1 = {r=.2,g=.05,b=.05,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-WildGrowth-mine", {type = "buff", spellName = 53248, mine = true, color1 = {r=0.2,g=.9,b=.2,a=1}})
-
-				DBL:SetupMapObject(dblData, "statusMap", layer, "center-left", "debuff-Poison", 90)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "center-right", "debuff-Curse", 80)
 
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-left", "buff-Lifebloom-mine", 99)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-left-color", "buff-Lifebloom-mine", 99)
