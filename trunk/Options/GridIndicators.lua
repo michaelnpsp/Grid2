@@ -497,18 +497,28 @@ local function AddTextIndicatorOptions(indicator)
 			order = 70,
 			name = L["Font"],
 			desc = L["Adjust the font settings"],
-			get = function ()
-				return indicator.dbx.font
-			end,
-			set = function (_, v)
-				indicator.dbx.font = v
-				DBL:GetOptionsDbx(Grid2.dblData, "indicators", baseKey).font = v
-				local font = media:Fetch("font", v)
-				local fontsize = indicator.dbx.fontSize
-				Grid2Frame:WithAllFrames(function (f) indicator:SetTextFont(f, font, fontsize) end)
-			end,
 		}
 		Grid2Options:AddMediaOption("font", fontOption)
+		local values = fontOption.values
+		fontOption.get = function ()
+			local fontIndex
+			for index, handle in ipairs(values) do
+				if (indicator.dbx.font == handle) then
+					fontIndex = index
+					break
+				end
+			end
+			return fontIndex
+		end
+		fontOption.set = function (_, v)
+			local fontHandle = values[v]
+			indicator.dbx.font = fontHandle
+			DBL:GetOptionsDbx(Grid2.dblData, "indicators", baseKey).font = fontHandle
+			local font = media:Fetch("font", fontHandle)
+			local fontsize = indicator.dbx.fontSize
+			Grid2Frame:WithAllFrames(function (f) indicator:SetTextFont(f, font, fontsize) end)
+		end
+
 		options.font = fontOption
 	end
 	Grid2Options:MakeIndicatorTypeOptions(indicator, options)

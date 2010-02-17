@@ -70,6 +70,7 @@ function Grid2Options:FlattenDefaults(dblData)
 end
 
 
+local defaultFont = "Friz Quadrata TT"
 
 -- locations - setup/locations
 -- objects - table of object config db indexed by layerKey
@@ -128,13 +129,13 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "death", 155)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "ready-check", 150)
 
-				DBL:SetupLayerObject(dblData, "indicators", layer, "text-name", {type = "text", level = 6, location = "center-top", textlength = 12, fontSize = 8, font = "Friz Quadrata TT",})
+				DBL:SetupLayerObject(dblData, "indicators", layer, "text-name", {type = "text", level = 6, location = "center-top", textlength = 12, fontSize = 8, font = defaultFont,})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "text-name", "name", 99)
 
 				DBL:SetupLayerObject(dblData, "indicators", layer, "text-name-color", {type = "text-color"})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "text-name-color", "classcolor", 99)
 
-				DBL:SetupLayerObject(dblData, "indicators", layer, "text-down", {type = "text", level = 7, location = "center-bottom", textlength = 12, fontSize = 8, font = "Friz Quadrata TT",})
+				DBL:SetupLayerObject(dblData, "indicators", layer, "text-down", {type = "text", level = 7, location = "center-bottom", textlength = 12, fontSize = 8, font = defaultFont,})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "text-down", "feign-death", 96)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "text-down", "death", 95)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "text-down", "offline", 93)
@@ -217,9 +218,9 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				DBL:SetupLayerObject(dblData, "locations", layer, "side-left-top", {relIndicator = nil, point = "BOTTOM", relPoint = "LEFT", x = 1, y = -2, name = "side-left-top"})
 				DBL:SetupLayerObject(dblData, "locations", layer, "side-left-bottom", {relIndicator = nil, point = "TOP", relPoint = "LEFT", x = 1, y = 2, name = "side-left-bottom"})
 
-				DBL:SetupLayerObject(dblData, "indicators", layer, "side-top", {type = "text", level = 9, location = "side-top", textlength = 12, fontSize = 8, font = "Friz Quadrata TT", duration = true})
-				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-left", {type = "text", level = 9, location = "corner-top-left", textlength = 12, fontSize = 8, font = "Friz Quadrata TT", duration = true})
-				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-right", {type = "text", level = 9, location = "corner-top-right", textlength = 12, fontSize = 8, font = "Friz Quadrata TT", duration = true})
+				DBL:SetupLayerObject(dblData, "indicators", layer, "side-top", {type = "text", level = 9, location = "side-top", textlength = 12, fontSize = 8, font = defaultFont, duration = true})
+				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-left", {type = "text", level = 9, location = "corner-top-left", textlength = 12, fontSize = 8, font = defaultFont, duration = true})
+				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-right", {type = "text", level = 9, location = "corner-top-right", textlength = 12, fontSize = 8, font = defaultFont, duration = true})
 
 				DBL:SetupLayerObject(dblData, "indicators", layer, "side-top-color", {type = "text-color"})
 				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-left-color", {type = "text-color"})
