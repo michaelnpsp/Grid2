@@ -84,6 +84,18 @@ L["Adjust border color and alpha."] = "테두리의 색상과 투명도를 조�
 L["Background"] = "배경"
 L["Adjust background color and alpha."] = "배경의 색상과 투명도를 조정합니다."
 
+--role
+L["MAIN_ASSIST"] = MAIN_ASSIST
+L["MAIN_TANK"] = MAIN_TANK
+
+--threat
+L["Not Tanking"] = "방어전담 않함"
+L["Higher threat than tank."] = "방어 전담을 하지 않습니다."
+L["Insecurely Tanking"] = "위험한 방어전담"
+L["Tanking without having highest threat."] = "가장 높은 위협 수준 가지지 않고 방어전담을 합니다."
+L["Securely Tanking"] = "안전한 방어전담"
+L["Tanking with highest threat."] = "가장 높은 위협 수준을 가지고 방어전담을 합니다."
+
 L["Layout Anchor"] = "배치 위치"
 L["Sets where Grid is anchored relative to the screen."] = "Grid의 화면 위치를 설정합니다."
 
@@ -162,10 +174,16 @@ L["WARRIOR"] = "전사"
 L["account"] = "계정"
 
 --Class Layer
+L["deathknight"] = true
 L["druid"] = "드루이드"
+L["hunter"] = true
+L["mage"] = true
 L["paladin"] = "성기사"
 L["priest"] = "사제"
+L["rogue"] = true
 L["shaman"] = "주술사"
+L["warlock"] = true
+L["warrior"] = true
 
 --Spec Layer
 L["tree"] = "특성"
@@ -175,6 +193,9 @@ L["resto"] = "복원"
 
 L["Layer"] = "계층"
 L["Layer level.  Higher layers (like Class or Spec) supercede lower ones like Account."] = "Layer level.  Higher layers (like Class or Spec) supercede lower ones like Account."
+
+L["Opacity"] = "투명도"
+L["Set the opacity."] = "투명도를 설정합니다."
 
 L["<CharacterOnlyString>"] = "<CharacterOnlyString>"
 L["+"] = "+"
@@ -222,6 +243,7 @@ L["Reset Locations"] = "위치 초기화"
 L["Reset locations to the default list."] = "기본 목록으로 위치를 되돌립니다."
 L["Reset Statuses"] = "상태 초기화"
 L["Reset statuses to defaults."] = "상태를 기본값으로 되돌립니다."
+L["Reset to defaults."] = "기본값으로 되돌립니다."
 L["Select statuses to display with the indicator"] = "지시기에 표시할 상태를 선택합니다."
 L["Select the location of the indicator"] = "지시기의 위치를 선택합니다."
 L["Show duration"] = "지속시간 표시"
@@ -233,6 +255,7 @@ L["Show the time remaining."] = "남은 시간을 표시."
 L["Threshold"] = "수치"
 L["Threshold at which to activate the status."] = "상태를 활성화할 수치를 설정합니다."
 L["Type"] = "형태"
+L["Type of indicator"] = "지시기 형태"
 L["Type of indicator to create"] = "만들 지시기의 형태를 설정합니다."
 L["Up"] = "위"
 L["X Offset"] = "X 간격"
