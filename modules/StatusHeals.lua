@@ -32,13 +32,11 @@ end
 local Heals = Grid2.statusPrototype:new("heals-incoming")
 
 function Heals:UpdateProfileData()
-	if self.db then
-		HEALCOMM_FLAGS = self.dbx.flags
-		HEALCOMM_TIMEFRAME = self.dbx.timeFrame
-		get_active_heal_amount = self.dbx.includePlayerHeals
-			and get_active_heal_amount_with_user
-			or  get_active_heal_amount_without_user
-	end
+	HEALCOMM_FLAGS = self.dbx.flags
+	HEALCOMM_TIMEFRAME = self.dbx.timeFrame
+	get_active_heal_amount = self.dbx.includePlayerHeals
+		and get_active_heal_amount_with_user
+		or  get_active_heal_amount_without_user
 end
 
 function Heals:OnEnable()
