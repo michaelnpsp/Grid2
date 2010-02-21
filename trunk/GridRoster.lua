@@ -38,38 +38,14 @@ do
 	end
 end
 
---ToDo: Is this actually used
-function Grid2:GetGUIDByName(name, realm)
+function Grid2:GetUnitByFullName(fullName)
+	local name, realm = fullName:match("^([^%-]+)%-(.*)$")
+	name = name or fullName
 	if realm == my_realm or realm == "" then realm = nil end
 	for unit, unit_name in pairs(roster_names) do
 		if name == unit_name and roster_realms[unit] == realm then
-			return roster_guids[unit]
+			return unit
 		end
-	end
-end
-
---ToDo: Is this actually used
-function Grid2:GetNameByGUID(guid)
-	local unit = roster_units[guid]
-	if unit then
-		return roster_names[unit], roster_realms[unit]
-	end
-end
-
---ToDo: Is this actually used
-function Grid2:GetGUIDByFullName(full_name)
-	local name, realm = full_name:match("^([^%-]+)%-(.*)$")
-	return self:GetGUIDByName(name or full_name, realm)
-end
-
---ToDo: Is this actually used
-function Grid2:GetFullNameByGUID(guid)
-	local name, realm = self:GetNameByGUID(guid)
-
-	if realm then
-		return name .. "-" .. realm
-	else
-		return name
 	end
 end
 
