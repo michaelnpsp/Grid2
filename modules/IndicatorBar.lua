@@ -48,7 +48,7 @@ local function Bar_OnUpdate(self, parent, unit, status)
 end
 
 local function Bar_SetOrientation(self, parent, orientation)
-	orientation = orientation or self.dbx.orientation
+	orientation = orientation or Grid2Frame.db.profile.orientation
 	parent[self.nameFG]:SetOrientation(orientation)
 end
 
