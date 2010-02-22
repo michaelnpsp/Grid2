@@ -4,13 +4,13 @@ local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 
 function Vehicle:PLAYER_ENTERING_WORLD(event)
-	for guid, unitid in Grid2:IterateRoster() do
-		self:UpdateIndicators(unitid)
+	for unit, guid in Grid2:IterateRosterUnits() do
+		self:UpdateIndicators(unit)
 	end
 end
 
-function Vehicle:UNIT_ENTERED_VEHICLE(event, unitid)
-	self:UpdateIndicators(unitid)
+function Vehicle:UNIT_ENTERED_VEHICLE(event, unit)
+	self:UpdateIndicators(unit)
 end
 
 function Vehicle:OnEnable()
@@ -27,25 +27,25 @@ function Vehicle:OnDisable()
 --	self:UnregisterMessage("Grid_UnitJoined")
 end
 
-function Vehicle:IsActive(unitid)
-	return UnitHasVehicleUI(unitid)
+function Vehicle:IsActive(unit)
+	return UnitHasVehicleUI(unit)
 end
 
-function Vehicle:GetColor(unitid)
+function Vehicle:GetColor(unit)
 	local color = self.dbx.color1
 	return color.r, color.g, color.b, color.a
 end
 
-function Vehicle:GetIcon(unitid)
+function Vehicle:GetIcon(unit)
 	return [[Interface\Vehicles\UI-Vehicles-Raid-Icon]]
 end
 
-function Vehicle:GetPercent(unitid)
-	return UnitHasVehicleUI(unitid) and self.dbx.color1.a
+function Vehicle:GetPercent(unit)
+	return UnitHasVehicleUI(unit) and self.dbx.color1.a
 end
 
 local vehicleString = L["vehicle"]
-function Vehicle:GetText(unitid)
+function Vehicle:GetText(unit)
 	return vehicleString
 end
 

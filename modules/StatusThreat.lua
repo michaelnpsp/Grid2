@@ -9,7 +9,7 @@ function Threat:UpdateUnit(event, unit)
 end
 
 function Threat:UpdateAllUnits()
-	for guid, unit in Grid2:IterateRoster() do
+	for unit, guid in Grid2:IterateRosterUnits() do
 		self:UpdateIndicators(unit)
 	end
 end

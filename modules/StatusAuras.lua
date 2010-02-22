@@ -312,7 +312,7 @@ function Grid2.CreateBuff(baseKey, dbx, statusTypesOverride)
 		-- as the texture is shown when the aura is not set
 		local _, _, texture = GetSpellInfo(status.auraName)
 		if texture then
-			for _, unit in Grid2:IterateRoster() do
+			for unit, guid in Grid2:IterateRosterUnits() do
 				status.textures[unit] = texture
 			end
 		end

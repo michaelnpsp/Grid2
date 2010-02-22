@@ -8,8 +8,8 @@ function PvP:UNIT_FACTION(_, unit)
 end
 
 function PvP:ZONE_CHANGED_NEW_AREA(event)
-	for guid, unitid in Grid2:IterateRoster() do
-		self:UpdateIndicators(unitid)
+	for unit, guid in Grid2:IterateRosterUnits() do
+		self:UpdateIndicators(unit)
 	end
 end
 

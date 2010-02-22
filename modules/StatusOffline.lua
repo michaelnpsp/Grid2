@@ -7,14 +7,10 @@ function Offline:UNIT_FLAGS(_, unit)
 end
 
 function Offline:OnEnable()
-	-- self:RegisterMessage("Grid_UnitJoined", "UNIT_FLAGS")
-	-- self:RegisterMessage("Grid_UnitChanged", "UNIT_FLAGS")
 	self:RegisterEvent("UNIT_FLAGS")
 end
 
 function Offline:OnDisable()
-	-- self:UnregisterMessage("Grid_UnitJoined")
-	-- self:UnregisterMessage("Grid_UnitChanged")
 	self:UnregisterEvent("UNIT_FLAGS")
 end
 

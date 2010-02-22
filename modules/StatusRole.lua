@@ -24,13 +24,13 @@ function Role:_GetUnitRole(unit)
 end
 
 function Role:UpdateAllUnits(event)
-	for guid, unitid in Grid2:IterateRoster() do
-		if (UnitExists(unitid)) then
-			local prev = role_cache[unitid]
-			local new = self:_GetUnitRole(unitid)
+	for unit, guid in Grid2:IterateRosterUnits() do
+		if (UnitExists(unit)) then
+			local prev = role_cache[unit]
+			local new = self:_GetUnitRole(unit)
 			if new ~= prev then
-				role_cache[unitid] = new
-				self:UpdateIndicators(unitid)
+				role_cache[unit] = new
+				self:UpdateIndicators(unit)
 			end
 		end
 	end
