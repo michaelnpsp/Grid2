@@ -44,8 +44,8 @@ function Grid2Options:MakeStatusLayerOptions(status, options)
 			DBL:SetObjectLayer(dblData, "statuses", baseKey, newLayer, status.dbx.type)
 			DBL:FlattenSetupType(dblData, "statuses")
 
-			for guid, unitid in Grid2:IterateRoster() do
-				status:UpdateIndicators(unitid)
+			for unit, guid in Grid2:IterateRosterUnits() do
+				status:UpdateIndicators(unit)
 			end
 		end,
 	}
@@ -186,8 +186,8 @@ function Grid2Options.SetStatusColor(info, r, g, b, a)
 	if (not privateColorHandler) then
 		Grid2:MakeBuffColorHandler(status)
 	end
-	for guid, unitid in Grid2:IterateRoster() do
-		status:UpdateIndicators(unitid)
+	for unit, guid in Grid2:IterateRosterUnits() do
+		status:UpdateIndicators(unit)
 	end
 end
 
@@ -277,8 +277,8 @@ function Grid2Options:MakeStatusClassFilterOptions(status, options, optionParams
 				if status.UpdateProfileData then
 					status:UpdateProfileData()
 				end
-				for guid, unitid in Grid2:IterateRoster() do
-					status:UpdateIndicators(unitid)
+				for unit, guid in Grid2:IterateRosterUnits() do
+					status:UpdateIndicators(unit)
 				end
 			end,
 		}
@@ -319,8 +319,8 @@ function Grid2Options:MakeStatusThresholdOptions(status, options, optionParams, 
 		set = function (_, v)
 			status.dbx.threshold = v
 			DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name).threshold = v
-			for guid, unitid in Grid2:IterateRoster() do
-				status:UpdateIndicators(unitid)
+			for unit, guid in Grid2:IterateRosterUnits() do
+				status:UpdateIndicators(unit)
 			end
 		end,
 	}
@@ -402,8 +402,8 @@ function Grid2Options:MakeStatusRangeOptions(status, options, optionParams)
 			status.dbx.range = v
 			DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name).range = v
 			status:Grid_RangesUpdated()
-			for guid, unitid in Grid2:IterateRoster() do
-				status:UpdateIndicators(unitid)
+			for unit, guid in Grid2:IterateRosterUnits() do
+				status:UpdateIndicators(unit)
 			end
 		end,
 		values = GetAvailableRangeList(),
@@ -441,8 +441,8 @@ function Grid2Options:MakeStatusMissingOptions(status, options, optionParams)
 			if status.UpdateProfileData then
 				status:UpdateProfileData()
 			end
-			for guid, unitid in Grid2:IterateRoster() do
-				status:UpdateIndicators(unitid)
+			for unit, guid in Grid2:IterateRosterUnits() do
+				status:UpdateIndicators(unit)
 			end
 		end,
 	}
@@ -523,8 +523,8 @@ function Grid2Options:MakeStatusClassColorOptions(status, options, optionParams)
 					c = DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name).colors.HOSTILE
 					c.r, c.g, c.b, c.a = r, g, b, a
 					
-					for guid, unitid in Grid2:IterateRoster() do
-						status:UpdateIndicators(unitid)
+					for unit, guid in Grid2:IterateRosterUnits() do
+						status:UpdateIndicators(unit)
 					end
 				end,
 			},
@@ -541,8 +541,8 @@ function Grid2Options:MakeStatusClassColorOptions(status, options, optionParams)
 					c = DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name).colors.UNKNOWN_UNIT
 					c.r, c.g, c.b, c.a = r, g, b, a
 
-					for guid, unitid in Grid2:IterateRoster() do
-						status:UpdateIndicators(unitid)
+					for unit, guid in Grid2:IterateRosterUnits() do
+						status:UpdateIndicators(unit)
 					end
 				end,
 			},
@@ -559,8 +559,8 @@ function Grid2Options:MakeStatusClassColorOptions(status, options, optionParams)
 					c = DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name).colors.UNKNOWN_PET
 					c.r, c.g, c.b, c.a = r, g, b, a
 
-					for guid, unitid in Grid2:IterateRoster() do
-						status:UpdateIndicators(unitid)
+					for unit, guid in Grid2:IterateRosterUnits() do
+						status:UpdateIndicators(unit)
 					end
 				end,
 			},
@@ -586,8 +586,8 @@ function Grid2Options:MakeStatusClassColorOptions(status, options, optionParams)
 				c = DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name).colors[type]
 				c.r, c.g, c.b, c.a = r, g, b, a
 
-				for guid, unitid in Grid2:IterateRoster() do
-					status:UpdateIndicators(unitid)
+				for unit, guid in Grid2:IterateRosterUnits() do
+					status:UpdateIndicators(unit)
 				end
 			end,
 		}
