@@ -74,6 +74,10 @@ function Grid2:IterateRoster()
 	return next, roster_units
 end
 
+function Grid2:IterateRosterUnits()
+	return next, roster_guids
+end
+
 function Grid2:UnitIsPet(unitid)
 	return owner_of_unit[unitid]
 end
