@@ -11,15 +11,24 @@ function Grid2Options.GetNewIndicatorTypes()
 	return newIndicatorTypes
 end
 
-function Grid2Options:UpdateIndicator(indicator)
-	local indicatorKey = indicator.name
+function Grid2Options:UpdateIndicator(indicator, morph)
+	local baseKey = indicator.name
 	local dblData = Grid2.dblData
 
-	local dbx = DBL:GetRuntimeDbx(dblData, "indicators", indicatorKey)
+	local dbx = DBL:GetRuntimeDbx(dblData, "indicators", baseKey)
 	if (indicator.UpdateDB) then
-		local create = indicator:UpdateDB(dbx)
-		if (create) then
-			Grid2Frame:WithAllFrames(function (f) indicator:Create(f) end)
+		if (morph) then
+print("Disable", baseKey, dbx.type)
+			Grid2Frame:WithAllFrames(function (f) indicator:Disable(f) end)
+			local setupFunc = Grid2.setupFunc[dbx.type]
+			if (setupFunc) then
+print("UpdateIndicator:", baseKey, dbx.type, dbx.location, self.setupFunc[dbx.type])
+				setupFunc(baseKey, dbx)
+			else
+				print("      *UpdateIndicator Could not find setupFunc for indicator", baseKey)
+			end
+		else
+			indicator:UpdateDB(dbx)
 		end
 	end
 end
@@ -372,16 +381,43 @@ function Grid2Options.GetIndicatorType(info)
 	return indicator.dbx.type
 end
 
+local defaultFont = "Friz Quadrata TT"
+Grid2Options.typeDefaultValues = {
+	icon = {iconSize = 16, fontSize = 8,},
+	square = {cornerSize = 5,},
+	text = {textlength = 12, fontSize = 8, font = defaultFont,},
+}
+
 function Grid2Options.SetIndicatorType(info, value)
 	local indicator = info.arg
 	local baseKey = indicator.name
 	local morph = indicator.dbx.type ~= value
+	local dbx = DBL:GetOptionsDbx(Grid2.dblData, "indicators", baseKey)
 	
 	indicator.dbx.type = value
-	DBL:GetOptionsDbx(Grid2.dblData, "indicators", baseKey).type = value
+	dbx.type = value
+	for k, v in pairs(Grid2Options.typeDefaultValues[value]) do
+		if (not dbx[k]) then
+			dbx[k] = v
+		end
+	end
 	
-	Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
-	Grid2Options:UpdateIndicator(indicator)
+	if (morph) then
+		Grid2Frame:WithAllFrames(function (f) indicator:Disable(f) end)
+		Grid2:UnregisterIndicator(indicator)
+		local setupFunc = Grid2.setupFunc[dbx.type]
+print("Disable", baseKey, dbx.type, Grid2.setupFunc[dbx.type], setupFunc)
+		if (setupFunc) then
+print("UpdateIndicator:", baseKey, dbx.type, dbx.location)
+			setupFunc(baseKey, dbx)
+		else
+			print("      *UpdateIndicator Could not find setupFunc for indicator", baseKey)
+		end
+		indicator:UpdateDB(dbx)
+	end
+Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
+Grid2Frame:UpdateAllFrames()
+Grid2Frame:Reset()
 end
 
 function Grid2Options:MakeIndicatorTypeOptions(indicator, options, optionParams)
@@ -550,23 +586,7 @@ end
 
 local function AddBarIndicatorOptions(indicator)
 	local baseKey = indicator.name
-	local options = {
-		orientation = {
-			type = "select",
-			order = 10,
-			name = L["Orientation of Frame"],
-			desc = L["Set frame orientation."],
-			get = function ()
-				return indicator.dbx.orientation
-			end,
-			set = function (_, v)
-				indicator.dbx.orientation = v
-				DBL:GetOptionsDbx(Grid2.dblData, "indicators", baseKey).orientation = v
-				Grid2Frame:WithAllFrames(function (f) indicator:SetOrientation(f) end)
-			end,
-			values={["VERTICAL"] = L["VERTICAL"], ["HORIZONTAL"] = L["HORIZONTAL"]}
-		},
-	}
+	local options = {}
 
 	if Grid2Options.AddMediaOption then
 		local textureOption = {
