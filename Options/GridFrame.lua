@@ -5,7 +5,7 @@ Grid2Frame.menuName = L["frame"]
 Grid2Frame.menuOrder = 20
 
 Grid2Options:AddModule("Grid2", "Grid2Frame", Grid2Frame, {
-	["tooltip"] = {
+	tooltip = {
 		type = "select",
 		order = 10,
 		name = L["Show Tooltip"],
@@ -18,7 +18,7 @@ Grid2Options:AddModule("Grid2", "Grid2Frame", Grid2Frame, {
 		end,
 		values={["Always"] = L["Always"], ["Never"] = L["Never"], ["OOC"] = L["OOC"]},
 	},
-	["frameBorder"] = {
+	frameBorder = {
 		type = "range",
 		order = 20,
 		name = L["Border Size"],
@@ -42,7 +42,7 @@ Grid2Options:AddModule("Grid2", "Grid2Frame", Grid2Frame, {
 		end,
 		disabled = InCombatLockdown,
 	},
-	["framewidth"] = {
+	framewidth = {
 		type = "range",
 		order = 30,
 		name = L["Frame Width"],
@@ -59,7 +59,7 @@ Grid2Options:AddModule("Grid2", "Grid2Frame", Grid2Frame, {
 			  end,
 		disabled = InCombatLockdown,
 	},
-	["frameheight"] = {
+	frameheight = {
 		type = "range",
 		order = 40,
 		name = L["Frame Height"],
@@ -75,6 +75,28 @@ Grid2Options:AddModule("Grid2", "Grid2Frame", Grid2Frame, {
 				  Grid2Frame:ResizeAllFrames()
 			  end,
 		disabled = InCombatLockdown,
+	},
+	orientationHeader = {
+		type = "header",
+		order = 50,
+		name = "",
+	},
+	orientation = {
+		type = "select",
+		order = 51,
+		name = L["Orientation of Frame"],
+		desc = L["Set frame orientation."],
+		get = function ()
+			return Grid2Frame.db.profile.orientation
+		end,
+		set = function (_, v)
+			Grid2Frame.db.profile.orientation = v
+			local indicator = Grid2.indicators["health"]
+			Grid2Frame:WithAllFrames(function (f) indicator:SetOrientation(f) end)
+			indicator = Grid2.indicators["heals"]
+			Grid2Frame:WithAllFrames(function (f) indicator:SetOrientation(f) end)
+		end,
+		values={["VERTICAL"] = L["VERTICAL"], ["HORIZONTAL"] = L["HORIZONTAL"]}
 	},
 })
 
