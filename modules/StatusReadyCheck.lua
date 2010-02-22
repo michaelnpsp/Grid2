@@ -15,7 +15,7 @@ function ReadyCheck:READY_CHECK(event, originator)
 		end
         readyChecking = true
 
-        for _, unit in Grid2:IterateRoster() do
+        for unit, guid in Grid2:IterateRosterUnits() do
 			readyStatuses[unit] = GetReadyCheckStatus(unit)
         	if not Grid2:UnitIsPet(unit) then
 				self:UpdateIndicators(unit)
@@ -31,7 +31,7 @@ function ReadyCheck:READY_CHECK_CONFIRM(event, unit)
 end
 
 function ReadyCheck:READY_CHECK_FINISHED()
-    for _, unit in Grid2:IterateRoster() do
+    for unit, guid in Grid2:IterateRosterUnits() do
         if not Grid2:UnitIsPet(unit) then
 			self:UpdateIndicators(unit)
         end
@@ -59,7 +59,8 @@ end
 function ReadyCheck:ClearStatus()
 	if readyChecking then
 		readyChecking = nil
-		for _, unit in Grid2:IterateRoster() do
+		for unit, guid in Grid2:IterateRosterUnits() do
+-- print("ReadyCheck:ClearStatus", unit, "guid", guid)
 			self:UpdateIndicators(unit)
 		end
 		timerClearStatus = nil
