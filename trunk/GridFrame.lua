@@ -162,6 +162,7 @@ Grid2Frame.defaultDB = {
 		frameBorder = 2,
 		debug = false,
 		showTooltip = "OOC",
+		orientation = "VERTICAL",
 	},
 }
 
