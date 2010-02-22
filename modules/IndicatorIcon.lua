@@ -97,6 +97,16 @@ local function Icon_SetIconSize(self, parent, iconSize)
 	Icon:SetHeight(iconSize)
 end
 
+local function Icon_Disable(self, parent)
+	local Icon = parent[self.name]
+	Icon:Hide()
+
+	self.GetBlinkFrame = nil
+	self.Layout = nil
+	self.OnUpdate = nil
+	self.SetIconSize = nil
+end
+
 local function Icon_UpdateDB(self, dbx)
 	local oldType = self.dbx and self.dbx.type or dbx.type
 	local location = Grid2.locations[dbx.location]
@@ -111,13 +121,10 @@ local function Icon_UpdateDB(self, dbx)
 	self.Layout = Icon_Layout
 	self.OnUpdate = Icon_OnUpdate
 	self.SetIconSize = Icon_SetIconSize
+	self.Disable = Icon_Disable
 	self.UpdateDB = Icon_UpdateDB
 
 	self.dbx = dbx
-	
-	if (oldType ~= dbx.type) then
-		return true
-	end
 end
 
 

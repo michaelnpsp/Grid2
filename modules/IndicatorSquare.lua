@@ -44,12 +44,25 @@ local function Square_SetSize(self, parent, size)
 	Square:SetHeight(size)
 end
 
+local function Square_Disable(self, parent)
+	local Square = parent[self.name]
+	Square:SetBackdrop(nil)
+	Square:SetBackdropBorderColor(0,0,0,0)
+	Square:SetBackdropColor(0,0,0,0)
+	Square:Hide()
+
+	self.GetBlinkFrame = nil
+	self.Layout = nil
+	self.OnUpdate = nil
+	self.SetSize = nil
+end
+
 local function Square_UpdateDB(self, dbx)
 	-- ToDo: copy if it already exists
 	-- ToDo: update if it changed
-if (self.dbx) then
-	print("Square_UpdateDB self.dbx:", self.dbx, self.dbx.cornerSize, "dbx:", dbx, dbx.cornerSize)
-end
+-- if (self.dbx) then
+	-- print("Square_UpdateDB self.dbx:", self.dbx, self.dbx.cornerSize, "dbx:", dbx, dbx.cornerSize)
+-- end
 	local oldType = self.dbx and self.dbx.type or dbx.type
 	local location = Grid2.locations[dbx.location]
 
@@ -63,13 +76,10 @@ end
 	self.Layout = Square_Layout
 	self.OnUpdate = Square_OnUpdate
 	self.SetSize = Square_SetSize
+	self.Disable = Square_Disable
 	self.UpdateDB = Square_UpdateDB
 
 	self.dbx = dbx
-	
-	if (oldType ~= dbx.type) then
-		return true
-	end
 end
 
 

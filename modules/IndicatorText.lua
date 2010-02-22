@@ -146,6 +146,16 @@ local function TextColor_OnUpdate(self, parent, unit, status)
 	end
 end
 
+local function Text_Disable(self, parent)
+	local Text = parent[self.name]
+	Text:Hide()
+
+	self.GetBlinkFrame = nil
+	self.Layout = nil
+	self.OnUpdate = nil
+	self.SetTextFont = nil
+end
+
 local function Text_UpdateDB(self, dbx)
 	local oldType = self.dbx and self.dbx.type or dbx.type
 	local location = Grid2.locations[dbx.location]
@@ -160,13 +170,10 @@ local function Text_UpdateDB(self, dbx)
 	self.Layout = Text_Layout
 	self.OnUpdate = Text_OnUpdate
 	self.SetTextFont = Text_SetTextFont
+	self.Disable = Text_Disable
 	self.UpdateDB = Text_UpdateDB
 
 	self.dbx = dbx
-	
-	if (oldType ~= dbx.type) then
-		return true
-	end
 end
 
 local function TextColor_UpdateDB(self, dbx)
@@ -187,6 +194,8 @@ local function Create(indicatorKey, dbx)
 	TextColor_UpdateDB(TextColor, dbx)
 	TextColor.textname = indicatorKey
 	Grid2:RegisterIndicator(TextColor, { "color" })
+
+	Text.sideKick = TextColor
 
 	return Text, TextColor
 end

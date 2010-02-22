@@ -32,11 +32,14 @@ function indicator:RegisterStatus(status, priority)
 		Grid2:Print(string.format("WARNING ! Status %s already registered with indicator %s", status.name, self.name))
 		return
 	end
-	assert(Grid2:IsCompatiblePair(self, status), "InCompatiblePair " .. self.name .. " vs " .. status.name)
-	self.priorities[status] = priority
-	self.statuses[#self.statuses + 1] = status
-	table.sort(self.statuses, self.sortStatuses)
-	status:RegisterIndicator(self)
+	-- assert(Grid2:IsCompatiblePair(self, status), "InCompatiblePair " .. self.name .. " vs " .. status.name)
+	-- ToDo: save these in case of a morph later?
+	if (Grid2:IsCompatiblePair(self, status)) then
+		self.priorities[status] = priority
+		self.statuses[#self.statuses + 1] = status
+		table.sort(self.statuses, self.sortStatuses)
+		status:RegisterIndicator(self)
+	end
 end
 
 function indicator:UnregisterStatus(status)
@@ -132,6 +135,19 @@ function Grid2:RegisterIndicator(indicator, types)
 	end
 	if self.db then
 		self:InitializeElement("indicator", indicator)
+	end
+end
+
+function Grid2:UnregisterIndicator(indicator)
+	local name = indicator.name
+	self.indicators[name] = nil
+	for type, t in pairs(self.indicatorTypes) do
+		t[name] = nil
+	end
+	
+	if (indicator.sideKick) then
+		Grid2:UnregisterIndicator(indicator.sideKick)
+		indicator.sideKick = nil
 	end
 end
 
