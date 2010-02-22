@@ -7,8 +7,8 @@ function Target:OnEnable()
 end
 
 function Target:PLAYER_TARGET_CHANGED(event)
-	for guid, unitid in Grid2:IterateRoster() do
-		self:UpdateIndicators(unitid)
+	for unit, guid in Grid2:IterateRosterUnits() do
+		self:UpdateIndicators(unit)
 	end
 end
 

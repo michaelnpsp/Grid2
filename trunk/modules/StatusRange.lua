@@ -4,7 +4,7 @@ local cache = {}
 local CheckUnitRange
 
 local function Update()
-	for _, unit in Grid2:IterateRoster() do
+	for unit, guid in Grid2:IterateRosterUnits() do
 		local value = CheckUnitRange(unit)
 		if value ~= cache[unit] then
 			cache[unit] = value
@@ -96,3 +96,14 @@ local function Create(baseKey, dbx)
 end
 
 Grid2.setupFunc["range"] = Create
+
+function Grid2:DebugRange()
+	for unit, guid in Grid2:IterateRosterUnits() do
+		local value = CheckUnitRange(unit)
+print(unit, value, cache[unit])
+		if value ~= cache[unit] then
+			cache[unit] = value
+			Range:UpdateIndicators(unit)
+		end
+	end
+end
