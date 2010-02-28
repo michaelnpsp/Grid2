@@ -224,7 +224,7 @@ local function AddCategoryOptions(category)
 		name = {
 			type = "input",
 			order = 71,
-			width = "full",
+			--width = "full",
 			name = L["Name"],
 			usage = L["<CharacterOnlyString>"],
 			get = getCategoryValue,
@@ -315,7 +315,7 @@ local function AddCategoryGroup(reset)
 		name = {
 			type = "input",
 			order = 1,
-			width = "full",
+			--width = "full",
 			name = L["Name"],
 			usage = L["<CharacterOnlyString>"],
 			get = getNewCategoryNameValue,

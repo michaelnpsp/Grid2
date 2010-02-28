@@ -990,6 +990,8 @@ end
 function Grid2Options:MakeStatusOptions(dblData, reset)
 	AddStatusesGroup(reset)
 
+	if(dblData==nil) then return end
+
 	self:AddOptionHandler("charmed", Grid2Options.MakeStatusStandardOptions)
 	self:AddOptionHandler("classcolor", Grid2Options.MakeStatusClassColorOptions)
 

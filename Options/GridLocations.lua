@@ -282,7 +282,7 @@ local function AddLocationGroup(reset)
 		name = {
 			type = "input",
 			order = 1,
-			width = "full",
+			--width = "full",
 			name = L["Name"],
 			usage = L["<CharacterOnlyString>"],
 			get = getNewLocationNameValue,
@@ -312,7 +312,7 @@ local function AddLocationGroup(reset)
 		},
 		resetLocations = {
 			type = "execute",
-			order = 11,
+			order = 111,
 			name = L["Reset Locations"],
 			desc = L["Reset locations to the default list."],
 			func = ResetLocations,
@@ -325,8 +325,10 @@ end
 function Grid2Options:MakeLocationOptions(dblData, reset)
 	AddLocationGroup(reset)
 
-	for baseKey, location in pairs(Grid2.locations) do
-		AddLocationOptions(baseKey)
+	if dblData then
+		for baseKey, location in pairs(Grid2.locations) do
+			AddLocationOptions(baseKey)
+		end
 	end
 end
 
