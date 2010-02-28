@@ -1,6 +1,9 @@
 local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2Options", "enUS", true, true)
 if not L then return end
 
+L["General Settings" ] = true
+L["GRID2_DESC"] = "Welcome to Grid2"
+
 L["Debug"] = true
 L["Debugging"] = true
 L["Module debugging menu."] = true
@@ -47,6 +50,7 @@ L["Raid"] = true
 
 L["Layouts"] = true
 L["Layouts for each type of groups you're in."] = true
+L["Layout Settings"] = true
 L["Solo Layout"] = true
 L["Select which layout to use for solo."] = true
 L["Party Layout"] = true
@@ -223,10 +227,16 @@ L["Down"] = true
 L["Location"] = true
 L["Move the status higher in priority"] = true
 L["Move the status lower in priority"] = true
+L["Remove selected status from this indicator"] = true
 L["Name"] = true
 L["Name of the new indicator"] = true
 L["New Category"] = true
 L["New Indicator"] = true
+L["Add a new indicator"] = true
+L["Indicators"] = true
+L["List of Indicators"] = true
+L["Order"] = true
+L["This is the ordered list of statuses for this indicator"] = true
 L["New Location"] = true
 L["New Status"] = true
 L["Range"] = true

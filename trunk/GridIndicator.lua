@@ -55,8 +55,12 @@ function indicator:UnregisterStatus(status)
 end
 
 function indicator:SetStatusPriority(status, priority)
-	if not self.priorities[status] then return end
+	if not self.priorities[status] then 
+		print( "Bad SetStatusPriority: "..self.name.." "..status.name )
+		return 
+	end
 	self.priorities[status] = priority
+	--print( "SetStatusPriority: "..self.name.." "..status.name.." now "..priority )
 	table.sort(self.statuses, self.sortStatuses)
 end
 

@@ -23,5 +23,6 @@
 <Script file="modules\StatusThreat.lua"/>
 <Script file="modules\StatusVehicle.lua"/>
 <Script file="modules\StatusVoiceComm.lua"/>
+<Script file="modules\StatusTest.lua"/>
 
 </Ui>

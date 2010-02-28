@@ -12,6 +12,21 @@ Grid2Options.options.Grid2 = {
 			name = L["Debug"],
 		},
 --]]
+
+		["General"] = {
+			order = 1,
+			type = "group",
+			name = L["General Settings"],
+			desc = L["General Settings"],
+			args = {
+				intro = {
+					order = 1,
+					type = "description",
+					name = L["GRID2_DESC"],
+				},
+			},
+		},
+
 		["debug"] = {
 			type = "group",
 			name = L["Debugging"],

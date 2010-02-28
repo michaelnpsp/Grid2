@@ -6,6 +6,7 @@
 
 locales.xml
 core.lua
+TreeAsSelectWidget.lua
 GridCore.lua
 GridFrame.lua
 GridLayout.lua
