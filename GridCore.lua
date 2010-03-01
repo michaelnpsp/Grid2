@@ -11,7 +11,7 @@ local DBL = LibStub:GetLibrary("LibDBLayers-1.0")
 --{{{  Initialization
 
 Grid2 = LibStub("AceAddon-3.0"):NewAddon("Grid2", "AceEvent-3.0", "AceConsole-3.0")
-Grid2.versionstring="Grid2 v"..GetAddOnMetadata("Grid2", "Version")
+Grid2.versionstring = "Grid2 v"..GetAddOnMetadata("Grid2", "Version")
 Grid2.debugFrame = Grid2DebugFrame or ChatFrame1
 function Grid2:Debug(s, ...)
 	if self.debugging then
@@ -151,7 +151,7 @@ function Grid2:OnInitialize()
 
 	--if you want to convine yourself that my settings hacks have done no harm, enable this:
 	--local optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Grid2", "Grid2 old")
-	local optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Grid2", Grid2.versionstring, nil, "General")
+	local optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Grid2", L["Grid2"], nil, "General")
 
 	local prev_OnShow = optionsFrame:GetScript("OnShow")
 	optionsFrame:SetScript("OnShow", function (self, ...)
