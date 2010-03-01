@@ -107,25 +107,26 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "border", "health-low", 69)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "border", "pvp", 45)
 
-				DBL:SetupLayerObject(dblData, "indicators", layer, "health", {type = "bar", level = 2, location = "center", orientation = "VERTICAL", texture = "Gradient", invertBarColor = true})
+				DBL:SetupLayerObject(dblData, "indicators", layer, "health", {type = "bar", level = 2, location = "center", texture = "Gradient", invertBarColor = true})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "health", "health-current", 99)
 
 				DBL:SetupLayerObject(dblData, "indicators", layer, "health-color", {type = "bar-color"})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "health-color", "classcolor", 99)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "health-color", "health-current", 85)
 
-				DBL:SetupLayerObject(dblData, "indicators", layer, "heals", {type = "bar", level = 1, location = "center", orientation = "VERTICAL", texture = "Gradient", invertBarColor = true})
+				DBL:SetupLayerObject(dblData, "indicators", layer, "heals", {type = "bar", level = 1, location = "center", texture = "Gradient", invertBarColor = true})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "heals", "heals-incoming", 99)
 
 				DBL:SetupLayerObject(dblData, "indicators", layer, "heals-color", {type = "bar-color"})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "heals-color", "heals-incoming", 99)
 
 
-				DBL:SetupLayerObject(dblData, "indicators", layer, "side-bottom", {type = "square", level = 5, location = "side-bottom", cornerSize = 5,})
-				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-bottom-left", {type = "square", level = 3, location = "corner-bottom-left", cornerSize = 5,})
+				DBL:SetupLayerObject(dblData, "indicators", layer, "side-bottom", {type = "square", level = 5, location = "side-bottom", cornerSize = 5, color1 = {r=1,g=1,b=1,a=1},})
+				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-bottom-left", {type = "square", level = 3, location = "corner-bottom-left", cornerSize = 5, color1 = {r=1,g=1,b=1,a=1},})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-bottom-left", "threat", 99)
 
 				DBL:SetupLayerObject(dblData, "indicators", layer, "icon-center", {type = "icon", level = 8, location = "center", iconSize = 16, fontSize = 8,})
+				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "buff-SpiritOfRedemption", 160)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "death", 155)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "ready-check", 150)
 
@@ -194,6 +195,7 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-Drink", {type = "buff", spellName = L["Drink"], mine = true, color1 = {r=.8,g=.8,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-Food", {type = "buff", spellName = L["Food"], mine = true, color1 = {r=1,g=1,b=.6,a=1}})
+				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-SpiritOfRedemption", {type = "buff", spellName = 27827, blinkThreshold = 3, color1 = {r=1,g=1,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "debuff-Magic", {type = "debuffType", subType = "Magic", color1 = {r=.2,g=.6,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "debuff-Poison", {type = "debuffType", subType = "Poison", color1 = {r=0,g=.6,b=0,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "debuff-Curse", {type = "debuffType", subType = "Curse", color1 = {r=.6,g=0,b=1,a=1}})
@@ -205,34 +207,16 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 			if (versions.deathknight.Grid2Options < 1) then
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-HornOfWinter-mine", {type = "buff", spellName = 57330, mine = true, missing = true, color1 = {r=.1,g=.1,b=1,a=1}})
 
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Magic", 40)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Poison", 30)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Curse", 20)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Disease", 10)
-
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-HornOfWinter-mine", 99)
+
+				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Magic", 40)
+
 				versions.deathknight.Grid2Options = 1
 			end
 		elseif (layer == "druid") then
 			if (versions.druid.Grid2Options < 1) then
 				DBL:SetupLayerObject(dblData, "locations", layer, "side-left-top", {relIndicator = nil, point = "BOTTOM", relPoint = "LEFT", x = 1, y = -2, name = "side-left-top"})
 				DBL:SetupLayerObject(dblData, "locations", layer, "side-left-bottom", {relIndicator = nil, point = "TOP", relPoint = "LEFT", x = 1, y = 2, name = "side-left-bottom"})
-
-				DBL:SetupLayerObject(dblData, "indicators", layer, "side-top", {type = "text", level = 9, location = "side-top", textlength = 12, fontSize = 8, font = defaultFont, duration = true})
-				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-left", {type = "text", level = 9, location = "corner-top-left", textlength = 12, fontSize = 8, font = defaultFont, duration = true})
-				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-right", {type = "text", level = 9, location = "corner-top-right", textlength = 12, fontSize = 8, font = defaultFont, duration = true})
-
-				DBL:SetupLayerObject(dblData, "indicators", layer, "side-top-color", {type = "text-color"})
-				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-left-color", {type = "text-color"})
-				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-right-color", {type = "text-color"})
-
-				DBL:SetupLayerObject(dblData, "indicators", layer, "center-left", {type = "icon", level = 9, location = "center-left", iconSize = 16, fontSize = 8,})
-				DBL:SetupMapObject(dblData, "statusMap", layer, "center-left", "debuff-Poison", 90)
-
-				DBL:SetupLayerObject(dblData, "indicators", layer, "center-right", {type = "icon", level = 9, location = "center-right", iconSize = 16, fontSize = 8,})
-				DBL:SetupMapObject(dblData, "statusMap", layer, "center-right", "debuff-Curse", 80)
-
-				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-bottom-right", {type = "square", level = 3, location = "corner-bottom-right", cornerSize = 5,})
 
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-AbolishPoison-mine", {type = "buff", spellName = 2893, mine = true, blinkThreshold = 3, color1 = {r=.9,g=1,b=.6,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-Lifebloom-mine", {type = "buff", spellName = 33763, mine = true, colorCount = 3, color1 = {r=.2,g=.7,b=.2,a=1}, color2 = {r=.6,g=.9,b=.6,a=1}, color3 = {r=1,g=1,b=1,a=1}})
@@ -241,23 +225,43 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-Thorns", {type = "buff", spellName = 467, missing = true, color1 = {r=.2,g=.05,b=.05,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-WildGrowth-mine", {type = "buff", spellName = 53248, mine = true, color1 = {r=0.2,g=.9,b=.2,a=1}})
 
-				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-left", "buff-Lifebloom-mine", 99)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-left-color", "buff-Lifebloom-mine", 99)
+				DBL:SetupLayerObject(dblData, "indicators", layer, "side-top", {type = "text", level = 9, location = "side-top", textlength = 12, fontSize = 8, font = defaultFont, duration = true})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-top", "buff-Regrowth-mine", 99)
+
+				DBL:SetupLayerObject(dblData, "indicators", layer, "side-top-color", {type = "text-color"})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-top-color", "buff-Regrowth-mine", 99)
+
+				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-left", {type = "text", level = 9, location = "corner-top-left", textlength = 12, fontSize = 8, font = defaultFont, duration = true})
+				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-left", "buff-Lifebloom-mine", 99)
+
+				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-left-color", {type = "text-color"})
+				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-left-color", "buff-Lifebloom-mine", 99)
+
+				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-right", {type = "text", level = 9, location = "corner-top-right", textlength = 12, fontSize = 8, font = defaultFont, duration = true})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right", "buff-Rejuv-mine", 99)
+
+				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-right-color", {type = "text-color"})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right-color", "buff-Rejuv-mine", 99)
+
+				DBL:SetupLayerObject(dblData, "indicators", layer, "center-left", {type = "icon", level = 9, location = "center-left", iconSize = 16, fontSize = 8,})
+				DBL:SetupMapObject(dblData, "statusMap", layer, "center-left", "debuff-Poison", 90)
+
+				DBL:SetupLayerObject(dblData, "indicators", layer, "center-right", {type = "icon", level = 9, location = "center-right", iconSize = 16, fontSize = 8,})
+				DBL:SetupMapObject(dblData, "statusMap", layer, "center-right", "debuff-Curse", 80)
+
+				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-bottom-right", {type = "square", level = 3, location = "corner-bottom-right", cornerSize = 5,})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-bottom-right", "buff-AbolishPoison-mine", 99)
+
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-WildGrowth-mine", 99)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-Thorns", 59)
+DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Magic", 40)
+DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Disease", 10)
+
 				versions.druid.Grid2Options = 1
 			end
 		elseif (layer == "hunter") then
 			if (versions.hunter.Grid2Options < 1) then
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Magic", 40)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Poison", 30)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Curse", 20)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Disease", 10)
+
 				versions.hunter.Grid2Options = 1
 			end
 		elseif (layer == "mage") then
@@ -272,11 +276,12 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-IceArmor-mine", {type = "buff", spellName = 7302, mine = true, missing = true, color1 = {r=.2,g=.4,b=.4,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-IceBarrier-mine", {type = "buff", spellName = 11426, mine = true, missing = true, color1 = {r=1,g=1,b=1,a=1}})
 
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Curse", 90)
+				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Curse", 20)
 
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right", "buff-AmplifyMagic", 99)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-left", "buff-DampenMagic", 99)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-bottom-right", "buff-FocusMagic", 99)
+
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-IceArmor-mine", 79)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-IceBarrier-mine", 89)
 				versions.mage.Grid2Options = 1
@@ -307,19 +312,14 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 
 				DBL:SetupLayerObject(dblData, "statuses", layer, "debuff-Forbearance", {type = "debuff", spellName = 25771, color1 = {r=1,g=0,b=0,a=1}})
 
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Disease", 90)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Magic", 80)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Poison", 70)
+				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Magic", 40)
+				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Poison", 30)
+				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Disease", 10)
 
-				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-DivineIntervention", 99)
 				versions.paladin.Grid2Options = 1
 			end
 		elseif (layer == "priest") then
 			if (versions.priest.Grid2Options < 1) then
-				DBL:SetupLayerObject(dblData, "indicators", layer, "side-right", {type = "square", level = 9, location = "side-right", cornerSize = 5,})
-				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-left", {type = "square", level = 9, location = "corner-top-left", cornerSize = 5,})
-				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-right", {type = "square", level = 9, location = "corner-top-right", cornerSize = 5,})
-
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-Grace-mine", {type = "buff", spellName = 47516, mine = true,
 						colorCount = 3, color1 = {r=.6,g=.6,b=.6,a=1}, color2 = {r=.8,g=.8,b=.8,a=1}, color3 = {r=1,g=1,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-DivineAegis", {type = "buff", spellName = 47509, color1 = {r=1,g=1,b=1,a=1}})
@@ -331,64 +331,64 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 
 				DBL:SetupLayerObject(dblData, "statuses", layer, "debuff-WeakenedSoul", {type = "debuff", spellName = 6788, color1 = {r=1,g=0,b=0,a=1}})
 
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Disease", 90)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Magic", 80)
+				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Magic", 40)
+				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Disease", 10)
 
+				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-left", {type = "square", level = 9, location = "corner-top-left", cornerSize = 5,})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-left", "buff-Renew-mine", 99)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "side-right", "buff-PrayerOfMending-mine", 99)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right", "buff-PowerWordShield", 99)
+
+				DBL:SetupLayerObject(dblData, "indicators", layer, "side-right", {type = "square", level = 9, location = "side-right", cornerSize = 5,})
+				DBL:SetupMapObject(dblData, "statusMap", layer, "side-right", "buff-PrayerOfMending-mine", 99)
+
+				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-right", {type = "square", level = 9, location = "corner-top-right", cornerSize = 5,})
+				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right", "debuff-WeakenedSoul", 89)
+
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-DivineAegis", 79)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-InnerFire", 79)
 
-				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right", "debuff-WeakenedSoul", 89)
 				versions.priest.Grid2Options = 1
 			end
 		elseif (layer == "rogue") then
 			if (versions.rogue.Grid2Options < 1) then
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-Evasion-mine", {type = "buff", spellName = 5277, mine = true, color1 = {r=.1,g=.1,b=1,a=1}})
-
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Magic", 40)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Poison", 30)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Curse", 20)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Disease", 10)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-Evasion-mine", 99)
+
 				versions.rogue.Grid2Options = 1
 			end
 		elseif (layer == "shaman") then
 			if (versions.shaman.Grid2Options < 1) then
-				DBL:SetupLayerObject(dblData, "indicators", layer, "side-left", {type = "square", level = 9, location = "side-left", cornerSize = 5,})
-				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-left", {type = "square", level = 9, location = "corner-top-left", cornerSize = 5,})
-				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-right", {type = "square", level = 9, location = "corner-top-right", cornerSize = 5,})
-
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-Riptide-mine", {type = "buff", spellName = 61295, mine = true, color1 = {r=.8,g=.6,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-Earthliving", {type = "buff", spellName = 51945, color1 = {r=.8,g=1,b=.5,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-EarthShield", {type = "buff", spellName = 974, color1 = {r=.8,g=.8,b=.2,a=1}})
+
+				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-left", {type = "square", level = 9, location = "corner-top-left", cornerSize = 5,})
+				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-left", "buff-Riptide-mine", 99)
+				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-left", "buff-Earthliving", 89)
+
+				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-right", {type = "square", level = 9, location = "corner-top-right", cornerSize = 5,})
+				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right", "buff-EarthShield", 99)
 
 				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Poison", 90)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Disease", 80)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Curse", 70)
 
-				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-left", "buff-Riptide-mine", 99)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-left", "buff-Earthliving", 89)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right", "buff-EarthShield", 99)
 				versions.shaman.Grid2Options = 1
 			end
 		elseif (layer == "warlock") then
 			if (versions.warlock.Grid2Options < 1) then
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-ShadowWard-mine", {type = "buff", spellName = 6229, mine = true, color1 = {r=1,g=1,b=1,a=1}})
-				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-SoulLink-mine", {type = "buff", spellName = 19028, mine = true, color1 = {r=1,g=1,b=1,a=1}})
-				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-DemonArmor-mine", {type = "buff", spellName = 706, mine = true, color1 = {r=1,g=1,b=1,a=1}})
-				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-DemonSkin-mine", {type = "buff", spellName = 696, mine = true, color1 = {r=1,g=1,b=1,a=1}})
-				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-FelArmor-mine", {type = "buff", spellName = 28189, mine = true, color1 = {r=1,g=1,b=1,a=1}})
-
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Magic", 40)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Poison", 30)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Curse", 20)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Disease", 10)
-
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-ShadowWard-mine", 99)
+
+				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-SoulLink-mine", {type = "buff", spellName = 19028, mine = true, color1 = {r=1,g=1,b=1,a=1}})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-SoulLink-mine", 99)
+
+				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-DemonArmor-mine", {type = "buff", spellName = 706, mine = true, missing = true, color1 = {r=1,g=1,b=1,a=1}})
+				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-DemonSkin-mine", {type = "buff", spellName = 696, mine = true, missing = true, color1 = {r=1,g=1,b=1,a=1}})
+
+				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-FelArmor-mine", {type = "buff", spellName = 28189, mine = true, missing = true, color1 = {r=1,g=1,b=1,a=1}})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-FelArmor-mine", 99)
+
 				versions.warlock.Grid2Options = 1
 			end
 		elseif (layer == "warrior") then
@@ -396,21 +396,20 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-bottom-right", {type = "square", level = 3, location = "corner-bottom-right", cornerSize = 5,})
 
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-BattleShout", {type = "buff", spellName = 2048, mine = true, color1 = {r=.1,g=.1,b=1,a=1}})
-				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-CommandingShout", {type = "buff", spellName = 469, mine = true, color1 = {r=.1,g=.1,b=1,a=1}})
-				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-LastStand", {type = "buff", spellName = 12975, mine = true, color1 = {r=.1,g=.1,b=1,a=1}})
-				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-ShieldWall", {type = "buff", spellName = 871, mine = true, color1 = {r=.1,g=.1,b=1,a=1}})
-				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-Vigilance", {type = "buff", spellName = 50720, mine = true, color1 = {r=.1,g=.1,b=1,a=1}})
-
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Magic", 40)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Poison", 30)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Curse", 20)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Disease", 10)
-
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-BattleShout", 89)
+
+				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-CommandingShout", {type = "buff", spellName = 469, mine = true, color1 = {r=.1,g=.1,b=1,a=1}})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-CommandingShout", 79)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-Vigilance", 99)
+
+				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-LastStand", {type = "buff", spellName = 12975, mine = true, color1 = {r=.1,g=.1,b=1,a=1}})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-bottom-right", "buff-LastStand", 99)
+
+				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-ShieldWall", {type = "buff", spellName = 871, mine = true, color1 = {r=.1,g=.1,b=1,a=1}})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-bottom-right", "buff-ShieldWall", 89)
+
+				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-Vigilance", {type = "buff", spellName = 50720, mine = true, color1 = {r=.1,g=.1,b=1,a=1}})
+				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-Vigilance", 99)
+
 				versions.warrior.Grid2Options = 1
 			end
 		end

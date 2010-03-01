@@ -18,11 +18,11 @@ function Grid2Options:UpdateIndicator(indicator, morph)
 	local dbx = DBL:GetRuntimeDbx(dblData, "indicators", baseKey)
 	if (indicator.UpdateDB) then
 		if (morph) then
-print("Disable", baseKey, dbx.type)
+-- print("Disable", baseKey, dbx.type)
 			Grid2Frame:WithAllFrames(function (f) indicator:Disable(f) end)
 			local setupFunc = Grid2.setupFunc[dbx.type]
 			if (setupFunc) then
-print("UpdateIndicator:", baseKey, dbx.type, dbx.location, self.setupFunc[dbx.type])
+-- print("UpdateIndicator:", baseKey, dbx.type, dbx.location, self.setupFunc[dbx.type])
 				setupFunc(baseKey, dbx)
 			else
 				print("      *UpdateIndicator Could not find setupFunc for indicator", baseKey)
@@ -67,7 +67,7 @@ function Grid2Options:UnregisterIndicatorStatus(indicator, status)
 	local dblData = Grid2.dblData
 	local baseKey = indicator.name
 	local statusKey = status.name
-	local layer = DBL:GetObjectLayer(Grid2.dblData, "indicators", baseKey)
+	local layer = DBL:GetMapLayer(Grid2.dblData, "statusMap", baseKey, statusKey)
 
 	DBL:DeleteMapObject(dblData, "statusMap", layer, baseKey, statusKey)
 	DBL:FlattenMap(dblData, "statusMap", "indicators", "statuses")
@@ -79,7 +79,7 @@ function Grid2Options:SetStatusPriority(indicator, status, priority)
 	local dblData = Grid2.dblData
 	local baseKey = indicator.name
 	local statusKey = status.name
-	local layer = DBL:GetObjectLayer(Grid2.dblData, "indicators", baseKey)
+	local layer = DBL:GetMapLayer(dblData, "statusMap", baseKey, statusKey)
 
 	DBL:SetupMapObject(dblData, "statusMap", layer, baseKey, statusKey, priority, true)
 	indicator:SetStatusPriority(status, priority)
@@ -114,8 +114,11 @@ function Grid2Options.SetIndicatorStatusCurrent(info, value)
 				local priority = Grid2Options:RegisterIndicatorStatus(indicator, status)
 				indicator:RegisterStatus(status, priority)
 			else
-				indicator:UnregisterStatus(status)
 				Grid2Options:UnregisterIndicatorStatus(indicator, status)
+				local layer = DBL:GetMapLayer(Grid2.dblData, "statusMap", indicator.name, statusKey)
+				if (not layer) then
+					indicator:UnregisterStatus(status)
+				end
 			end
 			Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
 			Grid2Frame:ResetAllFrames()
@@ -207,16 +210,52 @@ local function StatusShiftDown(info, indicator, higherStatus)
 	end
 end
 
+local function GetStatusLayer(info)
+	local passValue = info.arg
+	local indicator = passValue.indicator
+	local status = passValue.status
+
+	local layer = DBL:GetMapLayer(Grid2.dblData, "statusMap", indicator.name, status.name)
+	local layerIndex = DBL:GetLayerOrder(Grid2.dblData, "indicators")[layer]
+	return layerIndex
+end
+
+local function SetStatusLayer(info, value)
+	local passValue = info.arg
+	local indicator = passValue.indicator
+	local status = passValue.status
+	local priority = indicator:GetStatusPriority(status)
+
+	local dblData = Grid2.dblData
+	local newLayer
+	for layer, index in pairs(DBL:GetLayerOrder(dblData, "indicators")) do
+		if (index == value) then
+			newLayer = layer
+		end
+	end
+	DBL:SetMapLayer(dblData, "statusMap", indicator.name, status.name, priority, newLayer)
+	DBL:FlattenSetupType(dblData, "indicators")
+	Grid2Options:UpdateIndicator(indicator)
+
+	Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
+	Grid2Frame:ResetAllFrames()
+	Grid2Frame:UpdateAllFrames()
+
+	local parentOption = info.options.args.indicator.args[indicator.name].args.statusesCurrent
+	wipe(parentOption.args)
+	Grid2Options:AddIndicatorCurrentStatusOptions(indicator, parentOption.args)
+end
+
 function Grid2Options:AddIndicatorCurrentStatusOptions(indicator, options)
-	local statusKey, order
 	if (indicator.statuses) then
 		for index, status in ipairs(indicator.statuses) do
-			statusKey = status.name
-			order = 4 * index
+			local statusKey = status.name
+			local order = 5 * index
+			local passValue = {indicator = indicator, status = status}
 			options[statusKey] = {
 				type = "toggle",
 				order = order,
-				name = status.name,
+				name = statusKey,
 				desc = L["Select statuses to display with the indicator"],
 				get = Grid2Options.GetIndicatorStatus,
 				set = Grid2Options.SetIndicatorStatusCurrent,
@@ -245,6 +284,16 @@ function Grid2Options:AddIndicatorCurrentStatusOptions(indicator, options)
 			    	StatusShiftDown(info, indicator, status)
 				end,
 				arg = indicator,
+			}
+			options[statusKey .. "L"] = {
+				type = 'select',
+				order = order + 2,
+				name = L["Layer"],
+				desc = L["Layer level.  Higher layers (like Class or Spec) supercede lower ones like Account."],
+				values = Grid2Options.GetIndicatorLayerValues,
+				get = GetStatusLayer,
+				set = SetStatusLayer,
+				arg = passValue,
 			}
 			options[statusKey .. "S"] = {
 				type = "header",
@@ -314,6 +363,90 @@ function Grid2Options:AddIndicatorDeleteOptions(indicator, options)
 	    func = DeleteIndicator,
 		arg = indicator,
 	}
+end
+
+
+function Grid2Options.GetIndicatorColor(info)
+	local passValue = info.arg
+	local indicator = passValue.indicator
+	local colorKey = "color"
+
+	local colorIndex = passValue.colorIndex
+	colorKey = colorKey .. colorIndex
+
+	local c = indicator.dbx[colorKey]
+	if (c) then
+		return c.r, c.g, c.b, c.a
+	else
+		return 0, 0, 0, 0
+	end
+end
+
+function Grid2Options.SetIndicatorColor(info, r, g, b, a)
+	local passValue = info.arg
+	local indicator = passValue.indicator
+	local dbx = DBL:GetOptionsDbx(Grid2.dblData, "indicators", indicator.name)
+	local colorKey = "color"
+
+	local colorIndex = passValue.colorIndex
+	colorKey = colorKey .. colorIndex
+
+	local c = indicator.dbx[colorKey]
+	if (not c) then
+		c = {}
+		indicator.dbx[colorKey] = c
+	end
+	c.r, c.g, c.b, c.a = r, g, b, a
+
+	c = dbx[colorKey]
+	if (not c) then
+		c = {}
+		dbx[colorKey] = c
+	end
+	c.r, c.g, c.b, c.a = r, g, b, a
+
+Grid2Frame:Reset()
+	-- for unit, guid in Grid2:IterateRosterUnits() do
+		-- Grid2:UpdateIndicators(unit)
+	-- end
+end
+
+function Grid2Options:MakeIndicatorColorOptions(indicator, options, optionParams)
+	options = options or {}
+
+--print("MakeIndicatorColorOption", indicator.name, colorCount)
+	local colorCount = indicator.dbx.colorCount or 1
+	local name = L["Color"]
+	local desc = L["Color for %s."]:format(indicator.name)
+	for i = 1, colorCount, 1 do
+		local colorKey = "color" .. i
+		if (optionParams and optionParams[colorKey]) then
+			name = optionParams[colorKey]
+		elseif (colorCount > 1) then
+			name = L["Color %d"]:format(i)
+		end
+
+		local colorDescKey = "colorDesc" .. i
+		if (optionParams and optionParams[colorDescKey]) then
+			desc = optionParams[colorDescKey]
+		elseif (colorCount > 1) then
+			desc = name
+		end
+
+		options[colorKey] = {
+			type = "color",
+			order = (10 + i),
+			width = "half",
+			name = name,
+			desc = desc,
+			get = Grid2Options.GetIndicatorColor,
+			set = Grid2Options.SetIndicatorColor,
+			hasAlpha = true,
+			arg = {indicator = indicator, colorIndex = i},
+		}
+	end
+
+	return options
 end
 
 
@@ -399,8 +532,8 @@ Grid2Options.typeDefaultValues = {
 
 function Grid2Options.SetIndicatorType(info, value)
 	local indicator = info.arg
-	local baseKey = indicator.name
 	local morph = indicator.dbx.type ~= value
+	local baseKey = indicator.name
 	local dbx = DBL:GetOptionsDbx(Grid2.dblData, "indicators", baseKey)
 	
 	indicator.dbx.type = value
@@ -656,6 +789,7 @@ local function AddIconIndicatorOptions(indicator)
 	Grid2Options:MakeIndicatorTypeOptions(indicator, options)
 	Grid2Options:AddIndicatorLocationOptions(indicator, options)
 	Grid2Options:AddIndicatorLayerOptions(indicator, options)
+	Grid2Options:MakeIndicatorColorOptions(indicator, options)
 	Grid2Options:AddIndicatorStatusOptions(indicator, options)
 	Grid2Options:AddIndicatorDeleteOptions(indicator, options)
 
@@ -686,6 +820,7 @@ local function AddSquareIndicatorOptions(indicator)
 	Grid2Options:MakeIndicatorTypeOptions(indicator, options)
 	Grid2Options:AddIndicatorLocationOptions(indicator, options)
 	Grid2Options:AddIndicatorLayerOptions(indicator, options)
+	Grid2Options:MakeIndicatorColorOptions(indicator, options)
 	Grid2Options:AddIndicatorStatusOptions(indicator, options)
 	Grid2Options:AddIndicatorDeleteOptions(indicator, options)
 
