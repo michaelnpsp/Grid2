@@ -2,7 +2,7 @@ local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2Options", "deDE")
 if not L then return end
 
 L["Debug"] = "Debug"
-L["Debugging"] = "Debuggen"
+L["debugging"] = "debuggen"
 L["Module debugging menu."] = "Module debugging Menü"
 
 L["Show Tooltip"] = "Zeige Tooltip"

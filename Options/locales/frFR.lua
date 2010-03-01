@@ -2,7 +2,7 @@
 if not L then return end
 
 L["Debug"] = "Debug"
-L["Debugging"] = "Debugging"
+L["debugging"] = "debugging"
 L["Module debugging menu."] = "Menu du module de débugging"
 
 L["Show Tooltip"] = "Afficher tooltip"

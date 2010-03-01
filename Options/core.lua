@@ -1,3 +1,4 @@
+local LG = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 
 local DBL = LibStub:GetLibrary("LibDBLayers-1.0")
@@ -324,9 +325,9 @@ Interface\AddOns\Grid2\GridCore.lua:216: in function <Interface\AddOns\Grid2\Gri
 
 	local ACD3 = LibStub("AceConfigDialog-3.0")
 	--self.optionsFrame = ACD3:AddToBlizOptions("Grid2", Grid2.versionstring, nil, "General")
-	for key,value in pairs( self.options.Grid2.args ) do
-		if(key~="General") then
-			ACD3:AddToBlizOptions("Grid2", value.name, Grid2.versionstring, key)
+	for key, value in pairs(self.options.Grid2.args) do
+		if (key ~= "General") then
+			ACD3:AddToBlizOptions("Grid2", value.name, LG["Grid2"], key)
 		end
 	end
 
@@ -334,23 +335,6 @@ Interface\AddOns\Grid2\GridCore.lua:216: in function <Interface\AddOns\Grid2\Gri
 end
 
 -- This method gets called just before the options menu is shown
---[[
-function Grid2Options:MakeOptions(setup)
-	self:AddSetupLocationOptions(setup)
-	self:AddSetupIndicatorsOptions(setup)
-	self:AddSetupStatusesOptions(setup)
-	self:AddSetupCategoryOptions(setup)
-
-	if(setup~=nil) then
-		for name, data in pairs(setup.buffs) do
-			Grid2Options:AddAura("Buff", name, unpack(data))
-		end
-		for name, data in pairs(setup.debuffs) do
-			Grid2Options:AddAura("Debuff", name, unpack(data))
-		end
-	end
-=======
---]]
 function Grid2Options:MakeOptions(dblData)
 	self:MakeLocationOptions(dblData)
 	self:MakeIndicatorOptions(dblData)

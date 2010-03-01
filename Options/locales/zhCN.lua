@@ -2,7 +2,7 @@
 if not L then return end
 
 L["Debug"] = "除错"
-L["Debugging"] = "除错"
+L["debugging"] = "除错"
 L["Module debugging menu."] = "除错模块菜单。"
 
 L["Show Tooltip"] = "显示提示信息"

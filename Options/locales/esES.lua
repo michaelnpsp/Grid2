@@ -1,6 +1,9 @@
 ﻿local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2Options", "esES")
 if not L then return end
 
+L["debugging"] = "debuggen"
+L["Module debugging menu."] = "Module debugging Menü"
+
 L["Border Size"] = "Frame Border"
 L["Adjust the border of each unit's frame."] = "Adjust the border of each unit's frame."
 
