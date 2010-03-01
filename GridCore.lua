@@ -314,6 +314,19 @@ function Grid2:GroupChanged()
 			if raidDifficulty == 2 or raidDifficulty == 4 then
 				instType = "hraid"
 			end
+		else
+			local raidMembers = GetNumRaidMembers()
+			if raidMembers > 25 then
+				instType = "raid40"
+			elseif raidMembers > 10 then
+				instType = "hraid"
+			elseif raidMembers > 0 then
+				instType = "raid"
+			elseif GetNumPartyMembers() > 0 then
+				instType = "party"
+			else
+				instType = "solo"
+			end
 		end
 		if GetNumPartyMembers() == 0 and GetNumRaidMembers() == 0 then
 			instType = "solo"
