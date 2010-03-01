@@ -1,11 +1,11 @@
 local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2Options", "enUS", true, true)
 if not L then return end
 
-L["General Settings" ] = true
+L["General Settings"] = true
 L["GRID2_DESC"] = "Welcome to Grid2"
 
 L["Debug"] = true
-L["Debugging"] = true
+L["debugging"] = true
 L["Module debugging menu."] = true
 
 L["Show Tooltip"] = true

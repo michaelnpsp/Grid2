@@ -5,22 +5,19 @@ Grid2Options.options.Grid2 = {
 	type = "group",
 	handler = Grid2,
 	args = {
---[[
-		["DebugHeader"] = {
-			type = "header",
-			order = 104,
-			name = L["Debug"],
-		},
---]]
-
 		["General"] = {
 			order = 1,
 			type = "group",
 			name = L["General Settings"],
 			desc = L["General Settings"],
 			args = {
+				version = {
+					order = 10,
+					type = "description",
+					name = Grid2.versionstring,
+				},
 				intro = {
-					order = 1,
+					order = 20,
 					type = "description",
 					name = L["GRID2_DESC"],
 				},
@@ -29,13 +26,12 @@ Grid2Options.options.Grid2 = {
 
 		["debug"] = {
 			type = "group",
-			name = L["Debugging"],
+			name = L["debugging"],
 			desc = L["Module debugging menu."],
 			order = 1005,
 			args = {},
 		},
 	},
 }
-
 
 --}}}

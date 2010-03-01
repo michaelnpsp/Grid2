@@ -2,7 +2,7 @@
 if not L then return end
 
 L["Debug"] = "디버그"
-L["Debugging"] = "디버깅"
+L["debugging"] = "디버깅"
 L["Module debugging menu."] = "모듈 디버깅 메뉴를 설정합니다."
 
 L["Show Tooltip"] = "툴팁 표시"

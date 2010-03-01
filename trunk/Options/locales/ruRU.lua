@@ -2,7 +2,7 @@
 if not L then return end
 
 L["Debug"] = "Отладка"
-L["Debugging"] = "Отлаживание"
+L["debugging"] = "Отлаживание"
 L["Module debugging menu."] = "Модуль отладки меню."
 
 L["Show Tooltip"] = "Показать подсказки"
