@@ -280,15 +280,16 @@ local spellDB = {
 		70744,71733,72017,72018,--Acid Burst
 		70751,71738,72021,72022,--Corrosion
 		70633,71283,72025,72026,--Gut Spray
+		71941,--Twisted Nightmares
 
 		--Sindragosa
 		70107,--Permeating Chill
 		70106,--Chilled to the Bone
 		69766,--Instability
-		69762,--Unchained Magic
-		70126,--Frost Beacon
+--		69762,--Unchained Magic
 		71665,--Asphyxiation
-		70127,72528,72529,72530,--Mystic Buffet
+		70126,--Frost Beacon
+--		70127,72528,72529,72530,--Mystic Buffet
 
 		--Lich King
 		72133,73788,73789,73790,--Pain and Suffering
@@ -296,6 +297,7 @@ local spellDB = {
 		69242,--Soul Shriek
 		70541,73779,73780,73781,--Infest
 		70337,70338,73785,73786,73787,73912,73913,73914,--Necrotic Plague
+		27177,--Defile
 	},
 }
 
