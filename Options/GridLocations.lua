@@ -2,10 +2,19 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options", true)
 local LG = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 local DBL = LibStub:GetLibrary("LibDBLayers-1.0")
 
-function Grid2Options:GetLocation(baseKey)
+function Grid2Options:GetLocation(locationKey)
 	local locations = Grid2.locations
-	local location = locations[baseKey]
+	local location = locations[locationKey]
 	return location
+end
+
+function Grid2Options:UpdateLocation(locationKey)
+	for _, indicator in Grid2:IterateIndicators() do
+		if (indicator.dbx.location == locationKey) then
+			Grid2Options:UpdateIndicator(indicator)
+			Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
+		end
+	end
 end
 
 local layerValues
@@ -70,8 +79,7 @@ local function setLocationValue(info, value)
 	location[info[# info]] = value
 	dbx[info[# info]] = value
 
-	--ToDo: Update Indicators
-	Grid2Frame:UpdateAllFrames()
+	Grid2Options:UpdateLocation(baseKey)
 end
 
 local function getLocationNameValue(info)
@@ -99,7 +107,7 @@ local function setLocationNameValue(info, customName)
 		dbx[info[# info]] = customName
 	end
 
-	Grid2Frame:UpdateAllFrames()
+	Grid2Options:UpdateLocation(baseKey)
 end
 
 local function getLocationPointValue(info)
@@ -119,7 +127,7 @@ local function setLocationPointValue(info, value)
 	location[key] = point
 	dbx[key] = point
 
-	Grid2Frame:UpdateAllFrames()
+	Grid2Options:UpdateLocation(baseKey)
 end
 
 local function DeleteLocation(info)
@@ -310,6 +318,7 @@ local function AddLocationGroup(reset)
 			order = 10,
 			name = "",
 		},
+--[[
 		resetLocations = {
 			type = "execute",
 			order = 111,
@@ -317,6 +326,7 @@ local function AddLocationGroup(reset)
 			desc = L["Reset locations to the default list."],
 			func = ResetLocations,
 		},
+--]]
 	}
 	Grid2Options:AddElementGroup("location", options, 70, reset)
 end
