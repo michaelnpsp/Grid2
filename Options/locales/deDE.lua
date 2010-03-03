@@ -1,6 +1,9 @@
 local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2Options", "deDE")
 if not L then return end
 
+L["General Settings"] = "Allgemeine Einstellungen"
+L["GRID2_DESC"] = "Wilkommen bei Grid2"
+
 L["Debug"] = "Debug"
 L["debugging"] = "debuggen"
 L["Module debugging menu."] = "Module debugging Menü"
@@ -47,6 +50,7 @@ L["Raid"] = "Raid"
 
 L["Layouts"] = "Layouts"
 L["Layouts for each type of groups you're in."] = "Layout für jede Gruppe in der du bist"
+L["Layout Settings"] = "Layout Einstellungen"
 L["Solo Layout"] = "Solo Layout"
 L["Select which layout to use for solo."] = "Auswahl des Layout's welches für Solo genutzt werden soll"
 L["Party Layout"] = "Gruppen Layout"
@@ -83,6 +87,18 @@ L["Border"] = "Rand"
 L["Adjust border color and alpha."] = "Einstellung der Randfarbe und Alpha"
 L["Background"] = "Hintergrund"
 L["Adjust background color and alpha."] = "Einstellung der Hintergrundfarbe und Alpa"
+
+--role
+L["MAIN_ASSIST"] = MAIN_ASSIST
+L["MAIN_TANK"] = MAIN_TANK
+
+--threat
+L["Not Tanking"] = "Wird nicht getankt"
+L["Higher threat than tank."] = "Höhere Bedrohung als Tank"
+L["Insecurely Tanking"] = "Unsicheres Tanken"
+L["Tanking without having highest threat."] = "Wird getankt ohne die höchste Bedrohung"
+L["Securely Tanking"] = "Sicher Getankt"
+L["Tanking with highest threat."] = "Wird mit höchster Bedrohung getankt"
 
 L["Layout Anchor"] = "Layout Ankerpunkt"
 L["Sets where Grid is anchored relative to the screen."] = "Einstellung wo GRID relativ zum Bildschirm befestigt'Ankerpunkt' soll"
@@ -211,10 +227,16 @@ L["Down"] = "Nach unten"
 L["Location"] = "Position"
 L["Move the status higher in priority"] = "Status nach oben in der Prioriätenliste"
 L["Move the status lower in priority"] = "Status nach unten in der Prioritätenliste"
+L["Remove selected status from this indicator"] = "Entferne den Ausgewählten Statu von diesen Indikator"
 L["Name"] = "Name"
 L["Name of the new indicator"] = "Name des neuen Indikators"
 L["New Category"] = "Neue Kategorie"
 L["New Indicator"] = "Neuer Indikator"
+L["Add a new indicator"] = "Neuen Indikator dazufügen"
+L["Indicators"] = "Indikatoren"
+L["List of Indicators"] = "Liste von Indikatoren"
+L["Order"] = "Anordnung"
+L["This is the ordered list of statuses for this indicator"] = "Das ist die geordnete Liste von Statusen von diesem Indikator"
 L["New Location"] = "Neue Position"
 L["New Status"] = "Neuer Status"
 L["Range"] = "Reichweite"
@@ -315,7 +337,7 @@ L["Color for AFK."] = "Farbe für AFK"
 L["Include player heals"] = "Beinhaltet Spieler Heilung"
 L["Display status for the player's heals."] = "Anzeige Status für Spieler Heilung"
 L["Type of Heals taken into account"] = "Art welche Heilung genommen wurde"
---L["Select the type of healing spell taken into account for the amount of incoming heals calculated."] = "Select the type of healing spell taken into account for the amount of incoming heals calculated."
+L["Select the type of healing spell taken into account for the amount of incoming heals calculated."] = "Wähle die Art der Heil Zauber die genommen wurden für die Kalkulation der Menge der einghenden Heilung"
 L["Casted heals, both direct and channeled"] = "Gecastete Heilung - Direkt und Kanalisiert"
 L["Direct heals only."] = "Nur direkte Heilung"
 L["All heals, including casted and HoTs"] = "Alle Heilungen, inklusive gewirkte und Heilung über Zeit"
