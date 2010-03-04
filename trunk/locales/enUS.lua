@@ -10,16 +10,8 @@ L["Grid2"] = true
 --}}}
 
 
-
---{{{ GridCore
-L["Configure"] = true
-L["Configure Grid"] = true
---}}}
-
+--[[
 --{{{ GridFrame
-L["Frame"] = true
-L["Options for GridFrame."] = true
-
 L["Indicators"] = true
 L["Health Bar"] = true
 L["Health Bar Color"] = true
@@ -85,6 +77,7 @@ L["Color for %s."] = true
 L["Advanced"] = true
 L["Advanced options."] = true
 --}}}
+--]]
 
 --{{{ GridLayoutLayouts
 -- ToDo: move into options
@@ -117,6 +110,7 @@ L["By Group 25 w/tanks"] = true
 L["(%d+) yd range"] = true
 --}}}
 
+--[[
 --{{{ GridStatus
 L["Status"] = true
 L["Statuses"] = true
@@ -187,6 +181,7 @@ L["Ignore heals cast by you."] = true
 L["(.+) begins to cast (.+)."] = true
 L["(.+) gains (.+) Mana from (.+)'s Life Tap."] = true
 L["^Corpse of (.+)$"] = true
+--]]
 --}}}
 
 --{{{ GridStatusHealth
@@ -195,6 +190,8 @@ L["DEAD"] = true
 L["GHOST"] = true
 L["FD"] = true
 L["Offline"] = true
+
+--[[
 L["Unit health"] = true
 L["Health deficit"] = true
 L["Low HP warning"] = true
@@ -211,6 +208,7 @@ L["Only show deficit above % damage."] = true
 L["Color deficit based on class."] = true
 L["Low HP threshold"] = true
 L["Set the HP % for the low HP warning."] = true
+--]]
 --}}}
 
 --{{{ GridStatusPvp
@@ -219,7 +217,7 @@ L["FFA"] = true
 --}}}
 
 --{{{ GridStatusRange
-L["Out of Range"] = true
+--L["Out of Range"] = true
 L["OOR"] = true
 --}}}
 
@@ -231,8 +229,8 @@ L["AFK"] = true
 --}}}
 
 --{{{ GridStatusTarget
-L["Target"] = true
-L["Your Target"] = true
+L["target"] = true
+--L["Your Target"] = true
 --}}}
 
 --{{{ GridStatusVehicle
@@ -240,6 +238,6 @@ L["vehicle"] = true
 --}}}
 
 --{{{ GridStatusVoiceComm
-L["Voice Chat"] = true
-L["Talking"] = true
+--L["Voice Chat"] = true
+L["talking"] = true
 --}}}
