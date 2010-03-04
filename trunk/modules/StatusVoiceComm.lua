@@ -42,8 +42,13 @@ function Voice:GetColor(unit)
 	return color.r, color.g, color.b, color.a
 end
 
+local text = L["talking"]
+function Voice:GetText(unitid)
+	return text
+end
+
 local function Create(baseKey, dbx)
-	Grid2:RegisterStatus(Voice, {"color"}, baseKey, dbx)
+	Grid2:RegisterStatus(Voice, {"color", "text"}, baseKey, dbx)
 
 	return Voice
 end

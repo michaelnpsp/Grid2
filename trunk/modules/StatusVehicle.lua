@@ -44,9 +44,9 @@ function Vehicle:GetPercent(unit)
 	return UnitHasVehicleUI(unit) and self.dbx.color1.a
 end
 
-local vehicleString = L["vehicle"]
+local text = L["vehicle"]
 function Vehicle:GetText(unit)
-	return vehicleString
+	return text
 end
 
 local function Create(baseKey, dbx)

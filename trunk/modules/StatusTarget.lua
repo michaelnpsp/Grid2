@@ -1,3 +1,5 @@
+local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
+
 local Target = Grid2.statusPrototype:new("target")
 
 function Target:OnEnable()
@@ -32,13 +34,14 @@ function Target:IsActive(unitid)
 end
 --/dump UnitIsUnit("pet1", "target")
 
-function Target:GetText(unitid)
-	return "target"
-end
-
 function Target:GetColor(unitid)
 	local color = self.dbx.color1
 	return color.r, color.g, color.b, color.a
+end
+
+local text = L["target"]
+function Target:GetText(unitid)
+	return text
 end
 
 local function Create(baseKey, dbx)
