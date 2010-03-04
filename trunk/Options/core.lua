@@ -55,7 +55,7 @@ function Grid2Options:AddElement(elementType, element, extraOptions)
 	--Element: The element itself
 	--ExtraOptions: The aceconfig structure
 	--
-	--Addes options for this element to the main menu.
+	--Adds options for this element to the main menu.
 	--Will create a menu of type elementType if it doesn't already exist.
 	--That in turn must be a group, with elements matching 'element'
 	--

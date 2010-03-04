@@ -14,6 +14,7 @@ L["Always"] = true
 L["Never"] = true
 L["OOC"] = true
 
+L["alerts"] = true
 L["blink"] = true
 L["category"] = true
 L["frame"] = true
@@ -260,7 +261,9 @@ L["Show duration"] = true
 L["Show if mine"] = true
 L["Show if missing"] = true
 L["Show on %s."] = true
+L["Show stack"] = true
 L["Show status for the selected classes."] = true
+L["Show the number of stacks."] = true
 L["Show the time remaining."] = true
 L["Threshold"] = true
 L["Threshold at which to activate the status."] = true
