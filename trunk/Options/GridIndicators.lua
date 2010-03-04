@@ -99,9 +99,9 @@ function Grid2Options.GetIndicatorStatus(info, statusKey)
 	return false
 end
 
-function SettingsFromIndicator(info)
-	--was info.options.args.indicator
-	return(info.options.args.indicator.args.indicators)
+function GetParentOption(info, objectKey)
+	local settings = info.options.args.indicator.args.indicators
+	return settings.args[objectKey].args.statusesCurrent 
 end
 
 function Grid2Options.SetIndicatorStatusCurrent(info, value)
@@ -124,8 +124,7 @@ function Grid2Options.SetIndicatorStatusCurrent(info, value)
 			Grid2Frame:ResetAllFrames()
 			Grid2Frame:UpdateAllFrames()
 
-			local settings = SettingsFromIndicator(info)
-			local parentOption = settings.args[indicator.name].args.statusesCurrent
+			local parentOption = GetParentOption(indicator.name)
 			wipe(parentOption.args)
 			Grid2Options:AddIndicatorCurrentStatusOptions(indicator, parentOption.args)
 		end
@@ -149,8 +148,7 @@ function Grid2Options.SetIndicatorStatus(info, statusKey, value)
 			Grid2Frame:ResetAllFrames()
 			Grid2Frame:UpdateAllFrames()
 
-			local settings = SettingsFromIndicator(info)
-			local parentOption = settings.args[indicator.name].args.statusesCurrent
+			local parentOption = GetParentOption(indicator.name)
 			wipe(parentOption.args)
 			Grid2Options:AddIndicatorCurrentStatusOptions(indicator, parentOption.args)
 		end
@@ -174,8 +172,7 @@ local function StatusShiftUp(info, indicator, lowerStatus)
 				Grid2Options:SetStatusPriority(indicator, lowerStatus, higherPriority)
 				DBL:FlattenMap(Grid2.dblData, "statusMap", "indicators", "statuses")
 
-				local settings = SettingsFromIndicator(info)
-				local parentOption = settings.args[indicator.name].args.statusesCurrent
+				local parentOption = GetParentOption(indicator.name)
 				wipe(parentOption.args)
 				Grid2Options:AddIndicatorCurrentStatusOptions(indicator, parentOption.args)
 			end
@@ -200,8 +197,7 @@ local function StatusShiftDown(info, indicator, higherStatus)
 				Grid2Options:SetStatusPriority(indicator, lowerStatus, higherPriority)
 				DBL:FlattenMap(Grid2.dblData, "statusMap", "indicators", "statuses")
 
-				local settings = SettingsFromIndicator(info)
-				local parentOption = settings.args[indicator.name].args.statusesCurrent
+				local parentOption = GetParentOption(indicator.name)
 				wipe(parentOption.args)
 				Grid2Options:AddIndicatorCurrentStatusOptions(indicator, parentOption.args)
 			end
@@ -241,7 +237,7 @@ local function SetStatusLayer(info, value)
 	Grid2Frame:ResetAllFrames()
 	Grid2Frame:UpdateAllFrames()
 
-	local parentOption = info.options.args.indicator.args[indicator.name].args.statusesCurrent
+	local parentOption = GetParentOption(indicator.name)
 	wipe(parentOption.args)
 	Grid2Options:AddIndicatorCurrentStatusOptions(indicator, parentOption.args)
 end
@@ -666,7 +662,22 @@ local function AddTextIndicatorOptions(indicator)
 				DBL:GetOptionsDbx(Grid2.dblData, "indicators", baseKey).duration = v
 				Grid2Frame:UpdateAllFrames()
 			end,
-		}
+		},
+		stack = {
+			type = "toggle",
+			name = L["Show stack"],
+			desc = L["Show the number of stacks."],
+			order = 80,
+			tristate = true,
+			get = function ()
+				return indicator.dbx.stack
+			end,
+			set = function (_, v)
+				indicator.dbx.stack = v
+				DBL:GetOptionsDbx(Grid2.dblData, "indicators", baseKey).stack = v
+				Grid2Frame:UpdateAllFrames()
+			end,
+		},
 	}
 
 	if Grid2Options.AddMediaOption then
@@ -705,7 +716,7 @@ local function AddTextIndicatorOptions(indicator)
 	Grid2Options:AddIndicatorStatusOptions(indicator, options)
 	Grid2Options:AddIndicatorDeleteOptions(indicator, options)
 
-	Grid2Options:AddIndicatorElement( indicator, options)
+	Grid2Options:AddIndicatorElement(indicator, options)
 
 	local TextColor = Grid2.indicators[indicator.name .. "-color"]
 	if (not TextColor) then
@@ -723,7 +734,7 @@ local function AddAlphaIndicatorOptions(indicator)
 	Grid2Options:AddIndicatorLayerOptions(indicator, options)
 	Grid2Options:AddIndicatorStatusOptions(indicator, options)
 
-	Grid2Options:AddIndicatorElement( indicator, options)
+	Grid2Options:AddIndicatorElement(indicator, options)
 end
 
 local function AddBarIndicatorOptions(indicator)
@@ -754,7 +765,7 @@ local function AddBarIndicatorOptions(indicator)
 		options.texture = textureOption
 	end
 
-	Grid2Options:AddIndicatorElement( indicator, options)
+	Grid2Options:AddIndicatorElement(indicator, options)
 end
 
 local function AddBorderIndicatorOptions(indicator)
@@ -762,7 +773,7 @@ local function AddBorderIndicatorOptions(indicator)
 	Grid2Options:AddIndicatorLayerOptions(indicator, options)
 	Grid2Options:AddIndicatorStatusOptions(indicator, options)
 
-	Grid2Options:AddIndicatorElement( indicator, options)
+	Grid2Options:AddIndicatorElement(indicator, options)
 end
 
 local function AddIconIndicatorOptions(indicator)
@@ -793,7 +804,7 @@ local function AddIconIndicatorOptions(indicator)
 	Grid2Options:AddIndicatorStatusOptions(indicator, options)
 	Grid2Options:AddIndicatorDeleteOptions(indicator, options)
 
-	Grid2Options:AddIndicatorElement( indicator, options)
+	Grid2Options:AddIndicatorElement(indicator, options)
 end
 
 local function AddSquareIndicatorOptions(indicator)
@@ -824,7 +835,7 @@ local function AddSquareIndicatorOptions(indicator)
 	Grid2Options:AddIndicatorStatusOptions(indicator, options)
 	Grid2Options:AddIndicatorDeleteOptions(indicator, options)
 
-	Grid2Options:AddIndicatorElement( indicator, options)
+	Grid2Options:AddIndicatorElement(indicator, options)
 end
 
 local function AddBarColorIndicatorOptions(indicator)
@@ -851,7 +862,7 @@ local function AddBarColorIndicatorOptions(indicator)
 		},
 	}
 	Grid2Options:AddIndicatorStatusOptions(indicator, options)
-	Grid2Options:AddIndicatorElement( indicator, options)
+	Grid2Options:AddIndicatorElement(indicator, options)
 end
 
 
@@ -956,115 +967,102 @@ function ResetIndicators()
 end
 
 local function AddIndicatorsGroup(reset)
-	local indicator = {}
 	local options = {
-		--tabs = {
-			type = "group",
-			name = L["indicator"] or type,
-			desc = L["Options for %s."]:format("indicator"),
-			childGroups = "tab",
-			order = 50,
-			args = {
-				newIndicator = {
-					type = "group",
-					order = 100,
-					name = L["New Indicator"],
-					desc = L["Add a new indicator"],
-					args = {
-						newIndicatorName = {
-							type = "input",
-							order = 1,
-							--width = "full",
-							name = L["Name"],
-							desc = L["Name of the new indicator"],
-							usage = L["<CharacterOnlyString>"],
-							get = getNewIndicatorNameValue,
-							set = setNewIndicatorNameValue,
-						},
-						newIndicatorType = {
-							type = 'select',
-							order = 3,
-							name = L["Type"],
-							desc = L["Type of indicator to create"],
-							values = Grid2Options.GetNewIndicatorTypes,
-							get = getNewIndicatorType,
-							set = setNewIndicatorType,
-						},
-						newObjectLayer = {
-							type = 'select',
-							order = 5,
-							name = L["Layer"],
-							desc = L["Layer level.  Higher layers (like Class or Spec) supercede lower ones like Account."],
-							values = Grid2Options.GetIndicatorLayerValues,
-							get = getNewObjectLayer,
-							set = setNewObjectLayer,
-						},
-						newIndicatorLocation = {
-							type = 'select',
-							order = 5,
-							name = L["Location"],
-							desc = L["Select the location of the indicator"],
-							values = Grid2Options.GetLocationValues,
-							get = getNewIndicatorLocation,
-							set = setNewIndicatorLocation,
-						},
-						newIndicator = {
-							type = "execute",
-							order = 9,
-							name = L["New Indicator"],
-							desc = L["Create a new indicator."],
-							func = NewIndicator,
-							disabled = NewIndicatorDisabled,
-						},
+		type = "group",
+		name = L["indicator"] or type,
+		desc = L["Options for %s."]:format("indicator"),
+		childGroups = "tab",
+		order = 50,
+		args = {
+			newIndicator = {
+				type = "group",
+				order = 100,
+				name = L["New Indicator"],
+				desc = L["Add a new indicator"],
+				args = {
+					newIndicatorName = {
+						type = "input",
+						order = 1,
+						--width = "full",
+						name = L["Name"],
+						desc = L["Name of the new indicator"],
+						usage = L["<CharacterOnlyString>"],
+						get = getNewIndicatorNameValue,
+						set = setNewIndicatorNameValue,
 					},
-				}, --end NewIndicator tab
-				indicators = {
-					type = "group",
-					order = 10,
-					name = L["Indicators"],
-					desc = L["List of Indicators"],
-					args = {}
-					--list of existing indicators go here:
+					newIndicatorType = {
+						type = 'select',
+						order = 3,
+						name = L["Type"],
+						desc = L["Type of indicator to create"],
+						values = Grid2Options.GetNewIndicatorTypes,
+						get = getNewIndicatorType,
+						set = setNewIndicatorType,
+					},
+					newObjectLayer = {
+						type = 'select',
+						order = 5,
+						name = L["Layer"],
+						desc = L["Layer level.  Higher layers (like Class or Spec) supercede lower ones like Account."],
+						values = Grid2Options.GetIndicatorLayerValues,
+						get = getNewObjectLayer,
+						set = setNewObjectLayer,
+					},
+					newIndicatorLocation = {
+						type = 'select',
+						order = 5,
+						name = L["Location"],
+						desc = L["Select the location of the indicator"],
+						values = Grid2Options.GetLocationValues,
+						get = getNewIndicatorLocation,
+						set = setNewIndicatorLocation,
+					},
+					newIndicator = {
+						type = "execute",
+						order = 9,
+						name = L["New Indicator"],
+						desc = L["Create a new indicator."],
+						func = NewIndicator,
+						disabled = NewIndicatorDisabled,
+					},
 				},
-						   reset = {
-							   type = "group",
-							   order = 400,
-							   name = L["Reset Indicators"],
-							   desc = L["Reset indicators to defaults."],
-							   args = {
-								   resetIndicators = {
-									   type = "execute",
-									   order = 11,
-									   name = L["Reset Indicators"],
-									   desc = L["Reset indicators to defaults."],
-									   func = ResetIndicators,
-								   },
-							   },
-						   },
-			}, --end tab args
-		--}, --end tabs
-	} --end Options
+			},
+			indicators = {
+				type = "group",
+				order = 10,
+				name = L["Indicators"],
+				desc = L["List of Indicators"],
+				args = {}
+				--list of existing indicators go here:
+			},
+		   reset = {
+			   type = "group",
+			   order = 400,
+			   name = L["Reset Indicators"],
+			   desc = L["Reset indicators to defaults."],
+			   args = {
+				   resetIndicators = {
+					   type = "execute",
+					   order = 11,
+					   name = L["Reset Indicators"],
+					   desc = L["Reset indicators to defaults."],
+					   func = ResetIndicators,
+				   },
+			   },
+		   },
+		},
+	}
 	
-	--Going off-piste, see comment below
-	--Grid2Options:AddElementGroup("indicator", tabs, 50, reset)
-	--settings.args["indicator"] = tabs
 	Grid2Options.options.Grid2.args["indicator"] = options
 end
 
---[[
-I'm going to go off-piste here and skip the Grid2Options:AddElement. It's not clear to me if it's provided as convinence or as a potential hook point. 
-if it's the former then it certainly insn't convinent. If it's the latter, well *shrug* the whole options thing is pretty untidy I can't imagine anyone trying
-to hook anything.
-]]
 --/dump Grid2Options.options.Grid2.args.indicator
 function Grid2Options:AddIndicatorElement(element, extraOptions)
-	--assume Grid2Options:AddElementGroup("indicator",... ) has already been called.
 	local indicatorOptions = self.options.Grid2.args.indicator
-	local insersionPoint = indicatorOptions.args.indicators
-	--see also SettingsFromIndicator(info)
+	local insertionPoint = indicatorOptions.args.indicators
 
 	local options = {}
-	insersionPoint.args[element.name] = {
+	insertionPoint.args[element.name] = {
 		type = "group",
 		name = element.name,
 		desc = L["Options for %s."]:format(element.name),
@@ -1075,10 +1073,10 @@ function Grid2Options:AddIndicatorElement(element, extraOptions)
 	end
 end
 
-function Grid2Options:DeleteIndicatorElement( indicatorKey)
+function Grid2Options:DeleteIndicatorElement(objectKey)
 	local indicatorOptions = self.options.Grid2.args.indicator
-	local insersionPoint = indicatorOptions.args.indicators
-	insersionPoint.args[elementKey] = nil
+	local insertionPoint = indicatorOptions.args.indicators
+	insertionPoint.args[objectKey] = nil
 end
 
 --No options for the indicator
@@ -1093,7 +1091,7 @@ end
 function Grid2Options:MakeIndicatorOptions(dblData, reset)
 	AddIndicatorsGroup(reset)
 
-	if( dblData == nil ) then
+	if (dblData == nil) then
 		return
 	end
 
