@@ -504,9 +504,7 @@ function Grid2Layout:UpdateSize()
 
 	local GridFrame = Grid2:GetModule("Grid2Frame")
 	for i = 1, self.indexes.spacer do
-		local f = self.groups.spacer[i]
-		f:SetWidth(GridFrame:GetFrameWidth())
-		f:SetHeight(GridFrame:GetFrameHeight())
+		self.groups.spacer[i]:SetSize(GridFrame:GetFrameSize())
 	end
 
 	for type, headers in pairs(self.groups) do

@@ -5,6 +5,7 @@
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 local GridRange = GridRange
 local Grid2Frame
+local SecureButton_GetModifiedUnit = SecureButton_GetModifiedUnit
 
 --}}}
 --{{{ Grid2Frame script handlers
@@ -18,28 +19,20 @@ function GridFrameEvents:OnHide()
 	Grid2Frame:SendMessage("Grid_UpdateLayoutSize")
 end
 
-local warned
 function GridFrameEvents:OnAttributeChanged(name, value)
 	if (name == "unit") then
-		if (value) then
-			local unit = self:GetModifiedUnit()
+		if value then
+			local unit = SecureButton_GetModifiedUnit(self)
 			self.unit = unit
 
 			Grid2Frame:Debug("updated", self:GetName(), name, value, unit)
 			Grid2Frame:UpdateIndicators(self)
+			Grid2:SetFrameUnit(self, unit)
 		else
 			Grid2Frame:Debug("removed", self:GetName(), name, self.unit)
 			self.unit = nil
+			Grid2:SetFrameUnit(self, nil)
 		end
-		Grid2:SetFrameUnit(self, value)
-	elseif (name == "type1" or name == "*type1") and (not value or value == "") then
-		if not warned then
-			local message = ("%q has been set to %q, forcing to \"target\" instead."):format(name, tostring(value))
-			local _, ret = pcall(error, message, 3)
-			geterrorhandler()(ret)
-			warned = true
-		end
-		self:SetAttribute(name, "target")
 	end
 end
 
@@ -99,8 +92,7 @@ end
 
 function GridFramePrototype:Reset()
 	if not InCombatLockdown() then
-		self:SetWidth(Grid2Frame:GetFrameWidth())
-		self:SetHeight(Grid2Frame:GetFrameHeight())
+		self:SetSize(Grid2Frame:GetFrameSize())
 	end
 end
 
@@ -136,17 +128,6 @@ function GridFramePrototype:SetPosition(parentFrame, x, y)
 	self:SetPoint("TOPLEFT", parentFrame, "TOPLEFT", x, y)
 end
 
-function GridFramePrototype:SetBar(value, max)
-	if max == nil then
-		max = 100
-	end
-	self.Bar:SetValue(value/max*100)
-end
-
-function GridFramePrototype:GetModifiedUnit()
-	return SecureButton_GetModifiedUnit(self)
-end
-
 --}}}
 
 --{{{ Grid2Frame
@@ -172,17 +153,14 @@ function Grid2Frame:OnInitialize()
 	self.core.defaultModulePrototype.OnInitialize(self)
 	self.debugging = self.db.profile.debug
 
-	self.frames = {}
 	self.registeredFrames = {}
 end
 
 function Grid2Frame:OnEnable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateFrameUnits")
-	self:RegisterMessage("Grid_UnitUpdate", "UpdateFrameUnitNow")
-	-- self:RegisterMessage("Grid_UnitChanged", "UpdateFrameUnit")
-	-- self:RegisterMessage("Grid_UnitJoined", "UpdateFrameUnit")
-	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "UpdateFrameUnit")
-	self:RegisterEvent("UNIT_EXITED_VEHICLE", "UpdateFrameUnit")
+	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "UNIT_ENTERED_VEHICLE")
+	self:RegisterEvent("UNIT_EXITED_VEHICLE", "UNIT_EXITED_VEHICLE")
+	self:RegisterMessage("Grid_UnitUpdate", "Grid_UnitUpdate")
 	self:ResetAllFrames()
 	self:UpdateFrameUnits()
 	self:UpdateAllFrames()
@@ -202,14 +180,13 @@ end
 
 function Grid2Frame:RegisterFrame(frame)
 	self:Debug("RegisterFrame", frame:GetName())
---print("RegisterFrame", frame:GetName())
 
-	GridFrame_Init(frame, self:GetFrameWidth(), self:GetFrameHeight())
+	GridFrame_Init(frame, self:GetFrameSize())
 	self.registeredFrames[frame:GetName()] = frame
 end
 
 function Grid2Frame:WithAllFrames(func, ...)
-	for _, frame in pairs(self.registeredFrames) do
+	for _, frame in next, self.registeredFrames do
 		func(frame, ...)
 	end
 end
@@ -227,8 +204,7 @@ do
 		f:SetSize(w, h)
 	end
 	function Grid2Frame:ResizeAllFrames()
-		local w, h = self:GetFrameWidth(), self:GetFrameHeight()
-		self:WithAllFrames(resize_handler, w, h)
+		self:WithAllFrames(resize_handler, self:GetFrameSize())
 		self:SendMessage("Grid_UpdateLayoutSize")
 	end
 end
@@ -244,12 +220,9 @@ do
 	end
 end
 
-function Grid2Frame:GetFrameWidth()
-	return self.db.profile.frameWidth
-end
-
-function Grid2Frame:GetFrameHeight()
-	return self.db.profile.frameHeight
+function Grid2Frame:GetFrameSize()
+	local p = self.db.profile
+	return p.frameWidth, p.frameHeight
 end
 
 function Grid2Frame:UpdateIndicators(frame)
@@ -266,28 +239,44 @@ local next = next
 function Grid2Frame:UpdateFrameUnits()
 	for frameName, frame in next, self.registeredFrames do
 		local old_unit = frame.unit
-		local unit = frame:GetModifiedUnit()
+		local unit = SecureButton_GetModifiedUnit(frame)
 		if old_unit ~= unit then
+			Grid2:SetFrameUnit(frame, unit)
 			frame.unit = unit
 			self:UpdateIndicators(frame)
 		end
 	end
 end
 
-function Grid2Frame:UpdateFrameUnit(_, unit)
+function Grid2Frame:UNIT_ENTERED_VEHICLE(_, unit)
 	for frame in next, Grid2:GetUnitFrames(unit) do
-		local old, new = frame.unit, frame:GetModifiedUnit()
+		local old, new = frame.unit, SecureButton_GetModifiedUnit(frame)
 		if old ~= new then
+			Grid2:SetFrameUnit(frame, new)
 			frame.unit = new
 			self:UpdateIndicators(frame)
 		end
 	end
 end
 
-function Grid2Frame:UpdateFrameUnitNow(_, unit)
+function Grid2Frame:UNIT_EXITED_VEHICLE(_, unit)
+	for frame in next, Grid2:GetUnitFrames(Grid2:GetPetUnitidByUnitid(unit)) do
+		local old, new = frame.unit, SecureButton_GetModifiedUnit(frame)
+		if old ~= new then
+			Grid2:SetFrameUnit(frame, new)
+			frame.unit = new
+			self:UpdateIndicators(frame)
+		end
+	end
+end
+
+function Grid2Frame:Grid_UnitUpdate(_, unit)
 	for frame in next, Grid2:GetUnitFrames(unit) do
-		local old, new = frame.unit, frame:GetModifiedUnit()
-		frame.unit = new
+		local old, new = frame.unit, SecureButton_GetModifiedUnit(frame)
+		if old ~= new then
+			Grid2:SetFrameUnit(frame, new)
+			frame.unit = new
+		end
 		self:UpdateIndicators(frame)
 	end
 end
@@ -300,29 +289,22 @@ function Grid2Frame:ListRegisteredFrames()
 	print("--[ BEGIN Registered Frame List ]--")
 	print("FrameName", "UnitId", "UnitName", "Status")
 	for frameName, frame in pairs(self.registeredFrames) do
-		local frameStatus = "|cff00ff00"
+		local frameStatus
 
 		if frame:IsVisible() then
-			frameStatus = frameStatus .. "visible"
+			frameStatus = "|cff00ff00visible|r"
 		elseif frame:IsShown() then
-			frameStatus = frameStatus .. "shown"
+			frameStatus = "|cff00ff00shown|r"
 		else
-			frameStatus = "|cffff0000"
-			frameStatus = frameStatus .. "hidden"
+			frameStatus = "|cffff0000hidden|r"
 		end
 
-		frameStatus = frameStatus .. "|r"
-
 		print(
-			frameName == frame:GetName() and
-				"|cff00ff00"..frameName.."|r" or
-				"|cffff0000"..frameName.."|r",
-			frame.unit == frame:GetAttribute("unit") and
-					"|cff00ff00"..(frame.unit or "nil").."|r" or
-					"|cffff0000"..(frame.unit or "nil").."|r",
+			(frameName == frame:GetName() and "|cff00ff00" or "|cffff0000")
+				..frameName.."|r",
+			(frame.unit == frame:GetAttribute("unit") and "|cff00ff00" or "|cffff0000")
+				..(frame.unit or "nil").."|r",
 				"|cff00ff00"..(frame.unit and UnitName(frame.unit) or "nil").."|r",
-			frame:GetAttribute("type1"),
-			frame:GetAttribute("*type1"),
 			frameStatus)
 	end
 	print("--[ END Registered Frame List ]--")
