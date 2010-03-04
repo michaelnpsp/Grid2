@@ -56,28 +56,40 @@ local string_sub = string.utf8sub or string.sub
 local durationFormat = "%.1f"
 local durationFormatLarge = "%.0f"
 local durationLarge = 5
+local stackDurationFormat = "%s-%s"
 
 local durationTimers = {}
 local expirations = {}
+local stacks = {}
 local function f(Text)
 	local now = GetTime()
 	local timeLeft = expirations[Text] - now
 	if (timeLeft < 0) then
 		timeLeft = 0
 	end
+	local content
 	if (timeLeft < durationLarge) then
-		Text:SetText(durationFormat:format(timeLeft))
+		content = durationFormat:format(timeLeft)
 	else
-		Text:SetText(durationFormatLarge:format(timeLeft))
+		content = durationFormatLarge:format(timeLeft)
 	end
+	local stack = stacks[Text]
+	if (stack) then
+		content = stackDurationFormat:format(content, stack)
+	end
+	Text:SetText(content)
 end
 
 local function Text_OnUpdate(self, parent, unit, status)
 	local Text = parent[self.name]
 	local duration = self.dbx.duration
+	local stack = self.dbx.stack
 
 	if (status) then
-		local content
+		local contentDuration, contentStack
+		if (stack and status.GetCount) then
+			contentStack = tostring(status:GetCount(unit))
+		end
 		if (duration) then
 			if (status.GetExpirationTime and status.GetDuration) then
 				local expirationTime = status:GetExpirationTime(unit)
@@ -87,12 +99,15 @@ local function Text_OnUpdate(self, parent, unit, status)
 					timeLeft = 0
 				end
 				if (timeLeft < durationLarge) then
-					content = durationFormat:format(timeLeft)
+					contentDuration = durationFormat:format(timeLeft)
 				else
-					content = durationFormatLarge:format(timeLeft)
+					contentDuration = durationFormatLarge:format(timeLeft)
 				end
 
 				expirations[Text] = expirationTime
+				if (stack) then
+					stacks[Text] = contentStack or ""
+				end
 				if (not durationTimers[Text]) then
 					if (expirationTime > now) then
 						durationTimers[Text] = Grid2:ScheduleRepeatingTimer(f, 0.1, Text)
@@ -102,10 +117,23 @@ local function Text_OnUpdate(self, parent, unit, status)
 						Grid2:CancelTimer(durationTimers[Text])--, true)
 						durationTimers[Text] = nil
 						expirations[Text] = nil
+						stacks[Text] = nil
 					end
 				end
 			end
-		elseif (status.GetText) then
+		end
+		
+		local content
+		if (stack and duration) then
+			if (contentStack or contentDuration) then
+				content = stackDurationFormat:format(contentDuration, contentStack)
+			end
+		elseif (contentDuration) then
+			content = contentDuration
+		elseif (contentStack) then
+			content = contentStack
+		end
+		if (not content and status.GetText) then
 			content = status:GetText(unit)
 		end
 		if (content and content ~= "") then
@@ -120,6 +148,7 @@ local function Text_OnUpdate(self, parent, unit, status)
 				Grid2:CancelTimer(durationTimers[Text])--, true)
 				durationTimers[Text] = nil
 				expirations[Text] = nil
+				stacks[Text] = nil
 			end
 		end
 		Text:Hide()
