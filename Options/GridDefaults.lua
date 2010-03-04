@@ -72,8 +72,8 @@ end
 
 local defaultFont = "Friz Quadrata TT"
 
--- locations - setup/locations
--- objects - table of object config db indexed by layerKey
+-- dblData - data table for the mod
+-- versions - table of version info
 -- layers to create defaults for
 function Grid2Options:MakeDefaults(dblData, versions, layers)
 	for i, layer in pairs(layers) do
@@ -254,8 +254,6 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-WildGrowth-mine", 99)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-Thorns", 59)
-DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Magic", 40)
-DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Disease", 10)
 
 				versions.druid.Grid2Options = 1
 			end
@@ -284,6 +282,7 @@ DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Disease",
 
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-IceArmor-mine", 79)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-IceBarrier-mine", 89)
+
 				versions.mage.Grid2Options = 1
 			end
 		elseif (layer == "paladin") then
