@@ -192,8 +192,8 @@ end
 function Grid2:LoadGrid2Options()
 	--make Grid2Options loading slightly more failsafe
 	--(gr2options destroys initialize once it's done)
-	if Grid2Options and not Grid2Options.Initialize then 
-		return 
+	if Grid2Options and not Grid2Options.Initialize then
+		return
 	end
 
 	if (not IsAddOnLoaded("Grid2Options")) then
@@ -210,14 +210,14 @@ end
 -- This function gets hooked
 function Grid2:LoadOptions(dblData)
 	local upgrade
-	
+
 	if (dblData) then
 		upgrade = DBL:LoadOptions("Grid2Options", dblData, "Initialize", "account", 1, dblData.classKey, 1, dblData.specKey, 1) or upgrade
 	else
 		Grid2:LoadGrid2Options()
 		upgrade = true
 	end
-	
+
 	return upgrade
 end
 
@@ -353,8 +353,7 @@ local unit_of_frame = {}
 function Grid2:SetFrameUnit(frame, unit)
 	local prev_unit = unit_of_frame[frame]
 	if prev_unit then
-		local frames = frames_of_unit[prev_unit]
-		frames[frame] = nil
+		frames_of_unit[prev_unit][frame] = nil
 	end
 	if unit then
 		frames_of_unit[unit][frame] = true
