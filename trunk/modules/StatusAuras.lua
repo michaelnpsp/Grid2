@@ -58,6 +58,10 @@ function CreateDebuffType(baseKey, dbx)
 		return c[unit] ~= nil
 	end
 
+	function status:GetBorder(unit)
+		return 1
+	end
+
 	function status:GetColor(unit)
 		local color = self.dbx.color1
 		return color.r, color.g, color.b, color.a
