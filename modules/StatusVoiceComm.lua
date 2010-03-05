@@ -1,5 +1,7 @@
 local Voice = Grid2.statusPrototype:new("voice")
 
+local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
+
 local cache = {}
 
 function Voice:Grid_UnitLeft(_, unit)
