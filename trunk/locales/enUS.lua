@@ -55,10 +55,12 @@ L["Set the coloring strategy of pet units."] = true
 L["By Owner Class"] = true
 L["By Creature Type"] = true
 L["Using Fallback color"] = true
+--]]
 L["Beast"] = true
 L["Demon"] = true
 L["Humanoid"] = true
 L["Elemental"] = true
+--[[
 L["Colors"] = true
 L["Color options for class and pets."] = true
 L["Fallback colors"] = true
