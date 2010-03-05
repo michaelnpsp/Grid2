@@ -124,7 +124,7 @@ function Grid2Options.SetIndicatorStatusCurrent(info, value)
 			Grid2Frame:ResetAllFrames()
 			Grid2Frame:UpdateAllFrames()
 
-			local parentOption = GetParentOption(indicator.name)
+			local parentOption = GetParentOption(info, indicator.name)
 			wipe(parentOption.args)
 			Grid2Options:AddIndicatorCurrentStatusOptions(indicator, parentOption.args)
 		end
@@ -148,7 +148,7 @@ function Grid2Options.SetIndicatorStatus(info, statusKey, value)
 			Grid2Frame:ResetAllFrames()
 			Grid2Frame:UpdateAllFrames()
 
-			local parentOption = GetParentOption(indicator.name)
+			local parentOption = GetParentOption(info, indicator.name)
 			wipe(parentOption.args)
 			Grid2Options:AddIndicatorCurrentStatusOptions(indicator, parentOption.args)
 		end
@@ -172,7 +172,7 @@ local function StatusShiftUp(info, indicator, lowerStatus)
 				Grid2Options:SetStatusPriority(indicator, lowerStatus, higherPriority)
 				DBL:FlattenMap(Grid2.dblData, "statusMap", "indicators", "statuses")
 
-				local parentOption = GetParentOption(indicator.name)
+				local parentOption = GetParentOption(info, indicator.name)
 				wipe(parentOption.args)
 				Grid2Options:AddIndicatorCurrentStatusOptions(indicator, parentOption.args)
 			end
@@ -197,7 +197,7 @@ local function StatusShiftDown(info, indicator, higherStatus)
 				Grid2Options:SetStatusPriority(indicator, lowerStatus, higherPriority)
 				DBL:FlattenMap(Grid2.dblData, "statusMap", "indicators", "statuses")
 
-				local parentOption = GetParentOption(indicator.name)
+				local parentOption = GetParentOption(info, indicator.name)
 				wipe(parentOption.args)
 				Grid2Options:AddIndicatorCurrentStatusOptions(indicator, parentOption.args)
 			end
@@ -237,7 +237,7 @@ local function SetStatusLayer(info, value)
 	Grid2Frame:ResetAllFrames()
 	Grid2Frame:UpdateAllFrames()
 
-	local parentOption = GetParentOption(indicator.name)
+	local parentOption = GetParentOption(info, indicator.name)
 	wipe(parentOption.args)
 	Grid2Options:AddIndicatorCurrentStatusOptions(indicator, parentOption.args)
 end
