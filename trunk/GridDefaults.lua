@@ -66,7 +66,9 @@ end
 /dump Grid2.statuses["soulstone"]
 --]]
 
-
+-- Plugins can override this to set up additional object types
+function Grid2:SetupCustom(setup, objects, profileCurrentKey)
+end
 
 
 local handlerArray = {}
@@ -125,35 +127,7 @@ function Grid2:MakeDebuffColorHandler(status)
 	return handler
 end
 
---[[
-function Grid2:SetupBuffStatus(statusKey, info)
-	local status = self:CreateBuffStatus(unpack(info))
-	status.name = statusKey -- force name
 
-	self:RegisterStatus(status, { "color", "icon", "percent", "duration" })
-	self:MakeBuffColorHandler(status)
-	status:UpdateProfileData()
-	return status
-end
-
-function Grid2:SetupDebuffStatus(statusKey, info)
-	local status = self:CreateDebuffStatus(unpack(info))
-	status.name = statusKey -- force name
-
-	self:MakeDebuffColorHandler(status, info)
-	self:RegisterStatus(status, { "color", "icon", "percent" })
-	status:UpdateProfileData()
-	return status
-end
-function Grid2:SetupAuraStatus(setup)
-	for statusKey, info in pairs(setup.buffs) do
-		self:SetupBuffStatus(statusKey, info)
-	end
-	for statusKey, info in pairs(setup.debuffs) do
-		self:SetupDebuffStatus(statusKey, info)
-	end
-end
---]]
 function Grid2:RegisterIndicatorStatuses(setup)
 	for indicatorKey, statusPriorities in pairs(setup.status) do
 		local indicator = self.indicators[indicatorKey]
@@ -208,23 +182,28 @@ end
 
 function Grid2:GetSetupObjects()
 	local Grid2DB = Grid2DB or {}
-	self.dblData = DBL:InitializeRuntime("Grid2", Grid2DB)
+	local dblData = DBL:InitializeRuntime("Grid2", Grid2DB)
+	self.dblData = dblData
 
 	-- Load options for old versions (defaults versions to 0)
-	local upgrade = self:LoadOptions(self.dblData)
+-- print("Grid2:GetSetupObjects")
+	local upgrade = self:LoadOptions(dblData)
+-- print("Grid2:GetSetupObjects upgrade", upgrade)
 
 	if (upgrade) then
 		-- Upgrade defaults for those old versions
-		local flatten = self:UpgradeDefaults(self.dblData)
+		local flatten = self:UpgradeDefaults(dblData)
+-- print("Grid2:GetSetupObjects flatten", flatten)
 
 		-- Flatten and move the defaults from Grid2OptionsDB to Grid2DB
 		if (flatten) then
-			Grid2Options:FlattenDefaults(self.dblData)
+			Grid2Options:FlattenDefaults(dblData)
+-- print("Grid2:GetSetupObjects flattened")
 		end
 	end
 
 	-- Local Grid2DB objects are up to date and ready for use
-	local profileCurrentKey = self.dblData.profileCurrentKey
+	local profileCurrentKey = dblData.profileCurrentKey
 	local setup = Grid2DB["setup-flat"]
 	local objects = Grid2DB["objects"]
 
@@ -241,14 +220,17 @@ function Grid2:Setup()
 	self:SetupStatuses(setup.statuses[profileCurrentKey], objects.statuses)
 
 --[[
-/dump Grid2.statuses["death"]
 local categories = self.dbx.categories
 self:CreateCategories(categories)
 self:RegisterCategoryStatuses(categories)
 --]]
 	self:SetupStatusMap(setup.statusMap[profileCurrentKey], objects.statusMap)
+
+	--Hook Opportunity for plugin types
+	self:SetupCustom(setup, objects, profileCurrentKey)
 end
 
 --[[
+/dump Grid2.statuses["death"]
 /dump Grid2.statuses["buff-ArcaneIntellect"]
 --]]
