@@ -257,12 +257,11 @@ function Grid2Options:Initialize()
 	self = self or Grid2Options
 	Grid2OptionsDB = Grid2OptionsDB or {}
 	Grid2Options.dblData = DBL:InitializeOptions("Grid2", Grid2OptionsDB)
---print("Grid2Options:Initialize", Grid2.dblData, Grid2Options.dblData, Grid2Options.dblData.setupSrc)
+	Grid2Options:InitializeDefaults(Grid2Options.dblData)
 
 --old
 	LibStub("AceConfig-3.0"):RegisterOptionsTable("Grid2", self.options.Grid2)
 	Grid2:Print("Grid2Options Initializing...")
-
 
 	local function InitializeModuleOptions(parent)
 		for name, module in parent:IterateModules() do
@@ -274,33 +273,6 @@ function Grid2Options:Initialize()
 	self:AddResetDebugMenu()
 
 	InitializeModuleOptions(Grid2)
-
-	--can't do this immediately :(
-	--Grid2Options:MakeOptions(Grid2.db.profile.setup)
-	--why? Well it looks like GridDefaults calls LoadOptions which causes this to run...
-	--here's an example:
-	
-	--[[ --fixMe: Shoudl this every happen?
-	Message: Interface\AddOns\Grid2Options\GridIndicators.lua:671: attempt to index local 'element' (a nil value)
-Time: 01/05/10 23:50:28
-Count: 1
-Stack: Interface\AddOns\Grid2Options\GridIndicators.lua:671: in function `AddIndicatorElement'
-Interface\AddOns\Grid2Options\GridIndicators.lua:416: in function <Interface\AddOns\Grid2Options\GridIndicators.lua:375>
-Interface\AddOns\Grid2Options\GridIndicators.lua:698: in function `AddSetupIndicatorsOptions'
-Interface\AddOns\Grid2Options\core.lua:311: in function `MakeOptions'
-Interface\AddOns\Grid2Options\core.lua:262: in function `Initialize'
-Interface\AddOns\Grid2\GridCore.lua:188: in function <Interface\AddOns\Grid2\GridCore.lua:183>
-...ns\Grid2StatusRaidDebuffs\Grid2StatusRaidDebuffs.lua:375: in function <...ns\Grid2StatusRaidDebuffs\Grid2StatusRaidDebuffs.lua:374>
-...dOns\Grid2StatusTargetIcon\Grid2StatusTargetIcon.lua:170: in function `LoadOptions'
-...dOns\Grid2StatusTargetIcon\Grid2StatusTargetIcon.lua:186: in function `GetCurrentSetup'
-Interface\AddOns\Grid2\GridDefaults.lua:176: in function `Setup'
-Interface\AddOns\Grid2\GridCore.lua:216: in function <Interface\AddOns\Grid2\GridCore.lua:203>
-(tail call): ?
-[C]: ?
-[string "safecall Dispatcher[1]"]:9: in function <[string "safecall Dispatcher[1]"]:5>
-(tail call): ?
-...face\AddOns\Grid2\Libs\AceAddon-3.0\AceAddon-3.0.lua:539: in function `EnableAddon
-	]]
 
 	--so feed in a dummy
 	Grid2Options:MakeOptions()
@@ -320,11 +292,7 @@ Interface\AddOns\Grid2\GridCore.lua:216: in function <Interface\AddOns\Grid2\Gri
 		self:AddLayout(name, layout)
 	end
 
-	--instead put through a quick empty call...
-	--
-
 	local ACD3 = LibStub("AceConfigDialog-3.0")
-	--self.optionsFrame = ACD3:AddToBlizOptions("Grid2", Grid2.versionstring, nil, "General")
 	for key, value in pairs(self.options.Grid2.args) do
 		if (key ~= "General") then
 			ACD3:AddToBlizOptions("Grid2", value.name, LG["Grid2"], key)
@@ -334,7 +302,7 @@ Interface\AddOns\Grid2\GridCore.lua:216: in function <Interface\AddOns\Grid2\Gri
 	self.Initialize = nil
 end
 
--- This method gets called just before the options menu is shown
+-- Plugins can overide this to add their options
 function Grid2Options:MakeOptions(dblData)
 	self:MakeLocationOptions(dblData)
 	self:MakeIndicatorOptions(dblData)
@@ -344,8 +312,6 @@ end
 
 
 function Grid2Options:OnChatCommand(input)
-	--This will have been called shortly before invokation.
-	--Grid2Options:MakeOptions(Grid2.db.profile.setup)
     if (not input or input:trim() == "") then
         InterfaceOptionsFrame_OpenToCategory(Grid2.optionsFrame)
     else

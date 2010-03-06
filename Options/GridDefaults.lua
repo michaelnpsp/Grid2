@@ -48,16 +48,20 @@ function Grid2Options:GetDBObjects(db, charKey, classKey, specKey)
 	return setup, objects, versions
 end
 
-function Grid2Options.UpgradeDefaults(dblData)
-	local versionsSrc = dblData.versionsSrc
+
+function Grid2Options:InitializeDefaults(dblData)
 	local layerOrder = Grid2Options.layerOrder
-	local layers = Grid2Options.layers
 	
 	DBL:InitializeObjectType(dblData, "locations", layerOrder)
 	DBL:InitializeObjectType(dblData, "indicators", layerOrder)
 	DBL:InitializeObjectType(dblData, "statuses", layerOrder)
 	DBL:InitializeObjectType(dblData, "statusMap", layerOrder)
+end
 
+function Grid2Options.UpgradeDefaults(dblData)
+	local versionsSrc = dblData.versionsSrc
+	local layers = Grid2Options.layers
+	
 	Grid2Options:MakeDefaults(dblData, versionsSrc, layers)
 end
 
@@ -66,7 +70,7 @@ function Grid2Options:FlattenDefaults(dblData)
 	DBL:FlattenSetupType(dblData, "indicators")
 	DBL:FlattenSetupType(dblData, "statuses")
 	DBL:FlattenMap(dblData, "statusMap", "indicators", "statuses")
-	DBL:CopyDB(versionsSrc, versionsDst)
+	DBL:CopyDB(dblData.versionsSrc, dblData.versionsDst)
 end
 
 
