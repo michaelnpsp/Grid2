@@ -1,6 +1,9 @@
 ﻿local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2Options", "frFR")
 if not L then return end
 
+L["General Settings"] = "Paramètres généraux"
+L["GRID2_DESC"] = "Bienvenue sur Grid2"
+
 L["Debug"] = "Debug"
 L["debugging"] = "debugging"
 L["Module debugging menu."] = "Menu du module de débugging"
@@ -11,6 +14,7 @@ L["Always"] = "Toujours"
 L["Never"] = "Jamais"
 L["OOC"] = "OOC"
 
+L["alerts"] = "Alertes"
 L["blink"] = "Clignotement"
 L["category"] = "Catégorie"
 L["frame"] = "Cadre"
@@ -47,6 +51,7 @@ L["Raid"] = "Raid"
 
 L["Layouts"] = "Agencements"
 L["Layouts for each type of groups you're in."] = "Agencements pour chaque type de groupe dans lequel vous êtes."
+L["Layout Settings"] = "Paramètres d'agencement"
 L["Solo Layout"] = "Agencement Solo"
 L["Select which layout to use for solo."] = "Choisir l'agencement à utiliser en Solo."
 L["Party Layout"] = "Agencement de groupe"
@@ -83,6 +88,18 @@ L["Border"] = "Bordure"
 L["Adjust border color and alpha."] = "Ajuster la couleur de la bordure et de l'Alpha."
 L["Background"] = "Fond"
 L["Adjust background color and alpha."] = "Ajuster la couleur du fond et de l'Alpha."
+
+--role
+L["MAIN_ASSIST"] = MAIN_ASSIST
+L["MAIN_TANK"] = MAIN_TANK
+
+--threat
+L["Not Tanking"] = "Ne tank pas"
+L["Higher threat than tank."] = "Menace plus élevée que le Tank"
+L["Insecurely Tanking"] = "Tanking dangeureux"
+L["Tanking without having highest threat."] = "Tank sans avoir la menace la plus élevée."
+L["Securely Tanking"] = "Tanking sûr"
+L["Tanking with highest threat."] = "Tank avec la menace la plus élevée."
 
 L["Layout Anchor"] = "Ancre de la grille"
 L["Sets where Grid is anchored relative to the screen."] = "Configure ou Grid sera ancré sur l'écran"
@@ -211,10 +228,16 @@ L["Down"] = "Bas"
 L["Location"] = "Emplacement"
 L["Move the status higher in priority"] = "Bouger le statut en priorité plus haute"
 L["Move the status lower in priority"] = "Bouger le statut en priorité plus basse"
+L["Remove selected status from this indicator"] = "Retirer le statut séléctionné de cet indicateur"
 L["Name"] = "Nom"
 L["Name of the new indicator"] = "Nom du nouvel indicateur"
 L["New Category"] = "Nouvelle Catégorie"
 L["New Indicator"] = "Nouvel Indicateur"
+L["Add a new indicator"] = "Ajoute un nouvel indicateur"
+L["Indicators"] = "Indicateurs"
+L["List of Indicators"] = "Liste des indicateurs"
+L["Order"] = "Ordre"
+L["This is the ordered list of statuses for this indicator"] = "Ceci est la liste ordonnée des statuts pour cet indicateur"
 L["New Location"] = "Nouvel Emplacement"
 L["New Status"] = "Nouveau Statut"
 L["Range"] = "Distance"
@@ -238,7 +261,9 @@ L["Show duration"] = "Montrer durée"
 L["Show if mine"] = "Montrer si le mien"
 L["Show if missing"] = "Montrer si manquant"
 L["Show on %s."] = "Montrer sur %s."
+L["Show stack"] = "Montrer stack"
 L["Show status for the selected classes."] = "Montrer le statut pour les classes sélectionnées."
+L["Show the number of stacks."] = "Montrer le nombre de stacks."
 L["Show the time remaining."] = "Montrer le temps restant."
 L["Threshold"] = "Seuil"
 L["Threshold at which to activate the status."] = "Seuil d'activation du statut."
