@@ -149,8 +149,6 @@ function Grid2:OnInitialize()
 	self:RegisterChatCommand("grid2", "OnChatCommand")
 	self:RegisterChatCommand("gr2", "OnChatCommand")
 
-	--if you want to convine yourself that my settings hacks have done no harm, enable this:
-	--local optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Grid2", "Grid2 old")
 	local optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Grid2", L["Grid2"], nil, "General")
 
 	local prev_OnShow = optionsFrame:GetScript("OnShow")
