@@ -148,23 +148,17 @@ function Grid2:OnInitialize()
 
 	self:RegisterChatCommand("grid2", "OnChatCommand")
 	self:RegisterChatCommand("gr2", "OnChatCommand")
-
 	local optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Grid2", L["Grid2"], nil, "General")
 
 	local prev_OnShow = optionsFrame:GetScript("OnShow")
 	optionsFrame:SetScript("OnShow", function (self, ...)
-		local dblData = Grid2.dblData
-		Grid2:LoadOptions(dblData)
-		if (Grid2Options) then
-			--this is to force the options to rebuild whenever the menu is shown
-			Grid2Options:MakeOptions(dblData)
-		end
+		Grid2:LoadAllOptions()
+		
 		self:SetScript("OnShow", prev_OnShow)
 		return prev_OnShow(self, ...)
 	end)
 
 	self.optionsFrame = optionsFrame
-
 	self:RegisterModules()
 
 	for _, location in self:IterateLocations() do
@@ -188,29 +182,20 @@ end
 
 -- Do not hook
 function Grid2:LoadGrid2Options()
-	--make Grid2Options loading slightly more failsafe
-	--(gr2options destroys initialize once it's done)
-	if Grid2Options and not Grid2Options.Initialize then
-		return
-	end
+	if (Grid2Options) then return end
 
 	if (not IsAddOnLoaded("Grid2Options")) then
-		--self:Print("Grid2Options loading")
 		LoadAddOn("Grid2Options")
-		if (Grid2Options) then
-			Grid2Options:Initialize()
-		end
-	else
-		--self:Print("Grid2Options not found")
 	end
 end
 
 -- This function gets hooked
+-- Loads only Options that need an upgrade
 function Grid2:LoadOptions(dblData)
 	local upgrade
 
 	if (dblData) then
-		upgrade = DBL:LoadOptions("Grid2Options", dblData, "Initialize", "account", 1, dblData.classKey, 1, dblData.specKey, 1) or upgrade
+		upgrade = DBL:LoadOptions("Grid2Options", dblData, "InitializeOptions", "account", 1, dblData.classKey, 1, dblData.specKey, 1) or upgrade
 	else
 		Grid2:LoadGrid2Options()
 		upgrade = true
@@ -219,13 +204,25 @@ function Grid2:LoadOptions(dblData)
 	return upgrade
 end
 
-function Grid2:OnChatCommand(input)
+-- Do not hook
+-- Loads all options and initializes them
+local allOptionsLoaded
+function Grid2:LoadAllOptions()
+	if (allOptionsLoaded) then return end
+
+	allOptionsLoaded = true
 	Grid2:LoadOptions()
 	if (Grid2Options) then
-		Grid2Options:MakeOptions(Grid2.dblData)
-		Grid2Options:OnChatCommand(input)
+		Grid2Options:Initialize()
 	else
 		Grid2:Print("You need the Grid2Options addon available to be able to configure Grid2.")
+	end
+end
+
+function Grid2:OnChatCommand(input)
+	Grid2:LoadAllOptions()
+	if (Grid2Options) then
+		Grid2Options:OnChatCommand(input)
 	end
 end
 
