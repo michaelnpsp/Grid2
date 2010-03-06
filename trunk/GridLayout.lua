@@ -160,7 +160,7 @@ Grid2Layout.defaultDB = {
 
 		Padding = 1,
 		Spacing = 10,
-		ScaleSize = 1.5,
+		ScaleSize = 1,
 		BorderR = .5,
 		BorderG = .5,
 		BorderB = .5,
@@ -170,11 +170,11 @@ Grid2Layout.defaultDB = {
 		BackgroundB = .1,
 		BackgroundA = .65,
 
-		anchor = "TOPLEFT",
-		groupAnchor = "BOTTOMRIGHT",
+		anchor = "BOTTOMLEFT",
+		groupAnchor = "BOTTOMLEFT",
 
-		PosX = 300,
-		PosY = -400,
+		PosX = 400,
+		PosY = 100,
 	},
 }
 
