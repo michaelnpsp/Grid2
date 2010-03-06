@@ -1091,12 +1091,6 @@ end
 function Grid2Options:MakeIndicatorOptions(dblData, reset)
 	AddIndicatorsGroup(reset)
 
-	if (dblData == nil) then
-		return
-	end
-
-	local objects = DBL:GetOptionsObjects(dblData, "indicators")
-
 	self:AddOptionHandler("alpha", AddAlphaIndicatorOptions)
 	self:AddOptionHandler("bar", AddBarIndicatorOptions)
 	self:AddOptionHandler("bar-color", AddBarColorIndicatorOptions)
@@ -1107,10 +1101,10 @@ function Grid2Options:MakeIndicatorOptions(dblData, reset)
 	self:AddCreatableOptionHandler("text", L["text"], AddTextIndicatorOptions)
 	self:AddOptionHandler("text-color", Grid2Options.MakeNoIndicatorOptions)
 
+	local objects = DBL:GetOptionsObjects(dblData, "indicators")
 	local setup = DBL:GetRuntimeSetup(dblData, "indicators")
 	for baseKey, layer in pairs(setup) do
 		local indicator = Grid2.indicators[baseKey]
---print("MakeIndicatorOptions", layer, baseKey)
 		local dbx = objects[layer][baseKey]
 		if (dbx) then
 			local funcMakeOptions = Grid2Options.typeMakeOptions[dbx.type]

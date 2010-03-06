@@ -253,15 +253,17 @@ function Grid2Options:AddLayout(layoutName, layout)
 	end
 end
 
-function Grid2Options:Initialize()
-	self = self or Grid2Options
+function Grid2Options:InitializeOptions()
 	Grid2OptionsDB = Grid2OptionsDB or {}
 	Grid2Options.dblData = DBL:InitializeOptions("Grid2", Grid2OptionsDB)
 	Grid2Options:InitializeDefaults(Grid2Options.dblData)
+end
 
---old
+function Grid2Options:Initialize()
+	self = self or Grid2Options
+	self:InitializeOptions()
+
 	LibStub("AceConfig-3.0"):RegisterOptionsTable("Grid2", self.options.Grid2)
-	Grid2:Print("Grid2Options Initializing...")
 
 	local function InitializeModuleOptions(parent)
 		for name, module in parent:IterateModules() do
@@ -274,8 +276,7 @@ function Grid2Options:Initialize()
 
 	InitializeModuleOptions(Grid2)
 
-	--so feed in a dummy
-	Grid2Options:MakeOptions()
+	Grid2Options:MakeOptions(Grid2.dblData)
 	
 	--which makes all this obsolete I think:
 	for _, location in Grid2:IterateLocations() do
@@ -307,7 +308,6 @@ function Grid2Options:MakeOptions(dblData)
 	self:MakeLocationOptions(dblData)
 	self:MakeIndicatorOptions(dblData)
 	self:MakeStatusOptions(dblData)
-	-- self:AddSetupCategoryOptions(setup)
 end
 
 
@@ -315,7 +315,6 @@ function Grid2Options:OnChatCommand(input)
     if (not input or input:trim() == "") then
         InterfaceOptionsFrame_OpenToCategory(Grid2.optionsFrame)
     else
---        LibStub("AceConfigCmd-3.0").HandleCommand(Grid2, "grid2", "Grid2", input)
 		if (LibStub("AceConfigDialog-3.0").OpenFrames["Grid2"]) then
 			LibStub("AceConfigDialog-3.0"):Close("Grid2")
 		else
