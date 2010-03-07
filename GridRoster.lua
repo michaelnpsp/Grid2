@@ -120,8 +120,14 @@ do
 
 		roster_names[unit] = name
 		roster_realms[unit] = realm
+
+		local oldGuid = roster_guids[unit]
 		roster_guids[unit] = guid
 		roster_units[guid] = unit
+		
+		if (oldGuid and guid ~= oldGuid) then
+			roster_units[oldGuid] = nil
+		end
 	end
 
 	function Grid2:UNIT_NAME_UPDATE(_, unit)
@@ -163,8 +169,6 @@ do
 			local old_guid = roster_guids[unit]
 			if guid ~= old_guid then
 				if old_guid then
-					-- Potentially, it could be problematic to have guid "moving around" between frames.
-					-- assert (not roster_units[old_guid] or roster_units[old_guid] == unit)
 					roster_units[old_guid] = nil
 				end
 				roster_units[guid] = unit
@@ -215,33 +219,38 @@ do
 			roster_realms[unit] = nil
 			roster_guids[unit] = nil
 			roster_units[guid] = nil
-
+-- print("Grid_UnitLeft -->", unit, guid)
 			self:SendMessage("Grid_UnitLeft", unit, guid)
-
-			units_to_remove[guid] = nil
 		end
+		wipe(units_to_remove)
 
 		for unit, guid in pairs(units_added) do
 			updated = true
+-- print("Grid_UnitJoined -->", unit, guid)
 			self:SendMessage("Grid_UnitJoined", unit, guid)
 			units_updated[unit] = guid
-			units_added[unit] = nil
 		end
+		wipe(units_added)
 
 		for unit, guid in pairs(units_changed) do
 			updated = true
+-- print("Grid_UnitChanged -->", unit, guid)
 			self:SendMessage("Grid_UnitChanged", unit, guid)
 			units_updated[unit] = guid
-			units_changed[unit] = nil
 		end
+		wipe(units_changed)
 
 		for unit, guid in pairs(units_updated) do
+-- print("Grid_UnitUpdate -->", unit, guid)
 			self:SendMessage("Grid_UnitUpdate", unit, guid)
-			units_updated[unit] = nil
 		end
+		wipe(units_updated)
 
 		if updated then
 			self:SendMessage("Grid_RosterUpdated")
 		end
 	end
 end
+--[[
+/dump Grid2:IterateRoster()
+--]]
