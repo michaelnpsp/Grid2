@@ -319,11 +319,21 @@ Grid2Layout:AddLayout(L["By Role 25"], {
 		showPlayer = true,
 		groupFilter = "1,2,3,4,5",
 		groupBy = "ROLE",
-		groupingOrder = DEFAULT_GROUP_ORDER,
+		groupFilter = "MAINTANK,MAINASSIST", 
+		groupingOrder = "MAINTANK,MAINASSIST", 
+		unitsPerColumn = 5,
+		maxColumns = 1,
+	},
+	[2] = {
+		showSolo = true,
+		showPlayer = true,
+		groupFilter = "1,2,3,4,5",
+		groupBy = "GROUP",
+		groupingOrder = DEFAULT_GROUP_ORDER, 
 		unitsPerColumn = 5,
 		maxColumns = 5,
 	},
-	[2] = {
+	[3] = {
 		type = "raidpet",
 		showPlayer = true,
 		showParty = true,
