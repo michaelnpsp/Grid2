@@ -28,7 +28,12 @@ function Vehicle:OnDisable()
 end
 
 function Vehicle:IsActive(unit)
-	return UnitHasVehicleUI(unit)
+	local owner = Grid2:GetOwnerUnitByUnit(unit)
+	if (owner and UnitHasVehicleUI(owner)) then
+		return UnitHasVehicleUI(owner)
+	else
+		return UnitHasVehicleUI(unit)
+	end
 end
 
 function Vehicle:GetColor(unit)
@@ -46,7 +51,12 @@ end
 
 local text = L["vehicle"]
 function Vehicle:GetText(unit)
-	return text
+	local owner = Grid2:GetOwnerUnitByUnit(unit)
+	if (owner and UnitHasVehicleUI(owner)) then
+		return UnitName(owner)
+	else
+		return text
+	end
 end
 
 local function Create(baseKey, dbx)
