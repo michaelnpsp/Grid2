@@ -612,7 +612,7 @@ end
 
 
 
-local function AddTextIndicatorOptions(indicator)
+local function MakeTextIndicatorOptions(indicator)
 	local baseKey = indicator.name
 	local options = {
 		textlength = {
@@ -776,7 +776,7 @@ local function AddBorderIndicatorOptions(indicator)
 	Grid2Options:AddIndicatorElement(indicator, options)
 end
 
-local function AddIconIndicatorOptions(indicator)
+local function MakeIconIndicatorOptions(indicator)
 	local baseKey = indicator.name
 	local options = {
 		iconsize = {
@@ -807,7 +807,7 @@ local function AddIconIndicatorOptions(indicator)
 	Grid2Options:AddIndicatorElement(indicator, options)
 end
 
-local function AddSquareIndicatorOptions(indicator)
+local function MakeSquareIndicatorOptions(indicator)
 	local baseKey = indicator.name
 	local options = {
 		size = {
@@ -919,15 +919,15 @@ local function NewIndicator()
 		--ToDo: this needs to be in a setup list of functions somewhere
 		local dbx
 		if (newIndicatorType == "square") then
-			dbx = {type = "square", level = 9, location = newIndicatorLocation, cornerSize = 5,}
+			DBL:SetupLayerObject(dblData, "indicators", layer, baseKey, {type = "square", level = 9, location = newIndicatorLocation, cornerSize = 5,}, true)
 		elseif (newIndicatorType == "icon") then
-			dbx = {type = "icon", level = 8, location = newIndicatorLocation, iconSize = 16, fontSize = 8,}
+			DBL:SetupLayerObject(dblData, "indicators", layer, baseKey, {type = "icon", level = 8, location = newIndicatorLocation, iconSize = 16, fontSize = 8,}, true)
 		elseif (newIndicatorType == "text") then
-			dbx = {type = "text", level = 6, location = newIndicatorLocation, textlength = 12, fontSize = 8, font = "Friz Quadrata TT",}
+			DBL:SetupLayerObject(dblData, "indicators", layer, baseKey, {type = "text", level = 6, location = newIndicatorLocation, textlength = 12, fontSize = 8, font = "Friz Quadrata TT",}, true)
+			DBL:SetupLayerObject(dblData, "indicators", layer, (baseKey .. "-color"), {type = "text-color"}, true)
 		end
 
-		--Create the new object in options settings then flatten so it is copied to runtime settings
-		DBL:SetupLayerObject(dblData, "indicators", layer, baseKey, dbx, true)
+		-- Flatten so it is copied to runtime settings
 		DBL:FlattenSetupType(dblData, "indicators")
 		
 		--Find the flattened dbx
@@ -1096,9 +1096,9 @@ function Grid2Options:MakeIndicatorOptions(dblData, reset)
 	self:AddOptionHandler("bar-color", AddBarColorIndicatorOptions)
 	self:AddOptionHandler("border", AddBorderIndicatorOptions)
 
-	self:AddCreatableOptionHandler("icon", L["icon"], AddIconIndicatorOptions)
-	self:AddCreatableOptionHandler("square", L["square"], AddSquareIndicatorOptions)
-	self:AddCreatableOptionHandler("text", L["text"], AddTextIndicatorOptions)
+	self:AddCreatableOptionHandler("icon", L["icon"], MakeIconIndicatorOptions)
+	self:AddCreatableOptionHandler("square", L["square"], MakeSquareIndicatorOptions)
+	self:AddCreatableOptionHandler("text", L["text"], MakeTextIndicatorOptions)
 	self:AddOptionHandler("text-color", Grid2Options.MakeNoIndicatorOptions)
 
 	local objects = DBL:GetOptionsObjects(dblData, "indicators")
