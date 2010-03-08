@@ -62,8 +62,8 @@ function Grid2:GetPetUnitidByUnitid(unitid)
 	return pet_of_unit[unitid]
 end
 
-function Grid2:GetOwnerUnitidByUnitid(unitid)
-	return owner_of_unit[unitid]
+function Grid2:GetOwnerUnitByUnit(unit)
+	return owner_of_unit[unit]
 end
 
 function Grid2:IsGUIDInRaid(guid)
