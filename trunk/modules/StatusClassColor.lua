@@ -66,7 +66,12 @@ function Charmed:OnDisable()
 end
 
 function Charmed:IsActive(unit)
-	return UnitIsCharmed(unit)
+	local owner = Grid2:GetOwnerUnitByUnit(unit)
+	if (owner and UnitHasVehicleUI(owner)) then
+		return nil
+	else
+		return UnitIsCharmed(unit)
+	end
 end
 
 function Charmed:GetColor(unit)
@@ -75,11 +80,7 @@ function Charmed:GetColor(unit)
 end
 
 function Charmed:GetText(unit)
-	if (UnitIsCharmed(unit)) then
-		return L["Charmed"]
-	else
-		return nil
-	end
+	return L["Charmed"]
 end
 
 function Charmed:GetPercent(unit)
