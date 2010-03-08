@@ -284,10 +284,11 @@ local groupType
 function Grid2:PLAYER_ENTERING_WORLD()
 	-- this is needed to trigger an update when switching from one BG directly to another
 	groupType = nil
-	return self:GroupChanged()
+	self:GroupChanged("PLAYER_ENTERING_WORLD")
 end
 
-function Grid2:GroupChanged()
+function Grid2:GroupChanged(event)
+-- print("GroupChanged", event)
 	local _, instType = IsInInstance()
 
 	if instType == "none" then
