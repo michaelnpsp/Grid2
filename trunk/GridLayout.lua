@@ -85,7 +85,6 @@ local HeaderAttributes = {
 	"useOwnerUnit", "filterOnPet",
 	"allowVehicleTarget", "toggleForVehicle"
 }
---, "toggleForVehicle"
 function GridLayoutHeaderClass.prototype:Reset()
 	if self.initialConfigFunction then
 		self:SetAttribute("sortMethod", "NAME")
@@ -147,10 +146,12 @@ Grid2Layout.defaultDB = {
 		layouts = {
 			solo = L["Solo w/Pet"],
 			party = L["By Group 5 w/Pets"],
-			raid = L["By Group 10 w/Pets"],
-			hraid = L["By Group 25 w/Pets"],
-			pvp = L["By Group 40"],
+			raid10 = L["By Group 10 w/Pets"],
+			raid15 = L["By Group 15 w/Pets"],
+			raid20 = L["By Group 25 w/Pets"],
+			raid25 = L["By Group 25 w/Pets"],
 			raid40 = L["By Group 40"],
+			pvp = L["By Group 40"],
 			arena = L["By Group 5 w/Pets"],
 		},
 		horizontal = true,
@@ -446,7 +447,7 @@ function Grid2Layout:LoadLayout(layoutName)
 
 	for i, l in ipairs(layout) do
 		local type = l.type or default_type
-		local headers = assert(self.groups[type])
+		local headers = assert(self.groups[type], "Bad " .. type)
 		local index = self.indexes[type] + 1
 		local layoutGroup = headers[index]
 		if not layoutGroup then
@@ -546,7 +547,7 @@ function Grid2Layout:CheckVisibility()
 		self.frame:Show()
 	elseif frameDisplay == "Grouped" and self.partyType ~= "solo" then
 		self.frame:Show()
-	elseif frameDisplay == "Raid" and (self.partyType == "raid" or self.partyType == "hraid") then
+	elseif frameDisplay == "Raid" and (self.partyType == "raid10" or self.partyType == "raid15" or self.partyType == "raid20" or self.partyType == "raid25") then
 		self.frame:Show()
 	else
 		self.frame:Hide()

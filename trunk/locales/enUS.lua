@@ -1,4 +1,4 @@
-local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2", "enUS", true)
+local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2", "enUS", true, true)
 if not L then return end
 
 --{{{ Actually used
@@ -103,7 +103,6 @@ L["By Class 2 x 15 Wide"] = true
 L["By Role 25"] = true
 L["By Class"] = true
 L["By Class w/Pets"] = true
-L["Onyxia"] = true
 L["By Group 25 w/tanks"] = true
 --}}}
 
