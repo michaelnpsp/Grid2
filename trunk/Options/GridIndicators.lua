@@ -381,7 +381,8 @@ end
 function Grid2Options.SetIndicatorColor(info, r, g, b, a)
 	local passValue = info.arg
 	local indicator = passValue.indicator
-	local dbx = DBL:GetOptionsDbx(Grid2.dblData, "indicators", indicator.name)
+	local typeKey = passValue.typeKey
+	local dbx = DBL:GetOptionsDbx(Grid2.dblData, typeKey, indicator.name)
 	local colorKey = "color"
 
 	local colorIndex = passValue.colorIndex
@@ -401,10 +402,7 @@ function Grid2Options.SetIndicatorColor(info, r, g, b, a)
 	end
 	c.r, c.g, c.b, c.a = r, g, b, a
 
-Grid2Frame:Reset()
-	-- for unit, guid in Grid2:IterateRosterUnits() do
-		-- Grid2:UpdateIndicators(unit)
-	-- end
+	Grid2Frame:Reset()
 end
 
 function Grid2Options:MakeIndicatorColorOptions(indicator, options, optionParams)
@@ -414,6 +412,7 @@ function Grid2Options:MakeIndicatorColorOptions(indicator, options, optionParams
 	local colorCount = indicator.dbx.colorCount or 1
 	local name = L["Color"]
 	local desc = L["Color for %s."]:format(indicator.name)
+	local typeKey = optionParams and optionParams.typeKey or "indicators"
 	for i = 1, colorCount, 1 do
 		local colorKey = "color" .. i
 		if (optionParams and optionParams[colorKey]) then
@@ -438,7 +437,7 @@ function Grid2Options:MakeIndicatorColorOptions(indicator, options, optionParams
 			get = Grid2Options.GetIndicatorColor,
 			set = Grid2Options.SetIndicatorColor,
 			hasAlpha = true,
-			arg = {indicator = indicator, colorIndex = i},
+			arg = {indicator = indicator, colorIndex = i, typeKey = typeKey},
 		}
 	end
 
