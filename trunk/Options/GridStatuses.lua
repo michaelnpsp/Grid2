@@ -62,7 +62,8 @@ end
 
 
 local function DeleteStatus(info)
-	local status = info.arg
+	local status = info.arg.status
+	local group = info.arg.group
 	local baseKey = status.name
 	local dblData = Grid2.dblData
 
@@ -79,21 +80,36 @@ local function DeleteStatus(info)
 	Grid2Frame:ResetAllFrames()
 	Grid2Frame:UpdateAllFrames()
 
-	Grid2Options:DeleteElement("status", baseKey)
+	if (group) then
+		Grid2Options:DeleteElementSubType("status", group, baseKey)
+	else
+		Grid2Options:DeleteElement("status", baseKey)
+	end
 end
 
-function Grid2Options:AddStatusDeleteOptions(status, options)
+function Grid2Options:MakeStatusDeleteOptions(status, options, optionParams)
+	options = options or {}
+	local group = optionParams and optionParams.group
+
 	if (options.delete) then
-		options.delete.arg = status
+		options.delete.arg.status = status
+		options.delete.arg.group = group
 	else
+		options.deleteSpacer = {
+			type = "header",
+			order = 200,
+			name = "",
+		}
 		options.delete = {
 			type = "execute",
-			order = 83,
+			order = 201,
 			name = L["Delete"],
 			func = DeleteStatus,
-			arg = status,
+			arg = {status = status, group = group},
 		}
 	end
+
+	return options
 end
 
 
@@ -731,7 +747,7 @@ local function MakeStatusBuffCreateOptions(reset)
 		},
 		newStatusBuff = {
 			type = "execute",
-			order = 9,
+			order = 10,
 			name = L["New Status"],
 			desc = L["Create a new status."],
 			func = NewStatusBuff,
@@ -831,7 +847,7 @@ local function MakeStatusDebuffCreateOptions(reset)
 		},
 		newStatusDebuff = {
 			type = "execute",
-			order = 2,
+			order = 10,
 			name = L["New Status"],
 			desc = L["Create a new status."],
 			func = NewStatusDebuff,
@@ -907,6 +923,10 @@ function Grid2Options:MakeStatusStandardBuffOptions(status, options, optionParam
 	options = Grid2Options:MakeStatusClassFilterOptions(status, options, optionParams)
 	options = Grid2Options:MakeStatusLayerOptions(status, options, optionParams)
 
+	optionParams = optionParams or {}
+	optionParams.group = optionParams.group or "buff"
+	options = Grid2Options:MakeStatusDeleteOptions(status, options, optionParams)
+
 	--Add as a subtype.
 	return options, "buff"
 end
@@ -919,6 +939,10 @@ function Grid2Options:MakeStatusStandardDebuffOptions(status, options, optionPar
 	options = Grid2Options:MakeStatusBlinkThresholdOptions(status, options, optionParams)
 	options = Grid2Options:MakeStatusClassFilterOptions(status, options, optionParams)
 	options = Grid2Options:MakeStatusLayerOptions(status, options, optionParams)
+
+	optionParams = optionParams or {}
+	optionParams.group = optionParams.group or "debuff"
+	options = Grid2Options:MakeStatusDeleteOptions(status, options, optionParams)
 
 	--Add as a subtype.
 	return options, "debuff"

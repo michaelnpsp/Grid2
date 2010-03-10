@@ -87,8 +87,8 @@ function Grid2Options:AddElement(elementType, element, extraOptions)
 	end
 end
 
-function Grid2Options:DeleteElement(type, elementKey)
-	local group = self.options.Grid2.args[type]
+function Grid2Options:DeleteElement(elementType, elementKey)
+	local group = self.options.Grid2.args[elementType]
 	if not group then
 		return
 	end
@@ -150,32 +150,32 @@ function Grid2Options:AddElementSubTypeGroup(type, subType, subTypeOptions, rese
 end
 
 
-function Grid2Options:AddElementSubType(type, subType, element, extraOptions)
+function Grid2Options:AddElementSubType(elementType, subType, element, extraOptions)
 	extraOptions = extraOptions or element.extraOptions
 	element.extraOptions = nil
 	if not extraOptions then return end
 
-	local group = self.options.Grid2.args[type]
+	local group = self.options.Grid2.args[elementType]
 	if not group then
 		group = {
 			type = "group",
-			name = L[type] or type,
-			desc = L["Options for %s."]:format(type),
+			name = L[elementType] or elementType,
+			desc = L["Options for %s."]:format(elementType),
 			args = {},
 		}
-		self.options.Grid2.args[type] = group
+		self.options.Grid2.args[elementType] = group
 	end
 
 	local subGroup = group.args[subType]
 	if (not subGroup) then
-		subGroup = self:AddElementSubTypeGroup(type, subType)
+		subGroup = self:AddElementSubTypeGroup(elementType, subType)
 	end
 
 	local options = {}
 	subGroup.args[element.name] = {
 		type = "group",
 		name = element.name,
-		desc = L["Options for %s."]:format(type),
+		desc = L["Options for %s."]:format(elementType),
 		args = options,
 	}
 	for name, option in pairs(extraOptions) do
@@ -183,6 +183,19 @@ function Grid2Options:AddElementSubType(type, subType, element, extraOptions)
 	end
 end
 
+
+function Grid2Options:DeleteElementSubType(elementType, subType, elementKey)
+	local group = self.options.Grid2.args[elementType]
+	if not group then
+		return
+	end
+
+	local subGroup = group.args[subType]
+	if (not subGroup) then
+		return
+	end
+	subGroup.args[elementKey] = nil
+end
 
 function Grid2Options:AddAura(type, name, spell, owner, r, g, b, ...)
 	local group = self.options.Auras.args[type]
