@@ -3,6 +3,7 @@
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 local DEFAULT_GROUP_ORDER = "WARRIOR,DEATHKNIGHT,ROGUE,PALADIN,DRUID,SHAMAN,PRIEST,MAGE,WARLOCK,HUNTER"
+local DEFAULT_PET_ORDER = "HUNTER,WARLOCK,DEATHKNIGHT,PRIEST,MAGE,DRUID,SHAMAN,WARRIOR,ROGUE,PALADIN"
 
 --}}}
 
@@ -18,8 +19,10 @@ local DEFAULT_GROUP_ORDER = "WARRIOR,DEATHKNIGHT,ROGUE,PALADIN,DRUID,SHAMAN,PRIE
 Grid2Layout:AddLayout(L["None"], {
 	meta = {
 		raid40 = true,
-		hraid = true,
-		raid = true,
+		raid25 = true,
+		raid20 = true,
+		raid15 = true,
+		raid10 = true,
 		party = true,
 		pvp = true,
 		arena = true,
@@ -35,9 +38,10 @@ Grid2Layout:AddLayout(L["Solo"], {
 	},
 	[1] = {
 		type = "party",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 		showPlayer = true,
 		showSolo = true,
-		groupingOrder = DEFAULT_GROUP_ORDER,
+		allowVehicleTarget = true,
 		toggleForVehicle = true,
 	},
 })
@@ -50,15 +54,16 @@ Grid2Layout:AddLayout(L["Solo w/Pet"], {
 	},
 	[1] = {
 		type = "party",
+		groupingOrder = DEFAULT_GROUP_ORDER,
 		showPlayer = true,
 		showSolo = true,
-		groupingOrder = DEFAULT_GROUP_ORDER,
+		allowVehicleTarget = true,
 	},
 	[2] = {
 		type = "partypet",
+		groupingOrder = DEFAULT_PET_ORDER,
 		showPlayer = true,
 		showSolo = true,
-		groupingOrder = DEFAULT_GROUP_ORDER,
 		allowVehicleTarget = true,
 	}
 })
@@ -82,15 +87,18 @@ Grid2Layout:AddLayout(L["By Group 5 w/Pets"], {
 		party = true,
 		arena = true,
 	},
-	[1] = {
+	defaults = {
 		showPlayer = true,
 		showParty = true,
+        allowVehicleTarget = true,
+	},
+	[1] = {
 		groupingOrder = DEFAULT_GROUP_ORDER,
+		allowVehicleTarget = true,
 	},
 	[2] = {
-		showPlayer = true,
-		showParty = true,
 		type = "partypet",
+		groupingOrder = DEFAULT_PET_ORDER,
 		unitsPerColumn = 5,
 		maxColumns = 5,
 		allowVehicleTarget = true,
@@ -99,186 +107,170 @@ Grid2Layout:AddLayout(L["By Group 5 w/Pets"], {
 
 Grid2Layout:AddLayout(L["By Group 10"], {
 	meta = {
-		hraid = true,
-		raid = true,
+		raid10 = true,
 		pvp = true,
+	},
+	defaults = {
+		groupingOrder = DEFAULT_GROUP_ORDER,
+        allowVehicleTarget = true,
+		toggleForVehicle = true,
+		showPlayer = true,
+		showParty = true,
+		showRaid = true,
 	},
 	[1] = {
 		groupFilter = "1",
-		groupingOrder = DEFAULT_GROUP_ORDER,
-		showPlayer = true,
-		showParty = true,
-		showRaid = true,
-		toggleForVehicle = true,
 	},
 	[2] = {
 		groupFilter = "2",
-		groupingOrder = DEFAULT_GROUP_ORDER,
-		showPlayer = true,
-		showParty = true,
-		showRaid = true,
-		toggleForVehicle = true,
 	},
 })
 
 Grid2Layout:AddLayout(L["By Group 10 w/Pets"], {
 	meta = {
-		hraid = true,
-		raid = true,
+		raid10 = true,
 		pvp = true,
+	},
+	defaults = {
+		groupingOrder = DEFAULT_GROUP_ORDER,
+        allowVehicleTarget = true,
+		showPlayer = true,
+		showParty = true,
+		showRaid = true,
 	},
 	[1] = {
 		groupFilter = "1",
-		groupingOrder = DEFAULT_GROUP_ORDER,
-		showPlayer = true,
-		showParty = true,
-		showRaid = true,
 	},
 	[2] = {
 		groupFilter = "2",
-		groupingOrder = DEFAULT_GROUP_ORDER,
-		showPlayer = true,
-		showParty = true,
-		showRaid = true,
 	},
 	[3] = {
 		type = "raidpet",
-		showPlayer = true,
-		showParty = true,
-		showRaid = true,
+		groupingOrder = DEFAULT_PET_ORDER,
 		unitsPerColumn = 5,
 		maxColumns = 5,
-		allowVehicleTarget = true,
 	},
 })
 
 Grid2Layout:AddLayout(L["By Group 15"], {
 	meta = {
-		hraid = true,
-		raid = true,
+		raid15 = true,
 		pvp = true,
+	},
+	defaults = {
+		groupingOrder = DEFAULT_GROUP_ORDER,
+        allowVehicleTarget = true,
+		toggleForVehicle = true,
 	},
 	[1] = {
 		groupFilter = "1",
-		groupingOrder = DEFAULT_GROUP_ORDER,
-		toggleForVehicle = true,
 	},
 	[2] = {
 		groupFilter = "2",
-		groupingOrder = DEFAULT_GROUP_ORDER,
-		toggleForVehicle = true,
 	},
 	[3] = {
 		groupFilter = "3",
-		groupingOrder = DEFAULT_GROUP_ORDER,
-		toggleForVehicle = true,
 	},
 })
 
 Grid2Layout:AddLayout(L["By Group 15 w/Pets"], {
 	meta = {
-		hraid = true,
-		raid = true,
+		raid15 = true,
 		pvp = true,
+	},
+	defaults = {
+		groupingOrder = DEFAULT_GROUP_ORDER,
+        allowVehicleTarget = true,
 	},
 	[1] = {
 		groupFilter = "1",
-		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[2] = {
 		groupFilter = "2",
-		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[3] = {
 		groupFilter = "3",
-		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[4] = {
 		type = "raidpet",
+		groupingOrder = DEFAULT_PET_ORDER,
 		showPlayer = true,
 		showParty = true,
 		showRaid = true,
 		unitsPerColumn = 5,
 		maxColumns = 5,
-		allowVehicleTarget = true,
 	},
  })
 
 Grid2Layout:AddLayout(L["By Group 25"], {
 	meta = {
-		raid40 = true,
-		hraid = true,
-		raid = true,
+		raid25 = true,
+		raid15 = true,
+		raid10 = true,
+	},
+	defaults = {
+		groupingOrder = DEFAULT_GROUP_ORDER,
+        allowVehicleTarget = true,
+		toggleForVehicle = true,
 	},
 	[1] = {
 		groupFilter = "1",
-		groupingOrder = DEFAULT_GROUP_ORDER,
-		toggleForVehicle = true,
 	},
 	[2] = {
 		groupFilter = "2",
-		groupingOrder = DEFAULT_GROUP_ORDER,
-		toggleForVehicle = true,
 	},
 	[3] = {
 		groupFilter = "3",
-		groupingOrder = DEFAULT_GROUP_ORDER,
-		toggleForVehicle = true,
 	},
 	[4] = {
 		groupFilter = "4",
-		groupingOrder = DEFAULT_GROUP_ORDER,
-		toggleForVehicle = true,
 	},
 	[5] = {
 		groupFilter = "5",
-		groupingOrder = DEFAULT_GROUP_ORDER,
-		toggleForVehicle = true,
 	},
 })
 
 Grid2Layout:AddLayout(L["By Group 25 w/Pets"], {
 	meta = {
-		raid40 = true,
-		hraid = true,
-		raid = true,
+		raid25 = true,
+		raid15 = true,
+		raid10 = true,
+	},
+	defaults = {
+		groupingOrder = DEFAULT_GROUP_ORDER,
+        allowVehicleTarget = true,
 	},
 	[1] = {
 		groupFilter = "1",
-		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[2] = {
 		groupFilter = "2",
-		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[3] = {
 		groupFilter = "3",
-		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[4] = {
 		groupFilter = "4",
-		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[5] = {
 		groupFilter = "5",
-		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[6] = {
 		type = "raidpet",
+		groupingOrder = DEFAULT_PET_ORDER,
 		showPlayer = true,
 		showParty = true,
 		showRaid = true,
 		unitsPerColumn = 5,
 		maxColumns = 5,
-		allowVehicleTarget = true,
 	},
 })
 
 Grid2Layout:AddLayout(L["By Class 25"], {
 	meta = {
-		raid40 = true,
-		hraid = true,
-		raid = true,
+		raid25 = true,
+		raid15 = true,
+		raid10 = true,
 		party = true,
 		pvp = true,
 		arena = true,
@@ -292,9 +284,11 @@ Grid2Layout:AddLayout(L["By Class 25"], {
 		groupingOrder = DEFAULT_GROUP_ORDER,
 		unitsPerColumn = 5,
 		maxColumns = 5,
+		allowVehicleTarget = true,
 	},
 	[2] = {
 		type = "raidpet",
+		groupingOrder = DEFAULT_PET_ORDER,
 		showPlayer = true,
 		showParty = true,
 		showRaid = true,
@@ -306,17 +300,21 @@ Grid2Layout:AddLayout(L["By Class 25"], {
 
 Grid2Layout:AddLayout(L["By Role 25"], {
 	meta = {
-		raid40 = true,
-		hraid = true,
-		raid = true,
+		raid25 = true,
+		raid15 = true,
+		raid10 = true,
 		party = true,
 		pvp = true,
 		arena = true,
 		solo = true,
 	},
-	[1] = {
+	defaults = {
 		showSolo = true,
-		showPlayer = true,
+		showParty = true,
+		showRaid = true,
+        allowVehicleTarget = true,
+	},
+	[1] = {
 		groupFilter = "1,2,3,4,5",
 		groupBy = "ROLE",
 		groupFilter = "MAINTANK,MAINASSIST", 
@@ -325,225 +323,214 @@ Grid2Layout:AddLayout(L["By Role 25"], {
 		maxColumns = 1,
 	},
 	[2] = {
-		showSolo = true,
-		showPlayer = true,
 		groupFilter = "1,2,3,4,5",
-		groupBy = "GROUP",
+		groupBy = "CLASS",
 		groupingOrder = DEFAULT_GROUP_ORDER, 
 		unitsPerColumn = 5,
 		maxColumns = 5,
 	},
 	[3] = {
 		type = "raidpet",
-		showPlayer = true,
-		showParty = true,
-		showRaid = true,
+		groupingOrder = DEFAULT_PET_ORDER,
 		unitsPerColumn = 5,
 		maxColumns = 5,
-		allowVehicleTarget = true,
 	},
 })
 
 Grid2Layout:AddLayout(L["By Class 1 x 25 Wide"], {
 	meta = {
-		raid40 = true,
-		hraid = true,
-		raid = true,
+		raid25 = true,
+		raid15 = true,
+		raid10 = true,
 		party = true,
 		solo = true,
 		pvp = true,
 		arena = true,
 	},
-	[1] = {
+	defaults = {
 		showSolo = true,
-		showPlayer = true,
+		showParty = true,
+		showRaid = true,
+        allowVehicleTarget = true,
+	},
+	[1] = {
+		groupingOrder = DEFAULT_GROUP_ORDER,
 		groupFilter = "1,2,3,4,5",
 		groupBy = "CLASS",
-		groupingOrder = DEFAULT_GROUP_ORDER,
 		unitsPerColumn = 25,
 		maxColumns = 1,
 	},
 	[2] = {
 		type = "raidpet",
-		showPlayer = true,
-		showParty = true,
-		showRaid = true,
+		groupingOrder = DEFAULT_PET_ORDER,
 		unitsPerColumn = 25,
 		maxColumns = 1,
-		allowVehicleTarget = true,
 	},
 })
 
 Grid2Layout:AddLayout(L["By Class 2 x 15 Wide"], {
 	meta = {
-		raid40 = true,
-		hraid = true,
-		raid = true,
+		raid25 = true,
+		raid15 = true,
+		raid10 = true,
 		party = true,
 		solo = true,
 		pvp = true,
 		arena = true,
 	},
-	[1] = {
+	defaults = {
 		showSolo = true,
-		showPlayer = true,
+		showParty = true,
+		showRaid = true,
+		groupingOrder = DEFAULT_GROUP_ORDER,
+        allowVehicleTarget = true,
+	},
+	[1] = {
 		groupFilter = "1,2,3,4,5,6",
 		groupBy = "CLASS",
-		groupingOrder = DEFAULT_GROUP_ORDER,
 		unitsPerColumn = 15,
 		maxColumns = 2,
 	},
 	[2] = {
 		type = "raidpet",
-		showPlayer = true,
-		showParty = true,
-		showRaid = true,
 		unitsPerColumn = 15,
 		maxColumns = 2,
-		allowVehicleTarget = true,
 	},
 })
 
 Grid2Layout:AddLayout(L["By Group 4 x 10 Wide"], {
     meta = {
-        raid40 = true,
-        hraid = true,
-        raid = true,
+		raid40 = true,
+		raid25 = true,
+		raid15 = true,
+		raid10 = true,
         party = true,
         solo = true,
         pvp = true,
         arena = true,
     },
-    [1] = {
-        showSolo = true,
-        showPlayer = true,
+ 	defaults = {
+		showSolo = true,
+		showParty = true,
+		showRaid = true,
+		groupingOrder = DEFAULT_GROUP_ORDER,
+        allowVehicleTarget = true,
+	},
+   [1] = {
         groupFilter = "1,2",
         groupBy = "GROUP",
-        groupingOrder = DEFAULT_GROUP_ORDER,
         unitsPerColumn = 10,
         maxColumns = 4,
     },
     [2] = {
-        showSolo = true,
-        showPlayer = true,
         groupFilter = "3,4",
         groupBy = "GROUP",
-        groupingOrder = DEFAULT_GROUP_ORDER,
         unitsPerColumn = 10,
         maxColumns = 4,
     },
     [3] = {
-        showSolo = true,
-        showPlayer = true,
         groupFilter = "5,6",
         groupBy = "GROUP",
-        groupingOrder = DEFAULT_GROUP_ORDER,
         unitsPerColumn = 10,
         maxColumns = 4,
     },
     [4] = {
-        showSolo = true,
-        showPlayer = true,
         groupFilter = "7,8",
         groupBy = "GROUP",
-        groupingOrder = DEFAULT_GROUP_ORDER,
         unitsPerColumn = 10,
         maxColumns = 4,
     },
     [5] = {
         type = "raidpet",
-        showPlayer = true,
-        showParty = true,
-        showRaid = true,
+		groupingOrder = DEFAULT_PET_ORDER,
         unitsPerColumn = 10,
         maxColumns = 4,
-        allowVehicleTarget = true,
     },
 
 })
 
 Grid2Layout:AddLayout(L["By Group 20"], {
 	meta = {
-		hraid = true,
-		raid = true,
+		raid20 = true,
+		raid15 = true,
+		raid10 = true,
+	},
+	defaults = {
+		groupingOrder = DEFAULT_GROUP_ORDER,
+		toggleForVehicle = true,
 	},
 	[1] = {
 		groupFilter = "1",
-		groupingOrder = DEFAULT_GROUP_ORDER,
-		toggleForVehicle = true,
 	},
 	[2] = {
 		groupFilter = "2",
-		groupingOrder = DEFAULT_GROUP_ORDER,
-		toggleForVehicle = true,
 	},
 	[3] = {
 		groupFilter = "3",
-		groupingOrder = DEFAULT_GROUP_ORDER,
-		toggleForVehicle = true,
 	},
 	[4] = {
 		groupFilter = "4",
-		groupingOrder = DEFAULT_GROUP_ORDER,
-		toggleForVehicle = true,
 	},
 })
 
 Grid2Layout:AddLayout(L["By Class"], {
 	meta = {
 		raid40 = true,
-		hraid = true,
-		raid = true,
+		raid25 = true,
+		raid15 = true,
+		raid10 = true,
 		pvp = true,
+	},
+	defaults = {
+        allowVehicleTarget = true,
+		toggleForVehicle = true,
+		showParty = true,
+		showRaid = true,
 	},
 	[1] = {
 		groupFilter = "WARRIOR",
-		toggleForVehicle = true,
 	},
 	[2] = {
 		groupFilter = "DEATHKNIGHT",
-		toggleForVehicle = true,
 	},
 	[3] = {
 		groupFilter = "PALADIN",
-		toggleForVehicle = true,
 	},
 	[4] = {
 		groupFilter = "DRUID",
-		toggleForVehicle = true,
 	},
 	[5] = {
 		groupFilter = "ROGUE",
-		toggleForVehicle = true,
 	},
 	[6] = {
 		groupFilter = "SHAMAN",
-		toggleForVehicle = true,
 	},
 	[7] = {
 		groupFilter = "PRIEST",
-		toggleForVehicle = true,
 	},
 	[8] = {
 		groupFilter = "MAGE",
-		toggleForVehicle = true,
 	},
 	[9] = {
 		groupFilter = "WARLOCK",
-		toggleForVehicle = true,
 	},
 	[10] = {
 		groupFilter = "HUNTER",
-		toggleForVehicle = true,
 	},
 })
 
 Grid2Layout:AddLayout(L["By Class w/Pets"], {
 	meta = {
 		raid40 = true,
-		hraid = true,
-		raid = true,
+		raid25 = true,
+		raid15 = true,
+		raid10 = true,
 		pvp = true,
+	},
+	defaults = {
+        allowVehicleTarget = true,
+		showParty = true,
+		showRaid = true,
 	},
 	[1] = {
 		groupFilter = "WARRIOR",
@@ -577,69 +564,23 @@ Grid2Layout:AddLayout(L["By Class w/Pets"], {
 	},
 	[11] = {
 		type = "raidpet",
+		groupingOrder = DEFAULT_PET_ORDER,
 		showPlayer = true,
-		showParty = true,
-		showRaid = true,
-		allowVehicleTarget = true,
-	},
-})
-
-Grid2Layout:AddLayout(L["Onyxia"], {
-	meta = {
-		raid40 = true,
-		hraid = true,
-		raid = true,
-	},
-	[1] = {
-		groupFilter = "1",
-		groupingOrder = DEFAULT_GROUP_ORDER,
-		toggleForVehicle = true,
-	},
-	[2] = {
-		groupFilter = "3",
-		groupingOrder = DEFAULT_GROUP_ORDER,
-		toggleForVehicle = true,
-	},
-	[3] = {
-		groupFilter = "5",
-		groupingOrder = DEFAULT_GROUP_ORDER,
-		toggleForVehicle = true,
-	},
-	[4] = {
-		groupFilter = "7",
-		groupingOrder = DEFAULT_GROUP_ORDER,
-		toggleForVehicle = true,
-	},
-	[5] = {
-		type = "spacer",
-	},
-	[6] = {
-		groupFilter = "2",
-		groupingOrder = DEFAULT_GROUP_ORDER,
-		toggleForVehicle = true,
-	},
-	[7] = {
-		groupFilter = "4",
-		groupingOrder = DEFAULT_GROUP_ORDER,
-		toggleForVehicle = true,
-	},
-	[8] = {
-		groupFilter = "6",
-		groupingOrder = DEFAULT_GROUP_ORDER,
-		toggleForVehicle = true,
-	},
-	[9] = {
-		groupFilter = "8",
-		groupingOrder = DEFAULT_GROUP_ORDER,
-		toggleForVehicle = true,
 	},
 })
 
 Grid2Layout:AddLayout(L["By Group 25 w/tanks"], {
 	meta = {
-		raid40 = true,
-		hraid = true,
-		raid = true,
+		raid25 = true,
+		raid15 = true,
+		raid10 = true,
+	},
+	defaults = {
+		showParty = true,
+		showRaid = true,
+		groupingOrder = DEFAULT_GROUP_ORDER,
+        allowVehicleTarget = true,
+		toggleForVehicle = true,
 	},
 	[1] = {
 		groupFilter = "MAINTANK,MAINASSIST",
@@ -650,35 +591,34 @@ Grid2Layout:AddLayout(L["By Group 25 w/tanks"], {
 	},
 	[3] = {
 		groupFilter = "1",
-		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[4] = {
 		groupFilter = "2",
-		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[5] = {
 		groupFilter = "3",
-		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[6] = {
 		groupFilter = "4",
-		groupingOrder = DEFAULT_GROUP_ORDER,
 	},
 	[7] = {
 		groupFilter = "5",
-		groupingOrder = DEFAULT_GROUP_ORDER,
 	}
 })
 
 Grid2Layout:AddLayout(L["By Group 40"], {
 	meta = {
 		raid40 = true,
-		hraid = true,
-		raid = true,
+		raid25 = true,
+		raid15 = true,
+		raid10 = true,
 		pvp = true,
 	},
 	defaults = {
+		showParty = true,
+		showRaid = true,
 		groupingOrder = DEFAULT_GROUP_ORDER,
+        allowVehicleTarget = true,
 		toggleForVehicle = true,
 	},
 	[1] = {

@@ -296,9 +296,9 @@ function Grid2:GroupChanged(event)
 		if raidMembers > 25 then
 			instType = "raid40"
 		elseif raidMembers > 10 then
-			instType = "hraid"
+			instType = "raid25"
 		elseif raidMembers > 0 then
-			instType = "raid"
+			instType = "raid10"
 		elseif GetNumPartyMembers() > 0 then
 			instType = "party"
 		else
@@ -308,16 +308,29 @@ function Grid2:GroupChanged(event)
 		if instType == "raid" then
 			local raidDifficulty = GetRaidDifficulty()
 			if raidDifficulty == 2 or raidDifficulty == 4 then
-				instType = "hraid"
+				instType = "raid25"
+			else
+				instType = "raid10"
+			end
+		elseif (instType == "pvp") then
+			local raidMembers = GetNumRaidMembers()
+			if raidMembers < 11 then
+				instType = "raid10"
+			elseif raidMembers < 16 then
+				instType = "raid15"
+			else
+				instType = "raid40"
 			end
 		else
 			local raidMembers = GetNumRaidMembers()
 			if raidMembers > 25 then
 				instType = "raid40"
+			elseif raidMembers > 15 then
+				instType = "raid25"
 			elseif raidMembers > 10 then
-				instType = "hraid"
+				instType = "raid15"
 			elseif raidMembers > 0 then
-				instType = "raid"
+				instType = "raid10"
 			elseif GetNumPartyMembers() > 0 then
 				instType = "party"
 			else
