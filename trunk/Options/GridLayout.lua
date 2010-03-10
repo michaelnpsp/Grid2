@@ -232,14 +232,14 @@ Grid2Options:AddModule("Grid2", "Grid2Layout", Grid2Layout, {
 				desc = L["Select which layout to use for party."],
 				order = 2,
 				get = function ()
-						  return Grid2Layout.db.profile.layouts.party
-					  end,
+					return Grid2Layout.db.profile.layouts.party
+				end,
 				set = function (_, v)
-						  Grid2Layout.db.profile.layouts.party = v
-						  if Grid2Layout.partyType == "party" then
-							Grid2Layout:LoadLayout(v)
-						  end
-					  end,
+					Grid2Layout.db.profile.layouts.party = v
+					if Grid2Layout.partyType == "party" then
+						Grid2Layout:LoadLayout(v)
+					end
+				end,
 				values = {},
 			},
 			arena = {
@@ -248,78 +248,110 @@ Grid2Options:AddModule("Grid2", "Grid2Layout", Grid2Layout, {
 				desc = L["Select which layout to use for arenas."],
 				order = 3,
 				get = function ()
-						  return Grid2Layout.db.profile.layouts.arena
-					  end,
+					return Grid2Layout.db.profile.layouts.arena
+				end,
 				set = function (_, v)
-						  Grid2Layout.db.profile.layouts.arena = v
-						  if Grid2Layout.partyType == "arena" then
-							Grid2Layout:LoadLayout(v)
-						  end
-					  end,
+					Grid2Layout.db.profile.layouts.arena = v
+					if Grid2Layout.partyType == "arena" then
+						Grid2Layout:LoadLayout(v)
+					end
+				end,
 				values = {},
 			},
-			raid = {
+			raid10 = {
 				type = "select",
-				name = L["Raid Layout"],
-				desc = L["Select which layout to use for raid."],
+				name = L["Raid %s Layout"]:format(10),
+				desc = L["Select which layout to use for %s person raids."]:format(10),
 				order = 4,
 				get = function ()
-						  return Grid2Layout.db.profile.layouts.raid
-					  end,
+					return Grid2Layout.db.profile.layouts.raid10
+				end,
 				set = function (_, v)
-						  Grid2Layout.db.profile.layouts.raid = v
-						  if Grid2Layout.partyType == "raid" then
-							Grid2Layout:LoadLayout(v)
-						  end
-					  end,
+					Grid2Layout.db.profile.layouts.raid10 = v
+					if Grid2Layout.partyType == "raid10" then
+						Grid2Layout:LoadLayout(v)
+					end
+				end,
+				values = {},
+			},
+			raid15 = {
+				type = "select",
+				name = L["Raid %s Layout"]:format(15),
+				desc = L["Select which layout to use for %s person raids."]:format(15),
+				order = 5,
+				get = function ()
+					return Grid2Layout.db.profile.layouts.raid15
+				end,
+				set = function (_, v)
+					Grid2Layout.db.profile.layouts.raid15 = v
+					if Grid2Layout.partyType == "raid15" then
+						Grid2Layout:LoadLayout(v)
+					end
+				end,
+				values = {},
+			},
+			raid20 = {
+				type = "select",
+				name = L["Raid %s Layout"]:format(20),
+				desc = L["Select which layout to use for %s person raids."]:format(20),
+				order = 6,
+				get = function ()
+					return Grid2Layout.db.profile.layouts.raid20
+				end,
+				set = function (_, v)
+					Grid2Layout.db.profile.layouts.raid20 = v
+					if Grid2Layout.partyType == "raid20" then
+						Grid2Layout:LoadLayout(v)
+					end
+				end,
+				values = {},
+			},
+			raid25 = {
+				type = "select",
+				name = L["Raid %s Layout"]:format(20),
+				desc = L["Select which layout to use for %s person raids."]:format(20),
+				order = 7,
+				get = function ()
+					return Grid2Layout.db.profile.layouts.raid25
+				end,
+				set = function (_, v)
+					Grid2Layout.db.profile.layouts.raid25 = v
+					if Grid2Layout.partyType == "raid25" then
+						Grid2Layout:LoadLayout(v)
+					end
+				end,
 				values = {},
 			},
 			raid40 = {
 				type = "select",
-				name = L["Raid 40 Layout"],
-				desc = L["Select which layout to use for raid."],
-				order = 6,
+				name = L["Raid %s Layout"]:format(20),
+				desc = L["Select which layout to use for %s person raids."]:format(20),
+				order = 8,
 				get = function ()
-						  return Grid2Layout.db.profile.layouts.raid40
-					  end,
+					return Grid2Layout.db.profile.layouts.raid40
+				end,
 				set = function (_, v)
-						  Grid2Layout.db.profile.layouts.raid40 = v
-						  if Grid2Layout.partyType == "raid40" then
-							Grid2Layout:LoadLayout(v)
-						  end
-					  end,
-				values = {},
-			},
-			hraid = {
-				type = "select",
-				name = L["Heroic Raid Layout"],
-				desc = L["Select which layout to use for raid in heroic mode."],
-				order = 5,
-				get = function ()
-						  return Grid2Layout.db.profile.layouts.hraid
-					  end,
-				set = function (_, v)
-						  Grid2Layout.db.profile.layouts.hraid = v
-						  if Grid2Layout.partyType == "hraid" then
-							Grid2Layout:LoadLayout(v)
-						  end
-					  end,
+					Grid2Layout.db.profile.layouts.raid40 = v
+					if Grid2Layout.partyType == "raid40" then
+						Grid2Layout:LoadLayout(v)
+					end
+				end,
 				values = {},
 			},
 			pvp = {
 				type = "select",
 				name = L["Battleground Layout"],
 				desc = L["Select which layout to use for battlegrounds."],
-				order = 7,
+				order = 9,
 				get = function ()
-						  return Grid2Layout.db.profile.layouts.pvp
-					  end,
+					return Grid2Layout.db.profile.layouts.pvp
+				end,
 				set = function (_, v)
-						  Grid2Layout.db.profile.layouts.pvp = v
-						  if Grid2Layout.partyType == "pvp" then
-							Grid2Layout:LoadLayout(v)
-						  end
-					  end,
+					Grid2Layout.db.profile.layouts.pvp = v
+					if Grid2Layout.partyType == "pvp" then
+						Grid2Layout:LoadLayout(v)
+					end
+				end,
 				values = {},
 			},
 		},
