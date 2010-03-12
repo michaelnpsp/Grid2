@@ -8,12 +8,7 @@ L["Debug"] = "Отладка"
 L["debugging"] = "Отлаживание"
 L["Module debugging menu."] = "Модуль отладки меню."
 
-L["Show Tooltip"] = "Показать подсказки"
-L["Show unit tooltip.  Choose 'Always', 'Never', or 'OOC'."] = "Показывать подсказку единицы.  Выберите 'Всегда', 'Никогда', или 'Вне боя'."
-L["Always"] = "Всегда"
-L["Never"] = "Никогда"
-L["OOC"] = "Вне боя"
-
+L["alerts"] = "alerts"
 L["blink"] = "Мигание"
 L["category"] = "Категория"
 L["frame"] = "Фрейм"
@@ -29,15 +24,33 @@ L["icon"] = "Иконка"
 L["square"] = "Квадрат"
 L["text"] = "Текст"
 
-L["Advanced"] = "Дополнительные"
-L["Advanced options."] = "Допонительные опции."
+--{{{ GridFrame
+L["Mouseover Highlight"] = "Выделение при наведении мышки."
+L["Toggle mouseover highlight."] = "Вкл/Выкл выделение при наведении курсора мыши."
+
+L["Show Tooltip"] = "Показать подсказки"
+L["Show unit tooltip.  Choose 'Always', 'Never', or 'OOC'."] = "Показывать подсказку единицы.  Выберите 'Всегда', 'Никогда', или 'Вне боя'."
+L["Always"] = "Всегда"
+L["Never"] = "Никогда"
+L["OOC"] = "Вне боя"
+
+L["Border Size"] = "Размер края"
+L["Adjust the border of each unit's frame."] = "Регулировка края области."
 
 L["Frame Width"] = "Ширина области"
 L["Adjust the width of each unit's frame."] = "Регулировка ширины области."
+
 L["Frame Height"] = "Высота области"
 L["Adjust the height of each unit's frame."] = "Регулировка высоты области."
-L["Border Size"] = "Размер края"
-L["Adjust the border of each unit's frame."] = "Регулировка края области."
+
+L["Orientation of Frame"] = "Ориентация области"
+L["Set frame orientation."] = "Настрйока ориентации области."
+L["VERTICAL"] = "ВЕРТИКАЛЬНО"
+L["HORIZONTAL"] = "ГОРИЗОНТАЛЬНО"
+
+L["Orientation of Text"] = "Ориентация текста"
+L["Set frame text orientation."] = "Установить ориентацию текста фреймов"
+--}}}
 
 L["Options for %s."] = " Опции для %s."
 L["Toggle debugging for %s."] = "Показать отладку для %s."
@@ -286,10 +299,6 @@ L["Font"] = "Шрифт"
 L["Adjust the font settings"] = "Настройки шрифта."
 L["Frame Texture"] = "Текстура области"
 L["Adjust the texture of each unit's frame."] = "настройка текстуры выбранной области для игрока."
-L["Orientation of Frame"] = "Ориентация области"
-L["Set frame orientation."] = "Настрйока ориентации области."
-L["VERTICAL"] = "ВЕРТИКАЛЬНО"
-L["HORIZONTAL"] = "ГОРИЗОНТАЛЬНО"
 
 L["Icon Size"] = "Размер иконки"
 L["Adjust the size of the center icon."] = "Настройка размера значка в центре."

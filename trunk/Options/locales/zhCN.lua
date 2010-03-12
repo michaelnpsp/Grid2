@@ -1,9 +1,32 @@
 ﻿local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2Options", "zhCN")
 if not L then return end
 
+L["General Settings"] = "General Settings"
+L["GRID2_DESC"] = "Welcome to Grid2"
+
 L["Debug"] = "除错"
 L["debugging"] = "除错"
 L["Module debugging menu."] = "除错模块菜单。"
+
+L["alerts"] = "alerts"
+L["blink"] = "blink"
+L["category"] = "category"
+L["frame"] = "frame"
+L["layout"] = "layout"
+L["location"] = "location"
+L["indicator"] = "indicator"
+L["status"] = "status"
+
+L["buff"] = "buff"
+L["debuff"] = "debuff"
+
+L["icon"] = "icon"
+L["square"] = "square"
+L["text"] = "text"
+
+--{{{ GridFrame
+L["Mouseover Highlight"] = "启用鼠标悬停高亮"
+L["Toggle mouseover highlight."] = "打开/关闭鼠标悬停高亮。"
 
 L["Show Tooltip"] = "显示提示信息"
 L["Show unit tooltip.  Choose 'Always', 'Never', or 'OOC'."] = "显示单位框架的提示信息。选择“一直”，“不显示”或“非战斗”。"
@@ -11,19 +34,23 @@ L["Always"] = "一直"
 L["Never"] = "不显示"
 L["OOC"] = "非战斗"
 
-L["location"] = "location"
-L["indicator"] = "indicator"
-L["status"] = "status"
-
-L["Advanced"] = "高级"
-L["Advanced options."] = "高级选项。"
+L["Border Size"] = "Frame Border"
+L["Adjust the border of each unit's frame."] = "Adjust the border of each unit's frame."
 
 L["Frame Width"] = "框架宽度"
 L["Adjust the width of each unit's frame."] = "调整个体框架的宽度。"
+
 L["Frame Height"] = "框架高度"
 L["Adjust the height of each unit's frame."] = "调整个体框架的高度。"
-L["Border Size"] = "Frame Border"
-L["Adjust the border of each unit's frame."] = "Adjust the border of each unit's frame."
+
+L["Orientation of Frame"] = "框架方向"
+L["Set frame orientation."] = "设置框架方向。"
+L["VERTICAL"] = "竖直"
+L["HORIZONTAL"] = "水平"
+
+L["Orientation of Text"] = "文字方向"
+L["Set frame text orientation."] = "设置文字方向。"
+--}}}
 
 L["Options for %s."] = "%s状态的选项。"
 L["Toggle debugging for %s."] = "打开/关闭%s的除错。"
@@ -177,10 +204,6 @@ L["Font"] = "字体"
 L["Adjust the font settings"] = "调整字体设置"
 L["Frame Texture"] = "框架材质"
 L["Adjust the texture of each unit's frame."] = "调整个体框架的材质。"
-L["Orientation of Frame"] = "框架方向"
-L["Set frame orientation."] = "设置框架方向。"
-L["VERTICAL"] = "竖直"
-L["HORIZONTAL"] = "水平"
 
 L["Icon Size"] = "图标大小"
 L["Adjust the size of the center icon."] = "调整中心图标的尺寸。"

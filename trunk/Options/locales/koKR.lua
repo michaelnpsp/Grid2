@@ -1,16 +1,14 @@
 ﻿local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2Options", "koKR")
 if not L then return end
 
+L["General Settings"] = "General Settings"
+L["GRID2_DESC"] = "Welcome to Grid2"
+
 L["Debug"] = "디버그"
 L["debugging"] = "디버깅"
 L["Module debugging menu."] = "모듈 디버깅 메뉴를 설정합니다."
 
-L["Show Tooltip"] = "툴팁 표시"
-L["Show unit tooltip.  Choose 'Always', 'Never', or 'OOC'."] = "유닛 툴팁을 표시합니다. '항상', '안함' 또는 '비전투'을 선택합니다."
-L["Always"] = "항상"
-L["Never"] = "안함"
-L["OOC"] = "비전투"
-
+L["alerts"] = "alerts"
 L["blink"] = "깜박임"
 L["category"] = "목록"
 L["frame"] = "창"
@@ -22,19 +20,37 @@ L["status"] = "상태"
 L["buff"] = "버프"
 L["debuff"] = "디버프"
 
-L["Icon"] = "아이콘"
-L["Square"] = "네모"
-L["Text"] = "문자"
+L["icon"] = "아이콘"
+L["square"] = "네모"
+L["text"] = "문자"
 
-L["Advanced"] = "고급"
-L["Advanced options."] = "고급 옵션을 설정합니다."
+--{{{ GridFrame
+L["Mouseover Highlight"] = "마우스오버 강조 사용"
+L["Toggle mouseover highlight."] = "마우스오버 강조를 사용합니다."
+
+L["Show Tooltip"] = "툴팁 표시"
+L["Show unit tooltip.  Choose 'Always', 'Never', or 'OOC'."] = "유닛 툴팁을 표시합니다. '항상', '안함' 또는 '비전투'을 선택합니다."
+L["Always"] = "항상"
+L["Never"] = "안함"
+L["OOC"] = "비전투"
+
+L["Border Size"] = "테두리 크기"
+L["Adjust the border of each unit's frame."] = "각 유닛의 창 테두리를 조정합니다."
 
 L["Frame Width"] = "창 너비"
 L["Adjust the width of each unit's frame."] = "각 유닛의 창 너비를 조정합니다."
+
 L["Frame Height"] = "창 높이"
 L["Adjust the height of each unit's frame."] = "각 유닛의 창 높이를 조정합니다."
-L["Border Size"] = "테두리 크기"
-L["Adjust the border of each unit's frame."] = "각 유닛의 창 테두리를 조정합니다."
+
+L["Orientation of Frame"] = "프레임의 방향"
+L["Set frame orientation."] = "프레임의 방향을 설정합니다."
+L["VERTICAL"] = "세로"
+L["HORIZONTAL"] = "가로"
+
+L["Orientation of Text"] = "문자의 방향"
+L["Set frame text orientation."] = "프레임 문자의 방향을 설정합니다."
+--}}}
 
 L["Options for %s."] = "%s|1을;를; 위한 옵션을 설정합니다."
 L["Toggle debugging for %s."] = "%s|1을;를; 위해 디버깅을 사용합니다."
@@ -276,10 +292,6 @@ L["Font"] = "글꼴"
 L["Adjust the font settings"] = "글꼴 설정을 조정합니다."
 L["Frame Texture"] = "창 무늬"
 L["Adjust the texture of each unit's frame."] = "각 유닛의 창 무늬를 조정합니다."
-L["Orientation of Frame"] = "프레임의 방향"
-L["Set frame orientation."] = "프레임의 방향을 설정합니다."
-L["VERTICAL"] = "세로"
-L["HORIZONTAL"] = "가로"
 
 L["Icon Size"] = "아이콘 크기"
 L["Adjust the size of the center icon."] = "중앙 아이콘의 크기를 조정합니다."

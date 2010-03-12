@@ -8,12 +8,6 @@ L["Debug"] = true
 L["debugging"] = true
 L["Module debugging menu."] = true
 
-L["Show Tooltip"] = true
-L["Show unit tooltip.  Choose 'Always', 'Never', or 'OOC'."] = true
-L["Always"] = true
-L["Never"] = true
-L["OOC"] = true
-
 L["alerts"] = true
 L["blink"] = true
 L["category"] = true
@@ -30,15 +24,33 @@ L["icon"] = true
 L["square"] = true
 L["text"] = true
 
-L["Advanced"] = true
-L["Advanced options."] = true
+--{{{ GridFrame
+L["Mouseover Highlight"] = true
+L["Toggle mouseover highlight."] = true
+
+L["Show Tooltip"] = true
+L["Show unit tooltip.  Choose 'Always', 'Never', or 'OOC'."] = true
+L["Always"] = true
+L["Never"] = true
+L["OOC"] = true
+
+L["Border Size"] = true
+L["Adjust the border of each unit's frame."] = true
 
 L["Frame Width"] = true
 L["Adjust the width of each unit's frame."] = true
+
 L["Frame Height"] = true
 L["Adjust the height of each unit's frame."] = true
-L["Border Size"] = true
-L["Adjust the border of each unit's frame."] = true
+
+L["Orientation of Frame"] = true
+L["Set frame orientation."] = true
+L["VERTICAL"] = true
+L["HORIZONTAL"] = true
+
+L["Orientation of Text"] = true
+L["Set frame text orientation."] = true
+--}}}
 
 L["Options for %s."] = true
 L["Toggle debugging for %s."] = true
@@ -289,10 +301,6 @@ L["Font"] = true
 L["Adjust the font settings"] = true
 L["Frame Texture"] = true
 L["Adjust the texture of each unit's frame."] = true
-L["Orientation of Frame"] = true
-L["Set frame orientation."] = true
-L["VERTICAL"] = true
-L["HORIZONTAL"] = true
 
 L["Icon Size"] = true
 L["Adjust the size of the center icon."] = true

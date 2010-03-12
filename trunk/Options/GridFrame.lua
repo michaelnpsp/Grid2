@@ -5,9 +5,24 @@ Grid2Frame.menuName = L["frame"]
 Grid2Frame.menuOrder = 20
 
 Grid2Options:AddModule("Grid2", "Grid2Frame", Grid2Frame, {
+	mouseoverHighlight = {
+		type = "toggle",
+		name = L["Mouseover Highlight"],
+		desc = L["Toggle mouseover highlight."],
+		order = 10,
+		get = function ()
+			return Grid2Frame.db.profile.mouseoverHighlight
+		end,
+		set = function (_, v)
+			Grid2Frame.db.profile.mouseoverHighlight = v
+			Grid2Frame:WithAllFrames(function(f)
+				f:EnableMouseoverHighlight(v)
+			end)
+		end,
+	},
 	tooltip = {
 		type = "select",
-		order = 10,
+		order = 15,
 		name = L["Show Tooltip"],
 		desc = L["Show unit tooltip.  Choose 'Always', 'Never', or 'OOC'."],
 		get = function ()
@@ -27,8 +42,8 @@ Grid2Options:AddModule("Grid2", "Grid2Frame", Grid2Frame, {
 		max = 8,
 		step = 1,
 		get = function ()
-				  return Grid2Frame.db.profile.frameBorder
-			  end,
+			return Grid2Frame.db.profile.frameBorder
+		end,
 		set = function (_, frameBorder)
 			Grid2Frame.db.profile.frameBorder = frameBorder
 			Grid2Frame:WithAllFrames(function (f)
@@ -51,12 +66,12 @@ Grid2Options:AddModule("Grid2", "Grid2Frame", Grid2Frame, {
 		max = 100,
 		step = 1,
 		get = function ()
-				  return Grid2Frame.db.profile.frameWidth
-			  end,
+			return Grid2Frame.db.profile.frameWidth
+		end,
 		set = function (_, v)
-				  Grid2Frame.db.profile.frameWidth = v
-				  Grid2Frame:ResizeAllFrames()
-			  end,
+			Grid2Frame.db.profile.frameWidth = v
+			Grid2Frame:ResizeAllFrames()
+		end,
 		disabled = InCombatLockdown,
 	},
 	frameheight = {
@@ -68,12 +83,12 @@ Grid2Options:AddModule("Grid2", "Grid2Frame", Grid2Frame, {
 		max = 100,
 		step = 1,
 		get = function ()
-				  return Grid2Frame.db.profile.frameHeight
-			  end,
+			return Grid2Frame.db.profile.frameHeight
+		end,
 		set = function (_, v)
-				  Grid2Frame.db.profile.frameHeight = v
-				  Grid2Frame:ResizeAllFrames()
-			  end,
+			Grid2Frame.db.profile.frameHeight = v
+			Grid2Frame:ResizeAllFrames()
+		end,
 		disabled = InCombatLockdown,
 	},
 	orientationHeader = {
