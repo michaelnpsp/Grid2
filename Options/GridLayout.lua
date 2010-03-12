@@ -308,8 +308,8 @@ Grid2Options:AddModule("Grid2", "Grid2Layout", Grid2Layout, {
 			},
 			raid25 = {
 				type = "select",
-				name = L["Raid %s Layout"]:format(20),
-				desc = L["Select which layout to use for %s person raids."]:format(20),
+				name = L["Raid %s Layout"]:format(25),
+				desc = L["Select which layout to use for %s person raids."]:format(25),
 				order = 7,
 				get = function ()
 					return Grid2Layout.db.profile.layouts.raid25
@@ -324,8 +324,8 @@ Grid2Options:AddModule("Grid2", "Grid2Layout", Grid2Layout, {
 			},
 			raid40 = {
 				type = "select",
-				name = L["Raid %s Layout"]:format(20),
-				desc = L["Select which layout to use for %s person raids."]:format(20),
+				name = L["Raid %s Layout"]:format(40),
+				desc = L["Select which layout to use for %s person raids."]:format(40),
 				order = 8,
 				get = function ()
 					return Grid2Layout.db.profile.layouts.raid40
