@@ -35,6 +35,27 @@ L["Orientation of Text"] = "Ausrichtung des Texts"
 L["Set frame text orientation."] = "Text Ausrichtung festlegen."
 --}}}
 
+--{{{ GridLayout
+L["Layouts"] = "Layouts"
+L["Layouts for each type of groups you're in."] = "Layouts for each type of groups you're in."
+L["Layout Settings"] = "Layout Settings"
+L["Solo Layout"] = "Solo Layout"
+L["Select which layout to use for solo."] = "Select which layout to use for solo."
+L["Party Layout"] = "Party Layout"
+L["Select which layout to use for party."] = "Select which layout to use for party."
+L["Raid %s Layout"] = "Raid %s Layout"
+L["Select which layout to use for %s person raids."] = "Select which layout to use for %s person raids."
+L["Battleground Layout"] = "Battleground Layout"
+L["Select which layout to use for battlegrounds."] = "Select which layout to use for battlegrounds."
+L["Arena Layout"] = "Arena Layout"
+L["Select which layout to use for arenas."] = "Select which layout to use for arenas."
+
+L["Show Party in Raid"] = "Show Party in Raid"
+L["Show party/self as an extra group."] = "Show party/self as an extra group."
+L["Show Pets for Party"] = "Show Pets for Party"
+L["Show the pets for the party below the party itself."] = "Show the pets for the party below the party itself."
+--}}}
+
 L["corner-top-left"] = "corner-top-left"
 L["corner-top-right"] = "corner-top-right"
 L["corner-bottom-left"] = "corner-bottom-left"

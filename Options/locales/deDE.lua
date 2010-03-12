@@ -61,6 +61,7 @@ L["Always"] = "Immer"
 L["Grouped"] = "Gruppe"
 L["Raid"] = "Raid"
 
+--{{{ GridLayout
 L["Layouts"] = "Layouts"
 L["Layouts for each type of groups you're in."] = "Layout für jede Gruppe in der du bist"
 L["Layout Settings"] = "Layout Einstellungen"
@@ -74,6 +75,12 @@ L["Battleground Layout"] = "Schlachtfeld Layout"
 L["Select which layout to use for battlegrounds."] = "Auswahl welches Layout für Schlachtfelder genutzt werden soll"
 L["Arena Layout"] = "Arena Layout"
 L["Select which layout to use for arenas."] = "Auswahl welches Layout für Arena genutzt werden soll"
+
+L["Show Party in Raid"] = "Zeige deine Gruppe im Raid"
+L["Show party/self as an extra group."] = "Zeige 5er Gruppe/selbst als eine extra Gruppe"
+L["Show Pets for Party"] = "Zeige die Begleiter in einer 5er Gruppe"
+L["Show the pets for the party below the party itself."] = " Zeige Begleiter der 5er Gruppe unter dem Gruppen Fenster"
+--}}}
 
 L["Horizontal groups"] = "Horizontale Gruppen"
 L["Switch between horzontal/vertical groups."] = "Umschalten zwischen Horizontale/Vertikale Gruppen"

@@ -61,18 +61,25 @@ L["Always"] = "總是"
 L["Grouped"] = "組隊"
 L["Raid"] = "團隊"
 
+--{{{ GridLayout
 L["Layouts"] = "佈局"
 L["Layouts for each type of groups you're in."] = "你所在組的佈局類型。"
 L["Solo Layout"] = "單人佈局"
 L["Select which layout to use for solo."] = "選擇使用哪個單人佈局。"
 L["Party Layout"] = "隊伍佈局"
 L["Select which layout to use for party."] = "選擇使用哪個隊伍佈局。"
-L["Raid Layout"] = "團隊佈局"
-L["Select which layout to use for raid."] = "選擇使用哪個團隊佈局。"
+L["Raid %s Layout"] = "團隊佈局 %s Layout"
+L["Select which layout to use for %s person raids."] = "選擇使用哪個團隊佈局。 %s person raids."
 L["Battleground Layout"] = "戰場佈局"
 L["Select which layout to use for battlegrounds."] = "選擇使用哪個戰場佈局。"
 L["Arena Layout"] = "競技場佈局"
 L["Select which layout to use for arenas."] = "選擇使用哪個競技場佈局。"
+
+L["Show Party in Raid"] = "在團隊中顯示隊伍"
+L["Show party/self as an extra group."] = "把自己/隊伍單獨顯示出來。"
+L["Show Pets for Party"] = "隊伍中顯示寵物"
+L["Show the pets for the party below the party itself."] = "隊伍中在下方顯示寵物。"
+--}}}
 
 L["Horizontal groups"] = "橫向排列隊伍"
 L["Switch between horzontal/vertical groups."] = "選擇橫向/豎向排列隊伍。"
