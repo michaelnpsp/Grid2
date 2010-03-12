@@ -11,30 +11,6 @@ L["Grid2"] = true
 
 
 --[[
---{{{ GridFrame
-L["Indicators"] = true
-L["Health Bar"] = true
-L["Health Bar Color"] = true
-L["Center Text"] = true
-L["Center Text 2"] = true
-L["Center Icon"] = true
-L["Top Left Corner"] = true
-L["Top Right Corner"] = true
-L["Bottom Left Corner"] = true
-L["Bottom Right Corner"] = true
-L["Frame Alpha"] = true
-
-L["Options for %s indicator."] = true
-L["Statuses"] = true
-L["Toggle status display."] = true
-
--- Advanced options
-L["Enable %s indicator"] = true
-L["Toggle the %s indicator."] = true
-L["Orientation of Text"] = true
-L["Set frame text orientation."] = true
---}}}
-
 --{{{ GridLayout
 L["Layout"] = true
 L["Options for GridLayout."] = true
