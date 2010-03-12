@@ -71,7 +71,7 @@ local function GridFrame_Init(frame, width, height)
 	frame:SetBackdropBorderColor(0, 0, 0, 1)
 	frame:SetBackdropColor(0, 0, 0, 1)
 
-	frame:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight")
+	frame:EnableMouseoverHighlight(Grid2Frame.db.profile.mouseoverHighlight)
 
 	for _, indicator in Grid2:IterateIndicators() do
 		indicator:Create(frame)
@@ -90,9 +90,14 @@ local function GridFrame_Init(frame, width, height)
 	ClickCastFrames[frame] = true
 end
 
+function GridFramePrototype:EnableMouseoverHighlight(enabled)
+	self:SetHighlightTexture(enabled and "Interface\\QuestFrame\\UI-QuestTitleHighlight" or nil)
+end
+
 function GridFramePrototype:Reset()
 	if not InCombatLockdown() then
 		self:SetSize(Grid2Frame:GetFrameSize())
+		self:EnableMouseoverHighlight(Grid2Frame.db.profile.mouseoverHighlight)
 	end
 end
 
@@ -142,8 +147,10 @@ Grid2Frame.defaultDB = {
 		frameWidth = 56,
 		frameBorder = 2,
 		debug = false,
+		mouseoverHighlight = true,
 		showTooltip = "OOC",
 		orientation = "VERTICAL",
+		textOrientation = "VERTICAL",
 	},
 }
 
@@ -211,9 +218,7 @@ end
 
 do
 	local update_handler = function (f)
---		if f.unit then
-			Grid2Frame:UpdateIndicators(f)
---		end
+		Grid2Frame:UpdateIndicators(f)
 	end
 	function Grid2Frame:UpdateAllFrames()
 		self:WithAllFrames(update_handler)
