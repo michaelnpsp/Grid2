@@ -1,11 +1,39 @@
 ﻿local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2Options", "esES")
 if not L then return end
 
+L["General Settings"] = "General Settings"
+L["GRID2_DESC"] = "Welcome to Grid2"
+
 L["debugging"] = "debuggen"
 L["Module debugging menu."] = "Module debugging Menü"
 
-L["Border Size"] = "Frame Border"
-L["Adjust the border of each unit's frame."] = "Adjust the border of each unit's frame."
+--{{{ GridFrame
+L["Mouseover Highlight"] = "Rahmen Hervorhebung"
+L["Toggle mouseover highlight."] = "Rahmen Hervorhebung (Mouseover Highlight) ein-/ausschalten."
+
+L["Show Tooltip"] = "Zeige Tooltip"
+L["Show unit tooltip.  Choose 'Always', 'Never', or 'OOC'."] = "Zeige Einheiten Tooltip. Wähle:'Immer', 'Nie', oder 'OOC'"
+L["Always"] = "Immer"
+L["Never"] = "Nie"
+L["OOC"] = "Ausserhalb des Kampfes 'OOC'"
+
+L["Border Size"] = "Rand Größe"
+L["Adjust the border of each unit's frame."] = "Einstellung für den Rand des Einheiten Rahmens"
+
+L["Frame Width"] = "Rahmen Breite"
+L["Adjust the width of each unit's frame."] = "Einstellung für die Breite des Einheiten Rahmens"
+
+L["Frame Height"] = "Rahmen Höhe"
+L["Adjust the height of each unit's frame."] = "Einstellung für die Höhe des Einheiten Rahmens"
+
+L["Orientation of Frame"] = "Ausrichtung des Rahmens"
+L["Set frame orientation."] = "Setzt die Rahmen Ausrichtung"
+L["VERTICAL"] = "Vertikal"
+L["HORIZONTAL"] = "Horizontal"
+
+L["Orientation of Text"] = "Ausrichtung des Texts"
+L["Set frame text orientation."] = "Text Ausrichtung festlegen."
+--}}}
 
 L["corner-top-left"] = "corner-top-left"
 L["corner-top-right"] = "corner-top-right"

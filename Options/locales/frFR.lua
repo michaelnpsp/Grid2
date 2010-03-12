@@ -8,12 +8,6 @@ L["Debug"] = "Debug"
 L["debugging"] = "debugging"
 L["Module debugging menu."] = "Menu du module de débugging"
 
-L["Show Tooltip"] = "Afficher tooltip"
-L["Show unit tooltip.  Choose 'Always', 'Never', or 'OOC'."] = "Afficher le tooltip de l'unité. Choisir 'Toujours', 'Jamais', ou 'OOC'."
-L["Always"] = "Toujours"
-L["Never"] = "Jamais"
-L["OOC"] = "OOC"
-
 L["alerts"] = "Alertes"
 L["blink"] = "Clignotement"
 L["category"] = "Catégorie"
@@ -26,19 +20,37 @@ L["status"] = "Statut"
 L["buff"] = "Buff"
 L["debuff"] = "Débuff"
 
-L["Icon"] = "Icône"
-L["Square"] = "Carré"
-L["Text"] = "Texte"
+L["icon"] = "icône"
+L["square"] = "carré"
+L["text"] = "texte"
 
-L["Advanced"] = "Avancé"
-L["Advanced options."] = "Options Avancées"
+--{{{ GridFrame
+L["Mouseover Highlight"] = "Activer la surbrillance au survol"
+L["Toggle mouseover highlight."] = "Active ou non la surbrillance lors du passage de la souris."
+
+L["Show Tooltip"] = "Afficher tooltip"
+L["Show unit tooltip.  Choose 'Always', 'Never', or 'OOC'."] = "Afficher le tooltip de l'unité. Choisir 'Toujours', 'Jamais', ou 'OOC'."
+L["Always"] = "Toujours"
+L["Never"] = "Jamais"
+L["OOC"] = "OOC"
+
+L["Border Size"] = "Taille de la bordure"
+L["Adjust the border of each unit's frame."] = "Ajuster la bordure de chaque cadre d'unité."
 
 L["Frame Width"] = "Largeur du cadre"
 L["Adjust the width of each unit's frame."] = "Ajuster la largeur de chaque cadre d'unité."
+
 L["Frame Height"] = "Hauteur du cadre"
 L["Adjust the height of each unit's frame."] = "Ajuster la hauteur de chaque cadre d'unité."
-L["Border Size"] = "Taille de la bordure"
-L["Adjust the border of each unit's frame."] = "Ajuster la bordure de chaque cadre d'unité."
+
+L["Orientation of Frame"] = "Orientation du cadre"
+L["Set frame orientation."] = "Sélectionner l'orientation du cadre."
+L["VERTICAL"] = "VERTICAL"
+L["HORIZONTAL"] = "HORIZONTAL"
+
+L["Orientation of Text"] = "Orientation du texte"
+L["Set frame text orientation."] = "Détermine l'orientation du texte de la grille."
+--}}}
 
 L["Options for %s."] = "Options de %s."
 L["Toggle debugging for %s."] = "Afficher le debugging pour %s."
@@ -289,10 +301,6 @@ L["Font"] = "Style"
 L["Adjust the font settings"] = "Ajuste les caractèristiques de styles."
 L["Frame Texture"] = "Texture du cadre"
 L["Adjust the texture of each unit's frame."] = "Ajuste la texture de chaque cadre d'unité."
-L["Orientation of Frame"] = "Orientation du cadre"
-L["Set frame orientation."] = "Sélectionner l'orientation du cadre."
-L["VERTICAL"] = "VERTICAL"
-L["HORIZONTAL"] = "HORIZONTAL"
 
 L["Icon Size"] = "Taille de l'icône"
 L["Adjust the size of the center icon."] = "Ajuste la taille de l'icône centrale."
