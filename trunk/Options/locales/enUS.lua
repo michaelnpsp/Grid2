@@ -61,6 +61,7 @@ L["Always"] = true
 L["Grouped"] = true
 L["Raid"] = true
 
+--{{{ GridLayout
 L["Layouts"] = true
 L["Layouts for each type of groups you're in."] = true
 L["Layout Settings"] = true
@@ -74,6 +75,12 @@ L["Battleground Layout"] = true
 L["Select which layout to use for battlegrounds."] = true
 L["Arena Layout"] = true
 L["Select which layout to use for arenas."] = true
+
+L["Show Party in Raid"] = true
+L["Show party/self as an extra group."] = true
+L["Show Pets for Party"] = true
+L["Show the pets for the party below the party itself."] = true
+--}}}
 
 L["Horizontal groups"] = true
 L["Switch between horzontal/vertical groups."] = true
@@ -156,7 +163,7 @@ L["heals-incoming"] = "heals-incoming"
 L["health"] = "health"
 L["health-deficit"] = "health-deficit"
 L["health-low"] = "health-low"
-L["lowmana"] = "lowmana"
+L["lowmana"] = "mana-low"
 L["mana"] = "mana"
 L["name"] = "name"
 L["offline"] = "offline"
