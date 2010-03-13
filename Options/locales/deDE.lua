@@ -106,8 +106,11 @@ L["Background"] = "Hintergrund"
 L["Adjust background color and alpha."] = "Einstellung der Hintergrundfarbe und Alpa"
 
 --role
-L["MAIN_ASSIST"] = MAIN_ASSIST
-L["MAIN_TANK"] = MAIN_TANK
+-- L["MAIN_ASSIST"] = MAIN_ASSIST
+-- L["MAIN_TANK"] = MAIN_TANK
+
+--target
+L["Your Target"] = "Mein Ziel"
 
 --threat
 L["Not Tanking"] = "Wird nicht getankt"
@@ -116,6 +119,9 @@ L["Insecurely Tanking"] = "Unsicheres Tanken"
 L["Tanking without having highest threat."] = "Wird getankt ohne die höchste Bedrohung"
 L["Securely Tanking"] = "Sicher Getankt"
 L["Tanking with highest threat."] = "Wird mit höchster Bedrohung getankt"
+
+--voice
+L["Voice Chat"] = "Stem Spricht"
 
 L["Layout Anchor"] = "Layout Ankerpunkt"
 L["Sets where Grid is anchored relative to the screen."] = "Einstellung wo GRID relativ zum Bildschirm befestigt'Ankerpunkt' soll"
