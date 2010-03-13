@@ -47,13 +47,6 @@ L["Set frame text orientation."] = "Orientation du cadre du texte."
 L["Layout"] = "Agencement"
 L["Options for GridLayout."] = "Options d'agencement de la grille."
 
--- Layout options
-L["Raid Layout"] = "Agencement de raid"
-L["Select which raid layout to use."] = "Sélectionner l'agencement de raid à utiliser."
-L["Show Party in Raid"] = "Montrer le groupe en raid"
-L["Show party/self as an extra group."] = "Montrer groupe/soi-même comme un groupe à part."
-L["Show Pets for Party"] = "Montrer les familiers du groupe"
-L["Show the pets for the party below the party itself."] = "Montrer les familiers du groupe sous le groupe."
 
 -- Display options
 L["Pet color"] = "Couleur du familier"
@@ -231,8 +224,7 @@ L["AFK"] = "ABS"
 --}}}
 
 --{{{ GridStatusTarget
-L["Target"] = "Cible"
-L["Your Target"] = "Votre Cible"
+L["target"] = "Cible"
 --}}}
 
 --{{{ GridStatusVehicle
@@ -240,6 +232,5 @@ L["vehicle"] = "Véhicule"
 --}}}
 
 --{{{ GridStatusVoiceComm
-L["Voice Chat"] = "Chat Vocal"
-L["Talking"] = "Parle"
+L["talking"] = "Parle"
 --}}}
