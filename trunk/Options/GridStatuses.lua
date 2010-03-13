@@ -1062,9 +1062,14 @@ function Grid2Options:MakeStatusOptions(dblData, reset)
 			color3 = L["Securely Tanking"],
 			colorDesc3 = L["Tanking with highest threat."],
 	})
-	self:AddOptionHandler("target", Grid2Options.MakeStatusStandardOptions)
+	self:AddOptionHandler("target", Grid2Options.MakeStatusStandardOptions, {
+			color1 = L["Your Target"],
+	})
 	self:AddOptionHandler("vehicle", Grid2Options.MakeStatusStandardOptions)
-	self:AddOptionHandler("voice", Grid2Options.MakeStatusStandardOptions)
+	self:AddOptionHandler("voice", Grid2Options.MakeStatusStandardOptions, {
+			color1 = L["Voice Chat"],
+			colorDesc1 = L["Voice Chat"],
+	})
 
 	Grid2Options:AddElementSubTypeGroup("status", "buff", MakeStatusBuffCreateOptions(), reset)
 	Grid2Options:AddElementSubTypeGroup("status", "debuff", MakeStatusDebuffCreateOptions(), reset)

@@ -109,6 +109,9 @@ L["Adjust background color and alpha."] = true
 L["MAIN_ASSIST"] = MAIN_ASSIST
 L["MAIN_TANK"] = MAIN_TANK
 
+--target
+L["Your Target"] = true
+
 --threat
 L["Not Tanking"] = true
 L["Higher threat than tank."] = true
@@ -116,6 +119,9 @@ L["Insecurely Tanking"] = true
 L["Tanking without having highest threat."] = true
 L["Securely Tanking"] = true
 L["Tanking with highest threat."] = true
+
+--voice
+L["Voice Chat"] = true
 
 L["Layout Anchor"] = true
 L["Sets where Grid is anchored relative to the screen."] = true

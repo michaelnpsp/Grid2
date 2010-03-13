@@ -103,6 +103,20 @@ L["Adjust border color and alpha."] = "调整边框的颜色和透明度。"
 L["Background"] = "背景"
 L["Adjust background color and alpha."] = "调整背景颜色和透明度。"
 
+--target
+L["Your Target"] = "你的目标"
+
+--threat
+L["Not Tanking"] = "Not Tanking"
+L["Higher threat than tank."] = "Higher threat than tank."
+L["Insecurely Tanking"] = "Insecurely Tanking"
+L["Tanking without having highest threat."] = "Tanking without having highest threat."
+L["Securely Tanking"] = "Securely Tanking"
+L["Tanking with highest threat."] = "Tanking with highest threat."
+
+--voice
+L["Voice Chat"] = "语音"
+
 L["Layout Anchor"] = "布局锚点"
 L["Sets where Grid is anchored relative to the screen."] = "设置屏幕中 Grid 的锚点。"
 

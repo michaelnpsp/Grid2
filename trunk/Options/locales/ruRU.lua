@@ -106,8 +106,11 @@ L["Background"] = "Фон"
 L["Adjust background color and alpha."] = "Настройка цвета фона и прозрачности."
 
 --role
-L["MAIN_ASSIST"] = MAIN_ASSIST
-L["MAIN_TANK"] = MAIN_TANK
+-- L["MAIN_ASSIST"] = MAIN_ASSIST
+-- L["MAIN_TANK"] = MAIN_TANK
+
+--target
+L["Your Target"] = "Ваша Цель"
 
 --threat
 L["Not Tanking"] = "Не танкуется"
@@ -116,6 +119,9 @@ L["Insecurely Tanking"] = "Ненадёжное танкование"
 L["Tanking without having highest threat."] = "Танкование без наивысшего уровня угрозы."
 L["Securely Tanking"] = "Надёжное танкование"
 L["Tanking with highest threat."] = "Танкование с наивысшим уровнем угрозы."
+
+--voice
+L["Voice Chat"] = "Голосовой чат"
 
 L["Layout Anchor"] = "Нахождение якоря"
 L["Sets where Grid is anchored relative to the screen."] = "Настривает где якорь Grid будет находиться на экране."

@@ -106,8 +106,11 @@ L["Background"] = "배경"
 L["Adjust background color and alpha."] = "배경의 색상과 투명도를 조정합니다."
 
 --role
-L["MAIN_ASSIST"] = MAIN_ASSIST
-L["MAIN_TANK"] = MAIN_TANK
+-- L["MAIN_ASSIST"] = MAIN_ASSIST
+-- L["MAIN_TANK"] = MAIN_TANK
+
+--target
+L["Your Target"] = "당신의 대상"
 
 --threat
 L["Not Tanking"] = "방어전담 않함"
@@ -116,6 +119,9 @@ L["Insecurely Tanking"] = "위험한 방어전담"
 L["Tanking without having highest threat."] = "가장 높은 위협 수준 가지지 않고 방어전담을 합니다."
 L["Securely Tanking"] = "안전한 방어전담"
 L["Tanking with highest threat."] = "가장 높은 위협 수준을 가지고 방어전담을 합니다."
+
+--voice
+L["Voice Chat"] = "음성 대화"
 
 L["Layout Anchor"] = "배치 위치"
 L["Sets where Grid is anchored relative to the screen."] = "Grid의 화면 위치를 설정합니다."
