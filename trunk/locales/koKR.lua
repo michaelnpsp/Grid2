@@ -47,14 +47,6 @@ L["Set frame text orientation."] = "프레임 문자의 방향을 설정합니�
 L["Layout"] = "배치"
 L["Options for GridLayout."] = "배치 창과 그룹 배치를 위한 옵션을 설정합니다."
 
--- Layout options
-L["Raid Layout"] = "공격대 배치"
-L["Select which raid layout to use."] = "사용할 공격대 배치를 선택합니다."
-L["Show Party in Raid"] = "공격대시 파티원 표시"
-L["Show party/self as an extra group."] = "공격대시 자신과 파티원을 추가로 표시합니다."
-L["Show Pets for Party"] = "파티시 소환수 표시"
-L["Show the pets for the party below the party itself."] = "파티시 소환수를 표시합니다."
-
 -- Display options
 L["Pet color"] = "소환수 색상"
 L["Set the color of pet units."] = "소환수 유닛의 색상을 설정합니다."
@@ -231,8 +223,7 @@ L["AFK"] = "자리비움"
 --}}}
 
 --{{{ GridStatusTarget
-L["Target"] = "대상"
-L["Your Target"] = "당신의 대상"
+L["target"] = "대상"
 --}}}
 
 --{{{ GridStatusVehicle
@@ -240,6 +231,5 @@ L["vehicle"] = "탈것"
 --}}}
 
 --{{{ GridStatusVoiceComm
-L["Voice Chat"] = "음성 대화"
-L["Talking"] = "대화중"
+L["talking"] = "대화중"
 --}}}

@@ -45,14 +45,6 @@ L["Set frame text orientation."] = "设置框架文字排列方式。"
 L["Layout"] = "布局"
 L["Options for GridLayout."] = "Grid 布局选项。"
 
--- Layout options
-L["Raid Layout"] = "团队布局"
-L["Select which raid layout to use."] = "选择使用何种团队布局。"
-L["Show Party in Raid"] = "在团队中显示小队"
-L["Show party/self as an extra group."] = "把自己/小队单独显示出来。"
-L["Show Pets for Party"] = "小队中显示宠物"
-L["Show the pets for the party below the party itself."] = "小队中在下方显示宠物。"
-
 -- Display options
 L["Pet color"] = "宠物颜色"
 L["Set the color of pet units."] = "设置宠物单位颜色。"
@@ -226,8 +218,7 @@ L["AFK"] = "暂离"
 --}}}
 
 --{{{ GridStatusTarget
-L["Target"] = "目标"
-L["Your Target"] = "你的目标"
+L["target"] = "目标"
 --}}}
 
 --{{{ GridStatusVehicle
@@ -235,6 +226,5 @@ L["vehicle"] = "vehicle"
 --}}}
 
 --{{{ GridStatusVoiceComm
-L["Voice Chat"] = "语音"
-L["Talking"] = "正在说话"
+L["talking"] = "正在说话"
 --}}}

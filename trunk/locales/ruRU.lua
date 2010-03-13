@@ -45,13 +45,6 @@ L["Set frame text orientation."] = "Настройка области ориен
 L["Layout"] = "Расположение"
 L["Options for GridLayout."] = "Опции для GridLayout"
 
--- Layout options
-L["Raid Layout"] = "Расположение рейда"
-L["Select which raid layout to use."] = "Настраивает расположение рейда"
-L["Show Party in Raid"] = "Показывать группу в рейде"
-L["Show party/self as an extra group."] = "Показать группу/себя как отдельную группу"
-L["Show Pets for Party"] = "Показывать питомцев в группе"
-L["Show the pets for the party below the party itself."] = "Показывает питомцев группы непоредсвенно ниже группы."
 
 -- Display options
 L["Pet color"] = "Цвет питомцев"
@@ -228,8 +221,7 @@ L["AFK"] = "Отсутствует"
 --}}}
 
 --{{{ GridStatusTarget
-L["Target"] = "Цель"
-L["Your Target"] = "Ваша Цель"
+L["target"] = "Цель"
 --}}}
 
 --{{{ GridStatusVehicle
@@ -237,6 +229,5 @@ L["vehicle"] = "Транспортное средство"
 --}}}
 
 --{{{ GridStatusVoiceComm
-L["Voice Chat"] = "Голосовой чат"
-L["Talking"] = "Говорит"
+L["talking"] = "Говорит"
 --}}}

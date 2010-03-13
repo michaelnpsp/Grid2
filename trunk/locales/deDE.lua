@@ -6,7 +6,40 @@ L["Border"] = "Rand"
 L["Charmed"] = "Verzaubert"
 L["Drink"] = "Trinken"
 L["Food"] = "Essen"
--- L["Grid2"] = "Grid2"
+L["Grid2"] = "Grid2"
+L["Beast"] = "Bestie"
+L["Demon"] = "Dämon"
+L["Humanoid"] = "Humanoid"
+L["Elemental"] = "Elementar"
+--}}}
+
+--{{{ GridLayoutLayouts
+L["None"] = "Keine"
+L["Solo"] = "Allein"
+L["Solo w/Pet"] = "Allein mit Begleiter"
+L["By Group 5"] = "5er Gruppe"
+L["By Group 5 w/Pets"] = "5er Gruppe mit Begleiter"
+L["By Group 40"] = "40er Gruppe"
+L["By Group 25"] = "25er Gruppe"
+L["By Group 25 w/Pets"] = "25er Gruppe mit Begleiter"
+L["By Group 20"] = "20er Gruppe"
+L["By Group 15"] = "15er Gruppe"
+L["By Group 15 w/Pets"] = "15er Gruppe mit Begleiter"
+L["By Group 10"] = "10er Gruppe"
+L["By Group 10 w/Pets"] = "10er Gruppe mit Begleiter"
+L["By Group 4 x 10 Wide"] = "Gruppe 4 x 10 Breit"
+L["By Class 25"] = "25er nach Klasse"
+L["By Class 1 x 25 Wide"] = "Nach Klasse 1 x 25 Breit"
+L["By Class 2 x 15 Wide"] = "Nach Klasse 2x 15 Breit"
+L["By Role 25"] = "25er nach Rolle"
+L["By Class"] = "Nach Klasse"
+L["By Class w/Pets"] = "Nach Klasse mit Begleiter"
+L["By Group 25 w/tanks"] = "25er Gruppe mit Tanks"
+--}}}
+
+--{{{ GridRange
+-- used for getting spell range from tooltip
+L["(%d+) yd range"] = "(%d+) yd Reichweite"
 --}}}
 
 
@@ -35,25 +68,7 @@ L["Frame Alpha"] = "Frame/Rahmen Alpha"
 L["Options for %s indicator."] = "Optionen für %s Indikator"
 L["Statuses"] = "Status/Zustand"
 L["Toggle status display."] = "Einschalten/Ausschalten Status Display"
-
--- Advanced options
-L["Enable %s indicator"] = "Aktiviert %s indikator"
-L["Toggle the %s indicator."] = "Einschalten/Ausschalten %s Indikator."
-L["Orientation of Text"] = "Ausrichtung des Textes"
-L["Set frame text orientation."] = "Ausrichtung des Rahmen Textes"
 --}}}
-
---{{{ GridLayout
-L["Layout"] = "Layout"
-L["Options for GridLayout."] = "Optionen für das GridLayout"
-
--- Layout options
-L["Raid Layout"] = "Raid Layout"
-L["Select which raid layout to use."] = "Auswahl welches Raid Layout genutzt werden soll"
-L["Show Party in Raid"] = "Zeige deine Gruppe im Raid"
-L["Show party/self as an extra group."] = "Zeige 5er Gruppe/selbst als eine extra Gruppe"
-L["Show Pets for Party"] = "Zeige die Begleiter in einer 5er Gruppe"
-L["Show the pets for the party below the party itself."] = " Zeige Begleiter der 5er Gruppe unter dem Gruppen Fenster"
 
 -- Display options
 L["Pet color"] = "Begleiter Farbe"
@@ -63,10 +78,6 @@ L["Set the coloring strategy of pet units."] = "Legt fest, wie die Begleiter ein
 L["By Owner Class"] = "Nach Besitzer Klasse"
 L["By Creature Type"] = "Nach Kreatur Art"
 L["Using Fallback color"] = "Benutze Rücksicherungs Farbe"
-L["Beast"] = "Bestie"
-L["Demon"] = "Dämon"
-L["Humanoid"] = "Humanoid"
-L["Elemental"] = "Elementar"
 L["Colors"] = "Farben"
 L["Color options for class and pets."] = "Farb Optionen für Klassen und Begleiter"
 L["Fallback colors"] = "Rücksicherungs Farben"
@@ -80,42 +91,6 @@ L["Color of player unit classes."] = "Farbe für Spieler Einheit Klassen"
 L["Creature type colors"] = "Kreaturen Typ Farbe"
 L["Color of pet unit creature types."] = "Farbe der Begleiter Einheiten und Art"
 L["Color for %s."] = "Farbe für %s"
-
--- Advanced options
-L["Advanced"] = "Erweitert"
-L["Advanced options."] = "Erweiterte Optionen"
---}}}
-
---{{{ GridLayoutLayouts
--- ToDo: move into options
-L["None"] = "Keine"
-L["Solo"] = "Allein"
-L["Solo w/Pet"] = "Allein mit Begleiter"
-L["By Group 5"] = "5er Gruppe"
-L["By Group 5 w/Pets"] = "5er Gruppe mit Begleiter"
-L["By Group 40"] = "40er Gruppe"
-L["By Group 25"] = "25er Gruppe"
-L["By Group 25 w/Pets"] = "25er Gruppe mit Begleiter"
-L["By Group 20"] = "20er Gruppe"
-L["By Group 15"] = "15er Gruppe"
-L["By Group 15 w/Pets"] = "15er Gruppe mit Begleiter"
-L["By Group 10"] = "10er Gruppe"
-L["By Group 10 w/Pets"] = "10er Gruppe mit Begleiter"
-L["By Group 4 x 10 Wide"] = "Gruppe 4 x 10 Breit"
-L["By Class 25"] = "25er nach Klasse"
-L["By Class 1 x 25 Wide"] = "Nach Klasse 1 x 25 Breit"
-L["By Class 2 x 15 Wide"] = "Nach Klasse 2x 15 Breit"
-L["By Role 25"] = "25er nach Rolle"
-L["By Class"] = "Nach Klasse"
-L["By Class w/Pets"] = "Nach Klasse mit Begleiter"
-L["Onyxia"] = "Onyxia"
-L["By Group 25 w/tanks"] = "25er Gruppe mit Tanks"
---}}}
-
---{{{ GridRange
--- used for getting spell range from tooltip
-L["(%d+) yd range"] = "(%d+) yd Reichweite"
---}}}
 
 --{{{ GridStatus
 L["Status"] = "Status/Zustand"
@@ -231,8 +206,7 @@ L["AFK"] = "AFK"
 --}}}
 
 --{{{ GridStatusTarget
-L["Target"] = "Ziel"
-L["Your Target"] = "Mein Ziel"
+L["target"] = "Ziel"
 --}}}
 
 --{{{ GridStatusVehicle
@@ -240,7 +214,6 @@ L["vehicle"] = "Fahrzeug"
 --}}}
 
 --{{{ GridStatusVoiceComm
-L["Voice Chat"] = "Voice Chat"
-L["Talking"] = "Spricht"
+L["talking"] = "Spricht"
 --}}}
 
