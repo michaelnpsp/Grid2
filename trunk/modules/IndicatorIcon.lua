@@ -23,6 +23,7 @@ local function Icon_Create(self, parent)
 	local Cooldown = CreateFrame("Cooldown", nil, f, "CooldownFrameTemplate")
 	f.Cooldown = Cooldown
 	Cooldown:SetAllPoints(f)
+	Cooldown:SetReverse(self.dbx.reverseCooldown)
 	Cooldown:Hide()
 
 	local Text = Cooldown:CreateFontString(nil, "OVERLAY")
