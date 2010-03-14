@@ -860,7 +860,7 @@ local function AddBorderIndicatorOptions(indicator)
 end
 
 local function MakeIconIndicatorOptions(indicator)
-	local baseKey = indicator.name
+	local options = {}
 	Grid2Options:MakeIndicatorSizeOptions(indicator, options)
 	Grid2Options:MakeIndicatorTypeOptions(indicator, options)
 	Grid2Options:AddIndicatorLocationOptions(indicator, options)
@@ -873,7 +873,7 @@ local function MakeIconIndicatorOptions(indicator)
 end
 
 local function MakeSquareIndicatorOptions(indicator)
-	local baseKey = indicator.name
+	local options = {}
 	Grid2Options:MakeIndicatorSizeOptions(indicator, options)
 	Grid2Options:MakeIndicatorTypeOptions(indicator, options)
 	Grid2Options:AddIndicatorLocationOptions(indicator, options)
