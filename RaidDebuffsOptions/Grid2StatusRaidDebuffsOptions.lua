@@ -12,11 +12,11 @@ function Grid2StatusRaidDebuffsOptions.UpgradeDefaults(dblData)
 		DBL:SetupLayerObject(dblData, "statuses", layer, "raid-debuffs", {type = "raid-debuffs", color1 = {r=1,g=.5,b=1,a=1}})
 		DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "raid-debuffs", 1000)
 
-		DBL:SetupLayerObject(dblData, "indicators", layer, "center-left", {type = "icon", level = 9, location = "center-left", iconSize = 16, fontSize = 8,})
+		DBL:SetupLayerObject(dblData, "indicators", layer, "center-left", {type = "icon", level = 9, location = "center-left", size = 16, fontSize = 8,})
 		DBL:SetupLayerObject(dblData, "statuses", layer, "debuff-MysticBuffet", {type = "debuff", spellName = 70127, color1 = {r=.5,g=0,b=1,a=1}})
 		DBL:SetupMapObject(dblData, "statusMap", layer, "center-left", "debuff-MysticBuffet", 110)
 
-		DBL:SetupLayerObject(dblData, "indicators", layer, "center-right", {type = "icon", level = 9, location = "center-right", iconSize = 16, fontSize = 8,})
+		DBL:SetupLayerObject(dblData, "indicators", layer, "center-right", {type = "icon", level = 9, location = "center-right", size = 16, fontSize = 8,})
 		DBL:SetupLayerObject(dblData, "statuses", layer, "debuff-UnchainedMagic", {type = "debuff", spellName = 69762, color1 = {r=.5,g=0,b=1,a=1}})
 		DBL:SetupMapObject(dblData, "statusMap", layer, "center-right", "debuff-UnchainedMagic", 110)
 		
