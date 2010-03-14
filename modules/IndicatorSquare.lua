@@ -2,9 +2,9 @@ local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 local function Square_Create(self, parent)
 	local Square = CreateFrame("Frame", nil, parent)
-	local cornerSize = self.dbx.cornerSize
-	Square:SetWidth(cornerSize) -- @FIXME merge the sizes ?
-	Square:SetHeight(cornerSize)
+	local size = self.dbx.size
+	Square:SetWidth(size)
+	Square:SetHeight(size)
 	local borderSize = self.dbx.borderSize
 	if (borderSize) then
 		Square:SetBackdrop({
@@ -44,15 +44,15 @@ local function Square_OnUpdate(self, parent, unit, status)
 	end
 end
 
-local function Square_SetSize(self, parent, size)
-	local Square = parent[self.name]
-	Square:SetWidth(size)
-	Square:SetHeight(size)
+local function Square_SetIndicatorSize(self, parent, size)
+	local f = parent[self.name]
+	f:SetWidth(size)
+	f:SetHeight(size)
 end
 
 local function Square_SetBorderSize(self, parent, borderSize)
-	local Square = parent[self.name]
-	local backdrop = Square:GetBackdrop()
+	local f = parent[self.name]
+	local backdrop = f:GetBackdrop()
 
 	if (borderSize) then
 		backdrop.edgeFile = "Interface\\Addons\\Grid\\white16x16"
@@ -67,10 +67,10 @@ local function Square_SetBorderSize(self, parent, borderSize)
 	backdrop.insets.top = borderSize
 	backdrop.insets.bottom = borderSize
 
-	local r, g, b, a = Square:GetBackdropBorderColor()
+	local r, g, b, a = f:GetBackdropBorderColor()
 
-	Square:SetBackdrop(backdrop)
-	Square:SetBackdropBorderColor(r, g, b, a)
+	f:SetBackdrop(backdrop)
+	f:SetBackdropBorderColor(r, g, b, a)
 end
 
 local function Square_Layout(self, parent)
@@ -82,9 +82,9 @@ local function Square_Layout(self, parent)
 	local borderSize = self.dbx.borderSize
 	Square_SetBorderSize(self, parent, borderSize)
 
-	local cornerSize = self.dbx.cornerSize
-	Square:SetWidth(cornerSize) -- @FIXME merge the sizes ?
-	Square:SetHeight(cornerSize)
+	local size = self.dbx.size
+	Square:SetWidth(size)
+	Square:SetHeight(size)
 end
 
 local function Square_Disable(self, parent)
@@ -97,14 +97,15 @@ local function Square_Disable(self, parent)
 	self.GetBlinkFrame = nil
 	self.Layout = nil
 	self.OnUpdate = nil
-	self.SetSize = nil
+	self.SetIndicatorSize = nil
+	self.SetBorderSize = nil
 end
 
 local function Square_UpdateDB(self, dbx)
 	-- ToDo: copy if it already exists
 	-- ToDo: update if it changed
 -- if (self.dbx) then
-	-- print("Square_UpdateDB self.dbx:", self.dbx, self.dbx.cornerSize, "dbx:", dbx, dbx.cornerSize)
+	-- print("Square_UpdateDB self.dbx:", self.dbx, self.dbx.size, "dbx:", dbx, dbx.size)
 -- end
 	local oldType = self.dbx and self.dbx.type or dbx.type
 	local location = Grid2.locations[dbx.location]
@@ -118,7 +119,7 @@ local function Square_UpdateDB(self, dbx)
 	self.GetBlinkFrame = Square_GetBlinkFrame
 	self.Layout = Square_Layout
 	self.OnUpdate = Square_OnUpdate
-	self.SetSize = Square_SetSize
+	self.SetIndicatorSize = Square_SetIndicatorSize
 	self.SetBorderSize = Square_SetBorderSize
 	self.Disable = Square_Disable
 	self.UpdateDB = Square_UpdateDB
