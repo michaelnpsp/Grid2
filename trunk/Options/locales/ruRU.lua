@@ -310,10 +310,8 @@ L["Adjust the font settings"] = "Настройки шрифта."
 L["Frame Texture"] = "Текстура области"
 L["Adjust the texture of each unit's frame."] = "настройка текстуры выбранной области для игрока."
 
-L["Icon Size"] = "Размер иконки"
-L["Adjust the size of the center icon."] = "Настройка размера значка в центре."
 L["Size"] = "Размер"
-L["Adjust the size of the indicators."] = "Настрйока размера индикатора."
+L["Adjust the size of the indicator."] = "Настрйока размера индикатора."
 
 L["Blink effect"] = "Эффект мерцания"
 L["Select the type of Blink effect used by Grid2."] = "Gвыьерите тип эффекта мерцания для использования в Grid2."

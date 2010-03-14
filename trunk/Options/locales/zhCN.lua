@@ -226,10 +226,8 @@ L["Adjust the font settings"] = "调整字体设置"
 L["Frame Texture"] = "框架材质"
 L["Adjust the texture of each unit's frame."] = "调整个体框架的材质。"
 
-L["Icon Size"] = "图标大小"
-L["Adjust the size of the center icon."] = "调整中心图标的尺寸。"
 L["Size"] = "边角大小"
-L["Adjust the size of the indicators."] = "调整边角指示器的大小。"
+L["Adjust the size of the indicator."] = "调整边角指示器的大小。"
 
 L["Blink effect"] = "闪烁效果"
 L["Select the type of Blink effect used by Grid2."] = "选择 Grid2 闪烁效果。"
