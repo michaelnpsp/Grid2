@@ -2,10 +2,18 @@ local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 local function Icon_Create(self, parent)
 	local f = CreateFrame("Frame", nil, parent)
-	f:SetBackdrop({
-		edgeFile = "Interface\\Addons\\Grid2\\white16x16", edgeSize = 2,
-		insets = {left = 2, right = 2, top = 2, bottom = 2},
-	 })
+	local borderSize = self.dbx.borderSize
+	if (borderSize) then
+		f:SetBackdrop({
+			edgeFile = "Interface\\Addons\\Grid\\white16x16", edgeSize = borderSize,
+			insets = {left = borderSize, right = borderSize, top = borderSize, bottom = borderSize},
+		})
+	else
+		f:SetBackdrop({
+			edgeFile = "Interface\\Addons\\Grid2\\white16x16", edgeSize = 2,
+			insets = {left = 2, right = 2, top = 2, bottom = 2},
+		})
+	end
 
 	local Icon = f:CreateTexture(nil, "ARTWORK")
 	f.Icon = Icon
@@ -29,16 +37,6 @@ local function Icon_Create(self, parent)
 	parent[self.name] = f
 end
 
-local function Icon_Layout(self, parent)
-	local Icon = parent[self.name]
-	Icon:ClearAllPoints()
-	Icon:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
-	Icon:SetPoint(self.anchor, parent, self.anchorRel, self.offsetx, self.offsety)
-	local iconSize = self.dbx.iconSize
-	Icon:SetWidth(iconSize)
-	Icon:SetHeight(iconSize)
-end
-
 local function Icon_GetBlinkFrame(self, parent)
 	return parent[self.name]
 end
@@ -59,9 +57,15 @@ local function Icon_OnUpdate(self, parent, unit, status)
 	end
 	if (status.GetColor) then
 		local r, g, b, a = status:GetColor(unit)
+		local borderSize = self.dbx.borderSize
 
 		if (status.GetBorder and status:GetBorder(unit) > 0) then
 			Icon:SetBackdropBorderColor(r, g, b, a)
+		elseif (borderSize) then
+			local c = self.dbx.color1
+			if (c) then
+				Icon:SetBackdropBorderColor(c.r, c.g, c.b, c.a)
+			end
 		else
 			Icon:SetBackdropBorderColor(0, 0, 0, 0)
 		end
@@ -91,10 +95,49 @@ local function Icon_OnUpdate(self, parent, unit, status)
 	end
 end
 
-local function Icon_SetIconSize(self, parent, iconSize)
+local function Icon_SetIndicatorSize(self, parent, size)
+	local f = parent[self.name]
+	f:SetWidth(size)
+	f:SetHeight(size)
+end
+
+local function Icon_SetBorderSize(self, parent, borderSize)
+	local f = parent[self.name]
+	local backdrop = f:GetBackdrop()
+
+	local Icon = f.Icon
+	if (borderSize) then
+		Icon:SetPoint("TOPLEFT", f ,"TOPLEFT", borderSize, -1 * borderSize)
+		Icon:SetPoint("BOTTOMRIGHT", f ,"BOTTOMRIGHT", -1 * borderSize, borderSize)
+		backdrop.edgeSize = borderSize
+	else
+		Icon:SetAllPoints(f)
+		backdrop.edgeSize = 2
+		borderSize = 2
+	end
+	backdrop.insets.left = borderSize
+	backdrop.insets.right = borderSize
+	backdrop.insets.top = borderSize
+	backdrop.insets.bottom = borderSize
+
+	local r, g, b, a = f:GetBackdropBorderColor()
+
+	f:SetBackdrop(backdrop)
+	f:SetBackdropBorderColor(r, g, b, a)
+end
+
+local function Icon_Layout(self, parent)
 	local Icon = parent[self.name]
-	Icon:SetWidth(iconSize)
-	Icon:SetHeight(iconSize)
+	Icon:ClearAllPoints()
+	Icon:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
+	Icon:SetPoint(self.anchor, parent, self.anchorRel, self.offsetx, self.offsety)
+
+	local borderSize = self.dbx.borderSize
+	Icon_SetBorderSize(self, parent, borderSize)
+
+	local size = self.dbx.size
+	Icon:SetWidth(size)
+	Icon:SetHeight(size)
 end
 
 local function Icon_Disable(self, parent)
@@ -104,7 +147,8 @@ local function Icon_Disable(self, parent)
 	self.GetBlinkFrame = nil
 	self.Layout = nil
 	self.OnUpdate = nil
-	self.SetIconSize = nil
+	self.SetIndicatorSize = nil
+	self.SetBorderSize = nil
 end
 
 local function Icon_UpdateDB(self, dbx)
@@ -120,7 +164,8 @@ local function Icon_UpdateDB(self, dbx)
 	self.GetBlinkFrame = Icon_GetBlinkFrame
 	self.Layout = Icon_Layout
 	self.OnUpdate = Icon_OnUpdate
-	self.SetIconSize = Icon_SetIconSize
+	self.SetIndicatorSize = Icon_SetIndicatorSize
+	self.SetBorderSize = Icon_SetBorderSize
 	self.Disable = Icon_Disable
 	self.UpdateDB = Icon_UpdateDB
 
