@@ -105,6 +105,8 @@ L["Adjust border color and alpha."] = true
 L["Adjust the border size of the indicator."] = true
 L["Background"] = true
 L["Adjust background color and alpha."] = true
+L["Reverse Cooldown"] = true
+L["Set cooldown to become darker over time instead of lighter."] = true
 
 --role
 L["MAIN_ASSIST"] = MAIN_ASSIST

@@ -860,7 +860,29 @@ local function AddBorderIndicatorOptions(indicator)
 end
 
 local function MakeIconIndicatorOptions(indicator)
-	local options = {}
+	local options = {
+		reverseCooldown = {
+			type = "toggle",
+			order = 12,
+			name = L["Reverse Cooldown"],
+			desc = L["Set cooldown to become darker over time instead of lighter."],
+			tristate = true,
+			get = function ()
+				return indicator.dbx.reverseCooldown
+			end,
+			set = function (_, v)
+				indicator.dbx.reverseCooldown = v
+				
+				--Apply changes to the bar dbx
+				local indicatorKey = indicator.name
+				DBL:GetOptionsDbx(Grid2.dblData, "indicators", indicatorKey).reverseCooldown = v
+
+				Grid2Frame:WithAllFrames(function (f)
+					f[indicatorKey].Cooldown:SetReverse(indicator.dbx.reverseCooldown)
+				end)
+			end,
+		}
+	}
 	Grid2Options:MakeIndicatorSizeOptions(indicator, options)
 	Grid2Options:MakeIndicatorTypeOptions(indicator, options)
 	Grid2Options:AddIndicatorLocationOptions(indicator, options)
@@ -888,25 +910,6 @@ end
 local function MakeBarColorIndicatorOptions(indicator)
 	local baseKey = indicator.name
 	local options = {
-		invert = {
-			type = "toggle",
-			order = 12,
-			name = L["Invert Bar Color"],
-			desc = L["Swap foreground/background colors on bars."],
-			tristate = true,
-			get = function ()
-				return indicator.dbx.invertBarColor
-			end,
-			set = function (_, v)
-				indicator.dbx.invertBarColor = v
-				
-				--Apply changes to the bar dbx
-				local indicatorKey = indicator.barKey
-				DBL:GetOptionsDbx(Grid2.dblData, "indicators", indicatorKey).invertBarColor = v
-
-				Grid2Frame:WithAllFrames(function (f) indicator:Update(f, f.unit) end)
-			end,
-		},
 	}
 	Grid2Options:AddIndicatorStatusOptions(indicator, options)
 	Grid2Options:AddIndicatorElement(indicator, options)
