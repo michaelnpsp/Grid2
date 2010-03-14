@@ -315,10 +315,8 @@ L["Adjust the font settings"] = "Ajuste les caractèristiques de styles."
 L["Frame Texture"] = "Texture du cadre"
 L["Adjust the texture of each unit's frame."] = "Ajuste la texture de chaque cadre d'unité."
 
-L["Icon Size"] = "Taille de l'icône"
-L["Adjust the size of the center icon."] = "Ajuste la taille de l'icône centrale."
 L["Size"] = "Taille"
-L["Adjust the size of the indicators."] = "Ajuste la taille des indicateurs."
+L["Adjust the size of the indicator."] = "Ajuste la taille des indicateur."
 
 L["Blink effect"] = "Effet de clignotement"
 L["Select the type of Blink effect used by Grid2."] = "Sélectionner le type de clignotement "

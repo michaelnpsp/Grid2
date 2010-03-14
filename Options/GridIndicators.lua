@@ -351,6 +351,37 @@ local function DeleteIndicator(info)
 end
 
 
+function Grid2Options:MakeIndicatorSizeOptions(indicator, options, optionParams)
+	options = options or {}
+	local baseKey = indicator.name
+
+	local name = L["Border"]
+	local desc = L["Adjust the border size of the indicator."]
+	options.size = {
+		type = "range",
+		order = 10,
+		name = L["Size"],
+		desc = L["Adjust the size of the indicator."],
+		min = 5,
+		max = 50,
+		step = 1,
+		get = function ()
+			return indicator.dbx.size
+		end,
+		set = function (_, v)
+			indicator.dbx.size = v
+			DBL:GetOptionsDbx(Grid2.dblData, "indicators", baseKey).size = v	-- ToDo: handle nilling out if ancestor matches v
+			Grid2Frame:WithAllFrames(function (f)
+				indicator:SetIndicatorSize(f, v)
+				indicator:Layout(f)
+			end)
+		end,
+	}
+
+	return options
+end
+
+
 function Grid2Options:MakeIndicatorBorderSizeOptions(indicator, options, optionParams)
 	options = options or {}
 	local baseKey = indicator.name
@@ -376,7 +407,7 @@ function Grid2Options:MakeIndicatorBorderSizeOptions(indicator, options, optionP
 			DBL:GetOptionsDbx(Grid2.dblData, "indicators", baseKey).borderSize = v	-- ToDo: handle nilling out if ancestor matches v
 			Grid2Frame:WithAllFrames(function (f)
 				indicator:SetBorderSize(f, v)
-				indicator:SetSize(f, indicator.dbx.cornerSize)
+				indicator:Layout(f)
 			end)
 		end,
 	}
@@ -387,6 +418,10 @@ end
 
 function Grid2Options:MakeIndicatorBorderOptions(indicator, options, optionParams)
 	options = options or {}
+	optionParams = optionParams or {}
+	optionParams.color1 = L["Border"]
+	optionParams.colorDesc1 = L["Adjust border color and alpha."]
+	optionParams.typeKey = "indicators"
 
 	Grid2Options:MakeIndicatorColorOptions(indicator, options, optionParams)
 	Grid2Options:MakeIndicatorBorderSizeOptions(indicator, options, optionParams)
@@ -564,8 +599,8 @@ end
 
 local defaultFont = "Friz Quadrata TT"
 Grid2Options.typeDefaultValues = {
-	icon = {iconSize = 16, fontSize = 8,},
-	square = {cornerSize = 5,},
+	icon = {size = 16, fontSize = 8,},
+	square = {size = 5,},
 	text = {textlength = 12, fontSize = 8, font = defaultFont,},
 }
 
@@ -826,32 +861,11 @@ end
 
 local function MakeIconIndicatorOptions(indicator)
 	local baseKey = indicator.name
-	local options = {
-		iconsize = {
-			type = "range",
-			order = 10,
-			name = L["Icon Size"],
-			desc = L["Adjust the size of the center icon."],
-			min = 5,
-			max = 50,
-			step = 1,
-			get = function ()
-				return indicator.dbx.iconSize
-			end,
-			set = function (_, v)
-				indicator.dbx.iconSize = v
-				DBL:GetOptionsDbx(Grid2.dblData, "indicators", baseKey).iconSize = v	-- ToDo: handle nilling out if ancestor matches v
-				Grid2Frame:WithAllFrames(function (f) indicator:SetIconSize(f, v) end)
-			end,
-		},
-	}
+	Grid2Options:MakeIndicatorSizeOptions(indicator, options)
 	Grid2Options:MakeIndicatorTypeOptions(indicator, options)
 	Grid2Options:AddIndicatorLocationOptions(indicator, options)
 	Grid2Options:AddIndicatorLayerOptions(indicator, options)
-	Grid2Options:MakeIndicatorColorOptions(indicator, options, {
-			typeKey = "indicators",
---			color1 = L["Background"],
-	})
+	Grid2Options:MakeIndicatorBorderOptions(indicator, options)
 	Grid2Options:AddIndicatorStatusOptions(indicator, options)
 	Grid2Options:AddIndicatorDeleteOptions(indicator, options)
 
@@ -860,33 +874,11 @@ end
 
 local function MakeSquareIndicatorOptions(indicator)
 	local baseKey = indicator.name
-	local options = {
-		size = {
-			type = "range",
-			order = 10,
-			name = L["Size"],
-			desc = L["Adjust the size of the indicators."],
-			min = 1,
-			max = 20,
-			step = 1,
-			get = function ()
-				return indicator.dbx.cornerSize
-			end,
-			set = function (_, v)
-				indicator.dbx.cornerSize = v
-				DBL:GetOptionsDbx(Grid2.dblData, "indicators", baseKey).cornerSize = v
-				Grid2Frame:WithAllFrames(function (f) indicator:SetSize(f, v) end)
-			end,
-		},
-	}
+	Grid2Options:MakeIndicatorSizeOptions(indicator, options)
 	Grid2Options:MakeIndicatorTypeOptions(indicator, options)
 	Grid2Options:AddIndicatorLocationOptions(indicator, options)
 	Grid2Options:AddIndicatorLayerOptions(indicator, options)
-	Grid2Options:MakeIndicatorBorderOptions(indicator, options, {
-			typeKey = "indicators",
-			color1 = L["Border"],
-			colorDesc1 = L["Adjust border color and alpha."],
-	})
+	Grid2Options:MakeIndicatorBorderOptions(indicator, options)
 	Grid2Options:AddIndicatorStatusOptions(indicator, options)
 	Grid2Options:AddIndicatorDeleteOptions(indicator, options)
 
@@ -974,9 +966,9 @@ local function NewIndicator()
 		--ToDo: this needs to be in a setup list of functions somewhere
 		local dbx
 		if (newIndicatorType == "square") then
-			DBL:SetupLayerObject(dblData, "indicators", layer, baseKey, {type = "square", level = 9, location = newIndicatorLocation, cornerSize = 5,}, true)
+			DBL:SetupLayerObject(dblData, "indicators", layer, baseKey, {type = "square", level = 9, location = newIndicatorLocation, size = 5,}, true)
 		elseif (newIndicatorType == "icon") then
-			DBL:SetupLayerObject(dblData, "indicators", layer, baseKey, {type = "icon", level = 8, location = newIndicatorLocation, iconSize = 16, fontSize = 8,}, true)
+			DBL:SetupLayerObject(dblData, "indicators", layer, baseKey, {type = "icon", level = 8, location = newIndicatorLocation, size = 16, fontSize = 8,}, true)
 		elseif (newIndicatorType == "text") then
 			DBL:SetupLayerObject(dblData, "indicators", layer, baseKey, {type = "text", level = 6, location = newIndicatorLocation, textlength = 12, fontSize = 8, font = "Friz Quadrata TT",}, true)
 			DBL:SetupLayerObject(dblData, "indicators", layer, (baseKey .. "-color"), {type = "text-color"}, true)

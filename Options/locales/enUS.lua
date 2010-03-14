@@ -316,10 +316,8 @@ L["Adjust the font settings"] = true
 L["Frame Texture"] = true
 L["Adjust the texture of each unit's frame."] = true
 
-L["Icon Size"] = true
-L["Adjust the size of the center icon."] = true
 L["Size"] = true
-L["Adjust the size of the indicators."] = true
+L["Adjust the size of the indicator."] = true
 
 L["Blink effect"] = true
 L["Select the type of Blink effect used by Grid2."] = true
