@@ -351,6 +351,50 @@ local function DeleteIndicator(info)
 end
 
 
+function Grid2Options:MakeIndicatorBorderSizeOptions(indicator, options, optionParams)
+	options = options or {}
+	local baseKey = indicator.name
+
+	local name = L["Border"]
+	local desc = L["Adjust the border size of the indicator."]
+	options.borderSize = {
+		type = "range",
+		order = 20,
+		name = name,
+		desc = desc,
+		min = 0,
+		max = 20,
+		step = 1,
+		get = function ()
+			return indicator.dbx.borderSize or 0
+		end,
+		set = function (_, v)
+			if (v == 0) then
+				v = nil
+			end
+			indicator.dbx.borderSize = v
+			DBL:GetOptionsDbx(Grid2.dblData, "indicators", baseKey).borderSize = v	-- ToDo: handle nilling out if ancestor matches v
+			Grid2Frame:WithAllFrames(function (f)
+				indicator:SetBorderSize(f, v)
+				indicator:SetSize(f, indicator.dbx.cornerSize)
+			end)
+		end,
+	}
+
+	return options
+end
+
+
+function Grid2Options:MakeIndicatorBorderOptions(indicator, options, optionParams)
+	options = options or {}
+
+	Grid2Options:MakeIndicatorColorOptions(indicator, options, optionParams)
+	Grid2Options:MakeIndicatorBorderSizeOptions(indicator, options, optionParams)
+	
+	return options
+end
+
+
 function Grid2Options:AddIndicatorDeleteOptions(indicator, options)
 	options.delete = {
 	    type = "execute",
@@ -402,14 +446,15 @@ function Grid2Options.SetIndicatorColor(info, r, g, b, a)
 	end
 	c.r, c.g, c.b, c.a = r, g, b, a
 
-	Grid2Frame:Reset()
+	Grid2Frame:ResetAllFrames()
+	Grid2Frame:UpdateAllFrames()
 end
 
 function Grid2Options:MakeIndicatorColorOptions(indicator, options, optionParams)
 	options = options or {}
 
---print("MakeIndicatorColorOption", indicator.name, colorCount)
 	local colorCount = indicator.dbx.colorCount or 1
+--print("MakeIndicatorColorOption", indicator.name, colorCount)
 	local name = L["Color"]
 	local desc = L["Color for %s."]:format(indicator.name)
 	local typeKey = optionParams and optionParams.typeKey or "indicators"
@@ -430,8 +475,7 @@ function Grid2Options:MakeIndicatorColorOptions(indicator, options, optionParams
 
 		options[colorKey] = {
 			type = "color",
-			order = (10 + i),
-			width = "half",
+			order = (20 + i),
 			name = name,
 			desc = desc,
 			get = Grid2Options.GetIndicatorColor,
@@ -736,7 +780,7 @@ local function AddAlphaIndicatorOptions(indicator)
 	Grid2Options:AddIndicatorElement(indicator, options)
 end
 
-local function AddBarIndicatorOptions(indicator)
+local function MakeBarIndicatorOptions(indicator)
 	local baseKey = indicator.name
 	local options = {}
 
@@ -763,6 +807,11 @@ local function AddBarIndicatorOptions(indicator)
 		Grid2Options:AddMediaOption("statusbar", textureOption)
 		options.texture = textureOption
 	end
+	Grid2Options:MakeIndicatorColorOptions(indicator, options, {
+			typeKey = "indicators",
+			color1 = L["Background"],
+	})
+	Grid2Options:AddIndicatorLocationOptions(indicator, options)
 
 	Grid2Options:AddIndicatorElement(indicator, options)
 end
@@ -799,7 +848,10 @@ local function MakeIconIndicatorOptions(indicator)
 	Grid2Options:MakeIndicatorTypeOptions(indicator, options)
 	Grid2Options:AddIndicatorLocationOptions(indicator, options)
 	Grid2Options:AddIndicatorLayerOptions(indicator, options)
-	Grid2Options:MakeIndicatorColorOptions(indicator, options)
+	Grid2Options:MakeIndicatorColorOptions(indicator, options, {
+			typeKey = "indicators",
+--			color1 = L["Background"],
+	})
 	Grid2Options:AddIndicatorStatusOptions(indicator, options)
 	Grid2Options:AddIndicatorDeleteOptions(indicator, options)
 
@@ -830,14 +882,18 @@ local function MakeSquareIndicatorOptions(indicator)
 	Grid2Options:MakeIndicatorTypeOptions(indicator, options)
 	Grid2Options:AddIndicatorLocationOptions(indicator, options)
 	Grid2Options:AddIndicatorLayerOptions(indicator, options)
-	Grid2Options:MakeIndicatorColorOptions(indicator, options)
+	Grid2Options:MakeIndicatorBorderOptions(indicator, options, {
+			typeKey = "indicators",
+			color1 = L["Border"],
+			colorDesc1 = L["Adjust border color and alpha."],
+	})
 	Grid2Options:AddIndicatorStatusOptions(indicator, options)
 	Grid2Options:AddIndicatorDeleteOptions(indicator, options)
 
 	Grid2Options:AddIndicatorElement(indicator, options)
 end
 
-local function AddBarColorIndicatorOptions(indicator)
+local function MakeBarColorIndicatorOptions(indicator)
 	local baseKey = indicator.name
 	local options = {
 		invert = {
@@ -1091,8 +1147,8 @@ function Grid2Options:MakeIndicatorOptions(dblData, reset)
 	AddIndicatorsGroup(reset)
 
 	self:AddOptionHandler("alpha", AddAlphaIndicatorOptions)
-	self:AddOptionHandler("bar", AddBarIndicatorOptions)
-	self:AddOptionHandler("bar-color", AddBarColorIndicatorOptions)
+	self:AddOptionHandler("bar", MakeBarIndicatorOptions)
+	self:AddOptionHandler("bar-color", MakeBarColorIndicatorOptions)
 	self:AddOptionHandler("border", AddBorderIndicatorOptions)
 
 	self:AddCreatableOptionHandler("icon", L["icon"], MakeIconIndicatorOptions)
