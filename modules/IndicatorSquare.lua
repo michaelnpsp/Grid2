@@ -5,10 +5,19 @@ local function Square_Create(self, parent)
 	local cornerSize = self.dbx.cornerSize
 	Square:SetWidth(cornerSize) -- @FIXME merge the sizes ?
 	Square:SetHeight(cornerSize)
-	Square:SetBackdrop({
-		bgFile = "Interface\\Addons\\Grid2\\white16x16", tile = true, tileSize = 16,
-		insets = {left = 0, right = 0, top = 0, bottom = 0},
-	})
+	local borderSize = self.dbx.borderSize
+	if (borderSize) then
+		Square:SetBackdrop({
+			bgFile = "Interface\\Addons\\Grid2\\white16x16", tile = true, tileSize = 16,
+			edgeFile = "Interface\\Addons\\Grid\\white16x16", edgeSize = borderSize,
+			insets = {left = borderSize, right = borderSize, top = borderSize, bottom = borderSize},
+		})
+	else
+		Square:SetBackdrop({
+			bgFile = "Interface\\Addons\\Grid2\\white16x16", tile = true, tileSize = 16,
+			insets = {left = 0, right = 0, top = 0, bottom = 0},
+		})
+	end
 	Square:SetBackdropBorderColor(0,0,0,1)
 	Square:SetBackdropColor(1,1,1,1)
 	parent[self.name] = Square
@@ -18,20 +27,17 @@ local function Square_GetBlinkFrame(self, parent)
 	return parent[self.name]
 end
 
-local function Square_Layout(self, parent)
-	local Square = parent[self.name]
-	Square:ClearAllPoints()
-	Square:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
-	Square:SetPoint(self.anchor, parent, self.anchorRel, self.offsetx, self.offsety)
-	local cornerSize = self.dbx.cornerSize
-	Square:SetWidth(cornerSize) -- @FIXME merge the sizes ?
-	Square:SetHeight(cornerSize)
-end
-
 local function Square_OnUpdate(self, parent, unit, status)
 	local Square = parent[self.name]
 	if status then
 		Square:SetBackdropColor(status:GetColor(unit))
+		local borderSize = self.dbx.borderSize
+		if (borderSize) then
+			local c = self.dbx.color1
+			if (c) then
+				Square:SetBackdropBorderColor(c.r, c.g, c.b, c.a)
+			end
+		end
 		Square:Show()
 	else
 		Square:Hide()
@@ -42,6 +48,43 @@ local function Square_SetSize(self, parent, size)
 	local Square = parent[self.name]
 	Square:SetWidth(size)
 	Square:SetHeight(size)
+end
+
+local function Square_SetBorderSize(self, parent, borderSize)
+	local Square = parent[self.name]
+	local backdrop = Square:GetBackdrop()
+
+	if (borderSize) then
+		backdrop.edgeFile = "Interface\\Addons\\Grid\\white16x16"
+		backdrop.edgeSize = borderSize
+	else
+		backdrop.edgeFile = nil
+		backdrop.edgeSize = nil
+		borderSize = 0
+	end
+	backdrop.insets.left = borderSize
+	backdrop.insets.right = borderSize
+	backdrop.insets.top = borderSize
+	backdrop.insets.bottom = borderSize
+
+	local r, g, b, a = Square:GetBackdropBorderColor()
+
+	Square:SetBackdrop(backdrop)
+	Square:SetBackdropBorderColor(r, g, b, a)
+end
+
+local function Square_Layout(self, parent)
+	local Square = parent[self.name]
+	Square:ClearAllPoints()
+	Square:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
+	Square:SetPoint(self.anchor, parent, self.anchorRel, self.offsetx, self.offsety)
+
+	local borderSize = self.dbx.borderSize
+	Square_SetBorderSize(self, parent, borderSize)
+
+	local cornerSize = self.dbx.cornerSize
+	Square:SetWidth(cornerSize) -- @FIXME merge the sizes ?
+	Square:SetHeight(cornerSize)
 end
 
 local function Square_Disable(self, parent)
@@ -76,6 +119,7 @@ local function Square_UpdateDB(self, dbx)
 	self.Layout = Square_Layout
 	self.OnUpdate = Square_OnUpdate
 	self.SetSize = Square_SetSize
+	self.SetBorderSize = Square_SetBorderSize
 	self.Disable = Square_Disable
 	self.UpdateDB = Square_UpdateDB
 
