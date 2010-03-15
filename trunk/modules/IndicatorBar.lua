@@ -68,17 +68,22 @@ local function BarColor_OnUpdate(self, parent, unit, status)
 		self:SetBarColor(parent, status:GetColor(unit))
 	else
 		self:SetBarColor(parent, 0, 0, 0, 1)
+		--local c = self.dbx.color1
+		--self:SetBarColor(parent, c.r, c.g, c.b, 1)
 	end
 end
 
 local function BarColor_SetBarColor(self, parent, r, g, b, a)
 	local Bar, BarBG = parent[self.nameFG], parent[self.nameBG]
-	if self.dbx.invertBarColor then
+	--local c = self.dbx.color1
+	if (Grid2Frame.db.profile.invertBarColor) then
 		Bar:SetStatusBarColor(r, g, b, a)
+		--BarBG:SetVertexColor(c.r, c.g, c.b, 0)
 		BarBG:SetVertexColor(0, 0, 0, 0)
 	else
+		--Bar:SetStatusBarColor(c.r, c.g, c.b, 0.8)
 		Bar:SetStatusBarColor(0, 0, 0, 0.8)
-		BarBG:SetVertexColor(r, g, b ,a)
+		BarBG:SetVertexColor(r, g, b, a)
 	end
 end
 

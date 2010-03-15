@@ -151,6 +151,7 @@ Grid2Frame.defaultDB = {
 		showTooltip = "OOC",
 		orientation = "VERTICAL",
 		textOrientation = "VERTICAL",
+		invertBarColor = true,
 	},
 }
 
