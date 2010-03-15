@@ -102,8 +102,11 @@ L["Adjust Grid scale."] = "Einstellung der Grid2 größen Scalierung"
 L["Alpha"] = "Alpha"
 L["Border"] = "Rand"
 L["Adjust border color and alpha."] = "Einstellung der Randfarbe und Alpha"
+L["Adjust the border size of the indicator."] = "Einstellung Rand Größe für den Indikator"
 L["Background"] = "Hintergrund"
 L["Adjust background color and alpha."] = "Einstellung der Hintergrundfarbe und Alpa"
+L["Reverse Cooldown"] = "Cooldown umdrehen"
+L["Set cooldown to become darker over time instead of lighter."] = "Einstellung das der CD über Zeit dunkler anstatt Heller wird" 
 
 --role
 -- L["MAIN_ASSIST"] = MAIN_ASSIST
