@@ -111,14 +111,14 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "border", "health-low", 69)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "border", "pvp", 45)
 
-				DBL:SetupLayerObject(dblData, "indicators", layer, "health", {type = "bar", level = 2, location = "center", texture = "Gradient", invertBarColor = true, color1 = {r=0,g=0,b=0,a=0}})
+				DBL:SetupLayerObject(dblData, "indicators", layer, "health", {type = "bar", level = 2, location = "center", texture = "Gradient", color1 = {r=0,g=0,b=0,a=1}})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "health", "health-current", 99)
 
 				DBL:SetupLayerObject(dblData, "indicators", layer, "health-color", {type = "bar-color"})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "health-color", "classcolor", 99)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "health-color", "health-current", 85)
 
-				DBL:SetupLayerObject(dblData, "indicators", layer, "heals", {type = "bar", level = 1, location = "center", texture = "Gradient", invertBarColor = true, color1 = {r=0,g=0,b=0,a=0}})
+				DBL:SetupLayerObject(dblData, "indicators", layer, "heals", {type = "bar", level = 1, location = "center", texture = "Gradient", color1 = {r=0,g=0,b=0,a=1}})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "heals", "heals-incoming", 99)
 
 				DBL:SetupLayerObject(dblData, "indicators", layer, "heals-color", {type = "bar-color"})

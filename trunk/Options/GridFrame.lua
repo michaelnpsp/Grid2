@@ -1,5 +1,5 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
---{{{  Grid2Frame AceOptions table
+local DBL = LibStub:GetLibrary("LibDBLayers-1.0")
 
 Grid2Frame.menuName = L["frame"]
 Grid2Frame.menuOrder = 20
@@ -113,6 +113,32 @@ Grid2Options:AddModule("Grid2", "Grid2Frame", Grid2Frame, {
 		end,
 		values={["VERTICAL"] = L["VERTICAL"], ["HORIZONTAL"] = L["HORIZONTAL"]}
 	},
+	invert = {
+		type = "toggle",
+		order = 12,
+		name = L["Invert Bar Color"],
+		desc = L["Swap foreground/background colors on bars."],
+		tristate = true,
+		get = function ()
+			return Grid2Frame.db.profile.invertBarColor
+		end,
+		set = function (_, v)
+			Grid2Frame.db.profile.invertBarColor = v
+			
+			--Apply changes to the bar dbx
+			-- local indicatorKey = indicator.barKey
+			-- DBL:GetOptionsDbx(Grid2.dblData, "frames", indicatorKey).invertBarColor = v
+
+			local indicator = Grid2.indicators["health"]
+			Grid2Frame:WithAllFrames(function (f)
+				indicator:Layout(f)
+			end)
+			indicator = Grid2.indicators["heals"]
+			Grid2Frame:WithAllFrames(function (f)
+				indicator:Layout(f)
+			end)
+			Grid2Frame:Reset()
+		end,
+	},
 })
 
---}}}
