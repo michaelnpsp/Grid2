@@ -182,7 +182,7 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				
 				DBL:SetupLayerObject(dblData, "statuses", layer, "death", {type = "death", color1 = {r=1,g=1,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "feign-death", {type = "feign-death", color1 = {r=1,g=.5,b=1,a=1}})
-				DBL:SetupLayerObject(dblData, "statuses", layer, "health-current", {type = "health-current", deadAsFullHealth = nil})
+				DBL:SetupLayerObject(dblData, "statuses", layer, "health-current", {type = "health-current", color1 = {r=0,g=1,b=0,a=1}, deadAsFullHealth = nil})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "health-deficit", {type = "health-deficit", threshold = 0.2})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "health-low", {type = "health-low", threshold = 0.4, color1 = {r=1,g=0,b=0,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "heals-incoming", {type = "heals-incoming", includePlayerHeals = true, timeFrame = nil, flags = HealComm.ALL_HEALS, color1 = {r=0,g=1,b=0,a=1}})

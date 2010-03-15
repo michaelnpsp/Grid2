@@ -911,6 +911,7 @@ function Grid2Options:MakeStatusHealthCurrentOptions(status, options, optionPara
 	options = options or {}
 
 	options = Grid2Options:MakeStatusLayerOptions(status, options, optionParams)
+	options = Grid2Options:MakeStatusColorOptions(status, options, optionParams)
 	options = Grid2Options:MakeStatusToggleOptions(status, options, optionParams, "deadAsFullHealth")
 	
 	return options
