@@ -909,8 +909,7 @@ end
 
 local function MakeBarColorIndicatorOptions(indicator)
 	local baseKey = indicator.name
-	local options = {
-	}
+	local options = {}
 	Grid2Options:AddIndicatorStatusOptions(indicator, options)
 	Grid2Options:AddIndicatorElement(indicator, options)
 end
