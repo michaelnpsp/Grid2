@@ -181,10 +181,10 @@ L["threat"] = "위협"
 L["vehicle"] = "탈것"
 L["voice"] = "음성"
 
-L["Beast"] = "야수형"
-L["Demon"] = "악마형"
+L["Beast"] = "야수"
+L["Demon"] = "악마"
 L["Humanoid"] = "인간형"
-L["Elemental"] = "정령형"
+L["Elemental"] = "정령"
 
 L["DEATHKNIGHT"] = "죽음의 기사"
 L["DRUID"] = "드루이드"
