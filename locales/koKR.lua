@@ -7,9 +7,35 @@ L["Charmed"] = "매혹"
 L["Drink"] = "음료"
 L["Food"] = "음식"
 L["Grid2"] = "Grid2"
+L["Beast"] = "야수"
+L["Demon"] = "악마"
+L["Humanoid"] = "인간형"
+L["Elemental"] = "정령"
 --}}}
 
-
+--{{{ GridLayoutLayouts
+L["None"] = "없음"
+L["Solo"] = "솔로잉"
+L["Solo w/Pet"] = "솔로잉, 소환수"
+L["By Group 5"] = "5인 공격대"
+L["By Group 5 w/Pets"] = "5인 공격대, 소환수"
+L["By Group 40"] = "40인 공격대"
+L["By Group 25"] = "25인 공격대"
+L["By Group 25 w/Pets"] = "25인 공격대, 소환수"
+L["By Group 20"] = "20인 공격대"
+L["By Group 15"] = "15인 공격대"
+L["By Group 15 w/Pets"] = "15인 공격대, 소환수"
+L["By Group 10"] = "10인 공격대"
+L["By Group 10 w/Pets"] = "10인 공격대, 소환수"
+L["By Group 4 x 10 Wide"] = "4 x 10인 공격대"
+L["By Class 25"] = "25인 직업별"
+L["By Class 1 x 25 Wide"] = "1 x 25인 직업별"
+L["By Class 2 x 15 Wide"] = "2 x 15인 직업별"
+L["By Role 25"] = "25인 역할별"
+L["By Class"] = "직업별"
+L["By Class w/Pets"] = "직업별, 소환수"
+L["By Group 25 w/tanks"] = "25인 공격대, 탱커"
+--}}}
 
 --{{{ GridCore
 L["Configure"] = "설정"
@@ -55,10 +81,6 @@ L["Set the coloring strategy of pet units."] = "소환수의 유닛 채색 방�
 L["By Owner Class"] = "소환자의 직업에 의해"
 L["By Creature Type"] = "창조물의 타입에 의해"
 L["Using Fallback color"] = "사용자의 색상에 의해"
-L["Beast"] = "야수형"
-L["Demon"] = "악마형"
-L["Humanoid"] = "인간형"
-L["Elemental"] = "정령형"
 L["Colors"] = "색상"
 L["Color options for class and pets."] = "직업과 소환수의 색상 옵션을 설정합니다."
 L["Fallback colors"] = "대체 색상"
@@ -76,32 +98,6 @@ L["Color for %s."] = "%s 색상"
 -- Advanced options
 L["Advanced"] = "고급"
 L["Advanced options."] = "고급 옵션을 설정합니다."
---}}}
-
---{{{ GridLayoutLayouts
--- ToDo: move into options
-L["None"] = "없음"
-L["Solo"] = "솔로잉"
-L["Solo w/Pet"] = "솔로잉, 소환수"
-L["By Group 5"] = "5인 공격대"
-L["By Group 5 w/Pets"] = "5인 공격대, 소환수"
-L["By Group 40"] = "40인 공격대"
-L["By Group 25"] = "25인 공격대"
-L["By Group 25 w/Pets"] = "25인 공격대, 소환수"
-L["By Group 20"] = "20인 공격대"
-L["By Group 15"] = "15인 공격대"
-L["By Group 15 w/Pets"] = "15인 공격대, 소환수"
-L["By Group 10"] = "10인 공격대"
-L["By Group 10 w/Pets"] = "10인 공격대, 소환수"
-L["By Group 4 x 10 Wide"] = "4 x 10인 공격대"
-L["By Class 25"] = "25인 직업별"
-L["By Class 1 x 25 Wide"] = "1 x 25인 직업별"
-L["By Class 2 x 15 Wide"] = "2 x 15인 직업별"
-L["By Role 25"] = "25인 역할별"
-L["By Class"] = "직업별"
-L["By Class w/Pets"] = "직업별, 소환수"
-L["Onyxia"] = "오닉시아"
-L["By Group 25 w/tanks"] = "25인 공격대, 탱커"
 --}}}
 
 --{{{ GridRange
