@@ -502,7 +502,28 @@ function Grid2Options:MakeStatusBlinkThresholdOptions(status, options, optionPar
 	return options
 end
 
+local function MakeClassColorOption(status, options, type, translation)
+	options.colors.args[type] = {
+		type = "color",
+		name = (L["%s Color"]):format(translation),
+		get = function ()
+			local c = status.dbx.colors[type]
+			return c.r, c.g, c.b, c.a
+		end,
+		set = function (_, r, g, b, a)
+			local c = status.dbx.colors[type]
+			c.r, c.g, c.b, c.a = r, g, b, a
+			c = DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name).colors[type]
+			c.r, c.g, c.b, c.a = r, g, b, a
 
+			for unit, guid in Grid2:IterateRosterUnits() do
+				status:UpdateIndicators(unit)
+			end
+		end,
+	}
+end
+
+Grid2Options.RAID_CLASS_COLORS = RAID_CLASS_COLORS
 function Grid2Options:MakeStatusClassColorOptions(status, options, optionParams)
 	options = options or {}
 
@@ -583,35 +604,17 @@ function Grid2Options:MakeStatusClassColorOptions(status, options, optionParams)
 		},
 	}
 	
-	for _, type in ipairs{
-		"Beast", "Demon", "Humanoid", "Elemental",
-		"DEATHKNIGHT", "DRUID", "HUNTER", "MAGE", "PALADIN",
-		"PRIEST", "ROGUE", "SHAMAN", "WARLOCK", "WARRIOR",
-	} do
-		local translation = L[type]
-		options.colors.args[type] = {
-			type = "color",
-			name = (L["%s Color"]):format(translation),
-			get = function ()
-				local c = status.dbx.colors[type]
-				return c.r, c.g, c.b, c.a
-			end,
-			set = function (_, r, g, b, a)
-				local c = status.dbx.colors[type]
-				c.r, c.g, c.b, c.a = r, g, b, a
-				c = DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name).colors[type]
-				c.r, c.g, c.b, c.a = r, g, b, a
+	for _, class in ipairs{"Beast", "Demon", "Humanoid", "Elemental"} do
+		local translation = L[class]
+		MakeClassColorOption(status, options, translation, translation)
+	end
 
-				for unit, guid in Grid2:IterateRosterUnits() do
-					status:UpdateIndicators(unit)
-				end
-			end,
-		}
+	for class, translation in pairs(LOCALIZED_CLASS_NAMES_MALE) do
+		MakeClassColorOption(status, options, class, translation)
 	end
 
 	return options
 end
-
 
 -- For a given indicator fill in and return
 -- statusAvailable - available statuses that are not currently used
