@@ -211,10 +211,6 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 			end
 		elseif (layer == "deathknight") then
 			if (versions.deathknight.Grid2Options < 1) then
-				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-HornOfWinter-mine", {type = "buff", spellName = 57330, mine = true, missing = true, color1 = {r=.1,g=.1,b=1,a=1}})
-
-				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-HornOfWinter-mine", 99)
-
 				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Magic", 40)
 
 				versions.deathknight.Grid2Options = 1
