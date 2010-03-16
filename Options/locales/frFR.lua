@@ -102,8 +102,11 @@ L["Adjust Grid scale."] = "Ajuster l'agrandissement."
 L["Alpha"] = "Alpha"
 L["Border"] = "Bordure"
 L["Adjust border color and alpha."] = "Ajuster la couleur de la bordure et de l'Alpha."
+L["Adjust the border size of the indicator."] = "Ajuster la taille de la bordure de l'indicateur."
 L["Background"] = "Fond"
 L["Adjust background color and alpha."] = "Ajuster la couleur du fond et de l'Alpha."
+L["Reverse Cooldown"] = "Compte à Rebours inversé"
+L["Set cooldown to become darker over time instead of lighter."] = "Paramètre le CD pour devenir plus sombre suivant le temps écoulé au lieu de plus clair."
 
 --role
 -- L["MAIN_ASSIST"] = MAIN_ASSIST
