@@ -209,12 +209,16 @@ local spellDB = {
 	},
 	[BZ["Icecrown Citadel"]] = {
 		--Trash
+		70980,--Web Wrap
 		70450,--Blood Mirror
 		71089,--Bubbling Pus
 		69483,--Dark Reckoning
 		71163,--Devour Humanoid
 		71127,--Mortal Wound
 		70435,71154,--Rend Flesh
+		70671,--Leeching Rot
+		70432,--Blood Sap
+		71257,--Barbaric Strike
 
 		--Lord Marrowgar
 		70823,--Coldflame
@@ -247,11 +251,12 @@ local spellDB = {
 
 		--Rotface
 		69674,71224,73022,73023,--Mutated Infection
+		71215,--Ooze Flood
 		69508,--Slime Spray
 		30494,69774,69776,69778,71208,--Sticky Ooze
 
 		--Professor Putricide
-		70672,72455,72832,72833,--Gaseous Bloat
+		70215,70672,72455,72832,72833,--Gaseous Bloat
 		72549,--Malleable Goo
 		72454,--Mutated Plague
 		70341,--Slime Puddle (Spray)
@@ -264,6 +269,7 @@ local spellDB = {
 		71911,71822,--Shadow Resonance
 
 		--Blood-Queen Lana'thel
+		70838,--Blood Mirror
 		71623,71624,71625,71626,72264,72265,72266,72267,--Delirious Slash
 		70949,--Essence of the Blood Queen (hand icon)
 		70867,70871,70872,70879,70950,71473,71525,71530,71531,71532,71533,--Essence of the Blood Queen (bite icon)
@@ -289,15 +295,18 @@ local spellDB = {
 --		69762,--Unchained Magic
 		71665,--Asphyxiation
 		70126,--Frost Beacon
+		70157,--Ice Tomb
 --		70127,72528,72529,72530,--Mystic Buffet
 
 		--Lich King
 		72133,73788,73789,73790,--Pain and Suffering
 		68981,--Remorseless Winter
 		69242,--Soul Shriek
+		69409,--Soul Reaper
 		70541,73779,73780,73781,--Infest
 		70337,70338,73785,73786,73787,73912,73913,73914,--Necrotic Plague
 		27177,--Defile
+		68980,--Harvest Soul
 	},
 }
 
