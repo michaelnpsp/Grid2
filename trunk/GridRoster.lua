@@ -126,7 +126,12 @@ do
 		roster_units[guid] = unit
 		
 		if (oldGuid and guid ~= oldGuid) then
-			roster_units[oldGuid] = nil
+			local oldUnit = roster_units[oldGuid]
+			if (not UnitExists(oldUnit)) then
+				roster_units[oldGuid] = nil
+			elseif (UnitGUID(oldUnit) ~= oldGuid) then
+				roster_units[oldGuid] = nil
+			end
 		end
 	end
 
@@ -143,7 +148,9 @@ do
 		roster_realms[unit] = realm
 
 		if old_name ~= name or old_realm ~= realm then
+-- print("UNIT_NAME_UPDATE Grid_UnitChanged -->", unit, guid)
 			self:SendMessage("Grid_UnitChanged", unit, guid)
+			self:SendMessage("Grid_UnitUpdate", unit, guid)
 			self:SendMessage("Grid_RosterUpdated")
 		end
 	end
@@ -166,28 +173,41 @@ do
 				roster_realms[unit] = realm
 				updated = true
 			end
-			local old_guid = roster_guids[unit]
-			if guid ~= old_guid then
-				if old_guid then
-					roster_units[old_guid] = nil
+			local oldGuid = roster_guids[unit]
+			if guid ~= oldGuid then
+				roster_guids[unit] = guid
+				if oldGuid then
+					local oldUnit = roster_units[oldGuid]
+					if (not UnitExists(oldUnit)) then
+						roster_units[oldGuid] = nil
+					elseif (UnitGUID(oldUnit) ~= oldGuid) then
+						roster_units[oldGuid] = nil
+					end
 				end
 				roster_units[guid] = unit
 				updated = true
 			end
 			if updated then
+-- print("Pet " .. (exists and "Grid_UnitChanged" or "Grid_UnitJoined"), unit, guid)
 				self:SendMessage(exists and "Grid_UnitChanged" or "Grid_UnitJoined", unit, guid)
 				self:SendMessage("Grid_UnitUpdate", unit, guid)
 				self:SendMessage("Grid_RosterUpdated")
 			end
 		else
-			local old_guid = roster_guids[unit]
-			if old_guid then
+			local oldGuid = roster_guids[unit]
+			if oldGuid then
 				roster_names[unit] = nil
 				roster_realms[unit] = nil
 				roster_guids[unit] = nil
-				roster_units[old_guid] = nil
 
-				self:SendMessage("Grid_UnitLeft", unit, old_guid)
+				local oldUnit = roster_units[oldGuid]
+				if (not UnitExists(oldUnit)) then
+					roster_units[oldGuid] = nil
+				elseif (UnitGUID(oldUnit) ~= oldGuid) then
+					roster_units[oldGuid] = nil
+				end
+	-- print("Pet Grid_UnitLeft -->", unit, oldGuid)
+				self:SendMessage("Grid_UnitLeft", unit, oldGuid)
 				self:SendMessage("Grid_RosterUpdated")
 			end
 		end
@@ -212,18 +232,23 @@ do
 
 		local updated = false
 
+		--This message is used to maintain a cache.
 		for unit, guid in pairs(units_to_remove) do
 			updated = true
 
 			roster_names[unit] = nil
 			roster_realms[unit] = nil
 			roster_guids[unit] = nil
-			roster_units[guid] = nil
+			local oldUnit = roster_units[guid]
+			if (not UnitExists(oldUnit)) then
+				roster_units[guid] = nil
+			end
 -- print("Grid_UnitLeft -->", unit, guid)
 			self:SendMessage("Grid_UnitLeft", unit, guid)
 		end
 		wipe(units_to_remove)
 
+		--This message is used to maintain a cache.
 		for unit, guid in pairs(units_added) do
 			updated = true
 -- print("Grid_UnitJoined -->", unit, guid)
@@ -232,6 +257,7 @@ do
 		end
 		wipe(units_added)
 
+		--This message is used to maintain a cache.
 		for unit, guid in pairs(units_changed) do
 			updated = true
 -- print("Grid_UnitChanged -->", unit, guid)
@@ -240,8 +266,8 @@ do
 		end
 		wipe(units_changed)
 
+		--Grid2 uses this message internally to update indicators.
 		for unit, guid in pairs(units_updated) do
--- print("Grid_UnitUpdate -->", unit, guid)
 			self:SendMessage("Grid_UnitUpdate", unit, guid)
 		end
 		wipe(units_updated)
@@ -253,4 +279,5 @@ do
 end
 --[[
 /dump Grid2:IterateRoster()
+/dump Grid2:IterateRosterUnits()
 --]]
