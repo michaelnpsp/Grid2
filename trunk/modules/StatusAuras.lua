@@ -171,6 +171,10 @@ local function status_GetIcon(self, unit)
 	return self.textures[unit]
 end
 
+local function status_GetIconMissing(self, unit)
+	return self.missingTexture
+end
+
 local function status_GetCount(self, unit)
 	return self.counts[unit]
 end
@@ -285,7 +289,7 @@ function Grid2.CreateAuraCommon(baseKey, dbx)
 	status.durations = {}
 
 	status.Reset = status_Reset
-	status.GetIcon = status_GetIcon
+	status.GetIcon = dbx.missing and status_GetIconMissing or status_GetIcon
 	status.GetCount = status_GetCount
 	status.GetDuration = status_GetDuration
 	status.GetExpirationTime = status_GetExpirationTime
@@ -314,12 +318,14 @@ function Grid2.CreateBuff(baseKey, dbx, statusTypesOverride)
 	if (dbx.missing) then
 		-- Initialize the texture for "missing" status
 		-- as the texture is shown when the aura is not set
-		local _, _, texture = GetSpellInfo(status.auraName)
-		if texture then
-			for unit, guid in Grid2:IterateRosterUnits() do
-				status.textures[unit] = texture
-			end
-		end
+		local _, _, texture = GetSpellInfo(dbx.spellName)
+		status.missingTexture = texture
+--The following does jack at startup as IterateRosterUnits is not initialized yet
+		-- if texture then
+			-- for unit, guid in Grid2:IterateRosterUnits() do
+				-- status.textures[unit] = texture
+			-- end
+		-- end
 	end
 
 	status.UpdateState = dbx.mine and status_UpdateStateMine or status_UpdateState
