@@ -7,74 +7,10 @@ L["Charmed"] = "Зачарованный"
 L["Drink"] = "Питье"
 L["Food"] = "Пища"
 L["Grid2"] = "Grid2"
---}}}
-
---{{{ GridCore
-L["Configure"] = "Настройки"
-L["Configure Grid"] = "Настройка Grid"
---}}}
-
---{{{ GridFrame
-L["Frame"] = "Области"
-L["Options for GridFrame."] = "Опции для областей Grid"
-
-L["Indicators"] = "Индикатор"
-L["Health Bar"] = "Полоса Здоровья"
-L["Health Bar Color"] = "Цвет полосы здоровья"
-L["Center Text"] = "Текст в центре"
-L["Center Text 2"] = "Текст в центре 2"
-L["Center Icon"] = "Иконка в центре"
-L["Top Left Corner"] = "Верхний левый угол"
-L["Top Right Corner"] = "Верхний правый угол"
-L["Bottom Left Corner"] = "Нижний левый угол"
-L["Bottom Right Corner"] = "Нижний правый угол"
-L["Frame Alpha"] = "Прозрачная область"
-
-L["Options for %s indicator."] = "Опции для %s индикаторов"
-L["Statuses"] = "Состояния"
-L["Toggle status display."] = "Показать состояние на экране"
-
--- Advanced options
-L["Enable %s indicator"] = "Включить %s индикатор"
-L["Toggle the %s indicator."] = "Переключить %s индикатор"
-L["Orientation of Text"] = "Ориентация текста"
-L["Set frame text orientation."] = "Настройка области ориентации текста"
---}}}
-
---{{{ GridLayout
-L["Layout"] = "Расположение"
-L["Options for GridLayout."] = "Опции для GridLayout"
-
-
--- Display options
-L["Pet color"] = "Цвет питомцев"
-L["Set the color of pet units."] = "Установить цвет питомцев."
-L["Pet coloring"] = "Окраска  питомцев"
-L["Set the coloring strategy of pet units"] = "Установить стратегию окраски питомцев"
-L["By Owner Class."] = "По классу."
-L["By Creature Type"] = "По типу существа"
-L["Using Fallback color"] = "Использовать истинный цвет"
 L["Beast"] = "Животное"
 L["Demon"] = "Демон"
 L["Humanoid"] = "Гуманоид"
 L["Elemental"] = "Элементаль"
-L["Colors"] = "Цвета"
-L["Color options for class and pets."] = "Опции окраски для классов и питомцев"
-L["Fallback colors"] = "Цвета неизвестных"
-L["Color of unknown units or pets."] = "Цвет неизвестных единиц или питомцев"
-L["Unknown Unit"] = "Неизвестная единица"
-L["The color of unknown units."] = "Цвет неизвестной единицы"
-L["Unknown Pet"] = "Неизвестные питомцы"
-L["The color of unknown pets."] = "Цвет неизветстных питомцев"
-L["Class colors"] = "Цвет классов"
-L["Color of player unit classes."] = "Цвет классов персонажей"
-L["Creature type colors"] = "Цвет типов созданий"
-L["Color of pet unit creature types."] = "Цвет типов питомцев созданий"
-L["Color for %s."] = "Цвет для %s."
-
--- Advanced options
-L["Advanced"] = "Дополниельные"
-L["Advanced options."] = "Дополнительные опции"
 --}}}
 
 --{{{ GridLayoutLayouts
@@ -98,7 +34,6 @@ L["By Class 2 x 15 Wide"] = "По классам 2 x 15-широкий"
 L["By Role 25"] = "По роле 25"
 L["By Class"] = "По классам"
 L["By Class w/Pets"] = "По классам с питомцами"
-L["Onyxia"] = "Для Ониксии"
 L["By Group 25 w/tanks"] = "Группой из 25 чел. с танками"
 --}}}
 
@@ -107,25 +42,11 @@ L["By Group 25 w/tanks"] = "Группой из 25 чел. с танками"
 L["(%d+) yd range"] = "Радиус действия: (%d+) м"
 --}}}
 
+--[[
 --{{{ GridStatus
-L["Status"] = "Статус"
-L["Statuses"] = "Статусы"
-
 -- module prototype
-L["Status: %s"] = "Статус: %s"
-L["Color"] = "Цвет"
-L["Color for %s"] = "Цвет для %s"
-L["Priority"] = "Приоритет"
-L["Priority for %s"] = "Приоритет для %s"
 L["Range filter"] = "Фильтр радиуса"
 L["Range filter for %s"] = "Фильтр радиуса для %s"
-L["Enable"] = "Включено"
-L["Enable %s"] = "Включено %s"
---}}}
-
---{{{ GridStatusAggro
-L["Aggro"] = "Угроза"
-L["Aggro alert"] = "Сигнал угрозы"
 --}}}
 
 --{{{ GridStatusAuras
@@ -135,23 +56,6 @@ L["Poison"] = "Яды"
 L["Disease"] = "Болезнь"
 L["Magic"] = "Магия"
 L["Curse"] = "Проклятье"
-L["Ghost"] = "Призрак"
-L["Add new Buff"] = "Добавить новый бафф"
-L["Adds a new buff to the status module"] = "Добавляет новый бафф в модуль"
-L["<buff name>"] = "<имя баффа>"
-L["Add new Debuff"] = "Добавить новый дебафф"
-L["Adds a new debuff to the status module"] = "Добавляет новый дебафф в модуль статуса"
-L["<debuff name>"] = "<имя дебаффа>"
-L["Delete (De)buff"] = "Удалить бафф/дебафф"
-L["Deletes an existing debuff from the status module"] = "Удаляет выбранный дебафф в модуле статуса модуль"
-L["Remove %s from the menu"] = "Удалите %s из меню"
-L["Debuff: %s"] = "Дебафф: %s"
-L["Buff: %s"] = "Бафф: %s"
-L["Class Filter"] = "Фильтр классов"
-L["Show status for the selected classes."] = "Показывает статус для выбранных классов."
-L["Show on %s."] = "Показать на %s."
-L["Show if missing"] = "Показывать если пропущен"
-L["Display status only if the buff is not active."] = "Показывать статус только если баффы не активны"
 L["Filter Abolished units"] = "Фильтр персонажей находящихся под исцелением"
 L["Skip units that have an active Abolish buff."] = "Пропускает персонажей на которых есть активное Устранение баффа."
 --}}}
@@ -168,16 +72,7 @@ L["Mana threshold"] = "Порог маны"
 L["Set the percentage for the low mana warning."] = "Установить процент для предупреждения об окончании маны."
 L["Low Mana warning"] = "Предупреждение о заканчивающейся мане"
 --}}}
-
---{{{ GridStatusHeals
-L["Heals"] = "Лечение"
-L["Incoming heals"] = "Поступающее лечение"
-L["Ignore Self"] = "Игнорировать себя"
-L["Ignore heals cast by you."] = "Игнорировать лечение самого себя"
-L["(.+) begins to cast (.+)."] = "(.+) применяет (.+)?" --test
-L["(.+) gains (.+) Mana from (.+)'s Life Tap."] = "(.+) получает (.+) маны от (.+) Жизнеотвода" --test
-L["^Corpse of (.+)$"] = "Труп (.+)"
---}}}
+--]]
 
 --{{{ GridStatusHealth
 L["Low HP"] = "Мало ЗД"
@@ -185,22 +80,6 @@ L["DEAD"] = "ТРУП"
 L["GHOST"] = "ПРИЗРАК"
 L["FD"] = "ПМ"
 L["Offline"] = "Вышел из сети"
-L["Unit health"] = "Здоровье единицы"
-L["Health deficit"] = "Дефицит здоровья"
-L["Low HP warning"] = "Предупреждение Мало ЗД"
-L["Feign Death warning"] = "Предупреждение о Симуляции смерти"
-L["Death warning"] = "Предупреждение о смерти"
-L["Offline warning"] = "Предупреждение об оффлайне"
-L["Health"] = "Здоровье"
-L["Show dead as full health"] = "Показывать мертвых как-будто с полным здоровьем"
-L["Treat dead units as being full health."] = "Расматривать данные единицы как имеющие полное здоровье."
-L["Use class color"] = "Использовать цвет классов"
-L["Color health based on class."] = "Цвет полосы здоровья в зависимости от класса"
-L["Health threshold"] = "Порог здоровья"
-L["Only show deficit above % damage."] = "Показывать дефицит только после % урона."
-L["Color deficit based on class."] = "Цвет дефицита в зависимости от класса"
-L["Low HP threshold"] = "Порог \"Мало ЗД\""
-L["Set the HP % for the low HP warning."] = "Установить % для предупреждения о том что у игрока мало здоровья."
 --}}}
 
 --{{{ GridStatusPvp
@@ -209,7 +88,6 @@ L["FFA"] = "FFA"
 --}}}
 
 --{{{ GridStatusRange
-L["Out of Range"] = "Из Диапозона"
 L["OOR"] = "OOR"
 --}}}
 
