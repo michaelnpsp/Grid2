@@ -155,6 +155,7 @@ Grid2Layout:AddLayout(L["By Group 10 w/Pets"], {
 Grid2Layout:AddLayout(L["By Group 15"], {
 	meta = {
 		raid15 = true,
+		raid10 = true,
 		pvp = true,
 	},
 	defaults = {
@@ -176,6 +177,7 @@ Grid2Layout:AddLayout(L["By Group 15"], {
 Grid2Layout:AddLayout(L["By Group 15 w/Pets"], {
 	meta = {
 		raid15 = true,
+		raid10 = true,
 		pvp = true,
 	},
 	defaults = {
@@ -207,6 +209,7 @@ Grid2Layout:AddLayout(L["By Group 25"], {
 		raid25 = true,
 		raid15 = true,
 		raid10 = true,
+		pvp = true,
 	},
 	defaults = {
 		groupingOrder = DEFAULT_GROUP_ORDER,
@@ -235,6 +238,7 @@ Grid2Layout:AddLayout(L["By Group 25 w/Pets"], {
 		raid25 = true,
 		raid15 = true,
 		raid10 = true,
+		pvp = true,
 	},
 	defaults = {
 		groupingOrder = DEFAULT_GROUP_ORDER,
@@ -574,6 +578,7 @@ Grid2Layout:AddLayout(L["By Group 25 w/tanks"], {
 		raid25 = true,
 		raid15 = true,
 		raid10 = true,
+		pvp = true,
 	},
 	defaults = {
 		showParty = true,
