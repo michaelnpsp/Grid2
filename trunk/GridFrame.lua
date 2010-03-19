@@ -266,7 +266,9 @@ function Grid2Frame:UNIT_ENTERED_VEHICLE(_, unit)
 end
 
 function Grid2Frame:UNIT_EXITED_VEHICLE(_, unit)
-	for frame in next, Grid2:GetUnitFrames(Grid2:GetPetUnitidByUnitid(unit)) do
+	local pet = Grid2:GetPetUnitidByUnitid(unit) or unit
+assert(pet, "Grid2Frame:UNIT_EXITED_VEHICLE nil pet for unit: " .. tostring(unit))
+	for frame in next, Grid2:GetUnitFrames(pet) do
 		local old, new = frame.unit, SecureButton_GetModifiedUnit(frame)
 		if old ~= new then
 			Grid2:SetFrameUnit(frame, new)
