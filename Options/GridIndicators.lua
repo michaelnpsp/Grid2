@@ -1021,7 +1021,7 @@ local function AddIndicatorsGroup(reset)
 		name = L["indicator"] or type,
 		desc = L["Options for %s."]:format("indicator"),
 		childGroups = "tab",
-		order = 50,
+		order = 9,
 		args = {
 			newIndicator = {
 				type = "group",
