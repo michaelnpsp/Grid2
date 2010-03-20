@@ -327,19 +327,22 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-InnerFire", {type = "buff", spellName = 588, missing = true, color1 = {r=1,g=1,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-PrayerOfMending-mine", {type = "buff", spellName = 33076, mine = true,
 						colorCount = 5, color1 = {r=1,g=.2,b=.2,a=1}, color2 = {r=1,g=1,b=.4,a=.4}, color3 = {r=1,g=.6,b=.6,a=1}, color4 = {r=1,g=.8,b=.8,a=1}, color5 = {r=1,g=1,b=1,a=1}})
-				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-PowerWordShield", {type = "buff", spellName = 17, color1 = {r=1,g=1,b=1,a=1}})
+				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-PowerWordShield", {type = "buff", spellName = 17, color1 = {r=0,g=1,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-Renew-mine", {type = "buff", spellName = 139, mine = true, color1 = {r=1,g=1,b=1,a=1}})
 
-				DBL:SetupLayerObject(dblData, "statuses", layer, "debuff-WeakenedSoul", {type = "debuff", spellName = 6788, color1 = {r=1,g=0,b=0,a=1}})
+				DBL:SetupLayerObject(dblData, "statuses", layer, "debuff-WeakenedSoul", {type = "debuff", spellName = 6788, color1 = {r=0,g=.2,b=.9,a=1}})
 
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Magic", 40)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Disease", 10)
+				DBL:SetupLayerObject(dblData, "indicators", layer, "center-left", {type = "icon", level = 9, location = "center-left", size = 16, fontSize = 8,})
+				DBL:SetupMapObject(dblData, "statusMap", layer, "center-left", "debuff-Disease", 10)
+
+				DBL:SetupLayerObject(dblData, "indicators", layer, "center-right", {type = "icon", level = 9, location = "center-right", size = 16, fontSize = 8,})
+				DBL:SetupMapObject(dblData, "statusMap", layer, "center-right", "debuff-Magic", 40)
 
 				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-left", {type = "square", level = 9, location = "corner-top-left", size = 5,})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-left", "buff-Renew-mine", 99)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right", "buff-PowerWordShield", 99)
 
-				DBL:SetupLayerObject(dblData, "indicators", layer, "side-right", {type = "square", level = 9, location = "side-right", size = 5,})
+				DBL:SetupLayerObject(dblData, "indicators", layer, "side-right", {type = "icon", level = 9, location = "side-right", size = 16, fontSize = 8,})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-right", "buff-PrayerOfMending-mine", 99)
 
 				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-right", {type = "square", level = 9, location = "corner-top-right", size = 5,})
@@ -362,6 +365,7 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-Riptide-mine", {type = "buff", spellName = 61295, mine = true, color1 = {r=.8,g=.6,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-Earthliving", {type = "buff", spellName = 51945, color1 = {r=.8,g=1,b=.5,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-EarthShield", {type = "buff", spellName = 974, color1 = {r=.8,g=.8,b=.2,a=1}})
+				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-AncestralFortitude", {type = "buff", spellName = 16177, color1 = {r=.2,g=.8,b=.6,a=1}})
 
 				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-left", {type = "square", level = 9, location = "corner-top-left", size = 5,})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-left", "buff-Riptide-mine", 99)
