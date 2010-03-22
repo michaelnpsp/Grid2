@@ -1,7 +1,7 @@
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 local function Square_Create(self, parent)
-	local Square = CreateFrame("Frame", nil, parent)
+	local Square = parent[self.name] or CreateFrame("Frame", nil, parent)
 	local size = self.dbx.size
 	Square:SetWidth(size)
 	Square:SetHeight(size)
@@ -88,11 +88,8 @@ local function Square_Layout(self, parent)
 end
 
 local function Square_Disable(self, parent)
-	local Square = parent[self.name]
-	Square:SetBackdrop(nil)
-	Square:SetBackdropBorderColor(0,0,0,0)
-	Square:SetBackdropColor(0,0,0,0)
-	Square:Hide()
+	local f = parent[self.name]
+	f:Hide()
 
 	self.GetBlinkFrame = nil
 	self.Layout = nil
@@ -129,7 +126,8 @@ end
 
 
 local function Create(indicatorKey, dbx)
-	local indicator = Grid2.indicatorPrototype:new(indicatorKey)
+	local existingIndicator = Grid2.indicators[indicatorKey]
+	local indicator = existingIndicator or Grid2.indicatorPrototype:new(indicatorKey)
 
 	Square_UpdateDB(indicator, dbx)
 	
