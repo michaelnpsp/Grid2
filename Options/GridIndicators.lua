@@ -11,25 +11,13 @@ function Grid2Options.GetNewIndicatorTypes()
 	return newIndicatorTypes
 end
 
-function Grid2Options:UpdateIndicator(indicator, morph)
+function Grid2Options:UpdateIndicator(indicator)
 	local baseKey = indicator.name
 	local dblData = Grid2.dblData
 
 	local dbx = DBL:GetRuntimeDbx(dblData, "indicators", baseKey)
 	if (indicator.UpdateDB) then
-		if (morph) then
--- print("Disable", baseKey, dbx.type)
-			Grid2Frame:WithAllFrames(function (f) indicator:Disable(f) end)
-			local setupFunc = Grid2.setupFunc[dbx.type]
-			if (setupFunc) then
--- print("UpdateIndicator:", baseKey, dbx.type, dbx.location, self.setupFunc[dbx.type])
-				setupFunc(baseKey, dbx)
-			else
-				print("      *UpdateIndicator Could not find setupFunc for indicator", baseKey)
-			end
-		else
-			indicator:UpdateDB(dbx)
-		end
+		indicator:UpdateDB(dbx)
 	end
 end
 --[[
@@ -614,26 +602,26 @@ function Grid2Options.SetIndicatorType(info, value)
 	dbx.type = value
 	for k, v in pairs(Grid2Options.typeDefaultValues[value]) do
 		if (not dbx[k]) then
+			indicator.dbx[k] = v
 			dbx[k] = v
 		end
 	end
 	
 	if (morph) then
 		Grid2Frame:WithAllFrames(function (f) indicator:Disable(f) end)
-		Grid2:UnregisterIndicator(indicator)
+--		Grid2:UnregisterIndicator(indicator)
 		local setupFunc = Grid2.setupFunc[dbx.type]
-print("Disable", baseKey, dbx.type, Grid2.setupFunc[dbx.type], setupFunc)
+-- print("SetIndicatorType Disable", baseKey, dbx.type, Grid2.setupFunc[dbx.type], setupFunc)
 		if (setupFunc) then
-print("UpdateIndicator:", baseKey, dbx.type, dbx.location)
 			setupFunc(baseKey, dbx)
-		else
-			print("      *UpdateIndicator Could not find setupFunc for indicator", baseKey)
+			Grid2Frame:WithAllFrames(function (f)
+				indicator:Create(f)
+				indicator:Layout(f)
+			end)
 		end
-		indicator:UpdateDB(dbx)
 	end
-Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
-Grid2Frame:UpdateAllFrames()
-Grid2Frame:Reset()
+	Grid2Frame:UpdateAllFrames()
+-- Grid2Frame:Reset()
 end
 
 function Grid2Options:MakeIndicatorTypeOptions(indicator, options, optionParams)
