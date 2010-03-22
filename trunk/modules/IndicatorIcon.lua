@@ -1,7 +1,7 @@
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 local function Icon_Create(self, parent)
-	local f = CreateFrame("Frame", nil, parent)
+	local f = parent[self.name] or CreateFrame("Frame", nil, parent)
 	local borderSize = self.dbx.borderSize
 	if (borderSize) then
 		f:SetBackdrop({
@@ -15,25 +15,25 @@ local function Icon_Create(self, parent)
 		})
 	end
 
-	local Icon = f:CreateTexture(nil, "ARTWORK")
+	local Icon = f.Icon or f:CreateTexture(nil, "ARTWORK")
 	f.Icon = Icon
 	Icon:SetTexCoord(0.05, 0.95, 0.05, 0.95)
 	Icon:SetAllPoints()
 
-	local Cooldown = CreateFrame("Cooldown", nil, f, "CooldownFrameTemplate")
+	local Cooldown = f.Cooldown or CreateFrame("Cooldown", nil, f, "CooldownFrameTemplate")
 	f.Cooldown = Cooldown
 	Cooldown:SetAllPoints(f)
 	Cooldown:SetReverse(self.dbx.reverseCooldown)
 	Cooldown:Hide()
 
-	local Text = Cooldown:CreateFontString(nil, "OVERLAY")
-	f.Text = Text
-	Text:SetAllPoints()
-	Text:SetFontObject(GameFontHighlightSmall)
-	Text:SetFont(Text:GetFont(), self.dbx.fontSize)
-	Text:SetJustifyH("CENTER")
-	Text:SetJustifyV("CENTER")
-	Text:Hide()
+	local CooldownText = f.CooldownText or Cooldown:CreateFontString(nil, "OVERLAY")
+	f.CooldownText = CooldownText
+	CooldownText:SetAllPoints()
+	CooldownText:SetFontObject(GameFontHighlightSmall)
+	CooldownText:SetFont(CooldownText:GetFont(), self.dbx.fontSize)
+	CooldownText:SetJustifyH("CENTER")
+	CooldownText:SetJustifyV("CENTER")
+	CooldownText:Hide()
 
 	parent[self.name] = f
 end
@@ -78,10 +78,10 @@ local function Icon_OnUpdate(self, parent, unit, status)
 	if status.GetCount then
 		local count = status:GetCount(unit)
 		if not count or count <= 1 then count = "" end
-		Icon.Text:SetText(count)
-		Icon.Text:Show()
+		Icon.CooldownText:SetText(count)
+		Icon.CooldownText:Show()
 	else
-		Icon.Text:Hide()
+		Icon.CooldownText:Hide()
 	end
 	if (status.GetExpirationTime and status.GetDuration) then
 		local expirationTime, duration = status:GetExpirationTime(unit), status:GetDuration(unit)
@@ -142,8 +142,14 @@ local function Icon_Layout(self, parent)
 end
 
 local function Icon_Disable(self, parent)
-	local Icon = parent[self.name]
+	local f = parent[self.name]
+	f:Hide()
+	local Icon = f.Icon
 	Icon:Hide()
+	local Cooldown = f.Cooldown
+	Cooldown:Hide()
+	local CooldownText = f.CooldownText
+	CooldownText:Hide()
 
 	self.GetBlinkFrame = nil
 	self.Layout = nil
@@ -175,11 +181,14 @@ end
 
 
 local function CreateIcon(indicatorKey, dbx)
-	local indicator = Grid2.indicatorPrototype:new(indicatorKey)
-
+	local existingIndicator = Grid2.indicators[indicatorKey]
+	local indicator = existingIndicator or Grid2.indicatorPrototype:new(indicatorKey)
+-- print("CreateIcon", existingIndicator, indicator)
 	Icon_UpdateDB(indicator, dbx)
 
-	Grid2:RegisterIndicator(indicator, { "icon" })
+	-- if (not existingIndicator) then
+		Grid2:RegisterIndicator(indicator, { "icon" })
+	-- end
 	return indicator
 end
 

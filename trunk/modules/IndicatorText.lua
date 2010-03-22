@@ -6,14 +6,15 @@ local function Text_Create(self, parent)
 	local media = LibStub("LibSharedMedia-3.0", true)
 	local font = media and media:Fetch("font", self.dbx.font or Grid2Frame.db.profile.font) or STANDARD_TEXT_FONT
 
-	local f = CreateFrame("Frame", nil, parent)
+	local f = parent[self.name] or CreateFrame("Frame", nil, parent)
 	f:SetAllPoints()
-	local t = f:CreateFontString(nil, "OVERLAY")
-	t:SetFontObject(GameFontHighlightSmall)
-	t:SetFont(font, self.dbx.fontSize)
-	t:SetJustifyH("CENTER")
-	t:SetJustifyV("CENTER")
-	parent[self.name] = t
+	local Text = f.Text or f:CreateFontString(nil, "OVERLAY")
+	f.Text = Text
+	Text:SetFontObject(GameFontHighlightSmall)
+	Text:SetFont(font, self.dbx.fontSize)
+	Text:SetJustifyH("CENTER")
+	Text:SetJustifyV("CENTER")
+	parent[self.name] = f
 end
 
 local function Text_GetBlinkFrame(self, parent)
@@ -43,7 +44,7 @@ local justifyV = {
 	BOTTOMRIGHT = "BOTTOM",
 }
 local function Text_Layout(self, parent)
-	local Text = parent[self.name]
+	local Text = parent[self.name].Text
 	Text:ClearAllPoints()
 	Text:GetParent():SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
 	Text:SetPoint(self.anchor, parent, self.anchorRel, self.offsetx, self.offsety)
@@ -81,7 +82,7 @@ local function f(Text)
 end
 
 local function Text_OnUpdate(self, parent, unit, status)
-	local Text = parent[self.name]
+	local Text = parent[self.name].Text
 	local duration = self.dbx.duration
 	local stack = self.dbx.stack
 
@@ -167,7 +168,7 @@ local TextColor_Layout = function (self)
 end
 
 local function TextColor_OnUpdate(self, parent, unit, status)
-	local Text = parent[self.textname]
+	local Text = parent[self.textname].Text
 	if (status) then
 		Text:SetTextColor(status:GetColor(unit))
 	else
@@ -176,7 +177,9 @@ local function TextColor_OnUpdate(self, parent, unit, status)
 end
 
 local function Text_Disable(self, parent)
-	local Text = parent[self.name]
+	local f = parent[self.name]
+	f:Hide()
+	local Text = f.Text
 	Text:Hide()
 
 	self.GetBlinkFrame = nil
@@ -214,9 +217,10 @@ local function TextColor_UpdateDB(self, dbx)
 end
 
 local function Create(indicatorKey, dbx)
-	local Text = Grid2.indicatorPrototype:new(indicatorKey)
-	Text_UpdateDB(Text, dbx)
-	Grid2:RegisterIndicator(Text, { "text", "duration" })
+	local existingIndicator = Grid2.indicators[indicatorKey]
+	local indicator = existingIndicator or Grid2.indicatorPrototype:new(indicatorKey)
+	Text_UpdateDB(indicator, dbx)
+	Grid2:RegisterIndicator(indicator, { "text", "duration" })
 
 	local colorKey = indicatorKey .. "-color"
 	local TextColor = Grid2.indicatorPrototype:new(colorKey)
@@ -224,9 +228,9 @@ local function Create(indicatorKey, dbx)
 	TextColor.textname = indicatorKey
 	Grid2:RegisterIndicator(TextColor, { "color" })
 
-	Text.sideKick = TextColor
+	indicator.sideKick = TextColor
 
-	return Text, TextColor
+	return indicator, TextColor
 end
 
 Grid2.setupFunc["text"] = Create
