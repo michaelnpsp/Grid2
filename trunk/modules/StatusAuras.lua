@@ -317,15 +317,9 @@ function Grid2.CreateBuff(baseKey, dbx, statusTypesOverride)
 
 	if (dbx.missing) then
 		-- Initialize the texture for "missing" status
-		-- as the texture is shown when the aura is not set
+		-- Note that this means missing statuses only ever display this one texture
 		local _, _, texture = GetSpellInfo(dbx.spellName)
 		status.missingTexture = texture
---The following does jack at startup as IterateRosterUnits is not initialized yet
-		-- if texture then
-			-- for unit, guid in Grid2:IterateRosterUnits() do
-				-- status.textures[unit] = texture
-			-- end
-		-- end
 	end
 
 	status.UpdateState = dbx.mine and status_UpdateStateMine or status_UpdateState
