@@ -69,7 +69,7 @@ function HealthCurrent:GetPercent(unit)
 	return UnitHealth(unit) / UnitHealthMax(unit)
 end
 
-function HealthCurrent:GetText(unit)
+function HealthCurrent:GetTextDefault(unit)
 	return Grid2:GetShortNumber(UnitHealth(unit))
 end
 
@@ -80,7 +80,8 @@ end
 
 local function CreateHealthCurrent(baseKey, dbx)
 	Grid2:RegisterStatus(HealthCurrent, {"percent", "text", "color"}, baseKey, dbx)
-
+	Grid2:MakeTextHandler(HealthCurrent)
+	
 	return HealthCurrent
 end
 

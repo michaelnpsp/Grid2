@@ -161,10 +161,7 @@ local function Text_SetTextFont(self, parent, font, size)
 end
 
 
-local TextColor_Create = function (self)
-end
-
-local TextColor_Layout = function (self)
+local TextColor_Nothing = function (self)
 end
 
 local function TextColor_OnUpdate(self, parent, unit, status)
@@ -186,6 +183,10 @@ local function Text_Disable(self, parent)
 	self.Layout = nil
 	self.OnUpdate = nil
 	self.SetTextFont = nil
+	
+	local TextColor = self.sideKick
+	self.OnUpdate = TextColor_Nothing
+	--ToDo: move statuses to the base object for morphing?
 end
 
 local function Text_UpdateDB(self, dbx)
@@ -209,8 +210,8 @@ local function Text_UpdateDB(self, dbx)
 end
 
 local function TextColor_UpdateDB(self, dbx)
-	self.Create = TextColor_Create
-	self.Layout = TextColor_Layout
+	self.Create = TextColor_Nothing
+	self.Layout = TextColor_Nothing
 	self.OnUpdate = TextColor_OnUpdate
 
 	self.dbx = dbx
@@ -223,7 +224,8 @@ local function Create(indicatorKey, dbx)
 	Grid2:RegisterIndicator(indicator, { "text", "duration" })
 
 	local colorKey = indicatorKey .. "-color"
-	local TextColor = Grid2.indicatorPrototype:new(colorKey)
+	existingIndicator = Grid2.indicators[colorKey]
+	local TextColor = existingIndicator or Grid2.indicatorPrototype:new(colorKey)
 	TextColor_UpdateDB(TextColor, dbx)
 	TextColor.textname = indicatorKey
 	Grid2:RegisterIndicator(TextColor, { "color" })
