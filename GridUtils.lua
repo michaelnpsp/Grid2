@@ -1,4 +1,4 @@
-function Grid2:GetShortNumber(v, setPlusSign)
+function Grid2.GetShortNumber(v, setPlusSign)
 	local sign
 	if v < 0 then
 		sign = "-"
