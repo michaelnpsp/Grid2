@@ -1015,11 +1015,8 @@ end
 function Grid2Options:MakeStatusNoOptions(status, options, optionParams)
 end
 
-function Grid2Options:MakeStatusOptions(dblData, reset)
-	AddStatusesGroup(reset)
 
-	if(dblData==nil) then return end
-
+function Grid2Options:MakeStatusHandlers(dblData, reset)
 	self:AddOptionHandler("charmed", Grid2Options.MakeStatusStandardOptions)
 	self:AddOptionHandler("classcolor", Grid2Options.MakeStatusClassColorOptions)
 
@@ -1077,6 +1074,14 @@ function Grid2Options:MakeStatusOptions(dblData, reset)
 
 	Grid2Options:AddElementSubTypeGroup("status", "buff", MakeStatusBuffCreateOptions(), reset)
 	Grid2Options:AddElementSubTypeGroup("status", "debuff", MakeStatusDebuffCreateOptions(), reset)
+end
+
+function Grid2Options:MakeStatusOptions(dblData, reset)
+	AddStatusesGroup(reset)
+
+	if(dblData==nil) then return end
+	
+	self:MakeStatusHandlers(dblData, reset)
 
 --print("Grid2Options:MakeStatusOptions")
 	local setup = DBL:GetRuntimeSetup(dblData, "statuses")
