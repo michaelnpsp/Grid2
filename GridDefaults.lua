@@ -127,6 +127,12 @@ function Grid2:MakeDebuffColorHandler(status)
 	return handler
 end
 
+function Grid2:MakeTextHandler(status)
+	status.GetText = status.GetTextDefault
+	assert(status.GetText, "nil GetTextDefault")
+	return status.GetText
+end
+
 
 function Grid2:RegisterIndicatorStatuses(setup)
 	for indicatorKey, statusPriorities in pairs(setup.status) do
