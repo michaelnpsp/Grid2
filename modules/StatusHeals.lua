@@ -85,7 +85,7 @@ function Heals:GetColor(unit)
 end
 
 function Heals:GetText(unit)
-	return Grid2:GetShortNumber(get_effective_heal_amount(unit), true)
+	return Grid2.GetShortNumber(get_effective_heal_amount(unit), true)
 end
 
 function Heals:GetPercent(unit)
