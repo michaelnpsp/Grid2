@@ -24,6 +24,10 @@ function Grid2Options:AddOptionHandler(typeKey, funcMakeOptions, optionParams)
 	Grid2Options.optionParams[typeKey] = optionParams
 end
 
+function Grid2Options:GetOptionHandler(typeKey)
+	return Grid2Options.typeMakeOptions[typeKey], Grid2Options.optionParams[typeKey]
+end
+
 function Grid2Options:AddModule(parent, name, module, extraOptions)
 	extraOptions = extraOptions or module.extraOptions
 	module.extraOptions = nil
