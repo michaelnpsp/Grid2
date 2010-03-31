@@ -58,7 +58,7 @@ function Mana:GetPercent(unit)
 end
 
 function Mana:GetText(unit)
-	return Grid2:GetShortNumber(UnitMana(unit))
+	return Grid2.GetShortNumber(UnitMana(unit))
 end
 
 local function Create(baseKey, dbx)

@@ -70,7 +70,7 @@ function HealthCurrent:GetPercent(unit)
 end
 
 function HealthCurrent:GetTextDefault(unit)
-	return Grid2:GetShortNumber(UnitHealth(unit))
+	return Grid2.GetShortNumber(UnitHealth(unit))
 end
 
 function HealthCurrent:GetColor(unit)
@@ -213,7 +213,7 @@ function HealthDeficit:IsActive(unit)
 end
 
 function HealthDeficit:GetText(unit)
-	return Grid2:GetShortNumber(UnitHealth(unit) - UnitHealthMax(unit))
+	return Grid2.GetShortNumber(UnitHealth(unit) - UnitHealthMax(unit))
 end
 
 local function CreateHealthDeficit(baseKey, dbx)
