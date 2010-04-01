@@ -157,7 +157,7 @@ local function Text_OnUpdate(self, parent, unit, status)
 end
 
 local function Text_SetTextFont(self, parent, font, size)
-	parent[self.name]:SetFont(font, size)
+	parent[self.name].Text:SetFont(font, size)
 end
 
 
