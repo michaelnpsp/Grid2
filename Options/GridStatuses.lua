@@ -1091,7 +1091,7 @@ function Grid2Options:MakeStatusOptions(dblData, reset)
 		local status = Grid2.statuses[baseKey]
 		local dbx = objects[layer][baseKey]
 --print("    Grid2Options:MakeStatusOptions", baseKey, layer, "type:", dbx.type)
-		if (dbx) then
+		if (dbx and status) then
 			local funcMakeOptions = Grid2Options.typeMakeOptions[dbx.type]
 			if (funcMakeOptions) then
 				local optionParams = Grid2Options.optionParams[dbx.type]
@@ -1105,7 +1105,7 @@ function Grid2Options:MakeStatusOptions(dblData, reset)
 print("    ***No Options function", baseKey, layer, "type:", dbx.type)
 			end
 		else
-print("    ***No dbx", baseKey, layer)
+print("    ***No dbx / status:", baseKey, layer, "dbx:", dbx, "status:", status)
 		end
 	end
 end
