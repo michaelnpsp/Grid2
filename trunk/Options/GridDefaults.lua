@@ -259,6 +259,11 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 
 				versions.druid.Grid2Options = 1
 			end
+		-- elseif (layer == "tree") then
+			-- if (versions.tree.Grid2Options < 1) then
+
+				-- versions.tree.Grid2Options = 1
+			-- end
 		elseif (layer == "hunter") then
 			if (versions.hunter.Grid2Options < 1) then
 
@@ -319,6 +324,11 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 
 				versions.paladin.Grid2Options = 1
 			end
+		-- elseif (layer == "holy1") then
+			-- if (versions.holy1.Grid2Options < 1) then
+
+				-- versions.holy1.Grid2Options = 1
+			-- end
 		elseif (layer == "priest") then
 			if (versions.priest.Grid2Options < 1) then
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-Grace-mine", {type = "buff", spellName = 47516, mine = true,
@@ -353,6 +363,11 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 
 				versions.priest.Grid2Options = 1
 			end
+		-- elseif (layer == "holy2") then
+			-- if (versions.holy2.Grid2Options < 1) then
+
+				-- versions.holy2.Grid2Options = 1
+			-- end
 		elseif (layer == "rogue") then
 			if (versions.rogue.Grid2Options < 1) then
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-Evasion-mine", {type = "buff", spellName = 5277, mine = true, color1 = {r=.1,g=.1,b=1,a=1}})
@@ -365,7 +380,6 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-Riptide-mine", {type = "buff", spellName = 61295, mine = true, color1 = {r=.8,g=.6,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-Earthliving", {type = "buff", spellName = 51945, color1 = {r=.8,g=1,b=.5,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-EarthShield", {type = "buff", spellName = 974, color1 = {r=.8,g=.8,b=.2,a=1}})
-				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-AncestralFortitude", {type = "buff", spellName = 16177, color1 = {r=.2,g=.8,b=.6,a=1}})
 
 				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-left", {type = "square", level = 9, location = "corner-top-left", size = 5,})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-left", "buff-Riptide-mine", 99)
@@ -380,6 +394,11 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 
 				versions.shaman.Grid2Options = 1
 			end
+		-- elseif (layer == "resto") then
+			-- if (versions.resto.Grid2Options < 1) then
+
+				-- versions.resto.Grid2Options = 1
+			-- end
 		elseif (layer == "warlock") then
 			if (versions.warlock.Grid2Options < 1) then
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-ShadowWard-mine", {type = "buff", spellName = 6229, mine = true, color1 = {r=1,g=1,b=1,a=1}})
