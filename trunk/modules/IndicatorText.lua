@@ -81,7 +81,7 @@ local function f(Text)
 	Text:SetText(content)
 end
 
-local function Text_OnUpdate(self, parent, unit, status)
+local function Text_OnUpdateDS(self, parent, unit, status)
 	local Text = parent[self.name].Text
 	local duration = self.dbx.duration
 	local stack = self.dbx.stack
@@ -123,7 +123,7 @@ local function Text_OnUpdate(self, parent, unit, status)
 				end
 			end
 		end
-		
+
 		local content
 		if (stack and duration) then
 			if (contentStack or contentDuration) then
@@ -156,6 +156,25 @@ local function Text_OnUpdate(self, parent, unit, status)
 	end
 end
 
+local function Text_OnUpdate(self, parent, unit, status)
+	local Text = parent[self.name]
+
+	if status then
+		local content
+		if  status.GetText then
+			content = status:GetText(unit)
+		end
+		if content and content ~= "" then
+			Text:SetText(string_sub(content, 1, self.dbx.textlength))
+			Text:Show()
+		else
+			Text:Hide()
+		end
+	else
+		Text:Hide()
+	end
+end
+
 local function Text_SetTextFont(self, parent, font, size)
 	parent[self.name].Text:SetFont(font, size)
 end
@@ -183,7 +202,7 @@ local function Text_Disable(self, parent)
 	self.Layout = nil
 	self.OnUpdate = nil
 	self.SetTextFont = nil
-	
+
 	local TextColor = self.sideKick
 	self.OnUpdate = TextColor_Nothing
 	--ToDo: move statuses to the base object for morphing?
@@ -201,12 +220,17 @@ local function Text_UpdateDB(self, dbx)
 	self.Create = Text_Create
 	self.GetBlinkFrame = Text_GetBlinkFrame
 	self.Layout = Text_Layout
-	self.OnUpdate = Text_OnUpdate
 	self.SetTextFont = Text_SetTextFont
 	self.Disable = Text_Disable
 	self.UpdateDB = Text_UpdateDB
 
 	self.dbx = dbx
+
+	if dbx.duration or dbx.stack then
+		self.OnUpdate = Text_OnUpdateDS
+	else
+		self.OnUpdate = Text_OnUpdate
+	end
 end
 
 local function TextColor_UpdateDB(self, dbx)
