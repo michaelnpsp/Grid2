@@ -57,12 +57,13 @@ function Mana:GetPercent(unit)
 	return UnitMana(unit) / UnitManaMax(unit)
 end
 
-function Mana:GetText(unit)
+function Mana:GetTextDefault(unit)
 	return Grid2.GetShortNumber(UnitMana(unit))
 end
 
 local function Create(baseKey, dbx)
 	Grid2:RegisterStatus(Mana, {"percent"}, baseKey, dbx)
+	Grid2:MakeTextHandler(Mana)
 
 	return Mana
 end
