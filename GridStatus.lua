@@ -51,8 +51,10 @@ end
 function status:UpdateDB(dbx)
 	-- ToDo: copy if it already exists
 	-- ToDo: update if it changed
-	self.dbx = dbx
-print("status:UpdateDB", self.name)
+	if (dbx) then
+		self.dbx = dbx
+	end
+-- print("status:UpdateDB", self.name)
 end
 
 Grid2.statusPrototype = {
