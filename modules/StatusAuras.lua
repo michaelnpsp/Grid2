@@ -279,7 +279,7 @@ function Grid2.CreateAuraCommon(baseKey, dbx)
 	if (type(spellName) == "number") then
 		spellName = GetSpellInfo(spellName)
 	end
-	assert(type(spellName) == "string")
+	assert(type(spellName) == "string", "Bad spellName" .. tostring(spellName))
 
 	status.auraName = spellName
 	status.states = {}
