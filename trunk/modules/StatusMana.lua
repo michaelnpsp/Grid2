@@ -62,7 +62,7 @@ function Mana:GetTextDefault(unit)
 end
 
 local function Create(baseKey, dbx)
-	Grid2:RegisterStatus(Mana, {"percent"}, baseKey, dbx)
+	Grid2:RegisterStatus(Mana, {"percent", "text"}, baseKey, dbx)
 	Grid2:MakeTextHandler(Mana)
 
 	return Mana
