@@ -31,7 +31,7 @@ end
 
 local Heals = Grid2.statusPrototype:new("heals-incoming")
 
-function Heals:UpdateProfileData()
+function Heals:UpdateDB()
 	HEALCOMM_FLAGS = self.dbx.flags
 	HEALCOMM_TIMEFRAME = self.dbx.timeFrame
 	get_active_heal_amount = self.dbx.includePlayerHeals
@@ -45,7 +45,7 @@ function Heals:OnEnable()
 	HealComm.RegisterCallback(self, "HealComm_HealDelayed", "Update")
 	HealComm.RegisterCallback(self, "HealComm_HealStopped", "Update")
 	HealComm.RegisterCallback(self, "HealComm_ModifierChanged", "UpdateModifier")
-	self:UpdateProfileData()
+	self:UpdateDB()
 end
 
 function Heals:OnDisable()

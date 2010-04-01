@@ -254,7 +254,7 @@ do
 	end
 end
 
-local function status_UpdateProfileData(self)
+local function status_UpdateDB(self)
 	local dbx = self.dbx
 	MakeStatusFilter(self)
 	local blinkThreshold, missing = dbx.blinkThreshold, dbx.missing
@@ -269,6 +269,7 @@ local function status_UpdateProfileData(self)
 			RemoveTimeTracker(self)
 		end
 	end
+	self.GetIcon = dbx.missing and status_GetIconMissing or status_GetIcon
 end
 
 
@@ -295,8 +296,8 @@ function Grid2.CreateAuraCommon(baseKey, dbx)
 	status.GetExpirationTime = status_GetExpirationTime
 	status.GetPercent = status_GetPercent
 	status.HasStateChanged = status_HasStateChanged
-	status.UpdateProfileData = status_UpdateProfileData
-	
+	status.UpdateDB = status_UpdateDB
+
 	return status
 end
 
@@ -305,7 +306,7 @@ function Grid2.CreateBuff(baseKey, dbx, statusTypesOverride)
 	local status = Grid2.CreateAuraCommon(baseKey, dbx)
 
 	function status:OnEnable()
-		self:UpdateProfileData()
+		self:UpdateDB()
 		EnableAuraFrame(true)
 		BuffHandlers[self] = true
 	end
@@ -326,7 +327,7 @@ function Grid2.CreateBuff(baseKey, dbx, statusTypesOverride)
 
 	Grid2:RegisterStatus(status, statusTypesOverride or statusTypes, baseKey, dbx)
 	Grid2:MakeBuffColorHandler(status)
-	status:UpdateProfileData()
+	status:UpdateDB()
 
 	return status
 end
@@ -335,7 +336,7 @@ function Grid2.CreateDebuff(baseKey, dbx, statusTypesOverride)
 	local status = Grid2.CreateAuraCommon(baseKey, dbx)
 
 	function status:OnEnable()
-		self:UpdateProfileData()
+		self:UpdateDB()
 		EnableAuraFrame(true)
 		DebuffHandlers[self] = true
 	end

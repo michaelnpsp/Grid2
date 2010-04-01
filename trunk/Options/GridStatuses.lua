@@ -76,7 +76,7 @@ local function DeleteStatus(info)
 	-- for index, status in ipairs(status.statuses) do
 		-- status:UnregisterStatus(status)
 	-- end
-	
+
 	Grid2Frame:ResetAllFrames()
 	Grid2Frame:UpdateAllFrames()
 
@@ -165,7 +165,7 @@ function Grid2Options:MakeStatusOpacityOptions(status, options, optionParams)
 			arg = status,
 		}
 	end
-	
+
 	return options
 end
 
@@ -290,8 +290,8 @@ function Grid2Options:MakeStatusClassFilterOptions(status, options, optionParams
 						dbx.classFilter = nil
 					end
 				end
-				if status.UpdateProfileData then
-					status:UpdateProfileData()
+				if status.UpdateDB then
+					status:UpdateDB()
 				end
 				for unit, guid in Grid2:IterateRosterUnits() do
 					status:UpdateIndicators(unit)
@@ -454,8 +454,8 @@ function Grid2Options:MakeStatusMissingOptions(status, options, optionParams)
 		set = function (_, v)
 			status.dbx.missing = v
 			DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name).missing = v
-			if status.UpdateProfileData then
-				status:UpdateProfileData()
+			if status.UpdateDB then
+				status:UpdateDB()
 			end
 			for unit, guid in Grid2:IterateRosterUnits() do
 				status:UpdateIndicators(unit)
@@ -493,8 +493,8 @@ function Grid2Options:MakeStatusBlinkThresholdOptions(status, options, optionPar
 			end
 			status.dbx.blinkThreshold = v
 			DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name).blinkThreshold = v
-			if (status.UpdateProfileData) then
-				status:UpdateProfileData()
+			if (status.UpdateDB) then
+				status:UpdateDB()
 			end
 		end,
 	}
@@ -559,7 +559,7 @@ function Grid2Options:MakeStatusClassColorOptions(status, options, optionParams)
 					c.r, c.g, c.b, c.a = r, g, b, a
 					c = DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name).colors.HOSTILE
 					c.r, c.g, c.b, c.a = r, g, b, a
-					
+
 					for unit, guid in Grid2:IterateRosterUnits() do
 						status:UpdateIndicators(unit)
 					end
@@ -603,7 +603,7 @@ function Grid2Options:MakeStatusClassColorOptions(status, options, optionParams)
 			},
 		},
 	}
-	
+
 	for _, class in ipairs{"Beast", "Demon", "Humanoid", "Elemental"} do
 		local translation = L[class]
 		MakeClassColorOption(status, options, translation, translation)
@@ -902,7 +902,7 @@ function Grid2Options:MakeStatusToggleOptions(status, options, optionParams, tog
 			Grid2Frame:UpdateAllFrames()
 		end,
 	}
-	
+
 	return options
 end
 
@@ -913,7 +913,7 @@ function Grid2Options:MakeStatusHealthCurrentOptions(status, options, optionPara
 	options = Grid2Options:MakeStatusLayerOptions(status, options, optionParams)
 	options = Grid2Options:MakeStatusColorOptions(status, options, optionParams)
 	options = Grid2Options:MakeStatusToggleOptions(status, options, optionParams, "deadAsFullHealth")
-	
+
 	return options
 end
 
@@ -969,7 +969,7 @@ function Grid2Options:MakeStatusHealsIncomingOptions(status, options, optionPara
 		set = function (_, v)
 			status.dbx.includePlayerHeals = v
 			DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name).includePlayerHeals = v
-			status:UpdateProfileData()
+			status:UpdateDB()
 		end,
 	}
 
@@ -995,7 +995,7 @@ function Grid2Options:MakeStatusHealsIncomingOptions(status, options, optionPara
 				status.dbx.timeFrame = nil
 				DBL:GetOptionsDbx(Grid2.dblData, "statuses", baseKey).timeFrame = nil
 			end
-			status:UpdateProfileData()
+			status:UpdateDB()
 		end,
 		values = {
 			[HealComm.CASTED_HEALS] = L["Casted heals, both direct and channeled"],
@@ -1010,7 +1010,7 @@ end
 			-- [HealComm.DIRECT_HEALS] = L["Direct heals only."],
 			-- [HealComm.ALL_HEALS] = L["All: Casted and HoTs"],
 
-			
+
 --No options for the status
 function Grid2Options:MakeStatusNoOptions(status, options, optionParams)
 end
@@ -1080,7 +1080,7 @@ function Grid2Options:MakeStatusOptions(dblData, reset)
 	AddStatusesGroup(reset)
 
 	if(dblData==nil) then return end
-	
+
 	self:MakeStatusHandlers(dblData, reset)
 
 --print("Grid2Options:MakeStatusOptions")
