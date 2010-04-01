@@ -157,11 +157,11 @@ local function Text_OnUpdateDS(self, parent, unit, status)
 end
 
 local function Text_OnUpdate(self, parent, unit, status)
-	local Text = parent[self.name]
+	local Text = parent[self.name].Text
 
 	if status then
 		local content
-		if  status.GetText then
+		if status.GetText then
 			content = status:GetText(unit)
 		end
 		if content and content ~= "" then
@@ -180,7 +180,7 @@ local function Text_SetTextFont(self, parent, font, size)
 end
 
 
-local TextColor_Nothing = function (self)
+local dummy = function (self)
 end
 
 local function TextColor_OnUpdate(self, parent, unit, status)
@@ -204,7 +204,7 @@ local function Text_Disable(self, parent)
 	self.SetTextFont = nil
 
 	local TextColor = self.sideKick
-	self.OnUpdate = TextColor_Nothing
+	self.OnUpdate = dummy
 	--ToDo: move statuses to the base object for morphing?
 end
 
@@ -234,8 +234,8 @@ local function Text_UpdateDB(self, dbx)
 end
 
 local function TextColor_UpdateDB(self, dbx)
-	self.Create = TextColor_Nothing
-	self.Layout = TextColor_Nothing
+	self.Create = dummy
+	self.Layout = dummy
 	self.OnUpdate = TextColor_OnUpdate
 
 	self.dbx = dbx
