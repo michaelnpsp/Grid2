@@ -265,6 +265,7 @@ local spellDB = {
 		69774,72836,72837,72838,--Volatile Ooze Adhesive
 
 		--Blood Prince Council
+		72999,--Shadow Prison
 		71807,72796,72797,72798,--Glittering Sparks
 		71911,71822,--Shadow Resonance
 
