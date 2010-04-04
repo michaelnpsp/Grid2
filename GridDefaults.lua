@@ -54,7 +54,7 @@ function Grid2:SetupStatusMap(setup, objects)
 				if (status and tonumber(priority)) then
 					indicator:RegisterStatus(status, priority)
 				else
-print("      ***failed mapping:", statusKey, "status:", status, "priority:", priority)
+print("      ***failed mapping:", statusKey, "status:", status, "priority:", priority, "layer:", layer, "indicator:", baseKey)
 				end
 			end
 		else
