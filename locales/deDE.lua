@@ -4,6 +4,7 @@ if not L then return end
 --{{{ Actually used
 L["Border"] = "Rand"
 L["Charmed"] = "Verzaubert"
+L["Default"] = "Default"
 L["Drink"] = "Trinken"
 L["Food"] = "Essen"
 L["Grid2"] = "Grid2"

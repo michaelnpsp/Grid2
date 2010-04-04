@@ -4,9 +4,14 @@ if not L then return end
 --{{{ Actually used
 L["Border"] = "Bordure"
 L["Charmed"] = "Charme"
+L["Default"] = "Default"
 L["Drink"] = "Boisson"
 L["Food"] = "Nourriture"
 --L["Grid2"] = true
+L["Beast"] = "Bête"
+L["Demon"] = "Démon"
+L["Humanoid"] = "Humanoïde"
+L["Elemental"] = "Elementaire"
 --}}}
 
 
@@ -56,10 +61,6 @@ L["Set the coloring strategy of pet units."] = "Définis la stratégie de colora
 L["By Owner Class"] = "Par classe"
 L["By Creature Type"] = "Par type de créature"
 L["Using Fallback color"] = "Utiliser la couleur secondaire"
-L["Beast"] = "Bête"
-L["Demon"] = "Démon"
-L["Humanoid"] = "Humanoïde"
-L["Elemental"] = "Elementaire"
 L["Colors"] = "Couleurs"
 L["Color options for class and pets."] = "Options de couleurs pour les classes et les familiers."
 L["Fallback colors"] = "Couleurs secondaires"
