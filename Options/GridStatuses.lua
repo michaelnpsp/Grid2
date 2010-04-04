@@ -41,7 +41,7 @@ function Grid2Options:MakeStatusLayerOptions(status, options)
 					newLayer = layer
 				end
 			end
-			DBL:SetObjectLayer(dblData, "statuses", baseKey, newLayer, status.dbx.type)
+			DBL:SetObjectLayer(dblData, "statuses", baseKey, newLayer, status.dbx)
 			DBL:FlattenSetupType(dblData, "statuses")
 
 			for unit, guid in Grid2:IterateRosterUnits() do
