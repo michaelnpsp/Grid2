@@ -549,7 +549,7 @@ function Grid2Options:AddIndicatorLayerOptions(indicator, options)
 					newLayer = layer
 				end
 			end
-			DBL:SetObjectLayer(dblData, "indicators", baseKey, newLayer, indicator.dbx.type)
+			DBL:SetObjectLayer(dblData, "indicators", baseKey, newLayer, indicator.dbx)
 			DBL:FlattenSetupType(dblData, "indicators")
 			Grid2Options:UpdateIndicator(indicator)
 
