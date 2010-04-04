@@ -4,6 +4,7 @@ if not L then return end
 --{{{ Actually used
 L["Border"] = "邊框"
 L["Charmed"] = "Charmed"
+L["Default"] = "Default"
 L["Drink"] = "Drink"
 L["Food"] = "Food"
 L["Grid2"] = "Grid2"
