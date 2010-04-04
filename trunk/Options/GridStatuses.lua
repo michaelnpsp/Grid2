@@ -72,10 +72,10 @@ local function DeleteStatus(info)
 	DBL:DeleteLayerObject(dblData, "statuses", layer, baseKey)
 	DBL:FlattenSetupType(dblData, "statuses")
 
-	-- Remove from runtime
-	-- for index, status in ipairs(status.statuses) do
-		-- status:UnregisterStatus(status)
-	-- end
+	-- Remove mappings
+	for indicatorKey, indicator in Grid2:IterateIndicators() do
+		Grid2Options:UnregisterIndicatorStatus(indicator, status)
+	end
 
 	Grid2Frame:ResetAllFrames()
 	Grid2Frame:UpdateAllFrames()
