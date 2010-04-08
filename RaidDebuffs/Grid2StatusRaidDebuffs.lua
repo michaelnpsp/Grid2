@@ -219,6 +219,7 @@ local spellDB = {
 		70671,--Leeching Rot
 		70432,--Blood Sap
 		71257,--Barbaric Strike
+		--71298,--Banish
 
 		--Lord Marrowgar
 		70823,--Coldflame
@@ -238,7 +239,7 @@ local spellDB = {
 
 		--Deathbringer Saurfang
 		72293,--Mark of the Fallen Champion
-		72442,--Boiling Blood
+		-- 72442,--Boiling Blood
 		72449,--Rune of Blood
 		72769,--Scent of Blood (heroic)
 
