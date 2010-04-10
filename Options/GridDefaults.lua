@@ -125,8 +125,8 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				DBL:SetupLayerObject(dblData, "indicators", layer, "heals-color", {type = "bar-color"})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "heals-color", "heals-incoming", 99)
 
-
 				DBL:SetupLayerObject(dblData, "indicators", layer, "side-bottom", {type = "square", level = 5, location = "side-bottom", size = 5, color1 = {r=1,g=1,b=1,a=1},})
+
 				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-bottom-left", {type = "square", level = 5, location = "corner-bottom-left", size = 5, color1 = {r=1,g=1,b=1,a=1},})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-bottom-left", "threat", 99)
 
@@ -296,35 +296,65 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 			end
 		elseif (layer == "paladin") then
 			if (versions.paladin.Grid2Options < 1) then
-				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-left", {type = "square", level = 9, location = "corner-top-left", size = 5,})
+				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-left", {type = "text", level = 9, location = "corner-top-left", textlength = 12, fontSize = 8, font = defaultFont, duration = true})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-left", "buff-BeaconOfLight", 99)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-left", "buff-BeaconOfLight-mine", 89)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-left", "buff-LightsBeacon-mine", 89)
+				-- DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-left", "buff-LightsBeacon-mine", 79)
 
-				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-right", {type = "square", level = 9, location = "corner-top-right", size = 5,})
-				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right", "buff-DivineIntervention", 99)
+				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-left-color", {type = "text-color"})
+				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-left-color", "buff-BeaconOfLight", 99)
+				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-left-color", "buff-BeaconOfLight-mine", 89)
+
+				DBL:SetupLayerObject(dblData, "indicators", layer, "side-top", {type = "text", level = 9, location = "side-top", textlength = 12, fontSize = 8, font = defaultFont, duration = true})
+				DBL:SetupMapObject(dblData, "statusMap", layer, "side-top", "buff-FlashOfLight-mine", 99)
+
+				DBL:SetupLayerObject(dblData, "indicators", layer, "side-top-color", {type = "text-color"})
+				DBL:SetupMapObject(dblData, "statusMap", layer, "side-top-color", "buff-FlashOfLight-mine", 99)
+
+				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-right", {type = "text", level = 9, location = "corner-top-right", textlength = 12, fontSize = 8, font = defaultFont, duration = true})
+				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right", "SacredShield", 99)
+				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right", "SacredShield-mine", 89)
+
+				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-right-color", {type = "text-color"})
+				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right-color", "SacredShield", 99)
+				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right-color", "SacredShield-mine", 89)
+
+				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-bottom-left", {type = "square", level = 5, location = "corner-bottom-left", size = 5, color1 = {r=1,g=1,b=1,a=1},})
+				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-bottom-left", "buff-HandOfSalvation", 101)
+				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-bottom-left", "buff-HandOfSalvation-mine", 100)
+
+				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-bottom-right", {type = "icon", level = 8, location = "corner-bottom-right", size = 12, fontSize = 8,})
+				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-bottom-right", "debuff-Forbearance", 99)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right", "buff-DivineShield-mine", 97)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right", "buff-DivineProtection-mine", 95)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right", "buff-HandOfProtection-mine", 93)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right", "debuff-Forbearance", 89)
 
 				DBL:SetupLayerObject(dblData, "indicators", layer, "side-left", {type = "square", level = 9, location = "side-left", size = 5,})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-left", "SacredShield-mine", 99)
 
+				DBL:SetupLayerObject(dblData, "indicators", layer, "center-left", {type = "icon", level = 9, location = "center-left", size = 16, fontSize = 8,})
+				DBL:SetupMapObject(dblData, "statusMap", layer, "center-left", "debuff-Magic", 40)
+				DBL:SetupMapObject(dblData, "statusMap", layer, "center-left", "debuff-Poison", 30)
+
+				DBL:SetupLayerObject(dblData, "indicators", layer, "center-right", {type = "icon", level = 9, location = "center-right", size = 16, fontSize = 8,})
+				DBL:SetupMapObject(dblData, "statusMap", layer, "center-right", "debuff-Disease", 10)
+
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-BeaconOfLight", {type = "buff", spellName = 53654, color1 = {r=.7,g=1,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-BeaconOfLight-mine", {type = "buff", spellName = 53654, mine = true, color1 = {r=1,g=1,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-DivineIntervention", {type = "buff", spellName = 19752, color1 = {r=1,g=1,b=1,a=1}})
+				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-FlashOfLight-mine", {type = "buff", spellName = 66922, mine = true, color1 = {r=1,g=1,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-LightsBeacon-mine", {type = "buff", spellName = 53651, mine = true, color1 = {r=1,g=1,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-DivineShield-mine", {type = "buff", spellName = 642, mine = true, color1 = {r=1,g=1,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-DivineProtection-mine", {type = "buff", spellName = 498, mine = true, color1 = {r=1,g=1,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-HandOfProtection-mine", {type = "buff", spellName = 1022, mine = true, color1 = {r=1,g=1,b=1,a=1}})
-				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-SacredShield-mine", {type = "buff", spellName = 53601, mine = true, color1 = {r=1,g=1,b=1,a=1}})
+				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-HandOfSalvation", {type = "buff", spellName = 1038, color1 = {r=1,g=1,b=1,a=1}})
+				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-HandOfSalvation-mine", {type = "buff", spellName = 1038, mine = true, color1 = {r=.8,g=.8,b=.7,a=1}})
+				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-SacredShield", {type = "buff", spellName = 53601, mine = true, color1 = {r=1,g=1,b=1,a=1}})
+				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-SacredShield-mine", {type = "buff", spellName = 53601, mine = true, color1 = {r=.8,g=.9,b=.9,a=1}})
 
 				DBL:SetupLayerObject(dblData, "statuses", layer, "debuff-Forbearance", {type = "debuff", spellName = 25771, color1 = {r=1,g=0,b=0,a=1}})
 
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Magic", 40)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Poison", 30)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Disease", 10)
+				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "buff-DivineIntervention", 99)
 
 				versions.paladin.Grid2Options = 1
 			end
