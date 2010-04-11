@@ -38,7 +38,6 @@ local function Bar_CreateHH(self, parent)
 	healthBarBG:SetTexture(texture)
 	healthBarBG:SetVertexColor(0, 0, 0, 1)
 	healthBarBG:SetPoint("CENTER", parent, "CENTER")
-	-- healthBarBG:SetPoint(self.anchor, parent, self.anchorRel, self.offsetx, self.offsety)
 
 	-- create healing bar
 	local healsBar = parent[healsBarName] or CreateFrame("StatusBar", nil, parent)
@@ -76,8 +75,7 @@ local function Bar_Layout(self, parent)
 	local inset = frameBorder
 	local w, h = parent:GetWidth() - inset, parent:GetHeight() - inset
 	local Bar, BarBG = parent[self.nameFG], parent[self.nameBG]
-	-- Bar:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
--- print(self.name, parent:GetFrameLevel() + self.frameLevel)
+
 	BarBG:SetWidth(w)
 	BarBG:SetHeight(h)
 	Bar:SetWidth(w)
