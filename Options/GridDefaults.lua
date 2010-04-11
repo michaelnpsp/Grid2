@@ -424,9 +424,12 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right", "buff-EarthShield-mine", 99)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right", "buff-EarthShield", 89)
 
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Poison", 90)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Disease", 80)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Curse", 70)
+				DBL:SetupLayerObject(dblData, "indicators", layer, "center-left", {type = "icon", level = 9, location = "center-left", size = 16, fontSize = 8,})
+				DBL:SetupMapObject(dblData, "statusMap", layer, "center-left", "debuff-Poison", 50)
+				DBL:SetupMapObject(dblData, "statusMap", layer, "center-left", "debuff-Curse", 40)
+
+				DBL:SetupLayerObject(dblData, "indicators", layer, "center-right", {type = "icon", level = 9, location = "center-right", size = 16, fontSize = 8,})
+				DBL:SetupMapObject(dblData, "statusMap", layer, "center-right", "debuff-Disease", 10)
 
 				versions.shaman.Grid2Options = 1
 			end
