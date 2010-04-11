@@ -76,6 +76,7 @@ local function GridFrame_Init(frame, width, height)
 	for _, indicator in Grid2:IterateIndicators() do
 		indicator:Create(frame)
 	end
+	Grid2:InterleaveHealsHealth(frame)
 
 	frame:SetAttribute("initial-width", width)
 	frame:SetAttribute("initial-height", height)
@@ -125,6 +126,7 @@ function GridFramePrototype:LayoutIndicators()
 	for _, indicator in Grid2:IterateIndicators() do
 		indicator:Layout(self)
 	end
+	Grid2:InterleaveHealsHealth(self)
 end
 
 -- SetPoint for lazy people
@@ -151,7 +153,7 @@ Grid2Frame.defaultDB = {
 		showTooltip = "OOC",
 		orientation = "VERTICAL",
 		textOrientation = "VERTICAL",
-		invertBarColor = true,
+		intensity = 0.5,
 	},
 }
 
