@@ -125,17 +125,8 @@ Grid2Options:AddModule("Grid2", "Grid2Frame", Grid2Frame, {
 		set = function (_, v)
 			Grid2Frame.db.profile.invertBarColor = v
 			
-			--Apply changes to the bar dbx
-			-- local indicatorKey = indicator.barKey
-			-- DBL:GetOptionsDbx(Grid2.dblData, "frames", indicatorKey).invertBarColor = v
-
-			local indicator = Grid2.indicators["health"]
 			Grid2Frame:WithAllFrames(function (f)
-				indicator:Layout(f)
-			end)
-			indicator = Grid2.indicators["heals"]
-			Grid2Frame:WithAllFrames(function (f)
-				indicator:Layout(f)
+				Grid2:InterleaveHealsHealth(f)
 			end)
 			Grid2Frame:Reset()
 		end,
