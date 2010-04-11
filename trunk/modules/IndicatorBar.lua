@@ -22,12 +22,62 @@ local function Bar_Create(self, parent)
 	self:SetOrientation(parent)
 end
 
+local healthBarName = "health"
+local healthBarBGName = "health-color"
+local healsBarName = "heals"
+local function Bar_CreateHH(self, parent)
+	local media = LibStub("LibSharedMedia-3.0", true)
+	local texture = media and media:Fetch("statusbar", self.dbx.texture) or "Interface\\Addons\\Grid2\\gradient32x32"
+
+	local orientation = Grid2Frame.db.profile.orientation
+
+	-- create bar BG (which users will think is the real bar, as it is the one that has a shiny color)
+	-- this is necessary as there's no other way to implement status bars that grow in the other direction than normal
+	local healthBarBG = parent[healthBarBGName] or parent:CreateTexture()
+	parent[healthBarBGName] = healthBarBG
+	healthBarBG:SetTexture(texture)
+	healthBarBG:SetVertexColor(0, 0, 0, 1)
+	healthBarBG:SetPoint("CENTER", parent, "CENTER")
+	-- healthBarBG:SetPoint(self.anchor, parent, self.anchorRel, self.offsetx, self.offsety)
+
+	-- create healing bar
+	local healsBar = parent[healsBarName] or CreateFrame("StatusBar", nil, parent)
+	parent[healsBarName] = healsBar
+	healsBar:SetOrientation(orientation)
+	healsBar:SetStatusBarColor(0,0,0,0)
+	healsBar:SetStatusBarTexture(texture)
+	healsBar:SetMinMaxValues(0, 1)
+	healsBar:SetValue(0)
+	healsBar:SetPoint("TOPLEFT", healthBarBG, "TOPLEFT")
+	healsBar:SetPoint("BOTTOMRIGHT", healthBarBG, "BOTTOMRIGHT")
+
+	-- create health bar
+	local healthBar = parent[healthBarName] or CreateFrame("StatusBar", nil, parent)
+	parent[healthBarName] = healthBar
+	healthBar:SetOrientation(orientation)
+	healthBar:SetStatusBarColor(0,0,0,0.8)
+	healthBar:SetStatusBarTexture(texture)
+	healthBar:SetMinMaxValues(0, 1)
+	healthBar:SetValue(1)
+	healthBar:SetPoint("TOPLEFT", healsBar, "TOPLEFT")
+	healthBar:SetPoint("BOTTOMRIGHT", healsBar, "BOTTOMRIGHT")
+	
+	if (self.name == healthBarName) then
+		self.nameFG = healthBarName
+	else
+		self.nameFG = healsBarName
+	end
+	self.nameBG = healthBarBGName
+-- print("Bar_CreateHH", self.name, self.nameBG, parent[self.nameBG])
+end
+
 local function Bar_Layout(self, parent)
 	local frameBorder = Grid2Frame.db.profile.frameBorder * 2
 	local inset = frameBorder
 	local w, h = parent:GetWidth() - inset, parent:GetHeight() - inset
 	local Bar, BarBG = parent[self.nameFG], parent[self.nameBG]
-	Bar:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
+	-- Bar:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
+-- print(self.name, parent:GetFrameLevel() + self.frameLevel)
 	BarBG:SetWidth(w)
 	BarBG:SetHeight(h)
 	Bar:SetWidth(w)
@@ -44,6 +94,28 @@ local function Bar_OnUpdate(self, parent, unit, status)
 		Bar:SetValue(status:GetPercent(unit))
 	else
 		Bar:SetValue(0)
+	end
+end
+
+local function Bar_OnUpdateHeals(self, parent, unit, status)
+	local intensity = Grid2Frame.db.profile.intensity or .5
+	invertBarColor = Grid2Frame.db.profile.invertBarColor
+	local Bar = parent[self.nameFG]
+	if status then
+		Bar:SetValue(status:GetPercent(unit))
+		if (invertBarColor) then
+			local alpha = 0.8
+			local healingBar_alpha = intensity * alpha
+			local bar_alpha = 1 - (1 - alpha) / (1 - healingBar_alpha)
+			local healthBar = parent[healthBarName]
+			healthBar:SetStatusBarColor(0, 0, 0, bar_alpha)
+			Bar:SetStatusBarColor(0, 0, 0, healingBar_alpha)
+		end
+	else
+		Bar:SetValue(0)
+		if (invertBarColor) then
+			Bar:SetStatusBarColor(0, 0, 0, 0.8)
+		end
 	end
 end
 
@@ -67,7 +139,7 @@ local function BarColor_OnUpdate(self, parent, unit, status)
 	if status then
 		self:SetBarColor(parent, status:GetColor(unit))
 	else
-		self:SetBarColor(parent, 0, 0, 0, 1)
+		self:SetBarColor(parent, 0, 0, 0, 0)
 		--local c = self.dbx.color1
 		--self:SetBarColor(parent, c.r, c.g, c.b, 1)
 	end
@@ -77,13 +149,29 @@ local function BarColor_SetBarColor(self, parent, r, g, b, a)
 	local Bar, BarBG = parent[self.nameFG], parent[self.nameBG]
 	--local c = self.dbx.color1
 	if (Grid2Frame.db.profile.invertBarColor) then
-		Bar:SetStatusBarColor(r, g, b, a)
-		--BarBG:SetVertexColor(c.r, c.g, c.b, 0)
-		BarBG:SetVertexColor(0, 0, 0, 0)
-	else
 		--Bar:SetStatusBarColor(c.r, c.g, c.b, 0.8)
 		Bar:SetStatusBarColor(0, 0, 0, 0.8)
 		BarBG:SetVertexColor(r, g, b, a)
+	else
+		Bar:SetStatusBarColor(r, g, b, a)
+		--BarBG:SetVertexColor(c.r, c.g, c.b, 0)
+		BarBG:SetVertexColor(0, 0, 0, 0)
+	end
+end
+
+local function BarColor_SetBarColorHeals(self, parent, r, g, b, a)
+	local Bar, BarBG = parent[self.nameFG], parent[self.nameBG]
+	local c = self.dbx.color1
+	if (Grid2Frame.db.profile.invertBarColor) then
+		-- Bar:SetStatusBarColor(c.r, c.g, c.b, 0.8)
+		-- Bar:SetStatusBarColor(0, 0, 0, 0.8)
+		-- BarBG:SetVertexColor(r, g, b, a)
+-- print("BarColor_SetBarColorHeals", BarBG, self.name)
+		-- BarBG:SetVertexColor(0, 0, 0, 0)
+	else
+		Bar:SetStatusBarColor(r, g, b, a)
+		BarBG:SetVertexColor(c.r, c.g, c.b, 0)
+		BarBG:SetVertexColor(0, 0, 0, 0)
 	end
 end
 
@@ -93,14 +181,15 @@ local function Create(indicatorKey, dbx)
 
 	local Bar = Grid2.indicatorPrototype:new(indicatorKey)
 	Bar.nameFG = indicatorKey
-	Bar.nameBG = colorKey
+	-- Bar.nameBG = colorKey
+	Bar.nameBG = "health-color"
 
 	Bar.frameLevel = dbx.level
 	Bar.anchor = location.point
 	Bar.anchorRel = location.relPoint
 	Bar.offsetx = location.x
 	Bar.offsety = location.y
-	Bar.Create = Bar_Create
+	Bar.Create = Bar_CreateHH
 	Bar.Layout = Bar_Layout
 	Bar.GetBlinkFrame = Bar_GetBlinkFrame
 	Bar.OnUpdate = Bar_OnUpdate
@@ -127,6 +216,22 @@ end
 
 Grid2.setupFunc["bar"] = Create
 
+function Grid2:InterleaveHealsHealth(frame)
+	local healthBar = Grid2.indicators["health"]
+	local healsBar = Grid2.indicators["heals"]
+	local Bar = frame[healthBar.nameFG]
+	local BarBG = frame[healthBar.nameBG]
+	local HealsBar = frame[healsBar.nameFG]
+	local HealsBarBG = frame[healsBar.nameBG]
+
+	local baseLevel = frame:GetFrameLevel()
+	HealsBar:SetFrameLevel(baseLevel + 1)
+	Bar:SetFrameLevel(baseLevel + 2)
+
+	healsBar.OnUpdate = Bar_OnUpdateHeals
+	local healsBarColor = Grid2.indicators["heals-color"]
+	healsBarColor.SetBarColor = BarColor_SetBarColorHeals
+end
 
 --ToDo: Is there a better way to handle this dual indicator creation?
 local function CreateColor(indicatorKey, dbx)
