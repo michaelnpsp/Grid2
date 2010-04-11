@@ -55,7 +55,7 @@ local function Bar_CreateHH(self, parent)
 	local healthBar = parent[healthBarName] or CreateFrame("StatusBar", nil, parent)
 	parent[healthBarName] = healthBar
 	healthBar:SetOrientation(orientation)
-	healthBar:SetStatusBarColor(0,0,0,0.8)
+	healthBar:SetStatusBarColor(0,0,0,1)
 	healthBar:SetStatusBarTexture(texture)
 	healthBar:SetMinMaxValues(0, 1)
 	healthBar:SetValue(1)
@@ -97,28 +97,6 @@ local function Bar_OnUpdate(self, parent, unit, status)
 	end
 end
 
-local function Bar_OnUpdateHeals(self, parent, unit, status)
-	local intensity = Grid2Frame.db.profile.intensity or .5
-	invertBarColor = Grid2Frame.db.profile.invertBarColor
-	local Bar = parent[self.nameFG]
-	if status then
-		Bar:SetValue(status:GetPercent(unit))
-		if (invertBarColor) then
-			local alpha = 0.8
-			local healingBar_alpha = intensity * alpha
-			local bar_alpha = 1 - (1 - alpha) / (1 - healingBar_alpha)
-			local healthBar = parent[healthBarName]
-			healthBar:SetStatusBarColor(0, 0, 0, bar_alpha)
-			Bar:SetStatusBarColor(0, 0, 0, healingBar_alpha)
-		end
-	else
-		Bar:SetValue(0)
-		if (invertBarColor) then
-			Bar:SetStatusBarColor(0, 0, 0, 0.8)
-		end
-	end
-end
-
 local function Bar_SetOrientation(self, parent, orientation)
 	orientation = orientation or Grid2Frame.db.profile.orientation
 	parent[self.nameFG]:SetOrientation(orientation)
@@ -150,7 +128,7 @@ local function BarColor_SetBarColor(self, parent, r, g, b, a)
 	--local c = self.dbx.color1
 	if (Grid2Frame.db.profile.invertBarColor) then
 		--Bar:SetStatusBarColor(c.r, c.g, c.b, 0.8)
-		Bar:SetStatusBarColor(0, 0, 0, 0.8)
+		Bar:SetStatusBarColor(0, 0, 0, 1)
 		BarBG:SetVertexColor(r, g, b, a)
 	else
 		Bar:SetStatusBarColor(r, g, b, a)
@@ -162,17 +140,7 @@ end
 local function BarColor_SetBarColorHeals(self, parent, r, g, b, a)
 	local Bar, BarBG = parent[self.nameFG], parent[self.nameBG]
 	local c = self.dbx.color1
-	if (Grid2Frame.db.profile.invertBarColor) then
-		-- Bar:SetStatusBarColor(c.r, c.g, c.b, 0.8)
-		-- Bar:SetStatusBarColor(0, 0, 0, 0.8)
-		-- BarBG:SetVertexColor(r, g, b, a)
--- print("BarColor_SetBarColorHeals", BarBG, self.name)
-		-- BarBG:SetVertexColor(0, 0, 0, 0)
-	else
-		Bar:SetStatusBarColor(r, g, b, a)
-		BarBG:SetVertexColor(c.r, c.g, c.b, 0)
-		BarBG:SetVertexColor(0, 0, 0, 0)
-	end
+	Bar:SetStatusBarColor(r, g, b, a)
 end
 
 local function Create(indicatorKey, dbx)
@@ -228,7 +196,6 @@ function Grid2:InterleaveHealsHealth(frame)
 	HealsBar:SetFrameLevel(baseLevel + 1)
 	Bar:SetFrameLevel(baseLevel + 2)
 
-	healsBar.OnUpdate = Bar_OnUpdateHeals
 	local healsBarColor = Grid2.indicators["heals-color"]
 	healsBarColor.SetBarColor = BarColor_SetBarColorHeals
 end
