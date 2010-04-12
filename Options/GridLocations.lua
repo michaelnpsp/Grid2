@@ -287,7 +287,7 @@ end
 
 local function AddLocationGroup(reset)
 	local options = {
-		name = {
+		newName = {
 			type = "input",
 			order = 1,
 			--width = "full",
