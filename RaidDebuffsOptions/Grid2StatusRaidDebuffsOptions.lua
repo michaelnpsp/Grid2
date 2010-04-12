@@ -17,6 +17,8 @@ function Grid2StatusRaidDebuffsOptions.UpgradeDefaults(dblData)
 		DBL:SetupMapObject(dblData, "statusMap", layer, "center-left", "debuff-MysticBuffet", 110)
 		DBL:SetupLayerObject(dblData, "statuses", layer, "debuff-BoilingBlood", {type = "debuff", spellName = 72442, color1 = {r=.5,g=0,b=1,a=1}})
 		DBL:SetupMapObject(dblData, "statusMap", layer, "center-left", "debuff-BoilingBlood", 110)
+		DBL:SetupLayerObject(dblData, "statuses", layer, "debuff-HarvestSoul", {type = "debuff", spellName = 68980, color1 = {r=.5,g=0,b=1,a=1}})
+		DBL:SetupMapObject(dblData, "statusMap", layer, "center-left", "debuff-HarvestSoul", 110)
 
 		DBL:SetupLayerObject(dblData, "indicators", layer, "center-right", {type = "icon", level = 9, location = "center-right", size = 16, fontSize = 8,})
 		DBL:SetupLayerObject(dblData, "statuses", layer, "debuff-UnchainedMagic", {type = "debuff", spellName = 69762, color1 = {r=.5,g=0,b=1,a=1}})
