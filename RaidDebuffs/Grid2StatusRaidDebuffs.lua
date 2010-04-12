@@ -289,6 +289,7 @@ local spellDB = {
 		70751,71738,72021,72022,--Corrosion
 		70633,71283,72025,72026,--Gut Spray
 		71941,--Twisted Nightmares
+		70766,--Dream State
 
 		--Sindragosa
 		70107,--Permeating Chill
