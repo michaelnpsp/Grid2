@@ -215,6 +215,7 @@ local function SetStatusLayer(info, value)
 	for layer, index in pairs(DBL:GetLayerOrder(dblData, "indicators")) do
 		if (index == value) then
 			newLayer = layer
+			break
 		end
 	end
 	DBL:SetMapLayer(dblData, "statusMap", indicator.name, status.name, priority, newLayer)
