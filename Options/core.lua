@@ -240,20 +240,10 @@ function Grid2Options:AddResetDebugMenu()
 		type = "execute",
 		order = 1,
 		name = L["Reset"],
-		desc = L["Reset and ReloadUI."],
+		desc = L["Reset current setup and ReloadUI."],
 		func = function ()
 			Grid2DB = nil
 			Grid2OptionsDB = nil
-			ReloadUI()
-		end,
-	}
-	opt.resetSetup = {
-		type = "execute",
-		order = 2,
-		name = L["Reset Setup"],
-		desc = L["Reset current setup and ReloadUI."],
-		func = function ()
-			Grid2.db.profile.setup = nil
 			ReloadUI()
 		end,
 	}
