@@ -3,6 +3,7 @@
 ## LoadOnDemand: 1
 ## Dependencies: Grid2
 ## SavedVariables: Grid2OptionsDB
+## Version: @project-revision@
 
 locales.xml
 core.lua
