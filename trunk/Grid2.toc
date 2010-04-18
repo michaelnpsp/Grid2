@@ -12,7 +12,7 @@
 ## DefaultState: enabled
 ## LoadOnDemand: 0
 
-## Version: 3.3.0.@project-revision@
+## Version: @project-revision@
 ## X-ReleaseDate: "$Date$"
 ## X-Category: UnitFrame
 ## X-Website: http://wowace.com/projects/grid2/
