@@ -124,7 +124,7 @@ Grid2Options:AddModule("Grid2", "Grid2Frame", Grid2Frame, {
 		end,
 		set = function (_, v)
 			Grid2Frame.db.profile.invertBarColor = v
-			
+			Grid2.indicators["health-color"]:UpdateDB()
 			Grid2Frame:WithAllFrames(function (f)
 				Grid2:InterleaveHealsHealth(f)
 			end)

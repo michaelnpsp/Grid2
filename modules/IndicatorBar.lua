@@ -1,27 +1,5 @@
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
-local function Bar_Create(self, parent)
-	local media = LibStub("LibSharedMedia-3.0", true)
-	local texture = media and media:Fetch("statusbar", self.dbx.texture) or "Interface\\Addons\\Grid2\\gradient32x32"
-
-
-	local BarBG = parent:CreateTexture()
-	parent[self.nameBG] = BarBG
-	BarBG:SetTexture(texture)
-
-	-- create bar
-	local Bar = CreateFrame("StatusBar", nil, parent)
-	parent[self.nameFG] = Bar
-	Bar:SetStatusBarTexture(texture)
-	Bar:SetMinMaxValues(0, 1)
-	Bar:SetValue(1)
-	Bar:SetStatusBarColor(0,0,0,0.8)
-
-	BarBG:SetPoint(self.anchor, parent, self.anchorRel, self.offsetx, self.offsety)
-	Bar:SetPoint(self.anchor, parent, self.anchorRel, self.offsetx, self.offsety)
-	self:SetOrientation(parent)
-end
-
 local healthBarName = "health"
 local healthBarBGName = "health-color"
 local healsBarName = "heals"
@@ -60,7 +38,7 @@ local function Bar_CreateHH(self, parent)
 	healthBar:SetValue(1)
 	healthBar:SetPoint("TOPLEFT", healsBar, "TOPLEFT")
 	healthBar:SetPoint("BOTTOMRIGHT", healsBar, "BOTTOMRIGHT")
-	
+
 	if (self.name == healthBarName) then
 		self.nameFG = healthBarName
 	else
@@ -123,22 +101,31 @@ end
 
 local function BarColor_SetBarColor(self, parent, r, g, b, a)
 	local Bar, BarBG = parent[self.nameFG], parent[self.nameBG]
-	--local c = self.dbx.color1
-	if (Grid2Frame.db.profile.invertBarColor) then
-		--Bar:SetStatusBarColor(c.r, c.g, c.b, 0.8)
-		Bar:SetStatusBarColor(0, 0, 0, 0.8)
-		BarBG:SetVertexColor(r, g, b, a)
-	else
-		Bar:SetStatusBarColor(r, g, b, a)
-		--BarBG:SetVertexColor(c.r, c.g, c.b, 0)
-		BarBG:SetVertexColor(0, 0, 0, 0)
-	end
+	Bar:SetStatusBarColor(r, g, b, a)
+	BarBG:SetVertexColor(0, 0, 0, 0)
+end
+
+local function BarColor_SetBarColorInverted(self, parent, r, g, b, a)
+	local Bar, BarBG = parent[self.nameFG], parent[self.nameBG]
+	Bar:SetStatusBarColor(0, 0, 0, 0.8)
+	BarBG:SetVertexColor(r, g, b, a)
 end
 
 local function BarColor_SetBarColorHeals(self, parent, r, g, b, a)
-	local Bar, BarBG = parent[self.nameFG], parent[self.nameBG]
-	local c = self.dbx.color1
+	local Bar = parent[self.nameFG]
 	Bar:SetStatusBarColor(r, g, b, a)
+end
+
+local function BarColor_UpdateDB(self)
+	if self.name == "heals-color" then -- hackish
+		self.SetBarColor = BarColor_SetBarColorHeals
+		return
+	end
+	if Grid2Frame.db.profile.invertBarColor then
+		self.SetBarColor = BarColor_SetBarColorInverted
+	else
+		self.SetBarColor = BarColor_SetBarColor
+	end
 end
 
 local function Create(indicatorKey, dbx)
@@ -171,7 +158,8 @@ local function Create(indicatorKey, dbx)
 	BarColor.Create = BarColor_Create
 	BarColor.Layout = BarColor_Layout
 	BarColor.OnUpdate = BarColor_OnUpdate
-	BarColor.SetBarColor = BarColor_SetBarColor
+	BarColor.UpdateDB = BarColor_UpdateDB
+	BarColor_UpdateDB(BarColor)
 	BarColor.barKey = indicatorKey
 
 	BarColor.dbx = dbx
@@ -193,9 +181,6 @@ function Grid2:InterleaveHealsHealth(frame)
 	local baseLevel = frame:GetFrameLevel()
 	HealsBar:SetFrameLevel(baseLevel + 1)
 	Bar:SetFrameLevel(baseLevel + 2)
-
-	local healsBarColor = Grid2.indicators["heals-color"]
-	healsBarColor.SetBarColor = BarColor_SetBarColorHeals
 end
 
 --ToDo: Is there a better way to handle this dual indicator creation?
