@@ -107,6 +107,7 @@ do
 
 		if realm == "" then realm = nil end
 
+		local oldGuid = units_to_remove[unit]
 		units_to_remove[unit] = nil
 
 		local old_name = roster_names[unit]
@@ -121,7 +122,6 @@ do
 		roster_names[unit] = name
 		roster_realms[unit] = realm
 
-		local oldGuid = roster_guids[unit]
 		roster_guids[unit] = guid
 		roster_units[guid] = unit
 		
@@ -214,10 +214,8 @@ do
 	end
 
 	function Grid2:UpdateRoster()
-		for unit, guid in pairs(roster_guids) do
-			units_to_remove[unit] = guid
-		end
-
+		roster_guids, units_to_remove = units_to_remove, roster_guids
+		
 		local units = (GetNumRaidMembers() == 0) and party_units or raid_units
 
 		for _, unit in ipairs(units) do
@@ -245,32 +243,32 @@ do
 			end
 -- print("Grid_UnitLeft -->", unit, guid)
 			self:SendMessage("Grid_UnitLeft", unit, guid)
+			units_to_remove[unit] = nil
 		end
-		wipe(units_to_remove)
-
+		
 		--This message is used to maintain a cache.
 		for unit, guid in pairs(units_added) do
 			updated = true
 -- print("Grid_UnitJoined -->", unit, guid)
 			self:SendMessage("Grid_UnitJoined", unit, guid)
 			units_updated[unit] = guid
+			units_added[unit] = nil
 		end
-		wipe(units_added)
-
+		
 		--This message is used to maintain a cache.
 		for unit, guid in pairs(units_changed) do
 			updated = true
 -- print("Grid_UnitChanged -->", unit, guid)
 			self:SendMessage("Grid_UnitChanged", unit, guid)
 			units_updated[unit] = guid
+			units_changed[unit] = nil
 		end
-		wipe(units_changed)
 
 		--Grid2 uses this message internally to update indicators.
 		for unit, guid in pairs(units_updated) do
 			self:SendMessage("Grid_UnitUpdate", unit, guid)
+			units_updated[unit] = nil
 		end
-		wipe(units_updated)
 
 		if updated then
 			self:SendMessage("Grid_RosterUpdated")
