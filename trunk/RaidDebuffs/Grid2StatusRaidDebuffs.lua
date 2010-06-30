@@ -70,6 +70,20 @@ local spellDB = {
 		60708,--Fade Armor (N, H)
 		57491,--Flame Tsunami (N, H)
 	},
+	[BZ["The Ruby Sanctum"]] = {
+		--Baltharus the Warborn
+		74502,--Enervating Brand
+
+		--General Zarithrian
+		74367,--Cleave Armor
+
+		--Saviana Ragefire
+		74452,--Conflagration
+
+		--Halion
+		74562,--Fiery Combustion
+		74567,--Mark of Combustion
+	},
 	[BZ["Trial of the Crusader"]] = {
 		--Gormok the Impaler
 		66331, 67477, 67478, 67479,--Impale(10, 25, 10H, 25H)
