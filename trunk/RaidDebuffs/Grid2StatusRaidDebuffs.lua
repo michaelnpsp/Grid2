@@ -83,6 +83,8 @@ local spellDB = {
 		--Halion
 		74562,--Fiery Combustion
 		74567,--Mark of Combustion
+		74792,--Soul Consumption
+		74795,--Mark of Consumption
 	},
 	[BZ["Trial of the Crusader"]] = {
 		--Gormok the Impaler
