@@ -5,7 +5,7 @@ local function Icon_Create(self, parent)
 	local borderSize = self.dbx.borderSize
 	if (borderSize) then
 		f:SetBackdrop({
-			edgeFile = "Interface\\Addons\\Grid\\white16x16", edgeSize = borderSize,
+			edgeFile = "Interface\\Addons\\Grid2\\white16x16", edgeSize = borderSize,
 			insets = {left = borderSize, right = borderSize, top = borderSize, bottom = borderSize},
 		})
 	else

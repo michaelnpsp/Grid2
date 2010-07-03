@@ -9,7 +9,7 @@ local function Square_Create(self, parent)
 	if (borderSize) then
 		Square:SetBackdrop({
 			bgFile = "Interface\\Addons\\Grid2\\white16x16", tile = true, tileSize = 16,
-			edgeFile = "Interface\\Addons\\Grid\\white16x16", edgeSize = borderSize,
+			edgeFile = "Interface\\Addons\\Grid2\\white16x16", edgeSize = borderSize,
 			insets = {left = borderSize, right = borderSize, top = borderSize, bottom = borderSize},
 		})
 	else
@@ -55,7 +55,7 @@ local function Square_SetBorderSize(self, parent, borderSize)
 	local backdrop = f:GetBackdrop()
 
 	if (borderSize) then
-		backdrop.edgeFile = "Interface\\Addons\\Grid\\white16x16"
+		backdrop.edgeFile = "Interface\\Addons\\Grid2\\white16x16"
 		backdrop.edgeSize = borderSize
 	else
 		backdrop.edgeFile = nil
