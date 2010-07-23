@@ -25,12 +25,16 @@ function Grid2StatusRaidDebuffsOptions.UpgradeDefaults(dblData)
 		DBL:SetupMapObject(dblData, "statusMap", layer, "center-left", "debuff-Inoculated", 110)
 		DBL:SetupLayerObject(dblData, "statuses", layer, "debuff-DominateMind", {type = "debuff", spellName = 71289, color1 = {r=.5,g=0,b=1,a=1}})
 		DBL:SetupMapObject(dblData, "statusMap", layer, "center-left", "debuff-DominateMind", 110)
+		DBL:SetupLayerObject(dblData, "statuses", layer, "debuff-DreamState", {type = "debuff", spellName = 70766, color1 = {r=.5,g=0,b=1,a=1}})
+		DBL:SetupMapObject(dblData, "statusMap", layer, "center-left", "debuff-DreamState", 110)
 
 		DBL:SetupLayerObject(dblData, "indicators", layer, "center-right", {type = "icon", level = 9, location = "center-right", size = 16, fontSize = 8,})
 		DBL:SetupLayerObject(dblData, "statuses", layer, "debuff-UnchainedMagic", {type = "debuff", spellName = 69762, color1 = {r=.5,g=0,b=1,a=1}})
 		DBL:SetupMapObject(dblData, "statusMap", layer, "center-right", "debuff-UnchainedMagic", 110)
 		DBL:SetupLayerObject(dblData, "statuses", layer, "debuff-PlagueSickness", {type = "debuff", spellName = 73117, color1 = {r=.5,g=0,b=1,a=1}})
 		DBL:SetupMapObject(dblData, "statusMap", layer, "center-right", "debuff-PlagueSickness", 110)
+		DBL:SetupLayerObject(dblData, "statuses", layer, "debuff-NecroticPlague", {type = "debuff", spellName = 70337, color1 = {r=.5,g=0,b=1,a=1}})
+		DBL:SetupMapObject(dblData, "statusMap", layer, "center-right", "debuff-NecroticPlague", 110)
 		
 		versionsSrc.Grid2StatusRaidDebuffsOptions = 1
 	end
