@@ -323,7 +323,7 @@ local spellDB = {
 		69242,--Soul Shriek
 		69409,--Soul Reaper
 		70541,73779,73780,73781,--Infest
-		70337,70338,73785,73786,73787,73912,73913,73914,--Necrotic Plague
+--		70337,70338,73785,73786,73787,73912,73913,73914,--Necrotic Plague
 		27177,--Defile
 		68980,--Harvest Soul
 	},
