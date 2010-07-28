@@ -2,22 +2,48 @@ package-as: Grid2
 
 externals:
 	Libs/LibStub: svn://svn.wowace.com/wow/libstub/mainline/tags/1.0
-	Libs/CallbackHandler-1.0: svn://svn.wowace.com/wow/callbackhandler/mainline/trunk/CallbackHandler-1.0
-	Libs/AceAddon-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceAddon-3.0
-	Libs/AceBucket-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceBucket-3.0
-	Libs/AceConsole-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConsole-3.0
-	Libs/AceHook-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceHook-3.0
-	Libs/AceEvent-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceEvent-3.0
-	Libs/AceDB-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDB-3.0
-	Libs/AceDBOptions-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDBOptions-3.0
-	Libs/AceGUI-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceGUI-3.0
-	Libs/AceConfig-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConfig-3.0
-	Libs/AceLocale-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceLocale-3.0
-	Libs/AceTimer-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceTimer-3.0
+	Libs/CallbackHandler-1.0:
+		url: svn://svn.wowace.com/wow/callbackhandler/mainline/trunk/CallbackHandler-1.0
+		tag: latest
+	Libs/AceAddon-3.0:
+		url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceAddon-3.0
+		tag: latest
+	Libs/AceBucket-3.0:
+		url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceBucket-3.0
+		tag: latest
+	Libs/AceConsole-3.0:
+		url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConsole-3.0
+		tag: latest
+	Libs/AceHook-3.0:
+		url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceHook-3.0
+		tag: latest
+	Libs/AceEvent-3.0:
+		url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceEvent-3.0
+		tag: latest
+	Libs/AceDB-3.0:
+		url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDB-3.0
+		tag: latest
+	Libs/AceDBOptions-3.0:
+		url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDBOptions-3.0
+		tag: latest
+	Libs/AceGUI-3.0:
+		url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceGUI-3.0
+		tag: latest
+	Libs/AceConfig-3.0:
+		url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConfig-3.0
+		tag: latest
+	Libs/AceLocale-3.0:
+		url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceLocale-3.0
+		tag: latest
+	Libs/AceTimer-3.0:
+		url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceTimer-3.0
+		tag: latest
 	Libs/LibDBLayers-1.0: svn://svn.wowace.com/wow/libdblayers-1-0/mainline/trunk/LibDBLayers-1.0
 	Libs/LibHealComm-4.0: git://git.wowace.com/wow/libhealcomm-4-0/mainline.git
 	Libs/UTF8: http://grid.13th-floor.org/svn/trunk/UTF8
-	RaidDebuffs/Libs/LibBabble-Zone-3.0: svn://svn.wowace.com/wow/libbabble-zone-3-0/mainline/trunk
+	RaidDebuffs/Libs/LibBabble-Zone-3.0:
+		url: svn://svn.wowace.com/wow/libbabble-zone-3-0/mainline/trunk
+		tag: latest
 
 move-folders:
 	Grid2/Options: Grid2Options
