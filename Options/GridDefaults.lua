@@ -44,14 +44,14 @@ function Grid2Options:GetDBObjects(db, charKey, classKey, specKey)
 	local setup = db["setup-layers"][profileCurrentKey]
 	local objects = db.objects
 	local versions = db.versions
-	
+
 	return setup, objects, versions
 end
 
 
 function Grid2Options:InitializeDefaults(dblData)
 	local layerOrder = Grid2Options.layerOrder
-	
+
 	DBL:InitializeObjectType(dblData, "locations", layerOrder)
 	DBL:InitializeObjectType(dblData, "indicators", layerOrder)
 	DBL:InitializeObjectType(dblData, "statuses", layerOrder)
@@ -61,7 +61,7 @@ end
 function Grid2Options.UpgradeDefaults(dblData)
 	local versionsSrc = dblData.versionsSrc
 	local layers = Grid2Options.layers
-	
+
 	Grid2Options:MakeDefaults(dblData, versionsSrc, layers)
 end
 
@@ -180,7 +180,7 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 					end
 				end
 				DBL:SetupLayerObject(dblData, "statuses", layer, "classcolor", {type = "classcolor", colorHostile = true, colors = colors})
-				
+
 				DBL:SetupLayerObject(dblData, "statuses", layer, "death", {type = "death", color1 = {r=1,g=1,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "feign-death", {type = "feign-death", color1 = {r=1,g=.5,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "health-current", {type = "health-current", color1 = {r=0,g=1,b=0,a=1}, deadAsFullHealth = nil})
@@ -312,12 +312,12 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-top-color", "buff-FlashOfLight-mine", 99)
 
 				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-right", {type = "text", level = 9, location = "corner-top-right", textlength = 12, fontSize = 8, font = defaultFont, duration = true})
-				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right", "SacredShield", 99)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right", "SacredShield-mine", 89)
+				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right", "buff-SacredShield", 99)
+				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right", "buff-SacredShield-mine", 89)
 
 				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-right-color", {type = "text-color"})
-				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right-color", "SacredShield", 99)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right-color", "SacredShield-mine", 89)
+				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right-color", "buff-SacredShield", 99)
+				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right-color", "buff-SacredShield-mine", 89)
 
 				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-bottom-left", {type = "square", level = 5, location = "corner-bottom-left", size = 5, color1 = {r=1,g=1,b=1,a=1},})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-bottom-left", "buff-HandOfSalvation", 101)
