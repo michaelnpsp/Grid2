@@ -330,7 +330,7 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right", "buff-HandOfProtection-mine", 93)
 
 				DBL:SetupLayerObject(dblData, "indicators", layer, "side-left", {type = "square", level = 9, location = "side-left", size = 5,})
-				DBL:SetupMapObject(dblData, "statusMap", layer, "side-left", "SacredShield-mine", 99)
+				DBL:SetupMapObject(dblData, "statusMap", layer, "side-left", "buff-SacredShield-mine", 99)
 
 				DBL:SetupLayerObject(dblData, "indicators", layer, "center-left", {type = "icon", level = 9, location = "center-left", size = 16, fontSize = 8,})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "center-left", "debuff-Magic", 40)
