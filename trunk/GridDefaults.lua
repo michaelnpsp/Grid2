@@ -73,6 +73,7 @@ end
 
 local handlerArray = {}
 function Grid2:MakeBuffColorHandler(status)
+	assert(status.GetCount)
 	local dbx = status.dbx
 	local colorCount = dbx.colorCount or 1
 
@@ -99,6 +100,7 @@ function Grid2:MakeBuffColorHandler(status)
 end
 
 function Grid2:MakeDebuffColorHandler(status)
+	assert(status.GetCount)
 	local dbx = status.dbx
 	local colorCount = dbx.colorCount or 1
 	if (colorCount <= 0) then
