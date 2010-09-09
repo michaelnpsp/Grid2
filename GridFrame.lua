@@ -20,15 +20,17 @@ function GridFrameEvents:OnHide()
 end
 
 function GridFrameEvents:OnAttributeChanged(name, value)
-	if (name == "unit") then
+	if name == "unit" then
 		if value then
 			local unit = SecureButton_GetModifiedUnit(self)
-			self.unit = unit
+			if self.unit ~= unit then
+				self.unit = unit
 
-			Grid2Frame:Debug("updated", self:GetName(), name, value, unit)
-			Grid2Frame:UpdateIndicators(self)
-			Grid2:SetFrameUnit(self, unit)
-		else
+				Grid2Frame:Debug("updated", self:GetName(), name, value, unit)
+				Grid2Frame:UpdateIndicators(self)
+				Grid2:SetFrameUnit(self, unit)
+			end
+		elseif self.unit then
 			Grid2Frame:Debug("removed", self:GetName(), name, self.unit)
 			self.unit = nil
 			Grid2:SetFrameUnit(self, nil)
