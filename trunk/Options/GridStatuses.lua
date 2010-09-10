@@ -718,7 +718,7 @@ local NewAuraHandlerMT = {
 		return true
 	end,
 }
-
+NewAuraHandlerMT.__index = NewAuraHandlerMT
 
 local NewBuffHandler = setmetatable({type = "buff", color = {r=1,g=1,b=1,a=1}}, NewAuraHandlerMT)
 
