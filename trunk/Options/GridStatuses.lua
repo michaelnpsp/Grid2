@@ -638,229 +638,177 @@ function Grid2Options:GetAvailableStatusValues(indicator, statusAvailable)
 	return statusAvailable
 end
 
-local function getBuffKey(name, mine)
-	name = Grid2Options:GetValidatedName(name)
-	if (name and name ~= "") then
-		return "buff-" .. name .. (mine and "-mine" or "")
-	else
-		return nil
-	end
-end
-
-local newStatusBuffName = ""
-local function getNewStatusBuffNameValue()
-	return newStatusBuffName
-end
-local function setNewStatusBuffNameValue(info, buffName)
-	newStatusBuffName = buffName
-end
-
-
-local newStatusBuffMine = true
-local function getNewStatusBuffMine()
-	return newStatusBuffMine
-end
-local function setNewStatusBuffMine(info, mine)
-	newStatusBuffMine = mine
-end
-
-
-local function setNewStatusBuffMine(info, mine)
-	newStatusBuffMine = mine
-end
-
-
-local newBuffLayerIndex = 1
-local function getNewBuffLayer(info)
-	return newBuffLayerIndex
-end
-
-local function setNewBuffLayer(info, index)
-	newBuffLayerIndex = index
-end
-
-
-local function NewStatusBuff()
-	local baseKey = getBuffKey(newStatusBuffName, newStatusBuffMine)
-	if (baseKey) then
-		--Add to options and runtime db
-		local dblData = Grid2.dblData
-		local dbx = {type = "buff", spellName = newStatusBuffName, mine = newStatusBuffMine, color1 = {r=1,g=1,b=1,a=1}}
-		local layer = Grid2Options.statusLayers[newBuffLayerIndex]
-
--- print("NewStatusBuff", layer, baseKey)
-		DBL:SetupLayerObject(dblData, "statuses", layer, baseKey, dbx)
-		DBL:FlattenSetupType(dblData, "statuses")
-
-		--Create the status
-		dbx = DBL:GetRuntimeDbx(dblData, "statuses", baseKey)
-		local status = Grid2.setupFunc[dbx.type](baseKey, dbx)
-
-		--Create the status options
-		local funcMakeOptions = Grid2Options.typeMakeOptions[dbx.type]
-		local optionParams = Grid2Options.optionParams[dbx.type]
-		local options, subType = funcMakeOptions(self, status, options, optionParams)--, nil, baseKey, statuses)
-		if (subType) then
-			Grid2Options:AddElementSubType("status", subType, status, options)
-		elseif (options) then
-			Grid2Options:AddElement("status", status, options)
+local NewAuraHandlerMT = {
+	Init = function (self)
+		self.name = ""
+		self.mine = 1
+		self.layer = 1
+	end,
+	GetKey = function (self)
+		local name = Grid2Options:GetValidatedName(name)
+		if name == "" then return end
+		local mine = self.mine
+		if mine == 2 then
+			mine = "-not-mine"
+		elseif mine then
+			mine = "-mine"
+		else
+			mine = ""
 		end
-	end
-end
+		return self.type.."-"..name..mine
+	end,
+	GetName = function (self)
+		return self.name
+	end,
+	SetName = function (self, info, value)
+		self.name = value
+	end,
+	GetMine = function (self)
+		return self.mine == 1
+	end,
+	SetMine = function (self, info, value)
+		self.mine = value and 1
+	end,
+	GetNotMine = function (self)
+		return self.mine == 2
+	end,
+	SetNotMine = function (self, info, value)
+		self.mine = value and 2
+	end,
+	GetLayer = function (self)
+		return self.layer
+	end,
+	SetLayer = function (self, info, value)
+		self.layer = value
+	end,
+	Create = function (self)
+		local baseKey = self:GetKey()
+		if baseKey then
+			--Add to options and runtime db
+			local dblData = Grid2.dblData
+			local dbx = {type = self.type, spellName = self.name, mine = self.mine, color1 = self.color}
+			local layer = Grid2Options.statusLayers[self.layer]
 
-local function NewStatusBuffDisabled()
-	local statusKey = getBuffKey(newStatusBuffName, newStatusBuffMine)
-	if (statusKey) then
-		local statuses = DBL:GetRuntimeSetup(Grid2.dblData, "statuses")
-		if (not statuses[statusKey]) then
-			return false
+			-- print("NewStatusBuff", layer, baseKey)
+			DBL:SetupLayerObject(dblData, "statuses", layer, baseKey, dbx)
+			DBL:FlattenSetupType(dblData, "statuses")
+
+			--Create the status
+			dbx = DBL:GetRuntimeDbx(dblData, "statuses", baseKey)
+			local status = Grid2.setupFunc[dbx.type](baseKey, dbx)
+
+			--Create the status options
+			local funcMakeOptions = Grid2Options.typeMakeOptions[dbx.type]
+			local optionParams = Grid2Options.optionParams[dbx.type]
+			local options, subType = funcMakeOptions(self, status, options, optionParams)--, nil, baseKey, statuses)
+			if subType then
+				Grid2Options:AddElementSubType("status", subType, status, options)
+			elseif options then
+				Grid2Options:AddElement("status", status, options)
+			end
+			self:Init()
 		end
-	end
-	return true
-end
-
-local function MakeStatusBuffCreateOptions(reset)
-	local options = {
-		newStatusBuffName = {
-			type = "input",
-			order = 1,
-			width = "full",
-			name = L["Name"],
-			usage = L["<CharacterOnlyString>"],
-			get = getNewStatusBuffNameValue,
-			set = setNewStatusBuffNameValue,
-		},
-		newStatusBuffMine = {
-			type = "toggle",
-			order = 2,
-			name = L["Show if mine"],
-			desc = L["Display status only if the buff was cast by you."],
-			tristate = true,
-			get = getNewStatusBuffMine,
-			set = setNewStatusBuffMine,
-		},
-		newBuffLayer = {
-		    type = 'select',
-			order = 5,
-			name = L["Layer"],
-			desc = L["Layer level.  Higher layers (like Class or Spec) supercede lower ones like Account."],
-		    values = Grid2Options.GetStatusLayerValues,
-			get = getNewBuffLayer,
-			set = setNewBuffLayer,
-		},
-		newStatusBuff = {
-			type = "execute",
-			order = 10,
-			name = L["New Status"],
-			desc = L["Create a new status."],
-			func = NewStatusBuff,
-			disabled = NewStatusBuffDisabled,
-		},
-	}
-	return options
-end
-
-
-
-local newStatusDebuffName = ""
-
-local function getDebuffKey(name)
-	name = Grid2Options:GetValidatedName(name)
-	if (name and name ~= "") then
-		return "debuff-" .. name
-	else
-		return nil
-	end
-end
-
-local function getNewStatusDebuffNameValue()
-	return newStatusDebuffName
-end
-
-local function setNewStatusDebuffNameValue(info, debuffName)
-	newStatusDebuffName = debuffName
-end
-
-local newDebuffLayerIndex = 1
-local function getNewDebuffLayer(info)
-	return newDebuffLayerIndex
-end
-
-local function setNewDebuffLayer(info, index)
-	newDebuffLayerIndex = index
-end
-
-local function NewStatusDebuff()
-	local baseKey = getDebuffKey(newStatusDebuffName)
-	if (baseKey) then
-		--Add to options and runtime db
-		local dblData = Grid2.dblData
-		local dbx = {type = "debuff", spellName = newStatusDebuffName, color1 = {r=1,g=.2,b=.2,a=1}}
-		local layer = Grid2Options.statusLayers[newDebuffLayerIndex]
-
-		DBL:SetupLayerObject(dblData, "statuses", layer, baseKey, dbx)
-		DBL:FlattenSetupType(dblData, "statuses")
-
-		--Create the status
-		dbx = DBL:GetRuntimeDbx(dblData, "statuses", baseKey)
-		local status = Grid2.setupFunc[dbx.type](baseKey, dbx)
-
-		--Create the status options
-		local funcMakeOptions = Grid2Options.typeMakeOptions[dbx.type]
-		local optionParams = Grid2Options.optionParams[dbx.type]
-		local options, subType = funcMakeOptions(self, status, options, optionParams)--, nil, baseKey, statuses)
-		if (subType) then
-			Grid2Options:AddElementSubType("status", subType, status, options)
-		elseif (options) then
-			Grid2Options:AddElement("status", status, options)
+	end,
+	IsDisabled = function (self)
+		local key = self:GetKey()
+		if key then
+			local statuses = DBL:GetRuntimeSetup(Grid2.dblData, "statuses")
+			return not not statuses[key]
 		end
-	end
-end
-
-local function NewStatusDebuffDisabled()
-	local statusKey = getDebuffKey(newStatusDebuffName)
-	if (statusKey) then
-		local statuses = DBL:GetRuntimeSetup(Grid2.dblData, "statuses")
-		if (not statuses[statusKey]) then
-			return false
-		end
-	end
-	return true
-end
-
-local function MakeStatusDebuffCreateOptions(reset)
-	local options = {
-		newStatusDebuffName = {
-			type = "input",
-			order = 1,
-			width = "full",
-			name = L["Name"],
-			usage = L["<CharacterOnlyString>"],
-			get = getNewStatusDebuffNameValue,
-			set = setNewStatusDebuffNameValue,
-		},
-		newDebuffLayer = {
-		    type = 'select',
-			order = 5,
-			name = L["Layer"],
-			desc = L["Layer level.  Higher layers (like Class or Spec) supercede lower ones like Account."],
-		    values = Grid2Options.GetStatusLayerValues,
-			get = getNewDebuffLayer,
-			set = setNewDebuffLayer,
-		},
-		newStatusDebuff = {
-			type = "execute",
-			order = 10,
-			name = L["New Status"],
-			desc = L["Create a new status."],
-			func = NewStatusDebuff,
-			disabled = NewStatusDebuffDisabled,
-		},
-	}
-	return options
-end
+		return true
+	end,
+}
 
 
+local NewBuffHandler = setmetatable({type = "buff", color = {r=1,g=1,b=1,a=1}}, NewAuraHandlerMT)
+
+NewBuffHandler.options = {
+	newStatusBuffName = {
+		type = "input",
+		order = 1,
+		width = "full",
+		name = L["Name"],
+		usage = L["<CharacterOnlyString>"],
+		get = "GetName",
+		set = "SetName",
+		handler = NewBuffHandler,
+	},
+	newStatusBuffMine = {
+		type = "toggle",
+		order = 2,
+		name = L["Show if mine"],
+		desc = L["Display status only if the buff was cast by you."],
+		get = "GetMine",
+		set = "SetMine",
+		disabled = "GetNotMine",
+		handler = NewBuffHandler,
+	},
+	newStatusBuffNotMine = {
+		type = "toggle",
+		order = 3,
+		name = L["Show if not mine"],
+		desc = L["Display status only if the buff was not cast by you."],
+		get = "GetNotMine",
+		set = "SetNotMine",
+		disabled = "GetMine",
+		handler = NewBuffHandler,
+	},
+	newBuffLayer = {
+		type = 'select',
+		order = 5,
+		name = L["Layer"],
+		desc = L["Layer level.  Higher layers (like Class or Spec) supercede lower ones like Account."],
+		values = Grid2Options.GetStatusLayerValues,
+		get = "GetLayer",
+		set = "SetLayer",
+		handler = NewBuffHandler,
+	},
+	newStatusBuff = {
+		type = "execute",
+		order = 10,
+		name = L["New Status"],
+		desc = L["Create a new status."],
+		func = "Create",
+		disabled = "IsDisabled",
+		handler = NewBuffHandler,
+	},
+}
+NewBuffHandler:Init()
+
+local NewDebuffHandler = setmetatable({type = "debuff", color = {r=1,g=.2,b=.2,a=1}}, NewAuraHandlerMT)
+
+NewDebuffHandler.options = {
+	newStatusDebuffName = {
+		type = "input",
+		order = 1,
+		width = "full",
+		name = L["Name"],
+		usage = L["<CharacterOnlyString>"],
+		get = "GetName",
+		set = "SetName",
+		handler = NewDebuffHandler,
+	},
+	newDebuffLayer = {
+		type = 'select',
+		order = 5,
+		name = L["Layer"],
+		desc = L["Layer level.  Higher layers (like Class or Spec) supercede lower ones like Account."],
+		values = Grid2Options.GetStatusLayerValues,
+		get = "GetLayer",
+		set = "SetLayer",
+		handler = NewDebuffHandler,
+	},
+	newStatusDebuff = {
+		type = "execute",
+		order = 10,
+		name = L["New Status"],
+		desc = L["Create a new status."],
+		func = "Create",
+		disabled = "IsDisabled",
+		handler = NewDebuffHandler,
+	},
+}
+NewDebuffHandler:Init()
 
 function ResetStatuses()
 	local setup = Grid2.db.profile.setup
@@ -1072,8 +1020,8 @@ function Grid2Options:MakeStatusHandlers(dblData, reset)
 			colorDesc1 = L["Voice Chat"],
 	})
 
-	Grid2Options:AddElementSubTypeGroup("status", "buff", MakeStatusBuffCreateOptions(), reset)
-	Grid2Options:AddElementSubTypeGroup("status", "debuff", MakeStatusDebuffCreateOptions(), reset)
+	Grid2Options:AddElementSubTypeGroup("status", "buff", NewBuffHandler.options, reset)
+	Grid2Options:AddElementSubTypeGroup("status", "debuff", NewDebuffHandler.options, reset)
 end
 
 function Grid2Options:MakeStatusOptions(dblData, reset)
