@@ -218,6 +218,19 @@ local function status_UpdateStateMine(self, unit, auraName, iconTexture, count, 
 	end
 end
 
+local function status_UpdateStateNotMine(self, unit, auraName, iconTexture, count, duration, expiration, isMine)
+	if self.auraName == auraName and not isMine then
+		self.states[unit] = true
+		self.textures[unit] = iconTexture
+		self.counts[unit] = count
+		self.durations[unit] = duration
+		self.expirations[unit] = expiration
+		self.new_state = self:IsActive(unit)
+		self.new_count = count
+		self.new_expiration = expiration
+	end
+end
+
 local function status_HasStateChanged(self, unit)
 	return (self.new_state ~= self.prev_state) or (self.new_count ~= self.prev_count) or (self.new_expiration ~= self.prev_expiration)
 end
@@ -316,14 +329,20 @@ function Grid2.CreateBuff(baseKey, dbx, statusTypesOverride)
 		BuffHandlers[self] = nil
 	end
 
-	if (dbx.missing) then
+	if dbx.missing then
 		-- Initialize the texture for "missing" status
 		-- Note that this means missing statuses only ever display this one texture
 		local _, _, texture = GetSpellInfo(dbx.spellName)
 		status.missingTexture = texture
 	end
 
-	status.UpdateState = dbx.mine and status_UpdateStateMine or status_UpdateState
+	if dbx.mine == 2 then
+		status.UpdateState = status_UpdateStateNotMine
+	elseif dbx.mine then
+		status.UpdateState = status_UpdateStateMine
+	else
+		status.UpdateState = status_UpdateState
+	end
 
 	Grid2:RegisterStatus(status, statusTypesOverride or statusTypes, baseKey, dbx)
 	Grid2:MakeBuffColorHandler(status)
