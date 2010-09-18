@@ -645,7 +645,7 @@ local NewAuraHandlerMT = {
 		self.layer = 1
 	end,
 	GetKey = function (self)
-		local name = Grid2Options:GetValidatedName(name)
+		local name = Grid2Options:GetValidatedName(self.name)
 		if name == "" then return end
 		local mine = self.mine
 		if mine == 2 then
