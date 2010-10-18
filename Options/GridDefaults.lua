@@ -223,7 +223,7 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-Lifebloom-mine", {type = "buff", spellName = 33763, mine = true, colorCount = 3, color1 = {r=.2,g=.7,b=.2,a=1}, color2 = {r=.6,g=.9,b=.6,a=1}, color3 = {r=1,g=1,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-Rejuv-mine", {type = "buff", spellName = 774, mine = true, color1 = {r=1,g=0,b=.6,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-Regrowth-mine", {type = "buff", spellName = 8936, mine = true, color1 = {r=.5,g=1,b=0,a=1}})
-				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-WildGrowth-mine", {type = "buff", spellName = 53248, mine = true, color1 = {r=0.2,g=.9,b=.2,a=1}})
+				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-WildGrowth-mine", {type = "buff", spellName = 48438, mine = true, color1 = {r=0.2,g=.9,b=.2,a=1}})
 
 				DBL:SetupLayerObject(dblData, "indicators", layer, "side-top", {type = "text", level = 9, location = "side-top", textlength = 12, fontSize = 8, font = defaultFont, duration = true})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-top", "buff-Regrowth-mine", 99)
@@ -272,16 +272,12 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-left", {type = "square", level = 9, location = "corner-top-left", size = 5,})
 				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-right", {type = "square", level = 9, location = "corner-top-right", size = 5,})
 
-				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-AmplifyMagic", {type = "buff", spellName = 33946, color1 = {r=0,g=0,b=1,a=1}})
-				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-DampenMagic", {type = "buff", spellName = 33944, color1 = {r=.4,g=.2,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-FocusMagic", {type = "buff", spellName = 54646, color1 = {r=.11,g=.22,b=.33,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-IceArmor-mine", {type = "buff", spellName = 7302, mine = true, missing = true, color1 = {r=.2,g=.4,b=.4,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-IceBarrier-mine", {type = "buff", spellName = 11426, mine = true, missing = true, color1 = {r=1,g=1,b=1,a=1}})
 
 				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "debuff-Curse", 20)
 
-				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right", "buff-AmplifyMagic", 99)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-left", "buff-DampenMagic", 99)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-bottom-right", "buff-FocusMagic", 99)
 
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-IceArmor-mine", 79)
@@ -307,12 +303,8 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-top-color", "buff-FlashOfLight-mine", 99)
 
 				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-right", {type = "text", level = 9, location = "corner-top-right", textlength = 12, fontSize = 8, font = defaultFont, duration = true})
-				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right", "buff-SacredShield", 99)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right", "buff-SacredShield-mine", 89)
 
 				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-top-right-color", {type = "text-color"})
-				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right-color", "buff-SacredShield", 99)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right-color", "buff-SacredShield-mine", 89)
 
 				DBL:SetupLayerObject(dblData, "indicators", layer, "corner-bottom-left", {type = "square", level = 5, location = "corner-bottom-left", size = 5, color1 = {r=1,g=1,b=1,a=1},})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-bottom-left", "buff-HandOfSalvation", 101)
@@ -325,7 +317,6 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				DBL:SetupMapObject(dblData, "statusMap", layer, "corner-top-right", "buff-HandOfProtection-mine", 93)
 
 				DBL:SetupLayerObject(dblData, "indicators", layer, "side-left", {type = "square", level = 9, location = "side-left", size = 5,})
-				DBL:SetupMapObject(dblData, "statusMap", layer, "side-left", "buff-SacredShield-mine", 99)
 
 				DBL:SetupLayerObject(dblData, "indicators", layer, "center-left", {type = "icon", level = 9, location = "center-left", size = 16, fontSize = 8,})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "center-left", "debuff-Magic", 40)
@@ -334,22 +325,18 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				DBL:SetupLayerObject(dblData, "indicators", layer, "center-right", {type = "icon", level = 9, location = "center-right", size = 16, fontSize = 8,})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "center-right", "debuff-Disease", 10)
 
-				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-BeaconOfLight", {type = "buff", spellName = 53654, color1 = {r=.7,g=1,b=1,a=1}})
-				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-BeaconOfLight-mine", {type = "buff", spellName = 53654, mine = true, color1 = {r=1,g=1,b=1,a=1}})
-				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-DivineIntervention", {type = "buff", spellName = 19752, color1 = {r=1,g=1,b=1,a=1}})
-				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-FlashOfLight-mine", {type = "buff", spellName = 66922, mine = true, color1 = {r=1,g=1,b=1,a=1}})
+				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-BeaconOfLight", {type = "buff", spellName = 53653, color1 = {r=.7,g=1,b=1,a=1}})
+				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-BeaconOfLight-mine", {type = "buff", spellName = 53653, mine = true, color1 = {r=1,g=1,b=1,a=1}})
+				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-FlashOfLight-mine", {type = "buff", spellName = 19750, mine = true, color1 = {r=1,g=1,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-LightsBeacon-mine", {type = "buff", spellName = 53651, mine = true, color1 = {r=1,g=1,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-DivineShield-mine", {type = "buff", spellName = 642, mine = true, color1 = {r=1,g=1,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-DivineProtection-mine", {type = "buff", spellName = 498, mine = true, color1 = {r=1,g=1,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-HandOfProtection-mine", {type = "buff", spellName = 1022, mine = true, color1 = {r=1,g=1,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-HandOfSalvation", {type = "buff", spellName = 1038, color1 = {r=1,g=1,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-HandOfSalvation-mine", {type = "buff", spellName = 1038, mine = true, color1 = {r=.8,g=.8,b=.7,a=1}})
-				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-SacredShield", {type = "buff", spellName = 53601, mine = true, color1 = {r=1,g=1,b=1,a=1}})
-				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-SacredShield-mine", {type = "buff", spellName = 53601, mine = true, color1 = {r=.8,g=.9,b=.9,a=1}})
 
 				DBL:SetupLayerObject(dblData, "statuses", layer, "debuff-Forbearance", {type = "debuff", spellName = 25771, color1 = {r=1,g=0,b=0,a=1}})
 
-				DBL:SetupMapObject(dblData, "statusMap", layer, "icon-center", "buff-DivineIntervention", 99)
 
 				versions.paladin.Grid2Options = 1
 			end
@@ -441,10 +428,9 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-SoulLink-mine", {type = "buff", spellName = 19028, mine = true, color1 = {r=1,g=1,b=1,a=1}})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-SoulLink-mine", 99)
 
-				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-DemonArmor-mine", {type = "buff", spellName = 706, mine = true, missing = true, color1 = {r=1,g=1,b=1,a=1}})
-				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-DemonSkin-mine", {type = "buff", spellName = 696, mine = true, missing = true, color1 = {r=1,g=1,b=1,a=1}})
+				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-DemonArmor-mine", {type = "buff", spellName = 687, mine = true, missing = true, color1 = {r=1,g=1,b=1,a=1}})
 
-				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-FelArmor-mine", {type = "buff", spellName = 28189, mine = true, missing = true, color1 = {r=1,g=1,b=1,a=1}})
+				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-FelArmor-mine", {type = "buff", spellName = 28176, mine = true, missing = true, color1 = {r=1,g=1,b=1,a=1}})
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-FelArmor-mine", 99)
 
 				versions.warlock.Grid2Options = 1
