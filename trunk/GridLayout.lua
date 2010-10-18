@@ -10,10 +10,8 @@ local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 --{{{ Frame config function for secure headers
 
-local function GridLayout_InitialConfigFunction(frame)
+local function GridHeader_InitialConfigFunction(self, frame)
 	Grid2Frame:RegisterFrame(frame)
-	frame:SetAttribute("useparent-allowVehicleTarget", "1")
-	frame:SetAttribute("useparent-toggleForVehicle", "1")
 end
 
 --}}}
@@ -37,8 +35,20 @@ local GridLayoutHeaderClass = {
 			frame = CreateFrame("Frame", "Grid2LayoutHeader"..NUM_HEADERS, Grid2Layout.frame)
 		else
 			frame = CreateFrame("Frame", "Grid2LayoutHeader"..NUM_HEADERS, Grid2Layout.frame, assert(SecureHeaderTemplates[type]))
-			frame:SetAttribute("template", "SecureUnitButtonTemplate")
-			frame.initialConfigFunction = GridLayout_InitialConfigFunction
+			frame:SetAttribute("template",
+				ClickCastHeader and "ClickCastUnitTemplate,SecureUnitButtonTemplate" or "SecureUnitButtonTemplate")
+			frame.initialConfigFunction = GridHeader_InitialConfigFunction
+			frame:SetAttribute("initialConfigFunction", [[
+				RegisterUnitWatch(self)
+				self:SetAttribute("*type1", "target")
+				self:SetAttribute("toggleForVehicle", true)
+				local header = self:GetParent()
+				if header:GetAttribute("unitsuffix") == "pet" then
+					self:SetAttribute("useOwnerUnit", true)
+					self:SetAttribute("unitsuffix", "pet")
+				end
+				header:CallMethod("initialConfigFunction", self)
+			]])
 		end
 		for name, func in pairs(self.prototype) do
 			frame[name] = func

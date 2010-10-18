@@ -86,7 +86,7 @@ function GridRange:ScanSpellbook()
 
 	local i = 1
 	while true do
-		local name, rank = GetSpellName(i, BOOKTYPE_SPELL)
+		local name, rank = GetSpellBookItemName(i, BOOKTYPE_SPELL)
 		if not name then break end
 		-- beneficial spell with a range
 		if name == rezSpell then

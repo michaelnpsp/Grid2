@@ -1,6 +1,5 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 local DBL = LibStub:GetLibrary("LibDBLayers-1.0")
-local HealComm = LibStub:GetLibrary("LibHealComm-4.0", true)
 
 Grid2Options.healers = {
 	druid = true,
@@ -186,7 +185,7 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				DBL:SetupLayerObject(dblData, "statuses", layer, "health-current", {type = "health-current", color1 = {r=0,g=1,b=0,a=1}, deadAsFullHealth = nil})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "health-deficit", {type = "health-deficit", threshold = 0.2})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "health-low", {type = "health-low", threshold = 0.4, color1 = {r=1,g=0,b=0,a=1}})
-				DBL:SetupLayerObject(dblData, "statuses", layer, "heals-incoming", {type = "heals-incoming", includePlayerHeals = true, timeFrame = nil, flags = HealComm.ALL_HEALS, color1 = {r=0,g=1,b=0,a=1}})
+				DBL:SetupLayerObject(dblData, "statuses", layer, "heals-incoming", {type = "heals-incoming", includePlayerHeals = true, timeFrame = nil, flags = 0xFF, color1 = {r=0,g=1,b=0,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "lowmana", {type = "lowmana", threshold = 0.75, color1 = {r=0,g=0,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "mana", {type = "mana"})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "name", {type = "name"})
@@ -221,11 +220,9 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 				DBL:SetupLayerObject(dblData, "locations", layer, "side-left-top", {relIndicator = nil, point = "BOTTOM", relPoint = "LEFT", x = 1, y = -2, name = "side-left-top"})
 				DBL:SetupLayerObject(dblData, "locations", layer, "side-left-bottom", {relIndicator = nil, point = "TOP", relPoint = "LEFT", x = 1, y = 2, name = "side-left-bottom"})
 
-				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-AbolishPoison-mine", {type = "buff", spellName = 2893, mine = true, blinkThreshold = 3, color1 = {r=.9,g=1,b=.6,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-Lifebloom-mine", {type = "buff", spellName = 33763, mine = true, colorCount = 3, color1 = {r=.2,g=.7,b=.2,a=1}, color2 = {r=.6,g=.9,b=.6,a=1}, color3 = {r=1,g=1,b=1,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-Rejuv-mine", {type = "buff", spellName = 774, mine = true, color1 = {r=1,g=0,b=.6,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-Regrowth-mine", {type = "buff", spellName = 8936, mine = true, color1 = {r=.5,g=1,b=0,a=1}})
-				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-Thorns", {type = "buff", spellName = 467, missing = true, color1 = {r=.2,g=.05,b=.05,a=1}})
 				DBL:SetupLayerObject(dblData, "statuses", layer, "buff-WildGrowth-mine", {type = "buff", spellName = 53248, mine = true, color1 = {r=0.2,g=.9,b=.2,a=1}})
 
 				DBL:SetupLayerObject(dblData, "indicators", layer, "side-top", {type = "text", level = 9, location = "side-top", textlength = 12, fontSize = 8, font = defaultFont, duration = true})
@@ -254,10 +251,8 @@ function Grid2Options:MakeDefaults(dblData, versions, layers)
 
 				DBL:SetupLayerObject(dblData, "locations", layer, "side-right-bottom", {relIndicator = nil, point = "TOPRIGHT", relPoint = "RIGHT", x = -1, y = -2, name = "side-right-bottom"})
 				DBL:SetupLayerObject(dblData, "indicators", layer, "side-right-bottom", {type = "square", level = 5, location = "side-right-bottom", size = 5,})
-				DBL:SetupMapObject(dblData, "statusMap", layer, "side-right-bottom", "buff-AbolishPoison-mine", 99)
 
 				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-WildGrowth-mine", 99)
-				DBL:SetupMapObject(dblData, "statusMap", layer, "side-bottom", "buff-Thorns", 59)
 
 				versions.druid.Grid2Options = 1
 			end
