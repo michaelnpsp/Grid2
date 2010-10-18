@@ -921,8 +921,6 @@ function Grid2Options:MakeStatusHealsIncomingOptions(status, options, optionPara
 		end,
 	}
 
-	local HealComm = LibStub:GetLibrary("LibHealComm-4.0") -- we know it's available at this point
-
 	options.healTypes = {
 		type = "select",
 		order = 120,
@@ -936,28 +934,19 @@ function Grid2Options:MakeStatusHealsIncomingOptions(status, options, optionPara
 			local baseKey = status.name
 			status.dbx.flags = v
 			DBL:GetOptionsDbx(Grid2.dblData, "statuses", baseKey).flags = v
-			if v == HealComm.ALL_HEALS then
-				status.dbx.timeFrame = 4
-				DBL:GetOptionsDbx(Grid2.dblData, "statuses", baseKey).timeFrame = 4
-			else
-				status.dbx.timeFrame = nil
-				DBL:GetOptionsDbx(Grid2.dblData, "statuses", baseKey).timeFrame = nil
-			end
+			status.dbx.timeFrame = 4
+			DBL:GetOptionsDbx(Grid2.dblData, "statuses", baseKey).timeFrame = 4
 			status:UpdateDB()
 		end,
 		values = {
-			[HealComm.CASTED_HEALS] = L["Casted heals, both direct and channeled"],
-			[HealComm.DIRECT_HEALS] = L["Direct heals only."],
-			[HealComm.ALL_HEALS] = L["All heals, including casted and HoTs"],
+			[0x0F] = L["Casted heals, both direct and channeled"],
+			[0xF0] = L["Direct heals only."],
+			[0xFF] = L["All heals, including casted and HoTs"],
 		},
 	}
 
 	return options
 end
-			-- [HealComm.CASTED_HEALS] = L["Casted: Direct and Channeled"],
-			-- [HealComm.DIRECT_HEALS] = L["Direct heals only."],
-			-- [HealComm.ALL_HEALS] = L["All: Casted and HoTs"],
-
 
 --No options for the status
 function Grid2Options:MakeStatusNoOptions(status, options, optionParams)

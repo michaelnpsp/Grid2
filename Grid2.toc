@@ -1,4 +1,4 @@
-﻿## Interface: 30300
+﻿## Interface: 40000
 ## Title: Grid2
 ## Notes: A modular, lightweight and screen-estate saving grid of party/raid unit frames
 ## Notes-ruRU: Модульный, легкий, отображающий на экране область группы/рейда в виде сетки.
@@ -6,8 +6,8 @@
 ## Notes-zhTW: 精簡的團隊框架功能
 ## Author: Pastamancer & Maia, Jerry, Toadkiller
 
-## OptionalDeps: Ace3, LibHealComm-4.0, LibDBLayers-1.0
-## X-Embeds: Ace3, LibHealComm-4.0, LibDBLayers-1.0
+## OptionalDeps: Ace3, LibDBLayers-1.0
+## X-Embeds: Ace3, LibDBLayers-1.0
 ## SavedVariables: Grid2DB
 ## DefaultState: enabled
 ## LoadOnDemand: 0
@@ -36,7 +36,6 @@ Libs\AceGUI-3.0\AceGUI-3.0.xml
 Libs\AceConfig-3.0\AceConfig-3.0.xml
 Libs\AceLocale-3.0\AceLocale-3.0.xml
 Libs\LibDBLayers-1.0\LibDBLayers-1.0.xml
-Libs\LibHealComm-4.0\LibHealComm-4.0.xml
 #@end-no-lib-strip@
 
 #Locales

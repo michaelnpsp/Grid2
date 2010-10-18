@@ -83,8 +83,6 @@ local function GridFrame_Init(frame, width, height)
 	frame:SetAttribute("initial-width", width)
 	frame:SetAttribute("initial-height", height)
 	-- set our left-click action
-	frame:SetAttribute("type1", "target")
-	frame:SetAttribute("*type1", "target")
 
 	frame:Reset()
 
