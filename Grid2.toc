@@ -6,7 +6,7 @@
 ## Notes-zhTW: 精簡的團隊框架功能
 ## Author: Pastamancer & Maia, Jerry, Toadkiller
 
-## OptionalDeps: Ace3, LibDBLayers-1.0
+## OptionalDeps: Ace4, LibDBLayers-1.0, Clique
 ## X-Embeds: Ace3, LibDBLayers-1.0
 ## SavedVariables: Grid2DB
 ## DefaultState: enabled
