@@ -6,7 +6,7 @@ do
 	local frame
 	local count = 0
 	local function Frame_OnEvent(self, event, unit)
-		if (event ~= "UNIT_MANA" or UnitPowerType(unit) == 0) then
+		if (event ~= "UNIT_POWER" or UnitPowerType(unit) == 0) then
 			if Mana.enabled then Mana:UpdateIndicators(unit) end
 			if (LowMana.enabled) then
 				LowMana:UpdateIndicators(unit)
@@ -28,13 +28,13 @@ do
 			end
 			if curr then
 				frame:SetScript("OnEvent", nil)
-				frame:UnregisterEvent("UNIT_MANA")
-				frame:UnregisterEvent("UNIT_MAXMANA")
+				frame:UnregisterEvent("UNIT_POWER")
+				frame:UnregisterEvent("UNIT_MAXPOWER")
 				frame:UnregisterEvent("UNIT_DISPLAYPOWER")
 			else
 				frame:SetScript("OnEvent", Frame_OnEvent)
-				frame:RegisterEvent("UNIT_MANA")
-				frame:RegisterEvent("UNIT_MAXMANA")
+				frame:RegisterEvent("UNIT_POWER")
+				frame:RegisterEvent("UNIT_MAXPOWER")
 				frame:RegisterEvent("UNIT_DISPLAYPOWER")
 			end
 		end
