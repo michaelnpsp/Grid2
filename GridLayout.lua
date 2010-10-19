@@ -10,8 +10,8 @@ local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 --{{{ Frame config function for secure headers
 
-local function GridHeader_InitialConfigFunction(self, frame)
-	Grid2Frame:RegisterFrame(frame)
+local function GridHeader_InitialConfigFunction(self, name)
+	Grid2Frame:RegisterFrame(_G[name])
 end
 
 --}}}
@@ -47,7 +47,7 @@ local GridLayoutHeaderClass = {
 					self:SetAttribute("useOwnerUnit", true)
 					self:SetAttribute("unitsuffix", "pet")
 				end
-				header:CallMethod("initialConfigFunction", self)
+				header:CallMethod("initialConfigFunction", self:GetName())
 			]])
 		end
 		for name, func in pairs(self.prototype) do
