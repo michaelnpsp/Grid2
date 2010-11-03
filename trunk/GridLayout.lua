@@ -45,7 +45,6 @@ local GridLayoutHeaderClass = {
 				local header = self:GetParent()
 				if header:GetAttribute("unitsuffix") == "pet" then
 					self:SetAttribute("useOwnerUnit", true)
-					self:SetAttribute("unitsuffix", "pet")
 				end
 				header:CallMethod("initialConfigFunction", self:GetName())
 			]])
