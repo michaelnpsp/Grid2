@@ -43,9 +43,6 @@ local GridLayoutHeaderClass = {
 				self:SetAttribute("*type1", "target")
 				self:SetAttribute("toggleForVehicle", true)
 				local header = self:GetParent()
-				if header:GetAttribute("unitsuffix") == "pet" then
-					self:SetAttribute("useOwnerUnit", true)
-				end
 				header:CallMethod("initialConfigFunction", self:GetName())
 			]])
 		end

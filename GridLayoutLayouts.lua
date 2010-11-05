@@ -65,6 +65,7 @@ Grid2Layout:AddLayout(L["Solo w/Pet"], {
 		showPlayer = true,
 		showSolo = true,
 		allowVehicleTarget = true,
+		filterOnPet = true,
 	}
 })
 
@@ -102,6 +103,7 @@ Grid2Layout:AddLayout(L["By Group 5 w/Pets"], {
 		unitsPerColumn = 5,
 		maxColumns = 5,
 		allowVehicleTarget = true,
+		filterOnPet = true,
 	},
 })
 
@@ -149,6 +151,7 @@ Grid2Layout:AddLayout(L["By Group 10 w/Pets"], {
 		groupingOrder = DEFAULT_PET_ORDER,
 		unitsPerColumn = 5,
 		maxColumns = 5,
+		filterOnPet = true,
 	},
 })
 
@@ -201,6 +204,7 @@ Grid2Layout:AddLayout(L["By Group 15 w/Pets"], {
 		showRaid = true,
 		unitsPerColumn = 5,
 		maxColumns = 5,
+		filterOnPet = true,
 	},
  })
 
@@ -267,6 +271,7 @@ Grid2Layout:AddLayout(L["By Group 25 w/Pets"], {
 		showRaid = true,
 		unitsPerColumn = 5,
 		maxColumns = 5,
+		filterOnPet = true,
 	},
 })
 
@@ -299,6 +304,7 @@ Grid2Layout:AddLayout(L["By Class 25"], {
 		unitsPerColumn = 5,
 		maxColumns = 5,
 		allowVehicleTarget = true,
+		filterOnPet = true,
 	},
 })
 
@@ -321,15 +327,15 @@ Grid2Layout:AddLayout(L["By Role 25"], {
 	[1] = {
 		groupFilter = "1,2,3,4,5",
 		groupBy = "ROLE",
-		groupFilter = "MAINTANK,MAINASSIST", 
-		groupingOrder = "MAINTANK,MAINASSIST", 
+		groupFilter = "MAINTANK,MAINASSIST",
+		groupingOrder = "MAINTANK,MAINASSIST",
 		unitsPerColumn = 5,
 		maxColumns = 1,
 	},
 	[2] = {
 		groupFilter = "1,2,3,4,5",
 		groupBy = "CLASS",
-		groupingOrder = DEFAULT_GROUP_ORDER, 
+		groupingOrder = DEFAULT_GROUP_ORDER,
 		unitsPerColumn = 5,
 		maxColumns = 5,
 	},
@@ -338,6 +344,7 @@ Grid2Layout:AddLayout(L["By Role 25"], {
 		groupingOrder = DEFAULT_PET_ORDER,
 		unitsPerColumn = 5,
 		maxColumns = 5,
+		filterOnPet = true,
 	},
 })
 
@@ -369,6 +376,7 @@ Grid2Layout:AddLayout(L["By Class 1 x 25 Wide"], {
 		groupingOrder = DEFAULT_PET_ORDER,
 		unitsPerColumn = 25,
 		maxColumns = 1,
+		filterOnPet = true,
 	},
 })
 
@@ -399,6 +407,7 @@ Grid2Layout:AddLayout(L["By Class 2 x 15 Wide"], {
 		type = "raidpet",
 		unitsPerColumn = 15,
 		maxColumns = 2,
+		filterOnPet = true,
 	},
 })
 
@@ -449,6 +458,7 @@ Grid2Layout:AddLayout(L["By Group 4 x 10 Wide"], {
 		groupingOrder = DEFAULT_PET_ORDER,
         unitsPerColumn = 10,
         maxColumns = 4,
+		filterOnPet = true,
     },
 
 })
@@ -570,6 +580,7 @@ Grid2Layout:AddLayout(L["By Class w/Pets"], {
 		type = "raidpet",
 		groupingOrder = DEFAULT_PET_ORDER,
 		showPlayer = true,
+		filterOnPet = true,
 	},
 })
 
