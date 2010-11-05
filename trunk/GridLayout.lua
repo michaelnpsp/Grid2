@@ -306,11 +306,11 @@ CONFIGMODE_CALLBACKS["Grid2"] = function(action)
 end
 
 function Grid2Layout:CreateFrame()
+	local p = self.db.profile
 	-- create main frame to hold all our gui elements
 	local f = CreateFrame("Frame", "Grid2LayoutFrame", UIParent)
-	f:EnableMouse(not (self.db.profile.FrameLock and self.db.profile.ClickThrough))
 	f:SetMovable(true)
-	f:SetClampedToScreen(self.db.profile.clamp)
+	f:SetClampedToScreen(p.clamp)
 	f:SetPoint("CENTER", UIParent, "CENTER")
 	f:SetScript("OnMouseUp", function () self:StopMoveFrame() end)
 	f:SetScript("OnHide", function () self:StopMoveFrame() end)
@@ -333,6 +333,7 @@ function Grid2Layout:CreateFrame()
 
 	self.frame = f
 	self.CreateFrame = nil
+	self:SetFrameLock(p.FrameLock, p.ClickThrough)
 end
 
 local function getRelativePoint(point, horizontal)
@@ -648,7 +649,7 @@ function Grid2Layout:SetFrameLock(FrameLock, ClickThrough)
 		ClickThrough = false
 	end
 	p.ClickThrough = ClickThrough
-	self.Frame:EnableMouse(not ClickThrough)
+	self.frame:EnableMouse(not ClickThrough)
 end
 
 --}}}
