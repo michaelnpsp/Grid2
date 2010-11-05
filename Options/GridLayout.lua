@@ -58,9 +58,8 @@ Grid2Options:AddModule("Grid2", "Grid2Layout", Grid2Layout, {
 				order = ORDER_LAYOUT + 7,
 				get = function() return Grid2Layout.db.profile.ClickThrough end,
 				set = function()
-					local v = not Grid2Layout.db.profile.ClickThrough
-					Grid2Layout.db.profile.ClickThrough = v
-					Grid2Layout.frame:EnableMouse(not v)
+					Grid2Layout:SetFrameLock(Grid2Layout.db.profile.FrameLock,
+						not Grid2Layout.db.profile.ClickThrough)
 				end,
 				disabled = function () return not Grid2Layout.db.profile.FrameLock end,
 			},
