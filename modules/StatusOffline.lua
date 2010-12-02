@@ -2,16 +2,16 @@ local Offline = Grid2.statusPrototype:new("offline")
 
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
-function Offline:UNIT_FLAGS(_, unit)
+function Offline:UNIT_CONNECTION(_, unit)
 	self:UpdateIndicators(unit)
 end
 
 function Offline:OnEnable()
-	self:RegisterEvent("UNIT_FLAGS")
+	self:RegisterEvent("UNIT_CONNECTION")
 end
 
 function Offline:OnDisable()
-	self:UnregisterEvent("UNIT_FLAGS")
+	self:UnregisterEvent("UNIT_CONNECTION")
 end
 
 function Offline:IsActive(unit)
