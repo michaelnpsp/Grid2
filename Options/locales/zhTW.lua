@@ -1,8 +1,8 @@
 ﻿local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2Options", "zhTW")
 if not L then return end
 
-L["General Settings"] = "General Settings"
-L["GRID2_DESC"] = "Welcome to Grid2"
+L["General Settings"] = "一般設置"
+L["GRID2_DESC"] = "歡迎來到Grid2"
 
 L["Debug"] = "除錯"
 L["debugging"] = "除錯"
@@ -34,7 +34,7 @@ L["Always"] = "總是"
 L["Never"] = "不顯示"
 L["OOC"] = "非戰斗"
 
-L["Border Size"] = "Frame Border"
+L["Border Size"] = "框架邊框"
 L["Adjust the border of each unit's frame."] = "Adjust the border of each unit's frame."
 
 L["Frame Width"] = "框架寬度"
@@ -56,7 +56,7 @@ L["Options for %s."] = "%s狀態的選項。"
 L["Toggle debugging for %s."] = "打開/關閉%s的除错。"
 
 L["Show Frame"] = "顯示框架"
-L["Sets when the Grid is visible: Choose 'Always', 'Grouped', or 'Raid'."] = "選擇什么時候顯示 Grid：“總是”，“組隊”或“團隊”。"
+L["Sets when the Grid is visible: Choose 'Always', 'Grouped', or 'Raid'."] = "選擇什麼時候顯示 Grid：'總是'，'組隊'或'團隊'。"
 L["Always"] = "總是"
 L["Grouped"] = "組隊"
 L["Raid"] = "團隊"
@@ -64,12 +64,13 @@ L["Raid"] = "團隊"
 --{{{ GridLayout
 L["Layouts"] = "佈局"
 L["Layouts for each type of groups you're in."] = "你所在組的佈局類型。"
+L["Layout Settings"] = "佈局設置"
 L["Solo Layout"] = "單人佈局"
 L["Select which layout to use for solo."] = "選擇使用哪個單人佈局。"
 L["Party Layout"] = "隊伍佈局"
 L["Select which layout to use for party."] = "選擇使用哪個隊伍佈局。"
 L["Raid %s Layout"] = "團隊佈局 %s Layout"
-L["Select which layout to use for %s person raids."] = "選擇使用哪個團隊佈局。 %s person raids."
+L["Select which layout to use for %s person raids."] = "選擇使用%s人團隊佈局。"
 L["Battleground Layout"] = "戰場佈局"
 L["Select which layout to use for battlegrounds."] = "選擇使用哪個戰場佈局。"
 L["Arena Layout"] = "競技場佈局"
@@ -98,10 +99,18 @@ L["Adjust frame spacing."] = "調整框架空隙。"
 L["Scale"] = "縮放"
 L["Adjust Grid scale."] = "調整框架縮放。"
 
+L["Alpha"] = "透明度"
 L["Border"] = "邊框"
 L["Adjust border color and alpha."] = "調整邊框的顏色和透明度。"
+--L["Adjust the border size of the indicator."] = true
 L["Background"] = "背景"
 L["Adjust background color and alpha."] = "調整背景顏色和透明度。"
+L["Reverse Cooldown"] = "反向冷卻"
+--L["Set cooldown to become darker over time instead of lighter."] = true
+
+--role
+L["MAIN_ASSIST"] = MAIN_ASSIST
+L["MAIN_TANK"] = MAIN_TANK
 
 --target
 L["Your Target"] = "你的目標"
@@ -135,8 +144,14 @@ L["corner-top-right"] = "corner-top-right"
 L["corner-bottom-left"] = "corner-bottom-left"
 L["corner-bottom-right"] = "corner-bottom-right"
 L["side-left"] = "side-left"
+L["side-left-top"] = "side-left-top"
+L["side-left-bottom"] = "side-left-bottom"
 L["side-right"] = "side-right"
+L["side-right-top"] = "side-right-top"
+L["side-right-bottom"] = "side-right-bottom"
 L["side-top"] = "side-top"
+L["side-top-left"] = "side-top-left"
+L["side-top-right"] = "side-top-right"
 L["side-bottom"] = "side-bottom"
 L["side-bottom-left"] = "side-bottom-left"
 L["side-bottom-right"] = "side-bottom-right"
@@ -185,39 +200,118 @@ L["SHAMAN"] = "薩滿"
 L["WARLOCK"] = "術士"
 L["WARRIOR"] = "戰士"
 
+--Account Layer
+--L["account"] = true
+
+--Class Layer
+L["deathknight"] = "死亡騎士"
+L["druid"] = "德魯伊"
+L["hunter"] = "獵人"
+L["mage"] = "法師"
+L["paladin"] = "聖騎士"
+L["priest"] = "牧師"
+L["rogue"] = "盜賊"
+L["shaman"] = "薩滿"
+L["warlock"] = "術士"
+L["warrior"] = "戰士"
+
+--Spec Layer
+--L["tree"] = true
+--L["holy1"] = true
+--L["holy2"] = true
+--L["resto"] = true
+
+--L["Layer"] = true
+--L["Layer level.  Higher layers (like Class or Spec) supercede lower ones like Account."] = true
+
+--L["Opacity"] = true
+--L["Set the opacity."] = true
+
+--L["<CharacterOnlyString>"] = true
+L["+"] = "+"
+L["-"] = "-"
 L["%d yards"] = "%d碼"
-L["Class Filter"] = "職業過濾"
-L["Display status only if the buff is not active."] = "當缺少增益時提示。"
-L["Display status only if the buff was cast by you."] = "顯示只有你所施放的增益。"
+--L["Align Point"] = true
+--L["Align this point on the indicator"] = true
+--L["Align relative to"] = true
+--L["Align my align point relative to"] = true
+--L["Available Statuses"] = true
+--L["Available statuses you may add"] = true
+--L["Blink Threshold"] = true
+--L["Blink Threshold at which to start blinking the status."] = true
+--L["Class Filter"] = true
+--L["Create a new category of statuses."] = true
+--L["Create a new indicator."] = true
+--L["Create a new location for an indicator."] = true
+--L["Create a new object"] = true
+--L["Create a new status."] = true
+--L["Current Statuses"] = true
+--L["Current statuses in order of priority"] = true
+L["Delete"] = "刪除"
+--L["Display status only if the buff is not active."] = true
+--L["Display status only if the buff was cast by you."] = true
+--L["Display status only if the buff was not cast by you."] = true
+L["Down"] = "下"
+L["Location"] = "地區"
+--L["Move the status higher in priority"] = true
+--L["Move the status lower in priority"] = true
+--L["Remove selected status from this indicator"] = true
+L["Name"] = "名稱"
+--L["Name of the new indicator"] = true
+--L["Name of the new object"] = true
+--L["New"] = true
+--L["New Category"] = true
+--L["New Indicator"] = true
+--L["Add a new indicator"] = true
+--L["Indicators"] = true
+--L["List of Indicators"] = true
+L["Order"] = "命令"
+--L["This is the ordered list of statuses for this indicator"] = true
+L["New Location"] = "新地區"
+L["New Status"] = "新狀態"
 L["Range"] = "距離"
 L["Range in yards beyond which the status will be lost."] = "超出距離以外的狀態都將丟失。"
-L["Reset"] = "Reset"
-L["Reset and ReloadUI."] = "Reset and ReloadUI."
-L["Reset Setup"] = "Reset Setup"
-L["Reset current setup and ReloadUI."] = "Reset current setup and ReloadUI."
-L["Reset Categories"] = "Reset Categories"
-L["Reset categories to the default list."] = "Reset categories to the default list."
-L["Reset Indicators"] = "Reset Indicators"
-L["Reset indicators to defaults."] = "Reset indicators to defaults."
-L["Reset Locations"] = "Reset Locations"
-L["Reset locations to the default list."] = "Reset locations to the default list."
-L["Reset Statuses"] = "Reset Statuses"
-L["Reset statuses to defaults."] = "Reset statuses to defaults."
-L["Select statuses to display with the indicator"] = "Select statuses to display with the indicator"
-L["Select the location of the indicator"] = "Select the location of the indicator"
-L["Show duration"] = "顯示持續時間"
-L["Show if mine"] = "顯示我的"
-L["Show if missing"] = "顯示缺少"
-L["Show on %s."] = "在%s上顯示。"
-L["Show status for the selected classes."] = "顯示選定職業的狀態。"
-L["Show the time remaining."] = "在圖示中顯示持續時間。"
+L["Reset"] = "重設"
+L["Reset and ReloadUI."] = "重設且重載UI"
+--L["Reset Setup"] = true
+--L["Reset current setup and ReloadUI."] = true
+--L["Reset Categories"] = true
+--L["Reset categories to the default list."] = true
+--L["Reset Indicators"] = true
+--L["Reset indicators to defaults."] = true
+L["Reset Locations"] = "重設地區"
+L["Reset locations to the default list."] = "重設地區至預設清單"
+L["Reset Statuses"] = "重設狀態"
+L["Reset statuses to defaults."] = "重設狀態至預設清單"
+L["Reset to defaults."] = "重設至預設設定"
+--L["Select statuses to display with the indicator"] = true
+--L["Select the location of the indicator"] = true
+--L["Show duration"] = true
+--L["Show if mine"] = true
+--L["Show if not mine"] = true
+--L["Show if missing"] = true
+--L["Show on %s."] = true
+--L["Show stack"] = true
+--L["Show status for the selected classes."] = true
+--L["Show the number of stacks."] = true
+--L["Show the time remaining."] = true
+--L["Threshold"] = true
+--L["Threshold at which to activate the status."] = true
+L["Type"] = "類型"
+L["Type of indicator"] = "指示器類型"
+L["Type of indicator to create"] = "創建指示器類型"
+L["Up"] = "上"
+L["X Offset"] = "X 偏移"
+L["X - Horizontal Offset"] = "X - 水平偏移"
+L["Y Offset"] = "Y 偏移"
+L["Y - Vertical Offset"] = "Y - 垂直偏移"
 
 L["Group Anchor"] = "隊伍錨點"
-L["Position and Anchor"] = "Position and Anchor"
+L["Position and Anchor"] = "位置與錨點"
 L["Sets where groups are anchored relative to the layout frame."] = "設定佈局中隊伍的錨點。"
 L["Resets the layout frame's position and anchor."] = "重置佈局框架的位置和錨點。"
 
-L["Center Text Length"] = "中间文字长度"
+L["Center Text Length"] = "中間文字長度"
 L["Number of characters to show on Center Text indicator."] = "中央文字提示器所顯示文字的長度。"
 L["Font Size"] = "字型大小"
 L["Adjust the font size."] = "調整字型尺寸。"
@@ -227,7 +321,7 @@ L["Frame Texture"] = "框架材質"
 L["Adjust the texture of each unit's frame."] = "調整個體框架的材質。"
 
 L["Size"] = "邊角大小"
-L["Adjust the size of the indicator."] = "調整边角指示器的大小。"
+L["Adjust the size of the indicator."] = "調整邊角指示器的大小。"
 
 L["Blink effect"] = "閃爍效果"
 L["Select the type of Blink effect used by Grid2."] = "選擇 Grid2 閃爍效果。"
@@ -238,6 +332,7 @@ L["Blink Frequency"] = "閃爍頻率"
 L["Adjust the frequency of the Blink effect."] = "調整閃爍效果頻率。"
 
 L["Color"] = "顏色"
+L["Color %d"] = "顏色 %d"
 L["Color for %s."] = "%s的顏色。"
 L["Color Charmed Unit"] = "高亮被魅惑單位"
 L["Color Units that are charmed."] = "高亮顯示被魅惑單位。"
@@ -248,8 +343,28 @@ L["Default pet Color"] = "默認寵物顏色"
 L["%s Color"] = "%s顏色"
 L["Show dead as having Full Health"] = "顯示死亡或生命值全滿"
 L["Default alpha"] = "默認透明度"
-L["Default alpha value when units are way out of range."] = "当單位超出距離市的默認透明度。"
+L["Default alpha value when units are way out of range."] = "當單位超出距離時的默認透明度。"
 L["Update rate"] = "更新速度"
 L["Rate at which the range gets updated"] = "距離獲取的更新速度。"
 L["Invert Bar Color"] = "反轉顏色"
 L["Swap foreground/background colors on bars."] = "反轉提示條上背景/前景的顏色。"
+
+L["ready-check"] = "準備確認"
+L["Delay"] = "延遲"
+--L["Set the delay until ready check results are cleared."] = true
+--L["Waiting color"] = true
+--L["Color for Waiting."] = true
+--L["Ready color"] = true
+--L["Color for Ready."] = true
+--L["Not Ready color"] = true
+--L["Color for Not Ready."] = true
+--L["AFK color"] = true
+--L["Color for AFK."] = true
+
+--L["Include player heals"] = true
+--L["Display status for the player's heals."] = true
+--L["Type of Heals taken into account"] = true
+--L["Select the type of healing spell taken into account for the amount of incoming heals calculated."] = true
+--L["Casted heals, both direct and channeled"] = true
+--L["Direct heals only."] = true
+--L["All heals, including casted and HoTs"] = true

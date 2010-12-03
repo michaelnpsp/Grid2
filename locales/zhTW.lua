@@ -10,7 +10,7 @@ L["Food"] = "食物"
 L["Grid2"] = "Grid2"
 L["Beast"] = "野獸"
 L["Demon"] = "惡魔"
-L["Humanoid"] = "人形"
+L["Humanoid"] = "人型"
 L["Elemental"] = "元素"
 --}}}
 
