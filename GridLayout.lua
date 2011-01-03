@@ -41,7 +41,9 @@ local GridLayoutHeaderClass = {
 			frame:SetAttribute("initialConfigFunction", [[
 				RegisterUnitWatch(self)
 				self:SetAttribute("*type1", "target")
-				self:SetAttribute("toggleForVehicle", true)
+				self:SetAttribute("useparent-toggleForVehicle", true)
+				self:SetAttribute("useparent-allowVehicleTarget", true)
+				self:SetAttribute("useparent-unitsuffix", true)
 				local header = self:GetParent()
 				header:CallMethod("initialConfigFunction", self:GetName())
 			]])
@@ -88,7 +90,7 @@ local HeaderAttributes = {
 	"showPlayer", "showSolo", "nameList", "groupFilter", "strictFiltering",
 	"sortDir", "groupBy", "groupingOrder", "maxColumns", "unitsPerColumn",
 	"startingIndex", "columnSpacing", "columnAnchorPoint",
-	"useOwnerUnit", "filterOnPet",
+	"useOwnerUnit", "filterOnPet", "unitsuffix",
 	"allowVehicleTarget", "toggleForVehicle"
 }
 function GridLayoutHeaderClass.prototype:Reset()
@@ -434,6 +436,27 @@ local function getColumnAnchorPoint(point, horizontal)
 	return point
 end
 
+local function SetAllAttributes(header, p, list, fix)
+	local petgroup = false
+	for attr, value in next, list do
+		if attr == "unitsPerColumn" then
+			header:SetAttribute("unitsPerColumn", value)
+			header:SetAttribute("columnSpacing", p.Padding)
+			header:SetAttribute("columnAnchorPoint", getColumnAnchorPoint(p.groupAnchor, p.horizontal))
+		elseif attr ~= "type" then
+			header:SetAttribute(attr, value)
+		else
+			petgroup = (value == "partypet" or value == "raidpet")
+		end
+	end
+	if fix and petgroup then
+		-- force these so that the bug in SecureGroupPetHeader_Update doesn't trigger
+		header:SetAttribute("filterOnPet", true)
+		header:SetAttribute("useOwnerUnit", false)
+		header:SetAttribute("unitsuffix", nil)
+	end
+end
+
 function Grid2Layout:LoadLayout(layoutName)
 	local p = self.db.profile
 	local horizontal = p.horizontal
@@ -465,25 +488,9 @@ function Grid2Layout:LoadLayout(layoutName)
 
 		if type ~= "spacer" then
 			if defaults then
-				for attr, value in pairs(defaults) do
-					if attr == "unitsPerColumn" then
-						layoutGroup:SetAttribute("unitsPerColumn", value)
-						layoutGroup:SetAttribute("columnSpacing", p.Padding)
-						layoutGroup:SetAttribute("columnAnchorPoint", getColumnAnchorPoint(p.groupAnchor, p.horizontal))
-					elseif attr ~= "type" then
-						layoutGroup:SetAttribute(attr, value)
-					end
-				end
+				SetAllAttributes(layoutGroup, p, defaults)
 			end
-			for attr, value in pairs(l) do
-				if attr == "unitsPerColumn" then
-					layoutGroup:SetAttribute("unitsPerColumn", value)
-					layoutGroup:SetAttribute("columnSpacing", p.Padding)
-					layoutGroup:SetAttribute("columnAnchorPoint", getColumnAnchorPoint(p.groupAnchor, p.horizontal))
-				elseif attr ~= "type" then
-					layoutGroup:SetAttribute(attr, value)
-				end
-			end
+			SetAllAttributes(layoutGroup, p, l, true)
 			layoutGroup:SetOrientation(horizontal)
 		end
 		self:PlaceGroup(layoutGroup, i)
