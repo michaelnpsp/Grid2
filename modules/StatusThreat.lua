@@ -28,7 +28,9 @@ end
 -- 2 = insecurely tanking.
 -- 3 = securely tanking something
 function Threat:IsActive(unit)
-	local threat = unit and UnitThreatSituation(unit)
+	local threat = unit 
+		and UnitExists(unit) -- hack thanks Potje
+		and UnitThreatSituation(unit)
 	if (threat and threat > 0) then
 		return "blink"
 	end
