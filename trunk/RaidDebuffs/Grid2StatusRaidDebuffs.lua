@@ -342,7 +342,7 @@ local spellDB = {
 
 		--Maloriak
 		92991, -- Rend
-		-- Acid (?)
+		78225, -- Acid Nova
 		92910, -- Debilitating Slime
 		77786, -- Consuming Flames
 		91829, -- Fixate
