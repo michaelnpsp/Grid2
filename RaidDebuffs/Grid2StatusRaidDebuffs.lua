@@ -378,7 +378,7 @@ local spellDB = {
 		-- Ascendant Council
 		82762, -- Waterlogged
 		83099, -- Lightning Rod
-		-- Elemental Statis (?)
+		82285, -- Elemental Stasis
 		82660, -- Burning Blood
 		82665, -- Heart of Ice
 
