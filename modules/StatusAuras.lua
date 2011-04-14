@@ -232,7 +232,14 @@ local function status_UpdateStateNotMine(self, unit, auraName, iconTexture, coun
 end
 
 local function status_HasStateChanged(self, unit)
-	return (self.new_state ~= self.prev_state) or (self.new_count ~= self.prev_count) or (self.new_expiration ~= self.prev_expiration)
+	local new_state = self.new_state
+	if new_state ~= self.prev_state then
+		return true
+	elseif new_state then
+		return (self.new_count ~= self.prev_count) or (self.new_expiration ~= self.prev_expiration)
+	else
+		return false
+	end
 end
 
 local AddTimeTracker, RemoveTimeTracker
