@@ -10,7 +10,9 @@ function ClassColor:OnEnable()
 end
 
 function ClassColor:UpdateUnit(_, unitid)
-	self:UpdateIndicators(unitid)
+	if unitid then
+		self:UpdateIndicators(unitid)
+	end
 end
 
 function ClassColor:OnDisable()
@@ -57,7 +59,9 @@ function Charmed:OnEnable()
 end
 
 function Charmed:UpdateUnit(_, unitid)
-	self:UpdateIndicators(unitid)
+	if unitid then
+		self:UpdateIndicators(unitid)
+	end
 end
 
 function Charmed:OnDisable()

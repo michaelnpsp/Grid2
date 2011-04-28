@@ -1,4 +1,4 @@
-﻿## Interface: 40000
+﻿## Interface: 40100
 ## Title: Grid2
 ## Notes: A modular, lightweight and screen-estate saving grid of party/raid unit frames
 ## Notes-ruRU: Модульный, облегчённый аддон, отображаюший компактные юнитфреймы группы/рейда в виде грида
