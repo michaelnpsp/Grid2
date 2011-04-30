@@ -10,5 +10,4 @@
 ## X-Category: UnitFrame
 ## X-Website: http://wowace.com/projects/grid2/
 
-locales.xml
 Grid2StatusRaidDebuffsOptions.lua
