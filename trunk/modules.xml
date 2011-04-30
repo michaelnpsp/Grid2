@@ -24,5 +24,6 @@
 <Script file="modules\StatusVehicle.lua"/>
 <Script file="modules\StatusVoiceComm.lua"/>
 <Script file="modules\StatusTest.lua"/>
+<Script file="modules\StatusAFK.lua"/>
 
 </Ui>
