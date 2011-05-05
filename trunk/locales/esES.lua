@@ -54,6 +54,7 @@ L["talking"] = "hablando"
 --}}}
 
 --Layouts
+L["Solo"] = "Solo"
 L["Solo w/Pet"] = "Solo con mascota"
 L["By Group 5"] = "Por Grupo 5"
 L["By Group 5 w/Pets"] = "Por Grupo 5 con mascotas"
