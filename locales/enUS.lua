@@ -54,6 +54,7 @@ L["talking"] = true
 --}}}
 
 --Layouts
+L["Solo"] = true
 L["Solo w/Pet"] = true
 L["By Group 5"] = true
 L["By Group 5 w/Pets"] = true
