@@ -1,17 +1,19 @@
--- GridCore.lua
--- insert boilerplate here
+--[[
+Created by Grid2 original authors, modified by Michael
+--]]
 
---{{{ Libraries
+--{{{ 
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2")
-local DBL = LibStub:GetLibrary("LibDBLayers-1.0")
 
 --}}}
 --{{{ Grid2
 --{{{  Initialization
 
 Grid2 = LibStub("AceAddon-3.0"):NewAddon("Grid2", "AceEvent-3.0", "AceConsole-3.0")
+
 Grid2.versionstring = "Grid2 v"..GetAddOnMetadata("Grid2", "Version")
+
 Grid2.debugFrame = Grid2DebugFrame or ChatFrame1
 function Grid2:Debug(s, ...)
 	if self.debugging then
@@ -28,6 +30,10 @@ end
 Grid2.defaults = {
 	profile = {
 		debug = false,
+	    versions = {},
+		indicators = {},
+		statuses = {},
+		statusMap =  {},
 	}
 }
 
@@ -35,7 +41,6 @@ Grid2.defaults = {
 --{{{ type
 
 Grid2.setupFunc = {}	-- type setup functions for non-unique objects: "buff" statuses / "icon" indicators / etc.
-Grid2.objectMap = {}	-- map to unique objects: "debuff-Poison" / "name" / "border" / etc.
 
 --}}}
 --{{{ AceTimer-3.0, embedded upon use
@@ -60,225 +65,161 @@ end
 
 local modulePrototype = {}
 modulePrototype.core = Grid2
+modulePrototype.Debug = Grid2.Debug
 
 function modulePrototype:OnInitialize()
 	if not self.db then
-		self.db = self.core.db:RegisterNamespace(self.name, self.defaultDB)
+		self.db = self.core.db:RegisterNamespace(self.moduleName or self.name, self.defaultDB or {} )
 	end
 	self.debugFrame = Grid2.debugFrame
 	self.debugging = self.db.profile.debug
+	if self.Initialize then self:Initialize() end
 	self:Debug("OnInitialize")
-	self:RegisterModules()
 end
 
 function modulePrototype:OnEnable()
-	self:EnableModules()
+	if self.Enable then self:Enable() end
 end
 
 function modulePrototype:OnDisable()
-	self:DisableModules()
+	if self.Disable then self:Disable() end
 end
 
-function modulePrototype:Reset()
-	self.debugging = self.db.profile.debug
-	self:Debug("Reset")
-	self:ResetModules()
+function modulePrototype:OnUpdate()
+	if self.Update then self:Update() end
 end
-
-function modulePrototype:RegisterModules()
-	for name, module in self:IterateModules() do
-		self:RegisterModule(name, module)
-	end
-end
-
-function modulePrototype:RegisterModule(name, module)
-	self:Debug("Registering ", name)
-
-	if not module.db then
-		module.db = self.core.db:RegisterNamespace(name, module.defaultDB)
-	end
-
-	if Grid2Options then
-		Grid2Options:AddModule(self.name, name, module)
-	end
-end
-
-function modulePrototype:EnableModules()
-	for name,module in self:IterateModules() do
-		self:SetEnabledState(module, true)
-	end
-end
-
-function modulePrototype:DisableModules()
-	for name,module in self:IterateModules() do
-		self:SetEnabledState(module, false)
-	end
-end
-
-function modulePrototype:ResetModules()
-	for name,module in self:IterateModules() do
-		module:Reset()
-	end
-end
-
-modulePrototype.Debug = Grid2.Debug
 
 Grid2:SetDefaultModulePrototype(modulePrototype)
 Grid2:SetDefaultModuleLibraries("AceEvent-3.0")
 
 --}}}
+--{{{  Modules management
 
-function Grid2:InitializeElement(type, element)
-	if element.defaultDB and not element.db then
-		local name = type .. "-" .. element.name
-		if (self.db.children[name]) then
-			-- Hack in "UnregisterNamespace"
-			self.db.sv.namespaces[name] = nil
-			self.db.children[name] = nil
-		end
-		element.db = self.db:RegisterNamespace(name, element.defaultDB)
-	end
-	if Grid2Options then
-		Grid2Options:AddElement(type, element)
+function Grid2:EnableModules()
+	for _,module in self:IterateModules() do
+		module:OnEnable()
 	end
 end
 
+function Grid2:DisableModules()
+	for _,module in self:IterateModules() do
+		module:OnDisable()
+	end
+end
+
+function Grid2:UpdateModules()
+	for _,module in self:IterateModules() do
+		module:OnUpdate()
+	end
+end
+
+--}}}
+
 function Grid2:OnInitialize()
-	self.db = LibStub("AceDB-3.0"):New("Grid2DB", self.defaults, "profile")
+	self.db = LibStub("AceDB-3.0"):New("Grid2DB", self.defaults)
 
-	self:RegisterChatCommand("grid2", "OnChatCommand")
-	self:RegisterChatCommand("gr2", "OnChatCommand")
-	local optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Grid2", L["Grid2"], nil, "General")
-
-	local prev_OnShow = optionsFrame:GetScript("OnShow")
-	optionsFrame:SetScript("OnShow", function (self, ...)
-		Grid2:LoadAllOptions()
-		
-		self:SetScript("OnShow", prev_OnShow)
-		return prev_OnShow(self, ...)
-	end)
-
-	self.optionsFrame = optionsFrame
-	self:RegisterModules()
-
-	for _, location in self:IterateLocations() do
-		self:InitializeElement("location", location)
-	end
-	for _, indicator in self:IterateIndicators() do
-		self:InitializeElement("indicator", indicator)
-	end
-	for _, status in self:IterateStatuses() do
-		self:InitializeElement("status", status)
-	end
-	for _, category in self:IterateCategories() do
-		self:InitializeElement("category", category)
-	end
+	self.debugging = self.db.profile.debug
 
 	local media = LibStub("LibSharedMedia-3.0", true)
 	if media then
 		media:Register("statusbar", "Gradient", "Interface\\Addons\\Grid2\\gradient32x32")
 	end
-end
-
--- Do not hook
-function Grid2:LoadGrid2Options()
-	if (Grid2Options) then return end
-
-	if (not IsAddOnLoaded("Grid2Options")) then
-		LoadAddOn("Grid2Options")
-	end
-end
-
--- This function gets hooked
--- Loads only Options that need an upgrade
-function Grid2:LoadOptions(dblData)
-	local upgrade
-
-	if (dblData) then
-		upgrade = DBL:LoadOptions("Grid2Options", dblData, "InitializeOptions", "account", 1, dblData.classKey, 1, dblData.specKey, 1) or upgrade
-	else
-		Grid2:LoadGrid2Options()
-		upgrade = true
+	
+ 	local LibDualSpec = LibStub('LibDualSpec-1.0')
+	if LibDualSpec then
+		LibDualSpec:EnhanceDatabase(self.db, "Grid2")
 	end
 
-	return upgrade
-end
+	self:InitializeOptions()
 
--- Do not hook
--- Loads all options and initializes them
-local allOptionsLoaded
-function Grid2:LoadAllOptions()
-	if (allOptionsLoaded) then return end
-
-	allOptionsLoaded = true
-	Grid2:LoadOptions()
-	if (Grid2Options) then
-		Grid2Options:Initialize()
-	else
-		Grid2:Print("You need the Grid2Options addon available to be able to configure Grid2.")
-	end
-end
-
-function Grid2:OnChatCommand(input)
-	Grid2:LoadAllOptions()
-	if (Grid2Options) then
-		Grid2Options:OnChatCommand(input)
-	end
+	self.OnInitialize= nil
 end
 
 function Grid2:OnEnable()
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED", "GroupChanged")
 	self:RegisterEvent("RAID_ROSTER_UPDATE", "GroupChanged")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
-	-- roster
+
 	self:RegisterEvent("UNIT_PET")
 	self:RegisterEvent("UNIT_NAME_UPDATE")
+	
+    self.db.RegisterCallback(self, "OnProfileChanged", "ProfileChanged")
+	self.db.RegisterCallback(self, "OnProfileCopied", "ProfileChanged")
+	self.db.RegisterCallback(self, "OnProfileReset", "ProfileChanged")
 
-	self.db.RegisterCallback(self, "OnProfileChanged")
+	self:LoadConfig()
 
 	self:SendMessage("Grid_Enabled")
-
-	self:EnableModules()
-
-	self:Setup()
 end
 
 function Grid2:OnDisable()
-	self:Debug("OnDisable")
 	self:SendMessage("Grid_Disabled")
-	self:DisableModules()
 end
 
-function Grid2:OnProfileChanged()
-	self.debugging = self.db.profile.debug
-	self:Debug("Loaded profile (", self:GetProfile(),")")
-	self:ResetModules()
+function Grid2:LoadConfig()
+	self:UpdateDefaults()
+	self:Setup()	
 end
 
-function Grid2:RegisterModule(name, module)
-	self:Debug("Registering ", name)
+function Grid2:InitializeOptions()
+	if Grid2DB["setup-flat"] then
+		self.OnEnable= nil
+		self.OnChatCommand= function() end
+		print("|c00ff0000GRID2 ERROR: Old config detected. Grid2 cannot run. To remove old config type |cd0ff7d0a/script Grid2DB=nil|r |c00ff0000and restart WOW.")
+	else
+		self:RegisterChatCommand("grid2", "OnChatCommand")
+		self:RegisterChatCommand("gr2", "OnChatCommand")
+		local optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Grid2", "Grid2", nil, "Tabs")
+		local prev_OnShow = optionsFrame:GetScript("OnShow")
+		optionsFrame:SetScript("OnShow", function (self, ...)
+			if not Grid2Options then Grid2:LoadGrid2Options() end
+			self:SetScript("OnShow", prev_OnShow)
+			return prev_OnShow(self, ...)
+		end)
+		self.optionsFrame = optionsFrame
+	end	
+	self.InitializeOptions= nil
+end
 
-	if not module.db then
-		module.db = self.db:RegisterNamespace(name, module.defaultDB)
-	end
-
+function Grid2:OnChatCommand(input)
+    if not Grid2Options then
+		Grid2:LoadGrid2Options()
+	end		
 	if Grid2Options then
-		Grid2Options:AddModule(self.name, name, module)
+		Grid2Options:OnChatCommand(input)
+	end	
+end
+
+function Grid2:LoadGrid2Options()
+	if not IsAddOnLoaded("Grid2Options") then
+		LoadAddOn("Grid2Options")
+	end
+	if Grid2Options then
+		self:LoadOptions()
+		self.LoadGrid2Options= nil
+	else
+		Grid2:Print("You need the Grid2Options addon available to be able to configure Grid2.")
 	end
 end
 
-function Grid2:ResetModules()
-	for name, module in self:IterateModules() do
-		module.db = self.db:RegisterNamespace(name)
-		module:Reset()
-	end
+-- Hook this to load any options addon (See RaidDebuffs)
+function Grid2:LoadOptions()
+	Grid2Options:Initialize()
 end
-
-Grid2.RegisterModules = modulePrototype.RegisterModules
-Grid2.EnableModules = modulePrototype.EnableModules
-Grid2.DisableModules = modulePrototype.DisableModules
+--}}}
 
 --{{{ Event handlers
+
+function Grid2:ProfileChanged()
+	self:Debug("Loaded profile (", self.db:GetCurrentProfile(),")")
+	self:DisableModules()
+	self:LoadConfig()
+	self:UpdateModules()
+	self:EnableModules()
+	if Grid2Options then
+		Grid2Options:MakeOptions()
+	end	
+end
 
 local groupType
 function Grid2:PLAYER_ENTERING_WORLD()
@@ -288,69 +229,47 @@ function Grid2:PLAYER_ENTERING_WORLD()
 end
 
 function Grid2:GroupChanged(event)
--- print("GroupChanged", event)
 	local _, instType = IsInInstance()
-
 	if instType == "none" then
 		local raidMembers = GetNumRaidMembers()
-		if raidMembers > 25 then
-			instType = "raid40"
-		elseif raidMembers > 10 then
-			instType = "raid25"
-		elseif raidMembers > 0 then
-			instType = "raid10"
-		elseif GetNumPartyMembers() > 0 then
-			instType = "party"
-		else
-			instType = "solo"
+		if     raidMembers>25 then			instType = "raid40"
+		elseif raidMembers>10 then			instType = "raid25"
+		elseif raidMembers>0  then			instType = "raid10"
+		elseif GetNumPartyMembers()>0 then 	instType = "party"
+		else								instType = "solo"
 		end
 	else
 		if instType == "raid" then
-			local raidDifficulty = GetRaidDifficulty()
-			if raidDifficulty == 2 or raidDifficulty == 4 then
-				instType = "raid25"
-			else
-				instType = "raid10"
-			end
-		elseif (instType == "pvp") then
+			local dif = GetRaidDifficulty()
+			instType= (dif == 2 or dif == 4) and "raid25" or "raid10"
+		elseif instType == "pvp" then
 			local raidMembers = GetNumRaidMembers()
-			if raidMembers < 11 then
-				instType = "raid10"
-			elseif raidMembers < 16 then
-				instType = "raid15"
-			else
-				instType = "raid40"
+			if raidMembers<11 then		instType = "raid10"
+			elseif raidMembers<16 then	instType = "raid15"
+			else						instType = "raid40"
 			end
 		else
 			local raidMembers = GetNumRaidMembers()
-			if raidMembers > 25 then
-				instType = "raid40"
-			elseif raidMembers > 15 then
-				instType = "raid25"
-			elseif raidMembers > 10 then
-				instType = "raid15"
-			elseif raidMembers > 0 then
-				instType = "raid10"
-			elseif GetNumPartyMembers() > 0 then
-				instType = "party"
-			else
-				instType = "solo"
+			if raidMembers>25 then				instType = "raid40"
+			elseif raidMembers>15 then			instType = "raid25"
+			elseif raidMembers>10 then			instType = "raid15"
+			elseif raidMembers>0 then			instType = "raid10"
+			elseif GetNumPartyMembers()>0 then	instType = "party"
+			else								instType = "solo"
 			end
 		end
 		if GetNumPartyMembers() == 0 and GetNumRaidMembers() == 0 then
 			instType = "solo"
 		end
 	end
-
 	self:Debug("GroupChanged", groupType, "=>", instType)
-
 	if groupType ~= instType then
 		groupType = instType
 		self:SendMessage("Grid_GroupTypeChanged", groupType)
 	end
-
 	self:UpdateRoster()
 end
+
 
 local frames_of_unit = setmetatable({}, { __index = function (self, key)
 	local result = {}

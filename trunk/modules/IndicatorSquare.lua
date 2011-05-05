@@ -1,7 +1,7 @@
-local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
+--[[ Square indicator, created by Grid2 original authors, modified by Michael ]]--
 
 local function Square_Create(self, parent)
-	local Square = parent[self.name] or CreateFrame("Frame", nil, parent)
+	local Square = self:CreateFrame("Frame", parent)
 	local size = self.dbx.size
 	Square:SetWidth(size)
 	Square:SetHeight(size)
@@ -20,7 +20,6 @@ local function Square_Create(self, parent)
 	end
 	Square:SetBackdropBorderColor(0,0,0,1)
 	Square:SetBackdropColor(1,1,1,1)
-	parent[self.name] = Square
 end
 
 local function Square_GetBlinkFrame(self, parent)
@@ -53,6 +52,8 @@ end
 local function Square_SetBorderSize(self, parent, borderSize)
 	local f = parent[self.name]
 	local backdrop = f:GetBackdrop()
+	local r1,g1,b1,a1 = f:GetBackdropColor()
+	local r2,g2,b2,a2 = f:GetBackdropBorderColor()
 
 	if (borderSize) then
 		backdrop.edgeFile = "Interface\\Addons\\Grid2\\white16x16"
@@ -67,17 +68,16 @@ local function Square_SetBorderSize(self, parent, borderSize)
 	backdrop.insets.top = borderSize
 	backdrop.insets.bottom = borderSize
 
-	local r, g, b, a = f:GetBackdropBorderColor()
-
 	f:SetBackdrop(backdrop)
-	f:SetBackdropBorderColor(r, g, b, a)
+	f:SetBackdropColor(r1,g1,b1,a1)
+	f:SetBackdropBorderColor(r2,g2,b2,a2)
 end
 
 local function Square_Layout(self, parent)
 	local Square = parent[self.name]
 	Square:ClearAllPoints()
 	Square:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
-	Square:SetPoint(self.anchor, parent, self.anchorRel, self.offsetx, self.offsety)
+	Square:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
 
 	local borderSize = self.dbx.borderSize
 	Square_SetBorderSize(self, parent, borderSize)
@@ -99,19 +99,12 @@ local function Square_Disable(self, parent)
 end
 
 local function Square_UpdateDB(self, dbx)
-	-- ToDo: copy if it already exists
-	-- ToDo: update if it changed
--- if (self.dbx) then
-	-- print("Square_UpdateDB self.dbx:", self.dbx, self.dbx.size, "dbx:", dbx, dbx.size)
--- end
-	local oldType = self.dbx and self.dbx.type or dbx.type
-	local location = Grid2.locations[dbx.location]
-
+	local l= dbx.location
+	self.anchor = l.point
+	self.anchorRel = l.relPoint
+	self.offsetx = l.x
+	self.offsety = l.y
 	self.frameLevel = dbx.level
-	self.anchor = location.point
-	self.anchorRel = location.relPoint
-	self.offsetx = location.x
-	self.offsety = location.y
 	self.Create = Square_Create
 	self.GetBlinkFrame = Square_GetBlinkFrame
 	self.Layout = Square_Layout
@@ -120,7 +113,6 @@ local function Square_UpdateDB(self, dbx)
 	self.SetBorderSize = Square_SetBorderSize
 	self.Disable = Square_Disable
 	self.UpdateDB = Square_UpdateDB
-
 	self.dbx = dbx
 end
 
@@ -128,9 +120,7 @@ end
 local function Create(indicatorKey, dbx)
 	local existingIndicator = Grid2.indicators[indicatorKey]
 	local indicator = existingIndicator or Grid2.indicatorPrototype:new(indicatorKey)
-
 	Square_UpdateDB(indicator, dbx)
-	
 	Grid2:RegisterIndicator(indicator, { "square" })
 	return indicator
 end

@@ -1,12 +1,8 @@
--- Grid2Layout.lua
--- insert boilerplate
+--[[
+Created by Grid2 original authors, modified by Michael
+--]]
+
 local Grid2Layout = Grid2:NewModule("Grid2Layout")
-
---{{{ Libraries
-
-local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
-
---}}}
 
 --{{{ Frame config function for secure headers
 
@@ -57,35 +53,6 @@ local GridLayoutHeaderClass = {
 	end
 }
 
---[[
-showRaid = [BOOLEAN] -- true if the header should be shown while in a raid
-showParty = [BOOLEAN] -- true if the header should be shown while in a party and not in a raid
-showPlayer = [BOOLEAN] -- true if the header should show the player when not in a raid
-showSolo = [BOOLEAN] -- true if the header should be shown while not in a group (implies showPlayer)
-nameList = [STRING] -- a comma separated list of player names (not used if 'groupFilter' is set)
-groupFilter = [1-8, STRING] -- a comma seperated list of raid group numbers and/or uppercase class names and/or uppercase roles
-strictFiltering = [BOOLEAN] - if true, then characters must match both a group and a class from the groupFilter list
-point = [STRING] -- a valid XML anchoring point (Default: "TOP")
-xOffset = [NUMBER] -- the x-Offset to use when anchoring the unit buttons (Default: 0)
-yOffset = [NUMBER] -- the y-Offset to use when anchoring the unit buttons (Default: 0)
-sortMethod = ["INDEX", "NAME"] -- defines how the group is sorted (Default: "INDEX")
-sortDir = ["ASC", "DESC"] -- defines the sort order (Default: "ASC")
-template = [STRING] -- the XML template to use for the unit buttons
-templateType = [STRING] - specifies the frame type of the managed subframes (Default: "Button")
-groupBy = [nil, "GROUP", "CLASS", "ROLE"] - specifies a "grouping" type to apply before regular sorting (Default: nil)
-groupingOrder = [STRING] - specifies the order of the groupings (ie. "1,2,3,4,5,6,7,8")
-maxColumns = [NUMBER] - maximum number of columns the header will create (Default: 1)
-unitsPerColumn = [NUMBER or nil] - maximum units that will be displayed in a singe column, nil is infinate (Default: nil)
-startingIndex = [NUMBER] - the index in the final sorted unit list at which to start displaying units (Default: 1)
-columnSpacing = [NUMBER] - the ammount of space between the rows/columns (Default: 0)
-columnAnchorPoint = [STRING] - the anchor point of each new column (ie. use LEFT for the columns to grow to the right)
-
-allowVehicleTarget = [BOOLEAN] - clicking on a vehicle selects it
-toggleForVehicle = [BOOLEAN] - GetModifiedUnit will return owner of the vehicle
-
-useOwnerUnit = [BOOLEAN] - if true, then the owner's unit string is set on managed frames "unit" attribute (instead of pet's)
-filterOnPet = [BOOLEAN] - if true, then pet names are used when sorting/filtering the list
---]]
 local HeaderAttributes = {
 	"showPlayer", "showSolo", "nameList", "groupFilter", "strictFiltering",
 	"sortDir", "groupBy", "groupingOrder", "maxColumns", "unitsPerColumn",
@@ -95,9 +62,9 @@ local HeaderAttributes = {
 }
 function GridLayoutHeaderClass.prototype:Reset()
 	if self.initialConfigFunction then
-		self:SetAttribute("sortMethod", "NAME")
+		self:SetLayoutAttribute("sortMethod", "NAME")
 		for _, attr in ipairs(HeaderAttributes) do
-			self:SetAttribute(attr, nil)
+			self:SetLayoutAttribute(attr, nil)
 		end
 	end
 	self:Hide()
@@ -134,12 +101,31 @@ function GridLayoutHeaderClass.prototype:SetOrientation(horizontal)
 		end
 	end
 
-	self:SetAttribute("xOffset", xOffset)
-	self:SetAttribute("yOffset", yOffset)
-	self:SetAttribute("point", point)
+	self:SetLayoutAttribute("xOffset", xOffset)
+	self:SetLayoutAttribute("yOffset", yOffset)
+	self:SetLayoutAttribute("point", point)
 end
 
---}}}
+-- MSaint fix see: http://forums.wowace.com/showpost.php?p=315982&postcount=215
+-- To maintain the code consistent all calls to SetAttribute were replaced with SetLayoutAttribute
+-- including those which not affect anchors, the only exception: calls from GridLayoutHeaderClass.new)
+function GridLayoutHeaderClass.prototype:SetLayoutAttribute(name, value)
+	if name == "point" or name == "columnAnchorPoint" or name == "unitsPerColumn" then
+      Grid2Layout:Debug("GridLayoutHeaderClass:SetLayoutAttribute : Clearing All Points for " .. self:GetName())
+	  self:ClearChildrenPoints()
+  end
+   self:SetAttribute(name, value)
+end
+
+function GridLayoutHeaderClass.prototype:ClearChildrenPoints() 
+      local count = 1
+      local uframe = self:GetAttribute("child1") 
+      while uframe do
+         uframe:ClearAllPoints()
+         count = count + 1
+         uframe = self:GetAttribute("child" .. count)
+      end
+end
 
 --{{{ Grid2Layout
 --{{{  Initialization
@@ -149,25 +135,23 @@ end
 Grid2Layout.defaultDB = {
 	profile = {
 		debug = false,
-
 		FrameDisplay = "Always",
 		layouts = {
-			solo = L["Solo w/Pet"],
-			party = L["By Group 5 w/Pets"],
-			raid10 = L["By Group 10 w/Pets"],
-			raid15 = L["By Group 15 w/Pets"],
-			raid20 = L["By Group 25 w/Pets"],
-			raid25 = L["By Group 25 w/Pets"],
-			raid40 = L["By Group 40"],
-			pvp = L["By Group 40"],
-			arena = L["By Group 5 w/Pets"],
+					solo = "Solo w/Pet",
+					party = "By Group 5 w/Pets",
+					raid10 = "By Group 10 w/Pets",
+					raid15 = "By Group 15 w/Pets",
+					raid20 = "By Group 20",
+					raid25 = "By Group 25 w/Pets",
+					raid40 = "By Group 40",
+					pvp = "By Group 40",
+					arena = "By Group 5 w/Pets",
 		},
 		horizontal = true,
 		clamp = true,
 		FrameLock = false,
 		ClickThrough = false,
-
-		Padding = 1,
+		Padding = 0,
 		Spacing = 10,
 		ScaleSize = 1,
 		BorderR = .5,
@@ -178,12 +162,10 @@ Grid2Layout.defaultDB = {
 		BackgroundG = .1,
 		BackgroundB = .1,
 		BackgroundA = .65,
-
-		anchor = "BOTTOMLEFT",
-		groupAnchor = "BOTTOMLEFT",
-
-		PosX = 400,
-		PosY = 100,
+		anchor = "TOPLEFT",
+		groupAnchor = "TOPLEFT",
+		PosX = 500,
+		PosY = -200,
 	},
 }
 
@@ -193,8 +175,7 @@ Grid2Layout.defaultDB = {
 Grid2Layout.layoutSettings = {}
 Grid2Layout.layoutHeaderClass = GridLayoutHeaderClass
 
-function Grid2Layout:OnInitialize()
-	self.core.defaultModulePrototype.OnInitialize(self)
+function Grid2Layout:Initialize()
 	self.groups = {
 		raid = {},
 		raidpet = {},
@@ -211,35 +192,25 @@ function Grid2Layout:OnInitialize()
 	}
 end
 
-function Grid2Layout:OnEnable()
+function Grid2Layout:Enable()
 	if not self.frame then
 		self:CreateFrame()
 	end
-	self:LoadLayout(self.db.profile.layout)
-	-- position and scale frame
 	self:RestorePosition()
 	self:Scale()
-
+	if self.layoutName then
+		self:ReloadLayout()
+	end	
 	self:RegisterMessage("Grid_GroupTypeChanged")
 	self:RegisterMessage("Grid_UpdateLayoutSize", "UpdateSize")
-
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
-
-	self.core.defaultModulePrototype.OnEnable(self)
 end
 
-function Grid2Layout:OnDisable()
+function Grid2Layout:Disable()
+	self:UnregisterMessage("Grid_GroupTypeChanged")
+	self:UnregisterMessage("Grid_UpdateLayoutSize", "UpdateSize")
+	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 	self.frame:Hide()
-	self.core.defaultModulePrototype.OnDisable(self)
-end
-
-function Grid2Layout:Reset()
-	self.core.defaultModulePrototype.Reset(self)
-
-	self:ReloadLayout()
-	-- position and scale frame
-	self:RestorePosition()
-	self:Scale()
 end
 
 --{{{ Event handlers
@@ -250,6 +221,7 @@ function Grid2Layout:PLAYER_REGEN_ENABLED()
 	if updateSizeQueued then return self:UpdateSize() end
 	if restorePositionQueued then return self:RestorePosition() end
 end
+
 
 function Grid2Layout:Grid_GroupTypeChanged(_, type)
 	Grid2Layout:Debug("GroupTypeChanged", type)
@@ -377,18 +349,16 @@ function Grid2Layout:PlaceGroup(frame, groupNumber)
 
 	local relPoint, xMult, yMult = getRelativePoint(groupAnchor, horizontal)
 
+	frame:ClearAllPoints()
+	frame:SetParent(self.frame)
 	if groupNumber == 1 then
-		frame:ClearAllPoints()
-		frame:SetParent(self.frame)
 		frame:SetPoint(groupAnchor, self.frame, groupAnchor, spacing * xMult, spacing * yMult)
 	else
-		if horizontal then
-			xMult = 0
-		else
+		if horizontal then	
+			xMult = 0 
+		else				
 			yMult = 0
 		end
-
-		frame:ClearAllPoints()
 		frame:SetPoint(groupAnchor, previousFrame, relPoint, padding * xMult, padding * yMult)
 	end
 
@@ -399,9 +369,6 @@ end
 
 function Grid2Layout:AddLayout(layoutName, layout)
 	self.layoutSettings[layoutName] = layout
-	if Grid2Options then
-		Grid2Options:AddLayout(layoutName, layout)
-	end
 end
 
 function Grid2Layout:SetClamp()
@@ -414,7 +381,6 @@ function Grid2Layout:ReloadLayout()
 		return
 	end
 	reloadLayoutQueued = false
-
 	local layout = self.db.profile.layouts[self.partyType or "solo"]
 	self:LoadLayout(layout)
 end
@@ -440,31 +406,32 @@ local function SetAllAttributes(header, p, list, fix)
 	local petgroup = false
 	for attr, value in next, list do
 		if attr == "unitsPerColumn" then
-			header:SetAttribute("unitsPerColumn", value)
-			header:SetAttribute("columnSpacing", p.Padding)
-			header:SetAttribute("columnAnchorPoint", getColumnAnchorPoint(p.groupAnchor, p.horizontal))
+			header:SetLayoutAttribute("columnSpacing", p.Padding)
+			header:SetLayoutAttribute("unitsPerColumn", value)
+			header:SetLayoutAttribute("columnAnchorPoint", getColumnAnchorPoint(p.groupAnchor, p.horizontal))
 		elseif attr ~= "type" then
-			header:SetAttribute(attr, value)
+			header:SetLayoutAttribute(attr, value)
 		else
 			petgroup = (value == "partypet" or value == "raidpet")
 		end
 	end
 	if fix and petgroup then
 		-- force these so that the bug in SecureGroupPetHeader_Update doesn't trigger
-		header:SetAttribute("filterOnPet", true)
-		header:SetAttribute("useOwnerUnit", false)
-		header:SetAttribute("unitsuffix", nil)
+		header:SetLayoutAttribute("filterOnPet", true)
+		header:SetLayoutAttribute("useOwnerUnit", false)
+		header:SetLayoutAttribute("unitsuffix", nil)
 	end
 end
 
 function Grid2Layout:LoadLayout(layoutName)
-	local p = self.db.profile
-	local horizontal = p.horizontal
 	local layout = self.layoutSettings[layoutName]
 	if not layout then return end
 
 	self:Debug("LoadLayout", layoutName)
-
+	
+	local p = self.db.profile
+	local horizontal = p.horizontal
+	
 	for type, headers in pairs(self.groups) do
 		self.indexes[type] = 0
 		for _, g in ipairs(headers) do
@@ -494,10 +461,13 @@ function Grid2Layout:LoadLayout(layoutName)
 			layoutGroup:SetOrientation(horizontal)
 		end
 		self:PlaceGroup(layoutGroup, i)
+		
 		layoutGroup:Show()
 	end
 
 	self:UpdateDisplay()
+	
+	self.layoutName= layoutName
 end
 
 function Grid2Layout:UpdateDisplay()
@@ -512,16 +482,18 @@ function Grid2Layout:UpdateSize()
 		return
 	end
 	updateSizeQueued = false
-
+	
 	local p = self.db.profile
 	local curWidth, curHeight, maxWidth, maxHeight = 0, 0, 0, 0
 	local Padding, Spacing = p.Padding, p.Spacing * 2
-
+	
 	local GridFrame = Grid2:GetModule("Grid2Frame")
-	for i = 1, self.indexes.spacer do
-		self.groups.spacer[i]:SetSize(GridFrame:GetFrameSize())
-	end
+	local frameWidth,frameHeight = GridFrame:GetFrameSize()
 
+	for i = 1, self.indexes.spacer do
+		self.groups.spacer[i]:SetSize(frameWidth,frameHeight)
+	end
+	
 	for type, headers in pairs(self.groups) do
 		for i = 1, self.indexes[type] do
 			local g = headers[i]
@@ -535,13 +507,13 @@ function Grid2Layout:UpdateSize()
 
 	local x, y
 	if p.horizontal then
-		x = maxWidth + Spacing
-		y = curHeight + Spacing
+		x = maxWidth + Spacing 
+		y = curHeight + Spacing - Padding
 	else
-		x = curWidth + Spacing
-		y = maxHeight + Spacing
+		x = curWidth + Spacing - Padding
+		y = maxHeight + Spacing 
 	end
-
+	
 	self.frame:SetWidth(x)
 	self.frame:SetHeight(y)
 end

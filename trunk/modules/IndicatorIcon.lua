@@ -1,7 +1,8 @@
-local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
+--[[ Icon indicator, created by Grid2 original authors, modified by Michael ]]-- 
 
 local function Icon_Create(self, parent)
-	local f = parent[self.name] or CreateFrame("Frame", nil, parent)
+	local f = self:CreateFrame("Frame", parent)
+	if not f:IsShown() then	f:Show() end
 	local borderSize = self.dbx.borderSize
 	if (borderSize) then
 		f:SetBackdrop({
@@ -14,14 +15,18 @@ local function Icon_Create(self, parent)
 			insets = {left = 2, right = 2, top = 2, bottom = 2},
 		})
 	end
-
+	
 	local Icon = f.Icon or f:CreateTexture(nil, "ARTWORK")
 	f.Icon = Icon
 	Icon:SetTexCoord(0.05, 0.95, 0.05, 0.95)
 	Icon:SetAllPoints()
+	if not Icon:IsShown() then Icon:Show() end
 
 	local Cooldown = f.Cooldown or CreateFrame("Cooldown", nil, f, "CooldownFrameTemplate")
 	f.Cooldown = Cooldown
+	if self.dbx.disableOmniCC then
+		Cooldown.noCooldownCount= true 
+	end
 	Cooldown:SetAllPoints(f)
 	Cooldown:SetReverse(self.dbx.reverseCooldown)
 	Cooldown:Hide()
@@ -31,11 +36,11 @@ local function Icon_Create(self, parent)
 	CooldownText:SetAllPoints()
 	CooldownText:SetFontObject(GameFontHighlightSmall)
 	CooldownText:SetFont(CooldownText:GetFont(), self.dbx.fontSize)
-	CooldownText:SetJustifyH("CENTER")
-	CooldownText:SetJustifyV("CENTER")
-	CooldownText:Hide()
+	CooldownText:SetJustifyH( self.dbx.fontJustifyH or "CENTER" )
+	CooldownText:SetJustifyV( self.dbx.fontJustifyV or "MIDDLE" )
+	CooldownText:SetShadowOffset(1, -1)
 
-	parent[self.name] = f
+	CooldownText:Hide()
 end
 
 local function Icon_GetBlinkFrame(self, parent)
@@ -131,11 +136,11 @@ local function Icon_Layout(self, parent)
 	local Icon = parent[self.name]
 	Icon:ClearAllPoints()
 	Icon:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
-	Icon:SetPoint(self.anchor, parent, self.anchorRel, self.offsetx, self.offsety)
+	Icon:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
 
 	local borderSize = self.dbx.borderSize
 	Icon_SetBorderSize(self, parent, borderSize)
-
+	
 	local size = self.dbx.size
 	Icon:SetWidth(size)
 	Icon:SetHeight(size)
@@ -159,14 +164,12 @@ local function Icon_Disable(self, parent)
 end
 
 local function Icon_UpdateDB(self, dbx)
-	local oldType = self.dbx and self.dbx.type or dbx.type
-	local location = Grid2.locations[dbx.location]
-
+	local l= dbx.location
+	self.anchor = l.point
+	self.anchorRel = l.relPoint
+	self.offsetx = l.x
+	self.offsety = l.y
 	self.frameLevel = dbx.level
-	self.anchor = location.point
-	self.anchorRel = location.relPoint
-	self.offsetx = location.x
-	self.offsety = location.y
 	self.Create = Icon_Create
 	self.GetBlinkFrame = Icon_GetBlinkFrame
 	self.Layout = Icon_Layout
@@ -175,7 +178,6 @@ local function Icon_UpdateDB(self, dbx)
 	self.SetBorderSize = Icon_SetBorderSize
 	self.Disable = Icon_Disable
 	self.UpdateDB = Icon_UpdateDB
-
 	self.dbx = dbx
 end
 
@@ -183,12 +185,8 @@ end
 local function CreateIcon(indicatorKey, dbx)
 	local existingIndicator = Grid2.indicators[indicatorKey]
 	local indicator = existingIndicator or Grid2.indicatorPrototype:new(indicatorKey)
--- print("CreateIcon", existingIndicator, indicator)
 	Icon_UpdateDB(indicator, dbx)
-
-	-- if (not existingIndicator) then
-		Grid2:RegisterIndicator(indicator, { "icon" })
-	-- end
+	Grid2:RegisterIndicator(indicator, { "icon" })
 	return indicator
 end
 

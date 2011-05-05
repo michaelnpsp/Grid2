@@ -1,3 +1,7 @@
+--[[
+Created by Grid2 original authors, modified by Michael
+--]]
+
 local media = LibStub("LibSharedMedia-3.0", true)
 
 if not media then return end
@@ -34,4 +38,9 @@ function Grid2Options:AddMediaOption(type, option)
 		registeredMedia[type] = t
 	end
 	t[#t + 1] = option
+end
+
+function Grid2Options:ClearMediaOptions()
+	wipe(registeredMedia)
+	wipe(dummy_info)
 end

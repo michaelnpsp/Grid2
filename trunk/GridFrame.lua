@@ -1,13 +1,13 @@
--- Grid2Frame.lua
+--[[ Created by Grid2 original authors, modified by Michael --]]
 
---{{{ Libraries
 
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
-local GridRange = GridRange
-local Grid2Frame
+local media = LibStub("LibSharedMedia-3.0", true)
+local Grid2= Grid2
 local SecureButton_GetModifiedUnit = SecureButton_GetModifiedUnit
 
---}}}
+local Grid2Frame
+
 --{{{ Grid2Frame script handlers
 
 local GridFrameEvents = {}
@@ -24,10 +24,9 @@ function GridFrameEvents:OnAttributeChanged(name, value)
 		if value then
 			local unit = SecureButton_GetModifiedUnit(self)
 			if self.unit ~= unit then
-				self.unit = unit
-
 				Grid2Frame:Debug("updated", self:GetName(), name, value, unit)
-				Grid2Frame:UpdateIndicators(self)
+				self.unit = unit
+				self:UpdateIndicators()
 				Grid2:SetFrameUnit(self, unit)
 			end
 		elseif self.unit then
@@ -45,13 +44,15 @@ end
 function GridFrameEvents:OnLeave()
 	self:OnLeave()
 end
-
+--[[
 function GridFrameEvents:OnSizeChanged(w, h)
-	--@FIXME throttle this ?
+	local dbx= Grid2Frame.db.profile
+	local inset= (dbx.frameBorder+dbx.frameBorderDistance)*2
+	self.container:SetSize( w-inset, h-inset )
 	self:LayoutIndicators()
 end
+--]]
 
---}}}
 --{{{ GridFramePrototype
 
 local GridFramePrototype = {}
@@ -64,77 +65,89 @@ local function GridFrame_Init(frame, width, height)
 		frame:SetScript(event, handler)
 	end
 
-	local frameBorder = Grid2Frame.db.profile.frameBorder
-	frame:SetBackdrop({
-		bgFile = "Interface\\Addons\\Grid2\\white16x16", tile = true, tileSize = 16,
-		edgeFile = "Interface\\Addons\\Grid2\\white16x16", edgeSize = frameBorder,
-		insets = {left = frameBorder, right = frameBorder, top = frameBorder, bottom = frameBorder},
-	})
-	frame:SetBackdropBorderColor(0, 0, 0, 1)
-	frame:SetBackdropColor(0, 0, 0, 1)
-
-	frame:EnableMouseoverHighlight(Grid2Frame.db.profile.mouseoverHighlight)
-
-	for _, indicator in Grid2:IterateIndicators() do
-		indicator:Create(frame)
+	if frame:CanChangeAttribute() then
+		frame:SetAttribute("initial-width", width)
+		frame:SetAttribute("initial-height", height)
 	end
-	Grid2:InterleaveHealsHealth(frame)
+	
+	frame.container = frame:CreateTexture()
 
-	frame:SetAttribute("initial-width", width)
-	frame:SetAttribute("initial-height", height)
-	-- set our left-click action
+	frame:CreateIndicators()
 
-	frame:Reset()
+	frame:Layout()
 
 	-- set up click casting
 	ClickCastFrames = ClickCastFrames or {}
 	ClickCastFrames[frame] = true
 end
 
-function GridFramePrototype:EnableMouseoverHighlight(enabled)
-	self:SetHighlightTexture(enabled and "Interface\\QuestFrame\\UI-QuestTitleHighlight" or nil)
-end
-
-function GridFramePrototype:Reset()
+function GridFramePrototype:Layout()
+	local dbx= Grid2Frame.db.profile
+	local w= dbx.frameWidth 
+	local h= dbx.frameHeight
+	-- external border controlled by the border indicator
+	local r,g,b,a= self:GetBackdropBorderColor() 
+	local frameBorder = dbx.frameBorder
+	self:SetBackdrop({
+		bgFile = "Interface\\Addons\\Grid2\\white16x16", tile = true, tileSize = 16,
+		edgeFile = "Interface\\Addons\\Grid2\\white16x16", edgeSize = frameBorder,
+		insets = {left = frameBorder, right = frameBorder, top = frameBorder, bottom = frameBorder},
+	})
+	self:SetBackdropBorderColor(r, g, b, a)
+	-- inner border color (sure that is the inner border)
+	local cf= dbx.frameColor
+	self:SetBackdropColor( cf.r, cf.g, cf.b, cf.a )
+	-- visible background 
+	local container= self.container
+	container:SetPoint("CENTER", self, "CENTER")
+	-- visible background color
+	local cb= dbx.frameContentColor
+	container:SetVertexColor(cb.r, cb.g, cb.b, cb.a)
+	-- shrink the background, to show part of the real frame background (that is behind) as a inner border.
+	local inset= (dbx.frameBorder+dbx.frameBorderDistance)*2
+	container:SetSize( w-inset, h-inset )
+	-- visible background texture
+	local texture = media and media:Fetch("statusbar", dbx.frameTexture) or "Interface\\Addons\\Grid2\\gradient32x32"		
+	self.container:SetTexture(texture)
+	--
 	if not InCombatLockdown() then
-		self:SetSize(Grid2Frame:GetFrameSize())
-		self:EnableMouseoverHighlight(Grid2Frame.db.profile.mouseoverHighlight)
+		self:SetSize(w,h)
+		self:SetHighlightTexture(dbx.mouseoverHighlight and "Interface\\QuestFrame\\UI-QuestTitleHighlight" or nil)
+		-- Adjust indicators position to the new size
+		for _, indicator in Grid2:IterateIndicators() do
+			indicator:Layout(self)
+		end
 	end
 end
 
--- shows the default unit tooltip
-function GridFramePrototype:OnEnter()
-	local st = Grid2Frame.db.profile.showTooltip
-	if st == "Always" or
-		(st == "OOC" and
-			(not InCombatLockdown() or
-				(self.unit and UnitIsDeadOrGhost(self.unit)))) then
+function GridFramePrototype:CreateIndicators()
+	for _, indicator in Grid2:IterateIndicators() do
+		indicator:Create(self)
+	end
+end
 
+function GridFramePrototype:UpdateIndicators()
+	local unit = self.unit
+	if unit then
+		for _, indicator in Grid2:IterateIndicators() do
+			indicator:Update(self, unit)
+		end
+	end	
+end
+
+-- shows the default unit tooltip
+local TooltipCheck= { Always= true, Never = false, OOC= function() return not InCombatLockdown() end }
+function GridFramePrototype:OnEnter()
+	if TooltipCheck[Grid2Frame.db.profile.showTooltip] then
 		UnitFrame_OnEnter(self)
---		self:SetScript("OnUpdate", UnitFrame_OnUpdate)
 	else
-		self:OnLeave()
+		UnitFrame_OnLeave(self)
 	end
 end
 
 function GridFramePrototype:OnLeave()
 	UnitFrame_OnLeave(self)
---	self:SetScript("OnUpdate", nil)
 end
-
-function GridFramePrototype:LayoutIndicators()
-	for _, indicator in Grid2:IterateIndicators() do
-		indicator:Layout(self)
-	end
-	Grid2:InterleaveHealsHealth(self)
-end
-
--- SetPoint for lazy people
-function GridFramePrototype:SetPosition(parentFrame, x, y)
-	self:ClearAllPoints()
-	self:SetPoint("TOPLEFT", parentFrame, "TOPLEFT", x, y)
-end
-
 --}}}
 
 --{{{ Grid2Frame
@@ -145,11 +158,15 @@ Grid2Frame = Grid2:NewModule("Grid2Frame")
 
 Grid2Frame.defaultDB = {
 	profile = {
-		frameHeight = 36,
-		frameWidth = 56,
-		frameBorder = 2,
 		debug = false,
-		mouseoverHighlight = true,
+		frameHeight = 48,
+		frameWidth  = 48,
+		frameBorder = 2,
+		frameBorderDistance= 1,
+		frameTexture = "Gradient",
+		frameColor = { r=0, g=0, b=0, a=1 },
+		frameContentColor= { r=0, g=0, b=0, a=1 },
+		mouseoverHighlight = false,
 		showTooltip = "OOC",
 		orientation = "VERTICAL",
 		textOrientation = "VERTICAL",
@@ -159,40 +176,62 @@ Grid2Frame.defaultDB = {
 
 --}}}
 
-function Grid2Frame:OnInitialize()
-	self.core.defaultModulePrototype.OnInitialize(self)
-	self.debugging = self.db.profile.debug
+--{{{  
 
+function Grid2Frame:Initialize()
 	self.registeredFrames = {}
 end
 
-function Grid2Frame:OnEnable()
+function Grid2Frame:Enable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateFrameUnits")
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "UNIT_ENTERED_VEHICLE")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE", "UNIT_EXITED_VEHICLE")
 	self:RegisterMessage("Grid_UnitUpdate", "Grid_UnitUpdate")
-	self:ResetAllFrames()
 	self:UpdateFrameUnits()
-	self:UpdateAllFrames()
+	self:UpdateIndicators()
 end
 
-function Grid2Frame:OnDisable()
-	self:Debug("OnDisable")
-	-- should probably disable and hide all of our frames here
+function Grid2Frame:Disable()
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "UpdateFrameUnits")
+	self:UnregisterEvent("UNIT_ENTERED_VEHICLE", "UNIT_ENTERED_VEHICLE")
+	self:UnregisterEvent("UNIT_EXITED_VEHICLE", "UNIT_EXITED_VEHICLE")
+	self:UnregisterMessage("Grid_UnitUpdate", "Grid_UnitUpdate")
 end
 
-function Grid2Frame:Reset()
-	self.core.defaultModulePrototype.Reset(self)
-	self:ResetAllFrames()
-	self:UpdateFrameUnits()
-	self:UpdateAllFrames()
+-- When profile changes, the modules reset sequence is: Disable Update Enable
+-- That is done here because to work property Grid2Layout needs the new frame size 
+-- and the indicators created when it is enabled. And Grid2Layout is enabled before 
+-- Grid2Frame (We cannot decide the reset order of the modules)
+function Grid2Frame:Update()
+	self:CreateIndicators()
+	self:LayoutFrames()
 end
+
+--}}}
 
 function Grid2Frame:RegisterFrame(frame)
 	self:Debug("RegisterFrame", frame:GetName())
-
 	GridFrame_Init(frame, self:GetFrameSize())
 	self.registeredFrames[frame:GetName()] = frame
+end
+
+function Grid2Frame:CreateIndicators()
+	for _, frame in next, self.registeredFrames do
+		frame:CreateIndicators()
+	end
+end
+
+function Grid2Frame:UpdateIndicators()
+	for _, frame in next, self.registeredFrames do
+		frame:UpdateIndicators()
+	end
+end
+
+function Grid2Frame:LayoutFrames()
+	for name, frame in next, self.registeredFrames do
+		frame:Layout()
+	end
+	self:SendMessage("Grid_UpdateLayoutSize")
 end
 
 function Grid2Frame:WithAllFrames(func, ...)
@@ -201,57 +240,21 @@ function Grid2Frame:WithAllFrames(func, ...)
 	end
 end
 
-do
-	local reset_handler = function (f) f:Reset() end
-	function Grid2Frame:ResetAllFrames()
-		self:WithAllFrames(reset_handler)
-		self:SendMessage("Grid_UpdateLayoutSize")
-	end
-end
-
-do
-	local resize_handler = function (f, w, h)
-		f:SetSize(w, h)
-	end
-	function Grid2Frame:ResizeAllFrames()
-		self:WithAllFrames(resize_handler, self:GetFrameSize())
-		self:SendMessage("Grid_UpdateLayoutSize")
-	end
-end
-
-do
-	local update_handler = function (f)
-		Grid2Frame:UpdateIndicators(f)
-	end
-	function Grid2Frame:UpdateAllFrames()
-		self:WithAllFrames(update_handler)
-	end
-end
-
 function Grid2Frame:GetFrameSize()
-	local p = self.db.profile
+	local p= self.db.profile
 	return p.frameWidth, p.frameHeight
-end
-
-function Grid2Frame:UpdateIndicators(frame)
-	local unit = frame.unit
-	if not unit then return end
-
-	for _, indicator in self.core:IterateIndicators() do
-		indicator:Update(frame, unit)
-	end
 end
 
 --{{{ Event handlers
 local next = next
 function Grid2Frame:UpdateFrameUnits()
-	for frameName, frame in next, self.registeredFrames do
+	for _, frame in next, self.registeredFrames do
 		local old_unit = frame.unit
 		local unit = SecureButton_GetModifiedUnit(frame)
 		if old_unit ~= unit then
 			Grid2:SetFrameUnit(frame, unit)
 			frame.unit = unit
-			self:UpdateIndicators(frame)
+			frame:UpdateIndicators()
 		end
 	end
 end
@@ -262,20 +265,19 @@ function Grid2Frame:UNIT_ENTERED_VEHICLE(_, unit)
 		if old ~= new then
 			Grid2:SetFrameUnit(frame, new)
 			frame.unit = new
-			self:UpdateIndicators(frame)
+			frame:UpdateIndicators()
 		end
 	end
 end
 
 function Grid2Frame:UNIT_EXITED_VEHICLE(_, unit)
 	local pet = Grid2:GetPetUnitidByUnitid(unit) or unit
-assert(pet, "Grid2Frame:UNIT_EXITED_VEHICLE nil pet for unit: " .. tostring(unit))
 	for frame in next, Grid2:GetUnitFrames(pet) do
 		local old, new = frame.unit, SecureButton_GetModifiedUnit(frame)
 		if old ~= new then
 			Grid2:SetFrameUnit(frame, new)
 			frame.unit = new
-			self:UpdateIndicators(frame)
+			frame:UpdateIndicators()
 		end
 	end
 end
@@ -287,7 +289,7 @@ function Grid2Frame:Grid_UnitUpdate(_, unit)
 			Grid2:SetFrameUnit(frame, new)
 			frame.unit = new
 		end
-		self:UpdateIndicators(frame)
+		frame:UpdateIndicators()
 	end
 end
 

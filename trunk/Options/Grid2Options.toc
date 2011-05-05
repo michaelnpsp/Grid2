@@ -1,21 +1,32 @@
 ## Interface: 40100
-## Title: Grid2Options
+## Title: Grid2 |cd0ff7d0aOptions|r
+## Title-esES: Grid2 |cd0ff7d0aOpciones|r
+## Notes: Configuration module for Grid2
+## Notes-esES: Modulo de configuracion del Grid2
 ## LoadOnDemand: 1
 ## Dependencies: Grid2
-## SavedVariables: Grid2OptionsDB
-## Version: @project-revision@
+## Version: 1001
 
+# Ace Libraries
+Libs\AceGUI-3.0\AceGUI-3.0.xml
+Libs\AceConfig-3.0\AceConfig-3.0.xml
+Libs\AceDBOptions-3.0\AceDBOptions-3.0.xml
+Libs\AceSerializer-3.0\AceSerializer-3.0.xml
+Libs\AceComm-3.0\AceComm-3.0.xml
+Libs\LibCompress\LibCompress.lua
+
+# Locales
 locales.xml
-core.lua
+
+# Grid2Options
 GridCore.lua
 GridFrame.lua
 GridLayout.lua
 GridBlink.lua
 GridMedia.lua
-GridLocations.lua
 GridIndicators.lua
 GridStatuses.lua
-GridCategories.lua
-
-GridDefaults.lua
-
+GridDebug.lua
+GridExportImport.lua
+GridTestIndicators.lua
+GridTestLayout.lua

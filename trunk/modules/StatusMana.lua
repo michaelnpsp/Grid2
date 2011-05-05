@@ -1,16 +1,29 @@
-local Mana = Grid2.statusPrototype:new("mana")
-local LowMana = Grid2.statusPrototype:new("lowmana")
+--[[
+Created by Grid2 original authors, modified by Michael
+--]]
+
+local Mana = Grid2.statusPrototype:new("mana",false)
+local LowMana = Grid2.statusPrototype:new("lowmana",false)
+local PowerAlt= Grid2.statusPrototype:new("poweralt",false)
+
+local fmt= string.format
 
 local EnableManaFrame
 do
 	local frame
 	local count = 0
-	local function Frame_OnEvent(self, event, unit)
-		if (event ~= "UNIT_POWER" or UnitPowerType(unit) == 0) then
-			if Mana.enabled then Mana:UpdateIndicators(unit) end
-			if (LowMana.enabled) then
+	local function Frame_OnEvent(self, event, unit, powerType)
+		if powerType == "MANA" then
+			if Mana.enabled then 
+				Mana:UpdateIndicators(unit) 
+			end
+			if LowMana.enabled then
 				LowMana:UpdateIndicators(unit)
 			end
+		else
+			if PowerAlt.enabled and powerType == "ALTERNATE" then
+				PowerAlt:UpdateIndicators(unit)
+			end	
 		end
 	end
 	function EnableManaFrame(enable)
@@ -58,11 +71,16 @@ function Mana:GetPercent(unit)
 end
 
 function Mana:GetTextDefault(unit)
-	return Grid2.GetShortNumber(UnitMana(unit))
+	return fmt("%.1fk", UnitMana(unit) / 1000)
+end
+
+function Mana:GetColor(unit)
+	local color = self.dbx.color1
+	return color.r, color.g, color.b, color.a
 end
 
 local function Create(baseKey, dbx)
-	Grid2:RegisterStatus(Mana, {"percent", "text"}, baseKey, dbx)
+	Grid2:RegisterStatus(Mana, {"percent", "text", "color"}, baseKey, dbx)
 	Grid2:MakeTextHandler(Mana)
 
 	return Mana
@@ -96,3 +114,44 @@ local function Create(baseKey, dbx)
 end
 
 Grid2.setupFunc["lowmana"] = Create
+
+
+
+function PowerAlt:OnEnable()
+	EnableManaFrame(true)
+end
+
+function PowerAlt:OnDisable()
+	EnableManaFrame(false)
+end
+
+function PowerAlt:IsActive(unit)
+	return UnitPowerMax(unit,10)>0
+end
+
+function PowerAlt:GetPercent(unit)
+	return UnitPower(unit,10) / UnitPowerMax(unit,10)
+end
+
+function PowerAlt:GetTextDefault(unit)
+	local power= UnitPower(unit,10)
+	if power>=1000 then
+		return fmt("%.1fk", power / 1000)
+	else
+		return tostring(power)	
+	end
+end
+
+function PowerAlt:GetColor(unit)
+	local color = self.dbx.color1
+	return color.r, color.g, color.b, color.a
+end
+
+local function Create(baseKey, dbx)
+	Grid2:RegisterStatus(PowerAlt, {"percent", "text", "color"}, baseKey, dbx)
+	Grid2:MakeTextHandler(PowerAlt)
+
+	return PowerAlt
+end
+
+Grid2.setupFunc["poweralt"] = Create

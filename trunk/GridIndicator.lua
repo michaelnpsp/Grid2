@@ -1,3 +1,7 @@
+--[[
+Created by Grid2 original authors, modified by Michael
+--]]
+
 Grid2.indicators = {}
 Grid2.indicatorTypes = {}
 
@@ -13,33 +17,28 @@ function indicator:init(name)
 	self.name = name
 end
 
-function Grid2:IsCompatiblePair(indicator, status)
-	-- we check that the status provides at least
-	-- one of the required indicator types
-	for type, list in pairs(self.indicatorTypes) do
-		if list[indicator.name] then
-			for _, s in self:IterateStatuses(type) do
-				if s == status then
-					return type
-				end
-			end
-		end
+function indicator:CreateFrame(type, parent)
+	local f = parent[self.name]
+	if not (f and f:GetObjectType()==type) then
+		f= CreateFrame(type, nil, parent)
+		parent[self.name]= f
 	end
+	return f
 end
 
 function indicator:RegisterStatus(status, priority)
 	if self.priorities[status] then
 		Grid2:Print(string.format("WARNING ! Status %s already registered with indicator %s", status.name, self.name))
-		return
+		return true
 	end
-	-- assert(Grid2:IsCompatiblePair(self, status), "InCompatiblePair " .. self.name .. " vs " .. status.name)
-	-- ToDo: save these in case of a morph later?
 	if (Grid2:IsCompatiblePair(self, status)) then
 		self.priorities[status] = priority
 		self.statuses[#self.statuses + 1] = status
 		table.sort(self.statuses, self.sortStatuses)
 		status:RegisterIndicator(self)
+		return true
 	end
+	return false
 end
 
 function indicator:UnregisterStatus(status)
@@ -60,7 +59,6 @@ function indicator:SetStatusPriority(status, priority)
 		return 
 	end
 	self.priorities[status] = priority
-	--print( "SetStatusPriority: "..self.name.." "..status.name.." now "..priority )
 	table.sort(self.statuses, self.sortStatuses)
 end
 
@@ -70,50 +68,43 @@ end
 
 function indicator:GetCurrentStatus(unit)
 	if unit then
-		local range
-		for _, status in ipairs(self.statuses) do
+		local statuses= self.statuses
+		for i=1,#statuses do
+			local status= statuses[i]
 			local state = status:IsActive(unit)
 			if state then
-				if status:HasRange() then
-					if not range then
-						range = GridRange:GetUnitRange(unit)
-					end
-					if status:IsInRange(unit, range) then
-						return status, state
-					end
-				else
-					return status, state
-				end
+				return status, state
 			end
 		end
 	end
 end
 
-local Grid2Blink = Grid2:GetModule("Grid2Blink")
-function indicator:SetBlinkingState(frame, state)
-	local blinking = self.blinking
-	local current = blinking and blinking[frame] or false
-	
-	if current ~= state then
-		if not blinking then
-			blinking = {}
-			self.blinking = blinking
-		end
-		blinking[frame] = state
-		if state then
-			Grid2Blink:Add(frame)
-		else
-			Grid2Blink:Remove(frame)
-		end
-	end
-end
+--{{ Update functions  
 
-function indicator:Update(parent, unit)
+local Grid2Blink = Grid2:GetModule("Grid2Blink")
+local blinking= Grid2Blink.registry
+
+local function UpdateBlink(self, parent, unit)
 	local status, state = self:GetCurrentStatus(unit)
-	local f = self.GetBlinkFrame and self:GetBlinkFrame(parent)
-	if f then self:SetBlinkingState(f, state == "blink") end
+	local frame= self.GetBlinkFrame  
+	if frame then 
+		frame= frame(self,parent)
+		if blinking[frame] then
+			if not state then Grid2Blink:Remove(frame) end	
+		else
+			if state=="blink" then Grid2Blink:Add(frame) end
+		end
+	end 
 	self:OnUpdate(parent, unit, status)
 end
+
+local function UpdateNoBlink(self, parent, unit)
+	self:OnUpdate(parent, unit, self:GetCurrentStatus(unit) )
+end
+
+indicator.Update= UpdateBlink
+
+--}}
 
 Grid2.indicatorPrototype = {
 	__index = indicator,
@@ -126,8 +117,6 @@ Grid2.indicatorPrototype = {
 
 function Grid2:RegisterIndicator(indicator, types)
 	local name = indicator.name
---	assert(name and not self.indicators[name])
--- TODO: add an unregister so assert does not get triggered and indicators can switch types
 	self.indicators[name] = indicator
 	for _, type in ipairs(types) do
 		local t = self.indicatorTypes[type]
@@ -137,24 +126,51 @@ function Grid2:RegisterIndicator(indicator, types)
 		end
 		t[name] = indicator
 	end
-	if self.db then
-		self:InitializeElement("indicator", indicator)
-	end
 end
 
 function Grid2:UnregisterIndicator(indicator)
+	-- unregister statuses linked to this indicator
+	local statuses= indicator.statuses
+	while (#statuses>0) do
+		indicator:UnregisterStatus(statuses[#statuses])
+	end
+	-- Hide indicator from created frame units
+	if indicator.Disable then
+		Grid2Frame:WithAllFrames(function (f) indicator:Disable(f) end)
+	end
+	-- unregister indicator
 	local name = indicator.name
 	self.indicators[name] = nil
 	for type, t in pairs(self.indicatorTypes) do
 		t[name] = nil
 	end
-	
+	-- unregister asociated indicator if exists
 	if (indicator.sideKick) then
 		Grid2:UnregisterIndicator(indicator.sideKick)
 		indicator.sideKick = nil
 	end
 end
 
+-- We can choose which update function we want to use. UpdateNoBlink is faster 
+function Grid2:IndicatorsBlinkEnabled( enabled )
+  	indicator.Update= enabled and UpdateBlink or UpdateNoBlink
+end
+
+function Grid2:IsCompatiblePair(indicator, status)
+	-- we check that the status provides at least
+	-- one of the required indicator types
+	for type, list in pairs(self.indicatorTypes) do
+		if list[indicator.name] then
+			for _, s in self:IterateStatuses(type) do
+				if s == status then
+					return type
+				end
+			end
+		end
+	end
+end
+
 function Grid2:IterateIndicators(type)
 	return next, type and self.indicatorTypes[type] or self.indicators
 end
+

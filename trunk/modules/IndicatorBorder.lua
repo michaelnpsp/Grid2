@@ -1,16 +1,19 @@
+--[[ Created by Grid2 original authors, modified by Michael ]]--
+
 local Border = Grid2.indicatorPrototype:new("border")
 
-function Border:Create(parent)
+function Border:Create()
 end
 
-function Border:Layout(parent)
+function Border:Layout()
 end
 
 function Border:OnUpdate(parent, unit, status)
 	if status then
 		parent:SetBackdropBorderColor(status:GetColor(unit))
 	else
-		parent:SetBackdropBorderColor(0, 0, 0, 1)
+		local c= self.dbx.color1
+		parent:SetBackdropBorderColor(c.r, c.g, c.b, c.a)
 	end
 end
 

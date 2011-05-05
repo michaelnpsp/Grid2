@@ -1,5 +1,3 @@
-local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
-
 local Alpha = Grid2.indicatorPrototype:new("alpha")
 
 function Alpha:Create(parent)

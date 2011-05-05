@@ -1,26 +1,26 @@
 ﻿## Interface: 40100
 ## Title: Grid2
 ## Notes: A modular, lightweight and screen-estate saving grid of party/raid unit frames
-## Notes-ruRU: Модульный, облегчённый аддон, отображаюший компактные юнитфреймы группы/рейда в виде грида
+## Notes-esES: Marcos de unidades de raid compactos y ligeros.
+## Notes-ruRU: Модульный, легкий, отображающий на экране область группы/рейда в виде сетки.
 ## Notes-zhCN: 小巧的轻量级模块化队伍框架
 ## Notes-zhTW: 精簡的團隊框架功能
 ## Author: Pastamancer & Maia, Jerry, Toadkiller
 
-## OptionalDeps: Ace3, LibDBLayers-1.0, Clique
-## X-Embeds: Ace3, LibDBLayers-1.0
+## OptionalDeps: Ace4, Clique
+## X-Embeds: Ace3
 ## SavedVariables: Grid2DB
 ## DefaultState: enabled
 ## LoadOnDemand: 0
 
-## Version: @project-revision@
+## Version: @project-version@
 ## X-ReleaseDate: "$Date$"
 ## X-Category: UnitFrame
-## X-Website: http://wowace.com/projects/grid2/
 
 
 # Non-Ace Libraries
-#libs\UTF8\utf8data.lua
-libs\UTF8\utf8.lua
+libs\utf8\utf8.lua
+libs\LibDualSpec-1.0\LibDualSpec-1.0.lua
 
 # Ace Libraries
 #@no-lib-strip@
@@ -29,13 +29,9 @@ Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
 Libs\AceAddon-3.0\AceAddon-3.0.xml
 Libs\AceEvent-3.0\AceEvent-3.0.xml
 Libs\AceTimer-3.0\AceTimer-3.0.xml
-Libs\AceBucket-3.0\AceBucket-3.0.xml
 Libs\AceDB-3.0\AceDB-3.0.xml
 Libs\AceConsole-3.0\AceConsole-3.0.xml
-Libs\AceGUI-3.0\AceGUI-3.0.xml
-Libs\AceConfig-3.0\AceConfig-3.0.xml
 Libs\AceLocale-3.0\AceLocale-3.0.xml
-Libs\LibDBLayers-1.0\LibDBLayers-1.0.xml
 #@end-no-lib-strip@
 
 #Locales
@@ -43,17 +39,14 @@ locales.xml
 
 # Grid
 GridCore.lua
-GridUtils.lua
 GridBlink.lua
 GridRoster.lua
-GridRange.lua
 GridLayout.lua
 GridLayoutLayouts.lua
 GridFrame.lua
-GridLocation.lua
 GridIndicator.lua
 GridStatus.lua
-GridCategory.lua
+GridSetup.lua
 GridDefaults.lua
 
 modules.xml

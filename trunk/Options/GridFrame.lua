@@ -1,135 +1,180 @@
+--[[
+Created by Grid2 original authors, modified by Michael
+--]]
+
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
-local DBL = LibStub:GetLibrary("LibDBLayers-1.0")
+local media = LibStub("LibSharedMedia-3.0", true)
 
-Grid2Frame.menuName = L["frame"]
-Grid2Frame.menuOrder = 20
+function Grid2Options:MakeFrameOptions(reset)
+local options= {
+		mouseoverHighlight = {
+			type = "toggle",
+			name = L["Mouseover Highlight"],
+			desc = L["Toggle mouseover highlight."],
+			order = 59,
+			get = function ()
+				return Grid2Frame.db.profile.mouseoverHighlight
+			end,
+			set = function (_, v)
+				Grid2Frame.db.profile.mouseoverHighlight = v
+				Grid2Frame:LayoutFrames()
+			end,
+		},
+		tooltip = {
+			type = "select",
+			order = 55,
+			name = L["Show Tooltip"],
+			desc = L["Show unit tooltip.  Choose 'Always', 'Never', or 'OOC'."],
+			get = function ()
+				return Grid2Frame.db.profile.showTooltip
+			end,
+			set = function (_, v)
+				Grid2Frame.db.profile.showTooltip = v
+			end,
+			values={["Always"] = L["Always"], ["Never"] = L["Never"], ["OOC"] = L["OOC"]},
+		},
+		framewidth = {
+			type = "range",
+			order = 30,
+			name = L["Frame Width"],
+			desc = L["Adjust the width of each unit's frame."],
+			min = 10,
+			max = 100,
+			step = 1,
+			get = function ()
+				return Grid2Frame.db.profile.frameWidth
+			end,
+			set = function (_, v)
+				Grid2Frame.db.profile.frameWidth = v
+				Grid2Frame:LayoutFrames()
+				Grid2Layout:UpdateHeadersSize()
+				Grid2Layout:UpdateSize()
+				Grid2Options:LayoutTestRefresh()
+			end,
+			disabled = InCombatLockdown,
+		},
+		frameheight = {
+			type = "range",
+			order = 40,
+			name = L["Frame Height"],
+			desc = L["Adjust the height of each unit's frame."],
+			min = 10,
+			max = 100,
+			step = 1,
+			get = function ()
+				return Grid2Frame.db.profile.frameHeight
+			end,
+			set = function (_, v)
+				Grid2Frame.db.profile.frameHeight = v
+				Grid2Frame:LayoutFrames()
+				Grid2Layout:UpdateHeadersSize()
+				Grid2Layout:UpdateSize()
+				Grid2Options:LayoutTestRefresh()
+			end,
+			disabled = InCombatLockdown,
+		},
+		orientation = {
+			type = "select",
+			order = 5,
+			name = L["Orientation of Frame"],
+			desc = L["Set frame orientation."],
+			get = function ()
+				return Grid2Frame.db.profile.orientation
+			end,
+			set = function (_, v)
+				Grid2Frame.db.profile.orientation = v
+				for _, indicator in Grid2:IterateIndicators() do
+					if indicator.SetOrientation and indicator.orientation==nil then
+						Grid2Frame:WithAllFrames(function (f) indicator:SetOrientation(f) end)
+					end
+				end
+			end,
+			values={["VERTICAL"] = L["VERTICAL"], ["HORIZONTAL"] = L["HORIZONTAL"]}
+		},
+		borderDistance= {
+			type = "range",
+			name = L["Inner Border Size"],
+			desc = L["Sets the size of the inner border of each unit frame"],
+			min = 0,
+			max = 8,
+			step = 1,
+			order = 58,
+			get = function ()
+				return Grid2Frame.db.profile.frameBorderDistance
+			end,
+			set = function (_, v)
+				Grid2Frame.db.profile.frameBorderDistance = v
+				Grid2Frame:LayoutFrames()
+			end,
+		},		
+		colorFrame = {
+			type = "color",
+			order = 59,
+			name = L["Inner Border Color"],
+			desc = L["Sets the color of the inner border of each unit frame"],
+			get = function()
+				local c= Grid2Frame.db.profile.frameColor
+				return c.r, c.g, c.b, c.a
+			end,
+			set = function( info, r,g,b,a )
+				local c= Grid2Frame.db.profile.frameColor
+				c.r, c.g, c.b, c.a = r, g, b, a
+				Grid2Frame:LayoutFrames()
+			 end, 
+			hasAlpha = true,
+		},
+		colorContent = {
+			type = "color",
+			order = 57,
+			name = L["Background Color"],
+			desc = L["Sets the background color of each unit frame"],
+			get = function()
+				local c= Grid2Frame.db.profile.frameContentColor
+				return c.r, c.g, c.b, c.a
+			end,
+			set = function( info, r,g,b,a )
+				local c= Grid2Frame.db.profile.frameContentColor
+				c.r, c.g, c.b, c.a = r, g, b, a
+				Grid2Frame:LayoutFrames()
+			 end, 
+			hasAlpha = true,
+		}		
+	}
+	if Grid2Options.AddMediaOption then
+		local textureOption = {
+			type = "select",
+			order = 54,
+			name = L["Background Texture"],
+			desc = L["Select the frame background texture."],
+			get = function (info)
+				local v = Grid2Frame.db.profile.frameTexture
+				for i, t in ipairs(info.option.values) do
+					if v == t then return i end
+				end
+			end,
+			set = function (info, v)
+				Grid2Frame.db.profile.frameTexture = info.option.values[v]
+				Grid2Frame:LayoutFrames()
+			end,
+		}
+		Grid2Options:AddMediaOption("statusbar", textureOption)
+		options.texture = textureOption
+	end
+	
+	Grid2Options:AddModuleOptions("General", "Frames", options)
+	
+end
 
-Grid2Options:AddModule("Grid2", "Grid2Frame", Grid2Frame, {
-	mouseoverHighlight = {
-		type = "toggle",
-		name = L["Mouseover Highlight"],
-		desc = L["Toggle mouseover highlight."],
-		order = 10,
-		get = function ()
-			return Grid2Frame.db.profile.mouseoverHighlight
-		end,
-		set = function (_, v)
-			Grid2Frame.db.profile.mouseoverHighlight = v
-			Grid2Frame:WithAllFrames(function(f)
-				f:EnableMouseoverHighlight(v)
-			end)
-		end,
-	},
-	tooltip = {
-		type = "select",
-		order = 15,
-		name = L["Show Tooltip"],
-		desc = L["Show unit tooltip.  Choose 'Always', 'Never', or 'OOC'."],
-		get = function ()
-			return Grid2Frame.db.profile.showTooltip
-		end,
-		set = function (_, v)
-			Grid2Frame.db.profile.showTooltip = v
-		end,
-		values={["Always"] = L["Always"], ["Never"] = L["Never"], ["OOC"] = L["OOC"]},
-	},
-	frameBorder = {
-		type = "range",
-		order = 20,
-		name = L["Border Size"],
-		desc = L["Adjust the border of each unit's frame."],
-		min = 1,
-		max = 8,
-		step = 1,
-		get = function ()
-			return Grid2Frame.db.profile.frameBorder
-		end,
-		set = function (_, frameBorder)
-			Grid2Frame.db.profile.frameBorder = frameBorder
-			Grid2Frame:WithAllFrames(function (f)
-				f:SetBackdrop({
-					bgFile = "Interface\\Addons\\Grid2\\white16x16", tile = true, tileSize = 16,
-					edgeFile = "Interface\\Addons\\Grid2\\white16x16", edgeSize = frameBorder,
-					insets = {left = frameBorder, right = frameBorder, top = frameBorder, bottom = frameBorder},
-				})
-				f:LayoutIndicators()
-			end)
-		end,
-		disabled = InCombatLockdown,
-	},
-	framewidth = {
-		type = "range",
-		order = 30,
-		name = L["Frame Width"],
-		desc = L["Adjust the width of each unit's frame."],
-		min = 10,
-		max = 100,
-		step = 1,
-		get = function ()
-			return Grid2Frame.db.profile.frameWidth
-		end,
-		set = function (_, v)
-			Grid2Frame.db.profile.frameWidth = v
-			Grid2Frame:ResizeAllFrames()
-		end,
-		disabled = InCombatLockdown,
-	},
-	frameheight = {
-		type = "range",
-		order = 40,
-		name = L["Frame Height"],
-		desc = L["Adjust the height of each unit's frame."],
-		min = 10,
-		max = 100,
-		step = 1,
-		get = function ()
-			return Grid2Frame.db.profile.frameHeight
-		end,
-		set = function (_, v)
-			Grid2Frame.db.profile.frameHeight = v
-			Grid2Frame:ResizeAllFrames()
-		end,
-		disabled = InCombatLockdown,
-	},
-	orientationHeader = {
-		type = "header",
-		order = 50,
-		name = "",
-	},
-	orientation = {
-		type = "select",
-		order = 51,
-		name = L["Orientation of Frame"],
-		desc = L["Set frame orientation."],
-		get = function ()
-			return Grid2Frame.db.profile.orientation
-		end,
-		set = function (_, v)
-			Grid2Frame.db.profile.orientation = v
-			local indicator = Grid2.indicators["health"]
-			Grid2Frame:WithAllFrames(function (f) indicator:SetOrientation(f) end)
-			indicator = Grid2.indicators["heals"]
-			Grid2Frame:WithAllFrames(function (f) indicator:SetOrientation(f) end)
-		end,
-		values={["VERTICAL"] = L["VERTICAL"], ["HORIZONTAL"] = L["HORIZONTAL"]}
-	},
-	invert = {
-		type = "toggle",
-		order = 12,
-		name = L["Invert Bar Color"],
-		desc = L["Swap foreground/background colors on bars."],
-		tristate = true,
-		get = function ()
-			return Grid2Frame.db.profile.invertBarColor
-		end,
-		set = function (_, v)
-			Grid2Frame.db.profile.invertBarColor = v
-			Grid2.indicators["health-color"]:UpdateDB()
-			Grid2Frame:WithAllFrames(function (f)
-				Grid2:InterleaveHealsHealth(f)
-			end)
-			Grid2Frame:Reset()
-		end,
-	},
-})
+-- Force GridLayoutHeaders size recalculation. Called from Grid2Options when frames width or height changes. 
+-- Without this, UpdateSize calculates wrong layout size because g:GetWidth/g:GetHeight dont return correct values.
+-- TODO: A better way to fix this issue ?
+function Grid2Layout:UpdateHeadersSize()
+	for type, headers in pairs(self.groups) do
+		for i = 1, self.indexes[type] do
+			local g = headers[i]
+			g:Hide()
+			g:Show()
+		end
+	end
+end
 

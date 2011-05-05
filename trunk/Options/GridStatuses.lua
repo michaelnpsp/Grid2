@@ -1,89 +1,86 @@
+--[[
+Created by Grid2 original authors, modified by Michael
+--]]
+
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
-local DBL = LibStub:GetLibrary("LibDBLayers-1.0")
+
+local Grid2Options= Grid2Options
 
 local LOCALIZED_CLASS_NAMES_MALE = LOCALIZED_CLASS_NAMES_MALE
 
+local targetIconOptionParams = {
+	color1 = RAID_TARGET_1,
+	color2 = RAID_TARGET_2,
+	color3 = RAID_TARGET_3,
+	color4 = RAID_TARGET_4,
+	color5 = RAID_TARGET_5,
+	color6 = RAID_TARGET_6,
+	color7 = RAID_TARGET_7,
+	color8 = RAID_TARGET_8,
+	privateColorHandler= true,
+}
 
-local layerValues
-Grid2Options.statusLayers = {}
-function Grid2Options.GetStatusLayerValues()
-	if (not layerValues) then
-		layerValues = {}
-		for layer, index in pairs(DBL:GetLayerOrder(Grid2.dblData, "statuses")) do
-			local name = L[layer] or layer
-			layerValues[index] = name
-			Grid2Options.statusLayers[index] = layer
-		end
-	end
-	return layerValues
-end
+function Grid2Options.LocalizeStatus(name, RemovePrefix)
 
-function Grid2Options:MakeStatusLayerOptions(status, options)
-	options = options or {}
-
-	local baseKey = status.name
-	options.layer = {
-	    type = 'select',
-		order = 5,
-		name = L["Layer"],
-		desc = L["Layer level.  Higher layers (like Class or Spec) supercede lower ones like Account."],
-	    values = Grid2Options.GetStatusLayerValues,
-		get = function ()
-			local layer = DBL:GetObjectLayer(Grid2.dblData, "statuses", baseKey)
-			local layerIndex = DBL:GetLayerOrder(Grid2.dblData, "statuses")[layer]
-			return layerIndex
-		end,
-		set = function (info, value)
-			local dblData = Grid2.dblData
-			local newLayer
-			for layer, index in pairs(DBL:GetLayerOrder(dblData, "statuses")) do
-				if (index == value) then
-					newLayer = layer
+		local function SplitStatusName(name)
+			local prefixes= { "buff-", "debuff-" }
+			local suffixes= { "-mine", "-not-mine" }
+			local prefix= ""
+			local suffix= ""
+			local body
+			for _, value in ipairs(prefixes) do
+				if strsub(name,1,strlen(value))==value then 
+					prefix= value
+					break
 				end
 			end
-			DBL:SetObjectLayer(dblData, "statuses", baseKey, newLayer, status.dbx)
-			DBL:FlattenSetupType(dblData, "statuses")
-
-			for unit, guid in Grid2:IterateRosterUnits() do
-				status:UpdateIndicators(unit)
+			for _, value in ipairs(suffixes) do
+				if strsub(name,-strlen(value))==value then 
+					suffix= value
+					break
+				end
 			end
-		end,
-	}
-	options.layerSpacer = {
-		type = "header",
-		order = 6,
-		name = "",
-	}
+			body= strsub( name, strlen(prefix)+1, strlen(name)-strlen(suffix) )
+			return prefix,body,suffix
+		end
 
-	return options
-end
-
-
-
+	local prefix,body,suffix= SplitStatusName(name)
+	if RemovePrefix then
+		prefix= ""
+	end	
+	if prefix~="" then
+		prefix= L[prefix]
+	end
+	if suffix~="" then
+		suffix= L[suffix]
+	end
+	return prefix .. L[body] .. suffix	
+end	
 
 local function DeleteStatus(info)
 	local status = info.arg.status
 	local group = info.arg.group
 	local baseKey = status.name
-	local dblData = Grid2.dblData
 
-	-- Remove from options
-	local layer = DBL:GetObjectLayer(Grid2.dblData, "statuses", baseKey)
-	DBL:DeleteLayerObject(dblData, "statuses", layer, baseKey)
-	DBL:FlattenSetupType(dblData, "statuses")
-
-	-- Remove mappings
+	-- Remove from status db
+	Grid2.db.profile.statuses[baseKey]= nil
+	
+	-- Remove mappings from db
 	for indicatorKey, indicator in Grid2:IterateIndicators() do
-		Grid2Options:UnregisterIndicatorStatus(indicator, status)
+		if status.indicators[indicator] then
+			Grid2:DbSetMap(indicatorKey ,baseKey, nil)
+		end	
 	end
 
-	Grid2Frame:ResetAllFrames()
-	Grid2Frame:UpdateAllFrames()
+	-- Remove status from runtime
+	Grid2:UnregisterStatus(status)
+	
+	Grid2Frame:UpdateIndicators()
 
 	if (group) then
-		Grid2Options:DeleteElementSubType("status", group, baseKey)
+		Grid2Options:DeleteElementSubType("statuses", group, baseKey)
 	else
-		Grid2Options:DeleteElement("status", baseKey)
+		Grid2Options:DeleteElement("statuses", baseKey)
 	end
 end
 
@@ -102,18 +99,16 @@ function Grid2Options:MakeStatusDeleteOptions(status, options, optionParams)
 		}
 		options.delete = {
 			type = "execute",
-			order = 201,
+			order = 210,
 			name = L["Delete"],
 			func = DeleteStatus,
+			disabled = function() return (next(status.indicators)~=nil)	end,
 			arg = {status = status, group = group},
 		}
 	end
 
 	return options
 end
-
-
-
 
 function Grid2Options.GetStatusOpacity(info)
 	local status = info.arg
@@ -122,7 +117,7 @@ end
 
 function Grid2Options.SetStatusOpacity(info, a)
 	local status = info.arg
-	local dbx = DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name)
+	local dbx = Grid2.db.profile.statuses[status.name]
 
 	status.dbx.opacity = a
 	dbx.opacity = a
@@ -132,12 +127,11 @@ function Grid2Options.SetStatusOpacity(info, a)
 		local colorKey = "color" .. i
 		local c = status.dbx[colorKey]
 		c.a = a
-
 		c = dbx[colorKey]
 		c.a = a
 	end
 
-	Grid2Frame:UpdateAllFrames()
+	Grid2Frame:UpdateIndicators()
 end
 
 function Grid2Options:MakeStatusOpacityOptions(status, options, optionParams)
@@ -169,9 +163,6 @@ function Grid2Options:MakeStatusOpacityOptions(status, options, optionParams)
 	return options
 end
 
-
-
-
 function Grid2Options.GetStatusColor(info)
 	local status = info.arg.status
 	local colorKey = "color"
@@ -186,7 +177,7 @@ end
 function Grid2Options.SetStatusColor(info, r, g, b, a)
 	local passValue = info.arg
 	local status = passValue.status
-	local dbx = DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name)
+	local dbx = Grid2.db.profile.statuses[status.name] 
 	local colorKey = "color"
 
 	local colorIndex = passValue.colorIndex
@@ -210,7 +201,6 @@ end
 function Grid2Options:MakeStatusColorOptions(status, options, optionParams)
 	options = options or {}
 
---print("MakeStatusColorOption", status.name, colorCount)
 	local colorCount = status.dbx.colorCount or 1
 	local name = L["Color"]
 	local desc = L["Color for %s."]:format(status.name)
@@ -251,7 +241,8 @@ function Grid2Options:MakeStatusClassFilterOptions(status, options, optionParams
 
 	options.classFilter = {
 		type = "group",
-		order = 20,
+		order = 205,
+		inline= true,
 		name = L["Class Filter"],
 		desc = L["Threshold at which to activate the status."],
 		args = {},
@@ -268,27 +259,19 @@ function Grid2Options:MakeStatusClassFilterOptions(status, options, optionParams
 			end,
 			set = function (_, value)
 				local on = not value
-				local dbx = DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name)
+				local dbx = status.dbx
 				if (on) then
-					if (not status.dbx.classFilter) then
-						status.dbx.classFilter = {}
-					end
-					status.dbx.classFilter[classType] = true
-
 					if (not dbx.classFilter) then
 						dbx.classFilter = {}
 					end
 					dbx.classFilter[classType] = true
 				else
-					status.dbx.classFilter[classType] = nil
-					if (not next(status.dbx.classFilter)) then
-						status.dbx.classFilter = nil
-					end
-
-					dbx.classFilter[classType] = nil
-					if (not next(dbx.classFilter)) then
-						dbx.classFilter = nil
-					end
+					if dbx.classFilter then
+						dbx.classFilter[classType] = nil
+						if (not next(dbx.classFilter)) then
+							dbx.classFilter = nil
+						end
+					end	
 				end
 				if status.UpdateDB then
 					status:UpdateDB()
@@ -307,11 +290,9 @@ function Grid2Options:MakeStatusStandardOptions(status, options, optionParams)
 	options = options or {}
 
 	options = Grid2Options:MakeStatusColorOptions(status, options, optionParams)
-	options = Grid2Options:MakeStatusLayerOptions(status, options, optionParams)
 
 	return options
 end
-
 
 function Grid2Options:MakeStatusThresholdOptions(status, options, optionParams, min, max, step)
 	options = options or {}
@@ -334,13 +315,12 @@ function Grid2Options:MakeStatusThresholdOptions(status, options, optionParams, 
 		end,
 		set = function (_, v)
 			status.dbx.threshold = v
-			DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name).threshold = v
+			Grid2.db.profile.statuses[status.name].threshold = v
 			for unit, guid in Grid2:IterateRosterUnits() do
 				status:UpdateIndicators(unit)
 			end
 		end,
 	}
-
 	return options
 end
 
@@ -349,7 +329,6 @@ function Grid2Options:MakeStatusColorThresholdOptions(status, options, optionPar
 
 	options = Grid2Options:MakeStatusColorOptions(status, options, optionParams)
 	options = Grid2Options:MakeStatusThresholdOptions(status, options, optionParams)
-	options = Grid2Options:MakeStatusLayerOptions(status, options, optionParams)
 
 	return options
 end
@@ -357,8 +336,8 @@ end
 function Grid2Options:MakeStatusHealthDeficitOptions(status, options, optionParams)
 	options = options or {}
 
+	options = Grid2Options:MakeStatusColorOptions(status, options, optionParams)
 	options = Grid2Options:MakeStatusThresholdOptions(status, options, optionParams)
-	options = Grid2Options:MakeStatusLayerOptions(status, options, optionParams)
 
 	return options
 end
@@ -367,11 +346,12 @@ function Grid2Options:MakeStatusRangeOptions(status, options, optionParams)
 	options = options or {}
 
 	local function GetAvailableRangeList()
-		local rangelist = {}
-		for r in GridRange:AvailableRangeIterator() do
-			rangelist[r] = L["%d yards"]:format(r)
+		local result= {}
+		local ranges= status.GetRanges()
+		for _,r in ipairs(ranges) do
+			result[tostring(r)] = L["%d yards"]:format(tonumber(r))
 		end
-		return rangelist
+		return result
 	end
 
 	options.default = {
@@ -387,7 +367,7 @@ function Grid2Options:MakeStatusRangeOptions(status, options, optionParams)
 		end,
 		set = function (_, v)
 			status.dbx.default = v
-			DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name).default = v
+			status:UpdateDB()
 		end,
 	}
 	options.update = {
@@ -403,7 +383,7 @@ function Grid2Options:MakeStatusRangeOptions(status, options, optionParams)
 		end,
 		set = function (_, v)
 			status.dbx.elapsed = v
-			DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name).elapsed = v
+			status:UpdateDB()
 		end,
 	}
 	options.range = {
@@ -412,20 +392,17 @@ function Grid2Options:MakeStatusRangeOptions(status, options, optionParams)
 		name = L["Range"],
 		desc = L["Range in yards beyond which the status will be lost."],
 		get = function ()
-			return status.dbx.range
+			return status.dbx.range and tostring(status.dbx.range) or "38"
 		end,
 		set = function (_, v)
-			status.dbx.range = v
-			DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name).range = v
-			status:Grid_RangesUpdated()
+			status.dbx.range = tonumber(v)
+			status:UpdateDB()
 			for unit, guid in Grid2:IterateRosterUnits() do
 				status:UpdateIndicators(unit)
 			end
 		end,
-		values = GetAvailableRangeList(),
+		values =  GetAvailableRangeList,
 	}
-	Grid2.RegisterMessage(options, "Grid_RangesUpdated", function () options.range.values = GetAvailableRangeList() end)
-
 	return options
 end
 
@@ -434,7 +411,6 @@ function Grid2Options:MakeStatusReadyCheckOptions(status, options, optionParams)
 
 	options = Grid2Options:MakeStatusColorOptions(status, options, optionParams)
 	options = Grid2Options:MakeStatusThresholdOptions(status, options, optionParams, 1, 20, 1)
-	options = Grid2Options:MakeStatusLayerOptions(status, options, optionParams)
 
 	return options
 end
@@ -453,7 +429,7 @@ function Grid2Options:MakeStatusMissingOptions(status, options, optionParams)
 		end,
 		set = function (_, v)
 			status.dbx.missing = v
-			DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name).missing = v
+			Grid2.db.profile.statuses[status.name].missing = v
 			if status.UpdateDB then
 				status:UpdateDB()
 			end
@@ -466,39 +442,39 @@ function Grid2Options:MakeStatusMissingOptions(status, options, optionParams)
 	return options
 end
 
-
+local Grid2Blink = Grid2:GetModule("Grid2Blink")
 function Grid2Options:MakeStatusBlinkThresholdOptions(status, options, optionParams)
 	options = options or {}
-
-	options.blinkThresholdSpacer = {
-		type = "header",
-		order = 30,
-		name = "",
-	}
-	options.blinkThreshold = {
-		type = "range",
-		order = 31,
-		width = "full",
-		name = L["Blink Threshold"],
-		desc = L["Blink Threshold at which to start blinking the status."],
-		min = 0,
-		max = 30,
-		step = 0.1,
-		get = function ()
-			return status.dbx.blinkThreshold or 0
-		end,
-		set = function (_, v)
-			if (v == 0) then
-				v = nil
-			end
-			status.dbx.blinkThreshold = v
-			DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name).blinkThreshold = v
-			if (status.UpdateDB) then
-				status:UpdateDB()
-			end
-		end,
-	}
-
+	if Grid2Blink.db.profile.type ~= "None" then
+		options.blinkThresholdSpacer = {
+			type = "header",
+			order = 30,
+			name = "",
+		}
+		options.blinkThreshold = {
+			type = "range",
+			order = 31,
+			width = "full",
+			name = L["Blink Threshold"],
+			desc = L["Blink Threshold at which to start blinking the status."],
+			min = 0,
+			max = 30,
+			step = 0.1,
+			get = function ()
+				return status.dbx.blinkThreshold or 0
+			end,
+			set = function (_, v)
+				if (v == 0) then
+					v = nil
+				end
+				status.dbx.blinkThreshold = v
+				Grid2.db.profile.statuses[status.name].blinkThreshold = v
+				if (status.UpdateDB) then
+					status:UpdateDB()
+				end
+			end,
+		}
+	end
 	return options
 end
 
@@ -507,15 +483,14 @@ local function MakeClassColorOption(status, options, type, translation)
 		type = "color",
 		name = (L["%s Color"]):format(translation),
 		get = function ()
-			local c = status.dbx.colors[type]
+			local c = status.dbx.colors[type] or {r=1,g=1,b=1,a=1}
 			return c.r, c.g, c.b, c.a
 		end,
 		set = function (_, r, g, b, a)
 			local c = status.dbx.colors[type]
 			c.r, c.g, c.b, c.a = r, g, b, a
-			c = DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name).colors[type]
+			c = Grid2.db.profile.statuses[status.name].colors[type]
 			c.r, c.g, c.b, c.a = r, g, b, a
-
 			for unit, guid in Grid2:IterateRosterUnits() do
 				status:UpdateIndicators(unit)
 			end
@@ -527,12 +502,11 @@ Grid2Options.RAID_CLASS_COLORS = RAID_CLASS_COLORS
 function Grid2Options:MakeStatusClassColorOptions(status, options, optionParams)
 	options = options or {}
 
-	options = Grid2Options:MakeStatusLayerOptions(status, options, optionParams)
-
 	options.hostile = {
 		type = "toggle",
 		name = L["Color Charmed Unit"],
 		desc = L["Color Units that are charmed."],
+		width="full",
 		order = 7,
 		tristate = true,
 		get = function ()
@@ -540,11 +514,12 @@ function Grid2Options:MakeStatusClassColorOptions(status, options, optionParams)
 		end,
 		set = function (_, v)
 			status.dbx.colorHostile = v
-			DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name).colorHostile = v
+			Grid2.db.profile.statuses[status.name].colorHostile = v
 		end,
 	}
 	options.colors = {
 		type = "group",
+		inline=true,
 		name = L["Unit Colors"],
 		args = {
 			hostile = {
@@ -557,7 +532,7 @@ function Grid2Options:MakeStatusClassColorOptions(status, options, optionParams)
 				set = function (_, r, g, b, a)
 					local c = status.dbx.colors.HOSTILE
 					c.r, c.g, c.b, c.a = r, g, b, a
-					c = DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name).colors.HOSTILE
+					c = Grid2.db.profile.statuses[status.name].colors.HOSTILE
 					c.r, c.g, c.b, c.a = r, g, b, a
 
 					for unit, guid in Grid2:IterateRosterUnits() do
@@ -575,7 +550,7 @@ function Grid2Options:MakeStatusClassColorOptions(status, options, optionParams)
 				set = function (_, r, g, b, a)
 					local c = status.dbx.colors.UNKNOWN_UNIT
 					c.r, c.g, c.b, c.a = r, g, b, a
-					c = DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name).colors.UNKNOWN_UNIT
+					c = Grid2.db.profile.statuses[status.name].colors.UNKNOWN_UNIT
 					c.r, c.g, c.b, c.a = r, g, b, a
 
 					for unit, guid in Grid2:IterateRosterUnits() do
@@ -593,7 +568,7 @@ function Grid2Options:MakeStatusClassColorOptions(status, options, optionParams)
 				set = function (_, r, g, b, a)
 					local c = status.dbx.colors.UNKNOWN_PET
 					c.r, c.g, c.b, c.a = r, g, b, a
-					c = DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name).colors.UNKNOWN_PET
+					c = Grid2.db.profile.statuses[status.name].colors.UNKNOWN_PET
 					c.r, c.g, c.b, c.a = r, g, b, a
 
 					for unit, guid in Grid2:IterateRosterUnits() do
@@ -606,7 +581,7 @@ function Grid2Options:MakeStatusClassColorOptions(status, options, optionParams)
 
 	for _, class in ipairs{"Beast", "Demon", "Humanoid", "Elemental"} do
 		local translation = L[class]
-		MakeClassColorOption(status, options, translation, translation)
+		MakeClassColorOption(status, options, class, translation)
 	end
 
 	for class, translation in pairs(LOCALIZED_CLASS_NAMES_MALE) do
@@ -622,13 +597,13 @@ end
 function Grid2Options:GetAvailableStatusValues(indicator, statusAvailable)
 	statusAvailable = statusAvailable or {}
 	wipe(statusAvailable)
-
+	
 	for statusKey, status in Grid2:IterateStatuses() do
-		if (Grid2:IsCompatiblePair(indicator, status)) then
-			statusAvailable[statusKey] = status.name
+		if (Grid2:IsCompatiblePair(indicator, status) and status.name~="test") then
+			statusAvailable[statusKey] = self.LocalizeStatus(status.name)
 		end
 	end
-
+	
 	local statusKey
 	for _, status in ipairs(indicator.statuses) do
 		statusKey = status.name
@@ -638,30 +613,53 @@ function Grid2Options:GetAvailableStatusValues(indicator, statusAvailable)
 	return statusAvailable
 end
 
+
+local NewAuraUsageDescription= L["You can include a descriptive prefix using separators \"@#>\""] 
+							   .. " ".. 
+							   L["examples: Druid@Regrowth Chimaeron>Low Health"]	
+
 local NewAuraHandlerMT = {
 	Init = function (self)
 		self.name = ""
 		self.mine = 1
-		self.layer = 1
+		self.colorCount= 1
+		self.spellName= nil
 	end,
 	GetKey = function (self)
-		local name = Grid2Options:GetValidatedName(self.name)
+		local name = self.name:gsub("[ %.\"]", "")
 		if name == "" then return end
-		local mine = self.mine
-		if mine == 2 then
-			mine = "-not-mine"
-		elseif mine then
-			mine = "-mine"
+		if self.type == "debuff" then
+			return self.type.."-"..name
 		else
-			mine = ""
-		end
-		return self.type.."-"..name..mine
+			local mine = self.mine
+			if mine == 2 then
+				mine = "-not-mine"
+			elseif mine then
+				mine = "-mine"
+			else
+				mine = ""
+			end
+			return self.type.."-"..name..mine
+		end	
 	end,
 	GetName = function (self)
 		return self.name
 	end,
 	SetName = function (self, info, value)
-		self.name = value
+		local spellName
+		local prefix, spell= string.match(value, "^(.-[@#>])(.*)$")
+		if not spell then
+			spell, prefix = value, ""
+		end	
+		spellName= tonumber(spell) or spell
+		if type(spellName)=="number" then
+			spell= GetSpellInfo(spellName)
+			if spell==nil then
+				spell,spellName= "", nil
+			end
+		end
+		self.spellName = spellName	
+		self.name = prefix .. spell
 	end,
 	GetMine = function (self)
 		return self.mine == 1
@@ -675,45 +673,51 @@ local NewAuraHandlerMT = {
 	SetNotMine = function (self, info, value)
 		self.mine = value and 2
 	end,
-	GetLayer = function (self)
-		return self.layer
+	GetColorCount = function (self)
+		return self.colorCount
 	end,
-	SetLayer = function (self, info, value)
-		self.layer = value
+	SetColorCount = function (self, info, value)
+		self.colorCount = value
 	end,
+	
 	Create = function (self)
 		local baseKey = self:GetKey()
 		if baseKey then
-			--Add to options and runtime db
-			local dblData = Grid2.dblData
-			local dbx = {type = self.type, spellName = self.name, mine = self.mine, color1 = self.color}
-			local layer = Grid2Options.statusLayers[self.layer]
-
-			-- print("NewStatusBuff", layer, baseKey)
-			DBL:SetupLayerObject(dblData, "statuses", layer, baseKey, dbx)
-			DBL:FlattenSetupType(dblData, "statuses")
+			--Add to options and runtime db 
+			local dbx	
+			if self.type == "debuff" then
+				dbx = {type = self.type, spellName = self.spellName, color1 = self.color}
+			else
+				dbx = {type = self.type, spellName = self.spellName, mine = self.mine, color1 = self.color}
+				if self.colorCount>1 then
+					dbx.colorCount= self.colorCount
+					for i = 2, self.colorCount do
+						dbx["color"..i]= {r=1,g=1,b=1,a=1}
+					end
+				end
+			end
+			-- print("NewStatusBuff", baseKey)
+			Grid2.db.profile.statuses[baseKey]= dbx
 
 			--Create the status
-			dbx = DBL:GetRuntimeDbx(dblData, "statuses", baseKey)
 			local status = Grid2.setupFunc[dbx.type](baseKey, dbx)
 
 			--Create the status options
 			local funcMakeOptions = Grid2Options.typeMakeOptions[dbx.type]
 			local optionParams = Grid2Options.optionParams[dbx.type]
-			local options, subType = funcMakeOptions(self, status, options, optionParams)--, nil, baseKey, statuses)
+			local options, subType = funcMakeOptions(Grid2Options, status, options, optionParams)--, nil, baseKey, statuses)
 			if subType then
-				Grid2Options:AddElementSubType("status", subType, status, options)
+				Grid2Options:AddElementSubType("statuses", subType, status, options)
 			elseif options then
-				Grid2Options:AddElement("status", status, options)
+				Grid2Options:AddElement("statuses", status, options)
 			end
 			self:Init()
 		end
 	end,
 	IsDisabled = function (self)
-		local key = self:GetKey()
-		if key then
-			local statuses = DBL:GetRuntimeSetup(Grid2.dblData, "statuses")
-			return not not statuses[key]
+		local key = self:GetKey() 
+		if key and self.spellName then
+			return not not Grid2.statuses[key]
 		end
 		return true
 	end,
@@ -728,14 +732,14 @@ NewBuffHandler.options = {
 		order = 1,
 		width = "full",
 		name = L["Name"],
-		usage = L["<CharacterOnlyString>"],
+		usage = NewAuraUsageDescription,
 		get = "GetName",
 		set = "SetName",
 		handler = NewBuffHandler,
 	},
 	newStatusBuffMine = {
 		type = "toggle",
-		order = 2,
+		order = 3,
 		name = L["Show if mine"],
 		desc = L["Display status only if the buff was cast by you."],
 		get = "GetMine",
@@ -745,7 +749,7 @@ NewBuffHandler.options = {
 	},
 	newStatusBuffNotMine = {
 		type = "toggle",
-		order = 3,
+		order = 4,
 		name = L["Show if not mine"],
 		desc = L["Display status only if the buff was not cast by you."],
 		get = "GetNotMine",
@@ -753,15 +757,21 @@ NewBuffHandler.options = {
 		disabled = "GetMine",
 		handler = NewBuffHandler,
 	},
-	newBuffLayer = {
-		type = 'select',
+	newStatusColorCount = {
+		type = "select",
 		order = 5,
-		name = L["Layer"],
-		desc = L["Layer level.  Higher layers (like Class or Spec) supercede lower ones like Account."],
-		values = Grid2Options.GetStatusLayerValues,
-		get = "GetLayer",
-		set = "SetLayer",
+		width="half",
+		name = L["Color count"],
+		desc = L["Select how many colors the status must provide."],
+		get = "GetColorCount",
+		set = "SetColorCount",
+		values = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15},
 		handler = NewBuffHandler,
+	},
+	newStatusBuffSpacer = {
+		type = "header",
+		order = 9,
+		name = "",
 	},
 	newStatusBuff = {
 		type = "execute",
@@ -783,19 +793,9 @@ NewDebuffHandler.options = {
 		order = 1,
 		width = "full",
 		name = L["Name"],
-		usage = L["<CharacterOnlyString>"],
+		usage = NewAuraUsageDescription,
 		get = "GetName",
 		set = "SetName",
-		handler = NewDebuffHandler,
-	},
-	newDebuffLayer = {
-		type = 'select',
-		order = 5,
-		name = L["Layer"],
-		desc = L["Layer level.  Higher layers (like Class or Spec) supercede lower ones like Account."],
-		values = Grid2Options.GetStatusLayerValues,
-		get = "GetLayer",
-		set = "SetLayer",
 		handler = NewDebuffHandler,
 	},
 	newStatusDebuff = {
@@ -809,27 +809,6 @@ NewDebuffHandler.options = {
 	},
 }
 NewDebuffHandler:Init()
-
-function ResetStatuses()
-	local setup = Grid2.db.profile.setup
-	Grid2:SetupDefaultStatus(setup)
-	Grid2Frame:UpdateAllFrames()
-	Grid2Options:MakeStatusOptions(setup, true)
-end
-
-local function AddStatusesGroup(reset)
-	local options = {
-		resetStatuses = {
-			type = "execute",
-			order = 11,
-			name = L["Reset Statuses"],
-			desc = L["Reset statuses to defaults."],
-			func = ResetStatuses,
-		},
-	}
-	Grid2Options:AddElementGroup("status", options, 60, reset)
-end
-
 
 --Package a standard set of options for buffs
 function Grid2Options:MakeStatusToggleOptions(status, options, optionParams, toggleKey)
@@ -845,9 +824,8 @@ function Grid2Options:MakeStatusToggleOptions(status, options, optionParams, tog
 		end,
 		set = function (_, v)
 			status.dbx[toggleKey] = v
-			DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name)[toggleKey] = v
-
-			Grid2Frame:UpdateAllFrames()
+			Grid2.db.profile.statuses[status.name][toggleKey] = v
+			Grid2Frame:UpdateIndicators()
 		end,
 	}
 
@@ -858,9 +836,8 @@ end
 function Grid2Options:MakeStatusHealthCurrentOptions(status, options, optionParams)
 	options = options or {}
 
-	options = Grid2Options:MakeStatusLayerOptions(status, options, optionParams)
-	options = Grid2Options:MakeStatusColorOptions(status, options, optionParams)
-	options = Grid2Options:MakeStatusToggleOptions(status, options, optionParams, "deadAsFullHealth")
+	options = self:MakeStatusColorOptions(status, options, optionParams)
+	options = self:MakeStatusToggleOptions(status, options, optionParams, "deadAsFullHealth")
 
 	return options
 end
@@ -869,15 +846,14 @@ end
 function Grid2Options:MakeStatusStandardBuffOptions(status, options, optionParams)
 	options = options or {}
 
-	options = Grid2Options:MakeStatusColorOptions(status, options, optionParams)
-	options = Grid2Options:MakeStatusMissingOptions(status, options, optionParams)
-	options = Grid2Options:MakeStatusBlinkThresholdOptions(status, options, optionParams)
-	options = Grid2Options:MakeStatusClassFilterOptions(status, options, optionParams)
-	options = Grid2Options:MakeStatusLayerOptions(status, options, optionParams)
+	options = self:MakeStatusColorOptions(status, options, optionParams)
+	options = self:MakeStatusMissingOptions(status, options, optionParams)
+	options = self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
+	options = self:MakeStatusClassFilterOptions(status, options, optionParams)
 
 	optionParams = optionParams or {}
 	optionParams.group = optionParams.group or "buff"
-	options = Grid2Options:MakeStatusDeleteOptions(status, options, optionParams)
+	options = self:MakeStatusDeleteOptions(status, options, optionParams)
 
 	--Add as a subtype.
 	return options, "buff"
@@ -887,15 +863,16 @@ end
 function Grid2Options:MakeStatusStandardDebuffOptions(status, options, optionParams)
 	options = options or {}
 
-	options = Grid2Options:MakeStatusColorOptions(status, options, optionParams)
-	options = Grid2Options:MakeStatusBlinkThresholdOptions(status, options, optionParams)
-	options = Grid2Options:MakeStatusClassFilterOptions(status, options, optionParams)
-	options = Grid2Options:MakeStatusLayerOptions(status, options, optionParams)
+	options = self:MakeStatusColorOptions(status, options, optionParams)
+	options = self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
+	options = self:MakeStatusClassFilterOptions(status, options, optionParams)
 
 	optionParams = optionParams or {}
 	optionParams.group = optionParams.group or "debuff"
-	options = Grid2Options:MakeStatusDeleteOptions(status, options, optionParams)
-
+	-- Avoid deleting generic debuffs: Magic, Curse, etc.
+	if not status.debuffType then
+		options = self:MakeStatusDeleteOptions(status, options, optionParams)
+	end
 	--Add as a subtype.
 	return options, "debuff"
 end
@@ -916,35 +893,66 @@ function Grid2Options:MakeStatusHealsIncomingOptions(status, options, optionPara
 		end,
 		set = function (_, v)
 			status.dbx.includePlayerHeals = v
-			DBL:GetOptionsDbx(Grid2.dblData, "statuses", status.name).includePlayerHeals = v
+			Grid2.db.profile.statuses[status.name].includePlayerHeals = v
 			status:UpdateDB()
 		end,
 	}
 
 	options.healTypes = {
-		type = "select",
+		type = "input",
 		order = 120,
-		width = "double",
-		name = L["Type of Heals taken into account"],
-		desc = L["Select the type of healing spell taken into account for the amount of incoming heals calculated."],
+		width = "full",
+		name = L["Minimum value"], 
+		desc = L["Incoming heals below the specified value will not be shown."],
 		get = function ()
-			return status.dbx.flags
+			return tostring(status.dbx.flags or 0)
 		end,
 		set = function (_, v)
-			local baseKey = status.name
-			status.dbx.flags = v
-			DBL:GetOptionsDbx(Grid2.dblData, "statuses", baseKey).flags = v
-			status.dbx.timeFrame = 4
-			DBL:GetOptionsDbx(Grid2.dblData, "statuses", baseKey).timeFrame = 4
+			status.dbx.flags = tonumber(v) or nil
 			status:UpdateDB()
 		end,
-		values = {
-			[0x0F] = L["Casted heals, both direct and channeled"],
-			[0xF0] = L["Direct heals only."],
-			[0xFF] = L["All heals, including casted and HoTs"],
-		},
 	}
 
+	return options
+end
+
+function Grid2Options:MakeStatusTargetIconOptions(status, options, optionParams)
+	options = options or {}
+
+	options = self:MakeStatusStandardOptions(status, options, optionParams)
+	if (options.opacity) then
+		options.opacity.arg = status
+	else
+		options.opacity = {
+			type = "range",
+			order = 101,
+			name = L["Opacity"],
+			desc = L["Set the opacity / transparency of the status"],
+			min = 0,
+			max = 1,
+			step = 0.01,
+			get = function(info)
+				local status = info.arg
+				return status.dbx.opacity or false
+			end,
+			set = function(info, v) 
+					local status = info.arg
+					status.dbx.opacity = v
+					Grid2.db.profile.statuses[status.name].opacity = v
+					Grid2Frame:UpdateIndicators()
+			end,
+			arg = status,
+		}
+	end
+
+	return options
+end
+
+function Grid2Options:MakeStatusRaidDebuffsOptions(status, options, optionParams)
+	options = options or {}
+	options = self:MakeStatusStandardOptions(status, options, optionParams)
+	options = self:MakeStatusMissingOptions(status, options, optionParams)
+	options = self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
 	return options
 end
 
@@ -952,31 +960,25 @@ end
 function Grid2Options:MakeStatusNoOptions(status, options, optionParams)
 end
 
+function Grid2Options:MakeStatusHandlers(reset)
+	self:AddOptionHandler("classcolor", self.MakeStatusClassColorOptions)
 
-function Grid2Options:MakeStatusHandlers(dblData, reset)
-	self:AddOptionHandler("charmed", Grid2Options.MakeStatusStandardOptions)
-	self:AddOptionHandler("classcolor", Grid2Options.MakeStatusClassColorOptions)
+	self:AddOptionHandler("buff", self.MakeStatusStandardBuffOptions)
+	self:AddOptionHandler("debuff", self.MakeStatusStandardDebuffOptions)
+	self:AddOptionHandler("debuffType", self.MakeStatusStandardDebuffOptions)
 
-	self:AddOptionHandler("buff", Grid2Options.MakeStatusStandardBuffOptions)
-	self:AddOptionHandler("debuff", Grid2Options.MakeStatusStandardDebuffOptions)
-	self:AddOptionHandler("debuffType", Grid2Options.MakeStatusStandardDebuffOptions)
-
-	self:AddOptionHandler("death", Grid2Options.MakeStatusStandardOptions)
-	self:AddOptionHandler("feign-death", Grid2Options.MakeStatusStandardOptions)
-	self:AddOptionHandler("health-current", Grid2Options.MakeStatusHealthCurrentOptions, {
+	self:AddOptionHandler("health-current", self.MakeStatusHealthCurrentOptions, {
 			deadAsFullHealth = L["Show dead as having Full Health"],
 	})
-	self:AddOptionHandler("health-deficit", Grid2Options.MakeStatusHealthDeficitOptions)
-	self:AddOptionHandler("heals-incoming", Grid2Options.MakeStatusHealsIncomingOptions)
-	self:AddOptionHandler("health-low", Grid2Options.MakeStatusColorThresholdOptions)
-
-	self:AddOptionHandler("lowmana", Grid2Options.MakeStatusColorThresholdOptions)
-	self:AddOptionHandler("mana", Grid2Options.MakeStatusNoOptions)
-	self:AddOptionHandler("name", Grid2Options.MakeStatusNoOptions)
-	self:AddOptionHandler("offline", Grid2Options.MakeStatusStandardOptions)
-	self:AddOptionHandler("pvp", Grid2Options.MakeStatusStandardOptions)
-	self:AddOptionHandler("range", Grid2Options.MakeStatusRangeOptions)
-	self:AddOptionHandler("ready-check", Grid2Options.MakeStatusReadyCheckOptions, {
+	self:AddOptionHandler("health-deficit", self.MakeStatusHealthDeficitOptions)
+	self:AddOptionHandler("heals-incoming", self.MakeStatusHealsIncomingOptions)
+	self:AddOptionHandler("health-low", self.MakeStatusColorThresholdOptions)
+	self:AddOptionHandler("lowmana", self.MakeStatusColorThresholdOptions)
+	self:AddOptionHandler("mana", self.MakeStatusColorOptions)
+	self:AddOptionHandler("poweralt", self.MakeStatusColorOptions)
+	self:AddOptionHandler("name", self.MakeStatusNoOptions)
+	self:AddOptionHandler("range", self.MakeStatusRangeOptions)
+	self:AddOptionHandler("ready-check", self.MakeStatusReadyCheckOptions, {
 			color1 = L["Waiting color"],
 			colorDesc1 = L["Color for Waiting."],
 			color2 = L["Ready color"],
@@ -987,62 +989,53 @@ function Grid2Options:MakeStatusHandlers(dblData, reset)
 			colorDesc4 = L["Color for AFK."],
 			threshold = L["Delay"],
 			thresholdDesc = L["Set the delay until ready check results are cleared."],
+			privateColorHandler= true,
 	})
-	self:AddOptionHandler("role", Grid2Options.MakeStatusStandardOptions, {
+	self:AddOptionHandler("role", self.MakeStatusStandardOptions, {
 			color1 = L["MAIN_ASSIST"],
 			color2 = L["MAIN_TANK"],
+			privateColorHandler= true,
+		
 	})
-	self:AddOptionHandler("threat", Grid2Options.MakeStatusStandardOptions, {
+	self:AddOptionHandler("threat", self.MakeStatusStandardOptions, {
 			color1 = L["Not Tanking"],
 			colorDesc1 = L["Higher threat than tank."],
 			color2 = L["Insecurely Tanking"],
 			colorDesc2 = L["Tanking without having highest threat."],
 			color3 = L["Securely Tanking"],
 			colorDesc3 = L["Tanking with highest threat."],
+			privateColorHandler= true,
 	})
-	self:AddOptionHandler("target", Grid2Options.MakeStatusStandardOptions, {
-			color1 = L["Your Target"],
-	})
-	self:AddOptionHandler("vehicle", Grid2Options.MakeStatusStandardOptions)
-	self:AddOptionHandler("voice", Grid2Options.MakeStatusStandardOptions, {
-			color1 = L["Voice Chat"],
-			colorDesc1 = L["Voice Chat"],
-	})
+	self:AddOptionHandler("raid-icon-player", self.MakeStatusTargetIconOptions, targetIconOptionParams)
+	self:AddOptionHandler("raid-icon-target", self.MakeStatusTargetIconOptions, targetIconOptionParams)
 
-	Grid2Options:AddElementSubTypeGroup("status", "buff", NewBuffHandler.options, reset)
-	Grid2Options:AddElementSubTypeGroup("status", "debuff", NewDebuffHandler.options, reset)
+	if not self.typeMakeOptions["raid-debuffs"] then
+		self:AddOptionHandler("raid-debuffs", self.MakeStatusRaidDebuffsOptions)
+	end
+
 end
 
-function Grid2Options:MakeStatusOptions(dblData, reset)
-	AddStatusesGroup(reset)
-
-	if(dblData==nil) then return end
-
-	self:MakeStatusHandlers(dblData, reset)
-
---print("Grid2Options:MakeStatusOptions")
-	local setup = DBL:GetRuntimeSetup(dblData, "statuses")
-	local objects = DBL:GetOptionsObjects(dblData, "statuses")
-	local statuses = DBL:GetOptionsSetup(dblData, "statuses")
-	for baseKey, layer in pairs(setup) do
+function Grid2Options:MakeStatusOptions(reset)
+	self:DeleteElement("statuses")
+	if self.Initialize then  -- Create handlers only on first run
+		self:MakeStatusHandlers(reset) 
+	end
+	self:AddElementSubTypeGroup("statuses", "buff", "Buffs",  NewBuffHandler.options, reset)
+	self:AddElementSubTypeGroup("statuses", "debuff", "Debuffs",  NewDebuffHandler.options, reset)
+	local statuses= Grid2.db.profile.statuses
+	for baseKey, dbx in pairs(statuses) do
 		local status = Grid2.statuses[baseKey]
-		local dbx = objects[layer][baseKey]
---print("    Grid2Options:MakeStatusOptions", baseKey, layer, "type:", dbx.type)
-		if (dbx and status) then
-			local funcMakeOptions = Grid2Options.typeMakeOptions[dbx.type]
-			if (funcMakeOptions) then
-				local optionParams = Grid2Options.optionParams[dbx.type]
-				local options, subType = funcMakeOptions(self, status, options, optionParams)--, nil, baseKey, statuses)
-				if (subType) then
-					Grid2Options:AddElementSubType("status", subType, status, options)
-				elseif (options) then
-					Grid2Options:AddElement("status", status, options)
-				end
-			else
-print("    ***No Options function", baseKey, layer, "type:", dbx.type)
+		if (status) then
+			local funcMakeOptions = self.typeMakeOptions[dbx.type] or self.MakeStatusStandardOptions 
+			local optionParams = self.optionParams[dbx.type]
+			local options, subType = funcMakeOptions(self, status, options, optionParams)
+			if (subType) then
+				self:AddElementSubType("statuses", subType, status, options)
+			elseif (options) then
+				self:AddElement("statuses", status, options)
 			end
 		else
-print("    ***No dbx / status:", baseKey, layer, "dbx:", dbx, "status:", status)
+			print("    ***No status:", baseKey, "dbx:", dbx, "status:", status)
 		end
 	end
 end

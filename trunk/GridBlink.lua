@@ -1,3 +1,7 @@
+--[[
+Created by Grid2 original authors, modified by Michael
+--]]
+
 local Grid2Blink = Grid2:NewModule("Grid2Blink")
 Grid2Blink.defaultDB = {
 	profile = {
@@ -5,6 +9,18 @@ Grid2Blink.defaultDB = {
 		frequency = 4,
 	},
 }
+Grid2Blink.registry= {}
+Grid2Blink.alpha= {}
+
+-- Timer Event for blinking/flash. Limited to ~25 updates per second 
+local updateTime= 0
+local function OnUpdate( _, elapsed)
+	updateTime= updateTime - elapsed
+	if updateTime<=0 then
+		Grid2Blink.typeFunc(Grid2Blink, (0.04-updateTime) * Grid2Blink.frequency)
+		updateTime = 0.04
+	end
+end
 
 function Grid2Blink:Blink(elapsed)
 	local registry = self.registry
@@ -31,18 +47,25 @@ end
 function Grid2Blink.None()
 end
 
-function Grid2Blink:OnInitialize()
-	self.registry = {}
-	self.alpha = {}
+function Grid2Blink:Initialize()
+	self:Update()
+end
+
+function Grid2Blink:Update()
+	self.frequency= self.db.profile.frequency or 4
+	self.typeFunc= Grid2Blink[self.db.profile.type] or Grid2Blink.Flash
+	Grid2:IndicatorsBlinkEnabled( self.db.profile.type~="None" )
+end
+
+function Grid2Blink:Disable()
+	wipe(self.registry)
+	wipe(self.alpha)
 end
 
 function Grid2Blink:GetFrame()
 	local f = CreateFrame("Frame", nil, Grid2LayoutFrame)
 	f:Hide()
-	f:SetScript("OnUpdate", function (_, elapsed)
-		local p = self.db.profile
-		self[p.type](self, elapsed * p.frequency)
-	end)
+	f:SetScript("OnUpdate", OnUpdate)
 	self.frame = f
 	self.GetFrame = function (self) return self.frame end
 	return self.frame
@@ -61,11 +84,9 @@ function Grid2Blink:Remove(frame)
 	local registry = self.registry
 	if (registry[frame]) then
 		registry[frame] = nil
-
 		local alpha = self.alpha
 		frame:SetAlpha(alpha[frame])
 		alpha[frame] = nil
---		frame:Hide()
 		if not next(registry) then self.frame:Hide() end
 	end
 end
