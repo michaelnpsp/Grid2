@@ -1145,8 +1145,8 @@ local function NewIndicatorDisabled()
 			local _,frame= next(Grid2Frame.registeredFrames)
 			if frame then
 				-- Check if the name is in use by any unit frame child object
-				for key,_ in pairs(frame) do
-					if name==key then
+				for key,value in pairs(frame) do
+					if name==key and type(value)~="table" then
 						return true
 					end
 				end
