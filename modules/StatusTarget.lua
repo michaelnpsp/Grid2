@@ -2,10 +2,10 @@ local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 local Target = Grid2.statusPrototype:new("target")
 
+local UnitIsUnit= UnitIsUnit
+
 function Target:OnEnable()
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
-	-- self:RegisterMessage("Grid_UnitJoined")
-	-- self:RegisterMessage("Grid_UnitChanged")
 end
 
 function Target:PLAYER_TARGET_CHANGED(event)
@@ -14,25 +14,13 @@ function Target:PLAYER_TARGET_CHANGED(event)
 	end
 end
 
--- function Target:Grid_UnitJoined(_, unitid, guid)
-	-- return self:UpdateIndicators(unitid)
--- end
-
--- function Target:Grid_UnitChanged(_, unitid, guid)
-	-- return self:UpdateIndicators(unitid)
--- end
-
 function Target:OnDisable()
 	self:UnregisterEvent("PLAYER_TARGET_CHANGED")
-	self:UnregisterMessage("Grid_UnitJoined")
-	self:UnregisterMessage("Grid_UnitChanged")
 end
 
 function Target:IsActive(unitid)
---print("Target:IsActive", unitid, UnitIsUnit(unitid, "target"))
 	return UnitIsUnit(unitid, "target")
 end
---/dump UnitIsUnit("pet1", "target")
 
 function Target:GetColor(unitid)
 	local color = self.dbx.color1

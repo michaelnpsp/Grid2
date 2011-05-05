@@ -1,4 +1,9 @@
+--[[
+Created by Grid2 original authors, modified by Michael
+--]]
+
 local AuraFrame_OnEvent
+local GetTime = GetTime
 
 local EnableAuraFrame
 do
@@ -20,11 +25,9 @@ do
 			if curr then
 				frame:SetScript("OnEvent", nil)
 				frame:UnregisterEvent("UNIT_AURA")
-				frame:UnregisterEvent("UNIT_AURASTATE")
 			else
 				frame:SetScript("OnEvent", AuraFrame_OnEvent)
 				frame:RegisterEvent("UNIT_AURA")
-				frame:RegisterEvent("UNIT_AURASTATE")
 			end
 		end
 	end
@@ -40,7 +43,7 @@ function CreateDebuffType(baseKey, dbx)
 	local c = {}
 	DebuffCache[type] = c
 
-	local status = Grid2.statusPrototype:new(baseKey)
+	local status = Grid2.statusPrototype:new(baseKey, false)
 	DebuffTypeStatus[type] = status
 
 	status.debuffType = type
@@ -75,7 +78,6 @@ function CreateDebuffType(baseKey, dbx)
 	return status
 end
 
-local StatusCount = 0
 local BuffHandlers, DebuffHandlers = {}, {}
 
 local MakeStatusFilter
@@ -83,8 +85,9 @@ do
 	local filter_mt = {
 		__index = function (self, unit)
 			local _, class = UnitClass(unit)
-			local result = self.source[class]
-			self[unit] = result
+			local result= self.source[class]
+			self[unit]= result
+			return result
 		end,
 	}
 	local filters = {}
@@ -122,12 +125,10 @@ do
 end
 
 local function status_Reset(self, unit)
-	self.prev_state = self:IsActive(unit)
-	self.new_state = nil
-	self.prev_count = self.counts[unit]
-	self.prev_expiration = self.expirations[unit]
 	self.states[unit] = nil
+	self.counts[unit] = nil
 	self.expirations[unit] = nil
+	return true
 end
 
 local function status_IsInactive(self, unit) -- used for "missing" status
@@ -142,29 +143,21 @@ local function status_IsActive(self, unit)
 	return self.states[unit]
 end
 
-local status_IsActiveBlink, status_IsInactiveBlink
-do
-	local GetTime = GetTime
-	status_IsActiveBlink = function (self, unit)
-		local filtered = self.filtered
-		if (filtered and filtered[unit]) or not self.states[unit] then return nil end
-		if self.expirations[unit] - GetTime() < self.blinkThreshold then
-			return "blink"
-		else
-			return true
-		end
+local function status_IsActiveBlink(self, unit)
+	local filtered = self.filtered
+	if (filtered and filtered[unit]) or not self.states[unit] then return nil end
+	if self.expirations[unit] - GetTime() < self.blinkThreshold then
+		return "blink"
+	else
+		return true
 	end
-	status_IsInactiveBlink = function (self, unit)
-		-- does this really make sense ?
-		local filtered = self.filtered
-		if filtered and filtered[unit] then return nil end
-		if not self.states[unit] then return true end
-		if self.expirations[unit] - GetTime() < self.blinkThreshold then
-			return "blink"
-		else
-			return false
-		end
-	end
+end
+
+-- A missing active status lacks of expiration time, always return blink when is active
+local function status_IsInactiveBlink(self, unit)
+	local filtered = self.filtered
+	if filtered and filtered[unit] then return nil end
+	return not self.states[unit] and "blink"
 end
 
 local function status_GetIcon(self, unit)
@@ -179,6 +172,10 @@ local function status_GetCount(self, unit)
 	return self.counts[unit]
 end
 
+local function status_GetCountMax(self)
+	return self.dbx.colorCount or 1
+end	
+
 local function status_GetDuration(self, unit)
 	return self.durations[unit]
 end
@@ -187,58 +184,33 @@ local function status_GetExpirationTime(self, unit)
 	return self.expirations[unit]
 end
 
+-- Expiration time is unknow, return some hours in future to allow 
+-- blinking work and to prevent failing of IndicatorText status
+local function status_GetExpirationTimeMissing(self, unit)
+	return GetTime() + 9999
+end
+
 local function status_GetPercent(self, unit)
-	local color = self.dbx.color1
-	return color.a
+	local t= GetTime()
+	local expiration = (self.expirations[unit] or t) - t
+	return expiration / (self.durations[unit] or 1)
 end
 
-local function status_UpdateState(self, unit, auraName, iconTexture, count, duration, expiration)
-	if self.auraName == auraName then
+local function status_UpdateState(self, unit, iconTexture, count, duration, expiration)
+	local filtered = self.filtered
+	if filtered and filtered[unit] then return end 
+	if (self.states[unit]==nil) or 
+	   (self.counts[unit] ~= count) or 
+	   (self.expirations[unit] ~= expiration)
+	then
 		self.states[unit] = true
 		self.textures[unit] = iconTexture
-		self.counts[unit] = count
+		self.counts[unit] = (count==nil or count==0) and 1 or count
 		self.durations[unit] = duration
 		self.expirations[unit] = expiration
-		self.new_state = self:IsActive(unit)
-		self.new_count = count
-		self.new_expiration = expiration
-	end
-end
-
-local function status_UpdateStateMine(self, unit, auraName, iconTexture, count, duration, expiration, isMine)
-	if self.auraName == auraName and isMine then
-		self.states[unit] = true
-		self.textures[unit] = iconTexture
-		self.counts[unit] = count
-		self.durations[unit] = duration
-		self.expirations[unit] = expiration
-		self.new_state = self:IsActive(unit)
-		self.new_count = count
-		self.new_expiration = expiration
-	end
-end
-
-local function status_UpdateStateNotMine(self, unit, auraName, iconTexture, count, duration, expiration, isMine)
-	if self.auraName == auraName and not isMine then
-		self.states[unit] = true
-		self.textures[unit] = iconTexture
-		self.counts[unit] = count
-		self.durations[unit] = duration
-		self.expirations[unit] = expiration
-		self.new_state = self:IsActive(unit)
-		self.new_count = count
-		self.new_expiration = expiration
-	end
-end
-
-local function status_HasStateChanged(self, unit)
-	local new_state = self.new_state
-	if new_state ~= self.prev_state then
-		return true
-	elseif new_state then
-		return (self.new_count ~= self.prev_count) or (self.new_expiration ~= self.prev_expiration)
+		self.seen= 1
 	else
-		return false
+		self.seen= 0
 	end
 end
 
@@ -246,19 +218,24 @@ local AddTimeTracker, RemoveTimeTracker
 do
 	local next = next
 	local timetracker
+	local elapsedTime= 0
 	AddTimeTracker = function (status, value)
 		timetracker = CreateFrame("Frame", nil, Grid2LayoutFrame)
 		timetracker.tracked = {}
 		timetracker:SetScript("OnUpdate", function (self, elapsed)
-			local time = GetTime()
-			for status, value in next, self.tracked do
-				for unit, expiration in next, status.expirations do
-					local timeLeft = expiration - time
-					if (timeLeft < value) ~= (timeLeft + elapsed < value) then
-						status:UpdateIndicators(unit)
+			local elapsedTime= elapsedTime + elapsed
+			if elapsedTime>=0.10 then
+				local time = GetTime()
+				for status, value in next, self.tracked do
+					for unit, expiration in next, status.expirations do
+						local timeLeft = expiration - time
+						if (timeLeft < value) ~= (timeLeft + elapsedTime < value) then
+							status:UpdateIndicators(unit)
+						end
 					end
 				end
-			end
+				elapsedTime= 0
+			end	
 		end)
 		AddTimeTracker = function (status, value)
 			timetracker.tracked[status] = value
@@ -281,7 +258,10 @@ local function status_UpdateDB(self)
 	if blinkThreshold then
 		self.blinkThreshold = blinkThreshold
 		self.IsActive = missing and status_IsInactiveBlink or status_IsActiveBlink
-		AddTimeTracker(self, blinkThreshold)
+		-- blinking missing statuses dont need timetracker, because are always blinking
+		if not missing then
+			AddTimeTracker(self, blinkThreshold)
+		end	
 	else
 		self.blinkThreshold = nil
 		self.IsActive = missing and status_IsInactive or status_IsActive
@@ -290,11 +270,11 @@ local function status_UpdateDB(self)
 		end
 	end
 	self.GetIcon = dbx.missing and status_GetIconMissing or status_GetIcon
+	self.GetExpirationTime = dbx.missing and status_GetExpirationTimeMissing or status_GetExpirationTime
 end
 
-
 function Grid2.CreateAuraCommon(baseKey, dbx)
-	local status = Grid2.statusPrototype:new(baseKey)
+	local status = Grid2.statusPrototype:new(baseKey, false)
 
 	local spellName = dbx.spellName
 	if (type(spellName) == "number") then
@@ -311,29 +291,27 @@ function Grid2.CreateAuraCommon(baseKey, dbx)
 
 	status.Reset = status_Reset
 	status.GetIcon = dbx.missing and status_GetIconMissing or status_GetIcon
+	status.GetExpirationTime = dbx.missing and status_GetExpirationTimeMissing or status_GetExpirationTime
 	status.GetCount = status_GetCount
 	status.GetDuration = status_GetDuration
-	status.GetExpirationTime = status_GetExpirationTime
 	status.GetPercent = status_GetPercent
-	status.HasStateChanged = status_HasStateChanged
 	status.UpdateDB = status_UpdateDB
-
 	return status
 end
 
-local statusTypes = { "color", "icon" }
+local statusTypesBuffs = { "color", "icon", "percent" }
 function Grid2.CreateBuff(baseKey, dbx, statusTypesOverride)
 	local status = Grid2.CreateAuraCommon(baseKey, dbx)
 
 	function status:OnEnable()
 		self:UpdateDB()
 		EnableAuraFrame(true)
-		BuffHandlers[self] = true
+		BuffHandlers[self.auraKey] = self
 	end
 
 	function status:OnDisable()
 		EnableAuraFrame(false)
-		BuffHandlers[self] = nil
+		BuffHandlers[self.auraKey] = nil
 	end
 
 	if dbx.missing then
@@ -343,38 +321,41 @@ function Grid2.CreateBuff(baseKey, dbx, statusTypesOverride)
 		status.missingTexture = texture
 	end
 
-	if dbx.mine == 2 then
-		status.UpdateState = status_UpdateStateNotMine
-	elseif dbx.mine then
-		status.UpdateState = status_UpdateStateMine
-	else
-		status.UpdateState = status_UpdateState
-	end
+	-- A little trick. We add a suffix to auraKey depending of "mine"/"notmine" 
+	-- config to allow a fast search in BuffHandlers table using the auraKey.
+	-- Ex: "Riptide"(normal buff) "Riptide+"(Show if mine buff) "Riptide-"(Show if not-mine buff)
+	status.auraKey= status.auraName .. ((dbx.mine==2 and "-") or (dbx.mine and "+") or "")
 
-	Grid2:RegisterStatus(status, statusTypesOverride or statusTypes, baseKey, dbx)
+	status.GetCountMax = status_GetCountMax
+	
+	status.UpdateState = status_UpdateState
+
+	Grid2:RegisterStatus(status, statusTypesOverride or statusTypesBuffs, baseKey, dbx)
 	Grid2:MakeBuffColorHandler(status)
 	status:UpdateDB()
 
 	return status
 end
 
+local statusTypesDebuffs = { "color", "icon" }
 function Grid2.CreateDebuff(baseKey, dbx, statusTypesOverride)
 	local status = Grid2.CreateAuraCommon(baseKey, dbx)
 
 	function status:OnEnable()
 		self:UpdateDB()
 		EnableAuraFrame(true)
-		DebuffHandlers[self] = true
+		DebuffHandlers[self.auraKey] = self
 	end
 
 	function status:OnDisable()
 		EnableAuraFrame(false)
-		DebuffHandlers[self] = nil
+		DebuffHandlers[self.auraKey] = nil
 	end
 
 	status.UpdateState = status_UpdateState
-
-	Grid2:RegisterStatus(status, statusTypesOverride or statusTypes, baseKey, dbx)
+	status.auraKey= status.auraName
+	
+	Grid2:RegisterStatus(status, statusTypesOverride or statusTypesDebuffs, baseKey, dbx)
 	Grid2:MakeDebuffColorHandler(status)
 
 	return status
@@ -397,40 +378,39 @@ do
 	function AuraFrame_OnEvent(_, _, unit)
 		local frames = Grid2:GetUnitFrames(unit)
 		if not next(frames) then return end
-
-		for status in next, DebuffHandlers do
-			status:Reset(unit)
-		end
-		for status in next, BuffHandlers do
-			status:Reset(unit)
-		end
 		-- scan Debuffs and find the available debuff types
 		local i = 1
 		while true do
 			local name, _, iconTexture, count, debuffType, duration, expirationTime, caster = UnitDebuff(unit, i)
 			if not name then break end
-
-			local isMine = myUnits[caster]
-			for status in next, DebuffHandlers do
-				status:UpdateState(unit, name, iconTexture, count, duration, expirationTime, isMine)
+			local status= DebuffHandlers[name]
+			if status then
+				status:UpdateState(unit, iconTexture, count, duration, expirationTime, myUnits[caster])
 			end
 			i = i + 1
 			if debuffType and not types[debuffType] then
 				types[debuffType] = iconTexture
 			end
 		end
+		-- scan Buffs
 		i = 1
 		while true do
 			local name, _, iconTexture, count, debuffType, duration, expirationTime, caster = UnitBuff(unit, i)
 			if not name then break end
-
 			local isMine = myUnits[caster]
-			for status in next, BuffHandlers do
-				status:UpdateState(unit, name, iconTexture, count, duration, expirationTime, isMine)
+			-- Search standard buff 
+			local status= BuffHandlers[name]
+			if status then
+				status:UpdateState(unit, iconTexture, count, duration, expirationTime, isMine)
+			end
+			-- Search mine/notmine buff
+			status= BuffHandlers[name..(isMine and "+" or "-")]
+			if status then
+				status:UpdateState(unit, iconTexture, count, duration, expirationTime, isMine)
 			end
 			i = i + 1
 		end
-		-- update the debuff cache and mark indicators that need updating
+		-- Update the debuff cache and mark indicators that need updating
 		for type, status in next, DebuffTypeStatus do
 			if status.enabled then
 				local debuff = types[type]
@@ -444,27 +424,30 @@ do
 			end
 			types[type] = nil
 		end
-
-		for status in next, DebuffHandlers do
-			if status:HasStateChanged(unit) then
+		for _,status in next, DebuffHandlers do
+			local seen= status.seen
+			if (seen==1) or (not seen and status.states[unit] and status:Reset(unit)) then
 				for indicator in next, status.indicators do
 					indicators[indicator] = true
 				end
-			end
+			end	
+			status.seen= false
 		end
-		for status in next, BuffHandlers do
-			if status:HasStateChanged(unit) then
+		for _,status in next, BuffHandlers do
+			local seen= status.seen
+			if (seen==1) or (not seen and status.states[unit] and status:Reset(unit)) then
 				for indicator in next, status.indicators do
 					indicators[indicator] = true
 				end
 			end
+			status.seen= false
 		end
 		-- Update indicators that needs updating only once.
 		for indicator in next, indicators do
-			indicators[indicator] = nil
 			for frame in next, frames do
 				indicator:Update(frame, unit)
 			end
 		end
+		wipe(indicators)
 	end
 end

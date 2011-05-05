@@ -1,4 +1,5 @@
-local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
+--[[ Created by Grid2 original authors, modified by Michael ]]--
+
 local Grid2 = Grid2
 local GetTime = GetTime
 
@@ -6,15 +7,19 @@ local function Text_Create(self, parent)
 	local media = LibStub("LibSharedMedia-3.0", true)
 	local font = media and media:Fetch("font", self.dbx.font or Grid2Frame.db.profile.font) or STANDARD_TEXT_FONT
 
-	local f = parent[self.name] or CreateFrame("Frame", nil, parent)
+	local f= self:CreateFrame("Frame", parent)
 	f:SetAllPoints()
+	if not f:IsShown() then
+		f:SetBackdrop(nil)
+		f:Show()
+	end
+	
 	local Text = f.Text or f:CreateFontString(nil, "OVERLAY")
 	f.Text = Text
 	Text:SetFontObject(GameFontHighlightSmall)
 	Text:SetFont(font, self.dbx.fontSize)
 	Text:SetJustifyH("CENTER")
 	Text:SetJustifyV("CENTER")
-	parent[self.name] = f
 end
 
 local function Text_GetBlinkFrame(self, parent)
@@ -47,7 +52,7 @@ local function Text_Layout(self, parent)
 	local Text = parent[self.name].Text
 	Text:ClearAllPoints()
 	Text:GetParent():SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
-	Text:SetPoint(self.anchor, parent, self.anchorRel, self.offsetx, self.offsety)
+	Text:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
 	Text:SetJustifyH(justifyH[self.anchorRel])
 	Text:SetJustifyV(justifyV[self.anchorRel])
 	Text:SetWidth(parent:GetWidth())
@@ -56,123 +61,98 @@ end
 local string_sub = string.utf8sub or string.sub
 local durationFormat = "%.1f"
 local durationFormatLarge = "%.0f"
-local durationLarge = 5
+local durationLarge = 1
 local stackDurationFormat = "%s-%s"
 
 local durationTimers = {}
 local expirations = {}
 local stacks = {}
 local function f(Text)
-	local now = GetTime()
-	local timeLeft = expirations[Text] - now
-	if (timeLeft < 0) then
-		timeLeft = 0
-	end
-	local content
-	if (timeLeft < durationLarge) then
-		content = durationFormat:format(timeLeft)
+	local timeLeft = expirations[Text] - GetTime()
+	if timeLeft>0 then
+		local content
+		if timeLeft < durationLarge then
+			content = durationFormat:format(timeLeft)
+		else
+			content = durationFormatLarge:format(timeLeft)
+		end
+		local stack = stacks[Text]
+		if stack then
+			content = stackDurationFormat:format(content, stack)
+		end
+		Text:SetText(content)
 	else
-		content = durationFormatLarge:format(timeLeft)
-	end
-	local stack = stacks[Text]
-	if (stack) then
-		content = stackDurationFormat:format(content, stack)
-	end
-	Text:SetText(content)
+		Text:SetText("")
+	end	
+end
+local function fcancel(Text)
+	if durationTimers[Text] then
+		Grid2:CancelTimer(durationTimers[Text])
+		durationTimers[Text], expirations[Text], stacks[Text] = nil, nil, nil
+	end	
 end
 
 local function Text_OnUpdateDS(self, parent, unit, status)
 	local Text = parent[self.name].Text
-	local duration = self.dbx.duration
-	local stack = self.dbx.stack
-
-	if (status) then
+	if status then
+		local duration = self.dbx.duration
+		local stack = self.dbx.stack
 		local contentDuration, contentStack
-		if (stack and status.GetCount) then
+		if stack and status.GetCount then
 			contentStack = tostring(status:GetCount(unit))
 		end
-		if (duration) then
-			if (status.GetExpirationTime and status.GetDuration) then
-				local expirationTime = status:GetExpirationTime(unit)
-				local now = GetTime()
-				local timeLeft = expirationTime - now
-				if (timeLeft < 0) then
-					timeLeft = 0
-				end
-				if (timeLeft < durationLarge) then
+		if duration and status.GetExpirationTime then
+			local expiration= status:GetExpirationTime(unit)
+			local timeLeft = expiration - GetTime()
+			if stack then
+				stacks[Text] = contentStack or ""
+			end
+			if timeLeft>0 then
+				if timeLeft < durationLarge then
 					contentDuration = durationFormat:format(timeLeft)
 				else
 					contentDuration = durationFormatLarge:format(timeLeft)
 				end
-
-				expirations[Text] = expirationTime
-				if (stack) then
-					stacks[Text] = contentStack or ""
+				expirations[Text] = expiration
+				if not durationTimers[Text] then
+					durationTimers[Text] = Grid2:ScheduleRepeatingTimer(f, 0.1, Text)
 				end
-				if (not durationTimers[Text]) then
-					if (expirationTime > now) then
-						durationTimers[Text] = Grid2:ScheduleRepeatingTimer(f, 0.1, Text)
-					end
-				else
-					if (expirationTime <= now) then
-						Grid2:CancelTimer(durationTimers[Text])--, true)
-						durationTimers[Text] = nil
-						expirations[Text] = nil
-						stacks[Text] = nil
-					end
-				end
+			else
+				fcancel(Text)
 			end
 		end
-
 		local content
-		if (stack and duration) then
-			if (contentStack or contentDuration) then
-				content = stackDurationFormat:format(contentDuration, contentStack)
-			end
-		elseif (contentDuration) then
+		if contentStack and contentDuration then
+			content = stackDurationFormat:format(contentDuration, contentStack)
+		elseif contentDuration then
 			content = contentDuration
-		elseif (contentStack) then
+		elseif contentStack then
 			content = contentStack
-		end
-		if (not content and status.GetText) then
-			content = status:GetText(unit)
-		end
-		if (content and content ~= "") then
-			Text:SetText(string_sub(content, 1, self.dbx.textlength))
-			Text:Show()
-		else
-			Text:Hide()
-		end
-	else
-		if (duration) then
-			if (durationTimers[Text]) then
-				Grid2:CancelTimer(durationTimers[Text])--, true)
-				durationTimers[Text] = nil
-				expirations[Text] = nil
-				stacks[Text] = nil
-			end
-		end
-		Text:Hide()
-	end
-end
-
-local function Text_OnUpdate(self, parent, unit, status)
-	local Text = parent[self.name].Text
-
-	if status then
-		local content
-		if status.GetText then
+		elseif status.GetText then
 			content = status:GetText(unit)
 		end
 		if content and content ~= "" then
 			Text:SetText(string_sub(content, 1, self.dbx.textlength))
 			Text:Show()
-		else
-			Text:Hide()
+			return
 		end
 	else
-		Text:Hide()
+		fcancel(Text)
 	end
+	Text:Hide()
+end
+
+local function Text_OnUpdate(self, parent, unit, status)
+	local Text = parent[self.name].Text
+	if status and status.GetText then
+		local content = status:GetText(unit)
+		if content and content ~= "" then
+			Text:SetText(string_sub(content, 1, self.dbx.textlength))
+			Text:Show()
+			return
+		end
+	end
+	Text:Hide()
 end
 
 local function Text_SetTextFont(self, parent, font, size)
@@ -205,27 +185,23 @@ local function Text_Disable(self, parent)
 
 	local TextColor = self.sideKick
 	self.OnUpdate = dummy
-	--ToDo: move statuses to the base object for morphing?
 end
 
 local function Text_UpdateDB(self, dbx)
-	local oldType = self.dbx and self.dbx.type or dbx.type
-	local location = Grid2.locations[dbx.location]
-
+	dbx= dbx or self.dbx
+	local l= dbx.location
+	self.anchor = l.point
+	self.anchorRel = l.relPoint
+	self.offsetx = l.x
+	self.offsety = l.y
 	self.frameLevel = dbx.level
-	self.anchor = location.point
-	self.anchorRel = location.relPoint
-	self.offsetx = location.x
-	self.offsety = location.y
 	self.Create = Text_Create
 	self.GetBlinkFrame = Text_GetBlinkFrame
 	self.Layout = Text_Layout
 	self.SetTextFont = Text_SetTextFont
 	self.Disable = Text_Disable
 	self.UpdateDB = Text_UpdateDB
-
 	self.dbx = dbx
-
 	if dbx.duration or dbx.stack then
 		self.OnUpdate = Text_OnUpdateDS
 	else

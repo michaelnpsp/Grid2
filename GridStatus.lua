@@ -1,10 +1,16 @@
+--[[
+Created by Grid2 original authors, modified by Michael
+--]]
+
 Grid2.statuses = {}
 Grid2.statusTypes = {}
 
 local status = {}
 
-function status:init(name)
-	LibStub("AceEvent-3.0"):Embed(self)
+function status:init(name, embed)
+	if embed ~= false then
+		LibStub("AceEvent-3.0"):Embed(self)
+	end
 	self.indicators = {}
 	self.name = name
 end
@@ -40,21 +46,10 @@ function status:UpdateIndicators(unit)
 	end
 end
 
-function status:HasRange()
-	return self.range
-end
-
-function status:IsInRange(unitid, range)
-	return not self.range or (range and self.range >= range)
-end
-
 function status:UpdateDB(dbx)
-	-- ToDo: copy if it already exists
-	-- ToDo: update if it changed
 	if (dbx) then
 		self.dbx = dbx
 	end
--- print("status:UpdateDB", self.name)
 end
 
 Grid2.statusPrototype = {
@@ -83,11 +78,25 @@ function Grid2:RegisterStatus(status, types, baseKey, dbx)
 		end
 	end
 	status.dbx = dbx
-	
---Old
-	if self.db then
---		print("Grid2:RegisterStatus bad old style db", baseKey)
-		self:InitializeElement("status", status)
+end
+
+
+function Grid2:UnregisterStatus(status)
+    for _, indicator in Grid2:IterateIndicators() do
+		if self.indicators[indicator] then
+			indicator:UnregisterStatus(status)
+		end
+	end
+	if status.Destroy then status:Destroy() end
+	local name = status.name
+	self.statuses[name] = nil
+	for type, t in pairs(self.statusTypes) do
+		for i=1,#t do
+			if t[i]==status then
+				table.remove(t,i)
+				break
+			end
+		end
 	end
 end
 

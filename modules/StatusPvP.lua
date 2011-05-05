@@ -14,8 +14,6 @@ function PvP:ZONE_CHANGED_NEW_AREA(event)
 end
 
 function PvP:OnEnable()
-	-- self:RegisterMessage("Grid_UnitJoined", "UNIT_FACTION")
-	-- self:RegisterMessage("Grid_UnitChanged", "UNIT_FACTION")
 	self:RegisterEvent("UNIT_FACTION")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "ZONE_CHANGED_NEW_AREA")
 end
@@ -23,8 +21,6 @@ end
 function PvP:OnDisable()
 	self:UnregisterEvent("UNIT_FACTION")
 	self:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
-	-- self:UnregisterMessage("Grid_UnitJoined")
-	-- self:UnregisterMessage("Grid_UnitChanged")
 end
 
 function PvP:IsActive(unitid)

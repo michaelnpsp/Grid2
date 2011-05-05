@@ -1,15 +1,26 @@
+--[[
+Created by Grid2 original authors, modified by Michael
+--]]
+
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
-local HealthCurrent = Grid2.statusPrototype:new("health-current")
-local HealthLow = Grid2.statusPrototype:new("health-low")
-local Death = Grid2.statusPrototype:new("death")
-local FeignDeath = Grid2.statusPrototype:new("feign-death")
-local HealthDeficit = Grid2.statusPrototype:new("health-deficit")
+local HealthCurrent = Grid2.statusPrototype:new("health-current", false)
+local HealthLow = Grid2.statusPrototype:new("health-low",false)
+local Death = Grid2.statusPrototype:new("death", false)
+local FeignDeath = Grid2.statusPrototype:new("feign-death", false)
+local HealthDeficit = Grid2.statusPrototype:new("health-deficit", false)
+local Heals = Grid2.statusPrototype:new("heals-incoming", true)
 
+local Grid2 = Grid2
 local UnitHealth = UnitHealth
+local UnitHealthMax = UnitHealthMax
+local UnitIsDeadOrGhost = UnitIsDeadOrGhost
+
+local fmt= string.format
 
 local function Frame_OnUnitHealthChanged(self, _, unit)
 	if HealthCurrent.enabled then HealthCurrent:UpdateIndicators(unit) end
+	if Heals.enabled then Heals:UpdateIndicators(unit) end
 	if HealthLow.enabled then HealthLow:UpdateIndicators(unit) end
 	if Death.enabled then Death:UpdateIndicators(unit) end
 	if FeignDeath.enabled then FeignDeath:UpdateIndicators(unit) end
@@ -37,18 +48,16 @@ do
 				frame:SetScript("OnEvent", nil)
 				frame:UnregisterEvent("UNIT_HEALTH")
 				frame:UnregisterEvent("UNIT_MAXHEALTH")
---				frame:UnregisterMessage("Grid_UnitJoined")
 			else
 				frame:SetScript("OnEvent", Frame_OnUnitHealthChanged)
 				frame:RegisterEvent("UNIT_HEALTH")
 				frame:RegisterEvent("UNIT_MAXHEALTH")
---				frame:RegisterMessage("Grid_UnitJoined")
 			end
 		end
 	end
 end
 
-
+-- health status
 
 function HealthCurrent:OnEnable()
 	EnableHealthFrame(true)
@@ -70,7 +79,7 @@ function HealthCurrent:GetPercent(unit)
 end
 
 function HealthCurrent:GetTextDefault(unit)
-	return Grid2.GetShortNumber(UnitHealth(unit))
+	return fmt("%.1fk", UnitHealth(unit) / 1000)
 end
 
 function HealthCurrent:GetColor(unit)
@@ -87,7 +96,7 @@ end
 
 Grid2.setupFunc["health-current"] = CreateHealthCurrent
 
-
+-- health-low status
 
 function HealthLow:OnEnable()
 	EnableHealthFrame(true)
@@ -114,7 +123,7 @@ end
 
 Grid2.setupFunc["health-low"] = CreateHealthLow
 
-
+-- death status
 
 function Death:OnEnable()
 	EnableHealthFrame(true)
@@ -158,7 +167,7 @@ end
 
 Grid2.setupFunc["death"] = CreateDeath
 
-
+-- feign-death status
 
 function FeignDeath:OnEnable()
 	EnableHealthFrame(true)
@@ -183,10 +192,8 @@ function FeignDeath:GetPercent(unit)
 end
 
 function FeignDeath:GetText(unit)
-	if UnitIsDead(unit) then
-		return L["DEAD"]
-	elseif UnitIsGhost(unit) then
-		return L["GHOST"]
+	if UnitIsFeignDeath(unit) then
+		return L["FD"]
 	end
 end
 
@@ -198,7 +205,7 @@ end
 
 Grid2.setupFunc["feign-death"] = CreateFeignDeath
 
-
+-- health-deficit status
 
 function HealthDeficit:OnEnable()
 	EnableHealthFrame(true)
@@ -208,18 +215,90 @@ function HealthDeficit:OnDisable()
 	EnableHealthFrame(false)
 end
 
+function HealthDeficit:GetColor(unit)
+	local color = self.dbx.color1
+	return color.r, color.g, color.b, color.a
+end
+
 function HealthDeficit:IsActive(unit)
 	return (1 - HealthCurrent:GetPercent(unit)) > self.dbx.threshold
 end
 
 function HealthDeficit:GetText(unit)
-	return Grid2.GetShortNumber(UnitHealth(unit) - UnitHealthMax(unit))
+	return fmt("%.1fk", (UnitHealth(unit) - UnitHealthMax(unit)) / 1000)
 end
 
 local function CreateHealthDeficit(baseKey, dbx)
-	Grid2:RegisterStatus(HealthDeficit, {"text"}, baseKey, dbx)
+	Grid2:RegisterStatus(HealthDeficit, {"color", "text"}, baseKey, dbx)
 
 	return HealthDeficit
 end
 
 Grid2.setupFunc["health-deficit"] = CreateHealthDeficit
+
+-- heals-incoming status
+
+local HealsCache= {}
+
+local function Heals_get_with_user(unit)
+	return UnitGetIncomingHeals(unit) or 0
+end
+local function Heals_get_without_user(unit)
+	return (UnitGetIncomingHeals(unit) or 0)  - (UnitGetIncomingHeals(unit, "player") or 0)
+end
+local Heals_GetHealAmount = Heals_get_without_user
+
+function Heals:UpdateDB()
+	local m= self.dbx.flags
+	self.minimum= (m and m>1 and m ) or 1
+	Heals_GetHealAmount = self.dbx.includePlayerHeals
+		and Heals_get_with_user
+		or  Heals_get_without_user
+end
+
+function Heals:OnEnable()
+	self:RegisterEvent("UNIT_HEAL_PREDICTION", "Update")
+	self:UpdateDB()
+end
+
+function Heals:OnDisable()
+	self:UnregisterEvent("UNIT_HEAL_PREDICTION")
+	wipe(HealsCache)
+end
+
+function Heals:Update(event, unit)
+	if unit then
+		local cache= HealsCache[unit] or 0
+		local heal = Heals_GetHealAmount(unit)
+		if heal<self.minimum then heal = 0 end
+		if cache ~= heal then
+			HealsCache[unit] = heal
+			self:UpdateIndicators(unit)
+		end
+	end
+end
+
+function Heals:IsActive(unit)
+	return (HealsCache[unit] or 0) > 1
+end
+
+function Heals:GetColor(unit)
+	local c = self.dbx.color1
+	return c.r, c.g, c.b, c.a
+end
+
+function Heals:GetText(unit)
+	return fmt("+%.1fk", HealsCache[unit] / 1000)
+end
+
+function Heals:GetPercent(unit)
+	return (HealsCache[unit] + UnitHealth(unit)) / UnitHealthMax(unit)
+end
+
+local function Create(baseKey, dbx)
+	Grid2:RegisterStatus(Heals, {"color", "text", "percent"}, baseKey, dbx)
+
+	return Heals
+end
+
+Grid2.setupFunc["heals-incoming"] = Create

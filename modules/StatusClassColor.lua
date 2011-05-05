@@ -12,7 +12,7 @@ end
 function ClassColor:UpdateUnit(_, unitid)
 	if unitid then
 		self:UpdateIndicators(unitid)
-	end
+	end	
 end
 
 function ClassColor:OnDisable()
@@ -61,7 +61,7 @@ end
 function Charmed:UpdateUnit(_, unitid)
 	if unitid then
 		self:UpdateIndicators(unitid)
-	end
+	end	
 end
 
 function Charmed:OnDisable()

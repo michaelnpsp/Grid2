@@ -28,13 +28,11 @@ do
 	register_unit(party_units, "player", "pet")
 
 	for i = 1, MAX_PARTY_MEMBERS do
-		register_unit(party_units, ("party%d"):format(i),
-					  ("partypet%d"):format(i))
+		register_unit(party_units, ("party%d"):format(i),("partypet%d"):format(i))
 	end
 
 	for i = 1, MAX_RAID_MEMBERS do
-		register_unit(raid_units, ("raid%d"):format(i),
-					  ("raidpet%d"):format(i))
+		register_unit(raid_units, ("raid%d"):format(i),("raidpet%d"):format(i))
 	end
 end
 
@@ -101,40 +99,6 @@ do
 	local units_changed = {}
 	local units_updated = {}
 
-	local function UpdateUnit(unit)
-		local name, realm = UnitName(unit)
-		local guid = UnitGUID(unit)
-
-		if realm == "" then realm = nil end
-
-		local oldGuid = units_to_remove[unit]
-		units_to_remove[unit] = nil
-
-		local old_name = roster_names[unit]
-		local old_realm = roster_realms[unit]
-
-		if not old_name then
-			units_added[unit] = guid
-		elseif old_name ~= name or old_realm ~= realm then
-			units_changed[unit] = guid
-		end
-
-		roster_names[unit] = name
-		roster_realms[unit] = realm
-
-		roster_guids[unit] = guid
-		roster_units[guid] = unit
-		
-		if (oldGuid and guid ~= oldGuid) then
-			local oldUnit = roster_units[oldGuid]
-			if (not UnitExists(oldUnit)) then
-				roster_units[oldGuid] = nil
-			elseif (UnitGUID(oldUnit) ~= oldGuid) then
-				roster_units[oldGuid] = nil
-			end
-		end
-	end
-
 	function Grid2:UNIT_NAME_UPDATE(_, unit)
 		local name, realm = UnitName(unit)
 		local guid = UnitGUID(unit)
@@ -148,7 +112,6 @@ do
 		roster_realms[unit] = realm
 
 		if old_name ~= name or old_realm ~= realm then
--- print("UNIT_NAME_UPDATE Grid_UnitChanged -->", unit, guid)
 			self:SendMessage("Grid_UnitChanged", unit, guid)
 			self:SendMessage("Grid_UnitUpdate", unit, guid)
 			self:SendMessage("Grid_RosterUpdated")
@@ -188,7 +151,6 @@ do
 				updated = true
 			end
 			if updated then
--- print("Pet " .. (exists and "Grid_UnitChanged" or "Grid_UnitJoined"), unit, guid)
 				self:SendMessage(exists and "Grid_UnitChanged" or "Grid_UnitJoined", unit, guid)
 				self:SendMessage("Grid_UnitUpdate", unit, guid)
 				self:SendMessage("Grid_RosterUpdated")
@@ -206,19 +168,50 @@ do
 				elseif (UnitGUID(oldUnit) ~= oldGuid) then
 					roster_units[oldGuid] = nil
 				end
-	-- print("Pet Grid_UnitLeft -->", unit, oldGuid)
 				self:SendMessage("Grid_UnitLeft", unit, oldGuid)
 				self:SendMessage("Grid_RosterUpdated")
 			end
 		end
 	end
 
+	local function UpdateUnit(unit)
+		local name, realm = UnitName(unit)
+		local guid = UnitGUID(unit)
+
+		if realm == "" then realm = nil end
+
+		local oldGuid = units_to_remove[unit]
+		local old_name = roster_names[unit]
+		local old_realm = roster_realms[unit]
+
+		units_to_remove[unit] = nil
+		
+		if not old_name then
+			units_added[unit] = guid
+		elseif old_name ~= name or old_realm ~= realm then
+			units_changed[unit] = guid
+		end
+
+		roster_names[unit] = name
+		roster_realms[unit] = realm
+		roster_guids[unit] = guid
+		roster_units[guid] = unit
+		
+		if (oldGuid and guid ~= oldGuid) then
+			local oldUnit = roster_units[oldGuid]
+			if (not UnitExists(oldUnit)) or (UnitGUID(oldUnit) ~= oldGuid) then
+				roster_units[oldGuid] = nil
+			end
+		end
+	end
+	
 	function Grid2:UpdateRoster()
 		roster_guids, units_to_remove = units_to_remove, roster_guids
 		
 		local units = (GetNumRaidMembers() == 0) and party_units or raid_units
 
-		for _, unit in ipairs(units) do
+		for i= 1,#units do	
+			local unit= units[i]
 			if not UnitExists(unit) then break end
 			UpdateUnit(unit)
 
@@ -230,10 +223,8 @@ do
 
 		local updated = false
 
-		--This message is used to maintain a cache.
 		for unit, guid in pairs(units_to_remove) do
 			updated = true
-
 			roster_names[unit] = nil
 			roster_realms[unit] = nil
 			roster_guids[unit] = nil
@@ -241,24 +232,19 @@ do
 			if (not UnitExists(oldUnit)) then
 				roster_units[guid] = nil
 			end
--- print("Grid_UnitLeft -->", unit, guid)
 			self:SendMessage("Grid_UnitLeft", unit, guid)
 			units_to_remove[unit] = nil
 		end
 		
-		--This message is used to maintain a cache.
 		for unit, guid in pairs(units_added) do
 			updated = true
--- print("Grid_UnitJoined -->", unit, guid)
 			self:SendMessage("Grid_UnitJoined", unit, guid)
 			units_updated[unit] = guid
 			units_added[unit] = nil
 		end
 		
-		--This message is used to maintain a cache.
 		for unit, guid in pairs(units_changed) do
 			updated = true
--- print("Grid_UnitChanged -->", unit, guid)
 			self:SendMessage("Grid_UnitChanged", unit, guid)
 			units_updated[unit] = guid
 			units_changed[unit] = nil
