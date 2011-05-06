@@ -269,6 +269,12 @@ local function status_UpdateDB(self)
 			RemoveTimeTracker(self)
 		end
 	end
+	if dbx.missing and (not self.missingTexture) then
+		-- Initialize the texture for "missing" status
+		-- Note that this means missing statuses only ever display this one texture
+		local _, _, texture = GetSpellInfo(dbx.spellName)
+		self.missingTexture = texture or "Interface\\ICONS\\Achievement_General"
+	end	
 	self.GetIcon = dbx.missing and status_GetIconMissing or status_GetIcon
 	self.GetExpirationTime = dbx.missing and status_GetExpirationTimeMissing or status_GetExpirationTime
 end
@@ -314,16 +320,10 @@ function Grid2.CreateBuff(baseKey, dbx, statusTypesOverride)
 		BuffHandlers[self.auraKey] = nil
 	end
 
-	if dbx.missing then
-		-- Initialize the texture for "missing" status
-		-- Note that this means missing statuses only ever display this one texture
-		local _, _, texture = GetSpellInfo(dbx.spellName)
-		status.missingTexture = texture
-	end
-
 	-- A little trick. We add a suffix to auraKey depending of "mine"/"notmine" 
 	-- config to allow a fast search in BuffHandlers table using the auraKey.
 	-- Ex: "Riptide"(normal buff) "Riptide+"(Show if mine buff) "Riptide-"(Show if not-mine buff)
+	-- REMEMBER: Grid2Options checks if exists this variable to detect if a status is an Aura or not.
 	status.auraKey= status.auraName .. ((dbx.mine==2 and "-") or (dbx.mine and "+") or "")
 
 	status.GetCountMax = status_GetCountMax
@@ -450,4 +450,14 @@ do
 		end
 		wipe(indicators)
 	end
+	-- Needed in Grid2Options to refresh auras when an aura status is created.
+	function Grid2:RefreshAuras()
+		Grid2Frame:WithAllFrames( function(f) 
+			local unit = f.unit
+			if unit then 
+				AuraFrame_OnEvent(nil,nil,unit) 
+			end 
+		end)
+	end	
 end
+

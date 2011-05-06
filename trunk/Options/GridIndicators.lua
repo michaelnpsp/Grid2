@@ -88,6 +88,8 @@ function Grid2Options:RegisterIndicatorStatus(indicator, status, newPriority)
 	end
     Grid2.db.profile.statusMap[baseKey][statusKey]= priority
 	indicator:RegisterStatus(status, priority)
+	-- Hackish to refresh correctly aura statuses, check if is aura type status before 
+	if status.auraKey then Grid2:RefreshAuras() end	
 end
 
 function Grid2Options:UnregisterIndicatorStatus(indicator, status)
