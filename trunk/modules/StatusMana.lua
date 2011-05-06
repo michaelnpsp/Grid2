@@ -6,7 +6,7 @@ local Mana = Grid2.statusPrototype:new("mana",false)
 local LowMana = Grid2.statusPrototype:new("lowmana",false)
 local PowerAlt= Grid2.statusPrototype:new("poweralt",false)
 
-local fmt= string.format
+local max,fmt= math.max, string.format
 
 local EnableManaFrame
 do
@@ -130,7 +130,7 @@ function PowerAlt:IsActive(unit)
 end
 
 function PowerAlt:GetPercent(unit)
-	return UnitPower(unit,10) / UnitPowerMax(unit,10)
+	return max(UnitPower(unit,10),0) / UnitPowerMax(unit,10)
 end
 
 function PowerAlt:GetTextDefault(unit)
@@ -138,7 +138,7 @@ function PowerAlt:GetTextDefault(unit)
 	if power>=1000 then
 		return fmt("%.1fk", power / 1000)
 	else
-		return tostring(power)	
+		return tostring( max(power,0) )	
 	end
 end
 
