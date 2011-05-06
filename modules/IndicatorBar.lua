@@ -62,16 +62,14 @@ local function Bar_OnUpdateDS(self, parent, unit, status)
 				value= timeLeft / duration
 			else
 				tcancel(bar)
-				value = 0
 			end
 		elseif stack and status.GetCountMax then
 			value = (status:GetCount(unit) or 1) / status:GetCountMax()
 		end
 	else
 		tcancel(bar)
-		value= 0
 	end
-	bar:SetValue(value)
+	bar:SetValue(value or 0)
 end
 
 local function Bar_OnUpdate(self, parent, unit, status)
