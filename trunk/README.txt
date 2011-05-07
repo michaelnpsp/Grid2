@@ -34,3 +34,12 @@ misrepresented as being the original software.
 distribution.
 
 ------------------------------------------------------------------------
+
+ARTWORK
+
+Some textures are based on icons created by: <http://p.yusukekamiyamane.com/> 
+
+These icons are licensed under a Creative Commons Attribution
+3.0 license. <http://creativecommons.org/licenses/by/3.0/>
+
+------------------------------------------------------------------------
