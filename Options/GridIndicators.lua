@@ -236,9 +236,11 @@ function Grid2Options:AddIndicatorCurrentStatusOptions(indicator, options)
 			    type = "execute",
 				order = order + 1,
 				width = "half",
-			    name = L["+"],
+				image = "Interface\\Addons\\Grid2Options\\textures\\arrow-up",
+				imageWidth= 16,
+				imageHeight= 16,
+				name= "",
 			    desc = L["Move the status higher in priority"],
-				icon = "Interface\\Buttons\\UI-MicroButton-Spellbook-Up",
 			    func = function (info)
 			    	StatusShiftUp(info, indicator, status)
 				end,
@@ -248,18 +250,20 @@ function Grid2Options:AddIndicatorCurrentStatusOptions(indicator, options)
 			    type = "execute",
 				order = order + 2,
 				width = "half",
-			    name = L["-"],
+				image = "Interface\\Addons\\Grid2Options\\textures\\arrow-down",
+				imageWidth= 16,
+				imageHeight= 16,
+				name= "",
 			    desc = L["Move the status lower in priority"],
-				icon = "Interface\\Buttons\\UI-MicroButton-Spellbook-Down",
 			    func = function (info)
 			    	StatusShiftDown(info, indicator, status)
 				end,
 				arg = indicator,
 			}
-			options[statusKey .. "S"] = {
-				type = "header",
-				order = order + 3,
-				name = "",
+			options[statusKey .."S"] = {
+			  type= "description",
+			  name= "",
+			  order= order + 3
 			}
 		end
 	end
@@ -1233,8 +1237,8 @@ local indicatorTypesOrder= {
 	["alpha"] = 10,
 	["border"] = 11,
 	["bar"] = 12,
-	["square"] = 50,
-	["text"] = 60,
+	["text"] = 50,
+	["square"] = 60,
 	["icon"] = 70,
 }
 
@@ -1255,10 +1259,23 @@ function Grid2Options:AddIndicatorElement(element, layoutOptions, statusOptions)
 	if name ~= element.name then
 		lname= lname .. L["-color"]
 	end
+
+	-- calculate icon
+	local icon
+	if name == element.name then
+		if indicatorTypesOrder[type] then
+			icon= "Interface\\Addons\\Grid2Options\\textures\\indicator-" .. type 
+		else
+			icon= "Interface\\Addons\\Grid2Options\\textures\\indicator-default"  
+		end
+	else
+		icon= "Interface\\Addons\\Grid2Options\\textures\\indicator-color"
+	end
 	
 	insertPoint.args[element.name] = {
 		type = "group",
 		childGroups= "tab",
+		icon= icon,
 		order= indicatorTypesOrder[type] or 100,
 		name = lname,
 		desc = L["Options for %s."]:format(name),
