@@ -111,7 +111,6 @@ end
 -- including those which not affect anchors, the only exception: calls from GridLayoutHeaderClass.new)
 function GridLayoutHeaderClass.prototype:SetLayoutAttribute(name, value)
 	if name == "point" or name == "columnAnchorPoint" or name == "unitsPerColumn" then
-      Grid2Layout:Debug("GridLayoutHeaderClass:SetLayoutAttribute : Clearing All Points for " .. self:GetName())
 	  self:ClearChildrenPoints()
   end
    self:SetAttribute(name, value)
@@ -423,6 +422,22 @@ local function SetAllAttributes(header, p, list, fix)
 	end
 end
 
+-- Precreate frames to avoid a blizzard bug that prevents initializing unit frames in combat
+-- http://forums.wowace.com/showpost.php?p=307503&postcount=3163
+local function ForceFramesCreation(header)
+	local startingIndex = header:GetAttribute("startingIndex")
+	local maxColumns = header:GetAttribute("maxColumns") or 1
+	local unitsPerColumn = header:GetAttribute("unitsPerColumn") or 5
+	local maxFrames = maxColumns * unitsPerColumn
+	local count= header.FrameCount	
+	if not count or count<maxFrames then
+		header:Show()
+		header:SetAttribute("startingIndex", - maxFrames + 1)
+		header:SetAttribute("startingIndex", startingIndex)
+		header.FrameCount= maxFrames
+	end	
+end
+
 function Grid2Layout:LoadLayout(layoutName)
 	local layout = self.layoutSettings[layoutName]
 	if not layout then return end
@@ -458,6 +473,7 @@ function Grid2Layout:LoadLayout(layoutName)
 				SetAllAttributes(layoutGroup, p, defaults)
 			end
 			SetAllAttributes(layoutGroup, p, l, true)
+			ForceFramesCreation(layoutGroup)
 			layoutGroup:SetOrientation(horizontal)
 		end
 		self:PlaceGroup(layoutGroup, i)

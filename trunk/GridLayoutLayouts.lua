@@ -66,11 +66,13 @@ Grid2Layout:AddLayout("By Group 5", {
 	meta = {
 		party = true,
 		arena = true,
+		solo = true,
 	},
 	[1] = {
 		showPlayer = true,
 		showParty = true,
 		showRaid = true,
+		showSolo = true,
 		groupingOrder = DEFAULT_GROUP_ORDER,
 		toggleForVehicle = true,
 	},
@@ -103,6 +105,7 @@ Grid2Layout:AddLayout("By Group 10", {
 	meta = {
 		raid10 = true,
 		pvp = true,
+		solo = true,
 	},
 	defaults = {
 		groupingOrder = DEFAULT_GROUP_ORDER,
@@ -111,6 +114,7 @@ Grid2Layout:AddLayout("By Group 10", {
 		showPlayer = true,
 		showParty = true,
 		showRaid = true,
+		showSolo = true,
 	},
 	[1] = {	groupFilter = "1", },
 	[2] = {	groupFilter = "2", },
@@ -141,6 +145,7 @@ Grid2Layout:AddLayout("By Group 10 w/Pets", {
 Grid2Layout:AddLayout("By Group 10 Tanks First", {
 	meta = {
 		raid10 = true,
+		solo = true,
 	},
 	defaults = {
         allowVehicleTarget = true,
@@ -148,6 +153,7 @@ Grid2Layout:AddLayout("By Group 10 Tanks First", {
 		showPlayer = true,
 		showParty = true,
 		showRaid = true,
+		showSolo = true,
 		groupBy = "ROLE",
 		groupingOrder = "MAINTANK,MAINASSIST", 
 
@@ -198,8 +204,13 @@ Grid2Layout:AddLayout("By Group 25", {
 	meta = {
 		raid25 = true,
 		pvp = true,
+		solo = true,
 	},
 	defaults = {
+		showPlayer = true,
+		showParty = true,
+		showRaid = true,
+		showSolo = true,
 		groupingOrder = DEFAULT_GROUP_ORDER,
         allowVehicleTarget = true,
 		toggleForVehicle = true,
@@ -239,6 +250,7 @@ Grid2Layout:AddLayout("By Group 25 w/Pets", {
 Grid2Layout:AddLayout("By Group 25 Tanks First", {
 	meta = {
 		raid25 = true,
+		solo = true,
 	},
 	defaults = {
         allowVehicleTarget = true,
@@ -246,6 +258,7 @@ Grid2Layout:AddLayout("By Group 25 Tanks First", {
 		showPlayer = true,
 		showParty = true,
 		showRaid = true,
+		showSolo = true,
 		groupBy = "ROLE",
 		groupingOrder = "MAINTANK,MAINASSIST", 
 	},
@@ -330,6 +343,7 @@ Grid2Layout:AddLayout("By Class 1 x 25 Wide", {
 		raid10 = true,
 		pvp = true,
 		arena = true,
+		solo = true,
 	},
 	defaults = {
 		showSolo = true,
@@ -358,6 +372,7 @@ Grid2Layout:AddLayout("By Class 2 x 15 Wide", {
 		raid10 = true,
 		pvp = true,
 		arena = true,
+		solo = true,
 	},
 	defaults = {
 		showSolo = true,
@@ -385,9 +400,11 @@ Grid2Layout:AddLayout("By Group 4 x 10 Wide", {
 		raid15 = true,
 		raid10 = true,
         pvp = true,
+		solo = true,
     },
  	defaults = {
 		showSolo = true,
+		showPlayer = true,
 		showParty = true,
 		showRaid = true,
 		groupingOrder = DEFAULT_GROUP_ORDER,
@@ -428,6 +445,7 @@ Grid2Layout:AddLayout("By Class", {
 		raid15 = true,
 		raid10 = true,
 		pvp = true,
+		solo = true,
 	},
 	defaults = {
         allowVehicleTarget = true,
@@ -435,6 +453,7 @@ Grid2Layout:AddLayout("By Class", {
 		showParty = true,
 		showRaid = true,
 		showSolo = true,
+		showPlayer= true,
 	},
 	[1]= {
 		groupFilter = "1,2,3,4,5,6,7,8",
@@ -477,8 +496,11 @@ Grid2Layout:AddLayout("By Group 25 w/tanks", {
 		raid25 = true,
 		raid10 = true,
 		pvp = true,
+		solo = true,
 	},
 	defaults = {
+		showSolo = true,
+		showPlayer = true,	
 		showParty = true,
 		showRaid = true,
 		groupingOrder = DEFAULT_GROUP_ORDER,

@@ -44,14 +44,6 @@ end
 function GridFrameEvents:OnLeave()
 	self:OnLeave()
 end
---[[
-function GridFrameEvents:OnSizeChanged(w, h)
-	local dbx= Grid2Frame.db.profile
-	local inset= (dbx.frameBorder+dbx.frameBorderDistance)*2
-	self.container:SetSize( w-inset, h-inset )
-	self:LayoutIndicators()
-end
---]]
 
 --{{{ GridFramePrototype
 
@@ -110,13 +102,12 @@ function GridFramePrototype:Layout()
 	local texture = media and media:Fetch("statusbar", dbx.frameTexture) or "Interface\\Addons\\Grid2\\gradient32x32"		
 	self.container:SetTexture(texture)
 	--
-	if not InCombatLockdown() then
-		self:SetSize(w,h)
-		self:SetHighlightTexture(dbx.mouseoverHighlight and "Interface\\QuestFrame\\UI-QuestTitleHighlight" or nil)
-		-- Adjust indicators position to the new size
-		for _, indicator in Grid2:IterateIndicators() do
-			indicator:Layout(self)
-		end
+	if not InCombatLockdown() then self:SetSize(w,h) end
+	--
+	self:SetHighlightTexture(dbx.mouseoverHighlight and "Interface\\QuestFrame\\UI-QuestTitleHighlight" or nil)
+	-- Adjust indicators position to the new size
+	for _, indicator in Grid2:IterateIndicators() do
+		indicator:Layout(self)
 	end
 end
 
@@ -198,10 +189,10 @@ function Grid2Frame:Disable()
 	self:UnregisterMessage("Grid_UnitUpdate", "Grid_UnitUpdate")
 end
 
--- When profile changes, the modules reset sequence is: Disable Update Enable
--- That is done here because to work property Grid2Layout needs the new frame size 
--- and the indicators created when it is enabled. And Grid2Layout is enabled before 
--- Grid2Frame (We cannot decide the reset order of the modules)
+-- When profile changes, the modules reset sequence is: 
+-- 1. Disable all modules  2. Update all modules 3. Enable all modules (see Grid2:ProfileChanged)
+-- Grid2Layout uses the new frame size and can create/layout new frames when it is enabled, but could be 
+-- enabled before Grid2Frame.  This is the reason because we recreate and relayout the indicators here.
 function Grid2Frame:Update()
 	self:CreateIndicators()
 	self:LayoutFrames()

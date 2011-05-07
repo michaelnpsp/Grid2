@@ -452,12 +452,9 @@ do
 	end
 	-- Needed in Grid2Options to refresh auras when an aura status is created.
 	function Grid2:RefreshAuras()
-		Grid2Frame:WithAllFrames( function(f) 
-			local unit = f.unit
-			if unit then 
-				AuraFrame_OnEvent(nil,nil,unit) 
-			end 
-		end)
+		for unit, _ in Grid2:IterateRosterUnits() do
+			AuraFrame_OnEvent(nil,nil,unit) 
+		end
 	end	
 end
 

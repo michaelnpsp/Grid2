@@ -238,7 +238,7 @@ function Grid2Options:AddIndicatorCurrentStatusOptions(indicator, options)
 				width = "half",
 				image = "Interface\\Addons\\Grid2Options\\textures\\arrow-up",
 				imageWidth= 16,
-				imageHeight= 16,
+				imageHeight= 14,
 				name= "",
 			    desc = L["Move the status higher in priority"],
 			    func = function (info)
@@ -252,7 +252,7 @@ function Grid2Options:AddIndicatorCurrentStatusOptions(indicator, options)
 				width = "half",
 				image = "Interface\\Addons\\Grid2Options\\textures\\arrow-down",
 				imageWidth= 16,
-				imageHeight= 16,
+				imageHeight= 14,
 				name= "",
 			    desc = L["Move the status lower in priority"],
 			    func = function (info)
