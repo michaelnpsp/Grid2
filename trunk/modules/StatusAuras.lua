@@ -223,7 +223,7 @@ do
 		timetracker = CreateFrame("Frame", nil, Grid2LayoutFrame)
 		timetracker.tracked = {}
 		timetracker:SetScript("OnUpdate", function (self, elapsed)
-			local elapsedTime= elapsedTime + elapsed
+			elapsedTime= elapsedTime + elapsed
 			if elapsedTime>=0.10 then
 				local time = GetTime()
 				for status, value in next, self.tracked do
@@ -333,7 +333,7 @@ function Grid2.CreateBuff(baseKey, dbx, statusTypesOverride)
 	Grid2:RegisterStatus(status, statusTypesOverride or statusTypesBuffs, baseKey, dbx)
 	Grid2:MakeBuffColorHandler(status)
 	status:UpdateDB()
-
+	
 	return status
 end
 

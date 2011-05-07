@@ -90,7 +90,7 @@ local function UpdateBlink(self, parent, unit)
 	if frame then 
 		frame= frame(self,parent)
 		if blinking[frame] then
-			if not state then Grid2Blink:Remove(frame) end	
+			if state~="blink" then Grid2Blink:Remove(frame) end	
 		else
 			if state=="blink" then Grid2Blink:Add(frame) end
 		end
