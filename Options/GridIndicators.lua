@@ -69,13 +69,11 @@ function Grid2Options.GetNewIndicatorTypes()
 end
 
 function Grid2Options:GetNewStatusPriority(indicator)
-	local priority = 99
-	
-	for key, value in pairs(indicator.priorities) do
-		priority = math.max(priority, value + 1)
-	end
-
-	return priority
+	if #indicator.statuses>0 then
+		return indicator.priorities[indicator.statuses[1]] + 1 
+	else
+		return 50
+	end	
 end
 
 function Grid2Options:RegisterIndicatorStatus(indicator, status, newPriority)
@@ -157,7 +155,7 @@ function Grid2Options.SetIndicatorStatus(info, statusKey, value)
 	for key, status in Grid2:IterateStatuses() do
 		if (key == statusKey) then
 			if (value) then
-				Grid2Options:RegisterIndicatorStatus(indicator, status, 99)
+				Grid2Options:RegisterIndicatorStatus(indicator, status)
 			else
 				Grid2Options:UnregisterIndicatorStatus(indicator, status)
 			end
@@ -171,54 +169,40 @@ function Grid2Options.SetIndicatorStatus(info, statusKey, value)
 	end
 end
 
-local function StatusShiftUp(info, indicator, lowerStatus)
-	for index, status in ipairs(indicator.statuses) do
-		if (lowerStatus == status) then
-			local newIndex = index - 1
-			if (newIndex > 0) then
-				local higherStatus = indicator.statuses[newIndex]
-				local higherPriority = indicator:GetStatusPriority(higherStatus)
-				local lowerPriority = indicator:GetStatusPriority(lowerStatus)
-				if (higherPriority == lowerPriority) then
-					higherPriority = higherPriority + 1
-				end
-				Grid2Options:SetStatusPriority(indicator, higherStatus, lowerPriority)
-				Grid2Options:SetStatusPriority(indicator, lowerStatus, higherPriority)
+local function StatusSwapPriorities(indicator, index1, index2)
+	local status1 = indicator.statuses[index1]
+	local status2 = indicator.statuses[index2]
+	local priority1 = indicator:GetStatusPriority(status1)
+	local priority2 = indicator:GetStatusPriority(status2)
+	Grid2Options:SetStatusPriority(indicator, status1, priority2)
+	Grid2Options:SetStatusPriority(indicator, status2, priority1)
+end
 
-				local parentOption = GetParentOption(info, indicator.name)
-				wipe(parentOption.args)
-				Grid2Options:AddIndicatorCurrentStatusOptions(indicator, parentOption.args)
-			end
-			break
-		end
+local function StatusShiftUp(info, indicator, lowerStatus)
+	local index= indicator:GetStatusIndex(lowerStatus)
+	if index then
+		local newIndex = index>1 and index - 1 or #indicator.statuses
+		StatusSwapPriorities(indicator, index, newIndex)
+		local parentOption = GetParentOption(info, indicator.name)
+		wipe(parentOption.args)
+		Grid2Options:AddIndicatorCurrentStatusOptions(indicator, parentOption.args)
 	end
 end
 
 local function StatusShiftDown(info, indicator, higherStatus)
-	for index, status in ipairs(indicator.statuses) do
-		if (higherStatus == status) then
-			local newIndex = index + 1
-			if (newIndex <= # indicator.statuses) then
-				local lowerStatus = indicator.statuses[newIndex]
-				local higherPriority = indicator:GetStatusPriority(higherStatus)
-				local lowerPriority = indicator:GetStatusPriority(lowerStatus)
-				if (higherPriority == lowerPriority) then
-					lowerPriority = lowerPriority - 1
-				end
-				Grid2Options:SetStatusPriority(indicator, higherStatus, lowerPriority)
-				Grid2Options:SetStatusPriority(indicator, lowerStatus, higherPriority)
-
-				local parentOption = GetParentOption(info, indicator.name)
-				wipe(parentOption.args)
-				Grid2Options:AddIndicatorCurrentStatusOptions(indicator, parentOption.args)
-			end
-			break
-		end
+	local index= indicator:GetStatusIndex(higherStatus)
+	if index then
+		local newIndex = index<#indicator.statuses and index+1 or 1
+		StatusSwapPriorities(indicator, index, newIndex)
+		local parentOption = GetParentOption(info, indicator.name)
+		wipe(parentOption.args)
+		Grid2Options:AddIndicatorCurrentStatusOptions(indicator, parentOption.args)
 	end
 end
 
 function Grid2Options:AddIndicatorCurrentStatusOptions(indicator, options)
-	if (indicator.statuses) then
+	if indicator.statuses then
+		local more= #indicator.statuses>1
 		for index, status in ipairs(indicator.statuses) do
 			local statusKey = status.name
 			local order = 5 * index
@@ -232,39 +216,41 @@ function Grid2Options:AddIndicatorCurrentStatusOptions(indicator, options)
 				set = Grid2Options.SetIndicatorStatusCurrent,
 				arg = indicator,
 			}
-			options[statusKey .. "U"] = {
-			    type = "execute",
-				order = order + 1,
-				width = "half",
-				image = "Interface\\Addons\\Grid2Options\\textures\\arrow-up",
-				imageWidth= 16,
-				imageHeight= 14,
-				name= "",
-			    desc = L["Move the status higher in priority"],
-			    func = function (info)
-			    	StatusShiftUp(info, indicator, status)
-				end,
-				arg = indicator,
-			}
-			options[statusKey .. "D"] = {
-			    type = "execute",
-				order = order + 2,
-				width = "half",
-				image = "Interface\\Addons\\Grid2Options\\textures\\arrow-down",
-				imageWidth= 16,
-				imageHeight= 14,
-				name= "",
-			    desc = L["Move the status lower in priority"],
-			    func = function (info)
-			    	StatusShiftDown(info, indicator, status)
-				end,
-				arg = indicator,
-			}
-			options[statusKey .."S"] = {
-			  type= "description",
-			  name= "",
-			  order= order + 3
-			}
+			if more then
+				options[statusKey .. "U"] = {
+					type = "execute",
+					order = order + 1,
+					width = "half",
+					image = "Interface\\Addons\\Grid2Options\\textures\\arrow-up",
+					imageWidth= 16,
+					imageHeight= 14,
+					name= "",
+					desc = L["Move the status higher in priority"],
+					func = function (info)
+						StatusShiftUp(info, indicator, status)
+					end,
+					arg = indicator,
+				}
+				options[statusKey .. "D"] = {
+					type = "execute",
+					order = order + 2,
+					width = "half",
+					image = "Interface\\Addons\\Grid2Options\\textures\\arrow-down",
+					imageWidth= 16,
+					imageHeight= 14,
+					name= "",
+					desc = L["Move the status lower in priority"],
+					func = function (info)
+						StatusShiftDown(info, indicator, status)
+					end,
+					arg = indicator,
+				}
+				options[statusKey .."S"] = {
+				  type= "description",
+				  name= "",
+				  order= order + 3
+				}
+			end	
 		end
 	end
 end
@@ -1124,8 +1110,14 @@ local function NewIndicator()
 		elseif (newIndicatorValues.type == "bar") then
 			dbx.level = 3
 			dbx.texture= "Gradient"
-			dbx.height= 4
-			dbx.orientation= "HORIZONTAL"
+			local point= newIndicatorValues.relPoint
+			if point=="LEFT" or point=="RIGHT" then
+				dbx.width= 4
+				dbx.orientation= "VERTICAL"
+			elseif point~="CENTER" then
+				dbx.height= 4
+				dbx.orientation= "HORIZONTAL"
+			end
 			Grid2:DbSetIndicator( newIndicatorName.."-color" , { type="bar-color" })
 		end
 		Grid2:DbSetIndicator(newIndicatorName,dbx)
