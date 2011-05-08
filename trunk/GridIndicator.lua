@@ -66,6 +66,15 @@ function indicator:GetStatusPriority(status)
 	return self.priorities[status]
 end
 
+function indicator:GetStatusIndex(status)
+	local statuses= self.statuses
+	for i=1,#statuses do
+		if status == statuses[i] then
+			return i
+		end	
+	end
+end
+
 function indicator:GetCurrentStatus(unit)
 	if unit then
 		local statuses= self.statuses
