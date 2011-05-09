@@ -1,30 +1,24 @@
 ﻿local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2Options", "ruRU")
 if not L then return end
 
-L["General Settings"] = "Основные настройки"
+
+--{{{ General options
 L["GRID2_DESC"] = "Добро пожаловать в Grid2"
 
-L["Debug"] = "Отладка"
-L["debugging"] = "Отлаживание"
-L["Module debugging menu."] = "Модуль отладки меню."
+L["General Settings"] = "Основные настройки"
 
-L["alerts"] = "alerts"
-L["blink"] = "Мигание"
-L["category"] = "Категория"
+L["statuses"] = "Статус"
+L["Indicators"] = "Индикаторы"
+
+L["Frames"] = "Фреймы"
 L["frame"] = "Фрейм"
-L["layout"] = "Расположение"
-L["location"] = "Расположение"
-L["indicator"] = "Индикатор"
-L["status"] = "Статус"
 
-L["buff"] = "Бафф"
-L["debuff"] = "Дебафф"
+L["Invert Bar Color"] = "Обратить цвет панели"
+L["Swap foreground/background colors on bars."] = "Меняет местами окраску передниего плана/заднего на панели."
 
-L["icon"] = "Иконка"
-L["square"] = "Квадрат"
-L["text"] = "Текст"
+L["Background Color"] = "Фоновй цвет"
+L["Sets the background color of each unit frame"] = "Установить цвет фона для каждого фрейма"
 
---{{{ GridFrame
 L["Mouseover Highlight"] = "Выделение при наведении мышки."
 L["Toggle mouseover highlight."] = "Вкл/Выкл выделение при наведении курсора мыши."
 
@@ -34,8 +28,14 @@ L["Always"] = "Всегда"
 L["Never"] = "Никогда"
 L["OOC"] = "Вне боя"
 
-L["Border Size"] = "Размер края"
-L["Adjust the border of each unit's frame."] = "Регулировка края области."
+L["Background Texture"] = "Фоновая текстура"
+L["Select the frame background texture."] = "Выбрать фоновую текстуру фрейма"
+
+L["Inner Border Size"] = "Размер внутренней рамки"
+L["Sets the size of the inner border of each unit frame"] = "Установить размер внутренней рамки для каждого фрейма"
+
+L["Inner Border Color"] = "Цвет внутренней рамки"
+L["Sets the color of the inner border of each unit frame"] = "Установить цвет внутренней рамки для каждого фрейма"
 
 L["Frame Width"] = "Ширина области"
 L["Adjust the width of each unit's frame."] = "Регулировка ширины области."
@@ -50,10 +50,6 @@ L["HORIZONTAL"] = "ГОРИЗОНТАЛЬНО"
 
 L["Orientation of Text"] = "Ориентация текста"
 L["Set frame text orientation."] = "Установить ориентацию текста фреймов"
---}}}
-
-L["Options for %s."] = " Опции для %s."
-L["Toggle debugging for %s."] = "Показать отладку для %s."
 
 L["Show Frame"] = "Показать Область"
 L["Sets when the Grid is visible: Choose 'Always', 'Grouped', or 'Raid'."] = "Установить отображение Gridа: 'Всегда', 'Группа' или 'Рейд'."
@@ -61,8 +57,66 @@ L["Always"] = "Всегда"
 L["Grouped"] = "Группа"
 L["Raid"] = "Рейд"
 
---{{{ GridLayout
+L["Layout Anchor"] = "Нахождение якоря"
+L["Sets where Grid is anchored relative to the screen."] = "Настривает где якорь Grid будет находиться на экране."
+
+L["Horizontal groups"] = "Группы горизонтально"
+L["Switch between horzontal/vertical groups."] = "Переключить между группы вертикально/горизонтально."
+L["Clamped to screen"] = "В пределах экрана"
+L["Toggle whether to permit movement out of screen."] = "Не позволять перемещать окно за пределы экрана."
+L["Frame lock"] = "Закрепить область"
+L["Locks/unlocks the grid for movement."] = "Закрепить/открепить окно для передвижения."
+L["Click through the Grid Frame"] = "Выбирать через окно Grid"
+L["Allows mouse click through the Grid Frame."] = "Разрешает мышкой кликать сквозь окно Grнid."
+
+L["Display"] = "Отображение"
+L["Padding"] = "Заполнение"
+L["Adjust frame padding."] = "Настройка заполнения области."
+L["Spacing"] = "Промежуток"
+L["Adjust frame spacing."] = "Настройка промежутка фрейма."
+L["Scale"] = "Масштаб"
+L["Adjust Grid scale."] = "Настройка масштаба Gridа."
+
+L["Group Anchor"] = "Якорь группы"
+L["Position and Anchor"] = "Позиция и якорь"
+L["Sets where groups are anchored relative to the layout frame."] = "Настройка местоположения якорей групп относительно расположения области."
+L["Resets the layout frame's position and anchor."] = "Обновляет позицию области и якоря."
+
+--blink
+L["Misc"] = "Разное"
+L["blink"] = "Мигание"
+L["Blink effect"] = "Эффект мерцания"
+L["Select the type of Blink effect used by Grid2."] = "Gвыьерите тип эффекта мерцания для использования в Grid2."
+L["None"] = "Нет"
+L["Blink"] = "Мерцания"
+L["Flash"] = "Вспышка"
+L["Blink Frequency"] = "Частота мерцания"
+L["Adjust the frequency of the Blink effect."] = "Настройка частоты мерцания."
+
+-- debugging & maintenance
+L["debugging"] = "Отлаживание"
+L["Module debugging menu."] = "Модуль отладки меню."
+L["Debug"] = "Отладка"
+L["Reset"] = "Сброс"
+L["Reset and ReloadUI."] = "Сброс и перезагрузка UI"
+L["Reset Setup"] = "Reset Setup"
+L["Reset current setup and ReloadUI."] = "Reset current setup and ReloadUI."
+L["Reset Indicators"] = "Сброс индикаторов"
+L["Reset indicators to defaults."] = "Сбросить индикаторы на стандартные."
+L["Reset Locations"] = "Сброс расположения"
+L["Reset locations to the default list."] = "Сбросить расположения на стандартные."
+L["Reset to defaults."] = "Сброс значений на стандартные."
+L["Reset Statuses"] = "Сброс статусов"
+L["Reset statuses to defaults."] = "Сбросить статусы на стандартные."
+
+L["Warning! This option will delete all settings and profiles, are you sure ?"]= "Внимание! Эта опция будет удалена во всех настройках и профилях, вы уверены?"
+
+L["About"] = "Описание"
+
+--{{{ Layouts options
+L["Layout"] = true
 L["Layouts"] = "Расположение"
+L["layout"] = "Расположение"
 L["Layouts for each type of groups you're in."] = "Расположение для каждого типа групп при нахождении в."
 L["Layout Settings"] = "Настройки расположения"
 L["Solo Layout"] = "Соло Расположение"
@@ -75,60 +129,110 @@ L["Battleground Layout"] = "Расположение для полей битв"
 L["Select which layout to use for battlegrounds."] = "Выбирает расположение для полей битв."
 L["Arena Layout"] = "Расположение для арены"
 L["Select which layout to use for arenas."] = "Выбирает расположение для арен."
+L["Test"]= true
+L["Test the layout."]= true
 
-L["Show Party in Raid"] = "Показывать группу в рейде"
-L["Show party/self as an extra group."] = "Показать группу/себя как отдельную группу"
-L["Show Pets for Party"] = "Показывать питомцев в группе"
-L["Show the pets for the party below the party itself."] = "Показывает питомцев группы непоредсвенно ниже группы."
---}}}
-
-L["Horizontal groups"] = "Группы горизонтально"
-L["Switch between horzontal/vertical groups."] = "Переключить между группы вертикально/горизонтально."
-L["Clamped to screen"] = "В пределах экрана"
-L["Toggle whether to permit movement out of screen."] = "Не позволять перемещать окно за пределы экрана."
-L["Frame lock"] = "Закрепить область"
-L["Locks/unlocks the grid for movement."] = "Закрепить/открепить окно для передвижения."
-L["Click through the Grid Frame"] = "Выбирать через окно Grid"
-L["Allows mouse click through the Grid Frame."] = "Разрешает мышкой кликать сквозь окно Grid."
-
-L["Display"] = "Отображение"
-L["Padding"] = "Заполнение"
-L["Adjust frame padding."] = "Настройка заполнения области."
-L["Spacing"] = "Промежуток"
-L["Adjust frame spacing."] = "Настройка промежутка фрейма."
-L["Scale"] = "Масштаб"
-L["Adjust Grid scale."] = "Настройка масштаба Gridа."
-
-L["Alpha"] = "Прозрачность"
+--{{{ Miscelaneous
+L["Name"] = "Название"
+L["New"] = "Новый"
+L["Order"] = "Порядок"
+L["Delete"] = "Удалить"
+L["Color"] = "Цвет"
+L["Color %d"] = "Цвет %d"
+L["Color for %s."] = "Цвет для %s."
+L["Font"] = "Шрифт"
+L["Adjust the font settings"] = "Настройки шрифта."
 L["Border"] = "Граница"
-L["Adjust border color and alpha."] = "Настройка цвет границы и прозрачность."
-L["Adjust the border size of the indicator."] = "Настройка размера границ индикатора."
 L["Background"] = "Фон"
+L["Adjust border color and alpha."] = "Настройка цвет границы и прозрачность."
 L["Adjust background color and alpha."] = "Настройка цвета фона и прозрачности."
+L["Opacity"] = "Непрозрачность"
+L["Set the opacity."] = "Установка непрозрачности"
+L["<CharacterOnlyString>"] = "<CharacterOnlyString>"
+L["Options for %s."] = " Опции для %s."
+
+--{{{ Indicator management
+L["New Indicator"] = "Новый индикатор"
+L["Create a new indicator."] = "Создать новый индикатор."
+L["Name of the new indicator"] = "Название нового индикатора"
+L["Enable Test Mode"] = "Включить тестовый режим"
+L["Disable Test Mode"] = "Отключить тестовый режим"
+L["Appearance"] = "Вид true"
+L["Adjust the border size of the indicator."] = "Настройка размера границ индикатора."
 L["Reverse Cooldown"] = "Перевернуть восстановление"
 L["Set cooldown to become darker over time instead of lighter."] = "Установить для восстановления темную окрску по прошествию времени, вместо светлой."
+L["Cooldown"]= "Восстановление"
+L["Text Location"]= true
+L["Disable OmniCC"]= true
+ 
+L["Type"] = "Тип"
+L["Type of indicator"] = "Тип индикатора"
+L["Type of indicator to create"] = "Тип создаваемого индикатора"
 
---role
--- L["MAIN_ASSIST"] = MAIN_ASSIST
--- L["MAIN_TANK"] = MAIN_TANK
+L["Text Length"] = "Длина текста"
+L["Maximum number of characters to show."] = "Максимальное число отображаемх символов"
+L["Font Size"] = "Размер шрифта"
+L["Adjust the font size."] = "Настривает размер шрифта."
+L["Size"] = "Размер"
+L["Adjust the size of the indicator."] = "Настрйока размера индикатора."
 
---target
-L["Your Target"] = "Ваша Цель"
+L["Frame Texture"] = "Текстура области"
+L["Adjust the texture of the bar."] = "Настройка текстуры выбранной полосы"
 
---threat
-L["Not Tanking"] = "Не танкуется"
-L["Higher threat than tank."] = "Высший уровень угрозы чем у танка."
-L["Insecurely Tanking"] = "Ненадёжное танкование"
-L["Tanking without having highest threat."] = "Танкование без наивысшего уровня угрозы."
-L["Securely Tanking"] = "Надёжное танкование"
-L["Tanking with highest threat."] = "Танкование с наивысшим уровнем угрозы."
+L["Show stack"] = "Показать сумму"
+L["Show the number of stacks."] = "Показывает сумму эффкта."
+L["Show duration"] = "Длительность"
+L["Show the time remaining."] = "Показывать оставшееся время."
 
---voice
-L["Voice Chat"] = "Голосовой чат"
+L["Orientation of the Bar"] = "Ориентация полосы"
+L["Set status bar orientation."] = "Установить ориентацию полосы статуса"
+L["DEFAULT"]= "ПО УМОЛЧАНИЮ"
+L["Frame Level"] = "Уровень фрейма"
+L["Bars with higher numbers always show up on top of lower numbers."] = "Полоса с наибольшим номером всегда отображается поверх меньших номеров"
+L["Bar Width"] = "Ширина полосы"
+L["Choose zero to set the bar to the same width as parent frame"] = "Выберите 0, чтобы установить ширину полосы равную родительской"
+L["Bar Height"] = "Высота полосы"
+L["Choose zero to set the bar to the same height as parent frame"] = "Выберите 0, чтобы установить высоту полосы равную родительской"
 
-L["Layout Anchor"] = "Нахождение якоря"
-L["Sets where Grid is anchored relative to the screen."] = "Настривает где якорь Grid будет находиться на экране."
+L["Border Size"] = "Размер края"
+L["Adjust the border of each unit's frame."] = "Регулировка края области."
+L["Border Background Color"] = "Цвет фона рамки"
+L["Adjust border background color and alpha."] = "Регулировка цвета и прозрачности фона рамки"
 
+L["Select statuses to display with the indicator"] = "Выберите статусы которые будут отображаться на индикаторе."
+L["+"] = "+"
+L["-"] = "-"
+L["Available Statuses"] = "Доступные статусы"
+L["Available statuses you may add"] = "Доступные статусы которые вы можете добавить на индикатор"
+L["Current Statuses"] = "Текущие статусы"
+L["Current statuses in order of priority"] = "Текущий статус в индикаторе, в порядке очередности"
+L["Move the status higher in priority"] = "Переместитт статус выше по приоритету"
+L["Move the status lower in priority"] = "Переместитт статус ниже по приоритету"
+
+L["indicator"] = "Индикатор"
+
+-- indicator types
+L["icon"] = "Иконка"
+L["square"] = "Квадрат"
+L["text"] = "Текст"
+L["bar"] = "Полоса"
+
+-- indicators
+L["corner-top-left"] = "в верхнем левом углу"
+L["corner-top-right"] = "в верхнем правом углу"
+L["corner-bottom-left"] = "в нижнем левом углу"
+L["corner-bottom-right"] = "в нижнем правом углу"
+L["side-top"] = "по краю вверху"
+L["side-right"] = "по краю справа"
+L["side-bottom"] = "по краю внизу"
+L["side-left"] = "по краю слева"
+L["text-up"] = "текст сверху"
+L["text-down"] = "текст снизу"
+L["icon-left"] = "иконка слева"
+L["icon-center"] = "иконка в центре"
+L["icon-right"] = "иконка справа"
+
+-- locations
 L["CENTER"] = "ЦЕНТР"
 L["TOP"] = "ВЕРХ"
 L["BOTTOM"] = "ОСНОВАНИЕ"
@@ -139,55 +243,153 @@ L["TOPRIGHT"] = "ВВЕРХУ СПРАВА"
 L["BOTTOMLEFT"] = "СНИЗУ СЛЕВА"
 L["BOTTOMRIGHT"] = "СНИЗУ СПРАВА"
 
-L["corner-top-left"] = "в верхнем левом углу"
-L["corner-top-right"] = "в верхнем правом углу"
-L["corner-bottom-left"] = "в нижнем левом углу"
-L["corner-bottom-right"] = "в нижнем правом углу"
-L["side-left"] = "по краю слева"
-L["side-left-top"] = "по краю слева, вверху"
-L["side-left-bottom"] = "по краю слева, внизу"
-L["side-right"] = "по краю справа"
-L["side-right-top"] = "по краю справа, вверху"
-L["side-right-bottom"] = "по краю справа, внизу"
-L["side-top"] = "по краю вверху"
-L["side-top-left"] = "по краю вверху чуть слева"
-L["side-top-right"] = "по краю вверху чуть справа"
-L["side-bottom"] = "по краю внизу"
-L["side-bottom-left"] = "по краю внизу чуть слева"
-L["side-bottom-right"] = "по краю внизу чуть справа"
-L["center"] = "по центру"
-L["center-left"] = "по центру-влево"
-L["center-right"] = "по центру-вправо"
-L["center-top"] = "по центру-вверху"
-L["center-bottom"] = "по центру-внизу"
+L["location"] = "Расположение"
 
-L["charmed"] = "зачарованн"
-L["classcolor"] = "цвет-класса"
-L["death"] = "труп"
-L["feign-death"] = "притворяется"
-L["healing-impossible"] = "исцеление-невозможно"
-L["healing-prevented"] = "исцеление-предотвращёно"
-L["healing-reduced"] = "исцеление-подавлено"
-L["heals-incoming"] = "входящее-исцеление"
+L["Location"] = "Расположение"
+L["Align my align point relative to"] = "Выровнять мою точки относительн к"
+L["Align Point"] = "Точка выравнивания"
+L["Align this point on the indicator"] = "Выравнивание данной точки на индикаторе"
+L["X Offset"] = "Смещение по Х"
+L["X - Horizontal Offset"] = "Х - смещение по горизонтале"
+L["Y Offset"] = "Смещение по У"
+L["Y - Vertical Offset"] = "У - смещение по вертикале"
+
+--{{{ Statuses
+L["-color"]= ":цвет"
+L["-mine"]= ":моё"
+L["-not-mine"]= ":не моё"
+L["buff-"]= "бафф: "
+L["debuff-"]= "дебафф: "
+
+L["status"] = "Статус"
+
+L["buff"] = "Бафф"
+L["debuff"] = "Дебафф"
+
+L["New Status"] = "Новый статус"
+L["Create a new status."] = "Создать новый статус."
+
+L["Threshold"] = "Порог"
+L["Threshold at which to activate the status."] = "Порог, при котором активируется статус."
+
+-- buff & debuff statuses management
+L["Buffs"] = "Баффы"
+L["Debuffs"] = "Дебаффы"
+L["Show if mine"] = "Показать если моё"
+L["Show if not mine"] = "Показать если НЕ моё"
+L["Show if missing"] = "Показывать если пропущен"
+L["Display status only if the buff is not active."] = "Показывать статус только если баффы не активны."
+L["Display status only if the buff was cast by you."] = "Показывать статус только если баффы применяются на вас"
+L["Display status only if the buff was not cast by you."] = "Показывать статус только если баффы применяются НЕ на вас"
+L["Color count"] = "Свет счетчика"
+L["Select how many colors the status must provide."] = "Выберие, сколько цветов должен поддерживать статус"
+L["You can include a descriptive prefix using separators \"@#>\""] = "Вы можете включить описательную приставку, используя разделители \"@#>\""
+L["examples: Druid@Regrowth Chimaeron>Low Health"] = "Например: Druid@Regrowth Chimaeron>Low Health"
+
+L["Class Filter"] = "Фильтр классов"
+L["Show on %s."] = "Показать на %s."
+
+L["Blink Threshold"] = "Порог мерцания"
+L["Blink Threshold at which to start blinking the status."] = "Порог мерцания, при котором будет начинать мерцание статуса."
+
+-- general statuses
+L["name"] = "название"
+L["mana"] = "мана"
+L["poweralt"] = true
+L["alpha"] = "прозрачность"
+L["border"] = "граница"
+L["heals"] = "исцеление"
 L["health"] = "здоровье"
+L["charmed"] = "зачарованн"
+L["afk"] = "афк"
+L["death"] = "труп"
+L["classcolor"] = "цвет-класса"
+L["feign-death"] = "притворяется"
+L["heals-incoming"] = "входящее-исцеление"
+L["health-current"] = "здоровье-текущее"
 L["health-deficit"] = "нехватка-здоровья"
 L["health-low"] = "мало-здоровья"
 L["lowmana"] = "мало-маны"
-L["mana"] = "мана"
-L["name"] = "название"
 L["offline"] = "вне-сети"
-L["pvp"] = "pvp"
+L["raid-icon-player"] = "рейд-иконка игрока"
+L["raid-icon-target"] = "рейд-иконка цели"
 L["range"] = "радиус"
 L["ready-check"] = "проверка-готовности"
+L["role"] = "роль"
 L["target"] = "цель"
 L["threat"] = "угроза"
 L["vehicle"] = "транспорт"
 L["voice"] = "голос"
+L["pvp"] = "pvp"
 
-L["Beast"] = "Животное"
-L["Demon"] = "Демон"
-L["Humanoid"] = "Гуманоид"
-L["Elemental"] = "Элементаль"
+L["Curse"] = "Проклятье"
+L["Poison"] = "Яд"
+L["Disease"] = "Болезнь"
+L["Magic"] = "Магия"
+
+L["raid-debuffs"] = "рейд-дебаффы"
+
+-- class specific buffs & debuffs statuses
+
+-- shaman
+L["EarthShield"] = "Щит земли"
+L["Earthliving"] = "Жизнь Земли"
+L["Riptide"] = "Быстрина"
+
+-- Druid
+L["Rejuvenation"]= "Омоложение"
+L["Lifebloom"]= "Жизнецвет"
+L["Regrowth"]= "Восстановление"
+L["WildGrowth"]= "Буйный рост"
+
+-- paladin
+L["BeaconOfLight"]= "Частица Света"
+L["FlashOfLight"]= "Вспышка Света"
+L["DivineShield"]= "Божественный щит"
+L["DivineProtection"]= "Божественная защита"
+L["HandOfProtection"]= "Длань защиты"
+L["HandOfSalvation"]= "Длань спасения"
+L["Forbearance"]= "Воздержанность"
+
+-- priest
+L["Grace"]= "Милость"
+L["DivineAegis"]= "Божественное покровительство"
+L["InnerFire"]= "Внутренний огонь"
+L["PrayerOfMending"]= "Молитва восстановления"
+L["PowerWordShield"]= "Слово силы: Щит"
+L["Renew"]= "Обновление"
+L["WeakenedSoul"]= "Ослабленная душа"
+L["SpiritOfRedemption"]= "Дух воздаяния"
+
+-- mage
+L["FocusMagic"]= "Магическая концентрация"
+L["IceArmor"]= "Ледяной доспех"
+L["IceBarrier"]= "Ледяная преграда"
+
+-- rogue
+L["Evasion"]= "Ускользание"
+
+-- warlock
+L["ShadowWard"]= "Заслон от темной магии"
+L["SoulLink"]= "Родство душ"
+L["DemonArmor"]= "Демонический доспех"
+L["FelArmor"]= "Доспех Скверны"
+
+-- warrior
+L["Vigilance"]= "Бдительность"
+L["BattleShout"]= "Боевой крик"
+L["CommandingShout"]= "Командирский крик"
+L["ShieldWall"]= "Глухая оборона"
+L["LastStand"]= "Ни шагу назад"
+
+-- class color status
+L["%s Color"] = "%s цвет"
+L["Color Charmed Unit"] = "Цвет Околдованных Игроков"
+L["Color Units that are charmed."] = "Цвет для игроков попавший под разные отрицательные дебаффы и контроль."
+L["Unit Colors"] = "Цвет игроков"
+L["Charmed unit Color"] = "цвет околодованных игроков"
+L["Default unit Color"] = "Цвета игроков по умолчанию"
+L["Default pet Color"] = "Цвета питомцев по умолчанию"
 
 L["DEATHKNIGHT"] = "Рыцарь смерти"
 L["DRUID"] = "Друид"
@@ -199,155 +401,24 @@ L["ROGUE"] = "Разбойница"
 L["SHAMAN"] = "Шаманка"
 L["WARLOCK"] = "Чернокнижница"
 L["WARRIOR"] = "Воин"
+L["Beast"] = "Животное"
+L["Demon"] = "Демон"
+L["Humanoid"] = "Гуманоид"
+L["Elemental"] = "Элементаль"
 
---Account Layer
-L["account"] = "Account"
-
---Class Layer
-L["deathknight"] = "Рыцарь смерти"
-L["druid"] = "Друид"
-L["hunter"] = "Охотник"
-L["mage"] = "Маг"
-L["paladin"] = "Паладин"
-L["priest"] = "Жрец"
-L["rogue"] = "Разбойник"
-L["shaman"] = "Шаман"
-L["warlock"] = "Чернокнижник"
-L["warrior"] = "Воин"
-
---Spec Layer
-L["tree"] = "Ветка"
-L["holy1"] = "Свет1"
-L["holy2"] = "Свет2"
-L["resto"] = "Исцеление"
-
-L["Layer"] = "Слой"
-L["Layer level.  Higher layers (like Class or Spec) supercede lower ones like Account."] = "Уровень слоя. Высшие слои (например, класс или спец) переводят на задний план низшие."
-
-L["Opacity"] = "Непрозрачность"
-L["Set the opacity."] = "Установка непрозрачности"
-
-L["<CharacterOnlyString>"] = "<CharacterOnlyString>"
-L["+"] = "+"
-L["-"] = "-"
-L["%d yards"] = "%d м."
-L["Align Point"] = "Точка выравнивания"
-L["Align this point on the indicator"] = "Выравнивание данной точки на индикаторе"
-L["Align relative to"] = "Выровнять по отношению к"
-L["Align my align point relative to"] = "Выровнять мою точки относительн к"
-L["Available Statuses"] = "Доступные статусы"
-L["Available statuses you may add"] = "Доступные статусы которые вы можете добавить на индикатор"
-L["Blink Threshold"] = "Порог мерцания"
-L["Blink Threshold at which to start blinking the status."] = "Порог мерцания, при котором будет начинать мерцание статуса."
-L["Class Filter"] = "Фильтр классов"
-L["Create a new category of statuses."] = "Создать новую категорию статусов."
-L["Create a new indicator."] = "Создать новый индикатор."
-L["Create a new location for an indicator."] = "Создать новое расположение индикатора."
-L["Create a new object"] = "Создать новый объект"
-L["Create a new status."] = "Создать новый статус."
-L["Current Statuses"] = "Текущие статусы"
-L["Current statuses in order of priority"] = "Текущий статус в индикаторе, в порядке очередности"
-L["Delete"] = "Удалить"
-L["Display status only if the buff is not active."] = "Показывать статус только если баффы не активны."
-L["Display status only if the buff was cast by you."] = "Показывать статус только если баффы применяются на вас"
-L["Down"] = "Вниз"
-L["Location"] = "Расположение"
-L["Move the status higher in priority"] = "Переместитт статус выше по приоритету"
-L["Move the status lower in priority"] = "Переместитт статус ниже по приоритету"
-L["Remove selected status from this indicator"] = "Удалить выбранные статус из этого индикатора"
-L["Name"] = "Название"
-L["Name of the new indicator"] = "Название нового индикатора"
-L["Name of the new object"] = "Название нового объекта"
-L["New"] = "Новый"
-L["New Category"] = "Новая категория"
-L["New Indicator"] = "Новый индикатор"
-L["Add a new indicator"] = "Добавить новый индикатор"
-L["Indicators"] = "Индикаторы"
-L["List of Indicators"] = "Список индикаторов"
-L["Order"] = "Порядок"
-L["This is the ordered list of statuses for this indicator"] = "Это упорядоченный список статусов для этого индикатора"
-L["New Location"] = "Новое расположение"
-L["New Status"] = "Новый статус"
-L["Range"] = "Расстояние"
-L["Range in yards beyond which the status will be lost."] = "Диапозон вметрах выдя  за который статус будет утерян."
-L["Reset"] = "Сброс"
-L["Reset and ReloadUI."] = "Сброс и перезагрузка UI"
-L["Reset Setup"] = "Reset Setup"
-L["Reset current setup and ReloadUI."] = "Reset current setup and ReloadUI."
-L["Reset Categories"] = "Сброс категорий"
-L["Reset categories to the default list."] = "Сброс категорий на стандартный список."
-L["Reset Indicators"] = "Сброс индикаторов"
-L["Reset indicators to defaults."] = "Сбросить индикаторы на стандартные."
-L["Reset Locations"] = "Сброс расположения"
-L["Reset locations to the default list."] = "Сбросить расположения на стандартные."
-L["Reset Statuses"] = "Сброс статусов"
-L["Reset statuses to defaults."] = "Сбросить статусы на стандартные."
-L["Reset to defaults."] = "Сброс значений на стандартные."
-L["Select statuses to display with the indicator"] = "Выберите статусы которые будут отображаться на индикаторе."
-L["Select the location of the indicator"] = "Выберите расположение индикатора."
-L["Show duration"] = "Длительность"
-L["Show if mine"] = "Показать если моё"
-L["Show if missing"] = "Показывать если пропущен"
-L["Show on %s."] = "Показать на %s."
-L["Show stack"] = "Показать сумму"
-L["Show status for the selected classes."] = "Показывает статус для выбранных классов."
-L["Show the number of stacks."] = "Показывает сумму эффкта."
-L["Show the time remaining."] = "Показывать оставшееся время."
-L["Threshold"] = "Порог"
-L["Threshold at which to activate the status."] = "Порог, при котором активируется статус."
-L["Type"] = "Тип"
-L["Type of indicator"] = "Тип индикатора"
-L["Type of indicator to create"] = "Тип создаваемого индикатора"
-L["Up"] = "Вверх"
-L["X Offset"] = "Смещение по Х"
-L["X - Horizontal Offset"] = "Х - смещение по горизонтале"
-L["Y Offset"] = "Смещение по У"
-L["Y - Vertical Offset"] = "У - смещение по вертикале"
-
-L["Group Anchor"] = "Якорь группы"
-L["Position and Anchor"] = "Позиция и якорь"
-L["Sets where groups are anchored relative to the layout frame."] = "Настройка местоположения якорей групп относительно расположения области."
-L["Resets the layout frame's position and anchor."] = "Обновляет позицию области и якоря."
-
-L["Center Text Length"] = "Длина текста в центре"
-L["Number of characters to show on Center Text indicator."] = "Количество символов для отображения текста в центре."
-L["Font Size"] = "Размер шрифта"
-L["Adjust the font size."] = "Настривает размер шрифта."
-L["Font"] = "Шрифт"
-L["Adjust the font settings"] = "Настройки шрифта."
-L["Frame Texture"] = "Текстура области"
-L["Adjust the texture of each unit's frame."] = "настройка текстуры выбранной области для игрока."
-
-L["Size"] = "Размер"
-L["Adjust the size of the indicator."] = "Настрйока размера индикатора."
-
-L["Blink effect"] = "Эффект мерцания"
-L["Select the type of Blink effect used by Grid2."] = "Gвыьерите тип эффекта мерцания для использования в Grid2."
-L["None"] = "Нет"
-L["Blink"] = "Мерцания"
-L["Flash"] = "Вспышка"
-L["Blink Frequency"] = "Частота мерцания"
-L["Adjust the frequency of the Blink effect."] = "Настройка частоты мерцания."
-
-L["Color"] = "Цвет"
-L["Color %d"] = "Цвет %d"
-L["Color for %s."] = "Цвет для %s."
-L["Color Charmed Unit"] = "Цвет Околдованных Игроков"
-L["Color Units that are charmed."] = "Цвет для игроков попавший под разные отрицательные дебаффы и контроль."
-L["Unit Colors"] = "Цвет игроков"
-L["Charmed unit Color"] = "цвет околодованных игроков"
-L["Default unit Color"] = "Цвета игроков по умолчанию"
-L["Default pet Color"] = "Цвета питомцев по умолчанию"
-L["%s Color"] = "%s цвет"
+-- heal-current status
 L["Show dead as having Full Health"] = "Показывать мертвого как полным здоровьем"
+
+-- range status 
+L["Range"] = "Расстояние"
+L["%d yards"] = "%d м."
+L["Range in yards beyond which the status will be lost."] = "Диапозон вметрах выдя  за который статус будет утерян."
 L["Default alpha"] = "Прозрачность по умолчанию"
 L["Default alpha value when units are way out of range."] = "Прозрачность по умолчанию в зависимости от дапозона"
 L["Update rate"] = "Частота обновления"
 L["Rate at which the range gets updated"] = "Частота при которой обновляется диапозон"
-L["Invert Bar Color"] = "Обратить цвет панели"
-L["Swap foreground/background colors on bars."] = "Меняет местами окраску передниего плана/заднего на панели."
 
-L["ready-check"] = "Проверка готовности"
+-- ready-check status
 L["Delay"] = "Задержка"
 L["Set the delay until ready check results are cleared."] = "Установка задержки перед очисткой результатов проверки гтовности."
 L["Waiting color"] = "Цвет ожидания"
@@ -359,10 +430,63 @@ L["Color for Not Ready."] = "Цвет обозначающий не готовн
 L["AFK color"] = "Цвет AFK"
 L["Color for AFK."] = "Цвет обозначающий отсутствие."
 
+-- heals-incoming status 
 L["Include player heals"] = "Включая исцеления игрока"
 L["Display status for the player's heals."] = "Показывать статус исчелений игрока"
-L["Type of Heals taken into account"] = "Тип исцеления"
-L["Select the type of healing spell taken into account for the amount of incoming heals calculated."] = "Выберите тип исцеляющего заклинания для подсчета входящего исцеления."
-L["Casted heals, both direct and channeled"] = "Применяемое исцеление, прямое и потоковое"
-L["Direct heals only."] = "Только прямое исцеление."
-L["All heals, including casted and HoTs"] = "Любое исцеление, включая применяемое и хоты"
+L["Minimum value"] = "Минимальное значение"
+L["Incoming heals below the specified value will not be shown."] = "Входящий хил ниже указанного значения показан не будет"
+
+--role status
+L["MAIN_ASSIST"] = MAIN_ASSIST
+L["MAIN_TANK"] = MAIN_TANK
+
+--target status
+L["Your Target"] = "Ваша Цель"
+
+--threat status
+L["Not Tanking"] = "Не танкуется"
+L["Higher threat than tank."] = "Высший уровень угрозы чем у танка."
+L["Insecurely Tanking"] = "Ненадёжное танкование"
+L["Tanking without having highest threat."] = "Танкование без наивысшего уровня угрозы."
+L["Securely Tanking"] = "Надёжное танкование"
+L["Tanking with highest threat."] = "Танкование с наивысшим уровнем угрозы."
+
+-- voice status
+L["Voice Chat"] = "Голосовой чат"
+
+-- raid debuffs
+L["General"] = "Основные"
+L["Advanced"] = "Дополнительные"
+L["Enabled raid debuffs modules"] = "Включить модуль рейд-дебаффов"
+L["Enabled"] = "Включить"
+L["Enable All"] = "Включить все"
+L["Disable All"] = "Отключить все"
+L["Copy to Debuffs"] = "Копировать дебафф"
+L["Select module"]= "Выберите расширение"
+L["Select instance"]= "Выберите образец"
+L["Cataclysm"]= "Катаклизм"
+L["The Lich King"]= "ВоТЛК"
+L["The Burning Crusade"] = "БК"
+L["New raid debuff"] = "Новый рейд-дебафф"
+L["Type the SpellId of the new raid debuff"] = "Определите SpellId (Ид заклинания) для нового рейд-дебаффа"
+L["Create raid debuff"] = "Создать рейд-дебафф"
+L["Delete raid debuff"] = "Удалить рейд-дебафф"
+
+-- Import/export profiles module
+L["Import/export options"]= "Настройки Импорта/Экспорта"
+L["Import profile"]= "Импорт профиля"
+L["Export profile"]= "Экспорт профиля"
+L["Network sharing"]= "<Network sharing>"
+L["Accept profiles from other players"]= "Скопировать профиль с другого персонажа"
+L["Type player name"]= "Определите имя персонажа"
+L["Send current profile"]= "Отправить текущий профиль"
+L["Profile import/export"]= "Профиль Импорта/Экспорта"
+L["Paste here a profile in text format"]= "Вставить сюда профиль в текстовом формате"
+L["Press CTRL-V to paste a Grid2 configuration text"]= "Нажмите CTRL-V для вставки текста настроек Grid2"
+L["This is your current profile in text format"]= "Это ваш текущий профиль с текстовом формате"
+L["Press CTRL-C to copy the configuration to your clipboard"]= "Нажмите CTRL-С на вашей клавиатуре для копирования настроек профиля"
+L["Progress"]= true
+L["Data size: %.1fKB"]= true
+L["Transmision progress: %d%%"]= true
+L["Transmission completed"]= true
+L["\"%s\" has sent you a profile configuration. Do you want to activate received profile ?"]= "\"%s\" послал вам профиль настроек. Хотите активировать полученный профиль?"
