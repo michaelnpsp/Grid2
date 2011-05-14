@@ -2,6 +2,10 @@ local Role = Grid2.statusPrototype:new("role")
 
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
+local Grid2= Grid2
+local GetRaidRosterInfo= GetRaidRosterInfo
+local MAIN_TANK = MAIN_TANK
+local MAIN_ASSIST = MAIN_ASSIST
 
 local raid_indexes = {}
 for i = 1, 40 do
@@ -9,29 +13,30 @@ for i = 1, 40 do
 end
 
 local role_cache = {}
-function Role:_GetUnitRole(unit)
-	if not UnitExists(unit) then return end
-	if Grid2:UnitIsParty(unit) then
-		if GetPartyAssignment("MAINTANK", unit) then
-			return "MAINTANK"
-		elseif GetPartyAssignment("MAINASSIST", unit) then
-			return "MAINASSIST"
-		end
-	else
-		local index = raid_indexes[unit]
-		if index then return select(10, GetRaidRosterInfo(index)) end
+
+local function GetRaidUnitRole(unit)
+	local index = raid_indexes[unit]
+	if index then 
+		return select(10, GetRaidRosterInfo(index)) 
+	end
+end
+
+local function GetPartyUnitRole(unit)
+	if GetPartyAssignment("MAINTANK", unit) then
+		return "MAINTANK"
+	elseif GetPartyAssignment("MAINASSIST", unit) then
+		return "MAINASSIST"
 	end
 end
 
 function Role:UpdateAllUnits(event)
-	for unit, guid in Grid2:IterateRosterUnits() do
-		if (UnitExists(unit)) then
-			local prev = role_cache[unit]
-			local new = self:_GetUnitRole(unit)
-			if new ~= prev then
-				role_cache[unit] = new
-				self:UpdateIndicators(unit)
-			end
+	local GetUnitRole= Grid2:UnitIsParty(Grid2:IterateRosterUnits()) and GetPartyUnitRole or GetRaidUnitRole
+	for unit, _ in Grid2:IterateRosterUnits() do
+		local prev = role_cache[unit]
+		local new = GetUnitRole(unit)
+		if new ~= prev then
+			role_cache[unit] = new
+			self:UpdateIndicators(unit)
 		end
 	end
 end
@@ -82,14 +87,12 @@ function Role:GetIcon(unitid)
 	end
 end
 
-local assistString = MAIN_ASSIST
-local tankString = MAIN_TANK
 function Role:GetText(unitid)
 	local role = role_cache[unitid]
 	if role == "MAINASSIST" then
-		return assistString
+		return MAIN_ASSIST
 	elseif role == "MAINTANK" then
-		return tankString
+		return MAIN_TANK
 	end
 end
 

@@ -3,18 +3,12 @@
 local function Icon_Create(self, parent)
 	local f = self:CreateFrame("Frame", parent)
 	if not f:IsShown() then	f:Show() end
-	local borderSize = self.dbx.borderSize
-	if (borderSize) then
-		f:SetBackdrop({
-			edgeFile = "Interface\\Addons\\Grid2\\white16x16", edgeSize = borderSize,
-			insets = {left = borderSize, right = borderSize, top = borderSize, bottom = borderSize},
-		})
-	else
-		f:SetBackdrop({
-			edgeFile = "Interface\\Addons\\Grid2\\white16x16", edgeSize = 2,
-			insets = {left = 2, right = 2, top = 2, bottom = 2},
-		})
-	end
+	
+	local borderSize = self.dbx.borderSize or 2
+	f:SetBackdrop({
+		edgeFile = "Interface\\Addons\\Grid2\\white16x16", edgeSize = borderSize,
+		insets = {left = borderSize, right = borderSize, top = borderSize, bottom = borderSize},
+	})
 	
 	local Icon = f.Icon or f:CreateTexture(nil, "ARTWORK")
 	f.Icon = Icon
@@ -39,7 +33,6 @@ local function Icon_Create(self, parent)
 	CooldownText:SetJustifyH( self.dbx.fontJustifyH or "CENTER" )
 	CooldownText:SetJustifyV( self.dbx.fontJustifyV or "MIDDLE" )
 	CooldownText:SetShadowOffset(1, -1)
-
 	CooldownText:Hide()
 end
 
@@ -61,7 +54,7 @@ local function Icon_OnUpdate(self, parent, unit, status)
 	else
 		Icon.Icon:SetTexCoord(0.05, 0.95, 0.05, 0.95)
 	end
-	if (status.GetColor) then
+	if status.GetColor then
 		local r, g, b, a = status:GetColor(unit)
 		local borderSize = self.dbx.borderSize
 
@@ -102,9 +95,7 @@ local function Icon_OnUpdate(self, parent, unit, status)
 end
 
 local function Icon_SetIndicatorSize(self, parent, size)
-	local f = parent[self.name]
-	f:SetWidth(size)
-	f:SetHeight(size)
+	parent[self.name]:SetSize(size,size)
 end
 
 local function Icon_SetBorderSize(self, parent, borderSize)
@@ -112,7 +103,7 @@ local function Icon_SetBorderSize(self, parent, borderSize)
 	local backdrop = f:GetBackdrop()
 
 	local Icon = f.Icon
-	if (borderSize) then
+	if borderSize then
 		Icon:SetPoint("TOPLEFT", f ,"TOPLEFT", borderSize, -1 * borderSize)
 		Icon:SetPoint("BOTTOMRIGHT", f ,"BOTTOMRIGHT", -1 * borderSize, borderSize)
 		backdrop.edgeSize = borderSize
@@ -138,12 +129,10 @@ local function Icon_Layout(self, parent)
 	Icon:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
 	Icon:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
 
-	local borderSize = self.dbx.borderSize
-	Icon_SetBorderSize(self, parent, borderSize)
+	Icon_SetBorderSize(self, parent, self.dbx.borderSize)
 	
 	local size = self.dbx.size
-	Icon:SetWidth(size)
-	Icon:SetHeight(size)
+	Icon:SetSize(size,size)
 end
 
 local function Icon_Disable(self, parent)

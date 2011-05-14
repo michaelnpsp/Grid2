@@ -1,4 +1,4 @@
-local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2", "enUS")
+local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2", "enUS", true, true)
 if not L then return end
 
 --{{{ Actually used
@@ -54,6 +54,7 @@ L["talking"] = true
 --}}}
 
 --Layouts
+L["None"] = true
 L["Solo"] = true
 L["Solo w/Pet"] = true
 L["By Group 5"] = true
@@ -76,5 +77,4 @@ L["By Group 25 w/tanks"] = true
 L["By Group 40"] = true
 L["By Group 25 Tanks First"] = true
 L["By Group 10 Tanks First"] = true
-L["None"] = true
 L["Select Layout"] = true

@@ -4,6 +4,8 @@ Created by Grid2 original authors, modified by Michael
 
 local AuraFrame_OnEvent
 local GetTime = GetTime
+local UnitBuff = UnitBuff
+local UnitDebuff = UnitDebuff
 
 local EnableAuraFrame
 do
