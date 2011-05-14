@@ -432,7 +432,7 @@ local function ForceFramesCreation(header)
 	local count= header.FrameCount	
 	if not count or count<maxFrames then
 		header:Show()
-		header:SetAttribute("startingIndex", - maxFrames + 1)
+		header:SetAttribute("startingIndex", 1-maxFrames )
 		header:SetAttribute("startingIndex", startingIndex)
 		header.FrameCount= maxFrames
 	end	

@@ -47,9 +47,8 @@ function Grid2Options.LocalizeStatus(name, RemovePrefix)
 	local prefix,body,suffix= SplitStatusName(name)
 	if RemovePrefix then
 		prefix= ""
-	end	
-	if prefix~="" then
-		prefix= L[prefix]
+	elseif prefix~="" then
+		prefix=  (prefix=="buff-" and "|cFF00ff00" or "|cFFff0000") .. L[prefix] .. "|r"
 	end
 	if suffix~="" then
 		suffix= L[suffix]

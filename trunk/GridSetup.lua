@@ -17,7 +17,7 @@ function Grid2:SetupIndicators(setup)
 		if (setupFunc) then
 			setupFunc(baseKey, dbx)
         else
-			print("SetupIndicators setupFunc not found for indicator: ", dbx.type)
+			Grid2:Debug("SetupIndicators setupFunc not found for indicator: ", dbx.type)
 		end
 	end
 	
@@ -36,7 +36,7 @@ function Grid2:SetupStatuses(setup)
 		if (setupFunc) then
 			setupFunc(baseKey, dbx)
         else
-			print("SetupStatuses setupFunc not found for status: ", dbx.type)
+			 Grid2:Debug("SetupStatuses setupFunc not found for status: ", dbx.type)
 		end
 
 	end
@@ -49,14 +49,13 @@ function Grid2:SetupStatusMap(setup)
 			for statusKey, priority in pairs(map) do
 				local status = self.statuses[statusKey]
 				if (status and tonumber(priority)) then
-				    --print("======================= Register ", indicator.name, status.name ) 
 					indicator:RegisterStatus(status, priority)
 				else
-					print("Grid2:SetupStatusMap failed mapping:", statusKey, "status:", status, "priority:", priority, "indicator:", baseKey)
+					Grid2:Debug("Grid2:SetupStatusMap failed mapping:", statusKey, "status:", status, "priority:", priority, "indicator:", baseKey)
 				end
 			end
 		else
-			print("Grid2:SetupStatusMap Could not find mapped indicator baseKey:", baseKey)
+			Grid2:Debug("Grid2:SetupStatusMap Could not find mapped indicator baseKey:", baseKey)
 		end
 	end
 end
@@ -67,7 +66,6 @@ end
 
 local handlerArray = {}
 function Grid2:MakeBuffColorHandler(status)
-	--assert(status.GetCount)
 	local dbx = status.dbx
 	local colorCount = dbx.colorCount or 1
 
