@@ -6,7 +6,13 @@ local Mana = Grid2.statusPrototype:new("mana",false)
 local LowMana = Grid2.statusPrototype:new("lowmana",false)
 local PowerAlt= Grid2.statusPrototype:new("poweralt",false)
 
-local max,fmt= math.max, string.format
+local max = math.max
+local fmt = string.format
+local UnitMana = UnitMana
+local UnitManaMax = UnitManaMax
+local UnitPowerType = UnitPowerType
+local UnitPower = UnitPower
+local UnitPowerMax = UnitPowerMax
 
 local EnableManaFrame
 do
