@@ -58,9 +58,10 @@ function Offline:GetPercent(unit)
 	return (not UnitIsConnected(unit)) and self.dbx.color1.a
 end
 
+local text= L["Offline"]
 function Offline:GetText(unit)
 	if not UnitIsConnected(unit) then
-		return L["Offline"]
+		return text
 	end
 end
 

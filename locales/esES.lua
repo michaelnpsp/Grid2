@@ -53,6 +53,12 @@ L["vehicle"] = "vehículo"
 L["talking"] = "hablando"
 --}}}
 
+--{{{ GridStatusDungeonRole
+L["TANK"] = "Tanque"
+L["HEALER"] = "Curador"
+L["DAMAGER"] = "Daño"
+--}}}
+
 --Layouts
 L["Solo"] = "Solo"
 L["Solo w/Pet"] = "Solo con mascota"

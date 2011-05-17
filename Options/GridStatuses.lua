@@ -3,6 +3,7 @@ Created by Grid2 original authors, modified by Michael
 --]]
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
+local LG = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 
 local Grid2Options= Grid2Options
 
@@ -1008,6 +1009,13 @@ function Grid2Options:MakeStatusHandlers(reset)
 	self:AddOptionHandler("raid-icon-player", self.MakeStatusTargetIconOptions, targetIconOptionParams)
 	self:AddOptionHandler("raid-icon-target", self.MakeStatusTargetIconOptions, targetIconOptionParams)
 
+	self:AddOptionHandler("dungeon-role", self.MakeStatusStandardOptions, {
+			color1 = LG["DAMAGER"],
+			color2 = LG["HEALER"],
+			color3 = LG["TANK"],
+			privateColorHandler= true,
+	})
+	
 	if not self.typeMakeOptions["raid-debuffs"] then
 		self:AddOptionHandler("raid-debuffs", self.MakeStatusRaidDebuffsOptions)
 	end

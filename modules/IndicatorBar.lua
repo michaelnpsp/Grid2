@@ -57,7 +57,7 @@ local function Bar_OnUpdateDS(self, parent, unit, status)
 				expirations[bar] = expiration
 				durations[bar]= duration
 				if not durationTimers[bar] then
-					durationTimers[bar]= Grid2:ScheduleRepeatingTimer(tevent, 0.2, bar)
+					durationTimers[bar]= Grid2:ScheduleRepeatingTimer(tevent, (duration>3 and 0.2 or 0.1), bar)
 				end	
 				value= timeLeft / duration
 			else

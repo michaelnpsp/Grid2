@@ -53,6 +53,12 @@ L["vehicle"] = true
 L["talking"] = true
 --}}}
 
+--{{{ GridStatusDungeonRole
+L["TANK"] = true
+L["HEALER"] = true
+L["DAMAGER"] = true
+--}}}
+
 --Layouts
 L["None"] = true
 L["Solo"] = true
