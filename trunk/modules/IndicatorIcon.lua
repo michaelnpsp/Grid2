@@ -54,23 +54,23 @@ local function Icon_OnUpdate(self, parent, unit, status)
 	else
 		Icon.Icon:SetTexCoord(0.05, 0.95, 0.05, 0.95)
 	end
+	if status.GetVertexColor then
+		Icon.Icon:SetVertexColor( status:GetVertexColor(unit) )
+	else	
+		Icon.Icon:SetVertexColor( 1,1,1,1 )
+	end
 	if status.GetColor then
-		local r, g, b, a = status:GetColor(unit)
-		local borderSize = self.dbx.borderSize
-
-		if (status.GetBorder and status:GetBorder(unit) > 0) then
-			Icon:SetBackdropBorderColor(r, g, b, a)
-		elseif (borderSize) then
+		if status.GetBorder and status:GetBorder(unit) > 0 then
+			Icon:SetBackdropBorderColor(status:GetColor(unit))
+		elseif self.dbx.borderSize then
 			local c = self.dbx.color1
-			if (c) then
-				Icon:SetBackdropBorderColor(c.r, c.g, c.b, c.a)
-			end
+			if c then Icon:SetBackdropBorderColor(c.r, c.g, c.b, c.a) end
 		else
 			Icon:SetBackdropBorderColor(0, 0, 0, 0)
 		end
 		Icon.Icon:SetAlpha(a or 1)
 	else
-		Icon:SetBackdropBorderColor(1, 0, 0)
+		Icon:SetBackdropBorderColor(0, 0, 0, 0)
 		Icon.Icon:SetAlpha(1)
 	end
 	if status.GetCount then

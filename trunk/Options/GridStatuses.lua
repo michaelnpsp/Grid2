@@ -948,6 +948,53 @@ function Grid2Options:MakeStatusTargetIconOptions(status, options, optionParams)
 	return options
 end
 
+function Grid2Options:MakeStatusDirectionOptions(status, options)
+	options = options or {}
+	options = self:MakeStatusStandardOptions(status, options)
+	options.spacer = {
+		type = "header",
+		order = 99,
+		name = "",
+	}
+	options.showOutOfRange = {
+		type = "toggle",
+		order = 100,
+		name = L["Out of Range"],
+		desc = L["Display status for units out of range."],
+		tristate = true,
+		get = function ()	return status.dbx.ShowOutOfRange end,
+		set = function (_, v)
+			status.dbx.ShowOutOfRange = v
+			status:UpdateDB()
+		end,
+	}
+	options.showVisible = {
+		type = "toggle",
+		order = 110,
+		name = L["Visible Units"],
+		desc = L["Display status for units less than 100 yards away"],
+		tristate = true,
+		get = function ()	return status.dbx.ShowVisible end,
+		set = function (_, v)
+			status.dbx.ShowVisible = v
+			status:UpdateDB()
+		end,
+	}
+	options.showDead = {
+		type = "toggle",
+		order = 120,
+		name = L["Dead Units"],
+		desc = L["Display status only for dead units"],
+		tristate = true,
+		get = function ()	return status.dbx.ShowDead end,
+		set = function (_, v)
+			status.dbx.ShowDead = v
+			status:UpdateDB()
+		end,
+	}
+	return options
+end
+
 function Grid2Options:MakeStatusRaidDebuffsOptions(status, options, optionParams)
 	options = options or {}
 	options = self:MakeStatusStandardOptions(status, options, optionParams)
@@ -1009,6 +1056,8 @@ function Grid2Options:MakeStatusHandlers(reset)
 	self:AddOptionHandler("raid-icon-player", self.MakeStatusTargetIconOptions, targetIconOptionParams)
 	self:AddOptionHandler("raid-icon-target", self.MakeStatusTargetIconOptions, targetIconOptionParams)
 
+	self:AddOptionHandler("direction", self.MakeStatusDirectionOptions)
+	
 	self:AddOptionHandler("dungeon-role", self.MakeStatusStandardOptions, {
 			color1 = LG["DAMAGER"],
 			color2 = LG["HEALER"],
