@@ -323,6 +323,7 @@ L["banzai"] = "banzai"
 L["vehicle"] = "vehiculo"
 L["voice"] = "chat de voz"
 L["pvp"] = "pvp"
+L["direction"] = "direccion"
 
 L["Curse"] = "Maldicion"
 L["Poison"] = "Veneno"
@@ -472,6 +473,14 @@ L["New raid debuff"] = "Nuevo debuff de raid"
 L["Type the SpellId of the new raid debuff"] = "Teclea el número de hechizo (SpellId) del debuff de raid"
 L["Create raid debuff"] = "Crear debuff de raid"
 L["Delete raid debuff"] = "Borrar este debuff"
+
+-- direction
+L["Out of Range"] = "Fuera de rango"
+L["Display status for units out of range."] = "Muestra el estado solo para jugadores fuera de rango"
+L["Visible Units"] = "Jugadores visibles"
+L["Display status for units less than 100 yards away"] = "Muestra el estado solo para jugadores a menos de 100 metros"
+L["Dead Units"] = "Jugadores muertos"
+L["Display status only for dead units"] = "Muestra el estado solo para jugadores muertos"
 
 -- Import/export profiles module
 L["Import/export options"]= "Opciones de importación y exportación"

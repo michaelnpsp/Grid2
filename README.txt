@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------
-CREDITS
+SOFTWARE CREDITS
 
 Grid2 Authors:
 
@@ -10,7 +10,7 @@ Grid2 modifications, fixes and enhancements:
 * Michael, Potje
 
 ------------------------------------------------------------------------
-LICENSE
+SOFTWARE LICENSE
 
 Copyright (c) 2011
 
@@ -35,11 +35,15 @@ distribution.
 
 ------------------------------------------------------------------------
 
-ARTWORK
+ARTWORK LICENSES AND CREDITS
 
 Some textures are based on icons created by: <http://p.yusukekamiyamane.com/> 
-
 These icons are licensed under a Creative Commons Attribution
 3.0 license. <http://creativecommons.org/licenses/by/3.0/>
+
+3D-Arrows icons were created by "Guillotine":
+Everyone has full permission to do whatever they want with this model file in 
+any non-commercial manner. 
+For any commercial use, contact Guillotine first at curse.guillotine@gmail.com
 
 ------------------------------------------------------------------------

@@ -25,5 +25,6 @@
 <Script file="modules\StatusAFK.lua"/>
 <Script file="modules\StatusBanzai.lua"/>
 <Script file="modules\StatusDungeonRole.lua"/>
+<Script file="modules\StatusDirection.lua"/>
 
 </Ui>

@@ -352,6 +352,9 @@ function Grid2:UpdateDefaults()
 	if not Grid2:DbGetValue("statuses", "banzai") then
 		Grid2:DbSetValue( "statuses",  "banzai", { type = "banzai", color1 = {r=1,g=0,b=1,a=1} })
 	end	
+	if not Grid2:DbGetValue("statuses", "direction") then
+		Grid2:DbSetValue( "statuses", "direction", { type = "direction", color1 = { r= 0, g= 1, b= 0, a=1 } })
+	end	
 	if not Grid2:DbGetValue("statuses", "dungeon-role") then
 		Grid2:DbSetValue( "statuses", "dungeon-role", {	type = "dungeon-role",	
 			colorCount = 3,	
@@ -361,5 +364,4 @@ function Grid2:UpdateDefaults()
 			opacity = 0.75 
 		})
 	end
-	
 end

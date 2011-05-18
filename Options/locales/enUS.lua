@@ -323,6 +323,7 @@ L["banzai"] = true
 L["vehicle"] = true
 L["voice"] = true
 L["pvp"] = true
+L["direction"] = true
 
 L["Curse"] = true
 L["Poison"] = true
@@ -474,6 +475,14 @@ L["Type the SpellId of the new raid debuff"] = true
 L["Create raid debuff"] = true
 L["Delete raid debuff"] = true
 
+-- direction
+L["Out of Range"] = true
+L["Display status for units out of range."] = true
+L["Visible Units"] = true
+L["Display status for units less than 100 yards away"] = true
+L["Dead Units"] = true
+L["Display status only for dead units"] = true
+		
 -- Import/export profiles module
 L["Import/export options"]= true
 L["Import profile"]= true
