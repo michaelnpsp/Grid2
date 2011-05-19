@@ -16,6 +16,7 @@ local banzais= {}
 local banzais_guids= {}
 local banzais_durations= {}
 local banzais_expirations= {}
+local banzais_icons= {}
 
 --{{ Combat Log
 local function StopCast(guid)
@@ -53,13 +54,15 @@ local function CheckBanzaiUnit(unit)
 			if destGUID then
 				local destUnit= Grid2:GetUnitidByGUID(destGUID)
 				if destUnit then
-					local endTime= select(6,funcSpellInfo(sourceUnit))
-					if not endTime then endTime= curTime+250 end -- Maybe it is an instant spell, enable the status for some time
+					local icon, _, endTime= select(4,funcSpellInfo(sourceUnit))
+					-- local endTime= select(6,funcSpellInfo(sourceUnit))
+					if not endTime then endTime= curTime+500 end -- Maybe it was an instant spell, enable the status for some time
 					endTime= endTime / 1000 
 					banzais[destUnit]= sourceGUID
 					banzais_durations[destUnit]= endTime - curTime
 					banzais_expirations[destUnit]= endTime
 					banzais_guids[sourceGUID]= destUnit
+					banzais_icons[destUnit] = icon or "Interface\\ICONS\\Ability_Creature_Cursed_02"
 					Banzai:UpdateIndicators(destUnit)
 				end
 			end	
@@ -74,7 +77,7 @@ local function UpdateBanzais()
 	-- Delete expired banzais
 	for unit,guid in pairs(banzais) do
 		if curTime>=banzais_expirations[unit] then
-			banzais[unit], banzais_durations[unit], banzais_expirations[unit], banzais_guids[guid] = nil, nil, nil, nil
+			banzais[unit], banzais_durations[unit], banzais_icons[unit], banzais_expirations[unit], banzais_guids[guid] = nil, nil, nil, nil, nil
 			Banzai:UpdateIndicators(unit)
 		end
 	end
@@ -113,6 +116,7 @@ function Banzai:ClearBanzais()
 	wipe(banzais_sources)
 	wipe(banzais_durations)
 	wipe(banzais_expirations)
+	wipe(banzais_icons)
 	for unit,_ in pairs(banzais) do
 		banzais[unit]= nil
 		Banzai:UpdateIndicators(unit)
@@ -141,9 +145,13 @@ function Banzai:GetExpirationTime(unit)
 	return banzais_expirations[unit]
 end
 
-function Banzai:GetPercent(self, unit)
+function Banzai:GetPercent(unit)
 	local t= GetTime()
 	return ((banzais_expirations[unit] or t) - t) / (banzais_durations[unit] or 1)
+end
+
+function Banzai:GetIcon(unit)
+	return banzais_icons[unit]
 end
 
 function Banzai:GetColor(unit)
@@ -157,7 +165,7 @@ function Banzai:GetText(unit)
 end
 
 local function Create(baseKey, dbx)
-	Grid2:RegisterStatus(Banzai, {"color", "text", "percent"}, baseKey, dbx)
+	Grid2:RegisterStatus(Banzai, {"color", "text", "percent", "icon" }, baseKey, dbx)
 
 	return Banzai
 end
