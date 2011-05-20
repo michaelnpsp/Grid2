@@ -55,7 +55,6 @@ local function CheckBanzaiUnit(unit)
 				local destUnit= Grid2:GetUnitidByGUID(destGUID)
 				if destUnit then
 					local icon, _, endTime= select(4,funcSpellInfo(sourceUnit))
-					-- local endTime= select(6,funcSpellInfo(sourceUnit))
 					if not endTime then endTime= curTime+500 end -- Maybe it was an instant spell, enable the status for some time
 					endTime= endTime / 1000 
 					banzais[destUnit]= sourceGUID

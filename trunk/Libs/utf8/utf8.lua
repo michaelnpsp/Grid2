@@ -2,26 +2,11 @@
 --- zlib/libpng License
 --- Simple utf8 manipulation functions
 
-local function utf8len(s)
-	local l = #s
-	local i = 1
-	local c = 0
-	while i<=l do
-		local b = string.byte(s, i)
-		if     b < 192 then	i = i + 1
-		elseif b < 224 then i = i + 2
-		elseif b < 240 then	i = i + 3
-		else				i = i + 4
-		end
-		c = c + 1
-	end
-	return c
-end
-if not string.utf8len then
-	string.utf8len = utf8len
+if not string.lenutf8 then
+	string.lenutf8 = strlenutf8  -- Provided by blizzard api
 end
 
-local function utf8pos(s, pos)
+local function posutf8(s, pos)
 	local l = #s
 	local i = 1
 	local c = pos-1
@@ -36,14 +21,14 @@ local function utf8pos(s, pos)
 	end
 	return i
 end
-if not string.utf8pos then
-	string.utf8pos = utf8pos
+if not string.posutf8 then
+	string.posutf8 = posutf8
 end
 
-local function utf8sub(s, from, to)
+local function subutf8(s, from, to)
 	local l = #s
 	local c = to and to-from+1 or l
-	local j = from>1 and utf8pos(s, from) or 1
+	local j = from>1 and posutf8(s, from) or 1
 	local i = j
 	while c>0 and i<=l do
 		local b = string.byte(s, i)
@@ -56,7 +41,7 @@ local function utf8sub(s, from, to)
 	end
 	return s:sub(j, i-1)
 end
-if not string.utf8sub then
-	string.utf8sub = utf8sub
+if not string.subutf8 then
+	string.subutf8 = subutf8
 end
 
