@@ -60,8 +60,9 @@ local function Icon_OnUpdate(self, parent, unit, status)
 		Icon.Icon:SetVertexColor( 1,1,1,1 )
 	end
 	if status.GetColor then
+		local r,g,b,a = status:GetColor(unit)
 		if status.GetBorder and status:GetBorder(unit) > 0 then
-			Icon:SetBackdropBorderColor(status:GetColor(unit))
+			Icon:SetBackdropBorderColor(r,g,b,a)
 		elseif self.dbx.borderSize then
 			local c = self.dbx.color1
 			if c then Icon:SetBackdropBorderColor(c.r, c.g, c.b, c.a) end
@@ -81,7 +82,7 @@ local function Icon_OnUpdate(self, parent, unit, status)
 	else
 		Icon.CooldownText:Hide()
 	end
-	if (status.GetExpirationTime and status.GetDuration) then
+	if status.GetExpirationTime and status.GetDuration then
 		local expirationTime, duration = status:GetExpirationTime(unit), status:GetDuration(unit)
 		if expirationTime and duration then
 			Icon.Cooldown:SetCooldown(expirationTime - duration, duration)

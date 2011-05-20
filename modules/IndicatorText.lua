@@ -58,7 +58,7 @@ local function Text_Layout(self, parent)
 	Text:SetWidth(parent:GetWidth())
 end
 
-local string_sub = string.utf8sub or string.sub
+local string_sub = string.subutf8 or string.sub
 local durationFormat = "%.1f"
 local durationFormatLarge = "%.0f"
 local durationLarge = 1
