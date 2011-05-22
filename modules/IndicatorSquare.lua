@@ -5,7 +5,7 @@ local function Square_Create(self, parent)
 	local size = self.dbx.size
 	Square:SetWidth(size)
 	Square:SetHeight(size)
-	local borderSize = self.dbx.borderSize
+	local borderSize = self.borderSize
 	if (borderSize) then
 		Square:SetBackdrop({
 			bgFile = "Interface\\Addons\\Grid2\\white16x16", tile = true, tileSize = 16,
@@ -30,12 +30,8 @@ local function Square_OnUpdate(self, parent, unit, status)
 	local Square = parent[self.name]
 	if status then
 		Square:SetBackdropColor(status:GetColor(unit))
-		local borderSize = self.dbx.borderSize
-		if (borderSize) then
-			local c = self.dbx.color1
-			if (c) then
-				Square:SetBackdropBorderColor(c.r, c.g, c.b, c.a)
-			end
+		if self.borderSize then
+			Square:SetBackdropBorderColor( unpack(self.color) )
 		end
 		Square:Show()
 	else
@@ -78,13 +74,9 @@ local function Square_Layout(self, parent)
 	Square:ClearAllPoints()
 	Square:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
 	Square:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
-
-	local borderSize = self.dbx.borderSize
-	Square_SetBorderSize(self, parent, borderSize)
-
+	Square_SetBorderSize(self, parent, self.borderSize)
 	local size = self.dbx.size
-	Square:SetWidth(size)
-	Square:SetHeight(size)
+	Square:SetSize(size,size)
 end
 
 local function Square_Disable(self, parent)
@@ -99,12 +91,15 @@ local function Square_Disable(self, parent)
 end
 
 local function Square_UpdateDB(self, dbx)
+	dbx= dbx or self.dbx
 	local l= dbx.location
 	self.anchor = l.point
 	self.anchorRel = l.relPoint
 	self.offsetx = l.x
 	self.offsety = l.y
 	self.frameLevel = dbx.level
+	self.color= self:UnpackColor(dbx.color1)
+	self.borderSize= dbx.borderSize
 	self.Create = Square_Create
 	self.GetBlinkFrame = Square_GetBlinkFrame
 	self.Layout = Square_Layout

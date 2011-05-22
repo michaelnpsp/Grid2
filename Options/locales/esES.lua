@@ -418,7 +418,7 @@ L["Range in yards beyond which the status will be lost."] = "Rango máximo para 
 L["Default alpha"] = "Transparencia predeterminada"
 L["Default alpha value when units are way out of range."] = "Transparencia predeterminada de las unidades fuera de rango"
 L["Update rate"] = "Frecuencia de actualización"
-L["Rate at which the range gets updated"] = "Frecuencia de actualización de los rangos de las unidades"
+L["Rate at which the status gets updated"] = "Frecuencia de actualización de este estado"
 
 -- ready-check status
 L["Delay"] = "Espera"

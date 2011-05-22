@@ -61,10 +61,6 @@ function Role:IsActive(unitid)
 	return role_cache[unitid]
 end
 
-function Role:GetBorder(unitid)
-	return 0
-end
-
 function Role:GetColor(unitid)
 	local color
 	local role = role_cache[unitid]

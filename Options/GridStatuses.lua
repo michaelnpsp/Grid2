@@ -374,7 +374,7 @@ function Grid2Options:MakeStatusRangeOptions(status, options, optionParams)
 		type = "range",
 		order = 20,
 		name = L["Update rate"],
-		desc = L["Rate at which the range gets updated"],
+		desc = L["Rate at which the status gets updated"],
 		min = 0,
 		max = 5,
 		step = 0.1,
@@ -402,6 +402,28 @@ function Grid2Options:MakeStatusRangeOptions(status, options, optionParams)
 			end
 		end,
 		values =  GetAvailableRangeList,
+	}
+	return options
+end
+
+function Grid2Options:MakeStatusBanzaiOptions(status, options, optionParams)
+	options = options or {}
+	options = Grid2Options:MakeStatusColorOptions(status, options, optionParams)
+	options.update = {
+		type = "range",
+		order = 20,
+		name = L["Update rate"],
+		desc = L["Rate at which the status gets updated"],
+		min = 0,
+		max = 5,
+		step = 0.1,
+		get = function ()
+			return status.dbx.updateRate or 0.1
+		end,
+		set = function (_, v)
+			status.dbx.updateRate = v
+			status:UpdateDB()
+		end,
 	}
 	return options
 end
@@ -951,10 +973,26 @@ end
 function Grid2Options:MakeStatusDirectionOptions(status, options)
 	options = options or {}
 	options = self:MakeStatusStandardOptions(status, options)
+	options.updateRate = {
+		type = "range",
+		order = 90,
+		name = L["Update rate"],
+		desc = L["Rate at which the status gets updated"],
+		min = 0,
+		max = 5,
+		step = 0.1,
+		get = function ()
+			return status.dbx.updateRate or 0.2
+		end,
+		set = function (_, v)
+			status.dbx.updateRate = v
+			status:RestartTimer()
+		end,
+	}
 	options.spacer = {
 		type = "header",
 		order = 99,
-		name = "",
+		name = L["Display"],
 	}
 	options.showOutOfRange = {
 		type = "toggle",
@@ -1055,6 +1093,8 @@ function Grid2Options:MakeStatusHandlers(reset)
 	})
 	self:AddOptionHandler("raid-icon-player", self.MakeStatusTargetIconOptions, targetIconOptionParams)
 	self:AddOptionHandler("raid-icon-target", self.MakeStatusTargetIconOptions, targetIconOptionParams)
+
+	self:AddOptionHandler("banzai", self.MakeStatusBanzaiOptions)
 
 	self:AddOptionHandler("direction", self.MakeStatusDirectionOptions)
 	

@@ -1,10 +1,12 @@
 --[[ Icon indicator, created by Grid2 original authors, modified by Michael ]]-- 
 
+local GetTime = GetTime
+
 local function Icon_Create(self, parent)
 	local f = self:CreateFrame("Frame", parent)
 	if not f:IsShown() then	f:Show() end
 	
-	local borderSize = self.dbx.borderSize or 2
+	local borderSize = self.borderSize or 1
 	f:SetBackdrop({
 		edgeFile = "Interface\\Addons\\Grid2\\white16x16", edgeSize = borderSize,
 		insets = {left = borderSize, right = borderSize, top = borderSize, bottom = borderSize},
@@ -40,59 +42,42 @@ local function Icon_GetBlinkFrame(self, parent)
 	return parent[self.name]
 end
 
-local GetTime = GetTime
 local function Icon_OnUpdate(self, parent, unit, status)
-	local Icon = parent[self.name]
-	if not status then
-		Icon:Hide()
-		return
-	end
-	Icon.Icon:SetTexture(status:GetIcon(unit))
-	Icon:Show()
-	if status.GetTexCoord then
-		Icon.Icon:SetTexCoord(status:GetTexCoord(unit))
+	local Frame = parent[self.name]
+	if not status then Frame:Hide()	return end
+	
+	local Icon= Frame.Icon
+	Icon:SetTexture(status:GetIcon(unit))
+	Icon:SetTexCoord(status:GetTexCoord(unit))
+	Icon:SetVertexColor(status:GetVertexColor(unit))
+	
+	local r,g,b,a= status:GetColor(unit)
+	if status:GetBorder(unit) then
+		Frame:SetBackdropBorderColor(r,g,b,a) 
+	elseif self.borderSize then
+		Frame:SetBackdropBorderColor(unpack(self.color)) 
 	else
-		Icon.Icon:SetTexCoord(0.05, 0.95, 0.05, 0.95)
+		Frame:SetBackdropBorderColor(0,0,0,0)
 	end
-	if status.GetVertexColor then
-		Icon.Icon:SetVertexColor( status:GetVertexColor(unit) )
-	else	
-		Icon.Icon:SetVertexColor( 1,1,1,1 )
-	end
-	if status.GetColor then
-		local r,g,b,a = status:GetColor(unit)
-		if status.GetBorder and status:GetBorder(unit) > 0 then
-			Icon:SetBackdropBorderColor(r,g,b,a)
-		elseif self.dbx.borderSize then
-			local c = self.dbx.color1
-			if c then Icon:SetBackdropBorderColor(c.r, c.g, c.b, c.a) end
-		else
-			Icon:SetBackdropBorderColor(0, 0, 0, 0)
-		end
-		Icon.Icon:SetAlpha(a or 1)
+	Icon:SetAlpha(a or 1)
+
+	local count= status:GetCount(unit)
+	if count>1 then 
+		Frame.CooldownText:SetText(count)
+		Frame.CooldownText:Show()
 	else
-		Icon:SetBackdropBorderColor(0, 0, 0, 0)
-		Icon.Icon:SetAlpha(1)
+		Frame.CooldownText:Hide()
 	end
-	if status.GetCount then
-		local count = status:GetCount(unit)
-		if not count or count <= 1 then count = "" end
-		Icon.CooldownText:SetText(count)
-		Icon.CooldownText:Show()
+	
+	local expiration, duration = status:GetExpirationTime(unit), status:GetDuration(unit)
+	if expiration and duration then
+		Frame.Cooldown:SetCooldown(expiration - duration, duration)
+		Frame.Cooldown:Show()
 	else
-		Icon.CooldownText:Hide()
+		Frame.Cooldown:Hide()
 	end
-	if status.GetExpirationTime and status.GetDuration then
-		local expirationTime, duration = status:GetExpirationTime(unit), status:GetDuration(unit)
-		if expirationTime and duration then
-			Icon.Cooldown:SetCooldown(expirationTime - duration, duration)
-			Icon.Cooldown:Show()
-		else
-			Icon.Cooldown:Hide()
-		end
-	else
-		Icon.Cooldown:Hide()
-	end
+	
+	Frame:Show()
 end
 
 local function Icon_SetIndicatorSize(self, parent, size)
@@ -110,8 +95,8 @@ local function Icon_SetBorderSize(self, parent, borderSize)
 		backdrop.edgeSize = borderSize
 	else
 		Icon:SetAllPoints(f)
-		backdrop.edgeSize = 2
-		borderSize = 2
+		backdrop.edgeSize = 1
+		borderSize = 1
 	end
 	backdrop.insets.left = borderSize
 	backdrop.insets.right = borderSize
@@ -130,7 +115,7 @@ local function Icon_Layout(self, parent)
 	Icon:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
 	Icon:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
 
-	Icon_SetBorderSize(self, parent, self.dbx.borderSize)
+	Icon_SetBorderSize(self, parent, self.borderSize)
 	
 	local size = self.dbx.size
 	Icon:SetSize(size,size)
@@ -154,12 +139,15 @@ local function Icon_Disable(self, parent)
 end
 
 local function Icon_UpdateDB(self, dbx)
+	dbx= dbx or self.dbx
 	local l= dbx.location
 	self.anchor = l.point
 	self.anchorRel = l.relPoint
 	self.offsetx = l.x
 	self.offsety = l.y
 	self.frameLevel = dbx.level
+	self.borderSize= dbx.borderSize
+	self.color= self:UnpackColor(dbx.color1)
 	self.Create = Icon_Create
 	self.GetBlinkFrame = Icon_GetBlinkFrame
 	self.Layout = Icon_Layout

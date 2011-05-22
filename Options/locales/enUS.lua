@@ -419,7 +419,7 @@ L["Range in yards beyond which the status will be lost."] = true
 L["Default alpha"] = true
 L["Default alpha value when units are way out of range."] = true
 L["Update rate"] = true
-L["Rate at which the range gets updated"] = true
+L["Rate at which the status gets updated"] = true
 
 -- ready-check status
 L["Delay"] = true

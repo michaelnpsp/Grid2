@@ -1,6 +1,4 @@
---[[
-Created by Grid2 original authors, modified by Michael
---]]
+--[[ Created by Grid2 original authors, modified by Michael ]]--
 
 Grid2.statuses = {}
 Grid2.statusTypes = {}
@@ -13,6 +11,57 @@ function status:init(name, embed)
 	end
 	self.indicators = {}
 	self.name = name
+end
+
+--{{ Statuses will override this methods to set custom values, an unit is passed as first parameter
+
+-- shading color: icon indicator
+function status:GetVertexColor()
+	return 1,1,1,1
+end
+-- texture coords: icon indicator
+function status:GetTexCoord()
+	return 0.05, 0.95, 0.05, 0.95
+end
+-- stacks: text, bar indicators
+function status:GetCount()
+	return 1
+end
+-- max posible stacks: bar indicator
+function status:GetCountMax()
+	return 1
+end
+-- icon, square, text-color, bar-color indicators
+function status:GetColor()
+	return 0,0,0,1
+end
+-- returns~=nil to colorize icon border with status GetColor(): icon indicator
+function status:GetBorder()
+end
+-- text indicator
+function status:GetText()
+end
+-- expiration time in seconds: bar, icon, text indicators
+function status:GetExpirationTime()
+end
+-- duration in seconds: bar, icon, text indicators
+function status:GetDuration()
+end
+-- percent value: alpha, bar indicators
+function status:GetPercent()
+end
+-- texture: icon indicator
+function status:GetIcon()
+end
+
+--}}
+
+function status:UpdateIndicators(unit)
+	for parent in next, Grid2:GetUnitFrames(unit) do
+		for indicator in pairs(self.indicators) do
+			indicator:Update(parent, unit)
+		end
+	end
 end
 
 function status:RegisterIndicator(indicator)
@@ -35,14 +84,6 @@ function status:UnregisterIndicator(indicator)
 	if not enabled then
 		self.enabled = nil
 		self:OnDisable()
-	end
-end
-
-function status:UpdateIndicators(unit)
-	for parent in next, Grid2:GetUnitFrames(unit) do
-		for indicator in pairs(self.indicators) do
-			indicator:Update(parent, unit)
-		end
 	end
 end
 
