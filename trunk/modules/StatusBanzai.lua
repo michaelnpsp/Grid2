@@ -17,6 +17,7 @@ local banzais_guids= {}
 local banzais_durations= {}
 local banzais_expirations= {}
 local banzais_icons= {}
+local target = setmetatable({}, {__index = function(t,k) local v=k.."target" t[k]=v return v end})
 
 --{{ Combat Log
 local function StopCast(guid)
@@ -43,25 +44,25 @@ end
 --}}
 
 --{{ Checks target and targettarget of focus and roster units, looking for banzais sources and destinations
+local defaultIcon= "Interface\\ICONS\\Ability_Creature_Cursed_02"
 local curTime
 local function CheckBanzaiUnit(unit)
-	local sourceUnit= unit.."target"
+	local sourceUnit= target[unit]
 	local sourceGUID= UnitGUID(sourceUnit)
 	if sourceGUID then
 		local funcSpellInfo= banzais_sources[sourceGUID]
 		if funcSpellInfo then
-			local destGUID= UnitGUID(unit.."targettarget")
+			local destGUID= UnitGUID(target[sourceUnit])
 			if destGUID then
 				local destUnit= Grid2:GetUnitidByGUID(destGUID)
 				if destUnit then
 					local icon, _, endTime= select(4,funcSpellInfo(sourceUnit))
-					if not endTime then endTime= curTime+500 end -- Maybe it was an instant spell, enable the status for some time
-					endTime= endTime / 1000 
+					endTime= endTime and endTime/1000 or curTime+0.5 
 					banzais[destUnit]= sourceGUID
 					banzais_durations[destUnit]= endTime - curTime
 					banzais_expirations[destUnit]= endTime
 					banzais_guids[sourceGUID]= destUnit
-					banzais_icons[destUnit] = icon or "Interface\\ICONS\\Ability_Creature_Cursed_02"
+					banzais_icons[destUnit] = icon or defaultIcon
 					Banzai:UpdateIndicators(destUnit)
 				end
 			end	
@@ -97,7 +98,7 @@ end
 function Banzai:PLAYER_REGEN_DISABLED()
 	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	if not timer then
-		timer= Grid2:ScheduleRepeatingTimer(UpdateBanzais, 0.1)
+		timer= Grid2:ScheduleRepeatingTimer(UpdateBanzais, self.dbx.updateRate or 0.1)
 	end	
 end
 

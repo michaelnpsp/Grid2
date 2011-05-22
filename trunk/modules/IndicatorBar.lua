@@ -28,6 +28,7 @@ local function Bar_GetBlinkFrame(self, parent)
 	return parent[self.name]
 end
 
+--{{{ Bar OnUpdate
 local durationTimers = {}
 local expirations = {}
 local durations= {}
@@ -42,19 +43,16 @@ local function tcancel(bar)
 	end
 end
 
-local function Bar_OnUpdateDS(self, parent, unit, status)
-	local bar = parent[self.name]
-	local duration = self.dbx.duration
-	local stack = self.dbx.stack
-	local value
+local function Bar_OnUpdateD(self, parent, unit, status)
+	local bar,value = parent[self.name],0
 	if status then
-		if duration and status.GetExpirationTime and status.GetDuration then
+		local expiration = status:GetExpirationTime(unit)
+		if expiration then
 			local now = GetTime()
-			local expiration = status:GetExpirationTime(unit)
 			local timeLeft = expiration - now
 			if timeLeft>0 then
 				local duration= status:GetDuration(unit) or timeLeft
-				expirations[bar] = expiration
+				expirations[bar]= expiration
 				durations[bar]= duration
 				if not durationTimers[bar] then
 					durationTimers[bar]= Grid2:ScheduleRepeatingTimer(tevent, (duration>3 and 0.2 or 0.1), bar)
@@ -63,18 +61,21 @@ local function Bar_OnUpdateDS(self, parent, unit, status)
 			else
 				tcancel(bar)
 			end
-		elseif stack and status.GetCountMax then
-			value = (status:GetCount(unit) or 1) / status:GetCountMax()
-		end
+		end	
 	else
 		tcancel(bar)
 	end
-	bar:SetValue(value or 0)
+	bar:SetValue(value)
+end
+
+local function Bar_OnUpdateS(self, parent, unit, status)
+	parent[self.name]:SetValue( status and status:GetCount(unit)/status:GetCountMax(unit) or 0)
 end
 
 local function Bar_OnUpdate(self, parent, unit, status)
 	parent[self.name]:SetValue(status and status:GetPercent(unit) or 0)
 end
+--}}}
 
 local function Bar_SetOrientation(self, parent, orientation)
 	parent[self.name]:SetOrientation(orientation or Grid2Frame.db.profile.orientation)
@@ -110,11 +111,7 @@ local function Bar_UpdateDB(self, dbx)
 	self.Disable = Bar_Disable	
 	self.UpdateDB = Bar_UpdateDB
 	self.dbx = dbx
-	if dbx.duration or dbx.stack then
-		self.OnUpdate = Bar_OnUpdateDS
-	else
-		self.OnUpdate = Bar_OnUpdate
-	end
+	self.OnUpdate= (dbx.duration and Bar_OnUpdateD) or (dbx.stack and Bar_OnUpdateS) or Bar_OnUpdate
 end
 
 local function BarColor_Create(self, parent)

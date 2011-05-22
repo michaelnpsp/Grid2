@@ -353,8 +353,10 @@ function Grid2Options:MakeIndicatorBorderSizeOptions(indicator, options, optionP
 				v = nil
 			end
 			indicator.dbx.borderSize = v
+			indicator:UpdateDB()
 			Grid2Frame:WithAllFrames(function (f) indicator:SetBorderSize(f,v) end)
 			Grid2Frame:LayoutFrames()
+			Grid2Frame:UpdateIndicators()
 		end,
 	}
 
@@ -431,6 +433,8 @@ function Grid2Options.SetIndicatorColor(info, r, g, b, a)
 	end
 	c.r, c.g, c.b, c.a = r, g, b, a
 
+	indicator:UpdateDB()
+	
 	Grid2Frame:UpdateIndicators()
 end
 
@@ -673,6 +677,7 @@ local function MakeTextIndicatorOptions(indicator)
 			get = function () return indicator.dbx.textlength end,
 			set = function (_, v)
 				indicator.dbx.textlength = v
+				indicator:UpdateDB()
 				Grid2Frame:UpdateIndicators()
 			end,
 		},
