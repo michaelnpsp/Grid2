@@ -171,7 +171,7 @@ local function status_GetIconMissing(self, unit)
 end
 
 local function status_GetCount(self, unit)
-	return self.counts[unit]
+	return self.counts[unit] or 0
 end
 
 local function status_GetCountMax(self)
@@ -207,7 +207,7 @@ local function status_UpdateState(self, unit, iconTexture, count, duration, expi
 	then
 		self.states[unit] = true
 		self.textures[unit] = iconTexture
-		self.counts[unit] = (count==nil or count==0) and 1 or count
+		self.counts[unit] = count and count>0 and count or 1
 		self.durations[unit] = duration
 		self.expirations[unit] = expiration
 		self.seen= 1

@@ -75,7 +75,7 @@ function status:GetColor(unit)
 end
 
 function status:GetCount(unit)
-	return counts[unit]
+	return counts[unit] or 0
 end
 
 function status:GetDuration(unit)
@@ -126,7 +126,7 @@ frame:SetScript("OnEvent", function (self, event, ...)
 			then
 				states[unit] = n_state
 				textures[unit] = n_texture
-				counts[unit] = n_count
+				counts[unit] = n_count and n_count>0 and n_count or 1
 				types[unit] = n_type
 				durations[unit] = n_duration
 				expirations[unit] = n_expiration
