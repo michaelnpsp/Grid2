@@ -433,7 +433,7 @@ function Grid2Options.SetIndicatorColor(info, r, g, b, a)
 	end
 	c.r, c.g, c.b, c.a = r, g, b, a
 
-	indicator:UpdateDB()
+	if indicator.UpdateDB then indicator:UpdateDB() end
 	
 	Grid2Frame:UpdateIndicators()
 end
