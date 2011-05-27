@@ -44,22 +44,17 @@ local targetIconOptionParams = {
 	color8 = RAID_TARGET_8,
 }
 
+local HexDigits= "0123456789ABCDEF"
 function Grid2Options.LocalizeStatus(status, RemovePrefix)
 
-		-- Function decToHex (renamed, updated): http://lua-users.org/lists/lua-l/2004-09/msg00054.html
-		local function decToHex(IN)
-				local B,K,OUT,I,D=16,"0123456789ABCDEF","",0
-				while IN>0 do
-				I=I+1
-				IN,D=math.floor(IN/B),math.fmod(IN,B)+1
-				OUT=string.sub(K,D,D)..OUT
-				end
-				return (#OUT<1 and "00") or (#OUT<2 and "0"..OUT) or OUT
+		local function byteToHex(byte)
+			local L= byte % 16 + 1
+			local H= math.floor( byte / 16 ) + 1
+			return HexDigits:sub(H,H) .. HexDigits:sub(L,L)  
 		end
-		-- Function rgbToHex: http://gameon365.net/index.php
+		
 		local function rgbToHex(c)
-				local output = decToHex(math.floor(c.r*255)) .. decToHex(math.floor(c.g*255)) .. decToHex(math.floor(c.b*255))
-				return output
+			return  byteToHex(math.floor(c.r*255)) .. byteToHex(math.floor(c.g*255)) .. byteToHex(math.floor(c.b*255))
 		end		
 		
 		local function SplitStatusName(name)
