@@ -2,6 +2,8 @@
 Created by Grid2 original authors, modified by Michael
 --]]
 
+local GetTime= GetTime
+
 local BZ = LibStub("LibBabble-Zone-3.0"):GetReverseLookupTable()
 
 local GSRD = Grid2:NewModule("Grid2RaidDebuffs")
@@ -71,19 +73,20 @@ function status:GetIcon(unit)
 end
 
 function status:GetColor(unit)
-	return 1, 0, 0
+	local c= self.dbx.color1
+	return c.r, c.g, c.b, c.a
 end
 
 function status:GetCount(unit)
-	return counts[unit] or 0
+	return counts[unit] or 1
 end
 
 function status:GetDuration(unit)
-	return durations[unit]
+	return durations[unit] or (GetTime()+9999)
 end
 
 function status:GetExpirationTime(unit)
-	return expirations[unit]
+	return expirations[unit] or (GetTime()+9999)
 end
 
 local UnitDebuff = UnitDebuff
@@ -145,7 +148,7 @@ local function Create(baseKey, dbx)
 	if not dbx.debuffs then
 		dbx.debuffs= {}
 	end
-	Grid2:RegisterStatus(status, {"icon"}, baseKey, dbx)
+	Grid2:RegisterStatus(status, { "icon", "color" }, baseKey, dbx)
 	return status
 end
 

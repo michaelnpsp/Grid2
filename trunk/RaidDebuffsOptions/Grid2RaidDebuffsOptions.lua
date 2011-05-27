@@ -458,7 +458,6 @@ end
 local function MakeGeneralOptions(self, status, options, optionParams)
 	options= options or {}
 	options = Grid2Options:MakeStatusStandardOptions(status, options, optionParams)
-	options = Grid2Options:MakeStatusMissingOptions(status, options, optionParams)
 	options = Grid2Options:MakeStatusBlinkThresholdOptions(status, options, optionParams)
 	options = MakeModulesListOptions(self,status,options,optionParams)
 	return options
@@ -524,6 +523,7 @@ local function MakeStatusOptions(self, status, options, optionParams)
 	local advancedOptions= MakeAdvancedOptions(self,status)
 	local options = {
 		type = "group",
+		order= 25,
 		childGroups= "tab",
 		args= {
 			general= {
@@ -540,7 +540,7 @@ local function MakeStatusOptions(self, status, options, optionParams)
 			},
 		},
 	}
-	return options
+	return options, "root"
 end
 
 -- Notify Grid2Options howto create the options for our status

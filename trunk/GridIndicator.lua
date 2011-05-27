@@ -26,10 +26,6 @@ function indicator:CreateFrame(type, parent)
 	return f
 end
 
-function indicator:UnpackColor(c)
-	return c and {c.r, c.g, c.b, c.a} or {0,0,0,1}
-end
-
 function indicator:RegisterStatus(status, priority)
 	if self.priorities[status] then
 		Grid2:Print(string.format("WARNING ! Status %s already registered with indicator %s", status.name, self.name))

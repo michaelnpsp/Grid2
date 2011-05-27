@@ -210,7 +210,7 @@ function Grid2Options:AddIndicatorCurrentStatusOptions(indicator, options)
 			options[statusKey] = {
 				type = "toggle",
 				order = order,
-				name =  Grid2Options.LocalizeStatus(statusKey),
+				name =  Grid2Options.LocalizeStatus(status),
 				desc = L["Select statuses to display with the indicator"],
 				get = Grid2Options.GetIndicatorStatus,
 				set = Grid2Options.SetIndicatorStatusCurrent,

@@ -166,12 +166,16 @@ local function status_GetIcon(self, unit)
 	return self.textures[unit]
 end
 
-local function status_GetIconMissing(self, unit)
+local function status_GetIconMissing(self)
 	return self.missingTexture
 end
 
 local function status_GetCount(self, unit)
-	return self.counts[unit] or 0
+	return self.counts[unit]
+end
+
+local function status_GetCountMissing()
+	return 1
 end
 
 local function status_GetCountMax(self)
@@ -188,7 +192,7 @@ end
 
 -- Expiration time is unknow, return some hours in future to allow 
 -- blinking work and to prevent failing of IndicatorText status
-local function status_GetExpirationTimeMissing(self, unit)
+local function status_GetExpirationTimeMissing()
 	return GetTime() + 9999
 end
 
@@ -300,14 +304,14 @@ function Grid2.CreateAuraCommon(baseKey, dbx)
 	status.Reset = status_Reset
 	status.GetIcon = dbx.missing and status_GetIconMissing or status_GetIcon
 	status.GetExpirationTime = dbx.missing and status_GetExpirationTimeMissing or status_GetExpirationTime
-	status.GetCount = status_GetCount
+	status.GetCount =  dbx.missing and status_GetCountMissing or status_GetCount
 	status.GetDuration = status_GetDuration
 	status.GetPercent = status_GetPercent
 	status.UpdateDB = status_UpdateDB
 	return status
 end
 
-local statusTypesBuffs = { "color", "icon", "percent" }
+local statusTypesBuffs = { "color", "icon", "percent", "text" }
 function Grid2.CreateBuff(baseKey, dbx, statusTypesOverride)
 	local status = Grid2.CreateAuraCommon(baseKey, dbx)
 
@@ -333,13 +337,13 @@ function Grid2.CreateBuff(baseKey, dbx, statusTypesOverride)
 	status.UpdateState = status_UpdateState
 
 	Grid2:RegisterStatus(status, statusTypesOverride or statusTypesBuffs, baseKey, dbx)
-	Grid2:MakeBuffColorHandler(status)
+	Grid2:MakeStatusColorHandler(status)
 	status:UpdateDB()
 	
 	return status
 end
 
-local statusTypesDebuffs = { "color", "icon" }
+local statusTypesDebuffs = { "color", "icon", "text" }
 function Grid2.CreateDebuff(baseKey, dbx, statusTypesOverride)
 	local status = Grid2.CreateAuraCommon(baseKey, dbx)
 
@@ -358,7 +362,7 @@ function Grid2.CreateDebuff(baseKey, dbx, statusTypesOverride)
 	status.auraKey= status.auraName
 	
 	Grid2:RegisterStatus(status, statusTypesOverride or statusTypesDebuffs, baseKey, dbx)
-	Grid2:MakeDebuffColorHandler(status)
+	Grid2:MakeStatusColorHandler(status)
 
 	return status
 end

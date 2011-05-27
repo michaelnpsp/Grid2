@@ -1,6 +1,8 @@
 --[[ Icon indicator, created by Grid2 original authors, modified by Michael ]]-- 
 
+local Grid2= Grid2
 local GetTime = GetTime
+local fmt= string.format
 
 local function Icon_Create(self, parent)
 	local f = self:CreateFrame("Frame", parent)
@@ -18,11 +20,18 @@ local function Icon_Create(self, parent)
 	Icon:SetAllPoints()
 	if not Icon:IsShown() then Icon:Show() end
 
-	local Cooldown = f.Cooldown or CreateFrame("Cooldown", nil, f, "CooldownFrameTemplate")
-	f.Cooldown = Cooldown
+	local Cooldown
 	if self.dbx.disableOmniCC then
+		Cooldown = f.Cooldown or CreateFrame("Cooldown", nil, f, "CooldownFrameTemplate")
 		Cooldown.noCooldownCount= true 
+	else
+		local name= self.name:gsub("%-","")
+		local i,j = parent:GetName():match("Grid2LayoutHeader(%d)UnitButton(%d)")
+		Cooldown = f.Cooldown or CreateFrame("Cooldown", fmt("Grid2%s%02d%02d",name,i,j) , f, "CooldownFrameTemplate")
+		Cooldown.noCooldownCount= nil
 	end
+	f.Cooldown = Cooldown
+
 	Cooldown:SetAllPoints(f)
 	Cooldown:SetReverse(self.dbx.reverseCooldown)
 	Cooldown:Hide()
@@ -47,15 +56,17 @@ local function Icon_OnUpdate(self, parent, unit, status)
 	if not status then Frame:Hide()	return end
 	
 	local Icon= Frame.Icon
+	
 	Icon:SetTexture(status:GetIcon(unit))
 	Icon:SetTexCoord(status:GetTexCoord(unit))
 	Icon:SetVertexColor(status:GetVertexColor(unit))
-	
+
 	local r,g,b,a= status:GetColor(unit)
 	if status:GetBorder(unit) then
 		Frame:SetBackdropBorderColor(r,g,b,a) 
 	elseif self.borderSize then
-		Frame:SetBackdropBorderColor(unpack(self.color)) 
+		local c= self.color
+		Frame:SetBackdropBorderColor(c.r, c.g, c.b, c.a) 
 	else
 		Frame:SetBackdropBorderColor(0,0,0,0)
 	end
@@ -147,7 +158,7 @@ local function Icon_UpdateDB(self, dbx)
 	self.offsety = l.y
 	self.frameLevel = dbx.level
 	self.borderSize= dbx.borderSize
-	self.color= self:UnpackColor(dbx.color1)
+	self.color= Grid2:MakeColor(dbx.color1)
 	self.Create = Icon_Create
 	self.GetBlinkFrame = Icon_GetBlinkFrame
 	self.Layout = Icon_Layout

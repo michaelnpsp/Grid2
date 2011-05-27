@@ -22,7 +22,7 @@ L["Low HP"] = "Poca vida"
 L["DEAD"] = "Muerto"
 L["GHOST"] = "Fantasma"
 L["FD"] = "F.M."
-L["Offline"] = "Desconectado"
+L["Offline"] = "Desc."
 --}}}
 
 --{{{ GridStatusPvp

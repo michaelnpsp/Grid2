@@ -83,15 +83,16 @@ function Charmed:GetColor(unit)
 	return color.r, color.g, color.b, color.a
 end
 
+local textCharmed= L["Charmed"]
 function Charmed:GetText(unit)
-	return L["Charmed"]
+	return textCharmed
 end
 
 function Charmed:GetPercent(unit)
 	return UnitIsCharmed(unit) and 1 or self.dbx.color1.a
 end
 
-local function  CreateCharmed(baseKey, dbx)
+local function CreateCharmed(baseKey, dbx)
 	Grid2:RegisterStatus(Charmed, { "color", "text", "percent" }, baseKey, dbx)
 	
 	return Charmed
