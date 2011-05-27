@@ -60,6 +60,7 @@ end
 -- health status
 
 function HealthCurrent:OnEnable()
+	self:UpdateDB()
 	EnableHealthFrame(true)
 end
 
@@ -72,7 +73,7 @@ function HealthCurrent:IsActive(unit)
 end
 
 function HealthCurrent:GetPercent(unit)
-	if (self.dbx.deadAsFullHealth and UnitIsDeadOrGhost(unit)) then
+	if (self.deadAsFullHealth and UnitIsDeadOrGhost(unit)) then
 		return 1
 	end
 	return UnitHealth(unit) / UnitHealthMax(unit)
@@ -83,14 +84,27 @@ function HealthCurrent:GetTextDefault(unit)
 end
 
 function HealthCurrent:GetColor(unit)
-	local color = self.dbx.color1
-	return color.r, color.g, color.b, color.a
+	local f,t
+	local p= self:GetPercent(unit)
+	if p>=0.5 then
+		f,t,p = self.color2, self.color1, (p-0.5)*2
+	else
+		f,t,p = self.color3, self.color2, p*2
+	end
+	return (t.r-f.r)*p+f.r , (t.g-f.g)*p+f.g , (t.b-f.b)*p+f.b, (t.a-f.a)*p+f.a
+end
+
+function HealthCurrent:UpdateDB()
+	self.deadAsFullHealth= self.dbx.deadAsFullHealth
+	self.color1= Grid2:MakeColor(self.dbx.color1)
+	self.color2= Grid2:MakeColor(self.dbx.color2)
+	self.color3= Grid2:MakeColor(self.dbx.color3)
 end
 
 local function CreateHealthCurrent(baseKey, dbx)
 	Grid2:RegisterStatus(HealthCurrent, {"percent", "text", "color"}, baseKey, dbx)
 	Grid2:MakeTextHandler(HealthCurrent)
-	
+
 	return HealthCurrent
 end
 

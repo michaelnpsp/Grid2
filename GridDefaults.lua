@@ -364,4 +364,24 @@ function Grid2:UpdateDefaults()
 			opacity = 0.75 
 		})
 	end
+	if not Grid2:DbGetValue("statuses", "creaturecolor") then
+		local colors = {
+			HOSTILE = { r = 1, g = 0.1, b = 0.1, a = 1 },
+			UNKNOWN_UNIT = { r = 0.5, g = 0.5, b = 0.5, a = 1 },
+			[L["Beast"]] = { r = 0.93725490196078, g = 0.75686274509804, b = 0.27843137254902, a = 1 },
+			[L["Demon"]] = { r = 0.54509803921569, g = 0.25490196078431, b = 0.68627450980392, a = 1 },
+			[L["Humanoid"]] = { r = 0.91764705882353, g = 0.67450980392157, b = 0.84705882352941, a = 1 },
+			[L["Elemental"]] = { r = 0.1, g = 0.3, b = 0.9, a = 1 },
+		}
+		Grid2:DbSetValue( "statuses", "creaturecolor", { type = "creaturecolor", colorHostile = true, colors=colors })
+	end	
+	if not Grid2:DbGetValue("statuses", "friendcolor") then
+		Grid2:DbSetValue( "statuses", "friendcolor", {	type = "friendcolor",	
+			colorCount = 3,	
+			color1 = { r = 0, g = 1, b = 0, a=1 },    --player 
+			color2 = { r = 0, g = 1, b = 0, a=0.75 }, --pet 
+			color3 = { r = 1, g = 0, b = 0, a=1 },    --hostile
+		})
+	end	
+	
 end

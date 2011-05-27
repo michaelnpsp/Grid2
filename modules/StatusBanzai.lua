@@ -159,13 +159,8 @@ function Banzai:GetColor(unit)
 	return c.r, c.g, c.b, c.a
 end
 
-local textBanzai= L["banzai"]
-function Banzai:GetText(unit)
-	return textBanzai
-end
-
 local function Create(baseKey, dbx)
-	Grid2:RegisterStatus(Banzai, {"color", "text", "percent", "icon" }, baseKey, dbx)
+	Grid2:RegisterStatus(Banzai, {"color", "percent", "icon" }, baseKey, dbx)
 
 	return Banzai
 end

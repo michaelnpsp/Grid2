@@ -63,40 +63,12 @@ end
 /dump Grid2.statuses["soulstone"]
 --]]
 
-
 local handlerArray = {}
-function Grid2:MakeBuffColorHandler(status)
-	local dbx = status.dbx
-	local colorCount = dbx.colorCount or 1
-
-	wipe(handlerArray)
-	handlerArray[1] = "return function (self, unit)"
-	local index = 2
-	local color
-	if (colorCount > 1) then
-		handlerArray[index] = " local count = self:GetCount(unit)"
-		index = index + 1
-		for i = 1, colorCount - 1 do
-			color = dbx["color" .. i]
-			handlerArray[index] = (" if count == %d then return %s, %s, %s, %s end"):format(i, color.r, color.g, color.b, color.a)
-			index = index + 1
-		end
-	end
-
-	color = dbx[("color" .. colorCount)]
-	handlerArray[index] = (" return %s, %s, %s, %s end"):format(color.r, color.g, color.b, color.a)
-
-	local handler = table.concat(handlerArray)
-	status.GetColor = assert(loadstring(handler))()
-	return handler
-end
-
-function Grid2:MakeDebuffColorHandler(status)
-	assert(status.GetCount)
+function Grid2:MakeStatusColorHandler(status)
 	local dbx = status.dbx
 	local colorCount = dbx.colorCount or 1
 	if (colorCount <= 0) then
-		self:Print("Invalid number of colors for debuff %s", status.name)
+		self:Print("Invalid number of colors for status %s", status.name)
 		return
 	end
 
@@ -109,7 +81,7 @@ function Grid2:MakeDebuffColorHandler(status)
 		index = index + 1
 		for i = 1, colorCount - 1 do
 			color = dbx["color" .. i]
-			handlerArray[index] = ("if count == %d then return %s, %s, %s, %s end"):format(i, color.r, color.g, color.b, color.a)
+			handlerArray[index] = (" if count == %d then return %s, %s, %s, %s end"):format(i, color.r, color.g, color.b, color.a)
 			index = index + 1
 		end
 	end
@@ -125,6 +97,11 @@ function Grid2:MakeTextHandler(status)
 	status.GetText = status.GetTextDefault
 	assert(status.GetText, "nil GetTextDefault")
 	return status.GetText
+end
+
+local defaultColor= {r=0,g=0,b=0,a=0}
+function Grid2:MakeColor(color)
+	return color or defaultColor
 end
 
 function Grid2:Setup()

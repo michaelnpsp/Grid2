@@ -255,17 +255,19 @@ L["Y Offset"] = true
 L["Y - Vertical Offset"] = true
 
 --{{{ Statuses
-L["-color"]= ":color"
-L["-mine"]= ":mine"
-L["-not-mine"]= ":not mine"
-L["buff-"]= "buff: "
-L["debuff-"]= "debuff: "
+L["-color"] = ":color"
+L["-mine"] = ":mine"
+L["-not-mine"] = ":not mine"
+L["buff-"] = "buff: "
+L["debuff-"] = "debuff: "
+L["color-"] = "color: "
 
 L["status"] = true
 
 L["buff"] = true
 L["debuff"] = true
 
+L["New Color"] = true
 L["New Status"] = true
 L["Create a new status."] = true
 
@@ -275,6 +277,13 @@ L["Threshold at which to activate the status."] = true
 -- buff & debuff statuses management
 L["Buffs"] = true
 L["Debuffs"] = true
+L["Colors"] = true
+L["Health&Heals"] = true
+L["Mana&Power"] = true
+L["Combat"] = true
+L["Targeting&Distances"] = true
+L["Miscellaneous"] = true
+
 L["Show if mine"] = true
 L["Show if not mine"] = true
 L["Show if missing"] = true
@@ -304,6 +313,7 @@ L["charmed"] = true
 L["afk"] = true
 L["death"] = true
 L["classcolor"] = true
+L["creaturecolor"] = true
 L["feign-death"] = true
 L["heals-incoming"] = true
 L["health-current"] = true
@@ -330,7 +340,7 @@ L["Poison"] = true
 L["Disease"] = true
 L["Magic"] = true
 
-L["raid-debuffs"] = true
+L["raid-debuffs"] = "Raid Debuffs"
 
 -- class specific buffs & debuffs statuses
 
@@ -385,8 +395,10 @@ L["CommandingShout"]= true
 L["ShieldWall"]= true
 L["LastStand"]= true
 
--- class color status
+-- class color, creature color, friend color status
 L["%s Color"] = "%s"
+L["Player color"]= true
+L["Pet color"] = true
 L["Color Charmed Unit"] = true
 L["Color Units that are charmed."] = true
 L["Unit Colors"] = true

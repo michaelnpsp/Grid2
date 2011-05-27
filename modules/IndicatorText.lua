@@ -216,7 +216,7 @@ local function Create(indicatorKey, dbx)
 	local existingIndicator = Grid2.indicators[indicatorKey]
 	local indicator = existingIndicator or Grid2.indicatorPrototype:new(indicatorKey)
 	Text_UpdateDB(indicator, dbx)
-	Grid2:RegisterIndicator(indicator, { "text", "duration" })
+	Grid2:RegisterIndicator(indicator, { "text" })
 
 	local colorKey = indicatorKey .. "-color"
 	existingIndicator = Grid2.indicators[colorKey]

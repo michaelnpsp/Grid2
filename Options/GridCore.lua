@@ -150,6 +150,17 @@ function Grid2Options:AddElementGroup(type, extraOptions, order, reset)
 	end
 end
 
+local CategoriesOrder={
+	["buff"]  = 10,
+	["debuff"]= 20,
+	["color"] = 30,
+	["health"]= 40,
+	["mana"]  = 50,
+	["combat"]= 60,
+	["target"]= 70,
+	["misc"]  = 80,
+}
+
 function Grid2Options:AddElementSubTypeGroup(type, subType, subTypeDescription, subTypeOptions, reset)
 	local group = self.options.args[type]
 	if (not group) then
@@ -171,7 +182,7 @@ function Grid2Options:AddElementSubTypeGroup(type, subType, subTypeDescription, 
 		subGroup = {
 			type = "group",
 			name = L[subTypeDescription] or subTypeDescription,
-			order = 10,
+			order = CategoriesOrder[subType] or 100,
 			desc = L["Options for %s."]:format(subType),
 			args = options,
 		}
@@ -207,7 +218,7 @@ function Grid2Options:AddElementSubType(elementType, subType, element, extraOpti
 		subGroup = self:AddElementSubTypeGroup(elementType, subType)
 	end
 
-	local name= Grid2Options.LocalizeStatus(element.name, true)
+	local name= Grid2Options.LocalizeStatus(element, true)
 	
 	-- Calculate order: Magic,Curse,Poison and Disease debuffs first
 	local order= element.dbx.subType and 10 or 20

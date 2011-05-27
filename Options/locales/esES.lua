@@ -260,12 +260,14 @@ L["-mine"]= ":mio"
 L["-not-mine"]= ":no mio"
 L["buff-"]= "buff: "
 L["debuff-"]= "debuff: "
+L["color-"]= "color: "
 
 L["status"] = "estado"
 
 L["buff"] = "buff"
 L["debuff"] = "debuff"
 
+L["New Color"] = "Nuevo Color"
 L["New Status"] = "Nuevo Estado"
 L["Create a new status."] = "Crear un nuevo Estado"
 
@@ -275,6 +277,13 @@ L["Threshold at which to activate the status."] = "Elige el umbral para activar 
 -- buff & debuff statuses management
 L["Buffs"] = "Buffs"
 L["Debuffs"] = "Debuffs"
+L["Colors"] = "Colores"
+L["Health&Heals"] = "Vida&Curas"
+L["Mana&Power"] = "Mana&Poder"
+L["Combat"] = "Combate"
+L["Targeting&Distances"] = "Objetivos&Distancias"
+L["Miscellaneous"] = "Miscelaneo"
+
 L["Show if mine"] = "Mostrar si es mío"
 L["Show if not mine"] = "Mostrar si no es mío"
 L["Show if missing"] = "Muestra si falta"
@@ -304,6 +313,8 @@ L["charmed"] = "controlado"
 L["afk"] = "ausente"
 L["death"] = "muerte"
 L["classcolor"] = "color clase"
+L["creaturecolor"] = "color criatura"
+L["friendcolor"] = "color compañeros"
 L["feign-death"] = "fingir muerte"
 L["heals-incoming"] = "curas entrantes"
 L["health-current"] = "vida actual"
@@ -330,7 +341,7 @@ L["Poison"] = "Veneno"
 L["Disease"] = "Enfermedad"
 L["Magic"] = "Magia"
 
-L["raid-debuffs"] = "raid debuffs"
+L["raid-debuffs"] = "Debuffs de Raid"
 
 -- class specific buffs & debuffs statuses
 
@@ -387,6 +398,8 @@ L["LastStand"]= "Última carga"
 
 -- class color status
 L["%s Color"] = "%s"
+L["Player color"]= "Jugador"
+L["Pet color"] = "Mascota"
 L["Color Charmed Unit"] = "Colorear unidades Controladas"
 L["Color Units that are charmed."] = "Colorear las unidades que han sido controladas por enemigos"
 L["Unit Colors"] = "Colores unidades"

@@ -1,5 +1,7 @@
 --[[ Square indicator, created by Grid2 original authors, modified by Michael ]]--
 
+local Grid2= Grid2
+
 local function Square_Create(self, parent)
 	local Square = self:CreateFrame("Frame", parent)
 	local size = self.dbx.size
@@ -31,7 +33,8 @@ local function Square_OnUpdate(self, parent, unit, status)
 	if status then
 		Square:SetBackdropColor(status:GetColor(unit))
 		if self.borderSize then
-			Square:SetBackdropBorderColor( unpack(self.color) )
+			local c= self.color
+			Square:SetBackdropBorderColor( c.r, c.g, c.b, c.a )
 		end
 		Square:Show()
 	else
@@ -98,7 +101,7 @@ local function Square_UpdateDB(self, dbx)
 	self.offsetx = l.x
 	self.offsety = l.y
 	self.frameLevel = dbx.level
-	self.color= self:UnpackColor(dbx.color1)
+	self.color= Grid2:MakeColor(dbx.color1)
 	self.borderSize= dbx.borderSize
 	self.Create = Square_Create
 	self.GetBlinkFrame = Square_GetBlinkFrame
