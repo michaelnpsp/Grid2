@@ -2,6 +2,8 @@
 --- zlib/libpng License
 --- Simple utf8 manipulation functions
 
+local strbyte= string.byte
+
 if not string.lenutf8 then
 	string.lenutf8 = strlenutf8  -- Provided by blizzard api
 end
@@ -11,7 +13,7 @@ local function posutf8(s, pos)
 	local i = 1
 	local c = pos-1
 	while c>0 and i<=l do
-		local b = string.byte(s, i)
+		local b = strbyte(s, i)
 		if     b < 192 then	i = i + 1
 		elseif b < 224 then i = i + 2
 		elseif b < 240 then	i = i + 3
@@ -31,7 +33,7 @@ local function subutf8(s, from, to)
 	local j = from>1 and posutf8(s, from) or 1
 	local i = j
 	while c>0 and i<=l do
-		local b = string.byte(s, i)
+		local b = strbyte(s, i)
 		if     b < 192 then	i = i + 1
 		elseif b < 224 then i = i + 2
 		elseif b < 240 then	i = i + 3
