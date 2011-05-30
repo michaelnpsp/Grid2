@@ -169,12 +169,12 @@ function Grid2:InitializeOptions()
 	else
 		self:RegisterChatCommand("grid2", "OnChatCommand")
 		self:RegisterChatCommand("gr2", "OnChatCommand")
-		local optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Grid2", "Grid2", nil, "Tabs")
-		local prev_OnShow = optionsFrame:GetScript("OnShow")
+		local optionsFrame= CreateFrame( "Frame", nil, UIParent );
+		optionsFrame.name = "Grid2"
+		InterfaceOptions_AddCategory(optionsFrame)
 		optionsFrame:SetScript("OnShow", function (self, ...)
 			if not Grid2Options then Grid2:LoadGrid2Options() end
-			self:SetScript("OnShow", prev_OnShow)
-			return prev_OnShow(self, ...)
+			self:SetScript("OnShow", nil)
 		end)
 		self.optionsFrame = optionsFrame
 	end	

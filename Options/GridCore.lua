@@ -284,14 +284,12 @@ function Grid2Options:Initialize()
 	self:MakeOptions()
 	
 	LibStub("AceConfig-3.0"):RegisterOptionsTable("Grid2", self.options)
-
 	local ACD3 = LibStub("AceConfigDialog-3.0")
-	for key, value in pairs(self.options.args) do
-		 if (key ~= "Tabs") then
-			 ACD3:AddToBlizOptions("Grid2", value.name, "Grid2", key)
-		 end
-	end
-
+	local sections= self.options.args
+	ACD3:AddToBlizOptions("Grid2", sections.Tabs.name      , "Grid2", "Tabs")
+	ACD3:AddToBlizOptions("Grid2", sections.indicators.name, "Grid2", "indicators")
+	ACD3:AddToBlizOptions("Grid2", sections.statuses.name  , "Grid2", "statuses")
+	
 	self.Initialize = nil
 end
 
