@@ -26,7 +26,7 @@ local function Icon_Create(self, parent)
 		Cooldown.noCooldownCount= true 
 	else
 		local name= self.name:gsub("%-","")
-		local i,j = parent:GetName():match("Grid2LayoutHeader(%d)UnitButton(%d)")
+		local i,j = parent:GetName():match("Grid2LayoutHeader(%d+)UnitButton(%d+)")
 		Cooldown = f.Cooldown or CreateFrame("Cooldown", fmt("Grid2%s%02d%02d",name,i,j) , f, "CooldownFrameTemplate")
 		Cooldown.noCooldownCount= nil
 	end
