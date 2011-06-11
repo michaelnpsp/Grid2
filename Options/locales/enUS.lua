@@ -423,6 +423,7 @@ L["Elemental"] = "Elemental"
 
 -- heal-current status
 L["Show dead as having Full Health"] = true
+L["Frequent Updates"]= true
 
 -- range status 
 L["Range"] = true

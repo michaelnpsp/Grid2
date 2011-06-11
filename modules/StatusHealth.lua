@@ -15,7 +15,6 @@ local Grid2 = Grid2
 local UnitHealth = UnitHealth
 local UnitHealthMax = UnitHealthMax
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
-
 local fmt= string.format
 
 local function Frame_OnUnitHealthChanged(self, _, unit)
@@ -27,10 +26,11 @@ local function Frame_OnUnitHealthChanged(self, _, unit)
 	if HealthDeficit.enabled then HealthDeficit:UpdateIndicators(unit) end
 end
 
-local EnableHealthFrame
+local EnableHealthFrame, HealthFrameEnabled, UpdateHealthFrequency
 do
 	local frame
 	local count = 0
+	local HealthEvent
 	function EnableHealthFrame(enable)
 		local prev = (count == 0)
 		if enable then
@@ -46,13 +46,26 @@ do
 			end
 			if curr then
 				frame:SetScript("OnEvent", nil)
-				frame:UnregisterEvent("UNIT_HEALTH")
 				frame:UnregisterEvent("UNIT_MAXHEALTH")
+				frame:UnregisterEvent( HealthEvent )
+				HealthEvent= nil
 			else
+				HealthEvent= HealthCurrent.frequentUpdates and "UNIT_HEALTH_FREQUENT" or "UNIT_HEALTH"
 				frame:SetScript("OnEvent", Frame_OnUnitHealthChanged)
-				frame:RegisterEvent("UNIT_HEALTH")
 				frame:RegisterEvent("UNIT_MAXHEALTH")
+				frame:RegisterEvent( HealthEvent )
 			end
+		end
+	end
+	function HealthFrameEnabled()
+		return count>0
+	end
+	function UpdateHealthFrequency()
+		local NewHealthEvent=  HealthCurrent.frequentUpdates and "UNIT_HEALTH_FREQUENT" or "UNIT_HEALTH"
+		if HealthEvent and NewHealthEvent~=HealthEvent then
+			frame:UnregisterEvent(HealthEvent)
+			frame:RegisterEvent(NewHealthEvent)
+			HealthEvent= NewHealthEvent
 		end
 	end
 end
@@ -99,6 +112,8 @@ function HealthCurrent:UpdateDB()
 	self.color1= Grid2:MakeColor(self.dbx.color1)
 	self.color2= Grid2:MakeColor(self.dbx.color2)
 	self.color3= Grid2:MakeColor(self.dbx.color3)
+	self.frequentUpdates= self.dbx.frequentUpdates
+	if HealthFrameEnabled() then UpdateHealthFrequency() end
 end
 
 local function CreateHealthCurrent(baseKey, dbx)
