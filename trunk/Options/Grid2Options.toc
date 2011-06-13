@@ -5,7 +5,7 @@
 ## Notes-esES: Modulo de configuracion del Grid2
 ## LoadOnDemand: 1
 ## Dependencies: Grid2
-## Version: 1001
+## Version: @project-version@
 
 # Ace Libraries
 Libs\AceGUI-3.0\AceGUI-3.0.xml

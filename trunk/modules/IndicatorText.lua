@@ -140,6 +140,21 @@ local function Text_OnUpdateS(self, parent, unit, status)
 	end
 end
 
+local function Text_OnUpdateP(self, parent, unit, status)
+	local Text = parent[self.name].Text
+	if status then
+		local percent= status:GetPercent(unit)
+		if percent then
+			Text:SetText( fmt("%.0f%%", percent*100) )
+		else
+			Text:SetText(  string_sub( (status:GetText(unit) or ""), 1, self.textlength ) )
+		end
+		Text:Show()
+	else
+		Text:Hide()
+	end
+end
+
 local function Text_OnUpdate(self, parent, unit, status)
 	local Text = parent[self.name].Text
 	if status then
@@ -154,7 +169,6 @@ end
 local function Text_SetTextFont(self, parent, font, size)
 	parent[self.name].Text:SetFont(font, size)
 end
-
 
 local dummy = function (self)
 end
@@ -201,6 +215,7 @@ local function Text_UpdateDB(self, dbx)
 	self.OnUpdate= 	(dbx.duration and dbx.stack and Text_OnUpdateDS) or 
 					(dbx.duration and Text_OnUpdateD) or 
 					(dbx.stack 	  and Text_OnUpdateS) or 
+					(dbx.percent  and Text_OnUpdateP) or
 					Text_OnUpdate
 	self.dbx = dbx
 end

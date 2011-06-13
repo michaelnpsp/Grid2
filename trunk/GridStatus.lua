@@ -1,5 +1,9 @@
 --[[ Created by Grid2 original authors, modified by Michael ]]--
 
+local pairs, next= pairs, next
+
+-- status prototype (statuses will override this methods to provide custom values)
+
 Grid2.statuses = {}
 Grid2.statusTypes = {}
 
@@ -12,8 +16,6 @@ function status:init(name, embed)
 	self.indicators = {}
 	self.name = name
 end
-
---{{ Statuses will override this methods to set custom values, an unit is passed as first parameter
 
 -- shading color: icon indicator
 function status:GetVertexColor()
@@ -53,7 +55,6 @@ end
 -- texture: icon indicator
 function status:GetIcon()
 end
-
 --}}
 
 function status:UpdateIndicators(unit)

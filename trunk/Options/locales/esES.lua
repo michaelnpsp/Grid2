@@ -182,6 +182,8 @@ L["Show stack"] = "Mostrar acumulaciones"
 L["Show the number of stacks."] = "Mostrar el número de Acumulaciones"
 L["Show duration"] = "Mostrar duración"
 L["Show the time remaining."] = "Muestra el tiempo que falta"
+L["Show percent"] = "Mostrar porcentaje"
+L["Show percent value"] = "Mostrar como porcentaje"
 
 L["Orientation of the Bar"] = "Orientación de la barra"
 L["Set status bar orientation."] = "Ajusta la orientación de la barra"
@@ -423,7 +425,7 @@ L["Elemental"] = "Elemental"
 
 -- heal-current status
 L["Show dead as having Full Health"] = "Muertos con vida llena"
-L["Frequent Updates"]= "Actualizaciones frequentes"
+L["Frequent Updates"]= "Actualizaciones frecuentes"
 
 -- range status 
 L["Range"] = "Rango"
