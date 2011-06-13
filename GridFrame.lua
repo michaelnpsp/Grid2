@@ -48,7 +48,7 @@ function GridFrameEvents:OnLeave()
 end
 
 --{{{ GridFramePrototype
-
+local pairs= pairs
 local GridFramePrototype = {}
 local function GridFrame_Init(frame, width, height)
 	for name, value in pairs(GridFramePrototype) do

@@ -183,6 +183,8 @@ L["Show stack"] = true
 L["Show the number of stacks."] = true
 L["Show duration"] = true
 L["Show the time remaining."] = true
+L["Show percent"] = true
+L["Show percent value"] = true
 
 L["Orientation of the Bar"] = true
 L["Set status bar orientation."] = true

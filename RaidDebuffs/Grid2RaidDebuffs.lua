@@ -3,9 +3,10 @@ Created by Grid2 original authors, modified by Michael
 --]]
 
 local GetTime= GetTime
+local UnitDebuff = UnitDebuff
+local ipairs = ipairs
 
 local BZ = LibStub("LibBabble-Zone-3.0"):GetReverseLookupTable()
-
 local GSRD = Grid2:NewModule("Grid2RaidDebuffs")
 local status = Grid2.statusPrototype:new("raid-debuffs")
 local frame = CreateFrame("Frame")
@@ -89,8 +90,6 @@ function status:GetExpirationTime(unit)
 	return expirations[unit] or (GetTime()+9999)
 end
 
-local UnitDebuff = UnitDebuff
-local ipairs = ipairs
 frame:SetScript("OnEvent", function (self, event, ...)
 	if event == "UNIT_AURA" then
 		local unit = ...
@@ -115,12 +114,11 @@ frame:SetScript("OnEvent", function (self, event, ...)
 			local p_duration = durations[unit]
 			local p_expiration = expirations[unit]
 
-			local n_state, n_texture, n_count, n_expiration, n_duration, _
+			local n_state, n_texture, n_count, n_type, n_duration, n_expiration
 			n_state = true
 			_, _, n_texture, n_count, n_type, n_duration, n_expiration = UnitDebuff(unit, auraIndex)
 
-			if
-				p_state ~= n_state or
+			if	p_state ~= n_state or
 				p_texture ~= n_texture or
 				p_count ~= n_count or
 				p_type ~= n_type or
@@ -154,9 +152,6 @@ end
 
 Grid2.setupFunc["raid-debuffs"] = Create
 
---}}}
---{{{ 
-
 -- Hook to load Grid2RaidDebuffOptions module
 local prev_LoadOptions = Grid2.LoadOptions
 function Grid2:LoadOptions()
@@ -176,7 +171,3 @@ function Grid2:UpdateDefaults()
 		Grid2:DbSetValue("versions","Grid2RaidDebuffs",1)
 	end	
 end
-
---[[
-/dump Grid2.statuses["raid-debuffs"]
---]]

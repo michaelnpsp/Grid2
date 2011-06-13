@@ -2,6 +2,8 @@
 Created by Grid2 original authors, modified by Michael
 --]]
 
+local pairs, next = pairs, next
+
 local Grid2Blink = Grid2:NewModule("Grid2Blink")
 Grid2Blink.defaultDB = {
 	profile = {

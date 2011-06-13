@@ -1,6 +1,8 @@
+-- 
 local UnitExists = UnitExists
 local UnitName = UnitName
 local UnitGUID = UnitGUID
+local pairs, next= pairs, next
 
 -- indexed by unit ID
 local roster_names = {}

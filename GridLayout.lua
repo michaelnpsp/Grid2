@@ -2,6 +2,8 @@
 Created by Grid2 original authors, modified by Michael
 --]]
 
+local pairs, ipairs, next = pairs, ipairs, next
+
 local Grid2Layout = Grid2:NewModule("Grid2Layout")
 
 --{{{ Frame config function for secure headers

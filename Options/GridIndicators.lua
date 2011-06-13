@@ -733,6 +733,21 @@ local function MakeTextIndicatorOptions(indicator)
 				Grid2Frame:UpdateIndicators()
 			end,
 		},
+		percent = {
+			type = "toggle",
+			name = L["Show percent"],
+			desc = L["Show percent value"],
+			order = 87,
+			tristate = true,
+			get = function ()
+				return indicator.dbx.percent
+			end,
+			set = function (_, v)
+				indicator.dbx.percent = v
+				indicator:UpdateDB()
+				Grid2Frame:UpdateIndicators()
+			end,
+		},
 	}
 
 	if Grid2Options.AddMediaOption then

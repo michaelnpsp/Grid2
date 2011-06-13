@@ -9,6 +9,7 @@ local GetTime= GetTime
 local UnitGUID= UnitGUID
 local UnitCastingInfo= UnitCastingInfo
 local UnitChannelInfo= UnitChannelInfo
+local pairs, next= pairs, next
 
 local timer
 local banzais_sources= {}

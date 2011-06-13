@@ -4,6 +4,8 @@ Created by Michael, based on Grid2Options\GridDefaults.lua from original Grid2 a
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 
+local Grid2= Grid2
+
 local defaultFont = "Friz Quadrata TT"
 
 -- Database manipulation functions

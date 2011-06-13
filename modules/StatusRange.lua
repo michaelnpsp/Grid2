@@ -7,6 +7,9 @@ local Range = Grid2.statusPrototype:new("range")
 local UnitIsUnit= UnitIsUnit
 local UnitIsDead= UnitIsDead
 local IsSpellInRange= IsSpellInRange
+local UnitIsVisible= UnitIsVisible
+local UnitInRange= UnitInRange
+local CheckInteractDistance= CheckInteractDistance
 
 local cache = {}
 

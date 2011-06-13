@@ -8,7 +8,7 @@
 ## OptionalDeps: LibDataBroker-1.1
 ## X-Embeds: LibDataBroker-1.1
 
-## Version: 1.0
+## Version: @project-version@
 ## X-ReleaseDate: "$Date: 2011-04-14 23:42:17 -0700 (Tue, 14 Apr 2011) $"
 ## X-Category: Databroker
 ## X-Website: none
