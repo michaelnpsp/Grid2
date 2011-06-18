@@ -59,6 +59,12 @@ L["HEALER"] = true
 L["DAMAGER"] = true
 --}}}
 
+--{{{ Other roles
+L["RL"] = true
+L["RA"] = true
+L["ML"] = true
+--}}}
+
 --Layouts
 L["None"] = true
 L["Solo"] = true

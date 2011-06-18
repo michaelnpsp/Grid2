@@ -58,7 +58,7 @@ local function CheckBanzaiUnit(unit)
 				local destUnit= Grid2:GetUnitidByGUID(destGUID)
 				if destUnit then
 					local icon, _, endTime= select(4,funcSpellInfo(sourceUnit))
-					endTime= endTime and endTime/1000 or curTime+0.5 
+					endTime= endTime and endTime/1000 or curTime+0.25 
 					banzais[destUnit]= sourceGUID
 					banzais_durations[destUnit]= endTime - curTime
 					banzais_expirations[destUnit]= endTime
