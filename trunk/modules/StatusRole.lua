@@ -164,7 +164,7 @@ Grid2.setupFunc["leader"] = CreateLeader
 
 -- Assistant status
 
-local assis_cache= {}
+local assis_cache
 
 function Assistant:UpdateAllUnits()
 	self:UpdateAssistants()
