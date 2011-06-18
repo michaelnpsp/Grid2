@@ -284,6 +284,7 @@ L["Health&Heals"] = true
 L["Mana&Power"] = true
 L["Combat"] = true
 L["Targeting&Distances"] = true
+L["Raid&Party Roles"] = true
 L["Miscellaneous"] = true
 
 L["Show if mine"] = true
@@ -329,6 +330,9 @@ L["range"] = true
 L["ready-check"] = true
 L["role"] = true
 L["dungeon-role"] = true
+L["leader"]= true
+L["master-looter"]= true
+L["raid-assistant"]= true
 L["target"] = true
 L["threat"] = true
 L["banzai"] = true

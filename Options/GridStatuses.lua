@@ -24,6 +24,12 @@ local Categories= {
 	["raid-icon-target"]= "target",
 	["direction"]= "target",
 	
+	["role"]= "role",
+	["leader"]= "role",
+	["raid-assistant"]= "role",
+	["master-looter"]= "role",
+	["dungeon-role"]= "role",
+	
 	["threat"]= "combat",
 	["banzai"]= "combat",
 	["death"]= "combat",
@@ -1327,6 +1333,7 @@ function Grid2Options:MakeStatusOptions(reset)
 	self:AddElementSubTypeGroup("statuses", "mana", "Mana&Power",  {}, reset)
 	self:AddElementSubTypeGroup("statuses", "combat", "Combat",  {}, reset)
 	self:AddElementSubTypeGroup("statuses", "target", "Targeting&Distances",  {}, reset)
+	self:AddElementSubTypeGroup("statuses", "role", "Raid&Party Roles",  {}, reset)
 	self:AddElementSubTypeGroup("statuses", "misc", "Miscellaneous",  {}, reset)
 	
 	local statuses= Grid2.db.profile.statuses

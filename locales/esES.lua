@@ -59,6 +59,12 @@ L["HEALER"] = "Curador"
 L["DAMAGER"] = "Daño"
 --}}}
 
+--{{{ Other roles
+L["RL"] = "RL"
+L["RA"] = "RA"
+L["ML"] = "MD"
+--}}}
+
 --Layouts
 L["Solo"] = "Solo"
 L["Solo w/Pet"] = "Solo con mascota"

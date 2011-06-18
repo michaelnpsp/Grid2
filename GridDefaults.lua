@@ -385,5 +385,14 @@ function Grid2:UpdateDefaults()
 			color3 = { r = 1, g = 0, b = 0, a=1 },    --hostile
 		})
 	end	
+	if not Grid2:DbGetValue("statuses", "leader") then
+		Grid2:DbSetValue("statuses", "leader", {type = "leader", color1 = {r=0,g=.7,b=1,a=1}})
+	end	
+	if not Grid2:DbGetValue("statuses", "raid-assistant") then
+		Grid2:DbSetValue("statuses", "raid-assistant", {type = "raid-assistant", color1 = {r=1,g=.25,b=.2,a=1}})
+	end	
+	if not Grid2:DbGetValue("statuses", "master-looter") then
+		Grid2:DbSetValue("statuses", "master-looter", {type = "master-looter", color1 = {r=1,g=.5,b=0,a=1}})
+	end	
 	
 end

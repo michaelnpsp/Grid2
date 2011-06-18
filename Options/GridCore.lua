@@ -158,7 +158,8 @@ local CategoriesOrder={
 	["mana"]  = 50,
 	["combat"]= 60,
 	["target"]= 70,
-	["misc"]  = 80,
+	["role"]  = 80,
+	["misc"]  = 90,
 }
 
 function Grid2Options:AddElementSubTypeGroup(type, subType, subTypeDescription, subTypeOptions, reset)
