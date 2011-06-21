@@ -277,6 +277,7 @@ L["Threshold"] = true
 L["Threshold at which to activate the status."] = true
 
 -- buff & debuff statuses management
+L["Auras"] = true
 L["Buffs"] = true
 L["Debuffs"] = true
 L["Colors"] = true
@@ -303,6 +304,15 @@ L["Show on %s."] = true
 
 L["Blink Threshold"] = true
 L["Blink Threshold at which to start blinking the status."] = true
+
+L["Select Type"]= true
+L["Single Buff"] = true
+L["Single Debuff"] = true
+L["Buffs Group"] = true
+L["Debuffs Group"] = true
+L["Buffs Group: Defensive Cooldowns"] = true
+L["Debuffs Group: Healing Prevented "] = true
+L["Debuffs Group: Healing Reduced"] = true
 
 -- general statuses
 L["name"]= true

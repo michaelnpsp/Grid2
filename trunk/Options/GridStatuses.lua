@@ -7,6 +7,53 @@ local LG = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 
 local Grid2Options= Grid2Options
 
+local BuffSubTypes= {
+	["Single Buff"] =  1,
+	["Buffs Group"] =  {},
+	["Buffs Group: Defensive Cooldowns"] = { 
+			6940,  --Hand of Sacrifice
+			31850, --Ardent Defender
+			498,   --Divine Protection
+			86657, --Ancient Guardian (It the buff channeled by the Guardian of the Ancient Kings)
+			-- War
+			2565, --Shield Block
+			871, --Shield Wall
+			12975, --Last Stand
+			--Druid
+			61336, --Survival Instincts
+			22812, --Barkskin
+			22842, --Frenzied Regeneration
+			--Dk
+			55233, --Vampiric Blood
+			49028, --Dancing Rune Weapon
+			48792, --Icebound Fortitude
+			48707, --Anti-Magic Shell
+			--Priest
+			33206, --Pain Suppression
+			47788, --Guardian Spirit
+	},
+}
+
+local DebuffSubTypes= {
+	["Single Debuff"] =  1,
+	["Debuffs Group"] =  {},
+	["Debuffs Group: Healing Prevented "] = { 
+		82170, -- Corrupcion absoluta (Chogall)
+		82890, -- Mortalidad (Chimaeron)
+		85576, -- Vientos fulminadores (Alakir)
+		92787, -- Oscuridad engullidora (Maloriak Hc)
+		76903, -- Prision antimagia (Void Seeker/Hall of Originations)
+	},
+	["Debuffs Group: Healing Reduced"] = { 
+		83908, -- Golpes malevolos (Halfus)
+		76727, -- Golpe mortal (Grim Batol)
+		22687, -- Velo de sombras (Nefarian)
+		93956, -- Velo maldito (Baron Silverlain/Shadowfang Keep)
+		93675, -- Herida mortal (Lord Godfrey/Shadowfang Keep)
+		75571, -- Golpe hiriente (Rom'ogg Bonecrusher/BlackRock Caverns)
+	},
+}
+
 local Categories= {
 	["health"]= "health",
 	["health-current"]= "health",
@@ -769,7 +816,6 @@ function Grid2Options:GetAvailableStatusValues(indicator, statusAvailable)
 	return statusAvailable
 end
 
-
 local NewAuraUsageDescription= L["You can include a descriptive prefix using separators \"@#>\""] 
 							   .. " ".. 
 							   L["examples: Druid@Regrowth Chimaeron>Low Health"]	
@@ -835,7 +881,19 @@ local NewAuraHandlerMT = {
 	SetColorCount = function (self, info, value)
 		self.colorCount = value
 	end,
-	
+	GetAvailableSubTypes = function(self)
+		local result= {}
+		for k in pairs(self.subTypes) do
+			result[k]= L[k]
+		end
+	    return result
+	end,
+	GetSubType= function(self)
+		return self.subType
+	end,
+	SetSubType= function(self,info,value)
+		self.subType= value
+	end,
 	Create = function (self)
 		local baseKey = self:GetKey()
 		if baseKey then
@@ -852,12 +910,16 @@ local NewAuraHandlerMT = {
 					end
 				end
 			end
-			-- print("NewStatusBuff", baseKey)
+			local subType= self.subTypes[self.subType]
+			if type(subType) == "table" then -- Buffs or Debuffs Group
+				dbx.auras= {}
+				for i,v in pairs(subType) do
+					dbx.auras[i]= v
+				end
+			end				
 			Grid2.db.profile.statuses[baseKey]= dbx
-
 			--Create the status
 			local status = Grid2.setupFunc[dbx.type](baseKey, dbx)
-
 			--Create the status options
 			local funcMakeOptions = Grid2Options.typeMakeOptions[dbx.type]
 			local optionParams = Grid2Options.optionParams[dbx.type]
@@ -880,12 +942,23 @@ local NewAuraHandlerMT = {
 }
 NewAuraHandlerMT.__index = NewAuraHandlerMT
 
-local NewBuffHandler = setmetatable({type = "buff", color = {r=1,g=1,b=1,a=1}}, NewAuraHandlerMT)
+local NewBuffHandler = setmetatable({type = "buff", subType="Single Buff", subTypes= BuffSubTypes, color = {r=1,g=1,b=1,a=1}}, NewAuraHandlerMT)
 
 NewBuffHandler.options = {
+	newStatusBuffType = {
+		type = "select",
+		order = 1,
+		width="full",
+		name = L["Select Type"],
+		desc = L["Select Type"],
+		get = "GetSubType",
+		set = "SetSubType",
+		values = "GetAvailableSubTypes",
+		handler = NewBuffHandler,
+	},
 	newStatusBuffName = {
 		type = "input",
-		order = 1,
+		order = 2,
 		width = "full",
 		name = L["Name"],
 		usage = NewAuraUsageDescription,
@@ -941,12 +1014,23 @@ NewBuffHandler.options = {
 }
 NewBuffHandler:Init()
 
-local NewDebuffHandler = setmetatable({type = "debuff", color = {r=1,g=.2,b=.2,a=1}}, NewAuraHandlerMT)
+local NewDebuffHandler = setmetatable({type = "debuff", subType="Single Debuff", subTypes= DebuffSubTypes, color = {r=1,g=.2,b=.2,a=1}}, NewAuraHandlerMT)
 
 NewDebuffHandler.options = {
+	newStatusDebuffType = {
+		type = "select",
+		order = 1,
+		width="full",
+		name = L["Select Type"],
+		desc = L["Select Type"],
+		get = "GetSubType",
+		set = "SetSubType",
+		values = "GetAvailableSubTypes",
+		handler = NewDebuffHandler,
+	},
 	newStatusDebuffName = {
 		type = "input",
-		order = 1,
+		order = 2,
 		width = "full",
 		name = L["Name"],
 		usage = NewAuraUsageDescription,
@@ -1019,6 +1103,45 @@ do
 	}
 end
 
+function Grid2Options:MakeStatusAuraListOptions(status, options, optionParams)
+	options= options or {}
+	options.auras = {
+		type = "input",
+		order = 1,
+		width = "full",
+		name = L["Auras"],
+		multiline= math.min(8,#status.dbx.auras),
+		get = function()
+				local auras= {}
+				for _,aura in pairs(status.dbx.auras) do
+					auras[#auras+1]= (type(aura)=="number") and GetSpellInfo(aura) or aura
+				end
+				return table.concat( auras, "\n" )
+		end,
+		set = function(_, v) 
+			wipe(status.dbx.auras)
+			local auras= { strsplit("\n,", v) }
+			for _,v in pairs(auras) do
+				local aura= strtrim(v)
+				if #aura>0 then
+					table.insert(status.dbx.auras, tonumber(aura) or aura )
+				end
+			end	
+			status:UpdateDB()
+			for unit, guid in Grid2:IterateRosterUnits() do
+				status:UpdateIndicators(unit)
+			end
+		end,
+	}
+	options.aurasSpacer= {
+		type = "header",
+		order = 2,
+		name = "",
+	}
+	return options
+end
+
+
 function Grid2Options:MakeStatusColorStatusOptions(status, options, optionParams)
 	options = options or {}
 	options = self:MakeStatusColorOptions(status, options, optionParams)
@@ -1073,6 +1196,9 @@ end
 function Grid2Options:MakeStatusStandardBuffOptions(status, options, optionParams)
 	options = options or {}
 
+	if status.dbx.auras then
+		options = self:MakeStatusAuraListOptions(status, options, optionParams)
+	end	
 	options = self:MakeStatusColorOptions(status, options, optionParams)
 	options = self:MakeStatusMissingOptions(status, options, optionParams)
 	options = self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
@@ -1089,7 +1215,10 @@ end
 --Package a standard set of options for debuffs
 function Grid2Options:MakeStatusStandardDebuffOptions(status, options, optionParams)
 	options = options or {}
-
+	
+	if status.dbx.auras then
+		options = self:MakeStatusAuraListOptions(status, options, optionParams)
+	end	
 	options = self:MakeStatusColorOptions(status, options, optionParams)
 	options = self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
 	options = self:MakeStatusClassFilterOptions(status, options, optionParams)
@@ -1349,11 +1478,13 @@ function Grid2Options:MakeStatusOptions(reset)
 				self:AddElementSubType("statuses", subType or Categories[status.name] or "misc", status, options)
 			end	
 		else
-			print("    ***No status:", baseKey, "dbx:", dbx, "status:", status)
+			--print("    ***No status:", baseKey, "dbx:", dbx, "status:", status)
 		end
 	end
 end
 
-
--- Make categories table public for statuses plugins
+--{{ Publish some tables for plugins
 Grid2Options.Categories= Categories
+Grid2Options.BuffSubTypes= BuffSubTypes
+Grid2Options.DebuffSubTypes= DebuffSubTypes
+--}}
