@@ -1,7 +1,6 @@
 local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2Options", "enUS", true, true)
 if not L then return end
 
-
 --{{{ General options
 L["GRID2_DESC"] = true
 
@@ -306,8 +305,8 @@ L["Blink Threshold"] = true
 L["Blink Threshold at which to start blinking the status."] = true
 
 L["Select Type"]= true
-L["Single Buff"] = true
-L["Single Debuff"] = true
+L["Buff"] = true
+L["Debuff"] = true
 L["Buffs Group"] = true
 L["Debuffs Group"] = true
 L["Buffs Group: Defensive Cooldowns"] = true

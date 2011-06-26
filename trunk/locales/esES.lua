@@ -1,4 +1,4 @@
-﻿local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2", "esES")
+local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2", "esES")
 if not L then return end
 
 --{{{ Actually used
@@ -26,8 +26,8 @@ L["Offline"] = "Desc."
 --}}}
 
 --{{{ GridStatusPvp
-L["PvP"] = true
-L["FFA"] = true
+-- L["PvP"] = ""
+-- L["FFA"] = ""
 --}}}
 
 --{{{ GridStatusRange
@@ -35,9 +35,9 @@ L["OOR"] = "FDR"
 --}}}
 
 --{{{ GridStatusReadyCheck
-L["?"] = true
-L["R"] = true
-L["X"] = true
+-- L["?"] = ""
+-- L["R"] = ""
+-- L["X"] = ""
 L["AFK"] = "AUS"
 --}}}
 
@@ -66,6 +66,7 @@ L["ML"] = "MD"
 --}}}
 
 --Layouts
+L["None"] = "Ninguno"
 L["Solo"] = "Solo"
 L["Solo w/Pet"] = "Solo con mascota"
 L["By Group 5"] = "Por Grupo 5"
@@ -77,17 +78,15 @@ L["By Group 15 w/Pets"] = "Por Grupo 15 con  mascotas"
 L["By Group 25"] = "Por Grupo 25"
 L["By Group 25 w/Pets"] = "Por Grupo 25 con mascotas"
 L["By Class"] = "Por Clase"
+L["By Class w/Pets"] = "Por Clase con mascotas"
 L["By Class 25"] = "Por Clase 25"
 L["By Role 25"] = "Por Rol 25"
 L["By Class 1 x 25 Wide"] = "Por Clase 1x25"
 L["By Class 2 x 15 Wide"] = "Por Clase 2x15"
 L["By Group 4 x 10 Wide"] = "Por Grupo 4x10"
 L["By Group 20"] = "Por Grupo 20"
-L["Por Clase"] = "Por Clase"
-L["By Class w/Pets"] = "Por Clase con mascotas"
 L["By Group 25 w/tanks"] = "Por Grupo 25 con tanques"
 L["By Group 40"] = "Por Grupo 40"
 L["By Group 25 Tanks First"] = "Por Grupo 25 tanques primero"
 L["By Group 10 Tanks First"] = "Por Grupo 10 tanques primero"
-L["None"] = "Ninguno"
-L["Select Layout"]= "Elige Diseño"
+L["Select Layout"] = "Elige Diseño"
