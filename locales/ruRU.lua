@@ -1,4 +1,4 @@
-﻿local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2", "ruRU")
+local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2", "ruRU")
 if not L then return end
 
 --{{{ Actually used
@@ -26,12 +26,12 @@ L["Offline"] = "Вышел из сети"
 --}}}
 
 --{{{ GridStatusPvp
-L["PvP"] = true
-L["FFA"] = true
+-- L["PvP"] = ""
+-- L["FFA"] = ""
 --}}}
 
 --{{{ GridStatusRange
-L["OOR"] = true
+-- L["OOR"] = ""
 --}}}
 
 --{{{ GridStatusReadyCheck
@@ -53,7 +53,20 @@ L["vehicle"] = "Транспортное средство"
 L["talking"] = "Говорит"
 --}}}
 
+--{{{ GridStatusDungeonRole
+-- L["TANK"] = ""
+-- L["HEALER"] = ""
+-- L["DAMAGER"] = ""
+--}}}
+
+--{{{ Other roles
+-- L["RL"] = ""
+-- L["RA"] = ""
+-- L["ML"] = ""
+--}}}
+
 --Layouts
+-- L["None"] = ""
 L["Solo"] = "Соло"
 L["Solo w/Pet"] = "Соло,с питомцем"
 L["By Group 5"] = "Для группы из 5 чел."
@@ -74,8 +87,6 @@ L["By Group 4 x 10 Wide"] = "Для группы из 4 x 10-широкий"
 L["By Group 20"] = "Для группы из 20 чел."
 L["By Group 25 w/tanks"] = "Группой из 25 чел. с танками"
 L["By Group 40"] = "Для группы из 40 чел."
-L["By Group 25 Tanks First"] = true
-L["By Group 10 Tanks First"] = true
-L["None"] = true
-L["Select Layout"] = true
---}}}
+-- L["By Group 25 Tanks First"] = ""
+-- L["By Group 10 Tanks First"] = ""
+-- L["Select Layout"] = ""

@@ -125,9 +125,7 @@ local function Icon_Layout(self, parent)
 	Icon:ClearAllPoints()
 	Icon:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
 	Icon:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
-
 	Icon_SetBorderSize(self, parent, self.borderSize)
-	
 	local size = self.dbx.size
 	Icon:SetSize(size,size)
 end

@@ -47,9 +47,6 @@ externals:
 	RaidDebuffs/Libs/LibBabble-Zone-3.0:
 		url: svn://svn.wowace.com/wow/libbabble-zone-3-0/mainline/trunk
 		tag: latest
-	RaidDebuffsOptions/Libs/LibBabble-Boss-3.0:
-		url: svn://svn.wowace.com/wow/libbabble-boss-3-0/mainline/trunk
-		tag: latest
 move-folders:
 	Grid2/Options: Grid2Options
 	Grid2/RaidDebuffs: Grid2RaidDebuffs

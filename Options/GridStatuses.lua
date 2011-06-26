@@ -8,7 +8,7 @@ local LG = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 local Grid2Options= Grid2Options
 
 local BuffSubTypes= {
-	["Single Buff"] =  1,
+	["Buff"] =  1,
 	["Buffs Group"] =  {},
 	["Buffs Group: Defensive Cooldowns"] = { 
 			6940,  --Hand of Sacrifice
@@ -35,7 +35,7 @@ local BuffSubTypes= {
 }
 
 local DebuffSubTypes= {
-	["Single Debuff"] =  1,
+	["Debuff"] =  1,
 	["Debuffs Group"] =  {},
 	["Debuffs Group: Healing Prevented "] = { 
 		82170, -- Corrupcion absoluta (Chogall)
@@ -942,7 +942,7 @@ local NewAuraHandlerMT = {
 }
 NewAuraHandlerMT.__index = NewAuraHandlerMT
 
-local NewBuffHandler = setmetatable({type = "buff", subType="Single Buff", subTypes= BuffSubTypes, color = {r=1,g=1,b=1,a=1}}, NewAuraHandlerMT)
+local NewBuffHandler = setmetatable({type = "buff", subType="Buff", subTypes= BuffSubTypes, color = {r=1,g=1,b=1,a=1}}, NewAuraHandlerMT)
 
 NewBuffHandler.options = {
 	newStatusBuffType = {
@@ -1014,7 +1014,7 @@ NewBuffHandler.options = {
 }
 NewBuffHandler:Init()
 
-local NewDebuffHandler = setmetatable({type = "debuff", subType="Single Debuff", subTypes= DebuffSubTypes, color = {r=1,g=.2,b=.2,a=1}}, NewAuraHandlerMT)
+local NewDebuffHandler = setmetatable({type = "debuff", subType="Debuff", subTypes= DebuffSubTypes, color = {r=1,g=.2,b=.2,a=1}}, NewAuraHandlerMT)
 
 NewDebuffHandler.options = {
 	newStatusDebuffType = {
