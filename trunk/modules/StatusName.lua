@@ -1,5 +1,7 @@
 local Name = Grid2.statusPrototype:new("name")
 
+local UnitName= UnitName
+
 function Name:OnEnable()
 	self:RegisterEvent("UNIT_NAME_UPDATE")
 end

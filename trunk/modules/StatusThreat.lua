@@ -1,20 +1,23 @@
 local Threat = Grid2.statusPrototype:new("threat")
 
+local Grid2 = Grid2
+local UnitExists = UnitExists
+local UnitThreatSituation = UnitThreatSituation
 
-function Threat:UpdateUnit(event, unit)
-	-- unit can be nil which is so wtf
-	if (unit) then
+function Threat:UpdateUnit(_, unit)
+	if unit then -- unit can be nil which is so wtf
 		self:UpdateIndicators(unit)
 	end
 end
 
 function Threat:UpdateAllUnits()
-	for unit, guid in Grid2:IterateRosterUnits() do
+	for unit, _ in Grid2:IterateRosterUnits() do
 		self:UpdateIndicators(unit)
 	end
 end
 
 function Threat:OnEnable()
+	self:UpdateDB()
 	self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", "UpdateUnit")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "UpdateAllUnits")
 end
@@ -24,6 +27,10 @@ function Threat:OnDisable()
 	self:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
 end
 
+function Threat:UpdateDB()
+	self.colors= { self.dbx.color1, self.dbx.color2, self.dbx.color3 }
+end
+
 -- 1 = not tanking, higher threat than tank
 -- 2 = insecurely tanking.
 -- 3 = securely tanking something
@@ -31,23 +38,14 @@ function Threat:IsActive(unit)
 	local threat = unit 
 		and UnitExists(unit) -- hack thanks Potje
 		and UnitThreatSituation(unit)
-	if (threat and threat > 0) then
+	if threat and threat > 0 then
 		return "blink"
 	end
 end
 
 function Threat:GetColor(unit)
-	local color
-	local threat = UnitThreatSituation(unit)
-
-	if (threat == 1) then
-		color = self.dbx.color1
-	elseif (threat == 2) then
-		color = self.dbx.color2
-	elseif (threat == 3) then
-		color = self.dbx.color3
-	end
-
+	local threat= UnitThreatSituation(unit)
+	local color = self.colors[threat]
 	return color.r, color.g, color.b, color.a
 end
 

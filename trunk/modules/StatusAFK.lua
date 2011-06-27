@@ -4,14 +4,17 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 
 local AFK = Grid2.statusPrototype:new("afk")
 
-function AFK:UpdateUnit(_, unitid)
-	if unitid then
-		self:UpdateIndicators(unitid)
+local Grid2 = Grid2
+local UnitIsAFK = UnitIsAFK
+
+function AFK:UpdateUnit(_, unit)
+	if unit then
+		self:UpdateIndicators(unit)
 	end
 end
 
 function AFK:UpdateAllUnits()
-	for unit, guid in Grid2:IterateRosterUnits() do
+	for unit, _ in Grid2:IterateRosterUnits() do
 		self:UpdateIndicators(unit)
 	end
 end
@@ -30,22 +33,22 @@ function AFK:OnDisable()
 	self:UnregisterEvent("READY_CHECK_FINISHED")
 end
 
-function AFK:IsActive(unitid)
-	return UnitIsAFK(unitid)
+function AFK:IsActive(unit)
+	return UnitIsAFK(unit)
 end
 
-function AFK:GetColor(unitid)
-        local color = self.dbx.color1
-        return color.r, color.g, color.b, color.a
+function AFK:GetColor(unit)
+	local c = self.dbx.color1
+	return c.r, c.g, c.b, c.a
 end
 
-function AFK:GetText(unitid)
-        return L["AFK"]
+function AFK:GetText(unit)
+	return L["AFK"]
 end
 
 local function CreateStatusAFK(baseKey, dbx)
-        Grid2:RegisterStatus(AFK, {"color", "text"}, baseKey, dbx)
-        return AFK
+	Grid2:RegisterStatus(AFK, {"color", "text"}, baseKey, dbx)
+	return AFK
 end
 
 Grid2.setupFunc["afk"] = CreateStatusAFK

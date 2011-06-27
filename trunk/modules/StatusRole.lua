@@ -111,9 +111,12 @@ Grid2.setupFunc["role"] = CreateRole
 local raidLeader
 
 function Leader:UpdateAllUnits()
+	if raidLeader and raidLeader~="" then
+		self:UpdateIndicators(raidLeader)
+	end
 	self:UpdateLeader()
-	for unit,_ in Grid2:IterateRosterUnits() do
-		self:UpdateIndicators(unit)
+	if raidLeader and raidLeader~="" then
+		self:UpdateIndicators(raidLeader)
 	end
 end
 
@@ -121,10 +124,11 @@ function Leader:UpdateLeader()
 	for unit,_ in Grid2:IterateRosterUnits() do
 		if UnitIsPartyLeader(unit) then
 			raidLeader= unit
-			return
+			return raidLeader
 		end
 	end
 	raidLeader= ""
+	return raidLeader
 end
 
 function Leader:OnEnable()
@@ -133,12 +137,11 @@ end
 
 function Leader:OnDisable()
 	self:UnregisterEvent("PARTY_LEADER_CHANGED")
+	raidLeader= nil
 end
 
 function Leader:IsActive(unit)
-	if not raidLeader then self:UpdateLeader() end
-	self.IsActive= function(_,unit) return raidLeader==unit end
-	return self:IsActive()
+	return raidLeader and raidLeader==unit or self:UpdateLeader()==unit
 end
 
 function Leader:GetColor(unit)
@@ -196,12 +199,14 @@ end
 
 function Assistant:OnDisable()
 	self:UnregisterEvent("PARTY_LEADER_CHANGED")
+	assis_cache= nil
 end
 
 function Assistant:IsActive(unit)
-	if not assis_cache then	self:UpdateAssistants() end
-	self.IsActive= function(_,unit) return assis_cache[unit] end
-	return self:IsActive()
+	if not assis_cache then	
+		self:UpdateAssistants() 
+	end
+	return assis_cache[unit]
 end
 
 function Assistant:GetColor(unit)
@@ -230,24 +235,27 @@ Grid2.setupFunc["raid-assistant"] = CreateAssistant
 local masterLooter
 
 function MasterLooter:UpdateAllUnits()
+	if masterLooter and masterLooter~="" then
+		self:UpdateIndicators(masterLooter)
+	end
 	self:UpdateMasterLooter()
-	for unit, _ in Grid2:IterateRosterUnits() do
-		self:UpdateIndicators(unit)
+	if masterLooter and masterLooter~="" then
+		self:UpdateIndicators(masterLooter)
 	end
 end
 
 function MasterLooter:UpdateMasterLooter()
-  local method, party, raid = GetLootMethod()
-  if method == "master" then
+	local method, party, raid = GetLootMethod()
+	if method == "master" then
 		if raid then
 			masterLooter= "raid" .. raid
 		elseif party then
 			masterLooter= (party==0) and "player" or "party"..party
 		end	
-  else
+	else
 		masterLooter= ""
-  end 
-  return masterLooter
+	end 
+	return masterLooter
 end
 
 function MasterLooter:OnEnable()
@@ -256,12 +264,11 @@ end
 
 function MasterLooter:OnDisable()
 	self:UnregisterEvent("PARTY_LOOT_METHOD_CHANGED")
+	masterLooter= nil
 end
 
 function MasterLooter:IsActive(unit)
-	if not masterLooter then self:UpdateMasterLooter() end
-	self.IsActive= function(_,unit) return masterLooter==unit end
-	return self:IsActive()
+	return masterLooter and masterLooter==unit or self:UpdateMasterLooter()==unit
 end
 
 function MasterLooter:GetColor(unit)
