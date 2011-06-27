@@ -5,6 +5,11 @@ Created by Azethoth, modified by Michael
 local TargetIcon = Grid2.statusPrototype:new("raid-icon-target")
 local TargetIconPlayer = Grid2.statusPrototype:new("raid-icon-player")
 
+local Grid2 = Grid2
+local UnitExists = UnitExists
+local GetRaidTargetIndex = GetRaidTargetIndex
+local rawget= rawget
+
 local iconText = {
 	[1] = RAID_TARGET_1, -- Star
 	[2] = RAID_TARGET_2, -- Circle
@@ -26,13 +31,28 @@ local iconTexture = {
 	[8] = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_8"  -- Skull
 }
 
-function TargetIcon:UpdateUnit(event, unit)
+local target_cache= setmetatable({}, {__index = function(t,unit)
+	local target= unit .. "target"
+	local v= UnitExists(target) and GetRaidTargetIndex(target) or false
+	t[unit]= v 
+	return v
+end})
+
+function TargetIcon:UpdateUnit( _, unit)
+	local target= unit .. "target"
+	target_cache[unit] = UnitExists(target) and GetRaidTargetIndex(target) or false
 	self:UpdateIndicators(unit)
 end
 
-function TargetIcon:UpdateAllUnits(event)
-	for unit, guid in Grid2:IterateRosterUnits() do
-		self:UpdateIndicators(unit)
+function TargetIcon:UpdateAllUnits()
+	for unit, _ in Grid2:IterateRosterUnits() do
+		local target= unit .. "target"
+		local prev  = rawget( target_cache, unit )
+		local new   = UnitExists(target) and GetRaidTargetIndex(target) or false
+		if new ~= prev then
+			target_cache[unit] = new
+			self:UpdateIndicators(unit)
+		end
 	end
 end
 
@@ -44,36 +64,24 @@ end
 function TargetIcon:OnDisable()
 	self:UnregisterEvent("RAID_TARGET_UPDATE")
 	self:UnregisterEvent("UNIT_TARGET")
+	wipe(target_cache)
 end
 
 function TargetIcon:IsActive(unit)
-	local unitTarget = unit .. "target"
-	if (UnitExists(unitTarget)) then
-		return GetRaidTargetIndex(unitTarget)
-	end
-	return nil
+	return target_cache[unit]
 end
 
 function TargetIcon:GetColor(unit)
-	local unitTarget = unit .. "target"
-	local iconIndex = GetRaidTargetIndex(unitTarget)
-
-	local color = self.dbx["color" .. iconIndex]
-	local opacity = self.dbx.opacity or 1
-	return color.r, color.g, color.b, opacity
+	local c = self.dbx[ "color" .. target_cache[unit] ]
+	return c.r, c.g, c.b, self.dbx.opacity or 1
 end
 
 function TargetIcon:GetIcon(unit)
-	local unitTarget = unit .. "target"
-	local iconIndex = GetRaidTargetIndex(unitTarget)
-
-	return iconTexture[iconIndex]
+	return iconTexture[ target_cache[unit] ]
 end
 
 function TargetIcon:GetText(unit)
-	local unitTarget = unit .. "target"
-	local iconIndex = GetRaidTargetIndex(unitTarget)
-	return iconText[iconIndex]
+	return iconText[ target_cache[unit] ]
 end
 
 local function CreateTargetIcon(baseKey, dbx)
@@ -83,48 +91,47 @@ end
 
 Grid2.setupFunc["raid-icon-target"] = CreateTargetIcon
 
-function TargetIconPlayer:UpdateUnit(event, unit)
-	self:UpdateIndicators(unit)
-end
+local player_cache= setmetatable({}, {__index = function(t,unit) 
+	local v= GetRaidTargetIndex(unit) or false
+	t[unit]= v 
+	return v
+end})
 
-function TargetIconPlayer:UpdateAllUnits(event)
-	for unit, guid in Grid2:IterateRosterUnits() do
-		self:UpdateIndicators(unit)
+function TargetIconPlayer:UpdateAllUnits()
+	for unit, _ in Grid2:IterateRosterUnits() do
+		local prev= rawget( player_cache, unit )
+		local new = GetRaidTargetIndex(unit) or false
+		if new ~= prev then
+			player_cache[unit] = new
+			self:UpdateIndicators(unit)
+		end
 	end
 end
 
 function TargetIconPlayer:OnEnable()
 	self:RegisterEvent("RAID_TARGET_UPDATE", "UpdateAllUnits")
-	self:RegisterEvent("UNIT_TARGET", "UpdateUnit")
 end
 
 function TargetIconPlayer:OnDisable()
 	self:UnregisterEvent("RAID_TARGET_UPDATE")
-	self:UnregisterEvent("UNIT_TARGET")
+	wipe(player_cache)
 end
 
 function TargetIconPlayer:IsActive(unit)
-	if (UnitExists(unit)) then
-		return GetRaidTargetIndex(unit)
-	end
-	return nil
+	return player_cache[unit]
 end
 
 function TargetIconPlayer:GetColor(unit)
-	local iconIndex = GetRaidTargetIndex(unit)
-	local color = self.dbx["color" .. iconIndex]
-	local opacity = self.dbx.opacity or 1
-	return color.r, color.g, color.b, opacity
+	local c = self.dbx[ "color" .. player_cache[unit] ]
+	return c.r, c.g, c.b, self.dbx.opacity or 1
 end
 
 function TargetIconPlayer:GetIcon(unit)
-	local iconIndex = GetRaidTargetIndex(unit)
-	return iconTexture[iconIndex]
+	return iconTexture[ player_cache[unit] ]
 end
 
 function TargetIconPlayer:GetText(unit)
-	local iconIndex = GetRaidTargetIndex(unit)
-	return iconText[iconIndex]
+	return iconText[ player_cache[unit] ]
 end
 
 local function CreateTargetIconPlayer(baseKey, dbx)
@@ -134,4 +141,3 @@ local function CreateTargetIconPlayer(baseKey, dbx)
 end
 
 Grid2.setupFunc["raid-icon-player"] = CreateTargetIconPlayer
-

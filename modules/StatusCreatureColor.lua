@@ -2,6 +2,9 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 
 local CreatureColor = Grid2.statusPrototype:new("creaturecolor")
 
+local UnitIsEnemy= UnitIsEnemy
+local UnitIsCharmed= UnitIsCharmed
+local UnitCreatureType= UnitCreatureType
 
 function CreatureColor:OnEnable()
 	self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED", "UpdateUnit")

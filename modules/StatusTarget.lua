@@ -2,24 +2,38 @@ local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 local Target = Grid2.statusPrototype:new("target")
 
+local Grid2= Grid2
 local UnitIsUnit= UnitIsUnit
+local UnitGUID= UnitGUID
+
+local curTarget
 
 function Target:OnEnable()
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
 end
 
 function Target:PLAYER_TARGET_CHANGED(event)
-	for unit, guid in Grid2:IterateRosterUnits() do
-		self:UpdateIndicators(unit)
+	if curTarget then 
+		self:UpdateIndicators(curTarget) 
 	end
+	local guid= UnitGUID("target")
+	if guid then
+		curTarget= Grid2:GetUnitidByGUID( guid )
+		if curTarget then 
+			self:UpdateIndicators(curTarget) 
+		end
+	else
+		curTarget= nil
+	end	
 end
 
 function Target:OnDisable()
 	self:UnregisterEvent("PLAYER_TARGET_CHANGED")
+	curTarget= nil
 end
 
-function Target:IsActive(unitid)
-	return UnitIsUnit(unitid, "target")
+function Target:IsActive(unit)
+	return UnitIsUnit(unit, "target")
 end
 
 function Target:GetColor(unitid)

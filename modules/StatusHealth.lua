@@ -14,7 +14,9 @@ local Heals = Grid2.statusPrototype:new("heals-incoming", true)
 local Grid2 = Grid2
 local UnitHealth = UnitHealth
 local UnitHealthMax = UnitHealthMax
+local UnitIsFeignDeath = UnitIsFeignDeath
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
+local UnitGetIncomingHeals = UnitGetIncomingHeals
 local fmt= string.format
 
 local function Frame_OnUnitHealthChanged(self, _, unit)
