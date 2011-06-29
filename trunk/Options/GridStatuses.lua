@@ -82,6 +82,7 @@ local Categories= {
 	["death"]= "combat",
 	["feign-death"]= "combat",
 	["charmed"]= "combat",
+	["resurrection"]= "combat",
 }
 
 local LOCALIZED_CLASS_NAMES_MALE = LOCALIZED_CLASS_NAMES_MALE

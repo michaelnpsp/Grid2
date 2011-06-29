@@ -112,4 +112,65 @@ RDDB["Cataclysm"] = {
         88954, -- Consuming Darkness
         },
     },	
+	["Firelands"] = {
+		["Beth'tilac"]= {
+		49026, -- Fixate
+		97079, -- Seeping Venom
+		97202, -- Fiery Web Spin
+		99506, -- Widow Kiss
+		},
+		["Lord Rhyolith"]= {
+		98492, -- Eruption
+		},
+		["Alysrazor"]= {
+		101729, -- Blazing Claw
+		100094, -- Fireblast
+		99389,  -- Imprinted
+		99308,  -- Gushing Wound
+		100640, -- Harsh Winds
+		100555, -- Souldering Roots
+		},
+		["Shannox"]= {
+		99936,	-- Jagged Tear
+		99837,  -- Crustal Prison
+		99840,  -- Magma Rupture
+		101208, -- Inmolation Trap
+		},
+		["Baleroc"]= {
+		99252,  -- Blaze of Glory
+		99256,  -- Torment
+		99403,  -- Tormented
+		99262,  -- Vital Spark
+		99263,  -- Vital Flame
+		99516,  -- Count Down
+		100908, -- Fiery Torment
+		},
+		["Majordomo Staghelm"]= {
+		98443,  -- Fiery Cylcone
+		98450,	-- Searing Seeds
+		98535,  -- Leaping flames
+		96993,  -- Stay Withdrawn
+		100210, -- Burning Orb
+		},
+		["Ragnaros"]= {
+		99399,  -- Burning Wound
+		100293, -- Lava Wave
+		100238, -- Magma Trap vulnerability
+		98313,  -- Magma blast
+		100460, -- Blazing Heat
+		98981,  -- Lava Bolt
+		100249, -- Combustion
+		99613,  -- Molten Blast
+		},
+		["Trash"]= {
+		76622, -- Sunder Armor
+		97151, -- Magma
+		99610, -- Shockwave
+		99693,  -- Dinner Time
+		99695, -- Flaming Spear
+		99800, -- Ensnare
+		99993,  -- Fiery Blood
+		100767, -- Melt Armor
+		},		
+	},
 }
