@@ -126,7 +126,7 @@ end
 
 local function FormatDebuffName(spellName,spellId) 
 	local icon= selectedDebuffs[spellId] and ICON_CHECKED or ICON_UNCHECKED
-	return fmt("  |T%s:0|t%s", icon, spellName)
+	return fmt("  |T%s:0|t%s", icon, spellName or spellId)
 end
 
 local function EnableInstanceAllDebuffs(status)
