@@ -326,6 +326,7 @@ L["charmed"] = "Verzaubert"
 L["death"] = "Tot"
 L["classcolor"] = "Klassenfarbe"
 -- L["creaturecolor"] = ""
+-- L["friendcolor"] = ""
 L["feign-death"] = "Totstellen"
 L["heals-incoming"] = "Eingehende Heilung"
 -- L["health-current"] = ""
@@ -349,6 +350,7 @@ L["vehicle"] = "Fahrzeug"
 L["voice"] = "Stimme"
 L["pvp"] = "PvP"
 -- L["direction"] = ""
+-- L["resurrection"] = ""
 
 L["Curse"] = "Fluch"
 L["Poison"] = "Gift"
@@ -510,6 +512,13 @@ L["Voice Chat"] = "Stem Spricht"
 -- L["Display status for units less than 100 yards away"] = ""
 -- L["Dead Units"] = ""
 -- L["Display status only for dead units"] = ""
+
+-- resurrection
+
+-- L["Casting resurrection"] = ""
+-- L["A resurrection spell is being casted on the unit"] = ""
+-- L["Resurrected"] = ""
+-- L["A resurrection spell has been casted on the unit"] = ""
 		
 -- Import/export profiles module
 -- L["Import/export options"] = ""

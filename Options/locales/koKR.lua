@@ -326,6 +326,7 @@ L["charmed"] = "현혹"
 L["death"] = "죽음"
 L["classcolor"] = "직업색상"
 -- L["creaturecolor"] = ""
+-- L["friendcolor"] = ""
 L["feign-death"] = "죽은척하기"
 L["heals-incoming"] = "치유-받음"
 -- L["health-current"] = ""
@@ -349,6 +350,7 @@ L["vehicle"] = "탈것"
 L["voice"] = "음성"
 L["pvp"] = "PvP"
 -- L["direction"] = ""
+-- L["resurrection"] = ""
 
 -- L["Curse"] = ""
 -- L["Poison"] = ""
@@ -510,6 +512,13 @@ L["Voice Chat"] = "음성 대화"
 -- L["Display status for units less than 100 yards away"] = ""
 -- L["Dead Units"] = ""
 -- L["Display status only for dead units"] = ""
+
+-- resurrection
+
+-- L["Casting resurrection"] = ""
+-- L["A resurrection spell is being casted on the unit"] = ""
+-- L["Resurrected"] = ""
+-- L["A resurrection spell has been casted on the unit"] = ""
 		
 -- Import/export profiles module
 -- L["Import/export options"] = ""

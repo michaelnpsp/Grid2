@@ -22,7 +22,7 @@ L["Low HP"] = "Poca vida"
 L["DEAD"] = "Muerto"
 L["GHOST"] = "Fantasma"
 L["FD"] = "F.M."
-L["Offline"] = "Desconectado"
+L["Offline"] = "Desc."
 --}}}
 
 --{{{ GridStatusPvp
@@ -64,6 +64,11 @@ L["RL"] = "RL"
 L["RA"] = "RA"
 L["ML"] = "MD"
 --}}}
+
+--{{{ Resurrection
+L["Reviving"] = "Reviviendo"
+L["Revived"] = "Revivido"
+---}}}
 
 --Layouts
 L["None"] = "Ninguno"

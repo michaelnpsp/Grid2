@@ -65,6 +65,11 @@ L["talking"] = "대화중"
 -- L["ML"] = ""
 --}}}
 
+--{{{ Resurrection
+-- L["Reviving"] = ""
+-- L["Revived"] = ""
+---}}}
+
 --Layouts
 L["None"] = "없음"
 L["Solo"] = "솔로잉"

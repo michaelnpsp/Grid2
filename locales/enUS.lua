@@ -65,6 +65,11 @@ L["RA"] = true
 L["ML"] = true
 --}}}
 
+--{{{ Resurrection
+L["Reviving"] = true
+L["Revived"] = true
+---}}}
+
 --Layouts
 L["None"] = true
 L["Solo"] = true
