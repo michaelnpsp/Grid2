@@ -326,6 +326,7 @@ L["afk"] = true
 L["death"] = true
 L["classcolor"] = true
 L["creaturecolor"] = true
+L["friendcolor"] = true
 L["feign-death"] = true
 L["heals-incoming"] = true
 L["health-current"] = true
@@ -349,6 +350,7 @@ L["vehicle"] = true
 L["voice"] = true
 L["pvp"] = true
 L["direction"] = true
+L["resurrection"] = true
 
 L["Curse"] = true
 L["Poison"] = true
@@ -510,6 +512,13 @@ L["Visible Units"] = true
 L["Display status for units less than 100 yards away"] = true
 L["Dead Units"] = true
 L["Display status only for dead units"] = true
+
+-- resurrection
+
+L["Casting resurrection"] = true
+L["A resurrection spell is being casted on the unit"] = true
+L["Resurrected"] = true
+L["A resurrection spell has been casted on the unit"] = true
 		
 -- Import/export profiles module
 L["Import/export options"]= true

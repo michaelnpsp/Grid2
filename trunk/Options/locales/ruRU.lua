@@ -326,6 +326,7 @@ L["afk"] = "афк"
 L["death"] = "труп"
 L["classcolor"] = "цвет-класса"
 -- L["creaturecolor"] = ""
+-- L["friendcolor"] = ""
 L["feign-death"] = "притворяется"
 L["heals-incoming"] = "входящее-исцеление"
 L["health-current"] = "здоровье-текущее"
@@ -349,6 +350,7 @@ L["vehicle"] = "транспорт"
 L["voice"] = "голос"
 L["pvp"] = "pvp"
 -- L["direction"] = ""
+-- L["resurrection"] = ""
 
 L["Curse"] = "Проклятье"
 L["Poison"] = "Яд"
@@ -510,6 +512,13 @@ L["Delete raid debuff"] = "Удалить рейд-дебафф"
 -- L["Display status for units less than 100 yards away"] = ""
 -- L["Dead Units"] = ""
 -- L["Display status only for dead units"] = ""
+
+-- resurrection
+
+-- L["Casting resurrection"] = ""
+-- L["A resurrection spell is being casted on the unit"] = ""
+-- L["Resurrected"] = ""
+-- L["A resurrection spell has been casted on the unit"] = ""
 		
 -- Import/export profiles module
 L["Import/export options"] = "Настройки Импорта/Экспорта"

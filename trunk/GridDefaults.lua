@@ -394,12 +394,13 @@ function Grid2:UpdateDefaults()
 	if not Grid2:DbGetValue("statuses", "master-looter") then
 		Grid2:DbSetValue("statuses", "master-looter", {type = "master-looter", color1 = {r=1,g=.5,b=0,a=1}})
 	end	
-	-- if not Grid2:DbGetValue("statuses", "resurrection") then
-		-- Grid2:DbSetValue( "statuses", "resurrection", {	type = "resurrection",	
-			-- colorCount = 2,	
-			-- color1 = { r = 1, g = 0, b = 0, a=1 },    
-			-- color2 = { r = 1, g = 1, b = 0, a=0.75 }, 
-		-- })
-	-- end	
+	if not Grid2:DbGetValue("statuses", "resurrection") then
+		Grid2:DbSetValue( "statuses", "resurrection", {	type = "resurrection",	
+			colorCount = 2,	
+			color1 = { r = 0, g = 1, b = 0, a=1 },    
+			color2 = { r = 1, g = 1, b = 0, a=0.75 }, 
+		})
+		Grid2:DbSetMap( "icon-center", "resurrection", 160)
+	end	
 	
 end

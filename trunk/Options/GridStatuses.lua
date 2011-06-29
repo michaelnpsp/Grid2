@@ -1431,6 +1431,12 @@ function Grid2Options:MakeStatusHandlers(reset)
 			color3 = L["Securely Tanking"],
 			colorDesc3 = L["Tanking with highest threat."],
 	})
+	self:AddOptionHandler("resurrection", self.MakeStatusStandardOptions, {
+			color1 = L["Casting resurrection"],
+			colorDesc1 = L["A resurrection spell is being casted on the unit"],
+			color2 = L["Resurrected"],
+			colorDesc2 = L["A resurrection spell has been casted on the unit"],
+	})
 	self:AddOptionHandler("raid-icon-player", self.MakeStatusTargetIconOptions, targetIconOptionParams)
 	self:AddOptionHandler("raid-icon-target", self.MakeStatusTargetIconOptions, targetIconOptionParams)
 

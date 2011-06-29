@@ -65,6 +65,11 @@ L["talking"] = "Spricht"
 -- L["ML"] = ""
 --}}}
 
+--{{{ Resurrection
+-- L["Reviving"] = ""
+-- L["Revived"] = ""
+---}}}
+
 --Layouts
 L["None"] = "Keine"
 L["Solo"] = "Allein"

@@ -65,6 +65,11 @@ L["RA"] = "RA"
 L["ML"] = "MD"
 --}}}
 
+--{{{ Resurrection
+L["Reviving"] = "Reviviendo"
+L["Revived"] = "Revivido"
+---}}}
+
 --Layouts
 L["None"] = "Ninguno"
 L["Solo"] = "Solo"
