@@ -2,9 +2,11 @@
 Created by Grid2 original authors, modified by Michael
 --]]
 
-local pairs, ipairs, next = pairs, ipairs, next
-
 local Grid2Layout = Grid2:NewModule("Grid2Layout")
+
+local media = LibStub("LibSharedMedia-3.0", true)
+
+local pairs, ipairs, next = pairs, ipairs, next
 
 --{{{ Frame config function for secure headers
 
@@ -155,6 +157,7 @@ Grid2Layout.defaultDB = {
 		Padding = 0,
 		Spacing = 10,
 		ScaleSize = 1,
+		BorderTexture = "Blizzard Tooltip",
 		BorderR = .5,
 		BorderG = .5,
 		BorderB = .5,
@@ -223,7 +226,6 @@ function Grid2Layout:PLAYER_REGEN_ENABLED()
 	if restorePositionQueued then return self:RestorePosition() end
 end
 
-
 function Grid2Layout:Grid_GroupTypeChanged(_, type)
 	Grid2Layout:Debug("GroupTypeChanged", type)
 	self.partyType = type
@@ -284,6 +286,7 @@ function Grid2Layout:CreateFrame()
 	local p = self.db.profile
 	-- create main frame to hold all our gui elements
 	local f = CreateFrame("Frame", "Grid2LayoutFrame", UIParent)
+	self.frame = f
 	f:SetMovable(true)
 	f:SetClampedToScreen(p.clamp)
 	f:SetPoint("CENTER", UIParent, "CENTER")
@@ -291,24 +294,10 @@ function Grid2Layout:CreateFrame()
 	f:SetScript("OnHide", function () self:StopMoveFrame() end)
 	f:SetScript("OnMouseDown", function (_, button) self:StartMoveFrame(button) end)
 	f:SetFrameStrata("MEDIUM")
-	-- create background
 	f:SetFrameLevel(0)
-	f:SetBackdrop({
-				 bgFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16,
-				 edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", edgeSize = 16,
-				 insets = {left = 4, right = 4, top = 4, bottom = 4},
-			 })
-	-- create bg texture
-	f.texture = f:CreateTexture(nil, "BORDER")
-	f.texture:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
-	f.texture:SetPoint("TOPLEFT", f, "TOPLEFT", 4, -4)
-	f.texture:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -4, 4)
-	f.texture:SetBlendMode("ADD")
-	f.texture:SetGradientAlpha("VERTICAL", .1, .1, .1, 0, .2, .2, .2, 0.5)
-
-	self.frame = f
-	self.CreateFrame = nil
+	self:UpdateTextures()
 	self:SetFrameLock(p.FrameLock, p.ClickThrough)
+	self.CreateFrame = nil
 end
 
 local function getRelativePoint(point, horizontal)
@@ -489,6 +478,7 @@ function Grid2Layout:LoadLayout(layoutName)
 end
 
 function Grid2Layout:UpdateDisplay()
+	self:UpdateTextures()
 	self:UpdateColor()
 	self:CheckVisibility()
 	self:UpdateSize()
@@ -536,9 +526,26 @@ function Grid2Layout:UpdateSize()
 	self.frame:SetHeight(y)
 end
 
+function Grid2Layout:UpdateTextures()
+	local f = self.frame
+	local p = self.db.profile
+	local borderTexture = media and media:Fetch("border", p.BorderTexture) or "Interface\\Tooltips\\UI-Tooltip-Border"
+	f:SetBackdrop({
+				 bgFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16,
+				 edgeFile = borderTexture, edgeSize = 16,
+				 insets = {left = 4, right = 4, top = 4, bottom = 4},
+			 })
+	-- create bg texture
+	f.texture = f.texture or f:CreateTexture(nil, "BORDER")
+	f.texture:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
+	f.texture:SetPoint("TOPLEFT", f, "TOPLEFT", 4, -4)
+	f.texture:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -4, 4)
+	f.texture:SetBlendMode("ADD")
+	f.texture:SetGradientAlpha("VERTICAL", .1, .1, .1, 0, .2, .2, .2, 0.5)
+end
+
 function Grid2Layout:UpdateColor()
 	local settings = self.db.profile
-
 	self.frame:SetBackdropBorderColor(settings.BorderR, settings.BorderG, settings.BorderB, settings.BorderA)
 	self.frame:SetBackdropColor(settings.BackgroundR, settings.BackgroundG, settings.BackgroundB, settings.BackgroundA)
 	self.frame.texture:SetGradientAlpha("VERTICAL", .1, .1, .1, 0, .2, .2, .2, settings.BackgroundA/2 )

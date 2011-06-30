@@ -3,7 +3,6 @@ Created by Grid2 original authors, modified by Michael
 --]]
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
-local media = LibStub("LibSharedMedia-3.0", true)
 
 function Grid2Options:MakeFrameOptions(reset)
 local options= {

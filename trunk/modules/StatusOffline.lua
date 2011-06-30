@@ -2,8 +2,9 @@ local Offline = Grid2.statusPrototype:new("offline")
 
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
-local UnitIsConnected = UnitIsConnected
+local Grid2 = Grid2
 local UnitExists = UnitExists
+local UnitIsConnected = UnitIsConnected
 
 -- UNIT_CONNECTION event seems bugged (not fired when player reconnect):
 -- Using a timer to track when a offline unit reconnects.
@@ -60,9 +61,7 @@ end
 
 local text= L["Offline"]
 function Offline:GetText(unit)
-	if not UnitIsConnected(unit) then
-		return text
-	end
+	return text
 end
 
 local function Create(baseKey, dbx)

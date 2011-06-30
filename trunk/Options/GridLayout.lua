@@ -3,15 +3,14 @@ Created by Grid2 original authors, modified by Michael
 --]]
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
---{{{  Grid2Layout AceOptions table
+local media = LibStub("LibSharedMedia-3.0", true)
 
 function Grid2Options:MakeLayoutOptions(reset)
 
 	local ORDER_LAYOUT = 20
 	local ORDER_DISPLAY = 30
 	local ORDER_ANCHOR = 40
-
-	Grid2Options:AddModuleOptions( "General" , "Layout Settings", {
+	local layoutOptions= {
 		["display"] = {
 			type = "select",
 			name = L["Show Frame"],
@@ -61,7 +60,6 @@ function Grid2Options:MakeLayoutOptions(reset)
 			end,
 			disabled = function () return not Grid2Layout.db.profile.FrameLock end,
 		},
-
 		["DisplayHeader"] = {
 			type = "header",
 			order = ORDER_DISPLAY,
@@ -118,9 +116,9 @@ function Grid2Options:MakeLayoutOptions(reset)
 		},
 		["border"] = {
 			type = "color",
-			name = L["Border"],
+			name = L["Border Color"],
 			desc = L["Adjust border color and alpha."],
-			order = ORDER_DISPLAY + 4,
+			order = ORDER_DISPLAY + 5,
 			get = function ()
 					  local settings = Grid2Layout.db.profile
 					  return settings.BorderR, settings.BorderG, settings.BorderB, settings.BorderA
@@ -134,9 +132,9 @@ function Grid2Options:MakeLayoutOptions(reset)
 		},
 		["background"] = {
 			type = "color",
-			name = L["Background"],
+			name = L["Background Color"],
 			desc = L["Adjust background color and alpha."],
-			order = ORDER_DISPLAY + 5,
+			order = ORDER_DISPLAY + 6,
 			get = function ()
 					  local settings = Grid2Layout.db.profile
 					  return settings.BackgroundR, settings.BackgroundG, settings.BackgroundB, settings.BackgroundA
@@ -148,7 +146,6 @@ function Grid2Options:MakeLayoutOptions(reset)
 				  end,
 			hasAlpha = true
 		},
-
 		["AnchorHeader"] = {
 			type = "header",
 			order = ORDER_ANCHOR,
@@ -200,8 +197,30 @@ function Grid2Options:MakeLayoutOptions(reset)
 			order = ORDER_ANCHOR + 4,
 			func = function () Grid2Layout:ResetPosition() end,
 		},
-	})
-
+	}
+	if Grid2Options.AddMediaOption then
+		layoutOptions["borderTexture"]= {
+			type = "select",
+			order = ORDER_DISPLAY + 4,
+			name = L["Border Texture"],
+			desc = L["Adjust the border texture."],
+			get = function (info)
+				local v = Grid2Layout.db.profile.BorderTexture
+				for i, t in ipairs(info.option.values) do
+					if v == t then return i end
+				end
+			end,
+			set = function (info, v)
+				Grid2Layout.db.profile.BorderTexture= info.option.values[v]
+				Grid2Layout:UpdateTextures()
+				Grid2Layout:UpdateColor()
+			end,
+		}
+		Grid2Options:AddMediaOption("border", layoutOptions.borderTexture)
+	end
+	Grid2Options:AddModuleOptions( "General" , "Layout Settings", layoutOptions)
+	
+	
 	local function TestButton(order,name)
 		return {
 			type = "execute",
