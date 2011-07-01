@@ -13,43 +13,33 @@ local next= next
 
 local TimerId
 local res_cache= {}
-local cnt_cache= {}
 
 function Resurrection:Timer()
-	for unit in next, cnt_cache do
+	for unit in next, res_cache do
 		if not (UnitExists(unit) and UnitIsDeadOrGhost(unit)) then
 			res_cache[unit]= nil
-			cnt_cache[unit]= nil
 			self:UpdateIndicators(unit)
 		end
 	end
-	if not next(cnt_cache) then
+	if not next(res_cache) then
 		Grid2:CancelTimer(TimerId)
 		TimerId= nil
 	end		
 end
 
 function Resurrection:INCOMING_RESURRECT_CHANGED(_, unit)
-	if unit then
+	if unit and UnitIsDeadOrGhost(unit) then
 		if UnitHasIncomingResurrection(unit) then
-			if UnitIsDeadOrGhost(unit) then
-				local old= res_cache[unit]
-				local new= GetTime()
-				if not old then
-					res_cache[unit]= new
-					cnt_cache[unit]= 1
-					self:UpdateIndicators(unit)
-					if not TimerId then
-						TimerId = Grid2:ScheduleRepeatingTimer(Resurrection.Timer, 0.25, self)
-					end
-				elseif new-old>0.5 then -- Event is called twice for each res cast so try to filter redundant events
-					cnt_cache[unit]= (cnt_cache[unit] or 0)+1
+			if res_cache[unit] ~= 1 then
+				res_cache[unit]= 1
+				self:UpdateIndicators(unit)
+				if not TimerId then
+					TimerId = Grid2:ScheduleRepeatingTimer(Resurrection.Timer, 0.25, self)
 				end
 			end
 		else
-			local old= res_cache[unit] 
-			res_cache[unit]= nil
-			if old then
+			if res_cache[unit] == 1 then
+				res_cache[unit]= 0
 				self:UpdateIndicators(unit)
 			end
 		end
@@ -63,21 +53,16 @@ end
 function Resurrection:OnDisable()
 	self:UnregisterEvent("INCOMING_RESURRECT_CHANGED")
 	wipe(res_cache)
-	wipe(cnt_cache)
 end
 
 function Resurrection:IsActive(unit)
-	if cnt_cache[unit] then
+	if res_cache[unit] then
 		return true
 	end
 end
 
-function Resurrection:GetCount(unit)
-	return cnt_cache[unit] or 1
-end
-
 function Resurrection:GetColor(unit)
-	local c= res_cache[unit] and self.dbx.color1 or self.dbx.color2
+	local c= (res_cache[unit]==1) and self.dbx.color1 or self.dbx.color2
 	return c.r, c.g, c.b, c.a
 end
 
@@ -92,7 +77,7 @@ end
 local resText1= L["Reviving"]
 local resText2= L["Revived"]
 function Resurrection:GetText(unit)
-	return res_cache[unit] and resText1 or resText2
+	return (res_cache[unit]==1) and resText1 or resText2
 end
 
 local function Create(baseKey, dbx)
