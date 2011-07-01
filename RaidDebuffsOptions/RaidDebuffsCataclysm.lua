@@ -86,6 +86,10 @@ RDDB["Cataclysm"] = {
 		82518, -- Cho's Blast
 		93134, -- Debilitating Beam
 		},
+		["Sinestra"]= {
+		89299, -- Twilight Spit
+		92955, -- Wrack
+		},
 	},
 	["Throne of the Four Winds"] = {
 		["Conclave of Wind"]= {
