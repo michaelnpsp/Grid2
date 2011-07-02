@@ -1048,6 +1048,21 @@ local function MakeIconIndicatorOptions(indicator)
 				end)
 			end,
 		},
+		disableCooldown = {
+			type = "toggle",
+			order = 104,
+			name = L["Disable Cooldown"],
+			desc = L["Disable the Cooldown Frame"],
+			tristate = true,
+			get = function ()
+				return indicator.dbx.disableCooldown
+			end,
+			set = function (_, v)
+				indicator.disableCooldown = v
+				indicator.dbx.disableCooldown = v
+				Grid2Frame:UpdateIndicators()
+			end,
+		},		
 		reverseCooldown = {
 			type = "toggle",
 			order = 105,
