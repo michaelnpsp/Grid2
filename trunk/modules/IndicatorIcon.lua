@@ -81,11 +81,11 @@ local function Icon_OnUpdate(self, parent, unit, status)
 	end
 	
 	local expiration, duration = status:GetExpirationTime(unit), status:GetDuration(unit)
-	if expiration and duration then
+	if (not self.disableCooldown) and expiration and duration then
 		Frame.Cooldown:SetCooldown(expiration - duration, duration)
 		Frame.Cooldown:Show()
 	else
-		Frame.Cooldown:Hide()
+		Frame.Cooldown:Hide()	
 	end
 	
 	Frame:Show()
@@ -154,6 +154,7 @@ local function Icon_UpdateDB(self, dbx)
 	self.anchorRel = l.relPoint
 	self.offsetx = l.x
 	self.offsety = l.y
+	self.disableCooldown= dbx.disableCooldown
 	self.frameLevel = dbx.level
 	self.borderSize= dbx.borderSize
 	self.color= Grid2:MakeColor(dbx.color1)
