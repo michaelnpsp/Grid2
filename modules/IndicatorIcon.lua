@@ -3,6 +3,7 @@
 local Grid2= Grid2
 local GetTime = GetTime
 local fmt= string.format
+local media = LibStub("LibSharedMedia-3.0", true)
 
 local function Icon_Create(self, parent)
 	local f = self:CreateFrame("Frame", parent)
@@ -20,31 +21,38 @@ local function Icon_Create(self, parent)
 	Icon:SetAllPoints()
 	if not Icon:IsShown() then Icon:Show() end
 
-	local Cooldown
-	if self.dbx.disableOmniCC then
-		Cooldown = f.Cooldown or CreateFrame("Cooldown", nil, f, "CooldownFrameTemplate")
-		Cooldown.noCooldownCount= true 
-	else
-		local name= self.name:gsub("%-","")
-		local i,j = parent:GetName():match("Grid2LayoutHeader(%d+)UnitButton(%d+)")
-		Cooldown = f.Cooldown or CreateFrame("Cooldown", fmt("Grid2%s%02d%02d",name,i,j) , f, "CooldownFrameTemplate")
-		Cooldown.noCooldownCount= nil
+	if not self.disableCooldown then
+		local Cooldown
+		if self.dbx.disableOmniCC then
+			Cooldown = f.Cooldown or CreateFrame("Cooldown", nil, f, "CooldownFrameTemplate")
+			Cooldown.noCooldownCount= true 
+		else
+			local name= self.name:gsub("%-","")
+			local i,j = parent:GetName():match("Grid2LayoutHeader(%d+)UnitButton(%d+)")
+			Cooldown = f.Cooldown or CreateFrame("Cooldown", fmt("Grid2%s%02d%02d",name,i,j) , f, "CooldownFrameTemplate")
+			Cooldown.noCooldownCount= nil
+		end
+		Cooldown:SetAllPoints(f)
+		Cooldown:SetReverse(self.dbx.reverseCooldown)
+		Cooldown:Hide()
+		f.Cooldown = Cooldown
 	end
-	f.Cooldown = Cooldown
+	
+	if not self.disableStack then
+		local CooldownText = f.CooldownText or f:CreateFontString(nil, "OVERLAY")
+		CooldownText:SetAllPoints()
+		CooldownText:SetFontObject(GameFontHighlightSmall)
+		local font = self.dbx.font and media and media:Fetch("font", self.dbx.font) or CooldownText:GetFont()
+		CooldownText:SetFont(font, self.dbx.fontSize)
+		CooldownText:SetJustifyH( self.dbx.fontJustifyH or "CENTER" )
+		CooldownText:SetJustifyV( self.dbx.fontJustifyV or "MIDDLE" )
+		local c= self.dbx.stackColor
+		if c then CooldownText:SetTextColor(c.r, c.g, c.b, c.a) end	
+		CooldownText:SetShadowOffset(1, -1)
+		CooldownText:Hide()
+		f.CooldownText = CooldownText
+	end	
 
-	Cooldown:SetAllPoints(f)
-	Cooldown:SetReverse(self.dbx.reverseCooldown)
-	Cooldown:Hide()
-
-	local CooldownText = f.CooldownText or Cooldown:CreateFontString(nil, "OVERLAY")
-	f.CooldownText = CooldownText
-	CooldownText:SetAllPoints()
-	CooldownText:SetFontObject(GameFontHighlightSmall)
-	CooldownText:SetFont(CooldownText:GetFont(), self.dbx.fontSize)
-	CooldownText:SetJustifyH( self.dbx.fontJustifyH or "CENTER" )
-	CooldownText:SetJustifyV( self.dbx.fontJustifyV or "MIDDLE" )
-	CooldownText:SetShadowOffset(1, -1)
-	CooldownText:Hide()
 end
 
 local function Icon_GetBlinkFrame(self, parent)
@@ -72,21 +80,25 @@ local function Icon_OnUpdate(self, parent, unit, status)
 	end
 	Icon:SetAlpha(a or 1)
 
-	local count= status:GetCount(unit)
-	if count>1 then 
-		Frame.CooldownText:SetText(count)
-		Frame.CooldownText:Show()
-	else
-		Frame.CooldownText:Hide()
+	if not self.disableStack then
+		local count= status:GetCount(unit)
+		if count>1 then 
+			Frame.CooldownText:SetText(count)
+			Frame.CooldownText:Show()
+		else
+			Frame.CooldownText:Hide()
+		end
 	end
-	
-	local expiration, duration = status:GetExpirationTime(unit), status:GetDuration(unit)
-	if (not self.disableCooldown) and expiration and duration then
-		Frame.Cooldown:SetCooldown(expiration - duration, duration)
-		Frame.Cooldown:Show()
-	else
-		Frame.Cooldown:Hide()	
-	end
+
+	if not self.disableCooldown then
+		local expiration, duration = status:GetExpirationTime(unit), status:GetDuration(unit)
+		if expiration and duration then
+			Frame.Cooldown:SetCooldown(expiration - duration, duration)
+			Frame.Cooldown:Show()
+		else
+			Frame.Cooldown:Hide()	
+		end
+	end	
 	
 	Frame:Show()
 end
@@ -133,13 +145,9 @@ end
 local function Icon_Disable(self, parent)
 	local f = parent[self.name]
 	f:Hide()
-	local Icon = f.Icon
-	Icon:Hide()
-	local Cooldown = f.Cooldown
-	Cooldown:Hide()
-	local CooldownText = f.CooldownText
-	CooldownText:Hide()
-
+	f.Icon:Hide()
+	if f.Cooldown then f.Cooldown:Hide() end
+	if f.CooldownText then f.CooldownText:Hide() end
 	self.GetBlinkFrame = nil
 	self.Layout = nil
 	self.OnUpdate = nil
@@ -155,6 +163,7 @@ local function Icon_UpdateDB(self, dbx)
 	self.offsetx = l.x
 	self.offsety = l.y
 	self.disableCooldown= dbx.disableCooldown
+	self.disableStack= dbx.disableStack
 	self.frameLevel = dbx.level
 	self.borderSize= dbx.borderSize
 	self.color= Grid2:MakeColor(dbx.color1)

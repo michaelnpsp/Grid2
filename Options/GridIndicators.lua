@@ -1006,29 +1006,82 @@ local function MakeIconIndicatorOptions(indicator)
 			order = 90,
 			name = L["Cooldown"],
 		},
-		fontsize = {
-			type = "range",
-			order = 100,
-			name = L["Font Size"],
-			desc = L["Adjust the font size."],
-			min = 6,
-			max = 24,
-			step = 1,
+		disableCooldown = {
+			type = "toggle",
+			order = 95,
+			name = L["Disable Cooldown"],
+			desc = L["Disable the Cooldown Frame"],
+			tristate = true,
 			get = function ()
-				return indicator.dbx.fontSize
+				return indicator.dbx.disableCooldown
 			end,
 			set = function (_, v)
-				indicator.dbx.fontSize = v
+				indicator.dbx.disableCooldown = v
+				Grid2Frame:WithAllFrames(function (f) indicator:Disable(f) end)
+				indicator:UpdateDB()
+				Grid2Frame:WithAllFrames(function (f) indicator:Create(f) indicator:Layout(f) end)
+				Grid2Frame:UpdateIndicators()
+			end,
+		},		
+		reverseCooldown = {
+			type = "toggle",
+			order = 100,
+			name = L["Reverse Cooldown"],
+			desc = L["Set cooldown to become darker over time instead of lighter."],
+			tristate = true,
+			get = function ()
+				return indicator.dbx.reverseCooldown
+			end,
+			set = function (_, v)
+				indicator.dbx.reverseCooldown = v
 				local indicatorKey = indicator.name
 				Grid2Frame:WithAllFrames(function (f)
-					local text= f[indicatorKey].CooldownText
-					text:SetFont( text:GetFont() , v)
+					f[indicatorKey].Cooldown:SetReverse(indicator.dbx.reverseCooldown)
 				end)
 			end,
+			disabled= function() return indicator.dbx.disableCooldown end,
+		},		
+		disableOmniCC = {
+			type = "toggle",
+			order = 105,
+			name = L["Disable OmniCC"],
+			desc = L["Disable OmniCC"],
+			tristate = true,
+			get = function ()
+				return indicator.dbx.disableOmniCC
+			end,
+			set = function (_, v)
+				indicator.dbx.disableOmniCC = v
+				local indicatorKey = indicator.name
+				Grid2Frame:WithAllFrames(function (f) f[indicatorKey].Cooldown.noCooldownCount= v end)
+			end,
+			disabled= function() return indicator.dbx.disableCooldown end,
 		},
-	   fontJustify = {
+		spacerText = {
+			type = "header",
+			order = 110,
+			name = L["Stack Text"],
+		},
+		disableStacks = {
+			type = "toggle",
+			order = 115,
+			name = L["Disable Stack Text"],
+			desc = L["Disable Stack Text"],
+			tristate = true,
+			get = function ()
+				return indicator.dbx.disableStack
+			end,
+			set = function (_, v)
+				indicator.dbx.disableStack = v
+				Grid2Frame:WithAllFrames(function (f) indicator:Disable(f) end)
+				indicator:UpdateDB()
+				Grid2Frame:WithAllFrames(function (f) indicator:Create(f) indicator:Layout(f) end)
+				Grid2Frame:UpdateIndicators()
+			end,
+		},		
+		fontJustify = {
 		    type = 'select',
-			order = 95,
+			order = 120,
 			name = L["Text Location"],
 			desc = L["Text Location"],
 		    values = pointValueList,
@@ -1047,55 +1100,91 @@ local function MakeIconIndicatorOptions(indicator)
 					f[indicatorKey].CooldownText:SetJustifyV(justify[2])
 				end)
 			end,
+			disabled= function() return indicator.dbx.disableStack end,
 		},
-		disableCooldown = {
-			type = "toggle",
-			order = 104,
-			name = L["Disable Cooldown"],
-			desc = L["Disable the Cooldown Frame"],
-			tristate = true,
+		fontsize = {
+			type = "range",
+			order = 125,
+			name = L["Font Size"],
+			desc = L["Adjust the font size."],
+			min = 6,
+			max = 24,
+			step = 1,
 			get = function ()
-				return indicator.dbx.disableCooldown
+				return indicator.dbx.fontSize
 			end,
 			set = function (_, v)
-				indicator.disableCooldown = v
-				indicator.dbx.disableCooldown = v
-				Grid2Frame:UpdateIndicators()
-			end,
-		},		
-		reverseCooldown = {
-			type = "toggle",
-			order = 105,
-			name = L["Reverse Cooldown"],
-			desc = L["Set cooldown to become darker over time instead of lighter."],
-			tristate = true,
-			get = function ()
-				return indicator.dbx.reverseCooldown
-			end,
-			set = function (_, v)
-				indicator.dbx.reverseCooldown = v
+				indicator.dbx.fontSize = v
 				local indicatorKey = indicator.name
 				Grid2Frame:WithAllFrames(function (f)
-					f[indicatorKey].Cooldown:SetReverse(indicator.dbx.reverseCooldown)
+					local text= f[indicatorKey].CooldownText
+					text:SetFont( text:GetFont() , v)
 				end)
 			end,
-		},		
-		disableOmniCC = {
-			type = "toggle",
-			order = 110,
-			name = L["Disable OmniCC"],
-			desc = L["Disable OmniCC"],
-			tristate = true,
-			get = function ()
-				return indicator.dbx.disableOmniCC
+			disabled= function() return indicator.dbx.disableStack end,
+		},
+		fontColor = {
+			type = "color",
+			order = 130,
+			name = L["Font Color"],
+			desc = L["Font Color"],
+			get = function()
+				local c= indicator.dbx.stackColor
+				if c then 	return c.r, c.g, c.b, c.a
+				else		return 1,1,1,1
+				end
 			end,
-			set = function (_, v)
-				indicator.dbx.disableOmniCC = v
+			set = function( info, r,g,b,a )
+				local c= indicator.dbx.stackColor
+				if c then c.r, c.g, c.b, c.a = r, g, b, a
+				else	  indicator.dbx.stackColor= { r=r, g=g, b=b, a=a}
+				end
 				local indicatorKey = indicator.name
-				Grid2Frame:WithAllFrames(function (f) f[indicatorKey].Cooldown.noCooldownCount= v end)
-			end,
+				Grid2Frame:WithAllFrames(function (f) 
+					local text= f[indicatorKey].CooldownText
+					if text then text:SetTextColor(r,g,b,a) end
+				end)
+			 end, 
+			hasAlpha = true,
+			disabled= function() return indicator.dbx.disableStack end,
 		},		
 	}
+	if Grid2Options.AddMediaOption then
+		local fontOption = {
+			type = "select",
+			order = 123,
+			name = L["Font"],
+			desc = L["Adjust the font settings"],
+			disabled= function() return indicator.dbx.disableStack end,
+		}
+		Grid2Options:AddMediaOption("font", fontOption)
+		local values = fontOption.values
+		fontOption.get = function ()
+			local fontIndex
+			if indicator.dbx.font then
+				for index, handle in ipairs(values) do
+					if indicator.dbx.font == handle then
+						fontIndex = index
+						break
+					end
+				end
+			end	
+			return fontIndex
+		end
+		fontOption.set = function (_, v)
+			local fontHandle = values[v]
+			indicator.dbx.font = fontHandle
+			local font = media:Fetch("font", fontHandle)
+			local fontsize = indicator.dbx.fontSize
+			local indicatorKey = indicator.name
+			Grid2Frame:WithAllFrames(function (f) 
+				local text= f[indicatorKey].CooldownText
+				if text then text:SetFont(font,fontsize) end
+			end)
+		end
+		options.font = fontOption
+	end
+	
 	Grid2Options:MakeIndicatorSizeOptions(indicator, options)
 	Grid2Options:MakeIndicatorTypeOptions(indicator, options)
 	Grid2Options:AddIndicatorLocationOptions(indicator, options)
