@@ -37,7 +37,7 @@ function DungeonRole:GetColor(unit)
 	elseif role=="HEALER" then
 		c = self.dbx.color2
 	elseif role=="TANK" then
-		c = self.dbx.color2 
+		c = self.dbx.color3 
 	else 
 		c = { r=0, g=0, b=0, a=0 }
 	end

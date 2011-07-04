@@ -477,10 +477,6 @@ L["Display status for the player's heals."] = "Muestra el estado de las curas de
 L["Minimum value"] = "Valor mínimo"
 L["Incoming heals below the specified value will not be shown."] = "Las curas entrantes por debajo del valor indicado no se mostrarán"
 
---role status
-L["MAIN_ASSIST"] = MAIN_ASSIST
-L["MAIN_TANK"] = MAIN_TANK
-
 --target status
 L["Your Target"] = "Tu Objetivo"
 
@@ -522,7 +518,6 @@ L["Dead Units"] = "Jugadores muertos"
 L["Display status only for dead units"] = "Muestra el estado solo para jugadores muertos"
 
 -- resurrection
-
 L["Casting resurrection"] = "Resucitando"
 L["A resurrection spell is being casted on the unit"] = "Alguien esta resucitando a esta unidad"
 L["Resurrected"] = "Resucitado"

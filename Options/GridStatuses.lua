@@ -1420,8 +1420,8 @@ function Grid2Options:MakeStatusHandlers(reset)
 			thresholdDesc = L["Set the delay until ready check results are cleared."],
 	})
 	self:AddOptionHandler("role", self.MakeStatusStandardOptions, {
-			color1 = L["MAIN_ASSIST"],
-			color2 = L["MAIN_TANK"],
+			color1 = MAIN_ASSIST,
+			color2 = MAIN_TANK,
 	})
 	self:AddOptionHandler("threat", self.MakeStatusStandardOptions, {
 			color1 = L["Not Tanking"],

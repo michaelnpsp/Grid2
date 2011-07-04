@@ -477,10 +477,6 @@ L["Display status for the player's heals."] = "Показывать статус
 L["Minimum value"] = "Минимальное значение"
 L["Incoming heals below the specified value will not be shown."] = "Входящий хил ниже указанного значения показан не будет"
 
---role status
-L["MAIN_ASSIST"] = MAIN_ASSIST
-L["MAIN_TANK"] = MAIN_TANK
-
 --target status
 L["Your Target"] = "Ваша Цель"
 
@@ -522,7 +518,6 @@ L["Delete raid debuff"] = "Удалить рейд-дебафф"
 -- L["Display status only for dead units"] = ""
 
 -- resurrection
-
 -- L["Casting resurrection"] = ""
 -- L["A resurrection spell is being casted on the unit"] = ""
 -- L["Resurrected"] = ""

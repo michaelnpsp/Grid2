@@ -477,10 +477,6 @@ L["Display status for the player's heals."] = "Afficher le statut des soins du j
 -- L["Minimum value"] = ""
 -- L["Incoming heals below the specified value will not be shown."] = ""
 
---role status
-L["MAIN_ASSIST"] = MAIN_ASSIST
-L["MAIN_TANK"] = MAIN_TANK
-
 --target status
 L["Your Target"] = "Votre Cible"
 
@@ -522,7 +518,6 @@ L["Advanced"] = "Avancé"
 -- L["Display status only for dead units"] = ""
 
 -- resurrection
-
 -- L["Casting resurrection"] = ""
 -- L["A resurrection spell is being casted on the unit"] = ""
 -- L["Resurrected"] = ""

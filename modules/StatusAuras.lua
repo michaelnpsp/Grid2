@@ -92,6 +92,7 @@ do
 		for filter in next, filters do
 			filter[unit] = nil
 		end
+		AuraFrame_OnEvent(nil,nil,unit)  -- Not related to class filter, update auras of new units in raid
 	end
 
 	Grid2.RegisterMessage(filter_mt, "Grid_UnitJoined", status_ClearFilterUnit)
