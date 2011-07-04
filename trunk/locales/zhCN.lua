@@ -3,8 +3,8 @@ if not L then return end
 
 --{{{ Actually used
 L["Border"] = "边框"
-L["Charmed"] = "Charmed"
-L["Default"] = "Default"
+-- L["Charmed"] = "Charmed"
+-- L["Default"] = "Default"
 L["Grid2"] = "Grid2"
 L["Beast"] = "野兽"
 L["Demon"] = "恶魔"
@@ -26,8 +26,8 @@ L["Offline"] = "离"
 --}}}
 
 --{{{ GridStatusPvp
-L["PvP"] = "PvP"
-L["FFA"] = "FFA"
+-- L["PvP"] = "PvP"
+-- L["FFA"] = "FFA"
 --}}}
 
 --{{{ GridStatusRange
@@ -46,7 +46,7 @@ L["target"] = "目标"
 --}}}
 
 --{{{ GridStatusVehicle
-L["vehicle"] = "vehicle"
+-- L["vehicle"] = "vehicle"
 --}}}
 
 --{{{ GridStatusVoiceComm

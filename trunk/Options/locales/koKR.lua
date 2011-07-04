@@ -477,10 +477,6 @@ L["Display status for the player's heals."] = "플레이어의 치유를 상태 
 -- L["Minimum value"] = ""
 -- L["Incoming heals below the specified value will not be shown."] = ""
 
---role status
-L["MAIN_ASSIST"] = MAIN_ASSIST
-L["MAIN_TANK"] = MAIN_TANK
-
 --target status
 L["Your Target"] = "당신의 대상"
 
@@ -522,7 +518,6 @@ L["Voice Chat"] = "음성 대화"
 -- L["Display status only for dead units"] = ""
 
 -- resurrection
-
 -- L["Casting resurrection"] = ""
 -- L["A resurrection spell is being casted on the unit"] = ""
 -- L["Resurrected"] = ""

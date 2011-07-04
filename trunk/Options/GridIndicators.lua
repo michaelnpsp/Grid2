@@ -1126,8 +1126,8 @@ local function MakeIconIndicatorOptions(indicator)
 		fontColor = {
 			type = "color",
 			order = 130,
-			name = L["Font Color"],
-			desc = L["Font Color"],
+			name = L["Color"],
+			desc = L["Color"],
 			get = function()
 				local c= indicator.dbx.stackColor
 				if c then 	return c.r, c.g, c.b, c.a
