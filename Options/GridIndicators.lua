@@ -873,11 +873,51 @@ local function MakeBarIndicatorOptions(indicator)
 			Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
 		end,	
 	}
+	options.durationHeader = {
+			type = "header",
+			order = 45,
+			name = L["Display"],
+	}
+	options.duration = {
+		type = "toggle",
+		name = L["Show duration"],
+		desc = L["Show the time remaining."],
+		order = 50,
+		tristate = true,
+		get = function ()
+			return indicator.dbx.duration
+		end,
+		set = function (_, v)
+			indicator.dbx.duration = v
+			indicator:UpdateDB()
+			Grid2Frame:UpdateIndicators()
+		end,
+	}
+	options.stack = {
+		type = "toggle",
+		name = L["Show stack"],
+		desc = L["Show the number of stacks."],
+		order = 55,
+		tristate = true,
+		get = function ()
+			return indicator.dbx.stack
+		end,
+		set = function (_, v)
+			indicator.dbx.stack = v
+			indicator:UpdateDB()
+			Grid2Frame:UpdateIndicators()
+		end,
+	}
+	options.colorsHeader = {
+			type = "header",
+			order = 60,
+			name = L["Misc"],
+	}
 	options.inverColor= {
 		type = "toggle",
 		name = L["Invert Bar Color"],
 		desc = L["Swap foreground/background colors on bars."],
-		order =50,
+		order = 65,
 		tristate = true,
 		get = function ()
 			return indicator.dbx.invertColor
@@ -893,38 +933,19 @@ local function MakeBarIndicatorOptions(indicator)
 			Grid2Frame:UpdateIndicators()
 		end,
 	}	
-	options.durationHeader = {
-			type = "header",
-			order = 55,
-			name = L["Display"],
-	}
-	options.duration = {
-		type = "toggle",
-		name = L["Show duration"],
-		desc = L["Show the time remaining."],
-		order = 60,
-		tristate = true,
-		get = function ()
-			return indicator.dbx.duration
-		end,
-		set = function (_, v)
-			indicator.dbx.duration = v
-			indicator:UpdateDB()
-			Grid2Frame:UpdateIndicators()
-		end,
-	}
-	options.stack = {
-		type = "toggle",
-		name = L["Show stack"],
-		desc = L["Show the number of stacks."],
+	options.barOpacity = {
+		type = "range",
 		order = 70,
-		tristate = true,
-		get = function ()
-			return indicator.dbx.stack
-		end,
+		name = L["Opacity"],
+		desc = L["Set the opacity."],
+		min = 0,
+		max = 1,
+		step = 0.01,
+		bigStep = 0.05,
+		get = function () return indicator.dbx.opacity or 1	end,
 		set = function (_, v)
-			indicator.dbx.stack = v
-			indicator:UpdateDB()
+			indicator.dbx.opacity = v
+			indicator.sideKick:UpdateDB()
 			Grid2Frame:UpdateIndicators()
 		end,
 	}

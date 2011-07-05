@@ -2,6 +2,7 @@
 
 local Grid2= Grid2
 local GetTime= GetTime
+local min= min
 
 local function Bar_CreateHH(self, parent)
 	local bar= self:CreateFrame("StatusBar", parent)
@@ -130,7 +131,7 @@ end
 
 local function BarColor_SetBarColor(self, parent, r, g, b, a)
 	local Bar= parent[self.BarName]
-	Bar:SetStatusBarColor(r, g, b, a)
+	Bar:SetStatusBarColor(r, g, b, min(self.opacity,a or 1) )
 end
 
 local function BarColor_SetBarColorInverted(self, parent, r, g, b, a)
@@ -145,6 +146,7 @@ local function BarColor_UpdateDB(self)
 	else
 		self.SetBarColor = BarColor_SetBarColor
 	end
+	self.opacity= self.dbx.opacity or 1
 end
 
 local function Create(indicatorKey, dbx)
