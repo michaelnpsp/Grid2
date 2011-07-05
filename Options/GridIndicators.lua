@@ -800,6 +800,50 @@ local function MakeAlphaIndicatorOptions(indicator)
 	Grid2Options:AddIndicatorElement(indicator, options)
 end
 
+local function MakeBarColorIndicatorOptions(indicator)
+	local baseKey = indicator.name
+	local options = {}
+	local statuses= {}
+	options.inverColor= {
+		type = "toggle",
+		name = L["Invert Bar Color"],
+		desc = L["Swap foreground/background colors on bars."],
+		order = 10,
+		tristate = true,
+		get = function ()
+			return indicator.dbx.invertColor
+		end,
+		set = function (_, v)
+			indicator.dbx.invertColor = v
+			indicator:UpdateDB()
+			if not v then
+			    local c= Grid2Frame.db.profile.frameContentColor
+				Grid2Frame:WithAllFrames(function (f) f.container:SetVertexColor(c.r, c.g, c.b, c.a) end)
+			end	
+			Grid2Frame:UpdateIndicators()
+		end,
+	}	
+	options.barOpacity = {
+		type = "range",
+		order = 20,
+		name = L["Opacity"],
+		desc = L["Set the opacity."],
+		min = 0,
+		max = 1,
+		step = 0.01,
+		bigStep = 0.05,
+		get = function () return indicator.dbx.opacity or 1	end,
+		set = function (_, v)
+			indicator.dbx.opacity = v
+			indicator:UpdateDB()
+			Grid2Frame:UpdateIndicators()
+		end,
+		disabled= function() return indicator.dbx.invertColor end,
+	}
+	Grid2Options:AddIndicatorStatusOptions(indicator, statuses)
+	Grid2Options:AddIndicatorElement(indicator, options, statuses)
+end
+
 local function MakeBarIndicatorOptions(indicator)
 	local baseKey = indicator.name
 	local options = {}
@@ -908,48 +952,6 @@ local function MakeBarIndicatorOptions(indicator)
 			Grid2Frame:UpdateIndicators()
 		end,
 	}
-	options.colorsHeader = {
-			type = "header",
-			order = 60,
-			name = L["Misc"],
-	}
-	options.inverColor= {
-		type = "toggle",
-		name = L["Invert Bar Color"],
-		desc = L["Swap foreground/background colors on bars."],
-		order = 65,
-		tristate = true,
-		get = function ()
-			return indicator.dbx.invertColor
-		end,
-		set = function (_, v)
-			indicator.dbx.invertColor = v
-			-- sideKick is the linked BarColor indicator
-			indicator.sideKick:UpdateDB()
-			if not v then
-			    local c= Grid2Frame.db.profile.frameContentColor
-				Grid2Frame:WithAllFrames(function (f) f.container:SetVertexColor(c.r, c.g, c.b, c.a) end)
-			end	
-			Grid2Frame:UpdateIndicators()
-		end,
-	}	
-	options.barOpacity = {
-		type = "range",
-		order = 70,
-		name = L["Opacity"],
-		desc = L["Set the opacity."],
-		min = 0,
-		max = 1,
-		step = 0.01,
-		bigStep = 0.05,
-		get = function () return indicator.dbx.opacity or 1	end,
-		set = function (_, v)
-			indicator.dbx.opacity = v
-			indicator.sideKick:UpdateDB()
-			Grid2Frame:UpdateIndicators()
-		end,
-	}
-	
 	if Grid2Options.AddMediaOption then
 		local textureOption = {
 			type = "select",
@@ -981,9 +983,7 @@ local function MakeBarIndicatorOptions(indicator)
 	
 	local BarColor = Grid2.indicators[indicator.name .. "-color"]
 	if BarColor then
-		options = {}
-		Grid2Options:AddIndicatorStatusOptions(BarColor, options)
-		Grid2Options:AddIndicatorElement(BarColor, options)	
+		MakeBarColorIndicatorOptions(BarColor)
 	end	
 end
 
