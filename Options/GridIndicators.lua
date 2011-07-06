@@ -878,7 +878,7 @@ local function MakeBarIndicatorOptions(indicator)
 			indicator.dbx.level = v
 			Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
 		end,
-		values={ 1,2,3,4,5}
+		values={ 1,2,3,4,5,6,7,8,9 }
 	}
 	options.barWidth= {
 		type = "range",
