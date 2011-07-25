@@ -81,7 +81,7 @@ function Resurrection:GetText(unit)
 end
 
 local function Create(baseKey, dbx)
-	Grid2:RegisterStatus(Resurrection, {"text","icon"}, baseKey, dbx)
+	Grid2:RegisterStatus(Resurrection, {"text","icon","color"}, baseKey, dbx)
 	return Resurrection
 end
 

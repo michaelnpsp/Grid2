@@ -17,15 +17,15 @@ local UnitHealthMax = UnitHealthMax
 local UnitIsFeignDeath = UnitIsFeignDeath
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitGetIncomingHeals = UnitGetIncomingHeals
-local fmt= string.format
+local fmt = string.format
+local next = next
+
+local statuses= {} -- Enabled statuses
 
 local function Frame_OnUnitHealthChanged(self, _, unit)
-	if HealthCurrent.enabled then HealthCurrent:UpdateIndicators(unit) end
-	if Heals.enabled then Heals:UpdateIndicators(unit) end
-	if HealthLow.enabled then HealthLow:UpdateIndicators(unit) end
-	if Death.enabled then Death:UpdateIndicators(unit) end
-	if FeignDeath.enabled then FeignDeath:UpdateIndicators(unit) end
-	if HealthDeficit.enabled then HealthDeficit:UpdateIndicators(unit) end
+	for status in next, statuses do
+		status:UpdateIndicators(unit)
+	end
 end
 
 local EnableHealthFrame, HealthFrameEnabled, UpdateHealthFrequency
@@ -77,10 +77,12 @@ end
 function HealthCurrent:OnEnable()
 	self:UpdateDB()
 	EnableHealthFrame(true)
+	statuses[self]= true
 end
 
 function HealthCurrent:OnDisable()
 	EnableHealthFrame(false)
+	statuses[self]= nil
 end
 
 function HealthCurrent:IsActive(unit)
@@ -131,10 +133,12 @@ Grid2.setupFunc["health-current"] = CreateHealthCurrent
 
 function HealthLow:OnEnable()
 	EnableHealthFrame(true)
+	statuses[self]= true
 end
 
 function HealthLow:OnDisable()
 	EnableHealthFrame(false)
+	statuses[self]= nil
 end
 
 function HealthLow:IsActive(unit)
@@ -158,10 +162,12 @@ Grid2.setupFunc["health-low"] = CreateHealthLow
 
 function Death:OnEnable()
 	EnableHealthFrame(true)
+	statuses[self]= true
 end
 
 function Death:OnDisable()
 	EnableHealthFrame(false)
+	statuses[self]= nil
 end
 
 function Death:IsActive(unitid)
@@ -202,10 +208,12 @@ Grid2.setupFunc["death"] = CreateDeath
 
 function FeignDeath:OnEnable()
 	EnableHealthFrame(true)
+	statuses[self]= true
 end
 
 function FeignDeath:OnDisable()
 	EnableHealthFrame(false)
+	statuses[self]= nil
 end
 
 function FeignDeath:IsActive(unit)
@@ -240,10 +248,12 @@ Grid2.setupFunc["feign-death"] = CreateFeignDeath
 
 function HealthDeficit:OnEnable()
 	EnableHealthFrame(true)
+	statuses[self]= true
 end
 
 function HealthDeficit:OnDisable()
 	EnableHealthFrame(false)
+	statuses[self]= nil
 end
 
 function HealthDeficit:GetColor(unit)
@@ -290,11 +300,13 @@ end
 function Heals:OnEnable()
 	self:RegisterEvent("UNIT_HEAL_PREDICTION", "Update")
 	self:UpdateDB()
+	statuses[self]= true
 end
 
 function Heals:OnDisable()
 	self:UnregisterEvent("UNIT_HEAL_PREDICTION")
 	wipe(HealsCache)
+	statuses[self]= nil
 end
 
 function Heals:Update(event, unit)
