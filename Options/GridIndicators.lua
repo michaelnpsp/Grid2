@@ -597,12 +597,12 @@ function Grid2Options:AddIndicatorLocationOptions(indicator, options)
 	local location  = indicator.dbx.location
 	options.locationSeparator1 = {
 			type = "header",
-			order = 4,
+			order = 3,
 			name = L["Location"],
 	}
 	options.relPoint = {
 		    type = 'select',
-			order = 5,
+			order = 4,
 			name = L["Location"],
 			desc = L["Align my align point relative to"],
 		    values = pointValueList,
@@ -617,7 +617,7 @@ function Grid2Options:AddIndicatorLocationOptions(indicator, options)
 		}
 	options.point = {
 		    type = 'select',
-			order = 6,
+			order = 5,
 			name = L["Align Point"],
 			desc = L["Align this point on the indicator"],
 		    values = pointValueList,
@@ -630,7 +630,7 @@ function Grid2Options:AddIndicatorLocationOptions(indicator, options)
 		}
 	options.x = {
 			type = "range",
-			order = 7,
+			order = 6,
 			name = L["X Offset"],
 			desc = L["X - Horizontal Offset"],
 			min = -50, max = 50, step = 1, bigStep = 1,
@@ -643,7 +643,7 @@ function Grid2Options:AddIndicatorLocationOptions(indicator, options)
 		}
 	options.y = {
 			type = "range",
-			order = 8,
+			order = 7,
 			name = L["Y Offset"],
 			desc = L["Y - Vertical Offset"],
 			min = -50, max = 50, step = 1, bigStep = 1,
@@ -654,6 +654,21 @@ function Grid2Options:AddIndicatorLocationOptions(indicator, options)
 					Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
 			end,
 		}
+	options.frameLevel = {
+		type = "select",
+		order = 8,
+		name = L["Frame Level"],
+		desc = L["Bars with higher numbers always show up on top of lower numbers."],
+		get = function ()
+			return indicator.dbx.level or 1
+		end,
+		set = function (_, v)
+			indicator.frameLevel = v
+			indicator.dbx.level = v
+			Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
+		end,
+		values={ 1,2,3,4,5,6,7,8,9 }
+	}
 	options.locationSeparator2 = {
 			type = "header",
 			order = 9,
@@ -864,21 +879,6 @@ local function MakeBarIndicatorOptions(indicator)
 			Grid2Frame:WithAllFrames(function (f) indicator:SetOrientation(f,v) end)
 		end,
 		values={ ["DEFAULT"]= L["DEFAULT"], ["VERTICAL"] = L["VERTICAL"], ["HORIZONTAL"] = L["HORIZONTAL"]}
-	}
-	options.frameLevel = {
-		type = "select",
-		order = 25,
-		name = L["Frame Level"],
-		desc = L["Bars with higher numbers always show up on top of lower numbers."],
-		get = function ()
-			return indicator.dbx.level or 1
-		end,
-		set = function (_, v)
-			indicator.frameLevel = v
-			indicator.dbx.level = v
-			Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
-		end,
-		values={ 1,2,3,4,5,6,7,8,9 }
 	}
 	options.barWidth= {
 		type = "range",
@@ -1240,14 +1240,14 @@ local function NewIndicator()
 		local dbx= { type= newIndicatorValues.type }
 		dbx.location= Grid2.CreateLocation(newIndicatorValues.relPoint)
 		if (newIndicatorValues.type == "square") then
-			dbx.level = 9
+			dbx.level = 6
 			dbx.size = defaults.square.size
 		elseif (newIndicatorValues.type == "icon") then
 			dbx.level = 8
 			dbx.size = defaults.icon.size
 			dbx.fontSize= defaults.icon.fontSize
 		elseif (newIndicatorValues.type == "text") then
-			dbx.level = 6
+			dbx.level = 7
 			dbx.textlength= defaults.text.textlength
 			dbx.fontSize= defaults.text.fontSize
 			dbx.font= defaults.text.font
