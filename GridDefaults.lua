@@ -402,5 +402,13 @@ function Grid2:UpdateDefaults()
 		})
 		Grid2:DbSetMap( "icon-center", "resurrection", 160)
 	end	
+	if not Grid2:DbGetValue("statuses", "power") then
+		Grid2:DbSetValue( "statuses",  "power", {type = "power", colorCount = 5, 
+			color1 = {r=0,g=0.5,b=1  ,a=1},   -- mana
+			color2 = {r=1,g=0  ,b=0  ,a=1},   -- rage
+			color3 = {r=1,g=0.5,b=0  ,a=1},   -- focus
+			color4 = {r=1,g=1  ,b=0  ,a=1},   -- energy
+			color5 = {r=0,g=0.8,b=0.8,a=1}})  -- runic power
+	end
 	
 end

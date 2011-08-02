@@ -103,15 +103,16 @@ local function Icon_OnUpdate(self, parent, unit, status)
 	Frame:Show()
 end
 
-local function Icon_SetIndicatorSize(self, parent, size)
-	parent[self.name]:SetSize(size,size)
-end
-
-local function Icon_SetBorderSize(self, parent, borderSize)
+local function Icon_Layout(self, parent)
 	local f = parent[self.name]
-	local backdrop = f:GetBackdrop()
+	f:ClearAllPoints()
+	f:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
+	f:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
 
 	local Icon = f.Icon
+	local r,g,b,a = f:GetBackdropBorderColor()
+	local backdrop = f:GetBackdrop()
+	local borderSize = self.borderSize
 	if borderSize then
 		Icon:SetPoint("TOPLEFT", f ,"TOPLEFT", borderSize, -1 * borderSize)
 		Icon:SetPoint("BOTTOMRIGHT", f ,"BOTTOMRIGHT", -1 * borderSize, borderSize)
@@ -125,21 +126,11 @@ local function Icon_SetBorderSize(self, parent, borderSize)
 	backdrop.insets.right = borderSize
 	backdrop.insets.top = borderSize
 	backdrop.insets.bottom = borderSize
-
-	local r, g, b, a = f:GetBackdropBorderColor()
-
 	f:SetBackdrop(backdrop)
 	f:SetBackdropBorderColor(r, g, b, a)
-end
-
-local function Icon_Layout(self, parent)
-	local Icon = parent[self.name]
-	Icon:ClearAllPoints()
-	Icon:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
-	Icon:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
-	Icon_SetBorderSize(self, parent, self.borderSize)
+	
 	local size = self.dbx.size
-	Icon:SetSize(size,size)
+	f:SetSize(size,size)
 end
 
 local function Icon_Disable(self, parent)
@@ -151,8 +142,6 @@ local function Icon_Disable(self, parent)
 	self.GetBlinkFrame = nil
 	self.Layout = nil
 	self.OnUpdate = nil
-	self.SetIndicatorSize = nil
-	self.SetBorderSize = nil
 end
 
 local function Icon_UpdateDB(self, dbx)
@@ -171,8 +160,6 @@ local function Icon_UpdateDB(self, dbx)
 	self.GetBlinkFrame = Icon_GetBlinkFrame
 	self.Layout = Icon_Layout
 	self.OnUpdate = Icon_OnUpdate
-	self.SetIndicatorSize = Icon_SetIndicatorSize
-	self.SetBorderSize = Icon_SetBorderSize
 	self.Disable = Icon_Disable
 	self.UpdateDB = Icon_UpdateDB
 	self.dbx = dbx

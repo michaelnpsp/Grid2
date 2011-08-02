@@ -300,13 +300,10 @@ local function DeleteIndicator(indicator)
 	Grid2Frame:UpdateIndicators()
 end
 
-
 function Grid2Options:MakeIndicatorSizeOptions(indicator, options, optionParams)
 	options = options or {}
 	local baseKey = indicator.name
 
-	local name = L["Border Size"]
-	local desc = L["Adjust the border size of the indicator."]
 	options.size = {
 		type = "range",
 		order = 10,
@@ -320,13 +317,88 @@ function Grid2Options:MakeIndicatorSizeOptions(indicator, options, optionParams)
 		end,
 		set = function (_, v)
 			indicator.dbx.size = v
-			Grid2Frame:WithAllFrames(function (f)
-				indicator:SetIndicatorSize(f, v)
-				indicator:Layout(f)
-			end)
+			indicator:UpdateDB()
+			Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
 		end,
 	}
 
+	return options
+end
+
+function Grid2Options:MakeIndicatorSquareSizeOptions(indicator, options, optionParams)
+	options = options or {}
+	local baseKey = indicator.name
+
+	options.size = {
+		type = "range",
+		order = 10,
+		name = L["Size"],
+		desc = L["Adjust the size of the indicator."],
+		min = 0,
+		max = 50,
+		step = 1,
+		get = function () return indicator.dbx.size	end,
+		set = function (_, v)
+			indicator.dbx.size = v
+			indicator:UpdateDB()
+			Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
+		end,
+		hidden = function() return not indicator.dbx.size end
+	}
+	options.width = {
+		type = "range",
+		order = 11,
+		name = L["Width"],
+		desc = L["Adjust the width of the indicator."],
+		min = 0,
+		max = 50,
+		step = 1,
+		get = function () return indicator.dbx.width end,
+		set = function (_, v)
+			indicator.dbx.width = v
+			indicator:UpdateDB()
+			Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
+		end,
+		hidden = function() return indicator.dbx.size end
+	}
+	options.height = {
+		type = "range",
+		order = 12,
+		name = L["Height"],
+		desc = L["Adjust the height of the indicator."],
+		min = 0,
+		max = 50,
+		step = 1,
+		get = function () return indicator.dbx.height end,
+		set = function (_, v)
+			indicator.dbx.height = v
+			indicator:UpdateDB()
+			Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
+		end,
+		hidden = function() return indicator.dbx.size end
+	}
+	options.sizeToggle = {
+		type = "toggle",
+		name = L["Rectangle"],
+		desc = L["Allows to independently adjust width and height."],
+		order = 13,
+		tristate = false,
+		get = function () return not indicator.dbx.size end,
+		set = function (_, v)
+			if v then
+				indicator.dbx.width= indicator.dbx.size or 5
+				indicator.dbx.height= indicator.dbx.size or 5
+				indicator.dbx.size= nil
+			else
+				indicator.dbx.size= indicator.dbx.width
+				indicator.dbx.width= nil
+				indicator.dbx.height= nil
+			end
+			indicator:UpdateDB()
+			Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
+		end,
+	}
+	
 	return options
 end
 
@@ -345,21 +417,45 @@ function Grid2Options:MakeIndicatorBorderSizeOptions(indicator, options, optionP
 		min = 0,
 		max = 20,
 		step = 1,
-		get = function ()
-			return indicator.dbx.borderSize or 0
-		end,
+		get = function () return indicator.dbx.borderSize or 0 end,
 		set = function (_, v)
-			if (v == 0) then
-				v = nil
-			end
+			if v == 0 then v = nil end
 			indicator.dbx.borderSize = v
 			indicator:UpdateDB()
-			Grid2Frame:WithAllFrames(function (f) indicator:SetBorderSize(f,v) end)
-			Grid2Frame:LayoutFrames()
+			Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
 			Grid2Frame:UpdateIndicators()
 		end,
 	}
 
+	return options
+end
+
+
+function Grid2Options:MakeIndicatorTextureOptions(indicator, options, optionParams)
+	options = options or {}
+	local baseKey = indicator.name
+
+	if Grid2Options.AddMediaOption then
+		local textureOption = {
+			type = "select",
+			order = 9,
+			name = L["Frame Texture"],
+			desc = L["Adjust the texture of the indicator."],
+			get = function (info)
+				local v = indicator.dbx.texture or "Flat"
+				for i, t in ipairs(info.option.values) do
+					if v == t then return i end
+				end
+			end,
+			set = function (info, v)
+				indicator.dbx.texture = info.option.values[v]
+				indicator:UpdateDB()
+				Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
+			end,
+		}
+		Grid2Options:AddMediaOption("statusbar", textureOption)
+		options.texture = textureOption
+	end
 	return options
 end
 
@@ -764,7 +860,6 @@ local function MakeTextIndicatorOptions(indicator)
 			end,
 		},
 	}
-
 	if Grid2Options.AddMediaOption then
 		local fontOption = {
 			type = "select",
@@ -957,7 +1052,7 @@ local function MakeBarIndicatorOptions(indicator)
 			type = "select",
 			order = 20,
 			name = L["Frame Texture"],
-			desc = L["Adjust the texture of the bar."],
+			desc = L["Adjust the frame texture."],
 			get = function (info)
 				local v = indicator.dbx.texture
 				for i, t in ipairs(info.option.values) do
@@ -965,10 +1060,9 @@ local function MakeBarIndicatorOptions(indicator)
 				end
 			end,
 			set = function (info, v)
-				v = info.option.values[v]
-				indicator.dbx.texture = v
-				local texture = media:Fetch("statusbar", v)
-				Grid2Frame:WithAllFrames(function (f) indicator:SetTexture(f, texture) end)
+				indicator.dbx.texture = info.option.values[v]
+				indicator:UpdateDB()
+				Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
 			end,
 		}
 		Grid2Options:AddMediaOption("statusbar", textureOption)
@@ -998,7 +1092,7 @@ local function MakeBorderIndicatorOptions(indicator)
 			name = L["Border Size"],
 			desc = L["Adjust the border of each unit's frame."],
 			min = 1,
-			max = 8,
+			max = 20,
 			step = 1,
 			get = function ()
 				return Grid2Frame.db.profile.frameBorder
@@ -1009,13 +1103,50 @@ local function MakeBorderIndicatorOptions(indicator)
 			end,
 			disabled = InCombatLockdown,
 		},
+		borderDistance= {
+			type = "range",
+			name = L["Border separation"],
+			desc = L["Adjust the distance between the border and the frame content."],
+			min = -16,
+			max = 16,
+			step = 1,
+			order = 15,
+			get = function ()
+				return Grid2Frame.db.profile.frameBorderDistance
+			end,
+			set = function (_, v)
+				Grid2Frame.db.profile.frameBorderDistance = v
+				Grid2Frame:LayoutFrames()
+			end,
+		},		
 	}
+	if Grid2Options.AddMediaOption then
+		local textureOption = {
+			type = "select",
+			order = 25,
+			name = L["Border Texture"],
+			desc = L["Adjust the border texture."],
+			get = function (info)
+				local v = Grid2Frame.db.profile.frameBorderTexture
+				for i, t in ipairs(info.option.values) do
+					if v == t then return i end
+				end
+			end,
+			set = function (info, v)
+				Grid2Frame.db.profile.frameBorderTexture = info.option.values[v]
+				Grid2Frame:LayoutFrames()
+			end,
+		}
+		Grid2Options:AddMediaOption("border", textureOption)
+		layout.borderTexture = textureOption
+	end
+	
 	local optionParams = {}
 	optionParams.color1 = L["Border Background Color"]
 	optionParams.colorDesc1 = L["Adjust border background color and alpha."]
 	optionParams.typeKey = "indicators"
 	Grid2Options:MakeIndicatorColorOptions(indicator, layout, optionParams)
-
+	
 	Grid2Options:AddIndicatorElement(indicator, layout, statuses)
 end
 
@@ -1024,12 +1155,12 @@ local function MakeIconIndicatorOptions(indicator)
 	local options = {
 		spacerCooldown = {
 			type = "header",
-			order = 90,
+			order = 125,
 			name = L["Cooldown"],
 		},
 		disableCooldown = {
 			type = "toggle",
-			order = 95,
+			order = 130,
 			name = L["Disable Cooldown"],
 			desc = L["Disable the Cooldown Frame"],
 			tristate = true,
@@ -1046,7 +1177,7 @@ local function MakeIconIndicatorOptions(indicator)
 		},		
 		reverseCooldown = {
 			type = "toggle",
-			order = 100,
+			order = 135,
 			name = L["Reverse Cooldown"],
 			desc = L["Set cooldown to become darker over time instead of lighter."],
 			tristate = true,
@@ -1060,11 +1191,11 @@ local function MakeIconIndicatorOptions(indicator)
 					f[indicatorKey].Cooldown:SetReverse(indicator.dbx.reverseCooldown)
 				end)
 			end,
-			disabled= function() return indicator.dbx.disableCooldown end,
+			hidden= function() return indicator.dbx.disableCooldown end,
 		},		
 		disableOmniCC = {
 			type = "toggle",
-			order = 105,
+			order = 140,
 			name = L["Disable OmniCC"],
 			desc = L["Disable OmniCC"],
 			tristate = true,
@@ -1076,16 +1207,16 @@ local function MakeIconIndicatorOptions(indicator)
 				local indicatorKey = indicator.name
 				Grid2Frame:WithAllFrames(function (f) f[indicatorKey].Cooldown.noCooldownCount= v end)
 			end,
-			disabled= function() return indicator.dbx.disableCooldown end,
+			hidden= function() return indicator.dbx.disableCooldown end,
 		},
 		spacerText = {
 			type = "header",
-			order = 110,
+			order = 90,
 			name = L["Stack Text"],
 		},
 		disableStacks = {
 			type = "toggle",
-			order = 115,
+			order = 95,
 			name = L["Disable Stack Text"],
 			desc = L["Disable Stack Text"],
 			tristate = true,
@@ -1099,33 +1230,10 @@ local function MakeIconIndicatorOptions(indicator)
 				Grid2Frame:WithAllFrames(function (f) indicator:Create(f) indicator:Layout(f) end)
 				Grid2Frame:UpdateIndicators()
 			end,
-		},		
-		fontJustify = {
-		    type = 'select',
-			order = 120,
-			name = L["Text Location"],
-			desc = L["Text Location"],
-		    values = pointValueList,
-			get = function()
-				local JustifyH= indicator.dbx.fontJustifyH or "CENTER"
-				local JustifyV= indicator.dbx.fontJustifyV or "MIDDLE"
-				return pointMapText[ JustifyH..JustifyV ]
-			end,
-			set = function(_, v)
-				local justify=  pointMapText[v]
-				indicator.dbx.fontJustifyH= justify[1] 
-				indicator.dbx.fontJustifyV= justify[2]
-				local indicatorKey = indicator.name
-				Grid2Frame:WithAllFrames(function (f) 
-					f[indicatorKey].CooldownText:SetJustifyH(justify[1])
-					f[indicatorKey].CooldownText:SetJustifyV(justify[2])
-				end)
-			end,
-			disabled= function() return indicator.dbx.disableStack end,
 		},
 		fontsize = {
 			type = "range",
-			order = 125,
+			order = 105,
 			name = L["Font Size"],
 			desc = L["Adjust the font size."],
 			min = 6,
@@ -1142,11 +1250,11 @@ local function MakeIconIndicatorOptions(indicator)
 					text:SetFont( text:GetFont() , v)
 				end)
 			end,
-			disabled= function() return indicator.dbx.disableStack end,
+			hidden= function() return indicator.dbx.disableStack end,
 		},
 		fontColor = {
 			type = "color",
-			order = 130,
+			order = 110,
 			name = L["Color"],
 			desc = L["Color"],
 			get = function()
@@ -1167,16 +1275,39 @@ local function MakeIconIndicatorOptions(indicator)
 				end)
 			 end, 
 			hasAlpha = true,
-			disabled= function() return indicator.dbx.disableStack end,
+			hidden= function() return indicator.dbx.disableStack end,
 		},		
+		fontJustify = {
+		    type = 'select',
+			order = 100,
+			name = L["Text Location"],
+			desc = L["Text Location"],
+		    values = pointValueList,
+			get = function()
+				local JustifyH= indicator.dbx.fontJustifyH or "CENTER"
+				local JustifyV= indicator.dbx.fontJustifyV or "MIDDLE"
+				return pointMapText[ JustifyH..JustifyV ]
+			end,
+			set = function(_, v)
+				local justify=  pointMapText[v]
+				indicator.dbx.fontJustifyH= justify[1] 
+				indicator.dbx.fontJustifyV= justify[2]
+				local indicatorKey = indicator.name
+				Grid2Frame:WithAllFrames(function (f) 
+					f[indicatorKey].CooldownText:SetJustifyH(justify[1])
+					f[indicatorKey].CooldownText:SetJustifyV(justify[2])
+				end)
+			end,
+			hidden= function() return indicator.dbx.disableStack end,
+		},
 	}
 	if Grid2Options.AddMediaOption then
 		local fontOption = {
 			type = "select",
-			order = 123,
+			order = 120,
 			name = L["Font"],
 			desc = L["Adjust the font settings"],
-			disabled= function() return indicator.dbx.disableStack end,
+			hidden= function() return indicator.dbx.disableStack end,
 		}
 		Grid2Options:AddMediaOption("font", fontOption)
 		local values = fontOption.values
@@ -1219,7 +1350,8 @@ end
 local function MakeSquareIndicatorOptions(indicator)
 	local layout={}
 	local statuses={}
-	Grid2Options:MakeIndicatorSizeOptions(indicator, layout)
+	Grid2Options:MakeIndicatorTextureOptions(indicator, layout)
+	Grid2Options:MakeIndicatorSquareSizeOptions(indicator, layout)
 	Grid2Options:MakeIndicatorTypeOptions(indicator, layout)
 	Grid2Options:AddIndicatorLocationOptions(indicator, layout)
 	Grid2Options:MakeIndicatorBorderOptions(indicator, layout)

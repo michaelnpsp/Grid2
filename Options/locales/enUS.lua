@@ -182,9 +182,15 @@ L["Font Size"] = true
 L["Adjust the font size."] = true
 L["Size"] = true
 L["Adjust the size of the indicator."] = true
+L["Width"] = true
+L["Adjust the width of the indicator."] = true
+L["Height"] = true
+L["Adjust the height of the indicator."] = true
+L["Rectangle"] = true
+L["Allows to independently adjust width and height."] = true
 
 L["Frame Texture"] = true
-L["Adjust the texture of the bar."] = true
+L["Adjust the frame texture."] = true
 
 L["Show stack"] = true
 L["Show the number of stacks."] = true
@@ -207,10 +213,10 @@ L["Border Size"] = true
 L["Adjust the border of each unit's frame."] = true
 L["Border Background Color"] = true
 L["Adjust border background color and alpha."] = true
+L["Border separation"] = true
+L["Adjust the distance between the border and the frame content."] = true
 
 L["Select statuses to display with the indicator"] = true
-L["+"] = true
-L["-"] = true
 L["Available Statuses"] = true
 L["Available statuses you may add"] = true
 L["Current Statuses"] = true
@@ -324,6 +330,7 @@ L["Debuffs Group: Healing Reduced"] = true
 -- general statuses
 L["name"]= true
 L["mana"]= true
+L["power"]= true
 L["poweralt"]= true
 L["alpha"] = true
 L["border"] = true
@@ -522,6 +529,13 @@ L["Casting resurrection"] = true
 L["A resurrection spell is being casted on the unit"] = true
 L["Resurrected"] = true
 L["A resurrection spell has been casted on the unit"] = true
+		
+-- power
+L["Mana"] = true
+L["Rage"] = true
+L["Focus"] = true
+L["Energy"] = true
+L["Runic Power"] = true
 		
 -- Import/export profiles module
 L["Import/export options"]= true

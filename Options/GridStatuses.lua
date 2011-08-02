@@ -64,6 +64,7 @@ local Categories= {
 	["mana"]= "mana",
 	["lowmana"]= "mana",
 	["poweralt"]= "mana",
+	["power"]= "mana",
 	
 	["target"]= "target",
 	["range"]= "target",
@@ -1405,6 +1406,18 @@ function Grid2Options:MakeStatusHandlers(reset)
 	self:AddOptionHandler("lowmana", self.MakeStatusColorThresholdOptions)
 	self:AddOptionHandler("mana", self.MakeStatusColorOptions)
 	self:AddOptionHandler("poweralt", self.MakeStatusColorOptions)
+	self:AddOptionHandler("power", self.MakeStatusColorOptions, {
+			color1 = L["Mana"],
+			colorDesc1 = L["Mana"],
+			color2 = L["Rage"],
+			colorDesc2 = L["Rage"],
+			color3 = L["Focus"],
+			colorDesc3 = L["Focus"],
+			color4 = L["Energy"],
+			colorDesc4 = L["Energy"],
+			color5 = L["Runic Power"],
+			colorDesc5 = L["Runic Power"],
+	})
 	self:AddOptionHandler("name", self.MakeStatusNoOptions)
 	self:AddOptionHandler("range", self.MakeStatusRangeOptions)
 	self:AddOptionHandler("ready-check", self.MakeStatusReadyCheckOptions, {
