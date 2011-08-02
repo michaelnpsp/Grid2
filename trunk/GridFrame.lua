@@ -82,9 +82,10 @@ function GridFramePrototype:Layout()
 	-- external border controlled by the border indicator
 	local r,g,b,a= self:GetBackdropBorderColor() 
 	local frameBorder = dbx.frameBorder
+	local borderTexture = media and media:Fetch("border", dbx.frameBorderTexture) or "Interface\\Addons\\Grid2\\white16x16"
 	self:SetBackdrop({
 		bgFile = "Interface\\Addons\\Grid2\\white16x16", tile = true, tileSize = 16,
-		edgeFile = "Interface\\Addons\\Grid2\\white16x16", edgeSize = frameBorder,
+		edgeFile = borderTexture, edgeSize = frameBorder,
 		insets = {left = frameBorder, right = frameBorder, top = frameBorder, bottom = frameBorder},
 	})
 	self:SetBackdropBorderColor(r, g, b, a)
@@ -155,6 +156,7 @@ Grid2Frame.defaultDB = {
 		frameHeight = 48,
 		frameWidth  = 48,
 		frameBorder = 2,
+		frameBorderTexture = "Flat",
 		frameBorderDistance= 1,
 		frameTexture = "Gradient",
 		frameColor = { r=0, g=0, b=0, a=1 },

@@ -123,6 +123,7 @@ function Grid2:OnInitialize()
 	local media = LibStub("LibSharedMedia-3.0", true)
 	if media then
 		media:Register("statusbar", "Gradient", "Interface\\Addons\\Grid2\\gradient32x32")
+		media:Register("border", "Flat", "Interface\\Addons\\Grid2\\white16x16")
 	end
 	
  	local LibDualSpec = LibStub('LibDualSpec-1.0')

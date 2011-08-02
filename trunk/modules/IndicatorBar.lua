@@ -6,13 +6,10 @@ local min= min
 
 local function Bar_CreateHH(self, parent)
 	local bar= self:CreateFrame("StatusBar", parent)
-	local media = LibStub("LibSharedMedia-3.0", true)
-	local texture = media and media:Fetch("statusbar", self.dbx.texture) or "Interface\\Addons\\Grid2\\gradient32x32"
 	bar:SetOrientation(self.orientation or Grid2Frame.db.profile.orientation)
 	bar:SetStatusBarColor(0,0,0,0)
 	bar:SetMinMaxValues(0, 1)
 	bar:SetValue(0)
-	bar:SetStatusBarTexture(texture)
 	if not bar:IsShown() then bar:Show() end
 end
 
@@ -21,6 +18,7 @@ local function Bar_Layout(self, parent)
 	Bar:ClearAllPoints()
 	Bar:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
 	Bar:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
+	Bar:SetStatusBarTexture(self.texture)
     Bar:SetWidth(self.width or container:GetWidth())
 	Bar:SetHeight(self.height or container:GetHeight())
 end
@@ -82,10 +80,6 @@ local function Bar_SetOrientation(self, parent, orientation)
 	parent[self.name]:SetOrientation(orientation or Grid2Frame.db.profile.orientation)
 end
 
-local function Bar_SetTexture(self, parent, texture)
-	parent[self.name]:SetStatusBarTexture(texture)
-end
-
 local function Bar_Disable(self, parent)
 	parent[self.name]:Hide()
 	self.Layout = nil
@@ -94,6 +88,8 @@ end
 
 local function Bar_UpdateDB(self, dbx)
 	dbx= dbx or self.dbx
+	local media = LibStub("LibSharedMedia-3.0", true)
+	self.texture = media and media:Fetch("statusbar", dbx.texture or "Gradient") or "Interface\\Addons\\Grid2\\gradient32x32"
 	local l= dbx.location
 	self.frameLevel = dbx.level or 1
 	self.anchor = l.point
@@ -108,7 +104,6 @@ local function Bar_UpdateDB(self, dbx)
 	self.GetBlinkFrame = Bar_GetBlinkFrame
 	self.OnUpdate = Bar_OnUpdate
 	self.SetOrientation = Bar_SetOrientation
-	self.SetTexture = Bar_SetTexture
 	self.Disable = Bar_Disable	
 	self.UpdateDB = Bar_UpdateDB
 	self.dbx = dbx
