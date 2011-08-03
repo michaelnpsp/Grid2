@@ -442,7 +442,7 @@ function Grid2Options:MakeIndicatorTextureOptions(indicator, options, optionPara
 			name = L["Frame Texture"],
 			desc = L["Adjust the texture of the indicator."],
 			get = function (info)
-				local v = indicator.dbx.texture or "Flat"
+				local v = indicator.dbx.texture or "Grid2 Flat"
 				for i, t in ipairs(info.option.values) do
 					if v == t then return i end
 				end

@@ -156,7 +156,7 @@ Grid2Frame.defaultDB = {
 		frameHeight = 48,
 		frameWidth  = 48,
 		frameBorder = 2,
-		frameBorderTexture = "Flat",
+		frameBorderTexture = "Grid2 Flat",
 		frameBorderDistance= 1,
 		frameTexture = "Gradient",
 		frameColor = { r=0, g=0, b=0, a=1 },
