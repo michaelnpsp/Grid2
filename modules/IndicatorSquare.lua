@@ -58,7 +58,7 @@ end
 local function Square_UpdateDB(self, dbx)
 	dbx= dbx or self.dbx
 	local media = LibStub("LibSharedMedia-3.0", true)
-	self.texture = media and media:Fetch("statusbar", dbx.texture or "Flat") or "Interface\\Addons\\Grid2\\white16x16"
+	self.texture = media and media:Fetch("statusbar", dbx.texture or "Grid2 Flat") or "Interface\\Addons\\Grid2\\white16x16"
 	local l= dbx.location
 	self.anchor = l.point
 	self.anchorRel = l.relPoint
