@@ -229,7 +229,7 @@ function Power:UpdateDB()
 	powerColors["RAGE"]= self.dbx.color2 
 	powerColors["FOCUS"]= self.dbx.color3
 	powerColors["ENERGY"]= self.dbx.color4
-	powerColors["RUNICPOWER"]= self.dbx.color5
+	powerColors["RUNIC_POWER"]= self.dbx.color5
 end
 
 local function Create(baseKey, dbx)
