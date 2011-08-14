@@ -272,7 +272,7 @@ end
 local function status_UpdateStateGroup(self, unit, iconTexture, count, duration, expiration)
 	local filtered = self.filtered
 	if filtered and filtered[unit] then return end 
-	if self.states[unit]==nil then
+	if self.states[unit]==nil or (self.expirations[unit] ~= expiration) then
 		self.states[unit] = true
 		self.textures[unit] = iconTexture
 		self.durations[unit] = duration
