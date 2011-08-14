@@ -196,6 +196,8 @@ L["Show stack"] = "중첩 표시"
 L["Show the number of stacks."] = "중첩수를 표시합니다."
 L["Show duration"] = "지속시간 표시"
 L["Show the time remaining."] = "남은 시간을 표시합니다."
+-- L["Show elapsed time"] = ""
+-- L["Show the elapsed time."] = ""
 -- L["Show percent"] = ""
 -- L["Show percent value"] = ""
 

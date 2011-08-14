@@ -825,6 +825,23 @@ local function MakeTextIndicatorOptions(indicator)
 			end,
 			set = function (_, v)
 				indicator.dbx.duration = v
+				indicator.dbx.elapsed = nil
+				indicator:UpdateDB()
+				Grid2Frame:UpdateIndicators()
+			end,
+		},
+		elapsed = {
+			type = "toggle",
+			name = L["Show elapsed time"],
+			desc = L["Show the elapsed time."],
+			order = 84,
+			tristate = true,
+			get = function ()
+				return indicator.dbx.elapsed
+			end,
+			set = function (_, v)
+				indicator.dbx.elapsed = v
+				indicator.dbx.duration = nil
 				indicator:UpdateDB()
 				Grid2Frame:UpdateIndicators()
 			end,
