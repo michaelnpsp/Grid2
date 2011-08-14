@@ -196,6 +196,8 @@ L["Show stack"] = "Montrer stack"
 L["Show the number of stacks."] = "Montrer le nombre de stacks."
 L["Show duration"] = "Montrer durée"
 L["Show the time remaining."] = "Montrer le temps restant."
+-- L["Show elapsed time"] = ""
+-- L["Show the elapsed time."] = ""
 -- L["Show percent"] = ""
 -- L["Show percent value"] = ""
 

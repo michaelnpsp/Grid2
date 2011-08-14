@@ -78,11 +78,11 @@ function MakeDefaultsCommon()
 	Grid2:DbSetMap( "health-color", "classcolor", 99)
 	Grid2:DbSetMap( "health-color", "health-current", 85)
 
-	Grid2:DbSetValue( "indicators",  "heals", {type = "bar", level = 1, location = Location("CENTER"), texture = "Gradient", color1 = {r=0,g=0,b=0,a=0}})
+	Grid2:DbSetValue( "indicators",  "heals", {type = "bar", level = 1, location = Location("CENTER"), texture = "Gradient", opacity=0.5, color1 = {r=0,g=0,b=0,a=0}})
 	Grid2:DbSetMap( "heals", "heals-incoming", 99)
 
 	Grid2:DbSetValue( "indicators",  "heals-color", {type = "bar-color"})
-	Grid2:DbSetMap( "heals-color", "heals-incoming", 99)
+	Grid2:DbSetMap( "heals-color", "classcolor", 99)
 
 	Grid2:DbSetValue( "indicators",  "corner-bottom-left", {type = "square", level = 5, location = Location("BOTTOMLEFT"), size = 5, color1 = {r=1,g=1,b=1,a=1},})
 	Grid2:DbSetMap( "corner-bottom-left", "threat", 99)

@@ -77,6 +77,13 @@ local function fDS(Text)
 	local timeLeft = expirations[Text] - GetTime()
 	Text:SetText( timeLeft>0 and fmt("%s:%s",formatDuration(timeLeft),stacks[Text]) or "")
 end
+local function fE(Text)
+	Text:SetText( fmt( "%.0f", GetTime() - expirations[Text] ) )
+end
+local function fES(Text)
+	Text:SetText( fmt( "%.0f:%s", GetTime() - expirations[Text] , stacks[Text] ) )
+end
+
 local function fcancel(Text)
 	if durationTimers[Text] then
 		Grid2:CancelTimer(durationTimers[Text])
@@ -93,6 +100,23 @@ local function GetDurationText(expiration, Text, func)
 				durationTimers[Text] = Grid2:ScheduleRepeatingTimer(func, 0.1, Text)
 			end
 			return formatDuration(timeLeft)
+		end
+		fcancel(Text)
+	end	
+end
+
+local function GetElapsedTimeText(expiration, duration, Text, func)
+	if expiration and duration then
+		local curTime= GetTime()
+		local timeLeft = expiration - curTime
+		if timeLeft>0 then
+			local startTime   = expiration - duration
+			local timeElapsed = curTime - startTime
+			expirations[Text] = startTime
+			if not durationTimers[Text] then
+				durationTimers[Text] = Grid2:ScheduleRepeatingTimer(func, 0.1, Text)
+			end
+			return fmt("%.0f",timeElapsed)
 		end
 		fcancel(Text)
 	end	
@@ -116,11 +140,41 @@ local function Text_OnUpdateDS(self, parent, unit, status)
 	end
 end
 
+local function Text_OnUpdateES(self, parent, unit, status)
+	local Text = parent[self.name].Text
+	if status then
+		local stack= tostring(status:GetCount(unit)) or "1"
+		local elapsed= GetElapsedTimeText( status:GetExpirationTime(unit), status:GetDuration(unit),  Text, fES )
+		if elapsed then
+			stacks[Text]= stack
+			Text:SetText( fmt("%s:%s", elapsed, stack) )
+		else
+			Text:SetText( string_sub(status:GetText(unit) or "", 1, self.textlength) )
+		end
+		Text:Show()
+	else
+		fcancel(Text)
+		Text:Hide()
+	end
+end
+
 local function Text_OnUpdateD(self, parent, unit, status)
 	local Text = parent[self.name].Text
 	if status then
 		local duration= GetDurationText( status:GetExpirationTime(unit), Text, fD )
-		Text:SetText( duration and duration or string_sub(status:GetText(unit) or "", 1, self.textlength) )
+		Text:SetText( duration or string_sub(status:GetText(unit) or "", 1, self.textlength) )
+		Text:Show()
+	else
+		fcancel(Text)
+		Text:Hide()
+	end
+end
+
+local function Text_OnUpdateE(self, parent, unit, status)
+	local Text = parent[self.name].Text
+	if status then
+		local elapsed= GetElapsedTimeText( status:GetExpirationTime(unit), status:GetDuration(unit), Text, fE )
+		Text:SetText( elapsed or string_sub(status:GetText(unit) or "", 1, self.textlength) )
 		Text:Show()
 	else
 		fcancel(Text)
@@ -132,7 +186,7 @@ local function Text_OnUpdateS(self, parent, unit, status)
 	local Text = parent[self.name].Text
 	if status then
 		local content= tostring(status:GetCount(unit))
-		Text:SetText( content and content or string_sub(status:GetText(unit) or "", 1, self.textlength) )
+		Text:SetText( content or string_sub(status:GetText(unit) or "", 1, self.textlength) )
 		Text:Show()
 	else
 		fcancel(Text)
@@ -212,10 +266,12 @@ local function Text_UpdateDB(self, dbx)
 	self.SetTextFont = Text_SetTextFont
 	self.Disable = Text_Disable
 	self.UpdateDB = Text_UpdateDB
-	self.OnUpdate= 	(dbx.duration and dbx.stack and Text_OnUpdateDS) or 
-					(dbx.duration and Text_OnUpdateD) or 
-					(dbx.stack 	  and Text_OnUpdateS) or 
-					(dbx.percent  and Text_OnUpdateP) or
+	self.OnUpdate= 	(dbx.duration  and dbx.stack and Text_OnUpdateDS) or 
+					(dbx.elapsed   and dbx.stack and Text_OnUpdateES) or
+					(dbx.duration  and Text_OnUpdateD) or 
+					(dbx.elapsed   and Text_OnUpdateE) or
+					(dbx.stack 	   and Text_OnUpdateS) or 
+					(dbx.percent   and Text_OnUpdateP) or
 					Text_OnUpdate
 	self.dbx = dbx
 end
@@ -228,14 +284,12 @@ local function TextColor_UpdateDB(self, dbx)
 end
 
 local function Create(indicatorKey, dbx)
-	local existingIndicator = Grid2.indicators[indicatorKey]
-	local indicator = existingIndicator or Grid2.indicatorPrototype:new(indicatorKey)
+	local indicator = Grid2.indicators[indicatorKey] or Grid2.indicatorPrototype:new(indicatorKey)
 	Text_UpdateDB(indicator, dbx)
 	Grid2:RegisterIndicator(indicator, { "text" })
 
 	local colorKey = indicatorKey .. "-color"
-	existingIndicator = Grid2.indicators[colorKey]
-	local TextColor = existingIndicator or Grid2.indicatorPrototype:new(colorKey)
+	local TextColor = Grid2.indicators[colorKey] or Grid2.indicatorPrototype:new(colorKey)
 	TextColor_UpdateDB(TextColor, dbx)
 	TextColor.textname = indicatorKey
 	Grid2:RegisterIndicator(TextColor, { "color" })
@@ -251,4 +305,3 @@ Grid2.setupFunc["text"] = Create
 local function CreateColor(indicatorKey, dbx)
 end
 Grid2.setupFunc["text-color"] = CreateColor
-

@@ -196,6 +196,8 @@ L["Frame Texture"] = "框架材質"
 -- L["Show the number of stacks."] = ""
 -- L["Show duration"] = ""
 -- L["Show the time remaining."] = ""
+-- L["Show elapsed time"] = ""
+-- L["Show the elapsed time."] = ""
 -- L["Show percent"] = ""
 -- L["Show percent value"] = ""
 
