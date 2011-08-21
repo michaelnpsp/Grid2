@@ -49,17 +49,17 @@ end
 function Grid2Blink.None()
 end
 
-function Grid2Blink:Initialize()
-	self:Update()
+function Grid2Blink:InitializeMe()
+	self:UpdateMe()
 end
 
-function Grid2Blink:Update()
+function Grid2Blink:UpdateMe()
 	self.frequency= self.db.profile.frequency or 4
 	self.typeFunc= Grid2Blink[self.db.profile.type] or Grid2Blink.Flash
 	Grid2:IndicatorsBlinkEnabled( self.db.profile.type~="None" )
 end
 
-function Grid2Blink:Disable()
+function Grid2Blink:DisableMe()
 	wipe(self.registry)
 	wipe(self.alpha)
 end

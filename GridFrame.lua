@@ -173,11 +173,11 @@ Grid2Frame.defaultDB = {
 
 --{{{  
 
-function Grid2Frame:Initialize()
+function Grid2Frame:InitializeMe()
 	self.registeredFrames = {}
 end
 
-function Grid2Frame:Enable()
+function Grid2Frame:EnableMe()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateFrameUnits")
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "UNIT_ENTERED_VEHICLE")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE", "UNIT_EXITED_VEHICLE")
@@ -186,7 +186,7 @@ function Grid2Frame:Enable()
 	self:UpdateIndicators()
 end
 
-function Grid2Frame:Disable()
+function Grid2Frame:DisableMe()
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "UpdateFrameUnits")
 	self:UnregisterEvent("UNIT_ENTERED_VEHICLE", "UNIT_ENTERED_VEHICLE")
 	self:UnregisterEvent("UNIT_EXITED_VEHICLE", "UNIT_EXITED_VEHICLE")
@@ -197,7 +197,7 @@ end
 -- 1. Disable all modules  2. Update all modules 3. Enable all modules (see Grid2:ProfileChanged)
 -- Grid2Layout uses the new frame size and can create/layout new frames when it is enabled, but could be 
 -- enabled before Grid2Frame.  This is the reason because we recreate and relayout the indicators here.
-function Grid2Frame:Update()
+function Grid2Frame:UpdateMe()
 	self:CreateIndicators()
 	self:LayoutFrames()
 end
