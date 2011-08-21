@@ -210,7 +210,7 @@ function Grid2Layout:EnableMe()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 end
 
-function Grid2Layout:_DisableMe()
+function Grid2Layout:DisableMe()
 	self:UnregisterMessage("Grid_GroupTypeChanged")
 	self:UnregisterMessage("Grid_UpdateLayoutSize", "UpdateSize")
 	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
