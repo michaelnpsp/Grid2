@@ -878,6 +878,20 @@ local function MakeTextIndicatorOptions(indicator)
 		},
 	}
 	if Grid2Options.AddMediaOption then
+		options.fontFlags = {
+			type = "select",
+			order = 75,
+			name = L["Font Border"],
+			desc = L["Set the font border type."],
+			get = function () return indicator.dbx.fontFlags or "DEFAULT" end,
+			set = function (_, v)
+				if v=="DEFAULT" then v= nil	end
+				indicator.dbx.fontFlags = v
+				local font = media and media:Fetch('font', indicator.dbx.font) or STANDARD_TEXT_FONT
+				Grid2Frame:WithAllFrames(function (f) indicator:SetTextFont(f, font, indicator.dbx.fontSize) end)
+			end,
+			values={ ["DEFAULT"]= L["None"], ["OUTLINE"] = L["Thin"], ["THICKOUTLINE"] = L["Thick"]}
+		}
 		local fontOption = {
 			type = "select",
 			order = 70,
@@ -1348,7 +1362,7 @@ local function MakeIconIndicatorOptions(indicator)
 			local indicatorKey = indicator.name
 			Grid2Frame:WithAllFrames(function (f) 
 				local text= f[indicatorKey].CooldownText
-				if text then text:SetFont(font,fontsize) end
+				if text then text:SetFont(font,fontsize, "OUTLINE") end
 			end)
 		end
 		options.font = fontOption

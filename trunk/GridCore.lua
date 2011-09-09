@@ -73,20 +73,20 @@ function modulePrototype:OnInitialize()
 	end
 	self.debugFrame = Grid2.debugFrame
 	self.debugging = self.db.profile.debug
-	if self.InitializeMe then self:InitializeMe() end
+	if self.OnModuleInitialize then self:OnModuleInitialize() end
 	self:Debug("OnInitialize")
 end
 
 function modulePrototype:OnEnable()
-	if self.EnableMe then self:EnableMe() end
+	if self.OnModuleEnable then self:OnModuleEnable() end
 end
 
 function modulePrototype:OnDisable()
-	if self.DisableMe then self:DisableMe() end
+	if self.OnModuleDisable then self:OnModuleDisable() end
 end
 
 function modulePrototype:OnUpdate()
-	if self.UpdateMe then self:UpdateMe() end
+	if self.OnModuleUpdate then self:OnModuleUpdate() end
 end
 
 Grid2:SetDefaultModulePrototype(modulePrototype)

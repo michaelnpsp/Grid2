@@ -4,7 +4,7 @@ Created by Grid2 original authors, modified by Michael
 
 --{{{ Libraries
 
-local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
+local L = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 
 local DEFAULT_GROUP_ORDER = "WARRIOR,DEATHKNIGHT,ROGUE,PALADIN,DRUID,SHAMAN,PRIEST,MAGE,WARLOCK,HUNTER"
 local DEFAULT_PET_ORDER = "HUNTER,WARLOCK,DEATHKNIGHT,PRIEST,MAGE,DRUID,SHAMAN,WARRIOR,ROGUE,PALADIN"
@@ -203,6 +203,7 @@ Grid2Layout:AddLayout("By Group 15 w/Pets", {
 Grid2Layout:AddLayout("By Group 25", {
 	meta = {
 		raid25 = true,
+		raid10 = true,
 		pvp = true,
 		solo = true,
 	},

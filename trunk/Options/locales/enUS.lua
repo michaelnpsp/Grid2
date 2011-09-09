@@ -140,6 +140,9 @@ L["Color"] = true
 L["Color %d"] = true
 L["Color for %s."] = true
 L["Font"] = true
+L["Font Border"] = true
+L["Thin"] = true
+L["Thick"] = true
 L["Adjust the font settings"] = true
 L["Border Texture"] = true
 L["Adjust the border texture."] = true
@@ -382,6 +385,7 @@ L["raid-debuffs"] = "Raid Debuffs"
 L["EarthShield"] = true
 L["Earthliving"] = true
 L["Riptide"] = true
+L["ChainHeal"] = true
 
 -- Druid
 L["Rejuvenation"]= true
@@ -407,6 +411,8 @@ L["PowerWordShield"]= true
 L["Renew"]= true
 L["WeakenedSoul"]= true
 L["SpiritOfRedemption"]= true
+L["CircleOfHealing"]= true
+L["PrayerOfHealing"]= true
 
 -- mage
 L["FocusMagic"]= true
@@ -539,6 +545,38 @@ L["Focus"] = true
 L["Energy"] = true
 L["Runic Power"] = true
 		
+-- aoe heals
+L["aoe-"] = true
+L["neighbors"] = true
+L["highlighter"] = true
+
+L["AOE Heals"] = true
+L["Highlight status"] = true
+L["Autodetect"] = true
+L["Select the status the Highlighter will use."] = true
+L["Mouse Enter Delay"] = true
+L["Delay in seconds before showing the status."] = true
+L["Mouse Leave Delay"] = true
+L["Delay in seconds before hiding the status."] = true
+L["Min players"] = true
+L["Minimum players to enable the status."] = true
+L["Radius"] = true
+L["Max distance of nearby units."] = true
+L["Health deficit"] = true
+L["Minimum health deficit of units to enable the status."] = true
+L["Keep same targets"] = true
+L["Try to keep same heal targets solutions if posible."] = true
+L["Max solutions"] = true
+L["Maximum number of solutions to display."] = true
+L["Hide on cooldown"] = true
+L["Hide the status while the spell is on cooldown."] = true
+L["Show overlapping heals"]  = true
+L["Show heal targets even if they overlap with other heals."] = true
+L["Show only in combat"]  = true
+L["Enable the statuses only in combat."] = true
+L["Show only in raid"] = true
+L["Enable the statuses only in raid."]  = true
+			
 -- Import/export profiles module
 L["Import/export options"]= true
 L["Import profile"]= true

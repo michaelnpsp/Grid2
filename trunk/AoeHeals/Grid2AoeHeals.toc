@@ -1,0 +1,22 @@
+## Interface: 40200
+## Title: Grid2 |cd1ff7d0aAOE Heals|r
+## Notes: Display best targets for AOE Heals
+## Notes-esES: Muestra los mejores objetivos para las curas de area
+## Author: Michael
+## Dependencies: Grid2
+## DefaultState: disabled
+## Version: @project-version@
+
+#@no-lib-strip@
+Libs\LibMapData-1.0\library.lua
+#@end-no-lib-strip@
+
+AoeHeals.lua
+AoeHealsOptions.lua
+AoeHealsDefaults.lua
+AoeHealsStatusRaid.lua
+AoeHealsStatusParty.lua
+AoeHealsStatusChain.lua
+AoeHealsStatusNeighbors.lua
+AoeHealsStatusHighlighter.lua
+
