@@ -99,7 +99,16 @@ local targetIconOptionParams = {
 	color8 = RAID_TARGET_8,
 }
 
+local fmt= string.format
 local HexDigits= "0123456789ABCDEF"
+local prefixes= { "color-", "buff-", "debuff-", "aoe-" }
+local suffixes= { "-mine", "-not-mine" }
+local prefixes_colors = { 
+	["buff-"]   = "|cFF00ff00%s|r",
+	["debuff-"] = "|cFFff0000%s|r",
+	["aoe-"]    = "|cFF0080ff%s|r",
+	["color-"]  = "|cFFffff00%s|r",	
+}
 function Grid2Options.LocalizeStatus(status, RemovePrefix)
 
 		local function byteToHex(byte)
@@ -113,8 +122,6 @@ function Grid2Options.LocalizeStatus(status, RemovePrefix)
 		end		
 		
 		local function SplitStatusName(name)
-			local prefixes= { "color-", "buff-", "debuff-" }
-			local suffixes= { "-mine", "-not-mine" }
 			local prefix= ""
 			local suffix= ""
 			local body
@@ -145,13 +152,7 @@ function Grid2Options.LocalizeStatus(status, RemovePrefix)
 		body= L[body]
 	end
 	if prefix~="" then
-		if prefix=="buff-" then
-			prefix= "|cFF00ff00" .. L[prefix] .. "|r"
-		elseif prefix=="debuff-" then
-			prefix= "|cFFff0000" .. L[prefix] .. "|r"
-		else
-			prefix= L[prefix]
-		end
+		prefix= fmt( prefixes_colors[prefix] or "%s", L[prefix])
 	end
 	if suffix~="" then
 		suffix= L[suffix]
@@ -1469,12 +1470,7 @@ function Grid2Options:MakeStatusHandlers(reset)
 
 end
 
-function Grid2Options:MakeStatusOptions(reset)
-	self:DeleteElement("statuses")
-	if self.Initialize then  -- Create handlers only on first run
-		self:MakeStatusHandlers(reset) 
-	end
-	
+function Grid2Options:MakeGroupsOptions(reset)
 	self:AddElementSubTypeGroup("statuses", "buff", "Buffs",  NewBuffHandler.options, reset)
 	self:AddElementSubTypeGroup("statuses", "debuff", "Debuffs",  NewDebuffHandler.options, reset)
 	self:AddElementSubTypeGroup("statuses", "color", "Colors",  NewColorOptions, reset)
@@ -1484,7 +1480,17 @@ function Grid2Options:MakeStatusOptions(reset)
 	self:AddElementSubTypeGroup("statuses", "target", "Targeting&Distances",  {}, reset)
 	self:AddElementSubTypeGroup("statuses", "role", "Raid&Party Roles",  {}, reset)
 	self:AddElementSubTypeGroup("statuses", "misc", "Miscellaneous",  {}, reset)
-	
+end
+
+function Grid2Options:MakeStatusOptions(reset)
+	self:DeleteElement("statuses")
+
+	if self.Initialize then  -- Create handlers only on first run
+		self:MakeStatusHandlers(reset) 
+	end
+
+	self:MakeGroupsOptions(reset)
+
 	local statuses= Grid2.db.profile.statuses
 	for baseKey, dbx in pairs(statuses) do
 		local status = Grid2.statuses[baseKey]

@@ -179,7 +179,7 @@ Grid2Layout.defaultDB = {
 Grid2Layout.layoutSettings = {}
 Grid2Layout.layoutHeaderClass = GridLayoutHeaderClass
 
-function Grid2Layout:InitializeMe()
+function Grid2Layout:OnModuleInitialize()
 	self.groups = {
 		raid = {},
 		raidpet = {},
@@ -196,7 +196,7 @@ function Grid2Layout:InitializeMe()
 	}
 end
 
-function Grid2Layout:EnableMe()
+function Grid2Layout:OnModuleEnable()
 	if not self.frame then
 		self:CreateFrame()
 	end
@@ -210,7 +210,7 @@ function Grid2Layout:EnableMe()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 end
 
-function Grid2Layout:DisableMe()
+function Grid2Layout:OnModuleDisable()
 	self:UnregisterMessage("Grid_GroupTypeChanged")
 	self:UnregisterMessage("Grid_UpdateLayoutSize", "UpdateSize")
 	self:UnregisterEvent("PLAYER_REGEN_ENABLED")

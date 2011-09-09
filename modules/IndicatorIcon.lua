@@ -43,12 +43,12 @@ local function Icon_Create(self, parent)
 		CooldownText:SetAllPoints()
 		CooldownText:SetFontObject(GameFontHighlightSmall)
 		local font = self.dbx.font and media and media:Fetch("font", self.dbx.font) or CooldownText:GetFont()
-		CooldownText:SetFont(font, self.dbx.fontSize)
+		CooldownText:SetFont(font, self.dbx.fontSize, "OUTLINE" )
 		CooldownText:SetJustifyH( self.dbx.fontJustifyH or "CENTER" )
 		CooldownText:SetJustifyV( self.dbx.fontJustifyV or "MIDDLE" )
 		local c= self.dbx.stackColor
 		if c then CooldownText:SetTextColor(c.r, c.g, c.b, c.a) end	
-		CooldownText:SetShadowOffset(1, -1)
+		--CooldownText:SetShadowOffset(1, -1)
 		CooldownText:Hide()
 		f.CooldownText = CooldownText
 	end	

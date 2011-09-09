@@ -40,11 +40,11 @@ function GridFrameEvents:OnAttributeChanged(name, value)
 end
 
 function GridFrameEvents:OnEnter()
-	self:OnEnter()
+	Grid2Frame:OnFrameEnter(self)
 end
 
 function GridFrameEvents:OnLeave()
-	self:OnLeave()
+	Grid2Frame:OnFrameLeave(self)
 end
 
 --{{{ GridFramePrototype
@@ -129,21 +129,6 @@ function GridFramePrototype:UpdateIndicators()
 	end	
 end
 
--- shows the default unit tooltip
-local TooltipCheck= { Always= true, Never = false, OOC= function() return not InCombatLockdown() end }
-function GridFramePrototype:OnEnter()
-	if TooltipCheck[Grid2Frame.db.profile.showTooltip] then
-		UnitFrame_OnEnter(self)
-	else
-		UnitFrame_OnLeave(self)
-	end
-end
-
-function GridFramePrototype:OnLeave()
-	UnitFrame_OnLeave(self)
-end
---}}}
-
 --{{{ Grid2Frame
 
 Grid2Frame = Grid2:NewModule("Grid2Frame")
@@ -173,11 +158,11 @@ Grid2Frame.defaultDB = {
 
 --{{{  
 
-function Grid2Frame:InitializeMe()
+function Grid2Frame:OnModuleInitialize()
 	self.registeredFrames = {}
 end
 
-function Grid2Frame:EnableMe()
+function Grid2Frame:OnModuleEnable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateFrameUnits")
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "UNIT_ENTERED_VEHICLE")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE", "UNIT_EXITED_VEHICLE")
@@ -186,7 +171,7 @@ function Grid2Frame:EnableMe()
 	self:UpdateIndicators()
 end
 
-function Grid2Frame:DisableMe()
+function Grid2Frame:OnModuleDisable()
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "UpdateFrameUnits")
 	self:UnregisterEvent("UNIT_ENTERED_VEHICLE", "UNIT_ENTERED_VEHICLE")
 	self:UnregisterEvent("UNIT_EXITED_VEHICLE", "UNIT_EXITED_VEHICLE")
@@ -197,7 +182,7 @@ end
 -- 1. Disable all modules  2. Update all modules 3. Enable all modules (see Grid2:ProfileChanged)
 -- Grid2Layout uses the new frame size and can create/layout new frames when it is enabled, but could be 
 -- enabled before Grid2Frame.  This is the reason because we recreate and relayout the indicators here.
-function Grid2Frame:UpdateMe()
+function Grid2Frame:OnModuleUpdate()
 	self:CreateIndicators()
 	self:LayoutFrames()
 end
@@ -209,6 +194,22 @@ function Grid2Frame:RegisterFrame(frame)
 	GridFrame_Init(frame, self:GetFrameSize())
 	self.registeredFrames[frame:GetName()] = frame
 end
+
+-- shows the default unit tooltip
+local TooltipCheck= { Always= true, Never = false, OOC= function() return not InCombatLockdown() end }
+function Grid2Frame:OnFrameEnter(frame)
+	if TooltipCheck[self.db.profile.showTooltip] then
+		UnitFrame_OnEnter(frame)
+	else
+		UnitFrame_OnLeave(frame)
+	end
+end
+
+function Grid2Frame:OnFrameLeave(frame)
+	UnitFrame_OnLeave(frame)
+end
+
+--}}}
 
 function Grid2Frame:CreateIndicators()
 	for _, frame in next, self.registeredFrames do

@@ -2,7 +2,6 @@
 
 local Grid2 = Grid2
 local GetTime = GetTime
-local fmt= string.format
 local string_sub = string.subutf8 or string.sub
 
 local justifyH = {
@@ -42,7 +41,7 @@ local function Text_Create(self, parent)
 	local Text = f.Text or f:CreateFontString(nil, "OVERLAY")
 	f.Text = Text
 	Text:SetFontObject(GameFontHighlightSmall)
-	Text:SetFont(font, self.dbx.fontSize)
+	Text:SetFont(font, self.dbx.fontSize, self.dbx.fontFlags)
 	Text:SetJustifyH("CENTER")
 	Text:SetJustifyV("CENTER")
 end
@@ -62,8 +61,12 @@ local function Text_Layout(self, parent)
 end
 
 --{{{ Text OnUpdate
-local function formatDuration(timeLeft)
-	return fmt( timeLeft<1 and "%.1f" or "%.0f", timeLeft )
+local function dFormat(t)
+	return t<1 and "%.1f" or "%.0f"
+end
+
+local function dsFormat(t)
+	return t<1 and "%.1f:%s" or "%.0f:%d"
 end
 
 local durationTimers = {}
@@ -71,17 +74,26 @@ local expirations = {}
 local stacks = {}
 local function fD(Text)
 	local timeLeft = expirations[Text] - GetTime()
-	Text:SetText( timeLeft>0 and formatDuration(timeLeft) or "")
+	if timeLeft>0 then
+		Text:SetFormattedText( dFormat(timeLeft), timeLeft )
+	else
+		Text:SetText("")
+	end
 end
+
 local function fDS(Text)
 	local timeLeft = expirations[Text] - GetTime()
-	Text:SetText( timeLeft>0 and fmt("%s:%s",formatDuration(timeLeft),stacks[Text]) or "")
+	if timeLeft>0 then
+		Text:SetFormattedText( dsFormat(timeLeft), timeLeft, stacks[Text] )
+	else
+		Text:SetText("")
+	end	
 end
 local function fE(Text)
-	Text:SetText( fmt( "%.0f", GetTime() - expirations[Text] ) )
+	Text:SetFormattedText( "%.0f", GetTime() - expirations[Text]  )
 end
 local function fES(Text)
-	Text:SetText( fmt( "%.0f:%s", GetTime() - expirations[Text] , stacks[Text] ) )
+	Text:SetFormattedText( "%.0f:%d", GetTime() - expirations[Text] , stacks[Text]  )
 end
 
 local function fcancel(Text)
@@ -91,7 +103,7 @@ local function fcancel(Text)
 	end	
 end
 
-local function GetDurationText(expiration, Text, func)
+local function GetDurationValue(expiration, Text, func)
 	if expiration then
 		local timeLeft = expiration - GetTime()
 		if timeLeft>0 then
@@ -99,13 +111,13 @@ local function GetDurationText(expiration, Text, func)
 			if not durationTimers[Text] then
 				durationTimers[Text] = Grid2:ScheduleRepeatingTimer(func, 0.1, Text)
 			end
-			return formatDuration(timeLeft)
+			return timeLeft
 		end
 		fcancel(Text)
 	end	
 end
 
-local function GetElapsedTimeText(expiration, duration, Text, func)
+local function GetElapsedTimeValue(expiration, duration, Text, func)
 	if expiration and duration then
 		local curTime= GetTime()
 		local timeLeft = expiration - curTime
@@ -116,22 +128,26 @@ local function GetElapsedTimeText(expiration, duration, Text, func)
 			if not durationTimers[Text] then
 				durationTimers[Text] = Grid2:ScheduleRepeatingTimer(func, 0.1, Text)
 			end
-			return fmt("%.0f",timeElapsed)
+			return timeElapsed
 		end
 		fcancel(Text)
 	end	
 end
 
+local function SetDefaultText(Text, status, unit)
+	Text:SetText( string_sub(status:GetText(unit) or "", 1, self.textlength) )
+end
+
 local function Text_OnUpdateDS(self, parent, unit, status)
 	local Text = parent[self.name].Text
 	if status then
-		local stack= tostring(status:GetCount(unit)) or "1"
-		local duration= GetDurationText( status:GetExpirationTime(unit), Text, fDS )
+		local stack= status:GetCount(unit) or 1
+		local duration= GetDurationValue( status:GetExpirationTime(unit), Text, fDS )
 		if duration then
 			stacks[Text]= stack
-			Text:SetText( fmt("%s:%s", duration, stack) )
+			Text:SetFormattedText( dsFormat(duration), duration, stack )
 		else
-			Text:SetText( string_sub(status:GetText(unit) or "", 1, self.textlength) )
+			SetDefaultText(Text, status, unit)
 		end
 		Text:Show()
 	else
@@ -143,13 +159,13 @@ end
 local function Text_OnUpdateES(self, parent, unit, status)
 	local Text = parent[self.name].Text
 	if status then
-		local stack= tostring(status:GetCount(unit)) or "1"
-		local elapsed= GetElapsedTimeText( status:GetExpirationTime(unit), status:GetDuration(unit),  Text, fES )
+		local stack  = status:GetCount(unit) or 1
+		local elapsed= GetElapsedTimeValue( status:GetExpirationTime(unit), status:GetDuration(unit),  Text, fES )
 		if elapsed then
 			stacks[Text]= stack
-			Text:SetText( fmt("%s:%s", elapsed, stack) )
+			Text:SetFormattedText( "%.0f:%d", elapsed, stack )
 		else
-			Text:SetText( string_sub(status:GetText(unit) or "", 1, self.textlength) )
+			SetDefaultText(Text, status, unit)
 		end
 		Text:Show()
 	else
@@ -161,8 +177,12 @@ end
 local function Text_OnUpdateD(self, parent, unit, status)
 	local Text = parent[self.name].Text
 	if status then
-		local duration= GetDurationText( status:GetExpirationTime(unit), Text, fD )
-		Text:SetText( duration or string_sub(status:GetText(unit) or "", 1, self.textlength) )
+		local duration= GetDurationValue( status:GetExpirationTime(unit), Text, fD )
+		if duration then
+			Text:SetFormattedText( dFormat(duration), duration )
+		else
+			SetDefaultText(Text, status, unit)
+		end
 		Text:Show()
 	else
 		fcancel(Text)
@@ -173,8 +193,12 @@ end
 local function Text_OnUpdateE(self, parent, unit, status)
 	local Text = parent[self.name].Text
 	if status then
-		local elapsed= GetElapsedTimeText( status:GetExpirationTime(unit), status:GetDuration(unit), Text, fE )
-		Text:SetText( elapsed or string_sub(status:GetText(unit) or "", 1, self.textlength) )
+		local elapsed= GetElapsedTimeValue( status:GetExpirationTime(unit), status:GetDuration(unit), Text, fE )
+		if elapsed then
+			Text:SetFormattedText( "%.0f", elapsed )
+		else
+			SetDefaultText(Text, status, unit)
+		end
 		Text:Show()
 	else
 		fcancel(Text)
@@ -185,8 +209,12 @@ end
 local function Text_OnUpdateS(self, parent, unit, status)
 	local Text = parent[self.name].Text
 	if status then
-		local content= tostring(status:GetCount(unit))
-		Text:SetText( content or string_sub(status:GetText(unit) or "", 1, self.textlength) )
+		local content= status:GetCount(unit)
+		if content then
+			Text:SetFormattedText( "%d", content )
+		else
+			SetDefaultText(Text, status, unit)
+		end
 		Text:Show()
 	else
 		fcancel(Text)
@@ -199,9 +227,9 @@ local function Text_OnUpdateP(self, parent, unit, status)
 	if status then
 		local percent= status:GetPercent(unit)
 		if percent then
-			Text:SetText( fmt("%.0f%%", percent*100) )
+			Text:SetFormattedText( "%.0f%%", percent*100 )
 		else
-			Text:SetText(  string_sub( (status:GetText(unit) or ""), 1, self.textlength ) )
+			SetDefaultText(Text, status, unit)
 		end
 		Text:Show()
 	else
@@ -220,8 +248,8 @@ local function Text_OnUpdate(self, parent, unit, status)
 end
 --}}}
 
-local function Text_SetTextFont(self, parent, font, size)
-	parent[self.name].Text:SetFont(font, size)
+local function Text_SetTextFont(self, parent, font, size, flags)
+	parent[self.name].Text:SetFont(font, size, flags or self.dbx.fontFlags)
 end
 
 local dummy = function (self)
