@@ -191,6 +191,8 @@ L["Adjust the size of the indicator."] = "Einstellung der Indikator Größe"
 -- L["Adjust the height of the indicator."] = ""
 -- L["Rectangle"] = ""
 -- L["Allows to independently adjust width and height."] = ""
+-- L["Use Status Color"] = ""
+-- L["Always use the status color for the border"] = ""
 
 L["Frame Texture"] = "Rahmen Texture"
 -- L["Adjust the frame texture."] = ""
