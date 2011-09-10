@@ -70,7 +70,7 @@ local function Icon_OnUpdate(self, parent, unit, status)
 	Icon:SetVertexColor(status:GetVertexColor(unit))
 
 	local r,g,b,a= status:GetColor(unit)
-	if status:GetBorder(unit) then
+	if self.useStatusColor or status:GetBorder(unit) then
 		Frame:SetBackdropBorderColor(r,g,b,a) 
 	elseif self.borderSize then
 		local c= self.color
@@ -155,6 +155,7 @@ local function Icon_UpdateDB(self, dbx)
 	self.disableStack= dbx.disableStack
 	self.frameLevel = dbx.level
 	self.borderSize= dbx.borderSize
+	self.useStatusColor = dbx.useStatusColor
 	self.color= Grid2:MakeColor(dbx.color1)
 	self.Create = Icon_Create
 	self.GetBlinkFrame = Icon_GetBlinkFrame

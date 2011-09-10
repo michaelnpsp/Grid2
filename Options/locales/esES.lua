@@ -191,6 +191,8 @@ L["Height"] = "Alto"
 L["Adjust the height of the indicator."] = "Altura del indicador."
 L["Rectangle"] = "Rectangulo"
 L["Allows to independently adjust width and height."] = "Permite indicar el ancho y alto de forma independiente."
+L["Use Status Color"] = "Usar color del estado"
+L["Always use the status color for the border"] = "Usar siempre el color del estado para el borde."
 
 L["Frame Texture"] = "Textura"
 L["Adjust the frame texture."] = "Elige la textura"

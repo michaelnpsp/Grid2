@@ -191,6 +191,8 @@ L["Adjust the size of the indicator."] = "모서리 지시기의 크기를 조�
 -- L["Adjust the height of the indicator."] = ""
 -- L["Rectangle"] = ""
 -- L["Allows to independently adjust width and height."] = ""
+-- L["Use Status Color"] = ""
+-- L["Always use the status color for the border"] = ""
 
 L["Frame Texture"] = "창 무늬"
 -- L["Adjust the frame texture."] = ""

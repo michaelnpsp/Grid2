@@ -191,6 +191,8 @@ L["Height"] = true
 L["Adjust the height of the indicator."] = true
 L["Rectangle"] = true
 L["Allows to independently adjust width and height."] = true
+L["Use Status Color"] = true
+L["Always use the status color for the border"] = true
 
 L["Frame Texture"] = true
 L["Adjust the frame texture."] = true

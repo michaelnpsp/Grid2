@@ -402,12 +402,11 @@ function Grid2Options:MakeIndicatorSquareSizeOptions(indicator, options, optionP
 	return options
 end
 
-
 function Grid2Options:MakeIndicatorBorderSizeOptions(indicator, options, optionParams)
 	options = options or {}
 	local baseKey = indicator.name
 
-	local name = L["Border"]
+	local name = L["Border Size"]
 	local desc = L["Adjust the border size of the indicator."]
 	options.borderSize = {
 		type = "range",
@@ -429,7 +428,6 @@ function Grid2Options:MakeIndicatorBorderSizeOptions(indicator, options, optionP
 
 	return options
 end
-
 
 function Grid2Options:MakeIndicatorTextureOptions(indicator, options, optionParams)
 	options = options or {}
@@ -462,13 +460,34 @@ end
 function Grid2Options:MakeIndicatorBorderOptions(indicator, options, optionParams)
 	options = options or {}
 	optionParams = optionParams or {}
-	optionParams.color1 = L["Border"]
+	optionParams.color1 = L["Border Color"]
 	optionParams.colorDesc1 = L["Adjust border color and alpha."]
 	optionParams.typeKey = "indicators"
-
+	options.borderHeader= {
+		type = "header",
+		order = 19,
+		name = L["Border"],
+	}
 	Grid2Options:MakeIndicatorColorOptions(indicator, options, optionParams)
 	Grid2Options:MakeIndicatorBorderSizeOptions(indicator, options, optionParams)
-	
+	return options
+end
+
+function Grid2Options:MakeIconIndicatorBorderOptions(indicator, options, optionParams)
+	Grid2Options:MakeIndicatorBorderOptions(indicator, options, optionParams)
+	options.useStatusColor = {
+		type = "toggle",
+		name = L["Use Status Color"],
+		desc = L["Always use the status color for the border"],
+		order = 25,
+		tristate = false,
+		get = function () return indicator.dbx.useStatusColor end,
+		set = function (_, v)
+			indicator.dbx.useStatusColor = v
+			indicator:UpdateDB()
+			Grid2Frame:UpdateIndicators()
+		end,
+	}
 	return options
 end
 
@@ -678,7 +697,7 @@ function Grid2Options:MakeIndicatorTypeOptions(indicator, options, optionParams)
 	local baseKey = indicator.name
 	options.type = {
 	    type = 'select',
-		order = 3,
+		order = 1,
 		name = L["Type"],
 		desc = L["Type of indicator"],
 	    values = Grid2Options.GetIndicatorTypeValues,
@@ -726,7 +745,7 @@ function Grid2Options:AddIndicatorLocationOptions(indicator, options)
 		}
 	options.x = {
 			type = "range",
-			order = 6,
+			order = 7,
 			name = L["X Offset"],
 			desc = L["X - Horizontal Offset"],
 			min = -50, max = 50, step = 1, bigStep = 1,
@@ -739,7 +758,7 @@ function Grid2Options:AddIndicatorLocationOptions(indicator, options)
 		}
 	options.y = {
 			type = "range",
-			order = 7,
+			order = 8,
 			name = L["Y Offset"],
 			desc = L["Y - Vertical Offset"],
 			min = -50, max = 50, step = 1, bigStep = 1,
@@ -752,7 +771,7 @@ function Grid2Options:AddIndicatorLocationOptions(indicator, options)
 		}
 	options.frameLevel = {
 		type = "select",
-		order = 8,
+		order = 6,
 		name = L["Frame Level"],
 		desc = L["Bars with higher numbers always show up on top of lower numbers."],
 		get = function ()
@@ -1335,7 +1354,7 @@ local function MakeIconIndicatorOptions(indicator)
 	if Grid2Options.AddMediaOption then
 		local fontOption = {
 			type = "select",
-			order = 120,
+			order = 105,
 			name = L["Font"],
 			desc = L["Adjust the font settings"],
 			hidden= function() return indicator.dbx.disableStack end,
@@ -1371,7 +1390,7 @@ local function MakeIconIndicatorOptions(indicator)
 	Grid2Options:MakeIndicatorSizeOptions(indicator, options)
 	Grid2Options:MakeIndicatorTypeOptions(indicator, options)
 	Grid2Options:AddIndicatorLocationOptions(indicator, options)
-	Grid2Options:MakeIndicatorBorderOptions(indicator, options)
+	Grid2Options:MakeIconIndicatorBorderOptions(indicator, options)
 	Grid2Options:AddIndicatorDeleteOptions(indicator, options)
 	Grid2Options:AddIndicatorStatusOptions(indicator, statuses)
 
