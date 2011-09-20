@@ -22,6 +22,7 @@ locales.xml
 GridCore.lua
 GridFrame.lua
 GridLayout.lua
+GridLayoutEditor.lua
 GridBlink.lua
 GridMedia.lua
 GridIndicators.lua

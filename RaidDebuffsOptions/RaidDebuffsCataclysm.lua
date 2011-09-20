@@ -144,8 +144,8 @@ RDDB["Cataclysm"] = {
 		99252,  -- Blaze of Glory
 		99256,  -- Torment
 		99403,  -- Tormented
-		99262,  -- Vital Spark
-		99263,  -- Vital Flame
+		--99262,  -- Vital Spark
+		--99263,  -- Vital Flame
 		99516,  -- Count Down
 		100908, -- Fiery Torment
 		},
