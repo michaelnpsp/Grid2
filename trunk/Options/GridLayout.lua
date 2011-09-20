@@ -5,8 +5,10 @@ Created by Grid2 original authors, modified by Michael
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 local media = LibStub("LibSharedMedia-3.0", true)
 
-function Grid2Options:MakeLayoutOptions(reset)
 
+local raidTypesOptions= {}
+
+local function MakeLayoutSettingsOptions()
 	local ORDER_LAYOUT = 20
 	local ORDER_DISPLAY = 30
 	local ORDER_ANCHOR = 40
@@ -218,190 +220,91 @@ function Grid2Options:MakeLayoutOptions(reset)
 		}
 		Grid2Options:AddMediaOption("border", layoutOptions.borderTexture)
 	end
-	Grid2Options:AddModuleOptions( "General" , "Layout Settings", layoutOptions)
+	return layoutOptions
+end
 	
 	
-	local function TestButton(order,name)
-		return {
+local function MakeLayoutsGeneralOptions(options)
+
+	local ORDER= 10
+
+	local function MakeLayoutRaidTypeOption(options, raidType, name, desc )
+		options[raidType]= {
+			type = "select",
+			name = name and L[name] or L["Raid %s Layout"]:format( strsub(raidType,-2) ),
+			desc = desc and L[desc] or L["Select which layout to use for %s person raids."]:format( strsub(raidType,-2) ),
+			order = ORDER+5,
+			width = "double",	
+			get = function ()
+				return Grid2Layout.db.profile.layouts[raidType]
+			end,
+			set = function (_, v)
+				Grid2Layout.db.profile.layouts[raidType] = v
+				if Grid2Layout.partyType == raidType then
+					Grid2Layout:LoadLayout(v)
+				end
+			end,
+			values = Grid2Options:GetLayouts( raidType ),
+		}
+		options[raidType.."Test"] = {
 			type = "execute",
 			name = L["Test"],
 			width= "half",
 			desc = L["Test the layout."],
-			order = order,
-			func = function(info)
-				local layout= Grid2Layout.db.profile.layouts[name]
-				Grid2Options:LayoutTestEnable(layout)
-			end,
+			order = ORDER+10,
+			func = function(info) Grid2Options:LayoutTestEnable( Grid2Layout.db.profile.layouts[raidType], raidType ) end,
 			disabled = InCombatLockdown,
+		}		
+		options[raidType.."sep"] = {
+		  type= "description",  name= "",  order= ORDER + 99
 		}
+		
+		ORDER = ORDER + 100
 	end
 	
-	Grid2Options:AddModuleOptions( "Layouts", nil, {
-		solo = {
-			type = "select",
-			name = L["Solo Layout"],
-			desc = L["Select which layout to use for solo."],
-			order = 10,
-			width = "double",			
-			get = function ()
-					  return Grid2Layout.db.profile.layouts.solo
-				  end,
-			set = function (_, v)
-					  Grid2Layout.db.profile.layouts.solo = v
-					  if Grid2Layout.partyType == "solo" then
-						Grid2Layout:LoadLayout(v)
-					  end
-				  end,
-			values = Grid2Options:GetLayouts( "solo" ),
-		},
-		soloTest= TestButton(15, "solo"),
-		party = {
-			type = "select",
-			name = L["Party Layout"],
-			desc = L["Select which layout to use for party."],
-			order = 20,
-			width = "double",			
-			get = function ()
-				return Grid2Layout.db.profile.layouts.party
-			end,
-			set = function (_, v)
-				Grid2Layout.db.profile.layouts.party = v
-				if Grid2Layout.partyType == "party" then
-					Grid2Layout:LoadLayout(v)
-				end
-			end,
-			values = Grid2Options:GetLayouts( "party" ),
-		},
-		partyTest= TestButton(25,"party"),
-		arena = {
-			type = "select",
-			name = L["Arena Layout"],
-			desc = L["Select which layout to use for arenas."],
-			order = 30,
-			width = "double",			
-			get = function ()
-				return Grid2Layout.db.profile.layouts.arena
-			end,
-			set = function (_, v)
-				Grid2Layout.db.profile.layouts.arena = v
-				if Grid2Layout.partyType == "arena" then
-					Grid2Layout:LoadLayout(v)
-				end
-			end,
-			values = Grid2Options:GetLayouts( "arena" ),
-		},
-		arenaTest= TestButton(35,"arena"),
-		raid10 = {
-			type = "select",
-			name = L["Raid %s Layout"]:format(10),
-			desc = L["Select which layout to use for %s person raids."]:format(10),
-			order = 40,
-			width = "double",			
-			get = function ()
-				return Grid2Layout.db.profile.layouts.raid10
-			end,
-			set = function (_, v)
-				Grid2Layout.db.profile.layouts.raid10 = v
-				if Grid2Layout.partyType == "raid10" then
-					Grid2Layout:LoadLayout(v)
-				end
-			end,
-			values = Grid2Options:GetLayouts( "raid10" ),
-		},
-		raid10Test= TestButton(45,"raid10"),
-		raid15 = {
-			type = "select",
-			name = L["Raid %s Layout"]:format(15),
-			desc = L["Select which layout to use for %s person raids."]:format(15),
-			order = 50,
-			width = "double",			
-			get = function ()
-				return Grid2Layout.db.profile.layouts.raid15
-			end,
-			set = function (_, v)
-				Grid2Layout.db.profile.layouts.raid15 = v
-				if Grid2Layout.partyType == "raid15" then
-					Grid2Layout:LoadLayout(v)
-				end
-			end,
-			values = Grid2Options:GetLayouts( "raid15" ),
-		},
-		raid15Test= TestButton(55,"raid15"),
-		raid20 = {
-			type = "select",
-			name = L["Raid %s Layout"]:format(20),
-			desc = L["Select which layout to use for %s person raids."]:format(20),
-			order = 60,
-			width = "double",			
-			get = function ()
-				return Grid2Layout.db.profile.layouts.raid20
-			end,
-			set = function (_, v)
-				Grid2Layout.db.profile.layouts.raid20 = v
-				if Grid2Layout.partyType == "raid20" then
-					Grid2Layout:LoadLayout(v)
-				end
-			end,
-			values = Grid2Options:GetLayouts( "raid20" ),
-		},
-		raid20Test= TestButton(65,"raid20"),
-		raid25 = {
-			type = "select",
-			name = L["Raid %s Layout"]:format(25),
-			desc = L["Select which layout to use for %s person raids."]:format(25),
-			order = 70,
-			width = "double",
-			get = function ()
-				return Grid2Layout.db.profile.layouts.raid25
-			end,
-			set = function (_, v)
-				Grid2Layout.db.profile.layouts.raid25 = v
-				if Grid2Layout.partyType == "raid25" then
-					Grid2Layout:LoadLayout(v)
-				end
-			end,
-			values = Grid2Options:GetLayouts( "raid25" ),
-		},
-		raid25Test= TestButton(75,"raid25"),
-		raid40 = {
-			type = "select",
-			name = L["Raid %s Layout"]:format(40),
-			desc = L["Select which layout to use for %s person raids."]:format(40),
-			order = 80,
-			width = "double",			
-			get = function ()
-				return Grid2Layout.db.profile.layouts.raid40
-			end,
-			set = function (_, v)
-				Grid2Layout.db.profile.layouts.raid40 = v
-				if Grid2Layout.partyType == "raid40" then
-					Grid2Layout:LoadLayout(v)
-				end
-			end,
-			values = Grid2Options:GetLayouts( "raid40" ),
-		},
-		raid40Test= TestButton(85,"raid40"),
-		pvp = {
-			type = "select",
-			name = L["Battleground Layout"],
-			desc = L["Select which layout to use for battlegrounds."],
-			order = 90,
-			width = "double",			
-			get = function ()
-				return Grid2Layout.db.profile.layouts.pvp
-			end,
-			set = function (_, v)
-				Grid2Layout.db.profile.layouts.pvp = v
-				if Grid2Layout.partyType == "pvp" then
-					Grid2Layout:LoadLayout(v)
-				end
-			end,
-			values = Grid2Options:GetLayouts( "pvp" ),
-		},
-		pvpTest= TestButton(95,"pvp"),
-	})
-
+	options= options or {}
+	MakeLayoutRaidTypeOption(options, "solo"  , "Solo Layout" , "Select which layout to use for solo." )
+	MakeLayoutRaidTypeOption(options, "party" , "Party Layout", "Select which layout to use for party." )
+	MakeLayoutRaidTypeOption(options, "arena" , "Arena Layout", "Select which layout to use for arenas." )
+	MakeLayoutRaidTypeOption(options, "raid10" )
+	MakeLayoutRaidTypeOption(options, "raid15" )
+	MakeLayoutRaidTypeOption(options, "raid20" )
+	MakeLayoutRaidTypeOption(options, "raid25" )
+	MakeLayoutRaidTypeOption(options, "raid40" )	
+	MakeLayoutRaidTypeOption(options, "pvp"   , "Battleground Layout", "Select which layout to use for battlegrounds." )
+	return options
+end	
+	
+function Grid2Options:RefreshLayoutsOptions()
+	for raidType,option in pairs(raidTypesOptions) do
+		if option.type=="select" and option.values then
+			option.values = Grid2Options:GetLayouts( raidType )
+		end
+	end
 end	
 
+function Grid2Options:MakeLayoutOptions(reset)
+	wipe(raidTypesOptions)
+	Grid2Options:AddModuleOptions( "General" , "Layout Settings", MakeLayoutSettingsOptions() )
+	local general = {
+		type = "group",
+		order= 200,
+		name = L["General"],
+		args =  MakeLayoutsGeneralOptions(raidTypesOptions),
+	}
+	local advanced = {
+		type = "group",
+		order= 201,
+		name = L["Advanced"],
+		args = Grid2Options:MakeCustomLayoutOptions(),
+		
+	}
+	Grid2Options:AddModuleOptions( "Layouts", nil, {
+		type = "group",
+		childGroups= "tab",
+		name = L["Layouts"],
+		args = { general = general,	advanced = advanced	},	
+	})
+end	
 	
 --}}}

@@ -48,7 +48,6 @@ local function Icon_Create(self, parent)
 		CooldownText:SetJustifyV( self.dbx.fontJustifyV or "MIDDLE" )
 		local c= self.dbx.stackColor
 		if c then CooldownText:SetTextColor(c.r, c.g, c.b, c.a) end	
-		--CooldownText:SetShadowOffset(1, -1)
 		CooldownText:Hide()
 		f.CooldownText = CooldownText
 	end	

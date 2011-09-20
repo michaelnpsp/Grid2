@@ -150,6 +150,7 @@ Grid2Layout.defaultDB = {
 					pvp = "By Group 40",
 					arena = "By Group 5 w/Pets",
 		},
+		layoutScales= {},
 		horizontal = true,
 		clamp = true,
 		FrameLock = false,
@@ -194,6 +195,13 @@ function Grid2Layout:OnModuleInitialize()
 		partypet = 0,
 		spacer = 0,
 	}
+	-- Register user defined layouts
+	local customLayouts= self.db.global.customLayouts
+	if customLayouts then
+		for n,l in pairs(customLayouts) do
+			Grid2Layout:AddLayout(n,l)
+		end
+	end
 end
 
 function Grid2Layout:OnModuleEnable()
@@ -201,7 +209,6 @@ function Grid2Layout:OnModuleEnable()
 		self:CreateFrame()
 	end
 	self:RestorePosition()
-	self:Scale()
 	if self.layoutName then
 		self:ReloadLayout()
 	end	
@@ -371,8 +378,7 @@ function Grid2Layout:ReloadLayout()
 		return
 	end
 	reloadLayoutQueued = false
-	local layout = self.db.profile.layouts[self.partyType or "solo"]
-	self:LoadLayout(layout)
+	self:LoadLayout( self.db.profile.layouts[self.partyType or "solo"] )
 end
 
 local function getColumnAnchorPoint(point, horizontal)
@@ -432,8 +438,12 @@ end
 function Grid2Layout:LoadLayout(layoutName)
 	local layout = self.layoutSettings[layoutName]
 	if not layout then return end
-
+	
 	self:Debug("LoadLayout", layoutName)
+
+	self.layoutName= layoutName
+	
+	self:Scale()
 	
 	local p = self.db.profile
 	local horizontal = p.horizontal
@@ -473,8 +483,6 @@ function Grid2Layout:LoadLayout(layoutName)
 	end
 
 	self:UpdateDisplay()
-	
-	self.layoutName= layoutName
 end
 
 function Grid2Layout:UpdateDisplay()
@@ -642,7 +650,8 @@ end
 
 function Grid2Layout:Scale()
 	self:SavePosition()
-	self.frame:SetScale(self.db.profile.ScaleSize)
+	local settings= self.db.profile
+	self.frame:SetScale(  settings.ScaleSize * (settings.layoutScales[self.layoutName or "solo"] or 1) )
 	self:RestorePosition()
 end
 

@@ -90,14 +90,12 @@ Grid2Layout:AddLayout("By Group 5 w/Pets", {
 	},
 	[1] = {
 		groupingOrder = DEFAULT_GROUP_ORDER,
-		allowVehicleTarget = true,
 	},
 	[2] = {
 		type = "partypet",
 		groupingOrder = DEFAULT_PET_ORDER,
 		unitsPerColumn = 5,
 		maxColumns = 1,
-		allowVehicleTarget = true,
 	},
 })
 

@@ -11,6 +11,8 @@ local colColors
 local frameLayout
 local frames
 local layoutName
+local savedScale
+
 
 function Grid2Layout:ShowFrames(enabled)
 	for type, headers in pairs(self.groups) do
@@ -68,6 +70,12 @@ local function LayoutHide(restoreRealLayout)
 		for i=1,framesCount do
 			frames[i]:Hide()	
 		end
+		if savedScale then
+			Grid2Layout:SavePosition()
+			Grid2Layout.frame:SetScale(savedScale)
+			Grid2Layout:RestorePosition()
+			savedScale= nil
+		end
 		if restoreRealLayout then
 			layoutName= nil
 			Grid2Layout:ShowFrames(true)
@@ -90,6 +98,10 @@ do
 			texture = media and media:Fetch("statusbar", Grid2Frame.db.profile.frameTexture) or "Interface\\Addons\\Grid2\\gradient32x32"		
 		end
 		if not frameLayout then frameLayout= Grid2Layout.frame end
+		savedScale= frameLayout:GetScale()
+		Grid2Layout:SavePosition()
+		frameLayout:SetScale( Grid2Layout.db.profile.ScaleSize * (Grid2Layout.db.profile.layoutScales[name] or 1) )
+		Grid2Layout:RestorePosition()
 		colColors= {}
 		local layout = Grid2Layout.layoutSettings[name]
 		if layout then
