@@ -28,7 +28,8 @@ function Threat:OnDisable()
 end
 
 function Threat:UpdateDB()
-	self.colors= { self.dbx.color1, self.dbx.color2, self.dbx.color3 }
+	self.colors      = { self.dbx.color1, self.dbx.color2, self.dbx.color3 }
+	self.activeValue = self.dbx.disableBlink or "blink"
 end
 
 -- 1 = not tanking, higher threat than tank
@@ -39,7 +40,7 @@ function Threat:IsActive(unit)
 		and UnitExists(unit) -- hack thanks Potje
 		and UnitThreatSituation(unit)
 	if threat and threat > 0 then
-		return "blink"
+		return self.activeValue
 	end
 end
 

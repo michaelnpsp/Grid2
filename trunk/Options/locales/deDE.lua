@@ -537,6 +537,7 @@ L["Insecurely Tanking"] = "Unsicheres Tanken"
 L["Tanking without having highest threat."] = "Wird getankt ohne die höchste Bedrohung"
 L["Securely Tanking"] = "Sicher Getankt"
 L["Tanking with highest threat."] = "Wird mit höchster Bedrohung getankt"
+-- L["Disable Blink"] = ""
 
 -- voice status
 L["Voice Chat"] = "Voice Chat"

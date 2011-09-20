@@ -537,6 +537,7 @@ L["Insecurely Tanking"] = true
 L["Tanking without having highest threat."] = true
 L["Securely Tanking"] = true
 L["Tanking with highest threat."] = true
+L["Disable Blink"] = true
 
 -- voice status
 L["Voice Chat"] = true
