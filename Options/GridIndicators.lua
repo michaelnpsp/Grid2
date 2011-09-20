@@ -1297,7 +1297,7 @@ local function MakeIconIndicatorOptions(indicator)
 				local indicatorKey = indicator.name
 				Grid2Frame:WithAllFrames(function (f)
 					local text= f[indicatorKey].CooldownText
-					text:SetFont( text:GetFont() , v)
+					text:SetFont( text:GetFont() , v, "OUTLINE" )
 				end)
 			end,
 			hidden= function() return indicator.dbx.disableStack end,
@@ -1334,19 +1334,15 @@ local function MakeIconIndicatorOptions(indicator)
 			desc = L["Text Location"],
 		    values = pointValueList,
 			get = function()
-				local JustifyH= indicator.dbx.fontJustifyH or "CENTER"
-				local JustifyV= indicator.dbx.fontJustifyV or "MIDDLE"
+				local JustifyH = indicator.dbx.fontJustifyH or "CENTER"
+				local JustifyV = indicator.dbx.fontJustifyV or "MIDDLE"
 				return pointMapText[ JustifyH..JustifyV ]
 			end,
 			set = function(_, v)
-				local justify=  pointMapText[v]
-				indicator.dbx.fontJustifyH= justify[1] 
-				indicator.dbx.fontJustifyV= justify[2]
-				local indicatorKey = indicator.name
-				Grid2Frame:WithAllFrames(function (f) 
-					f[indicatorKey].CooldownText:SetJustifyH(justify[1])
-					f[indicatorKey].CooldownText:SetJustifyV(justify[2])
-				end)
+				local justify =  pointMapText[v]
+				indicator.dbx.fontJustifyH = justify[1] 
+				indicator.dbx.fontJustifyV = justify[2]
+				Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
 			end,
 			hidden= function() return indicator.dbx.disableStack end,
 		},

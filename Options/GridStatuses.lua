@@ -307,8 +307,9 @@ function Grid2Options:MakeStatusColorOptions(status, options, optionParams)
 	options = options or {}
 
 	local colorCount = status.dbx.colorCount or 1
-	local name = L["Color"]
-	local desc = L["Color for %s."]:format(status.name)
+	local name  = L["Color"]
+	local desc  = L["Color for %s."]:format(status.name)
+	local width = optionParams and optionParams.width or "half"
 	local makeColorHandler = optionParams and optionParams.makeColorHandler
 	for i = 1, colorCount, 1 do
 		local colorKey = "color" .. i
@@ -328,7 +329,7 @@ function Grid2Options:MakeStatusColorOptions(status, options, optionParams)
 		options[colorKey] = {
 			type = "color",
 			order = (10 + i),
-			width = "half",
+			width = width,
 			name = name,
 			desc = desc,
 			get = Grid2Options.GetStatusColor,
@@ -1378,6 +1379,33 @@ function Grid2Options:MakeStatusRaidDebuffsOptions(status, options, optionParams
 	return options
 end
 
+
+function Grid2Options:MakeStatusThreatOptions(status, options, optionParams)
+	options = options or {}
+
+	options = Grid2Options:MakeStatusColorOptions(status, options, optionParams)
+
+	options.separator= {
+		type = "header",
+		order = 25,
+		name = "",
+	}
+	options.disableBlink= {
+		type = "toggle",
+		name = L["Disable Blink"],
+		desc = L["Disable Blink"],
+		width = "full",
+		order = 30,
+		get = function () return status.dbx.disableBlink end,
+		set = function (_, v) 
+			status.dbx.disableBlink = v or nil 
+			status:UpdateDB()
+		end,
+	}
+	
+	return options
+end
+
 --No options for the status
 function Grid2Options:MakeStatusNoOptions(status, options, optionParams)
 end
@@ -1436,20 +1464,24 @@ function Grid2Options:MakeStatusHandlers(reset)
 	self:AddOptionHandler("role", self.MakeStatusStandardOptions, {
 			color1 = MAIN_ASSIST,
 			color2 = MAIN_TANK,
+			width = "full",
 	})
-	self:AddOptionHandler("threat", self.MakeStatusStandardOptions, {
+	
+	self:AddOptionHandler("threat", self.MakeStatusThreatOptions, {
 			color1 = L["Not Tanking"],
 			colorDesc1 = L["Higher threat than tank."],
 			color2 = L["Insecurely Tanking"],
 			colorDesc2 = L["Tanking without having highest threat."],
 			color3 = L["Securely Tanking"],
 			colorDesc3 = L["Tanking with highest threat."],
+			width= "full",
 	})
 	self:AddOptionHandler("resurrection", self.MakeStatusStandardOptions, {
 			color1 = L["Casting resurrection"],
 			colorDesc1 = L["A resurrection spell is being casted on the unit"],
 			color2 = L["Resurrected"],
 			colorDesc2 = L["A resurrection spell has been casted on the unit"],
+			width = "full",
 	})
 	self:AddOptionHandler("raid-icon-player", self.MakeStatusTargetIconOptions, targetIconOptionParams)
 	self:AddOptionHandler("raid-icon-target", self.MakeStatusTargetIconOptions, targetIconOptionParams)

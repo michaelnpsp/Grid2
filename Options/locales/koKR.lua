@@ -537,6 +537,7 @@ L["Insecurely Tanking"] = "위험한 방어전담"
 L["Tanking without having highest threat."] = "가장 높은 위협 수준 가지지 않고 방어전담을 합니다."
 L["Securely Tanking"] = "안전한 방어전담"
 L["Tanking with highest threat."] = "가장 높은 위협 수준을 가지고 방어전담을 합니다."
+-- L["Disable Blink"] = ""
 
 -- voice status
 L["Voice Chat"] = "음성 대화"

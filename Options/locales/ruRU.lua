@@ -537,6 +537,7 @@ L["Insecurely Tanking"] = "Ненадёжное танкование"
 L["Tanking without having highest threat."] = "Танкование без наивысшего уровня угрозы."
 L["Securely Tanking"] = "Надёжное танкование"
 L["Tanking with highest threat."] = "Танкование с наивысшим уровнем угрозы."
+-- L["Disable Blink"] = ""
 
 -- voice status
 L["Voice Chat"] = "Голосовой чат"

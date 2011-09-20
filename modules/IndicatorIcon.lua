@@ -32,7 +32,6 @@ local function Icon_Create(self, parent)
 			Cooldown = f.Cooldown or CreateFrame("Cooldown", fmt("Grid2%s%02d%02d",name,i,j) , f, "CooldownFrameTemplate")
 			Cooldown.noCooldownCount= nil
 		end
-		Cooldown:SetAllPoints(f)
 		Cooldown:SetReverse(self.dbx.reverseCooldown)
 		Cooldown:Hide()
 		f.Cooldown = Cooldown
@@ -40,12 +39,9 @@ local function Icon_Create(self, parent)
 	
 	if not self.disableStack then
 		local CooldownText = f.CooldownText or f:CreateFontString(nil, "OVERLAY")
-		CooldownText:SetAllPoints()
 		CooldownText:SetFontObject(GameFontHighlightSmall)
 		local font = self.dbx.font and media and media:Fetch("font", self.dbx.font) or CooldownText:GetFont()
 		CooldownText:SetFont(font, self.dbx.fontSize, "OUTLINE" )
-		CooldownText:SetJustifyH( self.dbx.fontJustifyH or "CENTER" )
-		CooldownText:SetJustifyV( self.dbx.fontJustifyV or "MIDDLE" )
 		local c= self.dbx.stackColor
 		if c then CooldownText:SetTextColor(c.r, c.g, c.b, c.a) end	
 		CooldownText:Hide()
@@ -130,6 +126,19 @@ local function Icon_Layout(self, parent)
 	
 	local size = self.dbx.size
 	f:SetSize(size,size)
+	
+	if not self.disableStack then
+		local CooldownText = f.CooldownText
+		local justifyH = self.dbx.fontJustifyH or "CENTER"
+		local justifyV = self.dbx.fontJustifyV or "MIDDLE"
+		CooldownText:SetJustifyH( justifyH )
+		CooldownText:SetJustifyV( justifyV  )
+		CooldownText:ClearAllPoints()
+		CooldownText:SetPoint("TOP"   , f, "TOP")
+		CooldownText:SetPoint("BOTTOM", f, "BOTTOM")
+		CooldownText:SetPoint("LEFT"  , f, "LEFT" , justifyH=="LEFT"  and 0 or -size, 0)
+		CooldownText:SetPoint("RIGHT" , f, "RIGHT", justifyH=="RIGHT" and 0 or  size, 0)
+	end
 end
 
 local function Icon_Disable(self, parent)
