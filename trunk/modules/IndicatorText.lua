@@ -134,7 +134,7 @@ local function GetElapsedTimeValue(expiration, duration, Text, func)
 	end	
 end
 
-local function SetDefaultText(Text, status, unit)
+local function SetDefaultText(self, Text, status, unit)
 	Text:SetText( string_sub(status:GetText(unit) or "", 1, self.textlength) )
 end
 
@@ -147,7 +147,7 @@ local function Text_OnUpdateDS(self, parent, unit, status)
 			stacks[Text]= stack
 			Text:SetFormattedText( dsFormat(duration), duration, stack )
 		else
-			SetDefaultText(Text, status, unit)
+			SetDefaultText(self, Text, status, unit)
 		end
 		Text:Show()
 	else
@@ -165,7 +165,7 @@ local function Text_OnUpdateES(self, parent, unit, status)
 			stacks[Text]= stack
 			Text:SetFormattedText( "%.0f:%d", elapsed, stack )
 		else
-			SetDefaultText(Text, status, unit)
+			SetDefaultText(self, Text, status, unit)
 		end
 		Text:Show()
 	else
@@ -181,7 +181,7 @@ local function Text_OnUpdateD(self, parent, unit, status)
 		if duration then
 			Text:SetFormattedText( dFormat(duration), duration )
 		else
-			SetDefaultText(Text, status, unit)
+			SetDefaultText(self, Text, status, unit)
 		end
 		Text:Show()
 	else
@@ -197,7 +197,7 @@ local function Text_OnUpdateE(self, parent, unit, status)
 		if elapsed then
 			Text:SetFormattedText( "%.0f", elapsed )
 		else
-			SetDefaultText(Text, status, unit)
+			SetDefaultText(self, Text, status, unit)
 		end
 		Text:Show()
 	else
@@ -213,7 +213,7 @@ local function Text_OnUpdateS(self, parent, unit, status)
 		if content then
 			Text:SetFormattedText( "%d", content )
 		else
-			SetDefaultText(Text, status, unit)
+			SetDefaultText(self, Text, status, unit)
 		end
 		Text:Show()
 	else
@@ -229,7 +229,7 @@ local function Text_OnUpdateP(self, parent, unit, status)
 		if percent then
 			Text:SetFormattedText( "%.0f%%", percent*100 )
 		else
-			SetDefaultText(Text, status, unit)
+			SetDefaultText(self, Text, status, unit)
 		end
 		Text:Show()
 	else
