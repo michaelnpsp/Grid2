@@ -120,13 +120,6 @@ function Grid2:OnInitialize()
 
 	self.debugging = self.db.profile.debug
 
-	local media = LibStub("LibSharedMedia-3.0", true)
-	if media then
-		media:Register("statusbar", "Gradient", "Interface\\Addons\\Grid2\\gradient32x32")
-		media:Register("statusbar", "Grid2 Flat", "Interface\\Addons\\Grid2\\white16x16")
-		media:Register("border", "Grid2 Flat", "Interface\\Addons\\Grid2\\white16x16")
-	end
-	
  	local LibDualSpec = LibStub('LibDualSpec-1.0')
 	if LibDualSpec then
 		LibDualSpec:EnhanceDatabase(self.db, "Grid2")
@@ -138,6 +131,14 @@ function Grid2:OnInitialize()
 end
 
 function Grid2:OnEnable()
+
+	local media = LibStub("LibSharedMedia-3.0", true)
+	if media then
+		media:Register("statusbar", "Gradient", "Interface\\Addons\\Grid2\\gradient32x32")
+		media:Register("statusbar", "Grid2 Flat", "Interface\\Addons\\Grid2\\white16x16")
+		media:Register("border", "Grid2 Flat", "Interface\\Addons\\Grid2\\white16x16")
+	end
+		
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED", "GroupChanged")
 	self:RegisterEvent("RAID_ROSTER_UPDATE", "GroupChanged")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")

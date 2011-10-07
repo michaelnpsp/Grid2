@@ -188,7 +188,7 @@ local function LoadLayoutHeader( layoutName, layout, index, header )
 		get    = function() return GetHeaderOption(layout,header,"groupBy","NONE") end,
 		set    = function(_,v)	
 					if v=="CLASS" then
-						header.groupingOrder = (header.type=="raid" or header.type=="party" and DEFAULT_GROUP_ORDER) or DEFAULT_PET_ORDER
+						header.groupingOrder = (header.type=="raid" or header.type=="party") and DEFAULT_GROUP_ORDER or DEFAULT_PET_ORDER
 					elseif v=="GROUP" then
 						header.groupingOrder = header.groupFilter or "1,2,3,4,5,6,7,8"
 					elseif v=="ROLE" then
