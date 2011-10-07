@@ -146,7 +146,7 @@ local function Create(baseKey, dbx)
 	if not dbx.debuffs then
 		dbx.debuffs= {}
 	end
-	Grid2:RegisterStatus(status, { "icon", "color" }, baseKey, dbx)
+	Grid2:RegisterStatus(status, { "icon", "color", "text" }, baseKey, dbx)
 	return status
 end
 

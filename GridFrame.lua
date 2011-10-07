@@ -2,12 +2,13 @@
 
 
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
-local media = LibStub("LibSharedMedia-3.0", true)
+
 local Grid2= Grid2
 local SecureButton_GetModifiedUnit = SecureButton_GetModifiedUnit
 local UnitFrame_OnEnter= UnitFrame_OnEnter
 local UnitFrame_OnLeave= UnitFrame_OnLeave
 
+local media
 local Grid2Frame
 
 --{{{ Grid2Frame script handlers
@@ -163,6 +164,9 @@ function Grid2Frame:OnModuleInitialize()
 end
 
 function Grid2Frame:OnModuleEnable()
+	if not media then
+		media = LibStub("LibSharedMedia-3.0", true)
+	end 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateFrameUnits")
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "UNIT_ENTERED_VEHICLE")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE", "UNIT_EXITED_VEHICLE")

@@ -4,7 +4,7 @@ Created by Grid2 original authors, modified by Michael
 
 local Grid2Layout = Grid2:NewModule("Grid2Layout")
 
-local media = LibStub("LibSharedMedia-3.0", true)
+local media
 
 local pairs, ipairs, next = pairs, ipairs, next
 
@@ -205,6 +205,9 @@ function Grid2Layout:OnModuleInitialize()
 end
 
 function Grid2Layout:OnModuleEnable()
+	if not media then
+		media = LibStub("LibSharedMedia-3.0", true)
+	end	
 	if not self.frame then
 		self:CreateFrame()
 	end
