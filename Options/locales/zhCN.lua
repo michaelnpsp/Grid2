@@ -497,8 +497,12 @@ L["Humanoid"] = "人型"
 L["Elemental"] = "元素"
 
 -- heal-current status
+-- L["Full Health"] = ""
+-- L["Medium Health"] = ""
+-- L["Low Health"] = ""
 L["Show dead as having Full Health"] = "显示死亡或生命值全满"
 -- L["Frequent Updates"] = ""
+-- L["Instant Updates"] = ""
 
 -- range status 
 L["Range"] = "距离"

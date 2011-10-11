@@ -497,8 +497,12 @@ L["Humanoid"] = "Humanoid"
 L["Elemental"] = "Elementar"
 
 -- heal-current status
+-- L["Full Health"] = ""
+-- L["Medium Health"] = ""
+-- L["Low Health"] = ""
 L["Show dead as having Full Health"] = "Zeige Tote, als hätten sie volle Gesundheit"
 L["Frequent Updates"] = "Häufigere Aktualisierungen"
+-- L["Instant Updates"] = ""
 
 -- range status 
 L["Range"] = "Reichweite"
