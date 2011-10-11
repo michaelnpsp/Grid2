@@ -497,8 +497,12 @@ L["Humanoid"] = "인간형"
 L["Elemental"] = "정령"
 
 -- heal-current status
+-- L["Full Health"] = ""
+-- L["Medium Health"] = ""
+-- L["Low Health"] = ""
 L["Show dead as having Full Health"] = "죽은후 가진 모든 생명력 표시"
 -- L["Frequent Updates"] = ""
+-- L["Instant Updates"] = ""
 
 -- range status 
 L["Range"] = "거리"

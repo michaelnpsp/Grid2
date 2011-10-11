@@ -1191,6 +1191,7 @@ function Grid2Options:MakeStatusHealthCurrentOptions(status, options, optionPara
 	options = self:MakeStatusColorOptions(status, options, optionParams)
 	options.spacer = {	type = "header", order = 100, name = "", }
 	options = self:MakeStatusToggleOptions(status, options, optionParams, "frequentUpdates")
+	options = self:MakeStatusToggleOptions(status, options, optionParams, "quickHealth")
 	options = self:MakeStatusToggleOptions(status, options, optionParams, "deadAsFullHealth")
 
 	return options, "health"
@@ -1428,6 +1429,10 @@ function Grid2Options:MakeStatusHandlers(reset)
 	self:AddOptionHandler("health-current", self.MakeStatusHealthCurrentOptions, {
 			deadAsFullHealth = L["Show dead as having Full Health"],
 			frequentUpdates= L["Frequent Updates"],
+			quickHealth= L["Instant Updates"],
+			color1= L["Full Health"],
+			color2= L["Medium Health"],
+			color3= L["Low Health"],
 	})
 	self:AddOptionHandler("health-deficit", self.MakeStatusHealthDeficitOptions)
 	self:AddOptionHandler("heals-incoming", self.MakeStatusHealsIncomingOptions)

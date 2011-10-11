@@ -26,7 +26,7 @@ L["Offline"] = "Desc."
 --}}}
 
 --{{{ GridStatusPvp
--- L["PvP"] = ""
+L["PvP"] = "JcJ"
 -- L["FFA"] = ""
 --}}}
 
