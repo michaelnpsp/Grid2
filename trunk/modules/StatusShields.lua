@@ -19,6 +19,7 @@ local shields_ava = {
 	76669, -- Illuminated Healing (Paladin)
 	85285, -- Sacred Shield (Paladin)
 	62600, -- Savage Defense (Druid)
+	77513, -- Blood shield (DK)
 	11426, -- Ice Barrier (Mage)
 	1463,  -- Mana Shield (Mage)
 	-- 7812,  -- Sacrifice (Warlock)
@@ -113,7 +114,7 @@ end
 
 function Shields:UpdateDB()
 	wipe(shields)
-	self.maxShieldAmount= self.dbx.maxShieldAmount or 30000
+	self.maxShieldAmount = self.dbx.maxShieldAmount or 30000
 	local filtered = self.dbx.filtered
 	for _,spellId in pairs(shields_ava) do
 		if (not filtered) or (not filtered[spellId]) then
