@@ -60,6 +60,7 @@ local Categories= {
 	["health-deficit"]= "health",
 	["heals-incoming"]= "health",
 	["health-low"]= "health",
+	["shields"] = "health",
 	
 	["mana"]= "mana",
 	["lowmana"]= "mana",
@@ -531,6 +532,55 @@ function Grid2Options:MakeStatusBanzaiOptions(status, options, optionParams)
 			status:UpdateDB()
 		end,
 	}
+	return options
+end
+
+function Grid2Options:MakeStatusShieldsOptions(status, options, optionParams)
+	options = options or {}
+	options = Grid2Options:MakeStatusColorOptions(status, options, optionParams)
+	options.maxShieldAmount = {
+		type = "range",
+		order = 30,
+		name = L["Maximum shield amount"],
+		desc = L["Maximum shield amount value. Only used by bar indicators."],
+		min = 0,
+		softMax = 50000,
+		step = 1,
+		get = function () return status.dbx.maxShieldAmount or 30000 end,
+		set = function (_, v) 
+			status.dbx.maxShieldAmount = v  
+			status:UpdateDB() 
+		end,
+	}
+	options.filter = {
+		type = "group",
+		order = 40,
+		inline= true,
+		name = L["shields"],
+		args = {},
+	}
+	local dbx = status.dbx
+	local shields = status:GetAvailableShields()
+	for _,spellId in pairs(shields) do
+		options.filter.args["shield"..spellId] = {
+			type = "toggle",
+			width = "full",
+			name = GetSpellInfo(spellId),
+			get = function () return not (dbx.filtered and dbx.filtered[spellId]) end,
+			set = function (_, value)
+				if value then
+					if dbx.filtered then
+						dbx.filtered[spellId] = nil
+						if not next(dbx.filtered) then dbx.filtered = nil end
+					end	
+				else
+					if not dbx.filtered then dbx.filtered = {} end
+					dbx.filtered[spellId] = true
+				end
+				status:UpdateDB()
+			end,
+		}
+	end
 	return options
 end
 
@@ -1181,7 +1231,7 @@ end
 
 --Package a standard set of options for buffs
 function Grid2Options:MakeStatusHealthCurrentOptions(status, options, optionParams)
-	-- Ugly hack to updgrade status config in ace database
+	-- Ugly hack to upgrade status config in ace database
 	if not status.dbx.colorCount or status.dbx.colorCount<3 then status.dbx.colorCount= 3 end	
 	if not status.dbx.color2 then status.dbx.color2= { r=1,g=0.35,b=0,a=1 } end
 	if not status.dbx.color3 then status.dbx.color3= { r=1,g=0,b=0,a=1 } end
@@ -1190,7 +1240,6 @@ function Grid2Options:MakeStatusHealthCurrentOptions(status, options, optionPara
 	
 	options = self:MakeStatusColorOptions(status, options, optionParams)
 	options.spacer = {	type = "header", order = 100, name = "", }
-	options = self:MakeStatusToggleOptions(status, options, optionParams, "frequentUpdates")
 	options = self:MakeStatusToggleOptions(status, options, optionParams, "quickHealth")
 	options = self:MakeStatusToggleOptions(status, options, optionParams, "deadAsFullHealth")
 
@@ -1428,7 +1477,6 @@ function Grid2Options:MakeStatusHandlers(reset)
 	
 	self:AddOptionHandler("health-current", self.MakeStatusHealthCurrentOptions, {
 			deadAsFullHealth = L["Show dead as having Full Health"],
-			frequentUpdates= L["Frequent Updates"],
 			quickHealth= L["Instant Updates"],
 			color1= L["Full Health"],
 			color2= L["Medium Health"],
@@ -1500,7 +1548,9 @@ function Grid2Options:MakeStatusHandlers(reset)
 			color2 = LG["HEALER"],
 			color3 = LG["TANK"],
 	})
-	
+
+	self:AddOptionHandler("shields", self.MakeStatusShieldsOptions)
+
 	if not self.typeMakeOptions["raid-debuffs"] then
 		self:AddOptionHandler("raid-debuffs", self.MakeStatusRaidDebuffsOptions)
 	end

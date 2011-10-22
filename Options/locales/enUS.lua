@@ -584,7 +584,12 @@ L["Rage"] = true
 L["Focus"] = true
 L["Energy"] = true
 L["Runic Power"] = true
-		
+
+-- shields status
+L["shields"] = true
+L["Maximum shield amount"] = true
+L["Maximum shield amount value. Only used by bar indicators."] = true
+
 -- aoe heals
 L["aoe-"] = true
 L["neighbors"] = true
