@@ -410,5 +410,8 @@ function Grid2:UpdateDefaults()
 			color4 = {r=1,g=1  ,b=0  ,a=1},   -- energy
 			color5 = {r=0,g=0.8,b=0.8,a=1}})  -- runic power
 	end
+	if not Grid2:DbGetValue("statuses", "shields") then
+		Grid2:DbSetValue( "statuses",  "shields", { type = "shields", color1 = {r=0,g=1,b=0,a=1} })
+	end	
 	
 end

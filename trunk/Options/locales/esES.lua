@@ -584,7 +584,12 @@ L["Rage"] = "Ira"
 L["Focus"] = "Foco"
 L["Energy"] = "Energia"
 L["Runic Power"] = "Poder Runico"
-		
+
+-- shields status
+L["shields"] = "escudos"
+L["Maximum shield amount"] = "Maximo valor"
+L["Maximum shield amount value. Only used by bar indicators."] = "Valor maximo de los escudos. Solo usado por los indicadores de tipo barra."
+
 -- aoe heals
 L["aoe-"] = "aoe: "
 L["neighbors"] = "Vecinos"

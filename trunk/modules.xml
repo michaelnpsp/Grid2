@@ -30,5 +30,6 @@
 <Script file="modules\StatusDungeonRole.lua"/>
 <Script file="modules\StatusDirection.lua"/>
 <Script file="modules\StatusRes.lua"/>
+<Script file="modules\StatusShields.lua"/>
 
 </Ui>

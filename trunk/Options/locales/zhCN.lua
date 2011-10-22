@@ -584,7 +584,12 @@ L["Voice Chat"] = "语音"
 -- L["Focus"] = ""
 -- L["Energy"] = ""
 -- L["Runic Power"] = ""
-		
+
+-- shields status
+-- L["shields"] = ""
+-- L["Maximum shield amount"] = ""
+-- L["Maximum shield amount value. Only used by bar indicators."] = ""
+
 -- aoe heals
 -- L["aoe-"] = ""
 -- L["neighbors"] = ""

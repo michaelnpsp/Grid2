@@ -5,17 +5,18 @@ local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 local Grid2 = Grid2
 local UnitExists = UnitExists
 local UnitIsConnected = UnitIsConnected
+local next = next 
 
 -- UNIT_CONNECTION event seems bugged (not fired when player reconnect):
 -- Using a timer to track when a offline unit reconnects.
 local offline={}
 local timer
 local function tevent()
-	for unit,_ in pairs(offline) do
+	for unit in next,offline do
 		if UnitExists(unit) then
 			if UnitIsConnected(unit) then
-				Offline:UpdateIndicators(unit)
 				offline[unit]= nil
+				Offline:UpdateIndicators(unit)
 			end	
 		else
 			offline[unit]= nil
@@ -29,7 +30,7 @@ end
 
 function Offline:UNIT_CONNECTION(_, unit, hasConnected)
 	if not hasConnected then
-		offline[unit]= true
+		offline[unit] = true
 		self:UpdateIndicators(unit)
 		if not timer then
 			timer= Grid2:ScheduleRepeatingTimer(tevent, 1)
@@ -56,7 +57,7 @@ function Offline:GetColor(unit)
 end
 
 function Offline:GetPercent(unit)
-	return (not UnitIsConnected(unit)) and self.dbx.color1.a
+	return self.dbx.color1.a
 end
 
 local text= L["Offline"]
