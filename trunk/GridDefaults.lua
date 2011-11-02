@@ -354,6 +354,9 @@ function Grid2:UpdateDefaults()
 	if not Grid2:DbGetValue("statuses", "banzai") then
 		Grid2:DbSetValue( "statuses",  "banzai", { type = "banzai", color1 = {r=1,g=0,b=1,a=1} })
 	end	
+	if not Grid2:DbGetValue("statuses", "banzai-threat") then
+		Grid2:DbSetValue( "statuses",  "banzai-threat", { type = "banzai-threat", color1 = {r=1,g=0,b=0,a=1} })
+	end	
 	if not Grid2:DbGetValue("statuses", "direction") then
 		Grid2:DbSetValue( "statuses", "direction", { type = "direction", color1 = { r= 0, g= 1, b= 0, a=1 } })
 	end	

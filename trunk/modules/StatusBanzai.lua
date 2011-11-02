@@ -1,169 +1,252 @@
--- Banzai status: tracks harmfull spells casted by hostile units over raid members ( created by Michael )
+-- banzai & banzai-threat statuses ( created by Michael )
 
-local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
+local Banzai = Grid2.statusPrototype:new("banzai", false)
+local BanzaiThreat = Grid2.statusPrototype:new("banzai-threat", false)
 
-local Banzai = Grid2.statusPrototype:new("banzai")
+local Grid2 = Grid2
+local GetTime = GetTime
+local UnitName = UnitName
+local UnitGUID = UnitGUID
+local UnitExists = UnitExists
+local UnitCanAttack = UnitCanAttack
+local UnitCastingInfo = UnitCastingInfo
+local UnitChannelInfo = UnitChannelInfo
+local next = next
 
-local Grid2= Grid2
-local GetTime= GetTime
-local UnitGUID= UnitGUID
-local UnitCastingInfo= UnitCastingInfo
-local UnitChannelInfo= UnitChannelInfo
-local pairs, next= pairs, next
+local statuses = {}
+local sguids   = {}
+local tguids   = {}
+local target   = setmetatable({}, {__index = function(t,k) local v=k.."target" t[k]=v return v end})
 
-local timer
-local banzais_sources= {}
-local banzais= {}
-local banzais_guids= {}
-local banzais_durations= {}
-local banzais_expirations= {}
-local banzais_icons= {}
-local target = setmetatable({}, {__index = function(t,k) local v=k.."target" t[k]=v return v end})
-
---{{ Combat Log
-local function StopCast(guid)
-	banzais_sources[guid]= nil
-	local unit= banzais_guids[guid]
-	if unit then banzais_expirations[unit]= 0 end
-end
-
-local banzaiEvents={
-	SPELL_CAST_START 		= function(guid) banzais_sources[guid]= UnitCastingInfo end,
-	SPELL_CAST_SUCCESS      = function(guid) banzais_sources[guid]= UnitChannelInfo end,
-	SPELL_CAST_INTERRUPTED 	= StopCast,
-	SPELL_MISSED            = StopCast,
-	UNIT_DIED               = StopCast,
-}
-
-function Banzai:COMBAT_LOG_EVENT_UNFILTERED(_,_,event,_,sourceGUID)
-	local action= banzaiEvents[event]
-	if action then 
-		local unit= Grid2:GetUnitidByGUID(sourceGUID)
-		if not unit then action(sourceGUID) end	
-	end	
-end
---}}
-
---{{ Checks target and targettarget of focus and roster units, looking for banzais sources and destinations
-local defaultIcon= "Interface\\ICONS\\Ability_Creature_Cursed_02"
-local curTime
-local function CheckBanzaiUnit(unit)
-	local sourceUnit= target[unit]
-	local sourceGUID= UnitGUID(sourceUnit)
-	if sourceGUID then
-		local funcSpellInfo= banzais_sources[sourceGUID]
-		if funcSpellInfo then
-			local destGUID= UnitGUID(target[sourceUnit])
-			if destGUID then
-				local destUnit= Grid2:GetUnitidByGUID(destGUID)
-				if destUnit then
-					local icon, _, endTime= select(4,funcSpellInfo(sourceUnit))
-					endTime= endTime and endTime/1000 or curTime+0.25 
-					banzais[destUnit]= sourceGUID
-					banzais_durations[destUnit]= endTime - curTime
-					banzais_expirations[destUnit]= endTime
-					banzais_guids[sourceGUID]= destUnit
-					banzais_icons[destUnit] = icon or defaultIcon
-					Banzai:UpdateIndicators(destUnit)
-				end
-			end	
-			banzais_sources[sourceGUID]= nil
-			if not next(banzais_sources) then return true end	
-		end	
-	end
-end
-
-local function UpdateBanzais()
-	curTime= GetTime()
-	-- Delete expired banzais
-	for unit,guid in pairs(banzais) do
-		if curTime>=banzais_expirations[unit] then
-			banzais[unit], banzais_durations[unit], banzais_icons[unit], banzais_expirations[unit], banzais_guids[guid] = nil, nil, nil, nil, nil
-			Banzai:UpdateIndicators(unit)
+-- events management
+local RegisterEvent, UnregisterEvent, SetTimerDelay, SetTimerEvent
+do
+	local Events = {}
+	local frame, timerFunc, timerRate, timerElapsed
+	local function TimerEvent(_,elapsed)
+		timerElapsed = timerElapsed - elapsed
+		if timerElapsed<=0 then
+			timerElapsed = timerElapsed + timerRate
+			timerFunc()
 		end
 	end
-	-- Look for new banzais
-	if next(banzais_sources) then
-		if not CheckBanzaiUnit("focus") then 
-			for unit,_ in Grid2:IterateRosterUnits() do
-				if CheckBanzaiUnit(unit) then 
-					return 
-				end
+	function RegisterEvent(event, func)
+		if not frame then
+			frame = CreateFrame("Frame", nil, Grid2LayoutFrame)
+			frame:SetScript( "OnEvent",  function(_, event, ...) Events[event](...) end )
+		end
+		frame:RegisterEvent(event) 
+		Events[event] = func
+	end	
+	function UnregisterEvent(event)
+		frame:UnregisterEvent( event )
+		Events[event] = nil
+	end
+	function SetTimerDelay(delay)
+		timerRate = delay
+	end
+	function SetTimerEvent(func)
+		timerFunc, timerElapsed  = func, timerRate
+		frame:SetScript( "OnUpdate",  func and TimerEvent or nil)
+	end
+end
+
+-- methods and events shared by all statuses
+local function CheckEnemyUnit( sunit )
+	if UnitCanAttack(sunit, "player") then
+		local sg = UnitGUID(sunit)
+		if sg and (not sguids[sg]) then
+			local tg = UnitGUID( target[sunit] )
+			if tg then
+				tguids[sg] = Grid2:GetUnitidByGUID( tg )
 			end
-			wipe(banzais_sources)
+			sguids[sg] = sunit
 		end	
-	end
-end
---}}
-
-function Banzai:PLAYER_REGEN_DISABLED()
-	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	if not timer then
-		timer= Grid2:ScheduleRepeatingTimer(UpdateBanzais, self.dbx.updateRate or 0.1)
 	end	
 end
 
-function Banzai:PLAYER_REGEN_ENABLED()
-	self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	if timer then
-		Grid2:CancelTimer(timer)
-		timer= nil
-	end	
-	self:ClearBanzais()
-end
-
-function Banzai:ClearBanzais()
-	wipe(banzais_guids)
-	wipe(banzais_sources)
-	wipe(banzais_durations)
-	wipe(banzais_expirations)
-	wipe(banzais_icons)
-	for unit,_ in pairs(banzais) do
-		banzais[unit]= nil
-		Banzai:UpdateIndicators(unit)
+local extra_units = { "focus", "boss1", "boss2", "boss3", "boss4" }
+local function SearchEnemyUnits()
+	for unit in Grid2:IterateRosterUnits() do
+		CheckEnemyUnit( target[unit] )
+	end
+	for _,unit in next, extra_units do
+		CheckEnemyUnit( unit )
 	end
 end
 
-function Banzai:OnEnable()
-	self:RegisterEvent("PLAYER_REGEN_ENABLED")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED")
+local function TimerEvent()
+	SearchEnemyUnits()
+	for status in next,statuses do
+		status:Update()
+	end	
+	wipe(sguids)
+	wipe(tguids)
 end
 
-function Banzai:OnDisable()
-	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
-	self:UnregisterEvent("PLAYER_REGEN_DISABLED")
+local function CombatEnterEvent()
+	if Banzai.enabled then RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Banzai.CombatLogEvent) end	
+	SetTimerEvent(TimerEvent)
 end
 
-function Banzai:IsActive(unit)
-	return banzais[unit] and true
+local function CombatExitEvent()
+	if Banzai.enabled then UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED") end	
+	SetTimerEvent(nil)
+	for status in next,statuses do
+		status:ClearIndicators()
+	end	
 end
 
-function Banzai:GetDuration(unit)
-	return banzais_durations[unit]
+local function status_OnEnable(self)
+	if not next(statuses) then
+		RegisterEvent("PLAYER_REGEN_ENABLED" , CombatExitEvent)
+		RegisterEvent("PLAYER_REGEN_DISABLED", CombatEnterEvent)
+		SetTimerDelay(self.dbx.updateRate or 0.2)
+	end
+	statuses[self] = true
 end
 
-function Banzai:GetExpirationTime(unit)
-	return banzais_expirations[unit]
+local function status_OnDisable(self)
+	statuses[self] = nil
+	if not next(statuses) then
+		UnregisterEvent("PLAYER_REGEN_ENABLED")
+		UnregisterEvent("PLAYER_REGEN_DISABLED")
+	end	
 end
 
-function Banzai:GetPercent(unit)
-	local t= GetTime()
-	return ((banzais_expirations[unit] or t) - t) / (banzais_durations[unit] or 1)
-end
-
-function Banzai:GetIcon(unit)
-	return banzais_icons[unit]
-end
-
-function Banzai:GetColor(unit)
-	local c= self.dbx.color1
+local function status_GetColor(self, unit)
+	local c = self.dbx.color1
 	return c.r, c.g, c.b, c.a
 end
 
-local function Create(baseKey, dbx)
-	Grid2:RegisterStatus(Banzai, {"color", "percent", "icon" }, baseKey, dbx)
+local function status_SetUpdateRate(self, delay)
+	Banzai.dbx.updateRate       = delay
+	BanzaiThreat.dbx.updateRate = delay
+	SetTimerDelay(delay)
+end
 
+-- banzai status
+local bsrc, buni, bgid, bdur, bexp, bico = {}, {}, {}, {}, {}, {}
+
+do 
+	local e = {}
+	e.SPELL_CAST_START       = function(g) bsrc[g]= UnitCastingInfo end
+	e.SPELL_CAST_SUCCESS     = function(g) bsrc[g]= UnitChannelInfo end
+	e.SPELL_CAST_INTERRUPTED = function(g) bsrc[g]= nil; local unit = bgid[g]; if unit then bexp[unit]= 0 end end
+	e.SPELL_MISSED           = e.SPELL_CAST_INTERRUPTED
+	e.UNIT_DIED              = e.SPELL_CAST_INTERRUPTED
+	function Banzai.CombatLogEvent(_, event,_,sourceGUID)
+		local action= e[event]
+		if action then 
+			local unit = Grid2:GetUnitidByGUID(sourceGUID)
+			if not unit then action(sourceGUID) end	
+		end	
+	end
+end	
+
+function Banzai:Update()
+	local ct = GetTime()
+	for unit,guid in next,buni do -- Delete expired banzais
+		if ct>=bexp[unit] then
+			buni[unit], bdur[unit], bico[unit], bexp[unit], bgid[guid] = nil, nil, nil, nil, nil
+			self:UpdateIndicators(unit)
+		end
+	end
+	for g,func in next, bsrc do	-- Search new banzais
+		local unit = tguids[g]
+		if unit then
+			local ico,_,et = select(4, func(sguids[g]) )
+			et         = et and et/1000 or ct+0.25 
+			bgid[g]    = unit
+			buni[unit] = g
+			bdur[unit] = et - ct
+			bexp[unit] = et
+			bico[unit] = ico or "Interface\\ICONS\\Ability_Creature_Cursed_02"
+			self:UpdateIndicators(unit)
+		end
+	end	
+	wipe(bsrc)
+end
+
+function Banzai:ClearIndicators()
+	wipe(bgid)
+	wipe(bico)
+	wipe(bsrc)
+	wipe(bdur)
+	wipe(bexp)
+	for unit in next,buni do
+		buni[unit] = nil
+		self:UpdateIndicators(unit)
+	end
+end
+
+function Banzai:IsActive(unit)
+	if buni[unit] then return true end
+end
+
+function Banzai:GetDuration(unit)
+	return bdur[unit]
+end
+
+function Banzai:GetExpirationTime(unit)
+	return bexp[unit]
+end
+
+function Banzai:GetPercent(unit)
+	local t = GetTime()
+	return ((bexp[unit] or t) - t) / (bdur[unit] or 1)
+end
+
+function Banzai:GetIcon(unit)
+	return bico[unit]
+end
+
+Banzai.OnEnable      = status_OnEnable
+Banzai.OnDisable     = status_OnDisable
+Banzai.GetColor      = status_GetColor
+Banzai.SetUpdateRate = status_SetUpdateRate
+
+Grid2.setupFunc["banzai"] = function(baseKey, dbx)
+	Grid2:RegisterStatus(Banzai, {"color", "percent", "icon" }, baseKey, dbx)
 	return Banzai
 end
 
-Grid2.setupFunc["banzai"] = Create
+-- banzai-threat status
+local units, units_prev = {}, {}
+
+function BanzaiThreat:Update(reset)
+	units, units_prev = units_prev, units
+	if not reset then
+		for g,unit in next, tguids do
+			local name = UnitName( sguids[g] )
+			units[unit] = name
+			units_prev[unit]= units_prev[unit]~=name and name or nil
+		end	
+	end	
+	for unit in next, units_prev do
+		self:UpdateIndicators(unit)
+	end
+	wipe(units_prev)
+end
+
+function BanzaiThreat:ClearIndicators()
+	self:Update(true)
+end
+
+function BanzaiThreat:IsActive(unit)
+	if units[unit] then	return true end	
+end
+
+function BanzaiThreat:GetText(unit)
+	return units[unit]
+end
+
+BanzaiThreat.OnEnable  = status_OnEnable
+BanzaiThreat.OnDisable = status_OnDisable
+BanzaiThreat.GetColor  = status_GetColor
+BanzaiThreat.SetUpdateRate = status_SetUpdateRate
+
+Grid2.setupFunc["banzai-threat"] = function(baseKey, dbx)
+	Grid2:RegisterStatus(BanzaiThreat, {"color", "text" }, baseKey, dbx)
+	return BanzaiThreat
+end

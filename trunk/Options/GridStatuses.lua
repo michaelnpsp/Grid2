@@ -81,6 +81,7 @@ local Categories= {
 	
 	["threat"]= "combat",
 	["banzai"]= "combat",
+	["banzai-threat"]= "combat",
 	["death"]= "combat",
 	["feign-death"]= "combat",
 	["charmed"]= "combat",
@@ -524,13 +525,8 @@ function Grid2Options:MakeStatusBanzaiOptions(status, options, optionParams)
 		min = 0,
 		max = 5,
 		step = 0.1,
-		get = function ()
-			return status.dbx.updateRate or 0.1
-		end,
-		set = function (_, v)
-			status.dbx.updateRate = v
-			status:UpdateDB()
-		end,
+		get = function () return status.dbx.updateRate or 0.2 end,
+		set = function (_, v) status:SetUpdateRate(v) end,
 	}
 	return options
 end
@@ -544,7 +540,7 @@ function Grid2Options:MakeStatusShieldsOptions(status, options, optionParams)
 		name = L["Maximum shield amount"],
 		desc = L["Maximum shield amount value. Only used by bar indicators."],
 		min = 0,
-		softMax = 50000,
+		softMax = 100000,
 		step = 1,
 		get = function () return status.dbx.maxShieldAmount or 30000 end,
 		set = function (_, v) 
@@ -1540,7 +1536,8 @@ function Grid2Options:MakeStatusHandlers(reset)
 	self:AddOptionHandler("raid-icon-target", self.MakeStatusTargetIconOptions, targetIconOptionParams)
 
 	self:AddOptionHandler("banzai", self.MakeStatusBanzaiOptions)
-
+	self:AddOptionHandler("banzai-threat", self.MakeStatusBanzaiOptions)
+	
 	self:AddOptionHandler("direction", self.MakeStatusDirectionOptions)
 	
 	self:AddOptionHandler("dungeon-role", self.MakeStatusStandardOptions, {

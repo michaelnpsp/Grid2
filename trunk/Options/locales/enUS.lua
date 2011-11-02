@@ -401,6 +401,7 @@ L["raid-assistant"]= true
 L["target"] = true
 L["threat"] = true
 L["banzai"] = true
+L["banzai-threat"] = true
 L["vehicle"] = true
 L["voice"] = true
 L["pvp"] = true

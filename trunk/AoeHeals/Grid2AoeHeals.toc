@@ -7,11 +7,8 @@
 ## DefaultState: disabled
 ## Version: @project-version@
 
-#@no-lib-strip@
-Libs\LibMapData-1.0\library.lua
-#@end-no-lib-strip@
-
 AoeHeals.lua
+AoeHealsMapData.lua
 AoeHealsOptions.lua
 AoeHealsDefaults.lua
 AoeHealsStatusRaid.lua
@@ -19,4 +16,3 @@ AoeHealsStatusParty.lua
 AoeHealsStatusChain.lua
 AoeHealsStatusNeighbors.lua
 AoeHealsStatusHighlighter.lua
-

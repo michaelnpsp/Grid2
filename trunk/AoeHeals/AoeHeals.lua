@@ -26,7 +26,6 @@ AOEM.defaultDB = {
 	}
 }
 
-local MapFiles
 local Grid2 = Grid2
 local Grid2Layout = Grid2Layout
 local UnitExists = UnitExists
@@ -72,15 +71,6 @@ local function ClearAllIndicators()
 	end
 end
 
-local function UpdateMapZone()
-	local x,y = GetPlayerMapPosition("player")
-	if x~=0 or y~=0 then
-		mapWidth, mapHeight = MapFiles:MapArea( GetMapInfo(), GetCurrentMapDungeonLevel() )
-		local result= mapWidth>0 and mapHeight>0
-		return result
-	end	
-end
-
 local function UpdateRoster()
 	ClearAllIndicators()
 	wipe(roster)
@@ -119,8 +109,7 @@ end
 -- Initialize data tables
 
 local function Init()
-	if not MapFiles then
-		MapFiles = LibStub("LibMapData-1.0")
+	if not rosterRaid then
 		rosterRaid  = {}
 		for i=1,25 do
 			rosterRaid[i] = { neighbors={} } 
@@ -131,7 +120,8 @@ end
 --{{ Timer
 
 local function TimerEvent()
-	if UpdateMapZone() then
+	mapWidth, mapHeight = AOEM:MapGetSize()
+	if mapWidth then
 		mapValid = true
 		rosterPosValid = false
 		for _, status in next,statuses do
@@ -264,6 +254,7 @@ local function status_OnEnable(self)
 		frame:RegisterEvent("PARTY_MEMBERS_CHANGED")
 		frame:RegisterEvent("PLAYER_REGEN_DISABLED")
 		frame:RegisterEvent("PLAYER_REGEN_ENABLED")
+		AOEM:MapEnable()
 		UpdateTimerState()
 	end	
 	tinsert(statuses, self)
@@ -280,6 +271,7 @@ local function status_OnDisable(self)
 		frame:UnregisterEvent("PARTY_MEMBERS_CHANGED")
 		frame:UnregisterEvent("PLAYER_REGEN_DISABLED" )
 		frame:UnregisterEvent("PLAYER_REGEN_ENABLED" )
+		AOEM:MapDisable()
 		SetTimer(false)
 	end	
 	if self.StatusDisabled then	self:StatusDisabled() end
@@ -379,13 +371,3 @@ function AOEM:RefreshDisplayState()
 end
 
 --}}
-
--- DEBUG REMOVE 
-function Grid2:AoeDebug()
-	local players= roster
-	print("----- start -----")
-	for i=1,#players do
-		local p= players[i]  
-		print(i, p.unit, string.format("%Xh",p.curMask), UnitName(p.unit), p.valid, p.count, p.percent )
-	end
-end

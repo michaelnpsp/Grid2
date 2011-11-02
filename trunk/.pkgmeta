@@ -47,9 +47,6 @@ externals:
 	RaidDebuffs/Libs/LibBabble-Zone-3.0:
 		url: svn://svn.wowace.com/wow/libbabble-zone-3-0/mainline/trunk
 		tag: latest
-	AoeHeals/Libs/LibMapData-1.0:
-		url: svn://svn.wowace.com/wow/libmapdata-1-0/mainline/trunk
-		tag: latest
 
 move-folders:
 	Grid2/Options: Grid2Options
