@@ -55,7 +55,7 @@ do
 				end	
 			end
 		end
-	end	
+	end
 end
 
 -- Quick/Instant Health management
@@ -77,9 +77,9 @@ do
 	end
 	local function HealthChangedEvent(unit)
 		if strlen(unit)<8 then  -- Ignore Pets
-			local h = UnitHealthOriginal(unit)  	
-			local c = health_cache[unit]			
-			if h==c then return end	
+			local h = UnitHealthOriginal(unit)
+			local c = health_cache[unit]
+			if h==c then return end
 			health_cache[unit] = h
 		end	
 		UpdateIndicators(unit)
@@ -168,7 +168,12 @@ function HealthCurrent:GetPercent(unit)
 	if (self.deadAsFullHealth and UnitIsDeadOrGhost(unit)) then
 		return 1
 	end
-	return UnitHealth(unit) / UnitHealthMax(unit)
+	local m = UnitHealthMax(unit)
+	if m ~= 0 then
+		return UnitHealth(unit) / m
+	else
+		return 0
+	end
 end
 
 function HealthCurrent:GetTextDefault(unit)
@@ -269,7 +274,7 @@ end
 Grid2.setupFunc["health-deficit"] = CreateHealthDeficit
 
 -- death status
-local dead_cache= {}
+local dead_cache = {}
 
 Death.GetColor= Health_GetColor
 
@@ -282,6 +287,7 @@ local function DeathUpdateEvent(unit)
 			if HealthCurrent.enabled and HealthCurrent.deadAsFullHealth then
 				HealthCurrent:UpdateIndicators(unit)
 			end
+			
 		end	
 	elseif dead_cache[unit] then
 		dead_cache[unit] = nil
@@ -298,7 +304,7 @@ function Death:OnDisable()
 end
 
 function Death:IsActive(unit)
-	if UnitIsDeadOrGhost(unit) then 
+	if dead_cache[unit] then 
 		return true 
 	end
 end
@@ -312,11 +318,12 @@ function Death:GetPercent(unit)
 end
 
 function Death:GetText(unit)
-	if UnitIsGhost(unit) then
+	local dead = dead_cache[unit]
+	if dead==2 then
 		return L["GHOST"]
-	else
+	elseif dead==1 then
 		return L["DEAD"]
-	end
+	end		
 end
 
 local function CreateDeath(baseKey, dbx)
@@ -328,7 +335,7 @@ end
 Grid2.setupFunc["death"] = CreateDeath
 
 -- heals-incoming status
-local heals_cache= {}
+local heals_cache= setmetatable( {}, {__index = function() return 0 end} )
 
 Heals.GetColor= Health_GetColor
 
@@ -342,7 +349,7 @@ local Heals_GetHealAmount = Heals_get_without_user
 
 local function HealsUpdateEvent(unit)
 	if unit then
-		local cache= heals_cache[unit] or 0
+		local cache= heals_cache[unit]
 		local heal = Heals_GetHealAmount(unit)
 		if heal<Heals.minimum then heal = 0 end
 		if cache ~= heal then
@@ -371,7 +378,7 @@ function Heals:OnDisable()
 end
 
 function Heals:IsActive(unit)
-	return (heals_cache[unit] or 0) > 1
+	return heals_cache[unit] > 1
 end
 
 function Heals:GetText(unit)
@@ -379,7 +386,12 @@ function Heals:GetText(unit)
 end
 
 function Heals:GetPercent(unit)
-	return (heals_cache[unit] + UnitHealth(unit)) / UnitHealthMax(unit)
+	local m = UnitHealthMax(unit)
+	if m ~= 0 then
+		return ( heals_cache[unit] + UnitHealth(unit) ) / m
+	else	
+		return 0
+	end	
 end
 
 local function Create(baseKey, dbx)
