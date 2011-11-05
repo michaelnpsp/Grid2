@@ -6,6 +6,8 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 
 local Grid2= Grid2
 
+local includeCustomLayouts
+
 -- Plain hexadecimal encoding/decoding functions 
 
 local function HexEncode(s,title)
@@ -53,15 +55,27 @@ local function HexDecode(s)
 	return table.concat(t)
 end
 
+-- Its not a deep copy, only root keys are duplicated
+local function MoveTableKeys(src,dst)
+	if src and dst then
+		for k,v in pairs(src) do
+			dst[k] = v
+		end
+	end	
+end
+
 -- Serialize current profile table into a string variable  
 -- Hex:  true/Encode in plain hexadecimal   false/Encode to be transmited by addon comm channel
 
-local function SerializeCurrentProfile(Hex)
+local function SerializeCurrentProfile(Hex, exportCustomLayouts )
 	local config= { ["Grid2"] = Grid2.db.profile }
 	for name, module in Grid2:IterateModules() do
 		if module.db.profile then
 			config[name]= module.db.profile
 		end 
+	end
+	if exportCustomLayouts then -- Special ugly case for Custom Layouts
+		config["@Grid2Layout"] = Grid2:GetModule("Grid2Layout").db.global
 	end
 	local Serializer = LibStub:GetLibrary("AceSerializer-3.0")
 	local Compresor = LibStub:GetLibrary("LibCompress")
@@ -124,7 +138,7 @@ end
 
 -- Unserialize a profile string into a new AceDB profile  
 
-local function ImportProfile(sender, data, Hex)
+local function ImportProfile(sender, data, Hex, importCustomLayouts)
 	if type(data)~="string" then
 		print("Grid2 Import profile failed, data supplied must be a string")
 		return false
@@ -139,6 +153,13 @@ local function ImportProfile(sender, data, Hex)
 		print("Grid2 Import profile failed: ",data)
 		return false 
 	end
+	if importCustomLayouts and data["@Grid2Layout"] then -- Special ugly case for Custom Layouts
+		local db = Grid2.db:GetNamespace("Grid2Layout",true)
+		if db then
+			MoveTableKeys( data["@Grid2Layout"], db.global)
+			Grid2Layout:AddCustomLayouts()
+		end	
+	end
 	local prev_Hook= Grid2.ProfileChanged
 	Grid2.ProfileChanged= function(self)
 		self.ProfileChanged= prev_Hook
@@ -147,19 +168,19 @@ local function ImportProfile(sender, data, Hex)
 			if key=="Grid2" then
 				db= self.db
 			else
-				db= self:GetModule(key) and self.db:GetNamespace(key,true) or nil
+				db= self:GetModule(key,true) and self.db:GetNamespace(key,true)
 			end	
 			if db then
-				db= db.profile
-				for k,v in pairs(section) do
-					db[k]= v
-				end			
+				MoveTableKeys(section, db.profile)
 			end
 		end
 		self:ProfileChanged()
 		LibStub("AceConfigRegistry-3.0"):NotifyChange("Grid2")
 	end		
 	Grid2.db:SetProfile(profileName)
+	if importCustomLayouts then
+		Grid2Options:RefreshCustomLayoutsOptions()
+	end	
 	return true
 end
 
@@ -195,7 +216,7 @@ local function ShowSerializeFrame(title,subtitle,data)
 		editbox:DisableButton(false)
 		editbox.button:SetScript("OnClick", 
 								function(widget) 
-									ImportProfile(nil,editbox:GetText(),true) 
+									ImportProfile(nil,editbox:GetText(),true, includeCustomLayouts) 
 									AceGUI:Release(frame)
 									collectgarbage()									
 								end)
@@ -272,6 +293,14 @@ function Grid2Options:GetExportImportOptions()
 			order = 60,
 			name = L["Profile import/export"],
 		},
+		incLayouts = {
+			type = "toggle",
+			order = 85,
+			name = L["Include Custom Layouts"],
+			width= "full",
+			get = function () return includeCustomLayouts end,
+			set = function () includeCustomLayouts = not includeCustomLayouts end,
+		},
 		import = {
 			type = "execute",
 			order = 70,
@@ -288,7 +317,7 @@ function Grid2Options:GetExportImportOptions()
 			func = function (info)
 				ShowSerializeFrame(	L["This is your current profile in text format"],
 									L["Press CTRL-C to copy the configuration to your clipboard"],
-									SerializeCurrentProfile(true) )
+									SerializeCurrentProfile(true, includeCustomLayouts) )
 			end,
 		},
 		header3 ={
