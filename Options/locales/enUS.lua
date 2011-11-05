@@ -641,3 +641,4 @@ L["Data size: %.1fKB"]= true
 L["Transmision progress: %d%%"]= true
 L["Transmission completed"]= true
 L["\"%s\" has sent you a profile configuration. Do you want to activate received profile ?"]= true
+L["Include Custom Layouts"] = true

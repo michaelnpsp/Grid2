@@ -144,8 +144,6 @@ RDDB["Cataclysm"] = {
 		99252,  -- Blaze of Glory
 		99256,  -- Torment
 		99403,  -- Tormented
-		--99262,  -- Vital Spark
-		--99263,  -- Vital Flame
 		99516,  -- Count Down
 		100908, -- Fiery Torment
 		},
@@ -177,4 +175,54 @@ RDDB["Cataclysm"] = {
 		100767, -- Melt Armor
 		},		
 	},
+	["Dragon Soul"] = {
+		["Morchok"] = {
+		103687, -- Crush Armor
+		},
+		["Hagara the Stormbinder"] = {
+		104451, -- Ice Tomb
+		105259, -- Watery Entrenchment	
+		105289, -- Shattered Ice		
+		},
+		["Warmaster Blackhorn"] = {
+		109204, -- Twilight Barrage
+		108046, -- Shockwave
+		108043, -- Devastate
+		107567, -- Brutal strike
+		107558, -- Degeneration
+		-- 108045, -- Vengeance
+		},
+		["Ultraxion"] = {
+		106108, -- Heroic will
+		106369, -- Twilight shift
+		106415, -- Twilight burst
+		105927, -- Faded Into Twilight
+		110068, -- Fading light (not sure, maybe must be removed)
+		},
+		["Yor'sahj the Unsleeping"] = {
+		-- 104849, -- Void bolt
+		109389, -- Deep Corruption
+		},
+		["Warlord Zon'ozz"] = {
+		103434, -- Disrupting shadows
+		110306, -- Black Blood of Go'rath
+		-- 104543, -- Focused anger
+		-- 106836, -- Void diffusion
+		},
+		["Spine of Deathwing"] = {
+		105563, -- Grasping Tendrils
+		105490, -- Fiery Grip
+		105479, -- Searing Plasma
+		106199, -- Blood corruption: death
+		106200, -- Blood corruption: earth
+		106005, -- Degradation
+		},
+		["Madness of Deathwing"] = {
+		105841, -- Degenerative bite
+		105445, -- Blistering heat
+		109603, -- Tetanus
+		-- 109632, -- Impale
+		--109592, -- Corrupted blood
+		},		
+	}
 }

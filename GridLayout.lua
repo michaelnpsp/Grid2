@@ -195,13 +195,7 @@ function Grid2Layout:OnModuleInitialize()
 		partypet = 0,
 		spacer = 0,
 	}
-	-- Register user defined layouts
-	local customLayouts= self.db.global.customLayouts
-	if customLayouts then
-		for n,l in pairs(customLayouts) do
-			Grid2Layout:AddLayout(n,l)
-		end
-	end
+	self:AddCustomLayouts()
 end
 
 function Grid2Layout:OnModuleEnable()
@@ -666,6 +660,16 @@ function Grid2Layout:SetFrameLock(FrameLock, ClickThrough)
 	end
 	p.ClickThrough = ClickThrough
 	self.frame:EnableMouse(not ClickThrough)
+end
+
+function Grid2Layout:AddCustomLayouts()
+	-- Register user defined layouts
+	local customLayouts= self.db.global.customLayouts
+	if customLayouts then
+		for n,l in pairs(customLayouts) do
+			Grid2Layout:AddLayout(n,l)
+		end
+	end
 end
 
 --}}}

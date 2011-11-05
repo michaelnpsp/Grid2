@@ -12,6 +12,7 @@ local Death = Grid2.statusPrototype:new("death", false)
 local Heals = Grid2.statusPrototype:new("heals-incoming", false)
 
 local Grid2 = Grid2
+local GetTime = GetTime
 local UnitHealth = UnitHealth
 local UnitHealthMax = UnitHealthMax
 local UnitIsDead = UnitIsDead
@@ -33,7 +34,7 @@ local function UpdateIndicators(unit)
 end
 
 -- Events management
-local RegisterEvent, UnregisterEvent
+local RegisterEvent, UnregisterEvent, EnableTimer, DisableTimer
 do
 	local frame
 	local Events = {}
@@ -56,6 +57,13 @@ do
 			end
 		end
 	end
+	function EnableTimer(func, delay)
+		local t = delay
+		frame:SetScript("OnUpdate",	function(_,e) t = t - e; if t<=0 then t = delay; func() end end)
+	end
+	function DisableTimer()
+		frame:SetScript("OnUpdate",nil)
+	end
 end
 
 -- Quick/Instant Health management
@@ -66,6 +74,7 @@ do
 	local max = math.max
 	local strlen = strlen
 	local health_cache = {}
+	local time_cache = {}
 	local HealthEvents = { SPELL_DAMAGE = -15, RANGE_DAMAGE = -15, SPELL_PERIODIC_DAMAGE = -15, 
 						   DAMAGE_SHIELD = -15, DAMAGE_SPLIT = -15, ENVIRONMENTAL_DAMAGE = -13, 
 						   SWING_DAMAGE = -12, SPELL_PERIODIC_HEAL = 15, SPELL_HEAL = 15 }
@@ -78,8 +87,20 @@ do
 	local function HealthChangedEvent(unit)
 		if strlen(unit)<8 then  -- Ignore Pets
 			local h = UnitHealthOriginal(unit)
-			local c = health_cache[unit]
-			if h==c then return end
+			local c = health_cache[unit] 
+			if c then
+				if h==c then 
+					time_cache[unit]=nil; return
+				elseif h>c then
+					local ct, tc = GetTime(), time_cache[unit]
+					if tc then
+						if ct-tc<1 then	return end 
+					else 
+						time_cache[unit] = ct; return
+					end
+				end
+			end	
+			time_cache[unit]   = nil
 			health_cache[unit] = h
 		end	
 		UpdateIndicators(unit)
@@ -219,16 +240,32 @@ end
 
 local function CreateHealthLow(baseKey, dbx)
 	Grid2:RegisterStatus(HealthLow, {"color"}, baseKey, dbx)
-
 	return HealthLow
 end
 
 Grid2.setupFunc["health-low"] = CreateHealthLow
 
 -- feign-death status
-FeignDeath.OnEnable  = Health_Enable
-FeignDeath.OnDisable = Health_Disable
-FeignDeath.GetColor  = Health_GetColor
+local feign_cache = {}
+
+FeignDeath.GetColor = Health_GetColor
+
+local function FeignDeathUpdateEvent(unit)
+	local feign = UnitIsFeignDeath(unit)
+	if feign~=feign_cache[unit] then
+		feign_cache[unit] = feign
+		FeignDeath:UpdateIndicators(unit)
+	end
+end
+
+function FeignDeath:OnEnable()
+	RegisterEvent( "UNIT_AURA", FeignDeathUpdateEvent )
+end
+
+function FeignDeath:OnDisable()
+	UnregisterEvent( "UNIT_AURA" )
+	wipe(feign_cache)
+end
 
 function FeignDeath:IsActive(unit)
 	return UnitIsFeignDeath(unit)
@@ -238,15 +275,13 @@ function FeignDeath:GetPercent(unit)
 	return self.dbx.color1.a 
 end
 
+local feignText = L["FD"]
 function FeignDeath:GetText(unit)
-	if UnitIsFeignDeath(unit) then
-		return L["FD"]
-	end
+	return feignText
 end
 
 local function CreateFeignDeath(baseKey, dbx)
 	Grid2:RegisterStatus(FeignDeath, {"color", "percent", "text"}, baseKey, dbx)
-
 	return FeignDeath
 end
 
@@ -267,7 +302,6 @@ end
 
 local function CreateHealthDeficit(baseKey, dbx)
 	Grid2:RegisterStatus(HealthDeficit, {"color", "text"}, baseKey, dbx)
-
 	return HealthDeficit
 end
 
@@ -278,16 +312,26 @@ local dead_cache = {}
 
 Death.GetColor= Health_GetColor
 
+local function DeathTimerEvent()
+	for unit in next, dead_cache do
+		if not UnitIsDeadOrGhost(unit) then
+			dead_cache[unit] = nil
+			Death:UpdateIndicators(unit)
+		end
+	end
+	if not next(dead_cache) then DisableTimer()	end	
+end
+
 local function DeathUpdateEvent(unit)
 	if UnitIsDeadOrGhost(unit) then
 		local dead = UnitIsGhost(unit) and 2 or 1
 		if dead ~= dead_cache[unit] then
+			if not next(dead_cache) then EnableTimer(DeathTimerEvent,1) end	
 			dead_cache[unit] = dead
 			Death:UpdateIndicators(unit)
 			if HealthCurrent.enabled and HealthCurrent.deadAsFullHealth then
 				HealthCurrent:UpdateIndicators(unit)
 			end
-			
 		end	
 	elseif dead_cache[unit] then
 		dead_cache[unit] = nil
@@ -301,12 +345,11 @@ end
 
 function Death:OnDisable()
 	UnregisterEvent( "UNIT_HEALTH" )
+	wipe(dead_cache)
 end
 
 function Death:IsActive(unit)
-	if dead_cache[unit] then 
-		return true 
-	end
+	if dead_cache[unit] then return true end
 end
 
 function Death:GetIcon()
@@ -328,7 +371,6 @@ end
 
 local function CreateDeath(baseKey, dbx)
 	Grid2:RegisterStatus(Death, {"color", "icon", "percent", "text"}, baseKey, dbx)
-
 	return Death
 end
 
@@ -396,7 +438,6 @@ end
 
 local function Create(baseKey, dbx)
 	Grid2:RegisterStatus(Heals, {"color", "text", "percent"}, baseKey, dbx)
-
 	return Heals
 end
 

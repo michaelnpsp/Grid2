@@ -19,17 +19,10 @@ local tguids   = {}
 local target   = setmetatable({}, {__index = function(t,k) local v=k.."target" t[k]=v return v end})
 
 -- events management
-local RegisterEvent, UnregisterEvent, SetTimerDelay, SetTimerEvent
+local RegisterEvent, UnregisterEvent, EnableTimer, DisableTimer
 do
 	local Events = {}
-	local frame, timerFunc, timerRate, timerElapsed
-	local function TimerEvent(_,elapsed)
-		timerElapsed = timerElapsed - elapsed
-		if timerElapsed<=0 then
-			timerElapsed = timerElapsed + timerRate
-			timerFunc()
-		end
-	end
+	local frame
 	function RegisterEvent(event, func)
 		if not frame then
 			frame = CreateFrame("Frame", nil, Grid2LayoutFrame)
@@ -42,12 +35,12 @@ do
 		frame:UnregisterEvent( event )
 		Events[event] = nil
 	end
-	function SetTimerDelay(delay)
-		timerRate = delay
+	function EnableTimer(func, delay)
+		local t = delay
+		frame:SetScript( "OnUpdate", function(_,e) t = t - e; if t<=0 then t = delay; func() end end )
 	end
-	function SetTimerEvent(func)
-		timerFunc, timerElapsed  = func, timerRate
-		frame:SetScript( "OnUpdate",  func and TimerEvent or nil)
+	function DisableTimer()
+		frame:SetScript( "OnUpdate", nil)
 	end
 end
 
@@ -86,12 +79,12 @@ end
 
 local function CombatEnterEvent()
 	if Banzai.enabled then RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Banzai.CombatLogEvent) end	
-	SetTimerEvent(TimerEvent)
+	EnableTimer( TimerEvent, Banzai.dbx.updateRate or 0.2 )
 end
 
 local function CombatExitEvent()
 	if Banzai.enabled then UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED") end	
-	SetTimerEvent(nil)
+	DisableTimer()
 	for status in next,statuses do
 		status:ClearIndicators()
 	end	
@@ -101,7 +94,6 @@ local function status_OnEnable(self)
 	if not next(statuses) then
 		RegisterEvent("PLAYER_REGEN_ENABLED" , CombatExitEvent)
 		RegisterEvent("PLAYER_REGEN_DISABLED", CombatEnterEvent)
-		SetTimerDelay(self.dbx.updateRate or 0.2)
 	end
 	statuses[self] = true
 end
@@ -122,7 +114,6 @@ end
 local function status_SetUpdateRate(self, delay)
 	Banzai.dbx.updateRate       = delay
 	BanzaiThreat.dbx.updateRate = delay
-	SetTimerDelay(delay)
 end
 
 -- banzai status
@@ -136,7 +127,7 @@ do
 	e.SPELL_MISSED           = e.SPELL_CAST_INTERRUPTED
 	e.UNIT_DIED              = e.SPELL_CAST_INTERRUPTED
 	function Banzai.CombatLogEvent(_, event,_,sourceGUID)
-		local action= e[event]
+		local action = e[event]
 		if action then 
 			local unit = Grid2:GetUnitidByGUID(sourceGUID)
 			if not unit then action(sourceGUID) end	
@@ -220,7 +211,7 @@ function BanzaiThreat:Update(reset)
 		for g,unit in next, tguids do
 			local name = UnitName( sguids[g] )
 			units[unit] = name
-			units_prev[unit]= units_prev[unit]~=name and name or nil
+			units_prev[unit] = units_prev[unit]~=name and name or nil
 		end	
 	end	
 	for unit in next, units_prev do

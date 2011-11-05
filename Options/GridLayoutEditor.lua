@@ -53,8 +53,8 @@ local ACTION2_VALUES= {
 	copy= string.format("|T%s:0|t%s", READY_CHECK_READY_TEXTURE, L["Copy"]),
 }
 
-
 local options
+local layoutName
 local LoadLayout
 
 local function GetAvailableLayouts(info)
@@ -312,8 +312,15 @@ local function CreateLayout(name)
 	return LoadLayout(name)
 end
 
+function Grid2Options:RefreshCustomLayoutsOptions()
+	layoutName = nil
+	options.selectLayout.values = GetAvailableLayouts()
+	LoadLayout(nil)
+	Grid2Options:RefreshLayoutsOptions()
+end
+
 function Grid2Options:MakeCustomLayoutOptions(reset)
-	local layoutName= nil
+	layoutName = nil
 	options= {
 		selectLayout = {
 			type = 'select',
