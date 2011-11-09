@@ -156,8 +156,12 @@ local function ImportProfile(sender, data, Hex, importCustomLayouts)
 	if importCustomLayouts and data["@Grid2Layout"] then -- Special ugly case for Custom Layouts
 		local db = Grid2.db:GetNamespace("Grid2Layout",true)
 		if db then
-			MoveTableKeys( data["@Grid2Layout"], db.global)
-			Grid2Layout:AddCustomLayouts()
+			local customLayouts = data["@Grid2Layout"].customLayouts
+			if customLayouts then
+				if not db.global.customLayouts then	db.global.customLayouts = {} end
+				MoveTableKeys( customLayouts, db.global.customLayouts)
+				Grid2Layout:AddCustomLayouts()
+			end	
 		end	
 	end
 	local prev_Hook= Grid2.ProfileChanged

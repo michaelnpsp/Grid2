@@ -74,7 +74,6 @@ do
 	local max = math.max
 	local strlen = strlen
 	local health_cache = {}
-	local time_cache = {}
 	local HealthEvents = { SPELL_DAMAGE = -15, RANGE_DAMAGE = -15, SPELL_PERIODIC_DAMAGE = -15, 
 						   DAMAGE_SHIELD = -15, DAMAGE_SPLIT = -15, ENVIRONMENTAL_DAMAGE = -13, 
 						   SWING_DAMAGE = -12, SPELL_PERIODIC_HEAL = 15, SPELL_HEAL = 15 }
@@ -87,20 +86,7 @@ do
 	local function HealthChangedEvent(unit)
 		if strlen(unit)<8 then  -- Ignore Pets
 			local h = UnitHealthOriginal(unit)
-			local c = health_cache[unit] 
-			if c then
-				if h==c then 
-					time_cache[unit]=nil; return
-				elseif h>c then
-					local ct, tc = GetTime(), time_cache[unit]
-					if tc then
-						if ct-tc<1 then	return end 
-					else 
-						time_cache[unit] = ct; return
-					end
-				end
-			end	
-			time_cache[unit]   = nil
+			if h==health_cache[unit] then return end
 			health_cache[unit] = h
 		end	
 		UpdateIndicators(unit)
