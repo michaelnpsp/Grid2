@@ -34,7 +34,7 @@ local function IsSpellReady(Spell)
 end
 
 local function CheckCooldown(self)
-	if (not self.dbx.hideOnCooldown) or IsSpellReady(self.spellName) then
+	if (not self.dbx.hideOnCooldown) or IsSpellReady(self.spellId) then
 		return true
 	elseif next(self.states) then
 		self:ClearIndicators()
