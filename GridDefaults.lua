@@ -14,6 +14,13 @@ function Grid2:DbSetValue(section, name, value)
   self.db.profile[section][name]= value
 end
 
+function Grid2:DbSetMissingValue(section, name, value)
+	if not self.db.profile[section][name] then
+		self.db.profile[section][name]= value
+		return true
+	end	
+end
+
 function Grid2:DbGetValue(section, name)
   return self.db.profile[section][name]
 end;
@@ -71,14 +78,13 @@ function MakeDefaultsCommon()
 	Grid2:DbSetMap( "border", "health-low", 55)
 	Grid2:DbSetMap( "border", "target", 50)
 
-	Grid2:DbSetValue( "indicators",  "health", {type = "bar", level = 2, location= Location("CENTER"), texture = "Gradient", color1 = {r=0,g=0,b=0,a=1}})
+	Grid2:DbSetValue( "indicators",  "health", {type = "bar", childBar = "heals", level = 2, location= Location("CENTER"), texture = "Gradient", color1 = {r=0,g=0,b=0,a=1}})
 	Grid2:DbSetMap( "health", "health-current", 99)
 
 	Grid2:DbSetValue( "indicators",  "health-color", {type = "bar-color"})
 	Grid2:DbSetMap( "health-color", "classcolor", 99)
-	Grid2:DbSetMap( "health-color", "health-current", 85)
 
-	Grid2:DbSetValue( "indicators",  "heals", {type = "bar", level = 1, location = Location("CENTER"), texture = "Gradient", opacity=0.5, color1 = {r=0,g=0,b=0,a=0}})
+	Grid2:DbSetValue( "indicators",  "heals", {type = "bar", parentBar = "health", level = 1, location = Location("CENTER"), texture = "Gradient", opacity=0.25, color1 = {r=0,g=0,b=0,a=0}})
 	Grid2:DbSetMap( "heals", "heals-incoming", 99)
 
 	Grid2:DbSetValue( "indicators",  "heals-color", {type = "bar-color"})
@@ -335,86 +341,66 @@ do
 		Grid2:DbSetMap( "corner-bottom-right", "buff-LastStand", 99)
 		Grid2:DbSetMap( "corner-bottom-right", "buff-ShieldWall", 89)
 		Grid2:DbSetMap( "icon-right", "raid-icon-target", 90)
-	end end
+	end else MakeDefaultsClass= function() end end
 end
 
 -- Plugins: Must hook this function to initialize default values in database
 function Grid2:UpdateDefaults()
 
 	local version= Grid2:DbGetValue("versions","Grid2") or 0
-	if version<1 then
+	if version>=2 then return end
+	if version==0 then
 		MakeDefaultsCommon()
-		if MakeDefaultsClass then 
-			MakeDefaultsClass()
-		else
-			print("Grid2: Not default configuration available for class: ", classKey)
-		end
-		Grid2:DbSetValue("versions","Grid2",1)	
+		MakeDefaultsClass()
 	end	
-	if not Grid2:DbGetValue("statuses", "banzai") then
-		Grid2:DbSetValue( "statuses",  "banzai", { type = "banzai", color1 = {r=1,g=0,b=1,a=1} })
-	end	
-	if not Grid2:DbGetValue("statuses", "banzai-threat") then
-		Grid2:DbSetValue( "statuses",  "banzai-threat", { type = "banzai-threat", color1 = {r=1,g=0,b=0,a=1} })
-	end	
-	if not Grid2:DbGetValue("statuses", "direction") then
-		Grid2:DbSetValue( "statuses", "direction", { type = "direction", color1 = { r= 0, g= 1, b= 0, a=1 } })
-	end	
-	if not Grid2:DbGetValue("statuses", "dungeon-role") then
-		Grid2:DbSetValue( "statuses", "dungeon-role", {	type = "dungeon-role",	
-			colorCount = 3,	
-			color1 = { r = 0.75, g = 0, b = 0 }, --dps
-			color2 = { r = 0, g = 0.75, b = 0 }, --heal
-			color3 = { r = 0, g = 0, b = 0.75 }, --tank
-			opacity = 0.75 
-		})
-	end
-	if not Grid2:DbGetValue("statuses", "creaturecolor") then
-		local colors = {
-			HOSTILE = { r = 1, g = 0.1, b = 0.1, a = 1 },
-			UNKNOWN_UNIT = { r = 0.5, g = 0.5, b = 0.5, a = 1 },
-			[L["Beast"]] = { r = 0.94, g = 0.75, b = 0.28, a = 1 },
-			[L["Demon"]] = { r = 0.5, g = 0.25, b = 0.69, a = 1 },
-			[L["Humanoid"]] = { r = 0.92, g = 0.67, b = 0.85, a = 1 },
-			[L["Elemental"]] = { r = 0.1, g = 0.3, b = 0.9, a = 1 },
-		}
-		Grid2:DbSetValue( "statuses", "creaturecolor", { type = "creaturecolor", colorHostile = true, colors=colors })
-	end	
-	if not Grid2:DbGetValue("statuses", "friendcolor") then
-		Grid2:DbSetValue( "statuses", "friendcolor", {	type = "friendcolor",	
-			colorCount = 3,	
-			color1 = { r = 0, g = 1, b = 0, a=1 },    --player 
-			color2 = { r = 0, g = 1, b = 0, a=0.75 }, --pet 
-			color3 = { r = 1, g = 0, b = 0, a=1 },    --hostile
-		})
-	end	
-	if not Grid2:DbGetValue("statuses", "leader") then
-		Grid2:DbSetValue("statuses", "leader", {type = "leader", color1 = {r=0,g=.7,b=1,a=1}})
-	end	
-	if not Grid2:DbGetValue("statuses", "raid-assistant") then
-		Grid2:DbSetValue("statuses", "raid-assistant", {type = "raid-assistant", color1 = {r=1,g=.25,b=.2,a=1}})
-	end	
-	if not Grid2:DbGetValue("statuses", "master-looter") then
-		Grid2:DbSetValue("statuses", "master-looter", {type = "master-looter", color1 = {r=1,g=.5,b=0,a=1}})
-	end	
-	if not Grid2:DbGetValue("statuses", "resurrection") then
-		Grid2:DbSetValue( "statuses", "resurrection", {	type = "resurrection",	
-			colorCount = 2,	
-			color1 = { r = 0, g = 1, b = 0, a=1 },    
-			color2 = { r = 1, g = 1, b = 0, a=0.75 }, 
-		})
+	Grid2:DbSetMissingValue( "statuses", "banzai", { type = "banzai", color1 = {r=1,g=0,b=1,a=1} })
+	Grid2:DbSetMissingValue( "statuses", "banzai-threat", { type = "banzai-threat", color1 = {r=1,g=0,b=0,a=1} })
+	Grid2:DbSetMissingValue( "statuses", "direction", { type = "direction", color1 = { r= 0, g= 1, b= 0, a=1 } })
+	Grid2:DbSetMissingValue( "statuses", "dungeon-role", {	type = "dungeon-role", colorCount = 3,	
+		color1 = { r = 0.75, g = 0, b = 0 }, --dps
+		color2 = { r = 0, g = 0.75, b = 0 }, --heal
+		color3 = { r = 0, g = 0, b = 0.75 }, --tank
+		opacity = 0.75 
+	})
+	Grid2:DbSetMissingValue( "statuses", "creaturecolor", { type = "creaturecolor", colorHostile = true, colors= {
+		HOSTILE = { r = 1, g = 0.1, b = 0.1, a = 1 },
+		UNKNOWN_UNIT = { r = 0.5, g = 0.5, b = 0.5, a = 1 },
+		[L["Beast"]] = { r = 0.94, g = 0.75, b = 0.28, a = 1 },
+		[L["Demon"]] = { r = 0.5, g = 0.25, b = 0.69, a = 1 },
+		[L["Humanoid"]] = { r = 0.92, g = 0.67, b = 0.85, a = 1 },
+		[L["Elemental"]] = { r = 0.1, g = 0.3, b = 0.9, a = 1 }, }
+	})
+	Grid2:DbSetMissingValue( "statuses", "friendcolor", { type = "friendcolor",	
+		colorCount = 3,	
+		color1 = { r = 0, g = 1, b = 0, a=1 },    --player 
+		color2 = { r = 0, g = 1, b = 0, a=0.75 }, --pet 
+		color3 = { r = 1, g = 0, b = 0, a=1 },    --hostile
+	})
+	Grid2:DbSetMissingValue("statuses", "leader", { type = "leader", color1 = {r=0,g=.7,b=1,a=1}})
+	Grid2:DbSetMissingValue("statuses", "raid-assistant", { type = "raid-assistant", color1 = {r=1,g=.25,b=.2,a=1}})
+	Grid2:DbSetMissingValue("statuses", "master-looter", { type = "master-looter", color1 = {r=1,g=.5,b=0,a=1}})
+	Grid2:DbSetMissingValue( "statuses",  "power", {type = "power", colorCount = 5, 
+		color1 = {r=0,g=0.5,b=1  ,a=1},   -- mana
+		color2 = {r=1,g=0  ,b=0  ,a=1},   -- rage
+		color3 = {r=1,g=0.5,b=0  ,a=1},   -- focus
+		color4 = {r=1,g=1  ,b=0  ,a=1},   -- energy
+		color5 = {r=0,g=0.8,b=0.8,a=1},   -- runic power
+	})  
+	Grid2:DbSetMissingValue( "statuses",  "shields", { type = "shields", color1 = {r=0,g=1,b=0,a=1} })
+	if Grid2:DbSetMissingValue( "statuses", "resurrection", { type = "resurrection", colorCount = 2,	
+		color1 = { r = 0, g = 1, b = 0, a=1 },    
+		color2 = { r = 1, g = 1, b = 0, a=0.75 }, }) 
+	then
 		Grid2:DbSetMap( "icon-center", "resurrection", 160)
 	end	
-	if not Grid2:DbGetValue("statuses", "power") then
-		Grid2:DbSetValue( "statuses",  "power", {type = "power", colorCount = 5, 
-			color1 = {r=0,g=0.5,b=1  ,a=1},   -- mana
-			color2 = {r=1,g=0  ,b=0  ,a=1},   -- rage
-			color3 = {r=1,g=0.5,b=0  ,a=1},   -- focus
-			color4 = {r=1,g=1  ,b=0  ,a=1},   -- energy
-			color5 = {r=0,g=0.8,b=0.8,a=1}})  -- runic power
+	-- Upgrade health&heals indicator
+	local health = Grid2:DbGetValue("indicators", "health")
+	local heals  = Grid2:DbGetValue("indicators", "heals")
+	if health and heals then
+		health.childBar = "heals"
+		heals.parentBar = "health"
 	end
-	if not Grid2:DbGetValue("statuses", "shields") then
-		Grid2:DbSetValue( "statuses",  "shields", { type = "shields", color1 = {r=0,g=1,b=0,a=1} })
-	end	
+	-- Set database version
+	Grid2:DbSetValue("versions","Grid2",2)	
 	
 end

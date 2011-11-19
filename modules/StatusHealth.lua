@@ -416,7 +416,14 @@ end
 function Heals:GetPercent(unit)
 	local m = UnitHealthMax(unit)
 	if m ~= 0 then
-		return ( heals_cache[unit] + UnitHealth(unit) ) / m
+		local h = UnitHealth(unit)
+		local v = heals_cache[unit] 
+		local d = m - h
+		if v<d then
+			return v / m
+		else
+			return d / m
+		end	
 	else	
 		return 0
 	end	

@@ -248,6 +248,8 @@ L["Bar Width"] = "Leistenbreite"
 -- L["Choose zero to set the bar to the same width as parent frame"] = ""
 L["Bar Height"] = "Leistenhöhe"
 -- L["Choose zero to set the bar to the same height as parent frame"] = ""
+-- L["Anchor to"] = ""
+-- L["Anchor the indicator to the selected bar."] = ""
 
 L["Border Size"] = "Rahmengröße"
 L["Adjust the border of each unit's frame."] = "Rahmen für alle Einheitenfenster anpassen."
@@ -422,6 +424,7 @@ L["EarthShield"] = "Erdschild"
 L["Earthliving"] = "Lebensgeister"
 L["Riptide"] = "Springflut"
 -- L["ChainHeal"] = ""
+-- L["HealingRain"] = ""
 
 -- Druid
 L["Rejuvenation"] = "Verjüngung"

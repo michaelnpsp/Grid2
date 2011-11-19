@@ -248,6 +248,8 @@ L["Show the time remaining."] = "남은 시간을 표시합니다."
 -- L["Choose zero to set the bar to the same width as parent frame"] = ""
 -- L["Bar Height"] = ""
 -- L["Choose zero to set the bar to the same height as parent frame"] = ""
+-- L["Anchor to"] = ""
+-- L["Anchor the indicator to the selected bar."] = ""
 
 L["Border Size"] = "테두리 크기"
 L["Adjust the border of each unit's frame."] = "각 유닛의 창 테두리를 조정합니다."
@@ -422,6 +424,7 @@ L["pvp"] = "PvP"
 -- L["Earthliving"] = ""
 -- L["Riptide"] = ""
 -- L["ChainHeal"] = ""
+-- L["HealingRain"] = ""
 
 -- Druid
 -- L["Rejuvenation"] = ""

@@ -248,6 +248,8 @@ L["Bar Width"] = "Ancho de la barra"
 L["Choose zero to set the bar to the same width as parent frame"] = "Si elige cero la barra tendrá el mismo ancho que la celda"
 L["Bar Height"] = "Alto de la barra"
 L["Choose zero to set the bar to the same height as parent frame"] = "Si elige cero la barra tendrá el mismo alto que la celda"
+L["Anchor to"] = "Anclar a"
+L["Anchor the indicator to the selected bar."] = "Seleccione la barra a la que desee anclar este indicador."
 
 L["Border Size"] = "Grosor del borde"
 L["Adjust the border of each unit's frame."] = "Ajusta el grosor del borde de cada celda"
@@ -422,6 +424,7 @@ L["EarthShield"] = "Escudo de tierra"
 L["Earthliving"] = "Vida terrestre"
 L["Riptide"] = "Mareas Vivas"
 L["ChainHeal"] = "Sanacion en cadena"
+L["HealingRain"] = "Lluvia de sanacion"
 
 -- Druid
 L["Rejuvenation"] = "Rejuvenecimiento"

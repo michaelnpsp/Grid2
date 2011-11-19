@@ -248,6 +248,8 @@ L["Bar Width"] = "Ширина полосы"
 L["Choose zero to set the bar to the same width as parent frame"] = "Выберите 0, чтобы установить ширину полосы равную родительской"
 L["Bar Height"] = "Высота полосы"
 L["Choose zero to set the bar to the same height as parent frame"] = "Выберите 0, чтобы установить высоту полосы равную родительской"
+-- L["Anchor to"] = ""
+-- L["Anchor the indicator to the selected bar."] = ""
 
 L["Border Size"] = "Размер края"
 L["Adjust the border of each unit's frame."] = "Регулировка края области."
@@ -422,6 +424,7 @@ L["EarthShield"] = "Щит земли"
 L["Earthliving"] = "Жизнь Земли"
 L["Riptide"] = "Быстрина"
 -- L["ChainHeal"] = ""
+-- L["HealingRain"] = ""
 
 -- Druid
 L["Rejuvenation"] = "Омоложение"
