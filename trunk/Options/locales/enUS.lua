@@ -248,6 +248,8 @@ L["Bar Width"] = true
 L["Choose zero to set the bar to the same width as parent frame"] = true
 L["Bar Height"] = true
 L["Choose zero to set the bar to the same height as parent frame"] = true
+L["Anchor to"] = true
+L["Anchor the indicator to the selected bar."] = true
 
 L["Border Size"] = true
 L["Adjust the border of each unit's frame."] = true
@@ -422,6 +424,7 @@ L["EarthShield"] = true
 L["Earthliving"] = true
 L["Riptide"] = true
 L["ChainHeal"] = true
+L["HealingRain"] = true 
 
 -- Druid
 L["Rejuvenation"]= true

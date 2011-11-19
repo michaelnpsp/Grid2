@@ -163,6 +163,12 @@ local function MakeStatusAoeHealOptions(self, status, options)
 	return options, "AOE Heals"
 end
 
+local function MakeStatusRainOptions(self, status, options)
+	options = options or {}
+	options = Grid2Options:MakeStatusColorOptions(status, options)
+	return options, "AOE Heals"
+end
+
 local prev_MakeGroups
 local function MakeGroupsOptions(self, reset)
 	local options= {
@@ -218,6 +224,7 @@ function Grid2:LoadOptions()
 	L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 
 	Grid2Options:AddOptionHandler("aoe-heal", MakeStatusAoeHealOptions )
+	Grid2Options:AddOptionHandler("aoe-HealingRain", MakeStatusRainOptions )
 
 	prev_MakeGroups = Grid2Options.MakeGroupsOptions
 	Grid2Options.MakeGroupsOptions= MakeGroupsOptions

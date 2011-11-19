@@ -248,6 +248,8 @@ L["Frame Texture"] = "框架材質"
 -- L["Choose zero to set the bar to the same width as parent frame"] = ""
 -- L["Bar Height"] = ""
 -- L["Choose zero to set the bar to the same height as parent frame"] = ""
+-- L["Anchor to"] = ""
+-- L["Anchor the indicator to the selected bar."] = ""
 
 L["Border Size"] = "框架邊框"
 L["Adjust the border of each unit's frame."] = "Adjust the border of each unit's frame."
@@ -422,6 +424,7 @@ L["pvp"] = "pvp"
 -- L["Earthliving"] = ""
 -- L["Riptide"] = ""
 -- L["ChainHeal"] = ""
+-- L["HealingRain"] = ""
 
 -- Druid
 -- L["Rejuvenation"] = ""

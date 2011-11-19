@@ -16,3 +16,4 @@ AoeHealsStatusParty.lua
 AoeHealsStatusChain.lua
 AoeHealsStatusNeighbors.lua
 AoeHealsStatusHighlighter.lua
+AoeHealsStatusHealingRain.lua

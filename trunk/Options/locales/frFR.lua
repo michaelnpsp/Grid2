@@ -248,6 +248,8 @@ L["Bar Width"] = "Largeur de la barre"
 L["Choose zero to set the bar to the same width as parent frame"] = "Choisissez zéro pour définir la barre à la même largeur que le cadre-parent."
 L["Bar Height"] = "Hauteur de la barre"
 L["Choose zero to set the bar to the same height as parent frame"] = "Choisissez zéro pour définir la barre à la même hauteur que le cadre-parent."
+-- L["Anchor to"] = ""
+-- L["Anchor the indicator to the selected bar."] = ""
 
 L["Border Size"] = "Taille de la bordure"
 L["Adjust the border of each unit's frame."] = "Ajuster la bordure de chaque cadre d'unité."
@@ -422,6 +424,7 @@ L["EarthShield"] = "BouclierDeTerre"
 L["Earthliving"] = "Viveterre"
 L["Riptide"] = "Remous"
 -- L["ChainHeal"] = ""
+-- L["HealingRain"] = ""
 
 -- Druid
 L["Rejuvenation"] = "Récupération"

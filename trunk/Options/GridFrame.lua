@@ -84,7 +84,7 @@ local options= {
 				Grid2Frame.db.profile.orientation = v
 				for _, indicator in Grid2:IterateIndicators() do
 					if indicator.SetOrientation and indicator.orientation==nil then
-						Grid2Frame:WithAllFrames(function (f) indicator:SetOrientation(f) end)
+						Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
 					end
 				end
 			end,
@@ -135,6 +135,7 @@ local options= {
 				local c= Grid2Frame.db.profile.frameContentColor
 				c.r, c.g, c.b, c.a = r, g, b, a
 				Grid2Frame:LayoutFrames()
+				Grid2Frame:UpdateIndicators()
 			 end, 
 			hasAlpha = true,
 		}		
