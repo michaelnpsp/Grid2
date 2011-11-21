@@ -296,9 +296,6 @@ end
 
 -- Called from Grid2 core if profile changes
 function Grid2Options:MakeOptions()
-	if not self.Initialize then   -- Avoid clearing media options on first run
-		self:ClearMediaOptions()
-	end
     self:MakeStatusOptions(true)	
 	self:MakeIndicatorOptions(true)
 end
@@ -353,6 +350,12 @@ function Grid2Options:GetValidatedName(name)
 	return name
 end
 
+local ipairs = ipairs
+function Grid2Options:SearchTableValue(t,v)
+	for i, w in ipairs(t) do
+		if v == w then return i end
+	end
+end
 
 function Grid2Options:ConfirmDialog(message, funcAccept, funcCancel)
 	local t

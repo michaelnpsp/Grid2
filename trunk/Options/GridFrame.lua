@@ -3,6 +3,7 @@ Created by Grid2 original authors, modified by Michael
 --]]
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
+local media = LibStub("LibSharedMedia-3.0", true)
 
 function Grid2Options:MakeFrameOptions(reset)
 local options= {
@@ -138,28 +139,22 @@ local options= {
 				Grid2Frame:UpdateIndicators()
 			 end, 
 			hasAlpha = true,
-		}		
-	}
-	if Grid2Options.AddMediaOption then
-		local textureOption = {
+		},		
+		texture = {
 			type = "select",
 			order = 54,
 			name = L["Background Texture"],
 			desc = L["Select the frame background texture."],
 			get = function (info)
-				local v = Grid2Frame.db.profile.frameTexture
-				for i, t in ipairs(info.option.values) do
-					if v == t then return i end
-				end
+				return Grid2Options:SearchTableValue(info.option.values, Grid2Frame.db.profile.frameTexture )
 			end,
 			set = function (info, v)
 				Grid2Frame.db.profile.frameTexture = info.option.values[v]
 				Grid2Frame:LayoutFrames()
 			end,
-		}
-		Grid2Options:AddMediaOption("statusbar", textureOption)
-		options.texture = textureOption
-	end
+			values = media:List("statusbar"),
+		},
+	}
 	
 	Grid2Options:AddModuleOptions("General", "Frames", options)
 	

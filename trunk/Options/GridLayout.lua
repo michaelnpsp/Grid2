@@ -5,7 +5,6 @@ Created by Grid2 original authors, modified by Michael
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 local media = LibStub("LibSharedMedia-3.0", true)
 
-
 local raidTypesOptions= {}
 
 local function MakeLayoutSettingsOptions()
@@ -199,27 +198,22 @@ local function MakeLayoutSettingsOptions()
 			order = ORDER_ANCHOR + 4,
 			func = function () Grid2Layout:ResetPosition() end,
 		},
-	}
-	if Grid2Options.AddMediaOption then
-		layoutOptions["borderTexture"]= {
+		["borderTexture"] = {
 			type = "select",
 			order = ORDER_DISPLAY + 4,
 			name = L["Border Texture"],
 			desc = L["Adjust the border texture."],
 			get = function (info)
-				local v = Grid2Layout.db.profile.BorderTexture
-				for i, t in ipairs(info.option.values) do
-					if v == t then return i end
-				end
+				return Grid2Options:SearchTableValue( info.option.values,  Grid2Layout.db.profile.BorderTexture )
 			end,
 			set = function (info, v)
 				Grid2Layout.db.profile.BorderTexture= info.option.values[v]
 				Grid2Layout:UpdateTextures()
 				Grid2Layout:UpdateColor()
 			end,
-		}
-		Grid2Options:AddMediaOption("border", layoutOptions.borderTexture)
-	end
+			values = media:List("border"),
+		},
+	}
 	return layoutOptions
 end
 	

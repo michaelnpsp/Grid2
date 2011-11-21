@@ -28,8 +28,7 @@ local justifyV = {
 }
 
 local function Text_Create(self, parent)
-	local media = LibStub("LibSharedMedia-3.0", true)
-	local font = media and media:Fetch("font", self.dbx.font or Grid2Frame.db.profile.font) or STANDARD_TEXT_FONT
+	local font = Grid2:MediaFetch("font", self.dbx.font or Grid2Frame.db.profile.font) or STANDARD_TEXT_FONT
 
 	local f= self:CreateFrame("Frame", parent)
 	f:SetAllPoints()

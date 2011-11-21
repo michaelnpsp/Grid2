@@ -33,6 +33,7 @@ Libs\AceTimer-3.0\AceTimer-3.0.xml
 Libs\AceDB-3.0\AceDB-3.0.xml
 Libs\AceConsole-3.0\AceConsole-3.0.xml
 Libs\AceLocale-3.0\AceLocale-3.0.xml
+Libs\LibSharedMedia-3.0\LibSharedMedia-3.0.lua
 #@end-no-lib-strip@
 
 #Locales

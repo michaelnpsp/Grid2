@@ -39,8 +39,7 @@ local function Icon_Create(self, parent)
 	if not self.disableStack then
 		local CooldownText = f.CooldownText or f:CreateFontString(nil, "OVERLAY")
 		CooldownText:SetFontObject(GameFontHighlightSmall)
-		local media = LibStub("LibSharedMedia-3.0", true)
-		local font = self.dbx.font and media and media:Fetch("font", self.dbx.font) or CooldownText:GetFont()
+		local font = Grid2:MediaFetch("font", self.dbx.font) or CooldownText:GetFont()
 		CooldownText:SetFont(font, self.dbx.fontSize, "OUTLINE" )
 		local c= self.dbx.stackColor
 		if c then CooldownText:SetTextColor(c.r, c.g, c.b, c.a) end	
