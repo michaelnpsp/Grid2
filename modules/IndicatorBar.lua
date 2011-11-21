@@ -143,8 +143,7 @@ end
 
 local function Bar_UpdateDB(self, dbx)
 	dbx = dbx or self.dbx
-	local media = LibStub("LibSharedMedia-3.0", true)
-	self.texture = media and media:Fetch("statusbar", dbx.texture or "Gradient") or "Interface\\Addons\\Grid2\\gradient32x32"
+	self.texture = Grid2:MediaFetch("statusbar", dbx.texture, "Gradient")
 	local l = dbx.location
 	self.frameLevel     = dbx.level or 1
 	self.anchor         = l.point

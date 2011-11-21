@@ -95,7 +95,7 @@ do
 		if layoutName then LayoutHide(false) end
 		if not texture then
 			local media = LibStub("LibSharedMedia-3.0", true)
-			texture = media and media:Fetch("statusbar", Grid2Frame.db.profile.frameTexture) or "Interface\\Addons\\Grid2\\gradient32x32"		
+			texture = media:Fetch("statusbar", Grid2Frame.db.profile.frameTexture) or "Interface\\Addons\\Grid2\\gradient32x32"		
 		end
 		if not frameLayout then frameLayout= Grid2Layout.frame end
 		savedScale= frameLayout:GetScale()

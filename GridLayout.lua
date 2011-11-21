@@ -4,8 +4,6 @@ Created by Grid2 original authors, modified by Michael
 
 local Grid2Layout = Grid2:NewModule("Grid2Layout")
 
-local media
-
 local pairs, ipairs, next = pairs, ipairs, next
 
 --{{{ Frame config function for secure headers
@@ -199,9 +197,6 @@ function Grid2Layout:OnModuleInitialize()
 end
 
 function Grid2Layout:OnModuleEnable()
-	if not media then
-		media = LibStub("LibSharedMedia-3.0", true)
-	end	
 	if not self.frame then
 		self:CreateFrame()
 	end
@@ -534,7 +529,7 @@ end
 function Grid2Layout:UpdateTextures()
 	local f = self.frame
 	local p = self.db.profile
-	local borderTexture = media and media:Fetch("border", p.BorderTexture) or "Interface\\Tooltips\\UI-Tooltip-Border"
+	local borderTexture = Grid2:MediaFetch("border", p.BorderTexture) or "Interface\\Tooltips\\UI-Tooltip-Border"
 	f:SetBackdrop({
 				 bgFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16,
 				 edgeFile = borderTexture, edgeSize = 16,

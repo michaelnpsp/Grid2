@@ -5,6 +5,7 @@ Created by Grid2 original authors, modified by Michael
 --{{{ 
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2")
+local media = LibStub("LibSharedMedia-3.0", true)
 
 --}}}
 --{{{ Grid2
@@ -132,12 +133,9 @@ end
 
 function Grid2:OnEnable()
 
-	local media = LibStub("LibSharedMedia-3.0", true)
-	if media then
-		media:Register("statusbar", "Gradient", "Interface\\Addons\\Grid2\\gradient32x32")
-		media:Register("statusbar", "Grid2 Flat", "Interface\\Addons\\Grid2\\white16x16")
-		media:Register("border", "Grid2 Flat", "Interface\\Addons\\Grid2\\white16x16")
-	end
+	media:Register("statusbar", "Gradient", "Interface\\Addons\\Grid2\\gradient32x32")
+	media:Register("statusbar", "Grid2 Flat", "Interface\\Addons\\Grid2\\white16x16")
+	media:Register("border", "Grid2 Flat", "Interface\\Addons\\Grid2\\white16x16")
 		
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED", "GroupChanged")
 	self:RegisterEvent("RAID_ROSTER_UPDATE", "GroupChanged")
@@ -210,6 +208,12 @@ function Grid2:LoadOptions()
 	Grid2Options:Initialize()
 end
 --}}}
+
+--{{ Media functions
+function Grid2:MediaFetch(mediatype, key, def)
+	return (key and media:Fetch(mediatype, key)) or (def and media:Fetch(mediatype, def))
+end
+--}}
 
 --{{{ Event handlers
 

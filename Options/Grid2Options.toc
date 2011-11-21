@@ -24,7 +24,6 @@ GridFrame.lua
 GridLayout.lua
 GridLayoutEditor.lua
 GridBlink.lua
-GridMedia.lua
 GridIndicators.lua
 GridStatuses.lua
 GridDebug.lua

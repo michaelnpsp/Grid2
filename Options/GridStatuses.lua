@@ -857,10 +857,8 @@ function Grid2Options:GetAvailableStatusValues(indicator, statusAvailable)
 		end
 	end
 	
-	local statusKey
 	for _, status in ipairs(indicator.statuses) do
-		statusKey = status.name
-		statusAvailable[statusKey] = nil
+		statusAvailable[status.name] = nil
 	end
 
 	return statusAvailable

@@ -8,7 +8,6 @@ local SecureButton_GetModifiedUnit = SecureButton_GetModifiedUnit
 local UnitFrame_OnEnter= UnitFrame_OnEnter
 local UnitFrame_OnLeave= UnitFrame_OnLeave
 
-local media
 local Grid2Frame
 
 --{{{ Grid2Frame script handlers
@@ -83,7 +82,7 @@ function GridFramePrototype:Layout()
 	-- external border controlled by the border indicator
 	local r,g,b,a= self:GetBackdropBorderColor() 
 	local frameBorder = dbx.frameBorder
-	local borderTexture = media and media:Fetch("border", dbx.frameBorderTexture) or "Interface\\Addons\\Grid2\\white16x16"
+	local borderTexture = Grid2:MediaFetch("border", dbx.frameBorderTexture, "Grid2 Flat")
 	self:SetBackdrop({
 		bgFile = "Interface\\Addons\\Grid2\\white16x16", tile = true, tileSize = 16,
 		edgeFile = borderTexture, edgeSize = frameBorder,
@@ -103,7 +102,7 @@ function GridFramePrototype:Layout()
 	local inset= (dbx.frameBorder+dbx.frameBorderDistance)*2
 	container:SetSize( w-inset, h-inset )
 	-- visible background texture
-	local texture = media and media:Fetch("statusbar", dbx.frameTexture) or "Interface\\Addons\\Grid2\\gradient32x32"		
+	local texture = Grid2:MediaFetch("statusbar", dbx.frameTexture, "Gradient" )
 	self.container:SetTexture(texture)
 	--
 	if not InCombatLockdown() then self:SetSize(w,h) end
@@ -164,9 +163,6 @@ function Grid2Frame:OnModuleInitialize()
 end
 
 function Grid2Frame:OnModuleEnable()
-	if not media then
-		media = LibStub("LibSharedMedia-3.0", true)
-	end 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateFrameUnits")
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "UNIT_ENTERED_VEHICLE")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE", "UNIT_EXITED_VEHICLE")
