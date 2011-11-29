@@ -163,9 +163,52 @@ local function MakeStatusAoeHealOptions(self, status, options)
 	return options, "AOE Heals"
 end
 
-local function MakeStatusRainOptions(self, status, options)
+local prev_spells = {}
+local function MakeStatusOutgoingOptions(self, status, options)
 	options = options or {}
 	options = Grid2Options:MakeStatusColorOptions(status, options)
+	options.activeTime = {
+		name = L["Active time"],
+		desc = L["Show the status for the specified number of seconds."],
+		order = 40,
+		type = "range", min = 1, max = 5, step = 1,
+		get = function()
+			return status.dbx.activeTime or 2
+		end,
+		set = function( _, v )
+			status.dbx.activeTime = v
+			status:UpdateDB()
+		end,
+	}
+	options.auras = {
+		type = "input",
+		order = 50,
+		width = "full",
+		name = L["Spells"],
+		desc = L["You can type spell IDs or spell names."],
+		multiline= 8,
+		get = function()
+				local auras = {}
+			    wipe(prev_spells)
+				for _,spell in pairs(status.dbx.spells) do
+					local name        = GetSpellInfo(spell)
+					auras[#auras+1]   = name
+					prev_spells[name] = spell
+				end
+				return table.concat( auras, "\n" )
+		end,
+		set = function(_, v) 
+			wipe(status.dbx.spells)
+			local auras= { strsplit("\n,", v) }
+			for i,v in pairs(auras) do
+				local aura= strtrim(v)
+				if #aura>0 then
+					table.insert(status.dbx.spells, tonumber(aura) or prev_spells[aura] or aura )
+				end
+			end	
+			status:UpdateDB()
+		end,
+	}
 	return options, "AOE Heals"
 end
 
@@ -224,7 +267,7 @@ function Grid2:LoadOptions()
 	L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 
 	Grid2Options:AddOptionHandler("aoe-heal", MakeStatusAoeHealOptions )
-	Grid2Options:AddOptionHandler("aoe-HealingRain", MakeStatusRainOptions )
+	Grid2Options:AddOptionHandler("aoe-OutgoingHeals", MakeStatusOutgoingOptions )
 
 	prev_MakeGroups = Grid2Options.MakeGroupsOptions
 	Grid2Options.MakeGroupsOptions= MakeGroupsOptions

@@ -598,6 +598,7 @@ L["Voice Chat"] = "语音"
 -- L["aoe-"] = ""
 -- L["neighbors"] = ""
 -- L["highlighter"] = ""
+-- L["OutgoingHeals"] = ""
 
 -- L["AOE Heals"] = ""
 -- L["Highlight status"] = ""
@@ -625,7 +626,11 @@ L["Voice Chat"] = "语音"
 -- L["Enable the statuses only in combat."] = ""
 -- L["Show only in raid"] = ""
 -- L["Enable the statuses only in raid."] = ""
-			
+-- L["Active time"] = ""
+-- L["Show the status for the specified number of seconds."] = ""
+-- L["Spells"] = ""
+-- L["You can type spell IDs or spell names."] = ""
+
 -- Import/export profiles module
 -- L["Import/export options"] = ""
 -- L["Import profile"] = ""

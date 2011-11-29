@@ -598,6 +598,7 @@ L["Maximum shield amount value. Only used by bar indicators."] = "Valor maximo d
 L["aoe-"] = "aoe: "
 L["neighbors"] = "Vecinos"
 L["highlighter"] = "Resaltador"
+-- L["OutgoingHeals"] = ""
 
 L["AOE Heals"] = "AOE Curas"
 L["Highlight status"] = "Estado a resaltar"
@@ -625,7 +626,11 @@ L["Show only in combat"] = "Mostrar solo en combate"
 L["Enable the statuses only in combat."] = "Mostrar los estados solo en combate."
 L["Show only in raid"] = "Mostrar solo en raid"
 L["Enable the statuses only in raid."] = "Mostrar los estados solo en raid."
-			
+-- L["Active time"] = ""
+-- L["Show the status for the specified number of seconds."] = ""
+-- L["Spells"] = ""
+-- L["You can type spell IDs or spell names."] = ""
+
 -- Import/export profiles module
 L["Import/export options"] = "Opciones de importación y exportación"
 L["Import profile"] = "Importar perfil"
