@@ -598,6 +598,7 @@ L["Maximum shield amount value. Only used by bar indicators."] = true
 L["aoe-"] = true
 L["neighbors"] = true
 L["highlighter"] = true
+L["OutgoingHeals"] = true
 
 L["AOE Heals"] = true
 L["Highlight status"] = true
@@ -625,7 +626,11 @@ L["Show only in combat"]  = true
 L["Enable the statuses only in combat."] = true
 L["Show only in raid"] = true
 L["Enable the statuses only in raid."]  = true
-			
+L["Active time"] = true
+L["Show the status for the specified number of seconds."] = true
+L["Spells"] = true
+L["You can type spell IDs or spell names."] = true
+
 -- Import/export profiles module
 L["Import/export options"]= true
 L["Import profile"]= true
