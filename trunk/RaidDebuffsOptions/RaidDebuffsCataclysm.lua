@@ -193,11 +193,11 @@ RDDB["Cataclysm"] = {
 		-- 108045, -- Vengeance
 		},
 		["Ultraxion"] = {
+		110068, -- Fading light 
 		106108, -- Heroic will
-		106369, -- Twilight shift
 		106415, -- Twilight burst
 		105927, -- Faded Into Twilight
-		110068, -- Fading light (not sure, maybe must be removed)
+		106369, -- Twilight shift
 		},
 		["Yor'sahj the Unsleeping"] = {
 		-- 104849, -- Void bolt

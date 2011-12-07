@@ -293,75 +293,6 @@ end
 
 Grid2.setupFunc["health-deficit"] = CreateHealthDeficit
 
--- death status
-local dead_cache = {}
-
-Death.GetColor= Health_GetColor
-
-local function DeathTimerEvent()
-	for unit in next, dead_cache do
-		if not UnitIsDeadOrGhost(unit) then
-			dead_cache[unit] = nil
-			Death:UpdateIndicators(unit)
-		end
-	end
-	if not next(dead_cache) then DisableTimer()	end	
-end
-
-local function DeathUpdateEvent(unit)
-	if UnitIsDeadOrGhost(unit) then
-		local dead = UnitIsGhost(unit) and 2 or 1
-		if dead ~= dead_cache[unit] then
-			if not next(dead_cache) then EnableTimer(DeathTimerEvent,1) end	
-			dead_cache[unit] = dead
-			Death:UpdateIndicators(unit)
-			if HealthCurrent.enabled and HealthCurrent.deadAsFullHealth then
-				HealthCurrent:UpdateIndicators(unit)
-			end
-		end	
-	elseif dead_cache[unit] then
-		dead_cache[unit] = nil
-		Death:UpdateIndicators(unit)
-	end
-end
-
-function Death:OnEnable()
-	RegisterEvent( "UNIT_HEALTH", DeathUpdateEvent )
-end
-
-function Death:OnDisable()
-	UnregisterEvent( "UNIT_HEALTH" )
-	wipe(dead_cache)
-end
-
-function Death:IsActive(unit)
-	if dead_cache[unit] then return true end
-end
-
-function Death:GetIcon()
-	return [[Interface\TargetingFrame\UI-TargetingFrame-Skull]]
-end
-
-function Death:GetPercent(unit)
-	return self.dbx.color1.a 
-end
-
-function Death:GetText(unit)
-	local dead = dead_cache[unit]
-	if dead==2 then
-		return L["GHOST"]
-	elseif dead==1 then
-		return L["DEAD"]
-	end		
-end
-
-local function CreateDeath(baseKey, dbx)
-	Grid2:RegisterStatus(Death, {"color", "icon", "percent", "text"}, baseKey, dbx)
-	return Death
-end
-
-Grid2.setupFunc["death"] = CreateDeath
-
 -- heals-incoming status
 local heals_cache= setmetatable( {}, {__index = function() return 0 end} )
 
@@ -435,3 +366,76 @@ local function Create(baseKey, dbx)
 end
 
 Grid2.setupFunc["heals-incoming"] = Create
+
+-- death status
+local dead_cache = {}
+
+Death.GetColor= Health_GetColor
+
+local function DeathTimerEvent()
+	for unit in next, dead_cache do
+		if not UnitIsDeadOrGhost(unit) then
+			dead_cache[unit] = nil
+			Death:UpdateIndicators(unit)
+		end
+	end
+	if not next(dead_cache) then DisableTimer()	end	
+end
+
+local function DeathUpdateEvent(unit)
+	if UnitIsDeadOrGhost(unit) then
+		local dead = UnitIsGhost(unit) and 2 or 1
+		if dead ~= dead_cache[unit] then
+			if not next(dead_cache) then EnableTimer(DeathTimerEvent,1) end	
+			dead_cache[unit] = dead
+			Death:UpdateIndicators(unit)
+			if HealthCurrent.enabled and HealthCurrent.deadAsFullHealth then
+				HealthCurrent:UpdateIndicators(unit)
+			end
+			if Heals.enabled and heals_cache[unit]~=0 then
+				heals_cache[unit] = 0
+				Heals:UpdateIndicators(unit)
+			end
+		end	
+	elseif dead_cache[unit] then
+		dead_cache[unit] = nil
+		Death:UpdateIndicators(unit)
+	end
+end
+
+function Death:OnEnable()
+	RegisterEvent( "UNIT_HEALTH", DeathUpdateEvent )
+end
+
+function Death:OnDisable()
+	UnregisterEvent( "UNIT_HEALTH" )
+	wipe(dead_cache)
+end
+
+function Death:IsActive(unit)
+	if dead_cache[unit] then return true end
+end
+
+function Death:GetIcon()
+	return [[Interface\TargetingFrame\UI-TargetingFrame-Skull]]
+end
+
+function Death:GetPercent(unit)
+	return self.dbx.color1.a 
+end
+
+function Death:GetText(unit)
+	local dead = dead_cache[unit]
+	if dead==2 then
+		return L["GHOST"]
+	elseif dead==1 then
+		return L["DEAD"]
+	end		
+end
+
+local function CreateDeath(baseKey, dbx)
+	Grid2:RegisterStatus(Death, {"color", "icon", "percent", "text"}, baseKey, dbx)
+	return Death
+end
+
+Grid2.setupFunc["death"] = CreateDeath
