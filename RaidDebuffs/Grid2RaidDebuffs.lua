@@ -13,9 +13,10 @@ local frame = CreateFrame("Frame")
 local spells = {}
 
 function GSRD:UpdateZoneSpells(zone)
+	zone = zone or GetRealZoneText()
+	if not zone then return end
 	wipe(spells)
 	local spell_order = 1
-	local zone = zone or GetRealZoneText()
 	local db = status.dbx.debuffs[BZ[zone] or zone]
 	if db then
 		for _, spellId in ipairs(db) do

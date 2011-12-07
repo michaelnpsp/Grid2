@@ -206,7 +206,7 @@ local Maps= {
 	['HourofTwilight'] = { 3043.762, 2029.162, 375,250, },
 	['WellofEternity'] = { 1252.082, 833.334, },
 	['EndTime'] = { 3295.854,2198,  562.5,375, 865.619,577.079, 475,316.7, 696.9,464.6, 453.135,302.093, }, 
-	['DragonSoul'] = { 3106.708,2063.065, 223.750,91.25, 1352,1209.5, 185.2,123.5, 1.5,1, 1.5,1, 1108.352,739, },
+	['DragonSoul'] = { 3106.708,2063.065, 397.5,265, 427.5,285, 185.2,123.5, 1.5,1, 1.5,1, 1108.352,739, },
 }
 
 local AOEM = Grid2:GetModule("Grid2AoeHeals")
@@ -281,6 +281,9 @@ end
 
 -- Returns current zone width and height
 function AOEM:MapGetSize()
+	if curFloor ~= GetCurrentMapDungeonLevel() then 
+		ZoneChanged()  -- Seems WOW does not call ZoneChanged when floor changes
+	end
 	return curMapWidth, curMapHeight
 end
 --}}
@@ -308,6 +311,8 @@ do
 					print( string.format( "Map [%s] Floor [%d] Adjust player direction, Err: %.12f", (GetMapInfo()), GetCurrentMapDungeonLevel(), err ) )
 				end	
 			end	
+		else
+			print("No valid map", x , y)
 		end
 		z,w = x,y
 	end)
