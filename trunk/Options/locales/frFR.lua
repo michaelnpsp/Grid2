@@ -593,6 +593,17 @@ L["A resurrection spell has been casted on the unit"] = "Un sort de résurrectio
 -- L["shields"] = ""
 -- L["Maximum shield amount"] = ""
 -- L["Maximum shield amount value. Only used by bar indicators."] = ""
+-- L["Normal"] = ""
+-- L["Medium"] = ""
+-- L["Low"] = ""
+-- L["Normal shield color"] = ""
+-- L["Medium shield color"] = ""
+-- L["Low shield color"] = ""
+
+-- L["Low shield threshold"] = ""
+-- L["The value below which a shield is considered low."] = ""
+-- L["Medium shield threshold"] = ""
+-- L["The value below which a shield is considered medium."] = ""
 
 -- aoe heals
 -- L["aoe-"] = ""

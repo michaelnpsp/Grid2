@@ -593,6 +593,16 @@ L["Runic Power"] = true
 L["shields"] = true
 L["Maximum shield amount"] = true
 L["Maximum shield amount value. Only used by bar indicators."] = true
+L["Normal"] = true
+L["Medium"] = true
+L["Low"] = true
+L["Normal shield color"] = true
+L["Medium shield color"] = true
+L["Low shield color"] = true
+L["Low shield threshold"] = true
+L["The value below which a shield is considered low."] = true
+L["Medium shield threshold"] = true
+L["The value below which a shield is considered medium."] = true
 
 -- aoe heals
 L["aoe-"] = true

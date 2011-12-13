@@ -5,6 +5,8 @@ Created by Grid2 original authors, modified by Michael
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 local LG = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 
+local Grid2Blink = Grid2:GetModule("Grid2Blink")
+
 local Grid2Options= Grid2Options
 
 local BuffSubTypes= {
@@ -532,8 +534,14 @@ function Grid2Options:MakeStatusBanzaiOptions(status, options, optionParams)
 end
 
 function Grid2Options:MakeStatusShieldsOptions(status, options, optionParams)
+
 	options = options or {}
-	options = Grid2Options:MakeStatusColorOptions(status, options, optionParams)
+	options = Grid2Options:MakeStatusColorOptions(status, options, {
+		color1 = L["Normal"], colorDesc1 = L["Normal shield color"],
+		color2 = L["Medium"], colorDesc2 = L["Medium shield color"],
+		color3 = L["Low"],    colorDesc3 = L["Low shield color"],
+	})
+	options.spacer1 = { type = "header", order = 28, name = "", }	
 	options.maxShieldAmount = {
 		type = "range",
 		order = 30,
@@ -541,6 +549,7 @@ function Grid2Options:MakeStatusShieldsOptions(status, options, optionParams)
 		desc = L["Maximum shield amount value. Only used by bar indicators."],
 		min = 0,
 		softMax = 100000,
+		bigStep = 100,
 		step = 1,
 		get = function () return status.dbx.maxShieldAmount or 30000 end,
 		set = function (_, v) 
@@ -548,6 +557,56 @@ function Grid2Options:MakeStatusShieldsOptions(status, options, optionParams)
 			status:UpdateDB() 
 		end,
 	}
+	options.thresholdMedium = {
+		type = "range",
+		order = 32,
+		name = L["Medium shield threshold"],
+		desc = L["The value below which a shield is considered medium."],
+		min = 0,
+		softMax = 100000,
+		bigStep = 100,
+		step = 1,
+		get = function () return status.dbx.thresholdMedium end,
+		set = function (_, v)
+			   if status.dbx.thresholdLow > v then v = status.dbx.thresholdLow end
+			   status.dbx.thresholdMedium = v  
+			   status:UpdateDB()
+		end,
+	}
+	options.thresholdLow = {
+		type = "range",
+		order = 34,
+		name = L["Low shield threshold"],
+		desc = L["The value below which a shield is considered low."],
+		min = 0,
+		softMax = 100000,
+		bigStep = 100,
+		step = 1,
+		get = function () return status.dbx.thresholdLow end,
+		set = function (_, v)
+			   if status.dbx.thresholdMedium < v then v = status.dbx.thresholdMedium end
+			   status.dbx.thresholdLow = v  
+			   status:UpdateDB()
+		end,
+	}	
+	if Grid2Blink.db.profile.type ~= "None" then
+		options.blinkThreshold = {
+			type = "range",
+			order = 35,
+			name = L["Blink Threshold"],
+			desc = L["Blink Threshold at which to start blinking the status."],
+			min = 0,
+			softMax = 100000,
+			bigStep = 100,
+			step = 1,
+			get = function () return status.dbx.blinkThreshold or 0	end,
+			set = function (_, v)
+				if v == 0 then v = nil end
+				status.dbx.blinkThreshold = v
+				status:UpdateDB()
+			end,
+		}
+	end
 	options.filter = {
 		type = "group",
 		order = 40,
@@ -616,7 +675,6 @@ function Grid2Options:MakeStatusMissingOptions(status, options, optionParams)
 	return options
 end
 
-local Grid2Blink = Grid2:GetModule("Grid2Blink")
 function Grid2Options:MakeStatusBlinkThresholdOptions(status, options, optionParams)
 	options = options or {}
 	if Grid2Blink.db.profile.type ~= "None" then
@@ -638,14 +696,9 @@ function Grid2Options:MakeStatusBlinkThresholdOptions(status, options, optionPar
 				return status.dbx.blinkThreshold or 0
 			end,
 			set = function (_, v)
-				if (v == 0) then
-					v = nil
-				end
+				if v == 0 then v = nil end
 				status.dbx.blinkThreshold = v
-				Grid2.db.profile.statuses[status.name].blinkThreshold = v
-				if (status.UpdateDB) then
-					status:UpdateDB()
-				end
+				if status.UpdateDB then status:UpdateDB() end
 			end,
 		}
 	end
