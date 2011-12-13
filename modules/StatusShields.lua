@@ -79,7 +79,10 @@ function Shields:COMBAT_LOG_EVENT_UNFILTERED(...)
 			local shieldName = select(14,...)
 			if shields[shieldName] then
 				local unit= Grid2:GetUnitidByGUID( select(9,...) )
-				if unit then action( self, unit, shieldName, select(17,...) ) end -- amount
+				if unit then 
+					local amount = select(17,...) or select(14, UnitAura(unit, shieldName))
+					action( self, unit, shieldName, amount ) 
+				end 
 			end	
 		end	
 	end	
@@ -94,17 +97,21 @@ function Shields:OnDisable()
 	self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 end
 
-function Shields:IsActive(unit)
-	local amount= shields_tot[unit]
-	return amount and amount>0
-end
-
 function Shields:GetPercent(unit)
 	return min( shields_tot[unit] / self.maxShieldAmount, 1)
 end
 
 function Shields:GetColor(unit)
-	local c = self.dbx.color1
+	local c
+	local amount = shields_tot[unit]
+	local dbx = self.dbx
+	if amount > dbx.thresholdMedium then
+		c = dbx.color1
+	elseif amount > dbx.thresholdLow then
+		c = dbx.color2
+	else
+		c = dbx.color3
+	end
 	return c.r, c.g, c.b, c.a
 end
 
@@ -112,9 +119,26 @@ function Shields:GetText(unit)
 	return fmt("%.1fk", shields_tot[unit] / 1000 )
 end
 
+function Shields:IsActiveNormal(unit)
+	return shields_tot[unit]>0
+end
+
+function Shields:IsActiveBLink(unit)
+	local amount = shields_tot[unit]
+	if amount>0 then
+		if amount>self.blinkThreshold then
+			return true
+		else	
+			return "blink"
+		end	
+	end
+end
+
 function Shields:UpdateDB()
 	wipe(shields)
-	self.maxShieldAmount = self.dbx.maxShieldAmount or 30000
+	self.maxShieldAmount = self.dbx.maxShieldAmount
+	self.blinkThreshold  = self.dbx.blinkThreshold
+	self.IsActive        = self.blinkThreshold and Shields.IsActiveBLink or Shields.IsActiveNormal
 	local filtered = self.dbx.filtered
 	for _,spellId in pairs(shields_ava) do
 		if (not filtered) or (not filtered[spellId]) then

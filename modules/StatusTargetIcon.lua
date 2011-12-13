@@ -8,7 +8,7 @@ local TargetIconPlayer = Grid2.statusPrototype:new("raid-icon-player")
 local Grid2 = Grid2
 local UnitExists = UnitExists
 local GetRaidTargetIndex = GetRaidTargetIndex
-local rawget= rawget
+local rawget = rawget
 
 local iconText = {
 	[1] = RAID_TARGET_1, -- Star
@@ -38,9 +38,12 @@ local target_cache= setmetatable({}, {__index = function(t,unit)
 	return v
 end})
 
+function TargetIcon:ClearUnitCache(_,unit)
+	target_cache[unit] = nil 
+end
+
 function TargetIcon:UpdateUnit( _, unit)
-	local target= unit .. "target"
-	target_cache[unit] = UnitExists(target) and GetRaidTargetIndex(target) or false
+	target_cache[unit] = nil
 	self:UpdateIndicators(unit)
 end
 
@@ -59,11 +62,15 @@ end
 function TargetIcon:OnEnable()
 	self:RegisterEvent("RAID_TARGET_UPDATE", "UpdateAllUnits")
 	self:RegisterEvent("UNIT_TARGET", "UpdateUnit")
+	self:RegisterMessage( "Grid_UnitJoined" , "ClearUnitCache" )
+	self:RegisterMessage( "Grid_UnitChanged", "ClearUnitCache" )
 end
 
 function TargetIcon:OnDisable()
 	self:UnregisterEvent("RAID_TARGET_UPDATE")
 	self:UnregisterEvent("UNIT_TARGET")
+	self:UnregisterMessage("Grid_UnitJoined")
+	self:UnregisterMessage("Grid_UnitChanged")
 	wipe(target_cache)
 end
 
@@ -108,12 +115,20 @@ function TargetIconPlayer:UpdateAllUnits()
 	end
 end
 
+function TargetIconPlayer:ClearUnitCache(_, unit)
+	player_cache[unit] = nil
+end
+
 function TargetIconPlayer:OnEnable()
-	self:RegisterEvent("RAID_TARGET_UPDATE", "UpdateAllUnits")
+	self:RegisterEvent( "RAID_TARGET_UPDATE", "UpdateAllUnits" )
+	self:RegisterMessage( "Grid_UnitJoined" , "ClearUnitCache" )
+	self:RegisterMessage( "Grid_UnitChanged", "ClearUnitCache" )
 end
 
 function TargetIconPlayer:OnDisable()
 	self:UnregisterEvent("RAID_TARGET_UPDATE")
+	self:UnregisterMessage("Grid_UnitJoined")
+	self:UnregisterMessage("Grid_UnitChanged")
 	wipe(player_cache)
 end
 

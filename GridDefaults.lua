@@ -5,6 +5,7 @@ Created by Michael, based on Grid2Options\GridDefaults.lua from original Grid2 a
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 
 local Grid2= Grid2
+local pairs = pairs
 
 local defaultFont = "Friz Quadrata TT"
 
@@ -15,10 +16,16 @@ function Grid2:DbSetValue(section, name, value)
 end
 
 function Grid2:DbSetMissingValue(section, name, value)
-	if not self.db.profile[section][name] then
+	local curValue = self.db.profile[section][name] 
+	if curValue then
+		for k,v in pairs(value) do
+			if not curValue[k] then
+				curValue[k] = v
+			end
+		end
+	else
 		self.db.profile[section][name]= value
-		return true
-	end	
+	end
 end
 
 function Grid2:DbGetValue(section, name)
@@ -348,59 +355,70 @@ end
 function Grid2:UpdateDefaults()
 
 	local version= Grid2:DbGetValue("versions","Grid2") or 0
-	if version>=2 then return end
+	if version>=3 then return end
+	
 	if version==0 then
 		MakeDefaultsCommon()
 		MakeDefaultsClass()
 	end	
-	Grid2:DbSetMissingValue( "statuses", "banzai", { type = "banzai", color1 = {r=1,g=0,b=1,a=1} })
-	Grid2:DbSetMissingValue( "statuses", "banzai-threat", { type = "banzai-threat", color1 = {r=1,g=0,b=0,a=1} })
-	Grid2:DbSetMissingValue( "statuses", "direction", { type = "direction", color1 = { r= 0, g= 1, b= 0, a=1 } })
-	Grid2:DbSetMissingValue( "statuses", "dungeon-role", {	type = "dungeon-role", colorCount = 3,	
-		color1 = { r = 0.75, g = 0, b = 0 }, --dps
-		color2 = { r = 0, g = 0.75, b = 0 }, --heal
-		color3 = { r = 0, g = 0, b = 0.75 }, --tank
-		opacity = 0.75 
-	})
-	Grid2:DbSetMissingValue( "statuses", "creaturecolor", { type = "creaturecolor", colorHostile = true, colors= {
-		HOSTILE = { r = 1, g = 0.1, b = 0.1, a = 1 },
-		UNKNOWN_UNIT = { r = 0.5, g = 0.5, b = 0.5, a = 1 },
-		[L["Beast"]] = { r = 0.94, g = 0.75, b = 0.28, a = 1 },
-		[L["Demon"]] = { r = 0.5, g = 0.25, b = 0.69, a = 1 },
-		[L["Humanoid"]] = { r = 0.92, g = 0.67, b = 0.85, a = 1 },
-		[L["Elemental"]] = { r = 0.1, g = 0.3, b = 0.9, a = 1 }, }
-	})
-	Grid2:DbSetMissingValue( "statuses", "friendcolor", { type = "friendcolor",	
-		colorCount = 3,	
-		color1 = { r = 0, g = 1, b = 0, a=1 },    --player 
-		color2 = { r = 0, g = 1, b = 0, a=0.75 }, --pet 
-		color3 = { r = 1, g = 0, b = 0, a=1 },    --hostile
-	})
-	Grid2:DbSetMissingValue("statuses", "leader", { type = "leader", color1 = {r=0,g=.7,b=1,a=1}})
-	Grid2:DbSetMissingValue("statuses", "raid-assistant", { type = "raid-assistant", color1 = {r=1,g=.25,b=.2,a=1}})
-	Grid2:DbSetMissingValue("statuses", "master-looter", { type = "master-looter", color1 = {r=1,g=.5,b=0,a=1}})
-	Grid2:DbSetMissingValue( "statuses",  "power", {type = "power", colorCount = 5, 
-		color1 = {r=0,g=0.5,b=1  ,a=1},   -- mana
-		color2 = {r=1,g=0  ,b=0  ,a=1},   -- rage
-		color3 = {r=1,g=0.5,b=0  ,a=1},   -- focus
-		color4 = {r=1,g=1  ,b=0  ,a=1},   -- energy
-		color5 = {r=0,g=0.8,b=0.8,a=1},   -- runic power
-	})  
-	Grid2:DbSetMissingValue( "statuses",  "shields", { type = "shields", color1 = {r=0,g=1,b=0,a=1} })
-	if Grid2:DbSetMissingValue( "statuses", "resurrection", { type = "resurrection", colorCount = 2,	
-		color1 = { r = 0, g = 1, b = 0, a=1 },    
-		color2 = { r = 1, g = 1, b = 0, a=0.75 }, }) 
-	then
-		Grid2:DbSetMap( "icon-center", "resurrection", 160)
-	end	
-	-- Upgrade health&heals indicator
-	local health = Grid2:DbGetValue("indicators", "health")
-	local heals  = Grid2:DbGetValue("indicators", "heals")
-	if health and heals then
-		health.childBar = "heals"
-		heals.parentBar = "health"
+	
+	if version<2 then
+		Grid2:DbSetMissingValue( "statuses", "banzai", { type = "banzai", color1 = {r=1,g=0,b=1,a=1} })
+		Grid2:DbSetMissingValue( "statuses", "banzai-threat", { type = "banzai-threat", color1 = {r=1,g=0,b=0,a=1} })
+		Grid2:DbSetMissingValue( "statuses", "direction", { type = "direction", color1 = { r= 0, g= 1, b= 0, a=1 } })
+		Grid2:DbSetMissingValue( "statuses", "dungeon-role", {	type = "dungeon-role", colorCount = 3,	
+			color1 = { r = 0.75, g = 0, b = 0 }, --dps
+			color2 = { r = 0, g = 0.75, b = 0 }, --heal
+			color3 = { r = 0, g = 0, b = 0.75 }, --tank
+			opacity = 0.75 
+		})
+		Grid2:DbSetMissingValue( "statuses", "creaturecolor", { type = "creaturecolor", colorHostile = true, colors= {
+			HOSTILE = { r = 1, g = 0.1, b = 0.1, a = 1 },
+			UNKNOWN_UNIT = { r = 0.5, g = 0.5, b = 0.5, a = 1 },
+			[L["Beast"]] = { r = 0.94, g = 0.75, b = 0.28, a = 1 },
+			[L["Demon"]] = { r = 0.5, g = 0.25, b = 0.69, a = 1 },
+			[L["Humanoid"]] = { r = 0.92, g = 0.67, b = 0.85, a = 1 },
+			[L["Elemental"]] = { r = 0.1, g = 0.3, b = 0.9, a = 1 }, }
+		})
+		Grid2:DbSetMissingValue( "statuses", "friendcolor", { type = "friendcolor",	
+			colorCount = 3,	
+			color1 = { r = 0, g = 1, b = 0, a=1 },    --player 
+			color2 = { r = 0, g = 1, b = 0, a=0.75 }, --pet 
+			color3 = { r = 1, g = 0, b = 0, a=1 },    --hostile
+		})
+		Grid2:DbSetMissingValue("statuses", "leader", { type = "leader", color1 = {r=0,g=.7,b=1,a=1}})
+		Grid2:DbSetMissingValue("statuses", "raid-assistant", { type = "raid-assistant", color1 = {r=1,g=.25,b=.2,a=1}})
+		Grid2:DbSetMissingValue("statuses", "master-looter", { type = "master-looter", color1 = {r=1,g=.5,b=0,a=1}})
+		Grid2:DbSetMissingValue( "statuses",  "power", {type = "power", colorCount = 5, 
+			color1 = {r=0,g=0.5,b=1  ,a=1},   -- mana
+			color2 = {r=1,g=0  ,b=0  ,a=1},   -- rage
+			color3 = {r=1,g=0.5,b=0  ,a=1},   -- focus
+			color4 = {r=1,g=1  ,b=0  ,a=1},   -- energy
+			color5 = {r=0,g=0.8,b=0.8,a=1},   -- runic power
+		})  
+		if Grid2:DbSetMissingValue( "statuses", "resurrection", { type = "resurrection", colorCount = 2,
+			color1 = { r = 0, g = 1, b = 0, a=1 },    
+			color2 = { r = 1, g = 1, b = 0, a=0.75 }, }) 
+		then
+			Grid2:DbSetMap( "icon-center", "resurrection", 160)
+		end	
+		-- Upgrade health&heals indicator
+		local health = Grid2:DbGetValue("indicators", "health")
+		local heals  = Grid2:DbGetValue("indicators", "heals")
+		if health and heals then
+			health.childBar = "heals"
+			heals.parentBar = "health"
+		end
 	end
+	
+	-- Upgrade shields indicator
+	Grid2:DbSetMissingValue( "statuses",  "shields", { type = "shields", maxShieldAmount = 50000, thresholdMedium = 15000, thresholdLow = 6000,  colorCount = 3,
+		color1 = { r = 0, g = 1,   b = 0, a=1 },    
+		color2 = { r = 1, g = 0.5, b = 0, a=1 },
+		color3 = { r = 1, g = 1,   b = 0, a=1 },
+	} ) 
+	
 	-- Set database version
-	Grid2:DbSetValue("versions","Grid2",2)	
+	Grid2:DbSetValue("versions","Grid2",3)
 	
 end

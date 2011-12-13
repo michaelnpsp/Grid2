@@ -591,8 +591,18 @@ L["Runic Power"] = "Poder Runico"
 
 -- shields status
 L["shields"] = "escudos"
-L["Maximum shield amount"] = "Maximo valor"
+L["Maximum shield amount"] = "Valor maximo"
 L["Maximum shield amount value. Only used by bar indicators."] = "Valor maximo de los escudos. Solo usado por los indicadores de tipo barra."
+L["Normal"] = "Normal"
+L["Medium"] = "Medio"
+L["Low"] = "Bajo"
+L["Normal shield color"] = "Color para escudo normal"
+L["Medium shield color"] = "Color para escudo medio"
+L["Low shield color"] = "Color para escudo bajo"
+L["Low shield threshold"] = "Umbral bajo"
+L["The value below which a shield is considered low."] = "Por debajo de este valor el escudo se considera bajo."
+L["Medium shield threshold"] = "Umbral medio"
+L["The value below which a shield is considered medium."] = "Por debajo de este valor el escudo se considera medio."
 
 -- aoe heals
 L["aoe-"] = "aoe: "

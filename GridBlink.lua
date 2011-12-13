@@ -50,18 +50,22 @@ function Grid2Blink.None()
 end
 
 function Grid2Blink:OnModuleInitialize()
-	self:OnModuleUpdate()
+	self:Update()
 end
 
 function Grid2Blink:OnModuleUpdate()
-	self.frequency= self.db.profile.frequency or 4
-	self.typeFunc= Grid2Blink[self.db.profile.type] or Grid2Blink.Flash
-	Grid2:IndicatorsBlinkEnabled( self.db.profile.type~="None" )
-end
+	self:Update()
+end	
 
 function Grid2Blink:OnModuleDisable()
 	wipe(self.registry)
 	wipe(self.alpha)
+end
+
+function Grid2Blink:Update()
+	self.frequency= self.db.profile.frequency or 4
+	self.typeFunc= Grid2Blink[self.db.profile.type] or Grid2Blink.Flash
+	Grid2:IndicatorsBlinkEnabled( self.db.profile.type~="None" )
 end
 
 function Grid2Blink:GetFrame()
