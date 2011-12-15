@@ -186,8 +186,10 @@ local function BarColor_SetBarColor(self, parent, r, g, b, a)
 end
 
 local function BarColor_SetBarColorInverted(self, parent, r, g, b, a)
-	parent[self.BarName]:SetStatusBarColor(0, 0, 0, 0.8)
-	parent.container:SetVertexColor(r, g, b, a)
+	parent[self.BarName]:SetStatusBarColor(0, 0, 0, min(self.opacity, 0.8) )
+	if not self.dbx.parentBar then
+		parent.container:SetVertexColor(r, g, b, a)
+	end	
 end
 
 local function BarColor_UpdateDB(self)
