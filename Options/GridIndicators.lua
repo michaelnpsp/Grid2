@@ -985,23 +985,6 @@ function Grid2Options:MakeIndicatorBarCustomOptions(indicator,options)
 				Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
 			end,	
 		}
-		options.inverColor= {
-			type = "toggle",
-			name = L["Invert Bar Color"],
-			desc = L["Swap foreground/background colors on bars."],
-			order = 44,
-			tristate = true,
-			get = function () return indicator.dbx.invertColor	end,
-			set = function (_, v)
-				indicator.dbx.invertColor = v
-				indicator.sideKick:UpdateDB()
-				if not v then
-					local c= Grid2Frame.db.profile.frameContentColor
-					Grid2Frame:WithAllFrames(function (f) f.container:SetVertexColor(c.r, c.g, c.b, c.a) end)
-				end	
-				Grid2Frame:UpdateIndicators()
-			end,
-		}	
 		options.enableBack = {
 			type = "toggle",
 			name = L["Enable Background"],
@@ -1022,8 +1005,8 @@ function Grid2Options:MakeIndicatorBarCustomOptions(indicator,options)
 		options.backColor = {
 			type = "color",
 			order = 46,
-			name = L["Background color"],
-			desc = L["Background color"],
+			name = L["Background Color"],
+			desc = L["Background Color"],
 			hasAlpha = true,
 			get = function() 
 				local c = indicator.dbx.backColor
@@ -1079,23 +1062,6 @@ function Grid2Options:MakeIndicatorBarCustomOptions(indicator,options)
 			Grid2Frame:UpdateIndicators()
 		end,
 	}
-	options.barOpacity = {
-		type = "range",
-		order = 43,
-		name = L["Opacity"],
-		desc = L["Set the opacity."],
-		min = 0,
-		max = 1,
-		step = 0.01,
-		bigStep = 0.05,
-		get = function () return indicator.dbx.opacity or 1	end,
-		set = function (_, v)
-			indicator.dbx.opacity = v
-			indicator.sideKick:UpdateDB()
-			Grid2Frame:UpdateIndicators()
-		end,
-		disabled= function() return indicator.dbx.invertColor end,
-	}
 	options.texture = {
 		type = "select",
 		order = 20,
@@ -1111,6 +1077,40 @@ function Grid2Options:MakeIndicatorBarCustomOptions(indicator,options)
 		end,
 		values = media:List("statusbar"),
 	}
+	options.barOpacity = {
+		type = "range",
+		order = 43,
+		name = L["Opacity"],
+		desc = L["Set the opacity."],
+		min = 0,
+		max = 1,
+		step = 0.01,
+		bigStep = 0.05,
+		get = function () return indicator.dbx.opacity or 1	end,
+		set = function (_, v)
+			indicator.dbx.opacity = v
+			indicator.sideKick:UpdateDB()
+			Grid2Frame:UpdateIndicators()
+		end,
+		-- disabled= function() return indicator.dbx.invertColor end,
+	}
+	options.inverColor= {
+		type = "toggle",
+		name = L["Invert Bar Color"],
+		desc = L["Swap foreground/background colors on bars."],
+		order = 44,
+		tristate = true,
+		get = function () return indicator.dbx.invertColor	end,
+		set = function (_, v)
+			indicator.dbx.invertColor = v
+			indicator.sideKick:UpdateDB()
+			if (not v) and (not indicator.dbx.parentBar) then
+				local c = Grid2Frame.db.profile.frameContentColor
+				Grid2Frame:WithAllFrames(function (f) f.container:SetVertexColor(c.r, c.g, c.b, c.a) end)
+			end	
+			Grid2Frame:UpdateIndicators()
+		end,
+	}	
 end
 
 function Grid2Options:MakeIndicatorBorderCustomOptions(indicator,options)
