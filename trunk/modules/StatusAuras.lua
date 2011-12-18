@@ -7,6 +7,7 @@ local Grid2 = Grid2
 local GetTime = GetTime
 local UnitBuff = UnitBuff
 local UnitDebuff = UnitDebuff
+local abs = math.abs
 
 --{{ Local variables
 local StatusList, BuffHandlers, DebuffHandlers = {}, {}, {}
@@ -262,17 +263,16 @@ local function status_GetThresholdColor(self, unit)
 	return color.r, color.g, color.b, color.a
 end
 
+-- This function includes a workaround to expiration variations of Druid WildGrowth HoT (little differences in expirations are ignored)
 local function status_UpdateState(self, unit, iconTexture, count, duration, expiration)
 	local filtered = self.filtered
 	if filtered and filtered[unit] then return end 
+	local prevexp = self.expirations[unit]
 	if count==0 then count = 1 end
-	if (self.states[unit]==nil) or 
-	   (self.counts[unit] ~= count) or 
-	   (self.expirations[unit] ~= expiration)
-	then
+	if self.states[unit]==nil or self.counts[unit] ~= count or prevexp==nil or abs(prevexp-expiration)>0.15 then 
 		self.states[unit] = true
 		self.textures[unit] = iconTexture
-		self.counts[unit] = count and count>0 and count or 1
+		self.counts[unit] = count
 		self.durations[unit] = duration
 		self.expirations[unit] = expiration
 		self.tracker[unit] = 1
@@ -285,7 +285,7 @@ end
 local function status_UpdateStateGroup(self, unit, iconTexture, count, duration, expiration)
 	local filtered = self.filtered
 	if filtered and filtered[unit] then return end
-	if self.states[unit]==nil or (self.expirations[unit] ~= expiration) then
+	if self.states[unit]==nil or self.expirations[unit] ~= expiration then
 		self.states[unit] = true
 		self.textures[unit] = iconTexture
 		self.durations[unit] = duration
