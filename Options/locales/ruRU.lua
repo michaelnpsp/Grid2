@@ -329,6 +329,7 @@ L["New Status"] = "Новый статус"
 L["Create a new status."] = "Создать новый статус."
 
 L["Threshold"] = "Порог"
+-- L["Thresholds"] = ""
 L["Threshold at which to activate the status."] = "Порог, при котором активируется статус."
 
 -- buff & debuff statuses management
@@ -353,6 +354,11 @@ L["Color count"] = "Свет счетчика"
 L["Select how many colors the status must provide."] = "Выберие, сколько цветов должен поддерживать статус"
 L["You can include a descriptive prefix using separators \"@#>\""] = "Вы можете включить описательную приставку, используя разделители \"@#>\""
 L["examples: Druid@Regrowth Chimaeron>Low Health"] = "Например: Druid@Regrowth Chimaeron>Low Health"
+-- L["Threshold to activate Color"] = ""
+
+-- L["Coloring based on"] = ""
+-- L["Number of stacks"] = ""
+-- L["Remaining time"] = ""
 
 L["Class Filter"] = "Фильтр классов"
 L["Show on %s."] = "Показать на %s."
@@ -416,6 +422,7 @@ L["Disease"] = "Болезнь"
 L["Magic"] = "Магия"
 
 L["raid-debuffs"] = "рейд-дебаффы"
+-- L["boss-shields"] = ""
 
 -- class specific buffs & debuffs statuses
 
@@ -603,6 +610,8 @@ L["Dead Units"] = "Мертвые юниты"
 -- L["The value below which a shield is considered low."] = ""
 -- L["Medium shield threshold"] = ""
 -- L["The value below which a shield is considered medium."] = ""
+-- L["Custom Shields"] = ""
+-- L["Type shield names separated by commas."] = ""
 
 -- aoe heals
 -- L["aoe-"] = ""

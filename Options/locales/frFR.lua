@@ -329,6 +329,7 @@ L["New Status"] = "Nouveau statut"
 L["Create a new status."] = "Créé un nouveau statut."
 
 L["Threshold"] = "Seuil"
+-- L["Thresholds"] = ""
 L["Threshold at which to activate the status."] = "Seuil d'activation du statut."
 
 -- buff & debuff statuses management
@@ -353,6 +354,11 @@ L["Display status only if the buff was not cast by you."] = "Affiche le statut u
 -- L["Select how many colors the status must provide."] = ""
 -- L["You can include a descriptive prefix using separators \"@#>\""] = ""
 -- L["examples: Druid@Regrowth Chimaeron>Low Health"] = ""
+-- L["Threshold to activate Color"] = ""
+
+-- L["Coloring based on"] = ""
+-- L["Number of stacks"] = ""
+-- L["Remaining time"] = ""
 
 L["Class Filter"] = "Filtre de classe"
 L["Show on %s."] = "Montrer sur %s."
@@ -416,6 +422,7 @@ L["Disease"] = "Maladie"
 L["Magic"] = "Magie"
 
 L["raid-debuffs"] = "débuffs-raid"
+-- L["boss-shields"] = ""
 
 -- class specific buffs & debuffs statuses
 
@@ -603,6 +610,8 @@ L["A resurrection spell has been casted on the unit"] = "Un sort de résurrectio
 -- L["The value below which a shield is considered low."] = ""
 -- L["Medium shield threshold"] = ""
 -- L["The value below which a shield is considered medium."] = ""
+-- L["Custom Shields"] = ""
+-- L["Type shield names separated by commas."] = ""
 
 -- aoe heals
 -- L["aoe-"] = ""

@@ -20,17 +20,21 @@ do
 	local next = next
 	local timetracker
 	local elapsedTime= 0
-	AddTimeTracker = function (status, value)
+	AddTimeTracker = function (status)
 		timetracker = CreateFrame("Frame", nil, Grid2LayoutFrame)
 		timetracker.tracked = {}
 		timetracker:SetScript("OnUpdate", function (self, elapsed)
 			elapsedTime= elapsedTime + elapsed
 			if elapsedTime>=0.10 then
 				local time = GetTime()
-				for status, value in next, self.tracked do
+				for status in next, self.tracked do
+					local tracker    = status.tracker
+					local thresholds = status.thresholds
 					for unit, expiration in next, status.expirations do
-						local timeLeft = expiration - time
-						if (timeLeft < value) ~= (timeLeft + elapsedTime < value) then
+						local timeLeft  = expiration - time
+						local threshold = thresholds[ tracker[unit] ]
+						if threshold and timeLeft <= threshold then
+							tracker[unit] = tracker[unit] + 1
 							status:UpdateIndicators(unit)
 						end
 					end
@@ -38,8 +42,8 @@ do
 				elapsedTime= 0
 			end	
 		end)
-		AddTimeTracker = function (status, value)
-			timetracker.tracked[status] = value
+		AddTimeTracker = function (status)
+			timetracker.tracked[status] = true
 			timetracker:Show()
 		end
 		RemoveTimeTracker = function (status)
@@ -200,10 +204,10 @@ end
 local function status_IsActiveBlink(self, unit)
 	local filtered = self.filtered
 	if (filtered and filtered[unit]) or not self.states[unit] then return nil end
-	if self.expirations[unit] - GetTime() < self.blinkThreshold then
-		return "blink"
-	else
+	if self.tracker[unit]==1 then
 		return true
+	else
+		return "blink"
 	end
 end
 
@@ -242,7 +246,7 @@ local function status_GetExpirationTime(self, unit)
 end
 
 local function status_GetExpirationTimeMissing() -- Expiration time is unknow, return some hours in future to allow 
-	return GetTime() + 9999						 -- blinking work and to prevent failing of IndicatorText status
+	return GetTime() + 9999						 -- blinking work and to avoid a crash of IndicatorText status
 end
 
 local function status_GetPercent(self, unit)
@@ -251,9 +255,17 @@ local function status_GetPercent(self, unit)
 	return expiration / (self.durations[unit] or 1)
 end
 
+local function status_GetThresholdColor(self, unit)    
+	local colors = self.colors
+	local index  = self.tracker[unit]
+	local color  = colors[index] or colors[1]
+	return color.r, color.g, color.b, color.a
+end
+
 local function status_UpdateState(self, unit, iconTexture, count, duration, expiration)
 	local filtered = self.filtered
 	if filtered and filtered[unit] then return end 
+	if count==0 then count = 1 end
 	if (self.states[unit]==nil) or 
 	   (self.counts[unit] ~= count) or 
 	   (self.expirations[unit] ~= expiration)
@@ -263,6 +275,7 @@ local function status_UpdateState(self, unit, iconTexture, count, duration, expi
 		self.counts[unit] = count and count>0 and count or 1
 		self.durations[unit] = duration
 		self.expirations[unit] = expiration
+		self.tracker[unit] = 1
 		self.seen= 1
 	else
 		self.seen= -1
@@ -271,13 +284,14 @@ end
 
 local function status_UpdateStateGroup(self, unit, iconTexture, count, duration, expiration)
 	local filtered = self.filtered
-	if filtered and filtered[unit] then return end 
+	if filtered and filtered[unit] then return end
 	if self.states[unit]==nil or (self.expirations[unit] ~= expiration) then
 		self.states[unit] = true
 		self.textures[unit] = iconTexture
 		self.durations[unit] = duration
 		self.expirations[unit] = expiration
 		self.counts[unit] = 1
+		self.tracker[unit] = 1
 		self.seen= 1
 	else
 		self.seen= -1
@@ -299,6 +313,7 @@ end
 
 local function status_OnDisable(self)
 	EnableAuraFrame(false)
+	if RemoveTimeTracker then RemoveTimeTracker(self) end
 	if self.auraKeys then
 		local handlers= self.handlers
 		for _,auraKey in next,self.auraKeys do
@@ -312,42 +327,54 @@ end
 
 local function status_UpdateDB(self)
 	if self.enabled then self:OnDisable() end
-	local dbx = self.dbx
 	MakeStatusFilter(self)
-	local blinkThreshold, missing, auras, mine = dbx.blinkThreshold, dbx.missing, dbx.auras, dbx.mine
-	if blinkThreshold then
-		self.blinkThreshold = blinkThreshold
-		self.IsActive = missing and status_IsInactiveBlink or status_IsActiveBlink
-		if not missing then  -- blinking missing statuses dont need timetracker, because are always blinking
-			AddTimeTracker(self, blinkThreshold)
-		end	
+	local dbx = self.dbx
+	if dbx.missing then
+		local _, _, texture    = GetSpellInfo(auras and auras[1] or dbx.spellName )
+		self.missingTexture    = texture or "Interface\\ICONS\\Achievement_General"
+		self.GetIcon           = status_GetIconMissing
+		self.GetExpirationTime = status_GetExpirationTimeMissing
+		self.GetCount          = status_GetCountMissing
+		self.IsActive          = dbx.blinkThreshold and status_IsInactiveBlink or status_IsInactive
+		Grid2:MakeStatusColorHandler(self)		
 	else
-		self.blinkThreshold = nil
-		self.IsActive = missing and status_IsInactive or status_IsActive
-		if RemoveTimeTracker then
-			RemoveTimeTracker(self)
+		self.GetIcon           = status_GetIcon
+		self.GetExpirationTime = status_GetExpirationTime
+		self.GetCount          = status_GetCount
+		if dbx.blinkThreshold then
+			AddTimeTracker(self)
+			self.thresholds = { dbx.blinkThreshold }
+			self.IsActive   = status_IsActiveBlink
+			Grid2:MakeStatusColorHandler(self)
+		elseif dbx.colorThreshold then
+			AddTimeTracker(self)
+			self.colors     = {}
+			self.thresholds = dbx.colorThreshold
+			self.GetColor   = status_GetThresholdColor
+			self.IsActive   = status_IsActive
+			for i=1,dbx.colorCount do
+				self.colors[i] = dbx["color"..i]
+			end
+		else
+			self.IsActive = status_IsActive
+			Grid2:MakeStatusColorHandler(self)			
 		end
 	end
-	if missing then
-		local _, _, texture = GetSpellInfo(auras and auras[1] or dbx.spellName )
-		self.missingTexture = texture or "Interface\\ICONS\\Achievement_General"
-	end
-	local suffix= (mine==2 and "-") or (mine and "+") or ""
+	local auras  = dbx.auras
+	local mine   = dbx.mine
+	local suffix = (mine==2 and "-") or (mine and "+") or ""
 	if auras then  
 		local auraKeys= {}
 		for index, spellName in next,auras do
 			auraKeys[index]= (type(spellName)=="number" and GetSpellInfo(spellName) or spellName) .. suffix
 		end
-		self.auraKeys= auraKeys
+		self.auraKeys = auraKeys
 		self.UpdateState = status_UpdateStateGroup
 	else
-		local spellName= dbx.spellName
-		self.auraKey= (type(spellName)=="number" and GetSpellInfo(spellName) or spellName) .. suffix
+		local spellName = dbx.spellName
+		self.auraKey = (type(spellName)=="number" and GetSpellInfo(spellName) or spellName) .. suffix
 		self.UpdateState = status_UpdateState
 	end
-	self.GetIcon = missing and status_GetIconMissing or status_GetIcon
-	self.GetExpirationTime = missing and status_GetExpirationTimeMissing or status_GetExpirationTime
-	self.GetCount = missing and status_GetCountMissing or status_GetCount
 	if self.enabled then self:OnEnable() end
 end
 --}}
@@ -362,7 +389,8 @@ local function CreateAuraCommon(baseKey, dbx, handlers, types)
 	status.counts = {}
 	status.expirations = {}
 	status.durations = {}
-
+	status.tracker = {}
+	
 	status.Reset = status_Reset
 	status.GetCountMax = status_GetCountMax
 	status.GetDuration = status_GetDuration
@@ -372,7 +400,6 @@ local function CreateAuraCommon(baseKey, dbx, handlers, types)
 	status.UpdateDB = status_UpdateDB
 
 	Grid2:RegisterStatus(status, types, baseKey, dbx)
-	Grid2:MakeStatusColorHandler(status)
 
 	status:UpdateDB()
 	
@@ -422,7 +449,7 @@ do
 			if not name then break end
 			local isMine = myUnits[caster]
 			-- Search standard buff 
-			local status= BuffHandlers[name]
+			local status = BuffHandlers[name]
 			if status then
 				status:UpdateState(unit, iconTexture, count, duration, expirationTime, isMine)
 			end
@@ -475,6 +502,6 @@ end
 
 --{{ Registering statuses constructors
 Grid2.setupFunc["debuffType"] = CreateDebuffType
-Grid2.setupFunc["buff"] = Grid2.CreateBuff
-Grid2.setupFunc["debuff"] = Grid2.CreateDebuff
+Grid2.setupFunc["buff"]       = Grid2.CreateBuff
+Grid2.setupFunc["debuff"]     = Grid2.CreateDebuff
 --}}

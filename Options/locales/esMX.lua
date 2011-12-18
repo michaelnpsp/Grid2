@@ -329,6 +329,7 @@ L["New Status"] = "Nuevo Estado"
 L["Create a new status."] = "Crear un nuevo Estado"
 
 L["Threshold"] = "Umbral"
+-- L["Thresholds"] = ""
 L["Threshold at which to activate the status."] = "Elige el umbral para activar el Estado"
 
 -- buff & debuff statuses management
@@ -353,6 +354,11 @@ L["Color count"] = "No. colores"
 L["Select how many colors the status must provide."] = "Elige cuantos colores debe suministrar el estado"
 L["You can include a descriptive prefix using separators \"@#>\""] = "Puede especificar un prefijo usando los separadores \"@#>\""
 L["examples: Druid@Regrowth Chimaeron>Low Health"] = "por ejemplo: Druida@Recrecimiento  Chimaeron>Vida baja"
+-- L["Threshold to activate Color"] = ""
+
+-- L["Coloring based on"] = ""
+-- L["Number of stacks"] = ""
+-- L["Remaining time"] = ""
 
 L["Class Filter"] = "Filtro de clases"
 L["Show on %s."] = "Mostrar para %s."
@@ -416,6 +422,7 @@ L["Disease"] = "Enfermedad"
 L["Magic"] = "Magia"
 
 L["raid-debuffs"] = "Debuffs de Raid"
+-- L["boss-shields"] = ""
 
 -- class specific buffs & debuffs statuses
 
@@ -603,6 +610,8 @@ L["Maximum shield amount value. Only used by bar indicators."] = "Valor maximo d
 -- L["The value below which a shield is considered low."] = ""
 -- L["Medium shield threshold"] = ""
 -- L["The value below which a shield is considered medium."] = ""
+-- L["Custom Shields"] = ""
+-- L["Type shield names separated by commas."] = ""
 
 -- aoe heals
 L["aoe-"] = "aoe: "

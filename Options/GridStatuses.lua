@@ -56,6 +56,9 @@ local DebuffSubTypes= {
 	},
 }
 
+local ColorCountValues = {1,2,3,4,5,6,7,8,9}
+local ColorizeByValues= { L["Number of stacks"] , L["Remaining time"] }
+
 local Categories= {
 	["health"]= "health",
 	["health-current"]= "health",
@@ -206,7 +209,7 @@ function Grid2Options:MakeStatusDeleteOptions(status, options, optionParams)
 		}
 		options.delete = {
 			type = "execute",
-			order = 210,
+			order = 255,
 			name = L["Delete"],
 			func = DeleteStatus,
 			disabled = function() return (next(status.indicators)~=nil)	end,
@@ -425,7 +428,6 @@ function Grid2Options:MakeStatusThresholdOptions(status, options, optionParams, 
 		end,
 		set = function (_, v)
 			status.dbx.threshold = v
-			Grid2.db.profile.statuses[status.name].threshold = v
 			for unit, guid in Grid2:IterateRosterUnits() do
 				status:UpdateIndicators(unit)
 			end
@@ -619,7 +621,7 @@ function Grid2Options:MakeStatusShieldsOptions(status, options, optionParams)
 	for _,spellId in pairs(shields) do
 		options.filter.args["shield"..spellId] = {
 			type = "toggle",
-			width = "full",
+			width = "normal",
 			name = GetSpellInfo(spellId),
 			get = function () return not (dbx.filtered and dbx.filtered[spellId]) end,
 			set = function (_, value)
@@ -636,6 +638,24 @@ function Grid2Options:MakeStatusShieldsOptions(status, options, optionParams)
 			end,
 		}
 	end
+	options.customShields = {
+		type = "input",
+		order = 120,
+		width = "full",
+		name = L["Custom Shields"], 
+		desc = L["Type shield names separated by commas."],
+		get = function () return status.dbx.customShields end,
+		set = function (_, v)
+			local shields = { strsplit( ",", strtrim(v, ", ")  ) }
+			for i=1,#shields do
+				local str  = strtrim(shields[i])
+				shields[i] = tonumber(str) and GetSpellInfo(str) or str
+			end
+			status.dbx.customShields = table.concat(shields,",")
+			status:UpdateDB()
+		end,
+	}
+
 	return options
 end
 
@@ -662,10 +682,7 @@ function Grid2Options:MakeStatusMissingOptions(status, options, optionParams)
 		end,
 		set = function (_, v)
 			status.dbx.missing = v
-			Grid2.db.profile.statuses[status.name].missing = v
-			if status.UpdateDB then
-				status:UpdateDB()
-			end
+			if status.UpdateDB then status:UpdateDB() end
 			for unit, guid in Grid2:IterateRosterUnits() do
 				status:UpdateIndicators(unit)
 			end
@@ -677,7 +694,7 @@ end
 
 function Grid2Options:MakeStatusBlinkThresholdOptions(status, options, optionParams)
 	options = options or {}
-	if Grid2Blink.db.profile.type ~= "None" then
+	if Grid2Blink.db.profile.type ~= "None" and (not status.dbx.colorThreshold) then
 		options.blinkThresholdSpacer = {
 			type = "header",
 			order = 30,
@@ -1095,7 +1112,7 @@ NewBuffHandler.options = {
 		desc = L["Select how many colors the status must provide."],
 		get = "GetColorCount",
 		set = "SetColorCount",
-		values = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15},
+		values = ColorCountValues,
 		handler = NewBuffHandler,
 	},
 	newStatusBuffSpacer = {
@@ -1204,45 +1221,6 @@ do
 	}
 end
 
-function Grid2Options:MakeStatusAuraListOptions(status, options, optionParams)
-	options= options or {}
-	options.auras = {
-		type = "input",
-		order = 1,
-		width = "full",
-		name = L["Auras"],
-		multiline= math.min(8,#status.dbx.auras),
-		get = function()
-				local auras= {}
-				for _,aura in pairs(status.dbx.auras) do
-					auras[#auras+1]= (type(aura)=="number") and GetSpellInfo(aura) or aura
-				end
-				return table.concat( auras, "\n" )
-		end,
-		set = function(_, v) 
-			wipe(status.dbx.auras)
-			local auras= { strsplit("\n,", v) }
-			for _,v in pairs(auras) do
-				local aura= strtrim(v)
-				if #aura>0 then
-					table.insert(status.dbx.auras, tonumber(aura) or aura )
-				end
-			end	
-			status:UpdateDB()
-			for unit, guid in Grid2:IterateRosterUnits() do
-				status:UpdateIndicators(unit)
-			end
-		end,
-	}
-	options.aurasSpacer= {
-		type = "header",
-		order = 2,
-		name = "",
-	}
-	return options
-end
-
-
 function Grid2Options:MakeStatusColorStatusOptions(status, options, optionParams)
 	options = options or {}
 	options = self:MakeStatusColorOptions(status, options, optionParams)
@@ -1293,15 +1271,194 @@ function Grid2Options:MakeStatusHealthCurrentOptions(status, options, optionPara
 	return options, "health"
 end
 
+function Grid2Options:MakeStatusAuraListOptions(status, options, optionParams)
+	options= options or {}
+	options.auras = {
+		type = "input",
+		order = 1,
+		width = "full",
+		name = L["Auras"],
+		multiline= math.min(8,#status.dbx.auras),
+		get = function()
+				local auras= {}
+				for _,aura in pairs(status.dbx.auras) do
+					auras[#auras+1]= (type(aura)=="number") and GetSpellInfo(aura) or aura
+				end
+				return table.concat( auras, "\n" )
+		end,
+		set = function(_, v) 
+			wipe(status.dbx.auras)
+			local auras= { strsplit("\n,", v) }
+			for _,v in pairs(auras) do
+				local aura= strtrim(v)
+				if #aura>0 then
+					table.insert(status.dbx.auras, tonumber(aura) or aura )
+				end
+			end	
+			status:UpdateDB()
+			for unit, guid in Grid2:IterateRosterUnits() do
+				status:UpdateIndicators(unit)
+			end
+		end,
+	}
+	options.aurasSpacer= {
+		type = "header",
+		order = 2,
+		name = "",
+	}
+	return options
+end
+
+local function StatusAuraGenerateColors(status, newCount)
+	local oldCount = status.dbx.colorCount or 1
+	for i=oldCount+1,newCount do
+		status.dbx["color"..i] = { r=1, g=1, b=1, a=1 } 
+	end
+	for i=newCount+1,oldCount do
+		status.dbx["color"..i] = nil
+	end
+	status.dbx.colorCount = newCount>1 and newCount or nil
+end
+
+local function StatusAuraGenerateColorThreshold(status)
+	if status.dbx.colorCount then
+		local newCount   =  status.dbx.colorCount - 1
+		local thresholds = status.dbx.colorThreshold or {}
+		local oldCount   = #thresholds
+		for i=oldCount+1,newCount do 
+			thresholds[i] = 0
+		end	
+		for i=oldCount,newCount+1,-1 do
+			table.remove(thresholds)
+		end
+		status.dbx.colorThreshold = thresholds
+		status.dbx.blinkThreshold = nil
+	else
+		status.dbx.colorThreshold = nil
+	end	
+end
+
+function Grid2Options:MakeStatusAuraMissingOptions(status, options, optionParams)
+	options = options or {}
+	options.threshold = {
+		type = "toggle",
+		name = L["Show if missing"],
+		desc = L["Display status only if the buff is not active."],
+		order = 8,
+		get = function () return status.dbx.missing end,
+		set = function (_, v)
+			status.dbx.missing = v or nil
+			if v then
+				StatusAuraGenerateColors(status,1)
+				status.dbx.colorThreshold = nil
+			end
+			if status.UpdateDB then	status:UpdateDB() end
+			self:MakeThisStatusOptions(status)
+			for unit, guid in Grid2:IterateRosterUnits() do
+				status:UpdateIndicators(unit)
+			end
+		end,
+	}
+	return options
+end
+
+function Grid2Options:MakeStatusAuraCommonOptions(status, options, optionParams)
+	options = options or {}
+	if not status.dbx.missing then
+		options.colorCount = {
+			type = "select",
+			order = 1,
+			width ="half",
+			name = L["Color count"],
+			desc = L["Select how many colors the status must provide."],
+			get = function() return status.dbx.colorCount or 1 end,
+			set = function(_,v) 
+				StatusAuraGenerateColors(status, v)
+				if status.dbx.colorThreshold then
+					StatusAuraGenerateColorThreshold(status)
+				end	
+				status:UpdateDB()
+				self:MakeThisStatusOptions(status)
+			end,
+			values = ColorCountValues,
+		}
+		if status.dbx.colorCount then
+			options.colorizeBy = {
+				type = "select",
+				order = 2,
+				width ="normal",
+				name = L["Coloring based on"],
+				desc = L["Coloring based on"],
+				get = function() return status.dbx.colorThreshold and 2 or 1 end,
+				set = function( _, v) 
+						if v == 1 then
+							status.dbx.colorThreshold = nil
+						else
+							StatusAuraGenerateColorThreshold(status)
+						end
+						status:UpdateDB()
+						self:MakeThisStatusOptions(status)
+				end,
+				values = ColorizeByValues, 
+			}
+		end	
+	end	
+	options.headerSpacer= {
+		type = "header",
+		order = 9,
+		name = L["Colors"],
+	}
+	return options
+end
+
+function Grid2Options:MakeStatusColorThresholdOptions(status, options, optionParams)
+	options = options or {}
+	local thresholds = status.dbx.colorThreshold
+	if thresholds then 
+		local colorKey = L["Color"]
+		options.colorThresholdSpacer= {
+			type = "header",
+			order = 50,
+			name = L["Thresholds"],
+		}
+		for i=1,#thresholds do
+			options[ "colorThreshold" .. i ] = {
+				type = "range",
+				order = 50+i,
+				name = colorKey .. (i+1),
+				desc = L["Threshold to activate Color"] .. (i+1),
+				min = 0,
+				max = 30,
+				step = 0.1,
+				bigStep = 1,
+				get = function () return status.dbx.colorThreshold[i] end,
+				set = function (_, v)
+					local min = status.dbx.colorThreshold[i+1] or 0
+					local max = status.dbx.colorThreshold[i-1] or 30
+					if v>=min and v<=max then
+						status.dbx.colorThreshold[i] = v
+						status:UpdateDB()
+					end	
+				end,
+			}
+		end
+	end
+	return options
+end
+
+
 --Package a standard set of options for buffs
 function Grid2Options:MakeStatusStandardBuffOptions(status, options, optionParams)
 	options = options or {}
 
 	if status.dbx.auras then
 		options = self:MakeStatusAuraListOptions(status, options, optionParams)
-	end	
+	end
+	
+    options = self:MakeStatusAuraCommonOptions(status, options, optionParams)	
+	options = self:MakeStatusAuraMissingOptions(status, options, optionParams)
 	options = self:MakeStatusColorOptions(status, options, optionParams)
-	options = self:MakeStatusMissingOptions(status, options, optionParams)
+	options = self:MakeStatusColorThresholdOptions(status, options, optionParams)
 	options = self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
 	options = self:MakeStatusClassFilterOptions(status, options, optionParams)
 
@@ -1503,10 +1660,25 @@ function Grid2Options:MakeStatusThreatOptions(status, options, optionParams)
 	return options
 end
 
---No options for the status
+-- No options for the status
 function Grid2Options:MakeStatusNoOptions(status, options, optionParams)
 end
 
+-- Create/Recreate optoins for the specified status
+function Grid2Options:MakeThisStatusOptions(status, dbx )
+	local type   = dbx and dbx.type or status.dbx.type
+	local func   = self.typeMakeOptions[type] or self.MakeStatusStandardOptions 
+	local params = self.optionParams[type]
+	local options, subType = func(self, status, nil, params)
+	if subType=="root" or Categories[status.name]=="root" then
+		self:AddElement("statuses", status, options)
+	else
+		self:AddElementSubType("statuses", subType or Categories[status.name] or "misc", status, options)
+	end	
+end
+			
+-- General methods			
+			
 function Grid2Options:MakeStatusHandlers(reset)
 
 	self:AddOptionHandler("buff", self.MakeStatusStandardBuffOptions , { makeColorHandler= true } )
@@ -1645,7 +1817,7 @@ function Grid2Options:MakeStatusOptions(reset)
 end
 
 --{{ Publish some tables for plugins
-Grid2Options.Categories= Categories
-Grid2Options.BuffSubTypes= BuffSubTypes
-Grid2Options.DebuffSubTypes= DebuffSubTypes
+Grid2Options.Categories = Categories
+Grid2Options.BuffSubTypes = BuffSubTypes
+Grid2Options.DebuffSubTypes = DebuffSubTypes
 --}}
