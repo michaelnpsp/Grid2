@@ -329,6 +329,7 @@ L["New Status"] = "새로운 상태"
 L["Create a new status."] = "새로운 상태를 만듭니다."
 
 L["Threshold"] = "수치"
+-- L["Thresholds"] = ""
 L["Threshold at which to activate the status."] = "상태를 활성화할 수치를 설정합니다."
 
 -- buff & debuff statuses management
@@ -353,6 +354,11 @@ L["Display status only if the buff was cast by you."] = "당신이 버프를 시
 -- L["Select how many colors the status must provide."] = ""
 -- L["You can include a descriptive prefix using separators \"@#>\""] = ""
 -- L["examples: Druid@Regrowth Chimaeron>Low Health"] = ""
+-- L["Threshold to activate Color"] = ""
+
+-- L["Coloring based on"] = ""
+-- L["Number of stacks"] = ""
+-- L["Remaining time"] = ""
 
 L["Class Filter"] = "직업 필터"
 L["Show on %s."] = "%s 표시"
@@ -416,6 +422,7 @@ L["pvp"] = "PvP"
 -- L["Magic"] = ""
 
 -- L["raid-debuffs"] = ""
+-- L["boss-shields"] = ""
 
 -- class specific buffs & debuffs statuses
 
@@ -603,6 +610,8 @@ L["Voice Chat"] = "음성 대화"
 -- L["The value below which a shield is considered low."] = ""
 -- L["Medium shield threshold"] = ""
 -- L["The value below which a shield is considered medium."] = ""
+-- L["Custom Shields"] = ""
+-- L["Type shield names separated by commas."] = ""
 
 -- aoe heals
 -- L["aoe-"] = ""

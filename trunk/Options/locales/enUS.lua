@@ -329,6 +329,7 @@ L["New Status"] = true
 L["Create a new status."] = true
 
 L["Threshold"] = true
+L["Thresholds"] = true
 L["Threshold at which to activate the status."] = true
 
 -- buff & debuff statuses management
@@ -353,6 +354,11 @@ L["Color count"]= true
 L["Select how many colors the status must provide."]= true
 L["You can include a descriptive prefix using separators \"@#>\""]= true
 L["examples: Druid@Regrowth Chimaeron>Low Health"]= true
+L["Threshold to activate Color"] = true
+
+L["Coloring based on"] = true
+L["Number of stacks"] = true
+L["Remaining time"] = true
 
 L["Class Filter"] = true
 L["Show on %s."] = true
@@ -416,6 +422,7 @@ L["Disease"] = true
 L["Magic"] = true
 
 L["raid-debuffs"] = "Raid Debuffs"
+L["boss-shields"] = true
 
 -- class specific buffs & debuffs statuses
 
@@ -603,6 +610,8 @@ L["Low shield threshold"] = true
 L["The value below which a shield is considered low."] = true
 L["Medium shield threshold"] = true
 L["The value below which a shield is considered medium."] = true
+L["Custom Shields"] = true
+L["Type shield names separated by commas."] = true
 
 -- aoe heals
 L["aoe-"] = true

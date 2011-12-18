@@ -7,7 +7,6 @@ local select   = select
 local next     = next
 local min      = math.min
 local fmt      = string.format
-local select   = select
 local UnitAura = UnitAura
 
 local shields     = {}  
@@ -84,7 +83,7 @@ function Shields:COMBAT_LOG_EVENT_UNFILTERED(...)
 					action( self, unit, shieldName, amount ) 
 				end 
 			end	
-		end	
+		end
 	end	
 end
 
@@ -135,16 +134,23 @@ function Shields:IsActiveBLink(unit)
 end
 
 function Shields:UpdateDB()
+	local dbx= self.dbx
 	wipe(shields)
-	self.maxShieldAmount = self.dbx.maxShieldAmount
-	self.blinkThreshold  = self.dbx.blinkThreshold
+	self.maxShieldAmount = dbx.maxShieldAmount
+	self.blinkThreshold  = dbx.blinkThreshold
 	self.IsActive        = self.blinkThreshold and Shields.IsActiveBLink or Shields.IsActiveNormal
-	local filtered = self.dbx.filtered
+	local filtered = dbx.filtered
 	for _,spellId in pairs(shields_ava) do
 		if (not filtered) or (not filtered[spellId]) then
 			shields[ GetSpellInfo(spellId) ] = true
 		end	
 	end
+	if dbx.customShields then
+		local customShields = { strsplit(",", dbx.customShields) }
+		for i=1,#customShields do
+			shields[ customShields[i] ] = true
+		end
+	end	
 end
 
 function Shields:GetAvailableShields()
