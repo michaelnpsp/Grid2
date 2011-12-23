@@ -51,17 +51,19 @@ local function ProcessGroup(self, roster, i, k)
 end
 
 local function ProcessRoster(self, roster)
-	local g,i,m= 1,1,#roster
-	for k=1,m do
-		local h= roster[k].group
-		if h~=g then
-			ProcessGroup( self,roster, i, k-1 )
-			g, i = h, k
+	local m = #roster
+	if m>0 then
+		local i = 1
+		local g = roster[1].group
+		for k=2,m do
+			local h = roster[k].group
+			if h~=g then
+				ProcessGroup( self, roster, i, k-1 )
+				g, i = h, k
+			end
 		end
-	end
-	if i<=m then
 		ProcessGroup( self, roster, i, m )
-	end
+	end	
 end
 
 local function Update(self)
