@@ -115,6 +115,13 @@ RDDB["Cataclysm"] = {
         88942, -- Meteor Slash
         88954, -- Consuming Darkness
         },
+		["Occu'thar"] = {
+		96913, -- Searing Shadows
+		},
+		["Alizabal"] = {
+		104936, -- Skewer
+		105067, -- Seething Hate
+		},		
     },	
 	["Firelands"] = {
 		["Beth'tilac"]= {
@@ -200,7 +207,7 @@ RDDB["Cataclysm"] = {
 		106369, -- Twilight shift
 		},
 		["Yor'sahj the Unsleeping"] = {
-		-- 104849, -- Void bolt
+		104849, -- Void bolt
 		109389, -- Deep Corruption
 		},
 		["Warlord Zon'ozz"] = {
@@ -218,11 +225,12 @@ RDDB["Cataclysm"] = {
 		106005, -- Degradation
 		},
 		["Madness of Deathwing"] = {
+		109603, -- Tetanus
+		109632, -- Impale
+		106794, -- Shrapnel
+		106385, -- Crush
 		105841, -- Degenerative bite
 		105445, -- Blistering heat
-		109603, -- Tetanus
-		-- 109632, -- Impale
-		--109592, -- Corrupted blood
 		},		
 	}
 }

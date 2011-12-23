@@ -218,8 +218,9 @@ end
 
 --{{{{ statuses public interface methods
 
-local function UpdateTimerState()
-	local disabled= (AOEM.db.profile.showInCombat and (not InCombatLockdown())) or
+local function UpdateTimerState(InCombat)
+	if InCombat==nil then InCombat = InCombatLockdown() end
+	local disabled= (AOEM.db.profile.showInCombat and (not InCombat) ) or
 	                (AOEM.db.profile.showInRaid and GetNumRaidMembers()==0) or
 	                (GetNumRaidMembers()==0 and GetNumPartyMembers()==0)
 	SetTimer(not disabled)
@@ -238,7 +239,7 @@ local function FrameEvents(self, event)
 			UpdateTimerState() 
 		end	
 	elseif dbx.showInCombat then  -- REGEN_DISABLED and REGEN_ENABLED events
-		UpdateTimerState()
+		UpdateTimerState( event=="PLAYER_REGEN_DISABLED" )
 	end	
 end
 
