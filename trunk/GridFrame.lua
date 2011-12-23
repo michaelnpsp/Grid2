@@ -7,7 +7,6 @@ local Grid2= Grid2
 local SecureButton_GetModifiedUnit = SecureButton_GetModifiedUnit
 local UnitFrame_OnEnter= UnitFrame_OnEnter
 local UnitFrame_OnLeave= UnitFrame_OnLeave
-
 local Grid2Frame
 
 --{{{ Grid2Frame script handlers
@@ -196,12 +195,16 @@ function Grid2Frame:RegisterFrame(frame)
 end
 
 -- shows the default unit tooltip
-local TooltipCheck= { Always= true, Never = false, OOC= function() return not InCombatLockdown() end }
+local TooltipCheck= { 	
+	Always = function() return false end, 
+	Never  = function() return true end, 
+	OOC    = InCombatLockdown,
+}
 function Grid2Frame:OnFrameEnter(frame)
-	if TooltipCheck[self.db.profile.showTooltip] then
-		UnitFrame_OnEnter(frame)
-	else
+	if TooltipCheck[self.db.profile.showTooltip]() then
 		UnitFrame_OnLeave(frame)
+	else
+		UnitFrame_OnEnter(frame)
 	end
 end
 
