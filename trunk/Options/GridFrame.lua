@@ -3,26 +3,60 @@ Created by Grid2 original authors, modified by Michael
 --]]
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
-local media = LibStub("LibSharedMedia-3.0", true)
 
 function Grid2Options:MakeFrameOptions(reset)
 local options= {
-		mouseoverHighlight = {
-			type = "toggle",
-			name = L["Mouseover Highlight"],
-			desc = L["Toggle mouseover highlight."],
-			order = 59,
+		orientation = {
+			type = "select",
+			order = 10,
+			name = L["Orientation of Frame"],
+			desc = L["Set frame orientation."],
 			get = function ()
-				return Grid2Frame.db.profile.mouseoverHighlight
+				return Grid2Frame.db.profile.orientation
 			end,
 			set = function (_, v)
-				Grid2Frame.db.profile.mouseoverHighlight = v
+				Grid2Frame.db.profile.orientation = v
+				for _, indicator in Grid2:IterateIndicators() do
+					if indicator.SetOrientation and indicator.orientation==nil then
+						Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
+					end
+				end
+			end,
+			values={["VERTICAL"] = L["VERTICAL"], ["HORIZONTAL"] = L["HORIZONTAL"]}
+		},
+		texture = {
+			type = "select", dialogControl = "LSM30_Statusbar",
+			order = 20,
+			name = L["Background Texture"],
+			desc = L["Select the frame background texture."],
+			get = function (info) return Grid2Frame.db.profile.frameTexture or "Gradient" end,
+			set = function (info, v)
+				Grid2Frame.db.profile.frameTexture = v
 				Grid2Frame:LayoutFrames()
 			end,
+			values = AceGUIWidgetLSMlists.statusbar,			
+		},
+		font = {
+			type = "select", dialogControl = "LSM30_Font",
+			order = 30,
+			name = L["Font"],
+			desc = L["Adjust the font settings"],
+			get = function(info) return Grid2Frame.db.profile.font end,
+			set = function(info,v)
+				Grid2Frame.db.profile.font = v
+				for _, indicator in Grid2:IterateIndicators() do
+					if indicator.SetTextFont and indicator.dbx.font==nil then
+						indicator:UpdateDB()
+						Grid2Frame:WithAllFrames(function (f) indicator:SetTextFont(f) end)
+					end
+				end
+
+			end,
+			values = AceGUIWidgetLSMlists.font,
 		},
 		tooltip = {
 			type = "select",
-			order = 55,
+			order = 40,
 			name = L["Show Tooltip"],
 			desc = L["Show unit tooltip.  Choose 'Always', 'Never', or 'OOC'."],
 			get = function ()
@@ -35,7 +69,7 @@ local options= {
 		},
 		framewidth = {
 			type = "range",
-			order = 30,
+			order = 50,
 			name = L["Frame Width"],
 			desc = L["Adjust the width of each unit's frame."],
 			min = 10,
@@ -55,7 +89,7 @@ local options= {
 		},
 		frameheight = {
 			type = "range",
-			order = 40,
+			order = 60,
 			name = L["Frame Height"],
 			desc = L["Adjust the height of each unit's frame."],
 			min = 10,
@@ -73,24 +107,6 @@ local options= {
 			end,
 			disabled = InCombatLockdown,
 		},
-		orientation = {
-			type = "select",
-			order = 5,
-			name = L["Orientation of Frame"],
-			desc = L["Set frame orientation."],
-			get = function ()
-				return Grid2Frame.db.profile.orientation
-			end,
-			set = function (_, v)
-				Grid2Frame.db.profile.orientation = v
-				for _, indicator in Grid2:IterateIndicators() do
-					if indicator.SetOrientation and indicator.orientation==nil then
-						Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
-					end
-				end
-			end,
-			values={["VERTICAL"] = L["VERTICAL"], ["HORIZONTAL"] = L["HORIZONTAL"]}
-		},
 		borderDistance= {
 			type = "range",
 			name = L["Inner Border Size"],
@@ -98,7 +114,7 @@ local options= {
 			min = -16,
 			max = 16,
 			step = 1,
-			order = 58,
+			order = 70,
 			get = function ()
 				return Grid2Frame.db.profile.frameBorderDistance
 			end,
@@ -109,7 +125,7 @@ local options= {
 		},		
 		colorFrame = {
 			type = "color",
-			order = 59,
+			order = 80,
 			name = L["Inner Border Color"],
 			desc = L["Sets the color of the inner border of each unit frame"],
 			get = function()
@@ -125,7 +141,7 @@ local options= {
 		},
 		colorContent = {
 			type = "color",
-			order = 57,
+			order = 90,
 			name = L["Background Color"],
 			desc = L["Sets the background color of each unit frame"],
 			get = function()
@@ -140,19 +156,18 @@ local options= {
 			 end, 
 			hasAlpha = true,
 		},		
-		texture = {
-			type = "select",
-			order = 54,
-			name = L["Background Texture"],
-			desc = L["Select the frame background texture."],
-			get = function (info)
-				return Grid2Options:SearchTableValue(info.option.values, Grid2Frame.db.profile.frameTexture )
+		mouseoverHighlight = {
+			type = "toggle",
+			name = L["Mouseover Highlight"],
+			desc = L["Toggle mouseover highlight."],
+			order = 100,
+			get = function ()
+				return Grid2Frame.db.profile.mouseoverHighlight
 			end,
-			set = function (info, v)
-				Grid2Frame.db.profile.frameTexture = info.option.values[v]
+			set = function (_, v)
+				Grid2Frame.db.profile.mouseoverHighlight = v
 				Grid2Frame:LayoutFrames()
 			end,
-			values = media:List("statusbar"),
 		},
 	}
 	

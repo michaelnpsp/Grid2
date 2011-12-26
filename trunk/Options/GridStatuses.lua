@@ -366,7 +366,7 @@ function Grid2Options:MakeStatusClassFilterOptions(status, options, optionParams
 			type = "toggle",
 			name = className,
 			desc = (L["Show on %s."]):format(className),
-			tristate = true,
+			tristate = false,
 			get = function ()
 				return not (status.dbx.classFilter and status.dbx.classFilter[classType])
 			end,
@@ -458,10 +458,10 @@ function Grid2Options:MakeStatusRangeOptions(status, options, optionParams)
 	options = options or {}
 
 	local function GetAvailableRangeList()
-		local result= {}
-		local ranges= status.GetRanges()
-		for _,r in ipairs(ranges) do
-			result[tostring(r)] = L["%d yards"]:format(tonumber(r))
+		local result = {}
+		local ranges = status.GetRanges()
+		for range in pairs(ranges) do
+			result[range] = fmt( L["%d yards"], tonumber(range) )
 		end
 		return result
 	end
@@ -474,13 +474,8 @@ function Grid2Options:MakeStatusRangeOptions(status, options, optionParams)
 		min = 0,
 		max = 1,
 		step = 0.01,
-		get = function ()
-			return status.dbx.default
-		end,
-		set = function (_, v)
-			status.dbx.default = v
-			status:UpdateDB()
-		end,
+		get = function () return status.dbx.default	end,
+		set = function (_, v) status.dbx.default = v; status:UpdateDB()	end,
 	}
 	options.update = {
 		type = "range",
@@ -489,31 +484,19 @@ function Grid2Options:MakeStatusRangeOptions(status, options, optionParams)
 		desc = L["Rate at which the status gets updated"],
 		min = 0,
 		max = 5,
-		step = 0.1,
-		get = function ()
-			return status.dbx.elapsed
-		end,
-		set = function (_, v)
-			status.dbx.elapsed = v
-			status:UpdateDB()
-		end,
+		step = 0.05,
+		bigStep = 0.1,
+		get = function () return status.dbx.elapsed	end,
+		set = function (_, v) status.dbx.elapsed = v; status:UpdateDB()	end,
 	}
 	options.range = {
 		type = "select",
 		order = 30,
 		name = L["Range"],
 		desc = L["Range in yards beyond which the status will be lost."],
-		get = function ()
-			return status.dbx.range and tostring(status.dbx.range) or "38"
-		end,
-		set = function (_, v)
-			status.dbx.range = tonumber(v)
-			status:UpdateDB()
-			for unit, guid in Grid2:IterateRosterUnits() do
-				status:UpdateIndicators(unit)
-			end
-		end,
-		values =  GetAvailableRangeList,
+		get = function () return status.dbx.range and tostring(status.dbx.range) or "38" end,
+		set = function (_, v) status.dbx.range = v; status:UpdateDB() end,
+		values = GetAvailableRangeList,
 	}
 	return options, "target"
 end
@@ -528,7 +511,8 @@ function Grid2Options:MakeStatusBanzaiOptions(status, options, optionParams)
 		desc = L["Rate at which the status gets updated"],
 		min = 0,
 		max = 5,
-		step = 0.1,
+		step = 0.05,
+		bigStep = 0.1,
 		get = function () return status.dbx.updateRate or 0.2 end,
 		set = function (_, v) status:SetUpdateRate(v) end,
 	}
@@ -676,12 +660,10 @@ function Grid2Options:MakeStatusMissingOptions(status, options, optionParams)
 		name = L["Show if missing"],
 		desc = L["Display status only if the buff is not active."],
 		order = 110,
-		tristate = true,
-		get = function ()
-			return status.dbx.missing
-		end,
+		tristate = false,
+		get = function ()return status.dbx.missing end,
 		set = function (_, v)
-			status.dbx.missing = v
+			status.dbx.missing = v or nil
 			if status.UpdateDB then status:UpdateDB() end
 			for unit, guid in Grid2:IterateRosterUnits() do
 				status:UpdateIndicators(unit)
@@ -753,9 +735,9 @@ function Grid2Options:MakeStatusClassColorOptions(status, options, optionParams)
 		desc = L["Color Units that are charmed."],
 		width="full",
 		order = 7,
-		tristate = true,
+		tristate = false,
 		get = function () return status.dbx.colorHostile end,
-		set = function (_, v) status.dbx.colorHostile = v end,
+		set = function (_, v) status.dbx.colorHostile = v or nil end,
 	}
 	options.colors = {
 		type = "group",
@@ -841,9 +823,9 @@ function Grid2Options:MakeStatusCreatureColorOptions(status, options, optionPara
 		desc = L["Color Units that are charmed."],
 		width="full",
 		order = 7,
-		tristate = true,
+		tristate = false,
 		get = function () return status.dbx.colorHostile end,
-		set = function (_, v) status.dbx.colorHostile = v end,
+		set = function (_, v) status.dbx.colorHostile = v or nil end,
 	}
 	options.colors = {
 		type = "group",
@@ -907,9 +889,9 @@ function Grid2Options:MakeStatusFriendColorOptions(status, options, optionParams
 		desc = L["Color Units that are charmed."],
 		width="full",
 		order = 5,
-		tristate = true,
+		tristate = false,
 		get = function () return status.dbx.colorHostile end,
-		set = function (_, v) status.dbx.colorHostile = v end,
+		set = function (_, v) status.dbx.colorHostile = v or nil end,
 	}
 	return options, "color"
 end
@@ -1239,13 +1221,10 @@ function Grid2Options:MakeStatusToggleOptions(status, options, optionParams, tog
 	options[toggleKey] = {
 		type = "toggle",
 		name = name,
-		tristate = true,
-		get = function ()
-			return status.dbx[toggleKey]
-		end,
+		tristate = false,
+		get = function () return status.dbx[toggleKey] end,
 		set = function (_, v)
-			status.dbx[toggleKey] = v
-			Grid2.db.profile.statuses[status.name][toggleKey] = v
+			status.dbx[toggleKey] = v or nil
 			if status.UpdateDB then status:UpdateDB() end
 			Grid2Frame:UpdateIndicators()
 		end,
@@ -1411,7 +1390,7 @@ function Grid2Options:MakeStatusAuraCommonOptions(status, options, optionParams)
 	return options
 end
 
-function Grid2Options:MakeStatusColorThresholdOptions(status, options, optionParams)
+function Grid2Options:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
 	options = options or {}
 	local thresholds = status.dbx.colorThreshold
 	if thresholds then 
@@ -1458,7 +1437,7 @@ function Grid2Options:MakeStatusStandardBuffOptions(status, options, optionParam
     options = self:MakeStatusAuraCommonOptions(status, options, optionParams)	
 	options = self:MakeStatusAuraMissingOptions(status, options, optionParams)
 	options = self:MakeStatusColorOptions(status, options, optionParams)
-	options = self:MakeStatusColorThresholdOptions(status, options, optionParams)
+	options = self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
 	options = self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
 	options = self:MakeStatusClassFilterOptions(status, options, optionParams)
 
@@ -1501,12 +1480,10 @@ function Grid2Options:MakeStatusHealsIncomingOptions(status, options, optionPara
 		order = 110,
 		name = L["Include player heals"],
 		desc = L["Display status for the player's heals."],
-		tristate = true,
-		get = function ()
-			return status.dbx.includePlayerHeals
-		end,
+		tristate = false,
+		get = function () return status.dbx.includePlayerHeals end,
 		set = function (_, v)
-			status.dbx.includePlayerHeals = v
+			status.dbx.includePlayerHeals = v or nil
 			Grid2.db.profile.statuses[status.name].includePlayerHeals = v
 			status:UpdateDB()
 		end,
@@ -1591,10 +1568,10 @@ function Grid2Options:MakeStatusDirectionOptions(status, options)
 		order = 100,
 		name = L["Out of Range"],
 		desc = L["Display status for units out of range."],
-		tristate = true,
+		tristate = false,
 		get = function ()	return status.dbx.ShowOutOfRange end,
 		set = function (_, v)
-			status.dbx.ShowOutOfRange = v
+			status.dbx.ShowOutOfRange = v or nil
 			status:UpdateDB()
 		end,
 	}
@@ -1603,10 +1580,10 @@ function Grid2Options:MakeStatusDirectionOptions(status, options)
 		order = 110,
 		name = L["Visible Units"],
 		desc = L["Display status for units less than 100 yards away"],
-		tristate = true,
-		get = function ()	return status.dbx.ShowVisible end,
+		tristate = false,
+		get = function () return status.dbx.ShowVisible end,
 		set = function (_, v)
-			status.dbx.ShowVisible = v
+			status.dbx.ShowVisible = v or nil
 			status:UpdateDB()
 		end,
 	}
@@ -1615,10 +1592,10 @@ function Grid2Options:MakeStatusDirectionOptions(status, options)
 		order = 120,
 		name = L["Dead Units"],
 		desc = L["Display status only for dead units"],
-		tristate = true,
+		tristate = false,
 		get = function ()	return status.dbx.ShowDead end,
 		set = function (_, v)
-			status.dbx.ShowDead = v
+			status.dbx.ShowDead = v or nil
 			status:UpdateDB()
 		end,
 	}
