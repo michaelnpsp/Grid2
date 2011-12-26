@@ -5,6 +5,8 @@ Created by Grid2 original authors, modified by Michael
 local LG = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 
+local pairs = pairs
+
 local Grid2Options = {
 	options = {
 		name = "Grid2",
@@ -348,13 +350,6 @@ function Grid2Options:GetValidatedName(name)
 	name = name:gsub("[\"%.]", "")
 	name = name:gsub(" ", "-")
 	return name
-end
-
-local ipairs = ipairs
-function Grid2Options:SearchTableValue(t,v)
-	for i, w in ipairs(t) do
-		if v == w then return i end
-	end
 end
 
 function Grid2Options:ConfirmDialog(message, funcAccept, funcCancel)

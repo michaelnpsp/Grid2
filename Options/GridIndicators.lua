@@ -444,19 +444,17 @@ end
 function Grid2Options:MakeIndicatorTextureOptions(indicator, options, optionParams)
 	options = options or {}
 	options.texture = {
-		type = "select",
+		type = "select", dialogControl = "LSM30_Statusbar",
 		order = 9,
 		name = L["Frame Texture"],
 		desc = L["Adjust the texture of the indicator."],
-		get = function (info)
-			return Grid2Options:SearchTableValue(info.option.values, indicator.dbx.texture or "Grid2 Flat" )
-		end,
+		get = function (info) return indicator.dbx.texture or "Grid2 Flat" end,
 		set = function (info, v)
-			indicator.dbx.texture = info.option.values[v]
+			indicator.dbx.texture = v
 			indicator:UpdateDB()
 			Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
 		end,
-		values = media:List("statusbar"),
+		values = AceGUIWidgetLSMlists.statusbar,
 	}
 	return options
 end
@@ -487,7 +485,7 @@ function Grid2Options:MakeIconIndicatorBorderOptions(indicator, options, optionP
 		tristate = false,
 		get = function () return indicator.dbx.useStatusColor end,
 		set = function (_, v)
-			indicator.dbx.useStatusColor = v
+			indicator.dbx.useStatusColor = v or nil
 			indicator:UpdateDB()
 			Grid2Frame:UpdateIndicators()
 		end,
@@ -799,13 +797,11 @@ function Grid2Options:MakeIndicatorTextCustomOptions(indicator, options)
 		min = 6,
 		max = 24,
 		step = 1,
-		get = function ()
-			return indicator.dbx.fontSize
-		end,
+		get = function () return indicator.dbx.fontSize	end,
 		set = function (_, v)
 			indicator.dbx.fontSize = v
-			local font = media:Fetch('font', indicator.dbx.font) or STANDARD_TEXT_FONT
-			Grid2Frame:WithAllFrames(function (f) indicator:SetTextFont(f, font, v) end)
+			indicator:UpdateDB()
+			Grid2Frame:WithAllFrames(function (f) indicator:SetTextFont(f) end)
 		end,
 	}
 	options.durationHeader = {
@@ -818,12 +814,10 @@ function Grid2Options:MakeIndicatorTextCustomOptions(indicator, options)
 		name = L["Show duration"],
 		desc = L["Show the time remaining."],
 		order = 83,
-		tristate = true,
-		get = function ()
-			return indicator.dbx.duration
-		end,
+		tristate = false,
+		get = function () return indicator.dbx.duration	end,
 		set = function (_, v)
-			indicator.dbx.duration = v
+			indicator.dbx.duration = v or nil
 			indicator.dbx.elapsed = nil
 			indicator:UpdateDB()
 			Grid2Frame:UpdateIndicators()
@@ -834,12 +828,10 @@ function Grid2Options:MakeIndicatorTextCustomOptions(indicator, options)
 		name = L["Show elapsed time"],
 		desc = L["Show the elapsed time."],
 		order = 84,
-		tristate = true,
-		get = function ()
-			return indicator.dbx.elapsed
-		end,
+		tristate = false,
+		get = function () return indicator.dbx.elapsed end,
 		set = function (_, v)
-			indicator.dbx.elapsed = v
+			indicator.dbx.elapsed = v or nil
 			indicator.dbx.duration = nil
 			indicator:UpdateDB()
 			Grid2Frame:UpdateIndicators()
@@ -850,12 +842,10 @@ function Grid2Options:MakeIndicatorTextCustomOptions(indicator, options)
 		name = L["Show stack"],
 		desc = L["Show the number of stacks."],
 		order = 85,
-		tristate = true,
-		get = function ()
-			return indicator.dbx.stack
-		end,
+		tristate = false,
+		get = function () return indicator.dbx.stack end,
 		set = function (_, v)
-			indicator.dbx.stack = v
+			indicator.dbx.stack = v or nil
 			indicator:UpdateDB()
 			Grid2Frame:UpdateIndicators()
 		end,
@@ -865,12 +855,10 @@ function Grid2Options:MakeIndicatorTextCustomOptions(indicator, options)
 		name = L["Show percent"],
 		desc = L["Show percent value"],
 		order = 87,
-		tristate = true,
-		get = function ()
-			return indicator.dbx.percent
-		end,
+		tristate = false,
+		get = function () return indicator.dbx.percent end,
 		set = function (_, v)
-			indicator.dbx.percent = v
+			indicator.dbx.percent = v or nil
 			indicator:UpdateDB()
 			Grid2Frame:UpdateIndicators()
 		end,
@@ -882,29 +870,24 @@ function Grid2Options:MakeIndicatorTextCustomOptions(indicator, options)
 		desc = L["Set the font border type."],
 		get = function () return indicator.dbx.fontFlags or "DEFAULT" end,
 		set = function (_, v)
-			if v=="DEFAULT" then v= nil	end
-			indicator.dbx.fontFlags = v
-			local font = media:Fetch('font', indicator.dbx.font) or STANDARD_TEXT_FONT
-			Grid2Frame:WithAllFrames(function (f) indicator:SetTextFont(f, font, indicator.dbx.fontSize) end)
+			indicator.dbx.fontFlags =  v ~= "DEFAULT" and v or nil
+			indicator:UpdateDB()
+			Grid2Frame:WithAllFrames(function (f) indicator:SetTextFont(f) end)
 		end,
 		values={ ["DEFAULT"]= L["None"], ["OUTLINE"] = L["Thin"], ["THICKOUTLINE"] = L["Thick"]}
 	}
 	options.font = {
-		type = "select",
+		type = "select", dialogControl = "LSM30_Font",
 		order = 70,
 		name = L["Font"],
 		desc = L["Adjust the font settings"],
-		get = function(info)
-			return Grid2Options:SearchTableValue( info.option.values, indicator.dbx.font )
-		end,
+		get = function(info) return indicator.dbx.font end,
 		set = function(info,v)
-			local fontHandle = info.option.values[v]
-			local font = media:Fetch("font", fontHandle)
-			local fontsize = indicator.dbx.fontSize
-			indicator.dbx.font = fontHandle
-			Grid2Frame:WithAllFrames(function (f) indicator:SetTextFont(f, font, fontsize) end)
+			indicator.dbx.font = v
+			indicator:UpdateDB()
+			Grid2Frame:WithAllFrames(function (f) indicator:SetTextFont(f) end)
 		end,
-		values = media:List("font"),
+		values = AceGUIWidgetLSMlists.font,
 	}
 end
 
@@ -1037,12 +1020,10 @@ function Grid2Options:MakeIndicatorBarCustomOptions(indicator,options)
 		name = L["Show duration"],
 		desc = L["Show the time remaining."],
 		order = 50,
-		tristate = true,
-		get = function ()
-			return indicator.dbx.duration
-		end,
+		tristate = false,
+		get = function () return indicator.dbx.duration	end,
 		set = function (_, v)
-			indicator.dbx.duration = v
+			indicator.dbx.duration = v or nil
 			indicator:UpdateDB()
 			Grid2Frame:UpdateIndicators()
 		end,
@@ -1052,30 +1033,26 @@ function Grid2Options:MakeIndicatorBarCustomOptions(indicator,options)
 		name = L["Show stack"],
 		desc = L["Show the number of stacks."],
 		order = 55,
-		tristate = true,
-		get = function ()
-			return indicator.dbx.stack
-		end,
+		tristate = false,
+		get = function () return indicator.dbx.stack end,
 		set = function (_, v)
-			indicator.dbx.stack = v
+			indicator.dbx.stack = v or nil
 			indicator:UpdateDB()
 			Grid2Frame:UpdateIndicators()
 		end,
 	}
 	options.texture = {
-		type = "select",
+		type = "select", dialogControl = "LSM30_Statusbar",
 		order = 20,
 		name = L["Frame Texture"],
 		desc = L["Adjust the frame texture."],
-		get = function (info)
-			return Grid2Options:SearchTableValue( info.option.values,  indicator.dbx.texture )
-		end,
+		get = function (info) return indicator.dbx.texture or "Gradient" end,
 		set = function (info, v)
-			indicator.dbx.texture = info.option.values[v]
+			indicator.dbx.texture = v
 			indicator:UpdateDB()
 			Grid2Frame:WithAllFrames(function (f) indicator:Layout(f) end)
 		end,
-		values = media:List("statusbar"),
+		values = AceGUIWidgetLSMlists.statusbar,		
 	}
 	options.barOpacity = {
 		type = "range",
@@ -1099,10 +1076,10 @@ function Grid2Options:MakeIndicatorBarCustomOptions(indicator,options)
 		name = L["Invert Bar Color"],
 		desc = L["Swap foreground/background colors on bars."],
 		order = 44,
-		tristate = true,
+		tristate = false,
 		get = function () return indicator.dbx.invertColor	end,
 		set = function (_, v)
-			indicator.dbx.invertColor = v
+			indicator.dbx.invertColor = v or nil
 			indicator.sideKick:UpdateDB()
 			if (not v) and (not indicator.dbx.parentBar) then
 				local c = Grid2Frame.db.profile.frameContentColor
@@ -1144,18 +1121,16 @@ function Grid2Options:MakeIndicatorBorderCustomOptions(indicator,options)
 		end,
 	}		
 	options.borderTexture = {
-		type = "select",
+		type = "select", dialogControl = "LSM30_Border",
 		order = 25,
 		name = L["Border Texture"],
 		desc = L["Adjust the border texture."],
-		get = function (info)
-			return Grid2Options:SearchTableValue( info.option.values, Grid2Frame.db.profile.frameBorderTexture )
-		end,
+		get = function (info) return Grid2Frame.db.profile.frameBorderTexture or "Grid2 Flat" end,
 		set = function (info, v)
-			Grid2Frame.db.profile.frameBorderTexture = info.option.values[v]
+			Grid2Frame.db.profile.frameBorderTexture = v
 			Grid2Frame:LayoutFrames()
-		end,
-		values = media:List("border"),
+		end, 
+		values = AceGUIWidgetLSMlists.border,
 	}
 end
 
@@ -1170,12 +1145,10 @@ function Grid2Options:MakeIndicatorIconCustomOptions(indicator, options)
 		order = 130,
 		name = L["Disable Cooldown"],
 		desc = L["Disable the Cooldown Frame"],
-		tristate = true,
-		get = function ()
-			return indicator.dbx.disableCooldown
-		end,
+		tristate = false,
+		get = function () return indicator.dbx.disableCooldown end,
 		set = function (_, v)
-			indicator.dbx.disableCooldown = v
+			indicator.dbx.disableCooldown = v or nil
 			Grid2Frame:WithAllFrames(function (f) indicator:Disable(f) end)
 			indicator:UpdateDB()
 			Grid2Frame:WithAllFrames(function (f) indicator:Create(f) indicator:Layout(f) end)
@@ -1187,12 +1160,10 @@ function Grid2Options:MakeIndicatorIconCustomOptions(indicator, options)
 		order = 135,
 		name = L["Reverse Cooldown"],
 		desc = L["Set cooldown to become darker over time instead of lighter."],
-		tristate = true,
-		get = function ()
-			return indicator.dbx.reverseCooldown
-		end,
+		tristate = false,
+		get = function () return indicator.dbx.reverseCooldown end,
 		set = function (_, v)
-			indicator.dbx.reverseCooldown = v
+			indicator.dbx.reverseCooldown = v or nil
 			local indicatorKey = indicator.name
 			Grid2Frame:WithAllFrames(function (f)
 				f[indicatorKey].Cooldown:SetReverse(indicator.dbx.reverseCooldown)
@@ -1205,12 +1176,10 @@ function Grid2Options:MakeIndicatorIconCustomOptions(indicator, options)
 		order = 140,
 		name = L["Disable OmniCC"],
 		desc = L["Disable OmniCC"],
-		tristate = true,
-		get = function ()
-			return indicator.dbx.disableOmniCC
-		end,
+		tristate = false,
+		get = function () return indicator.dbx.disableOmniCC end,
 		set = function (_, v)
-			indicator.dbx.disableOmniCC = v
+			indicator.dbx.disableOmniCC = v or nil
 			local indicatorKey = indicator.name
 			Grid2Frame:WithAllFrames(function (f) f[indicatorKey].Cooldown.noCooldownCount= v end)
 		end,
@@ -1226,12 +1195,10 @@ function Grid2Options:MakeIndicatorIconCustomOptions(indicator, options)
 		order = 95,
 		name = L["Disable Stack Text"],
 		desc = L["Disable Stack Text"],
-		tristate = true,
-		get = function ()
-			return indicator.dbx.disableStack
-		end,
+		tristate = false,
+		get = function () return indicator.dbx.disableStack end,
 		set = function (_, v)
-			indicator.dbx.disableStack = v
+			indicator.dbx.disableStack = v or nil
 			Grid2Frame:WithAllFrames(function (f) indicator:Disable(f) end)
 			indicator:UpdateDB()
 			Grid2Frame:WithAllFrames(function (f) indicator:Create(f) indicator:Layout(f) end)
@@ -1246,9 +1213,7 @@ function Grid2Options:MakeIndicatorIconCustomOptions(indicator, options)
 		min = 6,
 		max = 24,
 		step = 1,
-		get = function ()
-			return indicator.dbx.fontSize
-		end,
+		get = function () return indicator.dbx.fontSize	end,
 		set = function (_, v)
 			indicator.dbx.fontSize = v
 			local indicatorKey = indicator.name
@@ -1304,25 +1269,22 @@ function Grid2Options:MakeIndicatorIconCustomOptions(indicator, options)
 		hidden= function() return indicator.dbx.disableStack end,
 	}
 	options.font = {
-		type = "select",
+		type = "select", dialogControl = "LSM30_Font",
 		order = 105,
 		name = L["Font"],
 		desc = L["Adjust the font settings"],
-		get = function (info)
-			return Grid2Options:SearchTableValue( info.option.values, indicator.dbx.font )
-		end,
+		get = function (info) return indicator.dbx.font end,
 		set = function (info, v)
-			local fontHandle = info.option.values[v]
-			local font = media:Fetch("font", fontHandle)
+			indicator.dbx.font = v
+			local font = media:Fetch("font", v)
 			local fontsize = indicator.dbx.fontSize
 			local indicatorKey = indicator.name
-			indicator.dbx.font = fontHandle
 			Grid2Frame:WithAllFrames(function (f) 
-				local text= f[indicatorKey].CooldownText
+				local text = f[indicatorKey].CooldownText
 				if text then text:SetFont(font,fontsize, "OUTLINE") end
 			end)
 		end,
-		values = media:List("font"),
+		values = AceGUIWidgetLSMlists.font,
 		hidden= function() return indicator.dbx.disableStack end,
 	}
 end

@@ -28,8 +28,6 @@ local justifyV = {
 }
 
 local function Text_Create(self, parent)
-	local font = Grid2:MediaFetch("font", self.dbx.font or Grid2Frame.db.profile.font) or STANDARD_TEXT_FONT
-
 	local f= self:CreateFrame("Frame", parent)
 	f:SetAllPoints()
 	if not f:IsShown() then
@@ -40,7 +38,7 @@ local function Text_Create(self, parent)
 	local Text = f.Text or f:CreateFontString(nil, "OVERLAY")
 	f.Text = Text
 	Text:SetFontObject(GameFontHighlightSmall)
-	Text:SetFont(font, self.dbx.fontSize, self.dbx.fontFlags)
+	Text:SetFont(self.textfont, self.dbx.fontSize, self.dbx.fontFlags)
 	Text:SetJustifyH("CENTER")
 	Text:SetJustifyV("CENTER")
 end
@@ -248,7 +246,7 @@ end
 --}}}
 
 local function Text_SetTextFont(self, parent, font, size, flags)
-	parent[self.name].Text:SetFont(font, size, flags or self.dbx.fontFlags)
+	parent[self.name].Text:SetFont(font or self.textfont, size or self.dbx.fontSize, flags or self.dbx.fontFlags)
 end
 
 local dummy = function (self)
@@ -287,6 +285,7 @@ local function Text_UpdateDB(self, dbx)
 	self.offsety = l.y
 	self.frameLevel = dbx.level
 	self.textlength= dbx.textlength or 16
+	self.textfont  = Grid2:MediaFetch("font", dbx.font or Grid2Frame.db.profile.font) or STANDARD_TEXT_FONT
 	self.Create = Text_Create
 	self.GetBlinkFrame = Text_GetBlinkFrame
 	self.Layout = Text_Layout

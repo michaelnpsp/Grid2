@@ -3,7 +3,6 @@ Created by Grid2 original authors, modified by Michael
 --]]
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
-local media = LibStub("LibSharedMedia-3.0", true)
 
 local raidTypesOptions= {}
 
@@ -147,6 +146,19 @@ local function MakeLayoutSettingsOptions()
 				  end,
 			hasAlpha = true
 		},
+		["borderTexture"] = {
+			type = "select", dialogControl = "LSM30_Border",
+			order = ORDER_DISPLAY + 7,
+			name = L["Border Texture"],
+			desc = L["Adjust the border texture."],
+			get = function (info) return Grid2Layout.db.profile.BorderTexture or "Grid2 Flat" end,
+			set = function (info, v)
+				Grid2Layout.db.profile.BorderTexture = v
+				Grid2Layout:UpdateTextures()
+				Grid2Layout:UpdateColor()
+			end,
+			values = AceGUIWidgetLSMlists.border,			
+		},
 		["AnchorHeader"] = {
 			type = "header",
 			order = ORDER_ANCHOR,
@@ -197,21 +209,6 @@ local function MakeLayoutSettingsOptions()
 			desc = L["Resets the layout frame's position and anchor."],
 			order = ORDER_ANCHOR + 4,
 			func = function () Grid2Layout:ResetPosition() end,
-		},
-		["borderTexture"] = {
-			type = "select",
-			order = ORDER_DISPLAY + 4,
-			name = L["Border Texture"],
-			desc = L["Adjust the border texture."],
-			get = function (info)
-				return Grid2Options:SearchTableValue( info.option.values,  Grid2Layout.db.profile.BorderTexture )
-			end,
-			set = function (info, v)
-				Grid2Layout.db.profile.BorderTexture= info.option.values[v]
-				Grid2Layout:UpdateTextures()
-				Grid2Layout:UpdateColor()
-			end,
-			values = media:List("border"),
 		},
 	}
 	return layoutOptions
