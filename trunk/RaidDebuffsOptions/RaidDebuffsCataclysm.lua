@@ -187,9 +187,13 @@ RDDB["Cataclysm"] = {
 		103687, -- Crush Armor
 		},
 		["Hagara the Stormbinder"] = {
-		104451, -- Ice Tomb
-		105259, -- Watery Entrenchment	
-		105289, -- Shattered Ice		
+		104451,  -- Ice Tomb
+		105285,  -- Target (next Ice Lance)
+		105316,  -- Ice Lance
+		105289,  -- Shattered Ice
+		105259,  -- Watery Entrenchment	
+		105465,  -- Lightning Storm
+		105369,  -- Lightning Conduit
 		},
 		["Warmaster Blackhorn"] = {
 		109204, -- Twilight Barrage
@@ -197,7 +201,6 @@ RDDB["Cataclysm"] = {
 		108043, -- Devastate
 		107567, -- Brutal strike
 		107558, -- Degeneration
-		-- 108045, -- Vengeance
 		},
 		["Ultraxion"] = {
 		110068, -- Fading light 
@@ -213,8 +216,6 @@ RDDB["Cataclysm"] = {
 		["Warlord Zon'ozz"] = {
 		103434, -- Disrupting shadows
 		110306, -- Black Blood of Go'rath
-		-- 104543, -- Focused anger
-		-- 106836, -- Void diffusion
 		},
 		["Spine of Deathwing"] = {
 		105563, -- Grasping Tendrils
