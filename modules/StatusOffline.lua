@@ -30,30 +30,50 @@ end
 
 function Offline:UNIT_CONNECTION(_, unit, hasConnected)
 	if not hasConnected then
-		offline[unit] = true
+		self:UnitDisconnected(unit)
 		self:UpdateIndicators(unit)
-		if not timer then
-			timer= Grid2:ScheduleRepeatingTimer(tevent, 1)
-		end	
 	end
+end
+
+function Offline:Grid_UnitJoined(_, unit)
+	if not UnitIsConnected(unit) then
+		self:UnitDisconnected(unit)
+	end
+end
+
+function Offline:Grid_UnitLeft(_, unit)
+	offline[unit] = nil
 end
 
 function Offline:OnEnable()
 	self:RegisterEvent("UNIT_CONNECTION")
+	self:RegisterMessage("Grid_UnitJoined")
+	self:RegisterMessage("Grid_UnitChanged", "Grid_UnitJoined")
+	self:RegisterMessage("Grid_UnitLeft")
 end
 
 function Offline:OnDisable()
 	self:UnregisterEvent("UNIT_CONNECTION")
+	self:UnregisterMessage("Grid_UnitChanged")
+	self:UnregisterMessage("Grid_UnitJoined")
+	self:UnregisterMessage("Grid_UnitLeft")
 	wipe(offline)
 end
 
+function Offline:UnitDisconnected(unit)
+	offline[unit] = true
+	if not timer then
+		timer= Grid2:ScheduleRepeatingTimer(tevent, 1)
+	end	
+end
+
 function Offline:IsActive(unit)
-	return not UnitIsConnected(unit)
+	return offline[unit]
 end
 
 function Offline:GetColor(unit)
-	local color = self.dbx.color1
-	return color.r, color.g, color.b, color.a
+	local c = self.dbx.color1
+	return c.r, c.g, c.b, c.a
 end
 
 function Offline:GetPercent(unit)
