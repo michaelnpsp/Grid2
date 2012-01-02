@@ -4,7 +4,12 @@ Created by Grid2 original authors, modified by Michael
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 
-function Grid2Options:MakeBlinkOptions(reset)
+function Grid2Options:MakeMiscOptions()
+	self:MakeBlinkOptions()
+	self:MakeBRFOptions()
+end
+
+function Grid2Options:MakeBlinkOptions()
 
 	local Grid2Blink = Grid2:GetModule("Grid2Blink")
 
@@ -45,4 +50,23 @@ function Grid2Options:MakeBlinkOptions(reset)
 		},
 	})
 	
+end
+
+function Grid2Options:MakeBRFOptions()
+
+	Grid2Options:AddModuleOptions( "Misc", "Blizzard Raid Frames", {
+		hideBlizzardRaidFrames = {
+			type = "toggle",
+			name = L["Hide Blizzard Raid Frames on Startup"],
+			desc = L["Hide Blizzard Raid Frames on Startup"],
+			width = "full",
+			order = 120,
+			get = function () return Grid2.db.profile.hideBlizzardRaidFrames end,
+			set = function (_, v)
+				Grid2.db.profile.hideBlizzardRaidFrames = v or nil
+				if v then Grid2:HideBlizzardRaidFrames() end
+			end,
+		},
+	})
+
 end

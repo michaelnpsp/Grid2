@@ -280,7 +280,7 @@ function Grid2Options:Initialize()
 
 	self:MakeFrameOptions()
 	self:MakeLayoutOptions()
-	self:MakeBlinkOptions()
+	self:MakeMiscOptions()
     self:MakeProfileOptions()
 	self:MakeDebugOptions()
 	self:MakeAboutOptions()

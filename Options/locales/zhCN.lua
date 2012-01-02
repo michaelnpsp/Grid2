@@ -92,6 +92,10 @@ L["Flash"] = "闪光"
 L["Blink Frequency"] = "闪烁频率"
 L["Adjust the frequency of the Blink effect."] = "调整闪烁效果频率。"
 
+-- misc
+-- L["Blizzard Raid Frames"] = ""
+-- L["Hide Blizzard Raid Frames on Startup"] = ""
+
 -- debugging & maintenance
 L["debugging"] = "除错"
 L["Module debugging menu."] = "除错模块菜单。"
@@ -374,6 +378,8 @@ L["Show on %s."] = "在%s上显示。"
 -- L["Buffs Group: Defensive Cooldowns"] = ""
 -- L["Debuffs Group: Healing Prevented "] = ""
 -- L["Debuffs Group: Healing Reduced"] = ""
+-- L["Filtered debuffs"] = ""
+-- L["Listed debuffs will be ignored."] = ""
 
 -- general statuses
 L["name"] = "name"
