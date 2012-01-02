@@ -92,6 +92,10 @@ L["Flash"] = true
 L["Blink Frequency"] = true
 L["Adjust the frequency of the Blink effect."] = true
 
+-- misc
+L["Blizzard Raid Frames"] = true
+L["Hide Blizzard Raid Frames on Startup"] = true
+
 -- debugging & maintenance
 L["debugging"] = true
 L["Module debugging menu."] = true
@@ -374,6 +378,8 @@ L["Debuffs Group"] = true
 L["Buffs Group: Defensive Cooldowns"] = true
 L["Debuffs Group: Healing Prevented "] = true
 L["Debuffs Group: Healing Reduced"] = true
+L["Filtered debuffs"] = true
+L["Listed debuffs will be ignored."] = true
 
 -- general statuses
 L["name"]= true

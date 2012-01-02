@@ -176,7 +176,13 @@ function CreateDebuffType(baseKey, dbx)
 	function status:GetIcon(unit)
 		return c[unit]
 	end
-
+	
+	function status:UpdateDB()
+		self.debuffFilter = self.dbx.debuffFilter
+	end
+	
+	status:UpdateDB()
+	
 	Grid2:RegisterStatus(status, { "color", "icon" }, baseKey, dbx)
 	return status
 end
@@ -433,13 +439,16 @@ do
 		while true do
 			local name, _, iconTexture, count, debuffType, duration, expirationTime, caster = UnitDebuff(unit, i)
 			if not name then break end
-			local status= DebuffHandlers[name]
+			local status = DebuffHandlers[name]
 			if status then
 				status:UpdateState(unit, iconTexture, count, duration, expirationTime, myUnits[caster])
 			end
 			i = i + 1
-			if debuffType and not types[debuffType] then
-				types[debuffType] = iconTexture
+			if debuffType and (not types[debuffType]) then
+				status = DebuffTypeStatus[debuffType]
+				if not (status and status.debuffFilter and status.debuffFilter[name]) then
+					types[debuffType] = iconTexture
+				end
 			end
 		end
 		-- scan Buffs

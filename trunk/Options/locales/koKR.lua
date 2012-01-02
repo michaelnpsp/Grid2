@@ -92,6 +92,10 @@ L["Flash"] = "반짝임"
 L["Blink Frequency"] = "깜박임 빈도"
 L["Adjust the frequency of the Blink effect."] = "깜박임 효과의 빈도를 조정합니다."
 
+-- misc
+-- L["Blizzard Raid Frames"] = ""
+-- L["Hide Blizzard Raid Frames on Startup"] = ""
+
 -- debugging & maintenance
 L["debugging"] = "디버깅"
 L["Module debugging menu."] = "모듈 디버깅 메뉴를 설정합니다."
@@ -374,6 +378,8 @@ L["Blink Threshold at which to start blinking the status."] = "상태를 깜박�
 -- L["Buffs Group: Defensive Cooldowns"] = ""
 -- L["Debuffs Group: Healing Prevented "] = ""
 -- L["Debuffs Group: Healing Reduced"] = ""
+-- L["Filtered debuffs"] = ""
+-- L["Listed debuffs will be ignored."] = ""
 
 -- general statuses
 L["name"] = "이름"

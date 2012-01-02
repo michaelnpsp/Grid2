@@ -251,10 +251,9 @@ do
 			units_updated[unit] = guid
 			units_changed[unit] = nil
 		end
-
-		--Grid2 uses this message internally to update indicators.
+		
 		for unit, guid in pairs(units_updated) do
-			self:SendMessage("Grid_UnitUpdate", unit, guid)
+			self:SendMessage("Grid_UnitUpdate", unit, guid) -- Used internally (by Grid2Frame) to update indicators.
 			units_updated[unit] = nil
 		end
 

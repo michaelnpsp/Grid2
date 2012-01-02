@@ -215,6 +215,15 @@ function Grid2:MediaFetch(mediatype, key, def)
 end
 --}}
 
+-- Misc functions
+
+function Grid2:HideBlizzardRaidFrames()
+	CompactRaidFrameManager:UnregisterAllEvents()
+	CompactRaidFrameManager:Hide()
+	CompactRaidFrameContainer:UnregisterAllEvents()
+	CompactRaidFrameContainer:Hide()
+end
+
 --{{{ Event handlers
 
 function Grid2:ProfileChanged()
@@ -233,6 +242,10 @@ function Grid2:PLAYER_ENTERING_WORLD()
 	-- this is needed to trigger an update when switching from one BG directly to another
 	groupType = nil
 	self:GroupChanged("PLAYER_ENTERING_WORLD")
+	--
+	if self.db.profile.hideBlizzardRaidFrames then
+		Grid2:HideBlizzardRaidFrames()
+	end
 end
 
 function Grid2:GroupChanged(event)

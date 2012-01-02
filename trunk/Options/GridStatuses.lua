@@ -1470,6 +1470,78 @@ function Grid2Options:MakeStatusStandardDebuffOptions(status, options, optionPar
 	return options, "debuff"
 end
 
+
+function Grid2Options:MakeStatusDebuffTypeOptions(status, options, optionParams)
+	options = options or {}
+	
+	if status.dbx.auras then
+		options = self:MakeStatusAuraListOptions(status, options, optionParams)
+	end	
+	options = self:MakeStatusColorOptions(status, options, optionParams)
+	options = self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
+	options = self:MakeStatusDebuffTypeFilterOptions(status, options, optionParams)
+
+	optionParams = optionParams or {}
+	optionParams.group = optionParams.group or "debuff"
+	-- Avoid deleting generic debuffs: Magic, Curse, etc.
+	if not status.debuffType then
+		options = self:MakeStatusDeleteOptions(status, options, optionParams)
+	end
+	--Add as a subtype.
+	return options, "debuff"
+end
+
+function Grid2Options:MakeStatusDebuffTypeFilterOptions(status, options, optionParams)
+	options= options or {}
+	options.debuffFilter = {
+		type = "input",
+		order = 50,
+		width = "full",
+		name = L["Filtered debuffs"],
+		desc = L["Listed debuffs will be ignored."],
+		multiline= status.dbx.debuffFilter and math.max(#status.dbx.debuffFilter,3) or 3,
+		get = function()
+				if status.dbx.debuffFilter then
+					local debuffs= {}
+					for name in next,status.dbx.debuffFilter do
+						debuffs[#debuffs+1] = name
+					end
+					return table.concat( debuffs, "\n" )
+				end
+		end,
+		set = function(_, v) 
+			local debuffs= { strsplit("\n,", v) }
+			if next(debuffs) then
+				if status.dbx.debuffFilter then
+					wipe(status.dbx.debuffFilter)
+				else
+					status.dbx.debuffFilter = {}
+				end
+				for _,debuff in pairs(debuffs) do
+					debuff = strtrim(debuff)
+					if #debuff>0 then
+						debuff = tonumber(debuff) and GetSpellInfo(debuff) or debuff
+						status.dbx.debuffFilter[debuff] = true
+					end
+				end
+			end
+			if not next(status.dbx.debuffFilter) then
+				status.dbx.debuffFilter = nil
+			end			
+			status:UpdateDB()
+			for unit, guid in Grid2:IterateRosterUnits() do
+				status:UpdateIndicators(unit)
+			end
+		end,
+	}
+	options.aurasSpacer= {
+		type = "header",
+		order = 2,
+		name = "",
+	}
+	return options
+end
+
 function Grid2Options:MakeStatusHealsIncomingOptions(status, options, optionParams)
 	options = options or {}
 
@@ -1660,7 +1732,7 @@ function Grid2Options:MakeStatusHandlers(reset)
 
 	self:AddOptionHandler("buff", self.MakeStatusStandardBuffOptions , { makeColorHandler= true } )
 	self:AddOptionHandler("debuff", self.MakeStatusStandardDebuffOptions, { makeColorHandler= true } )
-	self:AddOptionHandler("debuffType", self.MakeStatusStandardDebuffOptions)
+	self:AddOptionHandler("debuffType", self.MakeStatusDebuffTypeOptions)
 
 	self:AddOptionHandler("color", self.MakeStatusColorStatusOptions)
 	self:AddOptionHandler("classcolor", self.MakeStatusClassColorOptions)

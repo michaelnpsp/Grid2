@@ -92,6 +92,10 @@ L["Flash"] = "Flash"
 L["Blink Frequency"] = "Frecuencia de parpadeo"
 L["Adjust the frequency of the Blink effect."] = "Ajusta la frecuencia del efecto de parpadeo."
 
+-- misc
+-- L["Blizzard Raid Frames"] = ""
+-- L["Hide Blizzard Raid Frames on Startup"] = ""
+
 -- debugging & maintenance
 L["debugging"] = "debugging"
 L["Module debugging menu."] = "Module debugging Menu"
@@ -374,6 +378,8 @@ L["Debuffs Group"] = "Grupo de Debuffs"
 L["Buffs Group: Defensive Cooldowns"] = "Buffs: Cooldowns defensivos"
 L["Debuffs Group: Healing Prevented "] = "Debuffs: Impiden curacion"
 L["Debuffs Group: Healing Reduced"] = "Debuffs: Reducen curacion"
+-- L["Filtered debuffs"] = ""
+-- L["Listed debuffs will be ignored."] = ""
 
 -- general statuses
 L["name"] = "nombre jugador"

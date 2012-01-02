@@ -92,6 +92,10 @@ L["Flash"] = "Вспышка"
 L["Blink Frequency"] = "Частота мерцания"
 L["Adjust the frequency of the Blink effect."] = "Настройка частоты мерцания."
 
+-- misc
+-- L["Blizzard Raid Frames"] = ""
+-- L["Hide Blizzard Raid Frames on Startup"] = ""
+
 -- debugging & maintenance
 L["debugging"] = "Отлаживание"
 L["Module debugging menu."] = "Модуль отладки меню."
@@ -374,6 +378,8 @@ L["Debuff"] = "Дебафф"
 -- L["Buffs Group: Defensive Cooldowns"] = ""
 -- L["Debuffs Group: Healing Prevented "] = ""
 -- L["Debuffs Group: Healing Reduced"] = ""
+-- L["Filtered debuffs"] = ""
+-- L["Listed debuffs will be ignored."] = ""
 
 -- general statuses
 L["name"] = "название"
