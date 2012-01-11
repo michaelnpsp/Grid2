@@ -25,7 +25,7 @@ do
 		timetracker = CreateFrame("Frame", nil, Grid2LayoutFrame)
 		timetracker.tracked = {}
 		timetracker:SetScript("OnUpdate", function (self, elapsed)
-			elapsedTime= elapsedTime + elapsed
+			elapsedTime = elapsedTime + elapsed
 			if elapsedTime>=0.10 then
 				local time = GetTime()
 				for status in next, self.tracked do
@@ -40,7 +40,7 @@ do
 						end
 					end
 				end
-				elapsedTime= 0
+				elapsedTime = 0
 			end	
 		end)
 		AddTimeTracker = function (status)
@@ -306,6 +306,7 @@ end
 
 local function status_OnEnable(self)
 	EnableAuraFrame(true)
+	if self.thresholds then AddTimeTracker(self) end
 	if self.auraKeys then
 		local handlers= self.handlers
 		for _,auraKey in next,self.auraKeys do
@@ -337,6 +338,7 @@ local function status_UpdateDB(self)
 	local dbx = self.dbx
 	if dbx.missing then
 		local _, _, texture    = GetSpellInfo(auras and auras[1] or dbx.spellName )
+		self.thresholds        = nil
 		self.missingTexture    = texture or "Interface\\ICONS\\Achievement_General"
 		self.GetIcon           = status_GetIconMissing
 		self.GetExpirationTime = status_GetExpirationTimeMissing
@@ -348,12 +350,10 @@ local function status_UpdateDB(self)
 		self.GetExpirationTime = status_GetExpirationTime
 		self.GetCount          = status_GetCount
 		if dbx.blinkThreshold then
-			AddTimeTracker(self)
 			self.thresholds = { dbx.blinkThreshold }
 			self.IsActive   = status_IsActiveBlink
 			Grid2:MakeStatusColorHandler(self)
 		elseif dbx.colorThreshold then
-			AddTimeTracker(self)
 			self.colors     = {}
 			self.thresholds = dbx.colorThreshold
 			self.GetColor   = status_GetThresholdColor
@@ -362,7 +362,8 @@ local function status_UpdateDB(self)
 				self.colors[i] = dbx["color"..i]
 			end
 		else
-			self.IsActive = status_IsActive
+			self.thresholds = nil
+			self.IsActive   = status_IsActive
 			Grid2:MakeStatusColorHandler(self)			
 		end
 	end
@@ -401,12 +402,12 @@ local function CreateAuraCommon(baseKey, dbx, handlers, types)
 	status.GetCountMax = status_GetCountMax
 	status.GetDuration = status_GetDuration
 	status.GetPercent = status_GetPercent
-	status.OnEnable= status_OnEnable
-	status.OnDisable= status_OnDisable
+	status.OnEnable = status_OnEnable
+	status.OnDisable = status_OnDisable
 	status.UpdateDB = status_UpdateDB
 
 	Grid2:RegisterStatus(status, types, baseKey, dbx)
-
+	
 	status:UpdateDB()
 	
 	return status
@@ -463,7 +464,7 @@ do
 				status:UpdateState(unit, iconTexture, count, duration, expirationTime, isMine)
 			end
 			-- Search mine/notmine buff
-			status= BuffHandlers[name..(isMine and "+" or "-")]
+			status = BuffHandlers[name..(isMine and "+" or "-")]
 			if status then
 				status:UpdateState(unit, iconTexture, count, duration, expirationTime, isMine)
 			end

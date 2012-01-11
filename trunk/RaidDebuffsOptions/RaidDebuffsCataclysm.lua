@@ -201,6 +201,7 @@ RDDB["Cataclysm"] = {
 		108043, -- Devastate
 		107567, -- Brutal strike
 		107558, -- Degeneration
+		110214, -- Consuming Shroud
 		},
 		["Ultraxion"] = {
 		110068, -- Fading light 

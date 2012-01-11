@@ -300,11 +300,9 @@ RDDB["The Lich King"] = {
 		70107,--Permeating Chill
 		70106,--Chilled to the Bone
 		69766,--Instability
---		69762,--Unchained Magic
 		71665,--Asphyxiation
 		70126,--Frost Beacon
 		70157,--Ice Tomb
---		70127,72528,72529,72530,--Mystic Buffet
 		},
 		["Lich King"]= {
 		72133,--Pain and Suffering
@@ -312,7 +310,6 @@ RDDB["The Lich King"] = {
 		69242,--Soul Shriek
 		69409,--Soul Reaper
 		70541,--Infest
---		70337,70338,73785,73786,73787,73912,73913,73914,--Necrotic Plague
 		27177,--Defile
 		68980,--Harvest Soul
 		},
