@@ -80,7 +80,7 @@ function status:GetColor(unit)
 end
 
 function status:GetCount(unit)
-	return counts[unit] or 1
+	return counts[unit]
 end
 
 function status:GetDuration(unit)
@@ -94,41 +94,42 @@ end
 frame:SetScript("OnEvent", function (self, event, ...)
 	if event == "UNIT_AURA" then
 		local unit = ...
-		local spellOrder
 		local auraIndex
+		local auraCount  = 0
+		local spellOrder = 10000
 		local index = 1
 		while true do
-			local name = UnitDebuff(unit, index)
+			local name, _, _, count = UnitDebuff(unit, index)
 			if not name then break end
 			local order = spells[name]
-			if order and (not spellOrder or order < spellOrder) then
+			if order and ( order < spellOrder or ( order == spellOrder and count > auraCount ) ) then
+				auraCount = count
 				auraIndex = index
 				spellOrder = order
 			end
 			index = index + 1
 		end
 		if auraIndex then
-			local p_state = states[unit]
 			local p_texture = textures[unit]
 			local p_count = counts[unit]
 			local p_type = types[unit]
 			local p_duration = durations[unit]
 			local p_expiration = expirations[unit]
+			
+			local _, _, n_texture, _, n_type, n_duration, n_expiration = UnitDebuff(unit, auraIndex)
 
-			local n_state, n_texture, n_count, n_type, n_duration, n_expiration
-			n_state = true
-			_, _, n_texture, n_count, n_type, n_duration, n_expiration = UnitDebuff(unit, auraIndex)
-
-			if	p_state ~= n_state or
+			if auraCount==0 then auraCount = 1 end
+			
+			if	(not states[unit]) or 
+				p_count ~= auraCount or 
 				p_texture ~= n_texture or
-				p_count ~= n_count or
 				p_type ~= n_type or
-				p_duration ~= n_duration or
+				p_duration ~= n_duration or	
 				p_expiration ~= n_expiration
 			then
-				states[unit] = n_state
+				states[unit] = true
+				counts[unit] = auraCount
 				textures[unit] = n_texture
-				counts[unit] = n_count and n_count>0 and n_count or 1
 				types[unit] = n_type
 				durations[unit] = n_duration
 				expirations[unit] = n_expiration
