@@ -92,6 +92,15 @@ L["Flash"] = "Flash"
 L["Blink Frequency"] = "Frecuencia de parpadeo"
 L["Adjust the frequency of the Blink effect."] = "Ajusta la frecuencia del efecto de parpadeo."
 
+-- text formatting
+L["Text Formatting"] = "Formato textos"
+L["Duration Format"] = "Duracion"
+L["Examples:\n(%d)\n%d seconds"] = "Ejemplos:\n(%d)\n%d segundos"
+L["Duration+Stacks Format"] = "Duracion+Acumulaciones"
+L["Examples:\n%d/%s\n%s(%d)"] = "Ejemplos:\n%d/%s\n%s(%d)"
+L["Display tenths of a second"] = "Mostrar decimas de segundo"
+L["When duration<1sec"] = "Si duracion < 1 segundo"
+
 -- misc
 L["Blizzard Raid Frames"] = "Marcos de banda de Blizzard"
 L["Hide Blizzard Raid Frames on Startup"] = "Ocultar marcos de banda de Blizzard al inicio"
@@ -359,6 +368,8 @@ L["Select how many colors the status must provide."] = "Elige cuantos colores de
 L["You can include a descriptive prefix using separators \"@#>\""] = "Puede especificar un prefijo usando los separadores \"@#>\""
 L["examples: Druid@Regrowth Chimaeron>Low Health"] = "por ejemplo: Druida@Recrecimiento  Chimaeron>Vida baja"
 L["Threshold to activate Color"] = "Umbral para activar Color"
+L["Track by SpellId"] = "Seguimiento por SpellId"
+L["Track by spellId instead of aura name"] = "Seguimiento por identificador en lugar de por nombre"
 
 L["Coloring based on"] = "Colorear por"
 L["Number of stacks"] = "No. Acumulaciones"

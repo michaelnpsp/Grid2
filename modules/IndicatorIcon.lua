@@ -1,8 +1,8 @@
 --[[ Icon indicator, created by Grid2 original authors, modified by Michael ]]-- 
 
-local Grid2= Grid2
+local Grid2 = Grid2
 local GetTime = GetTime
-local fmt= string.format
+local fmt = string.format
 
 local function Icon_Create(self, parent)
 	local f = self:CreateFrame("Frame", parent)

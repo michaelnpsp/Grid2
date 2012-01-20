@@ -92,6 +92,15 @@ L["Flash"] = "반짝임"
 L["Blink Frequency"] = "깜박임 빈도"
 L["Adjust the frequency of the Blink effect."] = "깜박임 효과의 빈도를 조정합니다."
 
+-- text formatting
+-- L["Text Formatting"] = ""
+-- L["Duration Format"] = ""
+-- L["Examples:\n(%d)\n%d seconds"] = ""
+-- L["Duration+Stacks Format"] = ""
+-- L["Examples:\n%d/%s\n%s(%d)"] = ""
+-- L["Display tenths of a second"] = ""
+-- L["When duration<1sec"] = ""
+
 -- misc
 -- L["Blizzard Raid Frames"] = ""
 -- L["Hide Blizzard Raid Frames on Startup"] = ""
@@ -359,6 +368,8 @@ L["Display status only if the buff was cast by you."] = "당신이 버프를 시
 -- L["You can include a descriptive prefix using separators \"@#>\""] = ""
 -- L["examples: Druid@Regrowth Chimaeron>Low Health"] = ""
 -- L["Threshold to activate Color"] = ""
+-- L["Track by SpellId"] = ""
+-- L["Track by spellId instead of aura name"] = ""
 
 -- L["Coloring based on"] = ""
 -- L["Number of stacks"] = ""

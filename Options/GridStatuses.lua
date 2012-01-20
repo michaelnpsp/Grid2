@@ -1265,7 +1265,7 @@ function Grid2Options:MakeStatusAuraListOptions(status, options, optionParams)
 				end
 				return table.concat( auras, "\n" )
 		end,
-		set = function(_, v) 
+		set = function(_, v)
 			wipe(status.dbx.auras)
 			local auras= { strsplit("\n,", v) }
 			for _,v in pairs(auras) do
@@ -1340,6 +1340,30 @@ function Grid2Options:MakeStatusAuraMissingOptions(status, options, optionParams
 	}
 	return options
 end
+
+function Grid2Options:MakeStatusAuraUseSpellIdOptions(status, options, optionParams)
+	options = options or {}
+	if tonumber(status.dbx.spellName) then
+		options.useSpellIdHeader = { 
+			type = "header", 
+			order = 100, 
+			name = L["Misc"], 
+		}
+		options.useSpellId = {
+			type = "toggle",
+			name = L["Track by SpellId"], 
+			desc = string.format( "%s (%d) ", L["Track by spellId instead of aura name"], status.dbx.spellName ),
+			order = 105,
+			get = function () return status.dbx.useSpellId end,
+			set = function (_, v)
+				status.dbx.useSpellId = v or nil
+				status:UpdateDB()
+			end,
+		}
+	end	
+	return options
+end
+
 
 function Grid2Options:MakeStatusAuraCommonOptions(status, options, optionParams)
 	options = options or {}
@@ -1436,6 +1460,7 @@ function Grid2Options:MakeStatusStandardBuffOptions(status, options, optionParam
 	
     options = self:MakeStatusAuraCommonOptions(status, options, optionParams)	
 	options = self:MakeStatusAuraMissingOptions(status, options, optionParams)
+	options = self:MakeStatusAuraUseSpellIdOptions(status, options, optionParams)
 	options = self:MakeStatusColorOptions(status, options, optionParams)
 	options = self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
 	options = self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
@@ -1456,6 +1481,7 @@ function Grid2Options:MakeStatusStandardDebuffOptions(status, options, optionPar
 	if status.dbx.auras then
 		options = self:MakeStatusAuraListOptions(status, options, optionParams)
 	end	
+	options = self:MakeStatusAuraUseSpellIdOptions(status, options, optionParams)
 	options = self:MakeStatusColorOptions(status, options, optionParams)
 	options = self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
 	options = self:MakeStatusClassFilterOptions(status, options, optionParams)

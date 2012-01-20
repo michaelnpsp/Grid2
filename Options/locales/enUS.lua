@@ -92,6 +92,15 @@ L["Flash"] = true
 L["Blink Frequency"] = true
 L["Adjust the frequency of the Blink effect."] = true
 
+-- text formatting
+L["Text Formatting"] = true
+L["Duration Format"] = true
+L["Examples:\n(%d)\n%d seconds"] = true
+L["Duration+Stacks Format"] = true
+L["Examples:\n%d/%s\n%s(%d)"] = true
+L["Display tenths of a second"] = true
+L["When duration<1sec"] = true
+
 -- misc
 L["Blizzard Raid Frames"] = true
 L["Hide Blizzard Raid Frames on Startup"] = true
@@ -359,6 +368,8 @@ L["Select how many colors the status must provide."]= true
 L["You can include a descriptive prefix using separators \"@#>\""]= true
 L["examples: Druid@Regrowth Chimaeron>Low Health"]= true
 L["Threshold to activate Color"] = true
+L["Track by SpellId"] = true
+L["Track by spellId instead of aura name"] = true
 
 L["Coloring based on"] = true
 L["Number of stacks"] = true

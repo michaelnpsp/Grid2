@@ -145,8 +145,8 @@ function MakeDefaultsCommon()
 			colors[class] = { r = color.r, g = color.g, b = color.b, a = 1 }
 		end
 	end
-	Grid2:DbSetValue( "statuses",  "afk", {type = "afk",  color1= {r=1,g=0,b=0,a=1} } )
 	Grid2:DbSetValue( "statuses",  "classcolor", {type = "classcolor", colorHostile = true, colors = colors})
+	Grid2:DbSetValue( "statuses",  "afk", {type = "afk",  color1= {r=1,g=0,b=0,a=1} } )
 	Grid2:DbSetValue( "statuses",  "charmed", {type = "charmed", color1 = {r=1,g=.1,b=.1,a=1}})
 	Grid2:DbSetValue( "statuses",  "death", {type = "death", color1 = {r=1,g=1,b=1,a=1}})
 	Grid2:DbSetValue( "statuses",  "feign-death", {type = "feign-death", color1 = {r=1,g=.5,b=1,a=1}})
