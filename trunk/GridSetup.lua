@@ -5,12 +5,10 @@ Created by Grid2 original authors, modified by Michael
 local Grid2= Grid2
 
 function Grid2:SetupIndicators(setup)
-
     -- remove old indicators 
 	for _, indicator in Grid2:IterateIndicators() do
 		Grid2:UnregisterIndicator(indicator)        
 	end
-
 	-- add new indicator types
 	for baseKey, dbx in pairs(setup) do
 		local setupFunc = self.setupFunc[dbx.type]
@@ -24,12 +22,10 @@ function Grid2:SetupIndicators(setup)
 end
 
 function Grid2:SetupStatuses(setup)
-  
-	-- remove old statuses
+  	-- remove old statuses
 	for _, status in Grid2:IterateStatuses() do
 		Grid2:UnregisterStatus(status)
 	end
-
 	-- add new statuses
 	for baseKey, dbx in pairs(setup) do
 		local setupFunc = self.setupFunc[dbx.type]
@@ -59,9 +55,6 @@ function Grid2:SetupStatusMap(setup)
 		end
 	end
 end
---[[
-/dump Grid2.statuses["soulstone"]
---]]
 
 local handlerArray = {}
 function Grid2:MakeStatusColorHandler(status)
@@ -110,8 +103,3 @@ function Grid2:Setup()
    Grid2:SetupStatuses(config.statuses)
    Grid2:SetupStatusMap(config.statusMap)
 end
-
---[[
-/dump Grid2.statuses["death"]
-/dump Grid2.statuses["buff-ArcaneIntellect"]
---]]

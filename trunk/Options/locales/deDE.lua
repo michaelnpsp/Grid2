@@ -92,6 +92,15 @@ L["Flash"] = "Aufblinken"
 L["Blink Frequency"] = "Blink Frequenz"
 L["Adjust the frequency of the Blink effect."] = "Stellt die Frequenz des Blink Effekts ein"
 
+-- text formatting
+-- L["Text Formatting"] = ""
+-- L["Duration Format"] = ""
+-- L["Examples:\n(%d)\n%d seconds"] = ""
+-- L["Duration+Stacks Format"] = ""
+-- L["Examples:\n%d/%s\n%s(%d)"] = ""
+-- L["Display tenths of a second"] = ""
+-- L["When duration<1sec"] = ""
+
 -- misc
 -- L["Blizzard Raid Frames"] = ""
 -- L["Hide Blizzard Raid Frames on Startup"] = ""
@@ -359,6 +368,8 @@ L["Display status only if the buff was not cast by you."] = "Status nur anzeigen
 -- L["You can include a descriptive prefix using separators \"@#>\""] = ""
 L["examples: Druid@Regrowth Chimaeron>Low Health"] = "Beispiele: Druide@Nachwachsen Chimaeron>Wenig Gesundheit"
 -- L["Threshold to activate Color"] = ""
+-- L["Track by SpellId"] = ""
+-- L["Track by spellId instead of aura name"] = ""
 
 -- L["Coloring based on"] = ""
 -- L["Number of stacks"] = ""

@@ -200,6 +200,7 @@ Grid2Layout:AddLayout("By Group 15 w/Pets", {
 
 Grid2Layout:AddLayout("By Group 25", {
 	meta = {
+		raid40 = true,
 		raid25 = true,
 		raid10 = true,
 		pvp = true,

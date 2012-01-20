@@ -10,7 +10,9 @@ local UnitDebuff = UnitDebuff
 local abs = math.abs
 
 --{{ Local variables
-local StatusList, BuffHandlers, DebuffHandlers = {}, {}, {}
+local StatusList = {}
+local DebuffHandlers = {}
+local BuffHandlers = {}
 local statusTypesBuffs = { "color", "icon", "percent", "text" }
 local statusTypesDebuffs = { "color", "icon", "text" }
 --}}
@@ -288,6 +290,18 @@ local function status_UpdateState(self, unit, iconTexture, count, duration, expi
 	end
 end
 
+local function status_UpdateStateMine(self, unit, iconTexture, count, duration, expiration, isMine)
+	if isMine then
+		status_UpdateState(self, unit, iconTexture, count, duration, expiration)
+	end
+end
+
+local function status_UpdateStateNotMine(self, unit, iconTexture, count, duration, expiration, isMine)
+	if not IsMine then
+		status_UpdateState(self, unit, iconTexture, count, duration, expiration)
+	end
+end
+
 local function status_UpdateStateGroup(self, unit, iconTexture, count, duration, expiration)
 	local filtered = self.filtered
 	if filtered and filtered[unit] then return end
@@ -304,31 +318,77 @@ local function status_UpdateStateGroup(self, unit, iconTexture, count, duration,
 	end
 end
 
-local function status_OnEnable(self)
+local function status_UpdateStateGroupMine(self, unit, iconTexture, count, duration, expiration, isMine)
+	if isMine then
+		status_UpdateStateGroup(self, unit,iconTexture, count,duration,expiration)
+	end
+end
+
+local function status_UpdateStateGroupNotMine(self, unit, iconTexture, count, duration, expiration, isMine)
+	if not IsMine then
+		status_UpdateStateGroup(self, unit,iconTexture, count, duration, expiration)
+	end
+end
+
+local function RegisterStatusKey(self, spellName)
+	local key = type(spellName)=="number" and (not self.dbx.useSpellId) and GetSpellInfo(spellName) or spellName
+	self.keys[key] = true
+	return key
+end
+
+local tempList = {}
+local function GetSpellList(self)
+	local auras = self.dbx.auras
+	if not auras then
+		tempList[1] = self.dbx.spellName
+		return tempList
+	end
+	return auras
+end
+
+local function status_OnBuffEnable(self)
 	EnableAuraFrame(true)
 	if self.thresholds then AddTimeTracker(self) end
-	if self.auraKeys then
-		local handlers= self.handlers
-		for _,auraKey in next,self.auraKeys do
-			handlers[auraKey] = self
+	local auras = GetSpellList(self)
+	for _,spellName in next,auras do
+		local key      = RegisterStatusKey(self,spellName)
+		local statuses = BuffHandlers[key]
+		if not statuses then 
+			statuses = {};	BuffHandlers[key] = statuses
 		end
-	else
-		self.handlers[self.auraKey] = self
+		statuses[self] = true
 	end
 	StatusList[self]= true
 end
 
-local function status_OnDisable(self)
+local function status_OnBuffDisable(self)
 	EnableAuraFrame(false)
 	if RemoveTimeTracker then RemoveTimeTracker(self) end
-	if self.auraKeys then
-		local handlers= self.handlers
-		for _,auraKey in next,self.auraKeys do
-			handlers[auraKey] = nil
-		end
-	else
-		self.handlers[self.auraKey] = nil
-	end	
+	for key in next,self.keys do
+		BuffHandlers[key][self] = nil
+		if not next(BuffHandlers[key]) then	BuffHandlers[key] = nil	end
+	end
+	wipe(self.keys)
+	StatusList[self]= nil
+end
+
+local function status_OnDebuffEnable(self)
+	EnableAuraFrame(true)
+	if self.thresholds then AddTimeTracker(self) end
+	local auras = GetSpellList(self)
+	for _,spellName in next,auras do
+		DebuffHandlers[ RegisterStatusKey( self, spellName ) ] = self
+	end
+	StatusList[self]= true
+end
+
+local function status_OnDebuffDisable(self)
+	EnableAuraFrame(false)
+	if RemoveTimeTracker then RemoveTimeTracker(self) end
+	for key in next,self.keys do
+		DebuffHandlers[key][self] = nil
+	end
+	wipe(self.keys)
 	StatusList[self]= nil
 end
 
@@ -367,30 +427,25 @@ local function status_UpdateDB(self)
 			Grid2:MakeStatusColorHandler(self)			
 		end
 	end
-	local auras  = dbx.auras
-	local mine   = dbx.mine
-	local suffix = (mine==2 and "-") or (mine and "+") or ""
-	if auras then  
-		local auraKeys= {}
-		for index, spellName in next,auras do
-			auraKeys[index]= (type(spellName)=="number" and GetSpellInfo(spellName) or spellName) .. suffix
-		end
-		self.auraKeys = auraKeys
-		self.UpdateState = status_UpdateStateGroup
+	if dbx.auras then  
+		self.UpdateState =  (dbx.mine==2 and status_UpdateStateGroupNotMine) or
+							(dbx.mine    and status_UpdateStateGroupMine) or
+							 status_UpdateStateGroup
+		
 	else
-		local spellName = dbx.spellName
-		self.auraKey = (type(spellName)=="number" and GetSpellInfo(spellName) or spellName) .. suffix
-		self.UpdateState = status_UpdateState
+		self.UpdateState =  (dbx.mine==2 and status_UpdateStateNotMine) or
+							(dbx.mine    and status_UpdateStateMine) or
+							 status_UpdateState
 	end
 	if self.enabled then self:OnEnable() end
 end
 --}}
 
 --{{ Aura creation functions
-local function CreateAuraCommon(baseKey, dbx, handlers, types)
+local function CreateAuraCommon(baseKey, dbx, types)
 	local status = Grid2.statusPrototype:new(baseKey, false)
 
-	status.handlers = handlers
+	status.keys = {}
 	status.states = {}
 	status.textures = {}
 	status.counts = {}
@@ -398,13 +453,13 @@ local function CreateAuraCommon(baseKey, dbx, handlers, types)
 	status.durations = {}
 	status.tracker = {}
 	
-	status.Reset = status_Reset
+	status.UpdateDB    = status_UpdateDB
+	status.Reset       = status_Reset
 	status.GetCountMax = status_GetCountMax
 	status.GetDuration = status_GetDuration
-	status.GetPercent = status_GetPercent
-	status.OnEnable = status_OnEnable
-	status.OnDisable = status_OnDisable
-	status.UpdateDB = status_UpdateDB
+	status.GetPercent  = status_GetPercent
+	status.OnEnable    = dbx.type=="buff" and status_OnBuffEnable  or status_OnDebuffEnable
+	status.OnDisable   = dbx.type=="buff" and status_OnBuffDisable or status_OnDebuffDisable
 
 	Grid2:RegisterStatus(status, types, baseKey, dbx)
 	
@@ -414,11 +469,11 @@ local function CreateAuraCommon(baseKey, dbx, handlers, types)
 end
 
 function Grid2.CreateBuff(baseKey, dbx, statusTypesOverride)
-	return CreateAuraCommon(baseKey, dbx, BuffHandlers, statusTypesOverride or statusTypesBuffs)
+	return CreateAuraCommon(baseKey, dbx, statusTypesOverride or statusTypesBuffs)
 end
 
 function Grid2.CreateDebuff(baseKey, dbx, statusTypesOverride)
-	return CreateAuraCommon( baseKey, dbx, DebuffHandlers, statusTypesOverride or statusTypesDebuffs)
+	return CreateAuraCommon( baseKey, dbx, statusTypesOverride or statusTypesDebuffs)
 end
 --}}
 
@@ -437,10 +492,10 @@ do
 		if not next(frames) then return end
 		-- scan Debuffs and find the available debuff types
 		local i = 1
-		while true do
-			local name, _, iconTexture, count, debuffType, duration, expirationTime, caster = UnitDebuff(unit, i)
+		while true do 
+			local name, _, iconTexture, count, debuffType, duration, expirationTime, caster, _, _, spellId = UnitDebuff(unit, i)
 			if not name then break end
-			local status = DebuffHandlers[name]
+			local status = DebuffHandlers[name] or DebuffHandlers[spellId]
 			if status then
 				status:UpdateState(unit, iconTexture, count, duration, expirationTime, myUnits[caster])
 			end
@@ -455,18 +510,14 @@ do
 		-- scan Buffs
 		i = 1
 		while true do
-			local name, _, iconTexture, count, _, duration, expirationTime, caster = UnitBuff(unit, i)
+			local name, _, iconTexture, count, _, duration, expirationTime, caster, _, _, spellId = UnitBuff(unit, i)
 			if not name then break end
-			local isMine = myUnits[caster]
-			-- Search standard buff 
-			local status = BuffHandlers[name]
-			if status then
-				status:UpdateState(unit, iconTexture, count, duration, expirationTime, isMine)
-			end
-			-- Search mine/notmine buff
-			status = BuffHandlers[name..(isMine and "+" or "-")]
-			if status then
-				status:UpdateState(unit, iconTexture, count, duration, expirationTime, isMine)
+			local statuses = BuffHandlers[name] or BuffHandlers[spellId]
+			if statuses then
+				local isMine = myUnits[caster]
+				for status in next, statuses do
+					status:UpdateState(unit, iconTexture, count, duration, expirationTime, isMine)
+				end
 			end
 			i = i + 1
 		end
@@ -485,13 +536,13 @@ do
 			types[type] = nil
 		end
 		for status in next, StatusList do
-			local seen= status.seen
+			local seen = status.seen
 			if (seen==1) or ((not seen) and status.states[unit] and status:Reset(unit)) then
 				for indicator in next, status.indicators do
 					indicators[indicator] = true
 				end
 			end	
-			status.seen= false
+			status.seen = false
 		end
 		-- Update indicators that needs updating only once.
 		for indicator in next, indicators do
