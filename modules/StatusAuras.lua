@@ -22,40 +22,37 @@ local AddTimeTracker, RemoveTimeTracker
 do
 	local next = next
 	local timetracker
-	local elapsedTime= 0
+	local tracked 
 	AddTimeTracker = function (status)
-		timetracker = CreateFrame("Frame", nil, Grid2LayoutFrame)
-		timetracker.tracked = {}
-		timetracker:SetScript("OnUpdate", function (self, elapsed)
-			elapsedTime = elapsedTime + elapsed
-			if elapsedTime>=0.10 then
-				local time = GetTime()
-				for status in next, self.tracked do
-					local tracker    = status.tracker
-					local thresholds = status.thresholds
-					for unit, expiration in next, status.expirations do
-						local timeLeft  = expiration - time
-						local threshold = thresholds[ tracker[unit] ]
-						if threshold and timeLeft <= threshold then
-							tracker[unit] = tracker[unit] + 1
-							status:UpdateIndicators(unit)
-						end
+		tracked = {}
+		timetracker = CreateFrame("Frame", nil, Grid2LayoutFrame):CreateAnimationGroup()
+		timetracker:SetScript("OnFinished", function (self)
+			local time = GetTime()
+			for status in next, tracked do
+				local tracker    = status.tracker
+				local thresholds = status.thresholds
+				for unit, expiration in next, status.expirations do
+					local timeLeft  = expiration - time
+					local threshold = thresholds[ tracker[unit] ]
+					if threshold and timeLeft <= threshold then
+						tracker[unit] = tracker[unit] + 1
+						status:UpdateIndicators(unit)
 					end
 				end
-				elapsedTime = 0
-			end	
+			end
+			self:Play()
 		end)
+		local timer = timetracker:CreateAnimation()
+		timer:SetOrder(1); timer:SetDuration(0.10) 
 		AddTimeTracker = function (status)
-			timetracker.tracked[status] = true
-			timetracker:Show()
+			if not next(tracked) then timetracker:Play() end
+			tracked[status] = true
 		end
 		RemoveTimeTracker = function (status)
-			timetracker.tracked[status] = nil
-			if not next(timetracker.tracked) then
-				timetracker:Hide()
-			end
+			tracked[status] = nil
+			if not next(tracked) then timetracker:Stop() end
 		end
-		return AddTimeTracker(status, value)
+		return AddTimeTracker(status)
 	end
 end
 --}}

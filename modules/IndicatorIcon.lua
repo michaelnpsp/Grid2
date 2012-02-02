@@ -19,12 +19,12 @@ local function Icon_Create(self, parent)
 	Icon:SetTexCoord(0.05, 0.95, 0.05, 0.95)
 	Icon:SetAllPoints()
 	if not Icon:IsShown() then Icon:Show() end
-
+	
 	if not self.disableCooldown then
 		local Cooldown
 		if self.dbx.disableOmniCC then
 			Cooldown = f.Cooldown or CreateFrame("Cooldown", nil, f, "CooldownFrameTemplate")
-			Cooldown.noCooldownCount= true 
+			Cooldown.noCooldownCount = true 
 		else
 			local name= self.name:gsub("%-","")
 			local i,j = parent:GetName():match("Grid2LayoutHeader(%d+)UnitButton(%d+)")
@@ -130,13 +130,14 @@ local function Icon_Layout(self, parent)
 		local CooldownText = f.CooldownText
 		local justifyH = self.dbx.fontJustifyH or "CENTER"
 		local justifyV = self.dbx.fontJustifyV or "MIDDLE"
+		CooldownText:SetParent( self.disableCooldown and f or f.Cooldown )
 		CooldownText:SetJustifyH( justifyH )
 		CooldownText:SetJustifyV( justifyV  )
 		CooldownText:ClearAllPoints()
-		CooldownText:SetPoint("TOP"   , f, "TOP")
-		CooldownText:SetPoint("BOTTOM", f, "BOTTOM")
-		CooldownText:SetPoint("LEFT"  , f, "LEFT" , justifyH=="LEFT"  and 0 or -size, 0)
-		CooldownText:SetPoint("RIGHT" , f, "RIGHT", justifyH=="RIGHT" and 0 or  size, 0)
+		CooldownText:SetPoint("TOP")
+		CooldownText:SetPoint("BOTTOM")
+		CooldownText:SetPoint("LEFT" , justifyH=="LEFT"  and 0 or -size, 0)
+		CooldownText:SetPoint("RIGHT", justifyH=="RIGHT" and 0 or  size, 0)
 	end
 end
 
