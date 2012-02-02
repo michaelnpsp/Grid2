@@ -4,6 +4,7 @@ Created by Grid2 original authors, modified by Michael
 
 local GetTime= GetTime
 local UnitDebuff = UnitDebuff
+local GetSpellInfo = GetSpellInfo
 local ipairs = ipairs
 
 local BZ = LibStub("LibBabble-Zone-3.0"):GetReverseLookupTable()
@@ -20,12 +21,10 @@ function GSRD:UpdateZoneSpells(zone)
 	local db = status.dbx.debuffs[BZ[zone] or zone]
 	if db then
 		for _, spellId in ipairs(db) do
-			local name = GetSpellInfo(spellId)
-			if name then
-				if not spells[name] then
-					spells[name] = spell_order
-					spell_order = spell_order + 1
-				end
+			local name = spellId<0 and -spellId or GetSpellInfo(spellId)
+			if name and (not spells[name]) then
+				spells[name] = spell_order
+				spell_order = spell_order + 1
 			end
 		end
 	end
@@ -99,9 +98,9 @@ frame:SetScript("OnEvent", function (self, event, ...)
 		local spellOrder = 10000
 		local index = 1
 		while true do
-			local name, _, _, count = UnitDebuff(unit, index)
+			local name, _, _, count, _, _, _, _, _, _, spellId = UnitDebuff(unit, index)
 			if not name then break end
-			local order = spells[name]
+			local order = spells[name] or spells[spellId]
 			if order and ( order < spellOrder or ( order == spellOrder and count > auraCount ) ) then
 				auraCount = count
 				auraIndex = index

@@ -1,5 +1,7 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 
+local Grid2 = Grid2
+
 local FriendColor = Grid2.statusPrototype:new("friendcolor")
 
 function FriendColor:UpdateUnit(_, unit)

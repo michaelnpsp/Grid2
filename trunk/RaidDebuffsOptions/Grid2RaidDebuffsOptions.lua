@@ -31,9 +31,6 @@ local ICON_SKULL= "Interface\\TargetingFrame\\UI-TargetingFrame-Skull"
 local ICON_CHECKED = READY_CHECK_READY_TEXTURE
 local ICON_UNCHECKED = READY_CHECK_NOT_READY_TEXTURE
 
--- Debuffs modules call this function to retrieve debuffs table
--- Not very clean but RaidDebuffsOptions dont provide any global 
--- object to put this method. 
 function Grid2Options:GetRaidDebuffsTable()
 	return RDDB
 end
@@ -104,7 +101,7 @@ local function GetInstances(module)
 	return values
 end
 
-local function SetEnableDebuff(status,instance, spellId, value)
+local function SetEnableDebuff(status,instance, spellId, value, idTracking)
 	local dbx= status.dbx
 	if value then
 		if not dbx.debuffs then 
@@ -114,18 +111,23 @@ local function SetEnableDebuff(status,instance, spellId, value)
 			dbx.debuffs[instance]= {}
 		end
 		local debuffs= dbx.debuffs[instance]
-		debuffs[#debuffs+1]= spellId
 		selectedDebuffs[spellId]= true
+		if idTracking then
+			selectedDebuffs[-spellId]= true
+			debuffs[#debuffs+1]= -spellId
+		else
+			debuffs[#debuffs+1]= spellId
+		end
 	else
 		local debuffs= dbx.debuffs and dbx.debuffs[instance]
 		if debuffs then
-			for i=1,#debuffs do
-				if debuffs[i]==spellId then
+			for i=#debuffs,1,-1 do
+				if debuffs[i]==spellId or debuffs[i]==-spellId then
 					table.remove(debuffs,i)
-					break
 				end
 			end
 			selectedDebuffs[spellId]= nil
+			selectedDebuffs[-spellId]= nil
 		end	
 	end
 	UpdateZoneSpells()
@@ -178,7 +180,7 @@ end
 local function RefreshDebuffsOptions()
 	local items= optionDebuffs.args
 	for key,value in pairs(items) do
-		local spellId=tonumber(key)
+		local spellId = tonumber(key)
 		if spellId then
 			items[key].name= FormatDebuffName(value.nameBackup,spellId)
 		end
@@ -245,7 +247,7 @@ end
 
 local function CreateRaidDebuff(status,boss)
 	local spellId= newSpellId
-	local spellName= GetSpellInfo(spellId)
+	local spellName= GetSpellInfo(newSpellId)
 	if spellId and spellName then
 		local dbx= GSRD.db.profile
 		if not dbx.debuffs then	dbx.debuffs= {}	end
@@ -326,11 +328,28 @@ local function MakeDebuffOptions(status,bossName,spellId,spellName,spellIcon, is
 			order= 140,
 			name="",
 		},
+		idTracking={
+			type="toggle",
+			order = 145,
+			width = "full",
+			name = fmt( "%s ( %d )", L["Track by SpellId"], spellId ),
+			desc = L["Track by spellId instead of aura name"],
+			get = function() return selectedDebuffs[-spellId] end,
+			set = function(_, v)
+				SetEnableDebuff(status, selectedInstance, spellId, false)
+				SetEnableDebuff(status, selectedInstance, spellId, true, v)
+			end,
+			disabled = function() return not selectedDebuffs[spellId] end,
+		},					
+		header4={
+			type= "header",
+			order= 147,
+			name="",
+		},
 		createDebuff= {
 			type = "execute",
 			order = 150,
 			name = L["Copy to Debuffs"],
-			desc = fmt("[%d]",spellId),
 			func = function() CreateStandardDebuff(bossName,spellId,spellName) end,
 			disabled = false,
 		}
@@ -340,7 +359,6 @@ local function MakeDebuffOptions(status,bossName,spellId,spellName,spellIcon, is
 			type = "execute",
 			order = 155,
 			name = L["Delete raid debuff"],
-			desc = fmt("[%d]",spellId),
 			func = function() DeleteRaidDebuff(status,spellId) end,
 			disabled = false,
 		}
@@ -350,7 +368,7 @@ end
 
 function MakeDebuffGroup(status, bossName, spellId, order, isCustom)
 	local spellName,_, spellIcon = GetSpellInfo(spellId)
-	return {	
+	return {
 		type= "group",
 		name= FormatDebuffName(spellName,spellId),
 		nameBackup= spellName,
@@ -366,7 +384,12 @@ function MakeDebuffsOptions(status)
 	selectedDebuffs= {}
 	local dbx= status.dbx.debuffs[instance] or {}
 	for index,value in ipairs(dbx) do
-		selectedDebuffs[value]= true
+		if value>0 then
+			selectedDebuffs[value]= true
+		else
+			selectedDebuffs[ value]= true
+			selectedDebuffs[-value]= true
+		end
 	end
 	--
 	local dbx= GSRD.db.profile.debuffs and GSRD.db.profile.debuffs[selectedInstance]

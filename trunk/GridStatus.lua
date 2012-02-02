@@ -1,6 +1,8 @@
 --[[ Created by Grid2 original authors, modified by Michael ]]--
 
-local pairs, next= pairs, next
+local Grid2 = Grid2
+local next = next
+local pairs = pairs
 
 -- status prototype (statuses will override this methods to provide custom values)
 

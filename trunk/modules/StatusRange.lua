@@ -38,7 +38,7 @@ end
 
 -- Roster ranges update function
 
-local function Update()
+local function Update(self)
 	for unit, guid in Grid2:IterateRosterUnits() do
 		local value = UnitIsInRange(unit) and 1 or false
 		if value ~= cache[unit] then
@@ -46,37 +46,25 @@ local function Update()
 			Range:UpdateIndicators(unit)
 		end
 	end
-end
-
--- Frame OnUpdate Timer event
-
-local updateRate
-local updateTime
-local function OnUpdate(self, elapsed)
-	updateTime= updateTime - elapsed
-	if updateTime<0 then
-		updateTime = updateRate
-		Update()
-	end
+	self:Play()
 end
 
 -- Range status 
 
 function Range:OnEnable()
+	self:CreateTimer()
 	self:UpdateDB()
 	self:RegisterMessage("Grid_UnitJoined")
 	self:RegisterMessage("Grid_UnitChanged", "Grid_UnitJoined")
 	self:RegisterMessage("Grid_UnitLeft")
-	self:GetFrame():Show()
+	self.timer:Play()
 end
 
 function Range:OnDisable()
-	if self.frame then
-		self.frame:Hide()
-	end
 	self:UnregisterMessage("Grid_UnitChanged")
 	self:UnregisterMessage("Grid_UnitJoined")
 	self:UnregisterMessage("Grid_UnitLeft")
+	self.timer:Stop() 
 end
 
 function Range:Grid_UnitJoined(_, unit)
@@ -87,20 +75,22 @@ function Range:Grid_UnitLeft(_, unit)
 	cache[unit] = nil
 end
 
-function Range:GetFrame()
-	local f = CreateFrame("Frame", nil, Grid2LayoutFrame)
-	updateTime = updateRate
-	f:SetScript("OnUpdate", OnUpdate)
-	self.frame = f
-	self.GetFrame = function (self) return self.frame end
-	return f
+function Range:CreateTimer()
+	local timer = CreateFrame("Frame", nil, Grid2LayoutFrame):CreateAnimationGroup()
+	timer.animation = timer:CreateAnimation()
+	timer.animation:SetOrder(1)
+	timer:SetScript("OnFinished", Update)
+	self.timer  = timer
+	self.CreateTimer = function() end
 end
 
 function Range:UpdateDB()
 	UnitNoDeadInRange = Ranges[tostring(self.dbx.range) or "38"] or Ranges["38"]
 	UnitIsInRange     = rezSpell and UnitDeadInRange or UnitNoDeadInRange
 	self.defaultAlpha = self.dbx.default or 0.25
-	updateRate        = self.dbx.elapsed or 0.25
+	if self.timer then 
+		self.timer.animation:SetDuration(self.dbx.elapsed or 0.25) 
+	end
 end
 
 function Range:IsActive(unit)
@@ -117,7 +107,6 @@ end
 
 local function Create(baseKey, dbx)
 	Grid2:RegisterStatus(Range, {"percent"}, baseKey, dbx)
-
 	return Range
 end
 
