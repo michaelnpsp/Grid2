@@ -17,6 +17,26 @@ local statusTypesBuffs = { "color", "icon", "percent", "text" }
 local statusTypesDebuffs = { "color", "icon", "text" }
 --}}
 
+--{{  Misc functions
+local handlerArray = {}
+local function MakeStatusColorHandler(status)
+	local dbx = status.dbx
+	local colorCount = dbx.colorCount or 1
+	handlerArray[1] = "return function (self, unit)"
+	if colorCount > 1 then
+		handlerArray[#handlerArray+1] = " local count = self:GetCount(unit)"
+		for i = 1, colorCount - 1 do
+			local color = dbx["color" .. i]
+			handlerArray[#handlerArray+1] = (" if count == %d then return %s, %s, %s, %s end"):format(i, color.r, color.g, color.b, color.a)
+		end
+	end
+	color = dbx["color" .. colorCount]
+	handlerArray[#handlerArray+1] = (" return %s, %s, %s, %s end"):format(color.r, color.g, color.b, color.a)
+	status.GetColor = assert(loadstring(table.concat(handlerArray)))()
+	wipe(handlerArray)
+end
+--}}
+
 --{{ Timer to refresh auras remaining time 
 local AddTimeTracker, RemoveTimeTracker
 do
@@ -99,8 +119,7 @@ do
 		AuraFrame_OnEvent(nil,nil,unit)  -- Not related to class filter, update auras of new units in raid
 	end
 
-	Grid2.RegisterMessage(filter_mt, "Grid_UnitJoined", status_ClearFilterUnit)
-	Grid2.RegisterMessage(filter_mt, "Grid_UnitChanged", status_ClearFilterUnit)
+	Grid2.RegisterMessage(filter_mt, "Grid_UnitUpdated", status_ClearFilterUnit)
 end
 --}}
 
@@ -401,7 +420,7 @@ local function status_UpdateDB(self)
 		self.GetExpirationTime = status_GetExpirationTimeMissing
 		self.GetCount          = status_GetCountMissing
 		self.IsActive          = dbx.blinkThreshold and status_IsInactiveBlink or status_IsInactive
-		Grid2:MakeStatusColorHandler(self)		
+		MakeStatusColorHandler(self)		
 	else
 		self.GetIcon           = status_GetIcon
 		self.GetExpirationTime = status_GetExpirationTime
@@ -409,7 +428,7 @@ local function status_UpdateDB(self)
 		if dbx.blinkThreshold then
 			self.thresholds = { dbx.blinkThreshold }
 			self.IsActive   = status_IsActiveBlink
-			Grid2:MakeStatusColorHandler(self)
+			MakeStatusColorHandler(self)
 		elseif dbx.colorThreshold then
 			self.colors     = {}
 			self.thresholds = dbx.colorThreshold
@@ -421,7 +440,7 @@ local function status_UpdateDB(self)
 		else
 			self.thresholds = nil
 			self.IsActive   = status_IsActive
-			Grid2:MakeStatusColorHandler(self)			
+			MakeStatusColorHandler(self)			
 		end
 	end
 	if dbx.auras then  
@@ -558,8 +577,15 @@ do
 end
 --}}
 
---{{ Registering statuses constructors
+--{{ 
 Grid2.setupFunc["debuffType"] = CreateDebuffType
 Grid2.setupFunc["buff"]       = Grid2.CreateBuff
 Grid2.setupFunc["debuff"]     = Grid2.CreateDebuff
+--}}
+
+--{{ 
+Grid2:DbSetStatusDefaultValue( "debuff-Magic", {type = "debuffType", subType = "Magic", color1 = {r=.2,g=.6,b=1,a=1}})
+Grid2:DbSetStatusDefaultValue( "debuff-Poison", {type = "debuffType", subType = "Poison", color1 = {r=0,g=.6,b=0,a=1}})
+Grid2:DbSetStatusDefaultValue( "debuff-Curse", {type = "debuffType", subType = "Curse", color1 = {r=.6,g=0,b=1,a=1}})
+Grid2:DbSetStatusDefaultValue( "debuff-Disease", {type = "debuffType", subType = "Disease", color1 = {r=.6,g=.4,b=0,a=1}})
 --}}

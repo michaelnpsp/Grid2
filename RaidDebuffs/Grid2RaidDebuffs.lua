@@ -2,10 +2,11 @@
 Created by Grid2 original authors, modified by Michael
 --]]
 
-local GetTime= GetTime
+local Grid2 = Grid2
+local GetTime = GetTime
 local UnitDebuff = UnitDebuff
 local GetSpellInfo = GetSpellInfo
-local ipairs = ipairs
+local next, ipairs = next, ipairs
 
 local BZ = LibStub("LibBabble-Zone-3.0"):GetReverseLookupTable()
 local GSRD = Grid2:NewModule("Grid2RaidDebuffs")
@@ -74,7 +75,7 @@ function status:GetIcon(unit)
 end
 
 function status:GetColor(unit)
-	local c= self.dbx.color1
+	local c = self.dbx.color1
 	return c.r, c.g, c.b, c.a
 end
 
@@ -90,47 +91,37 @@ function status:GetExpirationTime(unit)
 	return expirations[unit] or (GetTime()+9999)
 end
 
-frame:SetScript("OnEvent", function (self, event, ...)
+frame:SetScript("OnEvent", function (self, event, unit)
 	if event == "UNIT_AURA" then
-		local unit = ...
-		local auraIndex
-		local auraCount  = 0
-		local spellOrder = 10000
-		local index = 1
+		local index, n_order, n_count, n_texture, n_type, n_duration, n_expiration = 1, 10000, 0
 		while true do
-			local name, _, _, count, _, _, _, _, _, _, spellId = UnitDebuff(unit, index)
+			local name, _, te, count, ty, du, ex, _, _, _, id = UnitDebuff(unit, index)
 			if not name then break end
-			local order = spells[name] or spells[spellId]
-			if order and ( order < spellOrder or ( order == spellOrder and count > auraCount ) ) then
-				auraCount = count
-				auraIndex = index
-				spellOrder = order
+			local order = spells[name] or spells[id]
+			if order and ( order < n_order or ( order == n_order and count > n_count ) ) then
+				n_order      = order
+				n_count      = count
+				n_texture    = te
+				n_type       = ty
+				n_duration   = du
+				n_expiration = ex
 			end
 			index = index + 1
 		end
-		if auraIndex then
-			local p_texture = textures[unit]
-			local p_count = counts[unit]
-			local p_type = types[unit]
-			local p_duration = durations[unit]
-			local p_expiration = expirations[unit]
-			
-			local _, _, n_texture, _, n_type, n_duration, n_expiration = UnitDebuff(unit, auraIndex)
-
-			if auraCount==0 then auraCount = 1 end
-			
-			if	(not states[unit]) or 
-				p_count ~= auraCount or 
-				p_texture ~= n_texture or
-				p_type ~= n_type or
-				p_duration ~= n_duration or	
-				p_expiration ~= n_expiration
+		if n_texture then
+			if n_count==0 then n_count = 1 end
+			if	true         ~= states[unit]    or 
+				n_count      ~= counts[unit]    or 
+				n_type       ~= types[unit]     or
+				n_texture    ~= textures[unit]  or
+				n_duration   ~= durations[unit] or	
+				n_expiration ~= expirations[unit]
 			then
-				states[unit] = true
-				counts[unit] = auraCount
-				textures[unit] = n_texture
-				types[unit] = n_type
-				durations[unit] = n_duration
+				states[unit]      = true
+				counts[unit]      = n_count
+				textures[unit]    = n_texture
+				types[unit]       = n_type
+				durations[unit]   = n_duration
 				expirations[unit] = n_expiration
 				status:UpdateIndicators(unit)
 			end
@@ -153,6 +144,8 @@ end
 
 Grid2.setupFunc["raid-debuffs"] = Create
 
+Grid2:DbSetStatusDefaultValue( "raid-debuffs", {type = "raid-debuffs", color1 = {r=1,g=.5,b=1,a=1}} )
+
 -- Hook to load Grid2RaidDebuffOptions module
 local prev_LoadOptions = Grid2.LoadOptions
 function Grid2:LoadOptions()
@@ -164,11 +157,10 @@ end
 local prev_UpdateDefaults= Grid2.UpdateDefaults
 function Grid2:UpdateDefaults()
 	prev_UpdateDefaults(self)
-	
-	local version= Grid2:DbGetValue("versions", "Grid2RaidDebuffs")
-	if not version then 
-	    Grid2:DbSetValue("statuses","raid-debuffs", {type = "raid-debuffs", color1 = {r=1,g=.5,b=1,a=1}} )
+	if not Grid2:DbGetValue("versions", "Grid2RaidDebuffs") then 
 		Grid2:DbSetMap( "icon-center", "raid-debuffs", 155)
 		Grid2:DbSetValue("versions","Grid2RaidDebuffs",1)
 	end	
 end
+
+ 

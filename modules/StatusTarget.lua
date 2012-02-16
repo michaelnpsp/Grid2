@@ -53,3 +53,5 @@ local function Create(baseKey, dbx)
 end
 
 Grid2.setupFunc["target"] = Create
+
+Grid2:DbSetStatusDefaultValue( "target", {type = "target", color1 = {r=.8,g=.8,b=.8,a=.75}})

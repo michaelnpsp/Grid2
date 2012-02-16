@@ -60,13 +60,11 @@ function ReadyCheck:ClearStatus()
 	if readyChecking then
 		readyChecking = nil
 		for unit, guid in Grid2:IterateRosterUnits() do
--- print("ReadyCheck:ClearStatus", unit, "guid", guid)
 			self:UpdateIndicators(unit)
 		end
 		timerClearStatus = nil
 	end
 end
-
 
 function ReadyCheck:OnEnable()
 	self:RegisterEvent("READY_CHECK")
@@ -153,3 +151,5 @@ local function Create(baseKey, dbx)
 end
 
 Grid2.setupFunc["ready-check"] = Create
+
+Grid2:DbSetStatusDefaultValue( "ready-check", {type = "ready-check", threshold = 10, colorCount = 4, color1 = {r=1,g=1,b=0,a=1}, color2 = {r=0,g=1,b=0,a=1}, color3 = {r=1,g=0,b=0,a=1}, color4 = {r=1,g=0,b=1,a=1}})

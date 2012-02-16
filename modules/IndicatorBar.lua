@@ -10,9 +10,6 @@ local AlignPoints= {
 	VERTICAL   = { "BOTTOMLEFT","TOPLEFT","BOTTOMRIGHT","TOPRIGHT" },
 }
 
-local function Dummy() 
-end
-
 local function Bar_CreateHH(self, parent)
 	local bar = self:CreateFrame("StatusBar", parent)
 	bar:SetStatusBarColor(0,0,0,0)
@@ -160,7 +157,7 @@ local function Bar_UpdateDB(self, dbx)
 	self.SetOrientation = Bar_SetOrientation
 	self.Disable        = Bar_Disable	
 	self.UpdateDB       = Bar_UpdateDB
-	self.Layout         = dbx.parentBar and Dummy or Bar_Layout
+	self.Layout         = dbx.parentBar and Grid2.Dummy or Bar_Layout
 	self.OnUpdate       = (dbx.duration and Bar_OnUpdateD) or (dbx.stack and Bar_OnUpdateS) or Bar_OnUpdate
 	self.dbx            = dbx
 	if dbx.parentBar and Grid2.indicators[dbx.parentBar] then
@@ -211,8 +208,8 @@ local function Create(indicatorKey, dbx)
 	local BarColor    = Grid2.indicators[colorKey] or Grid2.indicatorPrototype:new(colorKey)
 	BarColor.dbx      = dbx
 	BarColor.BarName  = indicatorKey
-	BarColor.Create   = Dummy
-	BarColor.Layout   = Dummy
+	BarColor.Create   = Grid2.Dummy
+	BarColor.Layout   = Grid2.Dummy
 	BarColor.OnUpdate = BarColor_OnUpdate
 	BarColor.UpdateDB = BarColor_UpdateDB
 	BarColor_UpdateDB(BarColor)
@@ -225,5 +222,5 @@ end
 
 Grid2.setupFunc["bar"] = Create
 
-Grid2.setupFunc["bar-color"] = Dummy
+Grid2.setupFunc["bar-color"] = Grid2.Dummy
 

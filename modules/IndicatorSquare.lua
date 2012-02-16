@@ -38,7 +38,7 @@ local function Square_Layout(self, parent)
 	local borderSize  = self.borderSize 
 	if borderSize then
 		Square:SetBackdrop({ bgFile = self.texture, tile = false, tileSize = 0,
-							 edgeFile = "Interface\\Addons\\Grid2\\white16x16", edgeSize = borderSize,
+							 edgeFile = "Interface\\Addons\\Grid2\\media\\white16x16", edgeSize = borderSize,
 							 insets = {left = borderSize, right = borderSize, top = borderSize, bottom = borderSize} })
 	else
 		Square:SetBackdrop({ bgFile = self.texture, tile = false, tileSize = 0,

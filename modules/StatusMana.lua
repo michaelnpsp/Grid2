@@ -1,6 +1,4 @@
---[[
-Created by Grid2 original authors, modified by Michael
---]]
+-- mana, lowmana, power, poweralt
 
 local Mana = Grid2.statusPrototype:new("mana",false)
 local LowMana = Grid2.statusPrototype:new("lowmana",false)
@@ -69,13 +67,12 @@ function Mana:GetPercent(unit)
 	return UnitMana(unit) / UnitManaMax(unit)
 end
 
-function Mana:GetTextDefault(unit)
+function Mana:GetText(unit)
 	return fmt("%.1fk", UnitMana(unit) / 1000)
 end
 
 local function Create(baseKey, dbx)
 	Grid2:RegisterStatus(Mana, {"percent", "text", "color"}, baseKey, dbx)
-	Grid2:MakeTextHandler(Mana)
 
 	return Mana
 end
@@ -85,6 +82,8 @@ Mana.OnEnable = status_OnEnable
 Mana.OnDisable= status_OnDisable
 
 Grid2.setupFunc["mana"] = Create
+
+Grid2:DbSetStatusDefaultValue( "mana", {type = "mana", color1= {r=0,g=0,b=1,a=1}} )
 
 -- Low Mana status
 function LowMana:UpdateUnitPower(unit, powerType)
@@ -108,6 +107,8 @@ LowMana.OnDisable = status_OnDisable
 
 Grid2.setupFunc["lowmana"] = Create
 
+Grid2:DbSetStatusDefaultValue( "lowmana", {type = "lowmana", threshold = 0.75, color1 = {r=0.5,g=0,b=1,a=1}})
+
 -- Alternative power status
 function PowerAlt:UpdateUnitPower(unit, powerType)
 	if powerType=="ALTERNATE" then
@@ -123,7 +124,7 @@ function PowerAlt:GetPercent(unit)
 	return max(UnitPower(unit,10),0) / UnitPowerMax(unit,10)
 end
 
-function PowerAlt:GetTextDefault(unit)
+function PowerAlt:GetText(unit)
 	local power= UnitPower(unit,10)
 	if power>=1000 then
 		return fmt("%.1fk", power / 1000)
@@ -134,7 +135,6 @@ end
 
 local function Create(baseKey, dbx)
 	Grid2:RegisterStatus(PowerAlt, {"percent", "text", "color"}, baseKey, dbx)
-	Grid2:MakeTextHandler(PowerAlt)
 
 	return PowerAlt
 end
@@ -144,6 +144,8 @@ PowerAlt.OnEnable = status_OnEnable
 PowerAlt.OnDisable= status_OnDisable
 
 Grid2.setupFunc["poweralt"] = Create
+
+Grid2:DbSetStatusDefaultValue( "poweralt", {type = "poweralt", color1= {r=1,g=0,b=0.5,a=1}} )
 
 -- Power status
 local powerColors= {}
@@ -162,7 +164,7 @@ function Power:GetPercent(unit)
 	return UnitPower(unit) / UnitPowerMax(unit)
 end
 
-function Power:GetTextDefault(unit)
+function Power:GetText(unit)
 	local power= UnitPower(unit)
 	if power>=1000 then
 		return fmt("%.1fk", power / 1000)
@@ -187,12 +189,19 @@ end
 
 local function Create(baseKey, dbx)
 	Grid2:RegisterStatus(Power, {"percent", "text", "color"}, baseKey, dbx)
-	Grid2:MakeTextHandler(Power)
 	Power:UpdateDB()
 	return Power
 end
 
 Power.OnEnable = status_OnEnable
-Power.OnDisable= status_OnDisable
+Power.OnDisable = status_OnDisable
 
 Grid2.setupFunc["power"] = Create
+
+Grid2:DbSetStatusDefaultValue( "power", {type = "power", colorCount = 5, 
+	color1 = {r=0,g=0.5,b=1  ,a=1},   -- mana
+	color2 = {r=1,g=0  ,b=0  ,a=1},   -- rage
+	color3 = {r=1,g=0.5,b=0  ,a=1},   -- focus
+	color4 = {r=1,g=1  ,b=0  ,a=1},   -- energy
+	color5 = {r=0,g=0.8,b=0.8,a=1},   -- runic power
+})  

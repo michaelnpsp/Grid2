@@ -2,38 +2,43 @@
 Created by Michael, based on Grid2Options\GridDefaults.lua from original Grid2 authors
 --]]
 
-local L = LibStub("AceLocale-3.0"):GetLocale("Grid2")
-
-local Grid2= Grid2
-local pairs = pairs
+local Grid2 = Grid2
+local type, pairs = type, pairs
 
 local defaultFont = "Friz Quadrata TT"
 
 -- Database manipulation functions
 
-function Grid2:DbSetValue(section, name, value)
-  self.db.profile[section][name]= value
+function Grid2:DbSetStatusDefaultValue(name, value)
+	self.defaults.profile.statuses[name] = value
+	if self.db then -- if acedb was already created, copy by hand the defaults to the current profile
+		local statuses = self.db.profile.statuses
+		statuses[name] = Grid2.CopyTable( value, statuses[name] )
+	end
 end
 
-function Grid2:DbSetMissingValue(section, name, value)
-	local curValue = self.db.profile[section][name] 
-	if curValue then
-		for k,v in pairs(value) do
-			if not curValue[k] then
-				curValue[k] = v
-			end
-		end
-	else
-		self.db.profile[section][name]= value
-	end
+function Grid2:DbSetValue(section, name, value)
+  self.db.profile[section][name]= value
 end
 
 function Grid2:DbGetValue(section, name)
   return self.db.profile[section][name]
 end;
 
+function Grid2:DbGetIndicator(name)
+    return self.db.profile.indicators[name]
+end
+
+function Grid2:DbSetIndicator(name, value)
+	if value==nil then
+		local map = Grid2.db.profile.statusMap
+		if map[name] then map[name]= nil end	
+	end
+    self.db.profile.indicators[name]= value
+end
+
 function Grid2:DbSetMap(indicatorName, statusName, priority)
-	local map= self.db.profile.statusMap
+	local map = self.db.profile.statusMap
 	if priority then
 		if not map[indicatorName] then
 			map[indicatorName] =  {}
@@ -46,21 +51,19 @@ function Grid2:DbSetMap(indicatorName, statusName, priority)
 	end	
 end
 
-function Grid2:DbGetIndicator(name)
-    return self.db.profile.indicators[name]
-end
+-- Misc helper functions
 
-function Grid2:DbSetIndicator(name, value)
-	if value==nil then
-		local map= Grid2.db.profile.statusMap
-		if map[name] then 
-			map[name]= nil
-		end	
+function Grid2.CopyTable(src, dst)
+	if type(dst)~="table" then dst = {} end
+	for k,v in pairs(src) do
+		if type(v)=="table" then
+			dst[k] = Grid2.CopyTable(v,dst[k])
+		elseif not dst[k] then
+			dst[k] = v
+		end
 	end
-    self.db.profile.indicators[name]= value
+	return dst
 end
-
----
 
 function Grid2.CreateLocation(a,b,c,d)
     local p = a or "TOPLEFT"
@@ -70,12 +73,11 @@ function Grid2.CreateLocation(a,b,c,d)
 		return { relPoint = p, point = p, x = b or 0, y = c or 0 }
 	end
 end
-local Location= Grid2.CreateLocation
+local Location = Grid2.CreateLocation
 
 -- Default configurations
 
-function MakeDefaultsCommon()
-	-- Indicators
+local function MakeDefaultsCommon()
 	Grid2:DbSetValue( "indicators",  "alpha", {type = "alpha", color1 = {r=0,g=0,b=0,a=1}})
 	Grid2:DbSetMap( "alpha", "range", 99)
 	Grid2:DbSetMap( "alpha", "death", 98)
@@ -104,11 +106,9 @@ function MakeDefaultsCommon()
 	Grid2:DbSetMap( "icon-center", "death", 155)
 	Grid2:DbSetMap( "icon-center", "ready-check", 150)
 
+	Grid2:DbSetValue( "indicators",  "icon-right", {type = "icon", level = 8, location = Location("RIGHT",2), size = 12, fontSize = 8,})
 	Grid2:DbSetValue( "indicators",  "icon-left", {type = "icon", level = 8, location = Location("LEFT",-2), size = 12, fontSize = 8,})
 	Grid2:DbSetMap( "icon-left", "raid-icon-player", 155)
-
-	Grid2:DbSetValue( "indicators",  "icon-right", {type = "icon", level = 8, location = Location("RIGHT",2), size = 12, fontSize = 8,})
-	--Grid2:DbSetMap( "icon-right", "raid-icon-target", 90)
 	
 	Grid2:DbSetValue( "indicators",  "text-up", {type = "text", level = 7, location = Location("TOP",0,-8) , textlength = 6, fontSize = 8, font = defaultFont,})
 	Grid2:DbSetMap( "text-up", "health-deficit", 50)
@@ -129,83 +129,16 @@ function MakeDefaultsCommon()
 	Grid2:DbSetMap( "text-down", "name", 99)
 	Grid2:DbSetValue( "indicators",  "text-down-color", {type = "text-color"})
 	Grid2:DbSetMap( "text-down-color", "classcolor", 99)	
-
-	--- Statuses
-	local colors = {
-		HOSTILE = { r = 1, g = 0.1, b = 0.1, a = 1 },
-		UNKNOWN_UNIT = { r = 0.5, g = 0.5, b = 0.5, a = 1 },
-		UNKNOWN_PET = { r = 0, g = 1, b = 0, a = 1 },
-		[L["Beast"]] = { r = 0.94, g = 0.76, b = 0.28, a = 1 },
-		[L["Demon"]] = { r = 0.54, g = 0.25, b = 0.69, a = 1 },
-		[L["Humanoid"]] = { r = 0.92, g = 0.67, b = 0.85, a = 1 },
-		[L["Elemental"]] = { r = 0.1, g = 0.3, b = 0.9, a = 1 },
-	}
-	for class, color in pairs(RAID_CLASS_COLORS) do
-		if (not colors[class]) then
-			colors[class] = { r = color.r, g = color.g, b = color.b, a = 1 }
-		end
-	end
-	Grid2:DbSetValue( "statuses",  "classcolor", {type = "classcolor", colorHostile = true, colors = colors})
-	Grid2:DbSetValue( "statuses",  "afk", {type = "afk",  color1= {r=1,g=0,b=0,a=1} } )
-	Grid2:DbSetValue( "statuses",  "charmed", {type = "charmed", color1 = {r=1,g=.1,b=.1,a=1}})
-	Grid2:DbSetValue( "statuses",  "death", {type = "death", color1 = {r=1,g=1,b=1,a=1}})
-	Grid2:DbSetValue( "statuses",  "feign-death", {type = "feign-death", color1 = {r=1,g=.5,b=1,a=1}})
-	Grid2:DbSetValue( "statuses",  "health-current", {type = "health-current", color1 = {r=0,g=1,b=0,a=1}, deadAsFullHealth = nil})
-	Grid2:DbSetValue( "statuses",  "health-deficit", {type = "health-deficit", color1 = {r=1,g=1,b=1,a=1}, threshold = 0.05})
-	Grid2:DbSetValue( "statuses",  "health-low", {type = "health-low", threshold = 0.4, color1 = {r=1,g=0,b=0,a=1}})
-	Grid2:DbSetValue( "statuses",  "heals-incoming", {type = "heals-incoming", includePlayerHeals = false, flags = 0, color1 = {r=0,g=1,b=0,a=1}})
-	Grid2:DbSetValue( "statuses",  "lowmana", {type = "lowmana", threshold = 0.75, color1 = {r=0.5,g=0,b=1,a=1}})
-	Grid2:DbSetValue( "statuses",  "mana", {type = "mana", color1= {r=0,g=0,b=1,a=1}} )
-	Grid2:DbSetValue( "statuses",  "poweralt", {type = "poweralt", color1= {r=1,g=0,b=0.5,a=1}} )
-	Grid2:DbSetValue( "statuses",  "name", {type = "name"})
-	Grid2:DbSetValue( "statuses",  "offline", {type = "offline", color1 = {r=1,g=1,b=1,a=1}})
-	Grid2:DbSetValue( "statuses",  "pvp", {type = "pvp", color1 = {r=0,g=1,b=1,a=.75}})
-	Grid2:DbSetValue( "statuses",  "range", {type = "range", range= 38, default = 0.25, elapsed = 0.5})
-	Grid2:DbSetValue( "statuses",  "ready-check", {type = "ready-check", threshold = 10, colorCount = 4, color1 = {r=1,g=1,b=0,a=1}, color2 = {r=0,g=1,b=0,a=1}, color3 = {r=1,g=0,b=0,a=1}, color4 = {r=1,g=0,b=1,a=1}})
-	Grid2:DbSetValue( "statuses",  "role", {type = "role", colorCount = 2, color1 = {r=1,g=1,b=.5,a=1}, color2 = {r=.5,g=1,b=1,a=1}})
-	Grid2:DbSetValue( "statuses",  "target", {type = "target", color1 = {r=.8,g=.8,b=.8,a=.75}})
-	Grid2:DbSetValue( "statuses",  "threat", {type = "threat", colorCount = 3, color1 = {r=1,g=0,b=0,a=1}, color2 = {r=.5,g=1,b=1,a=1}, color3 = {r=1,g=1,b=1,a=1}})
-	Grid2:DbSetValue( "statuses",  "vehicle", {type = "vehicle", color1 = {r=0,g=1,b=1,a=.75}})
-	Grid2:DbSetValue( "statuses",  "voice", {type = "voice", color1 = {r=1,g=1,b=0,a=1}})
-	Grid2:DbSetValue( "statuses",  "debuff-Magic", {type = "debuffType", subType = "Magic", color1 = {r=.2,g=.6,b=1,a=1}})
-	Grid2:DbSetValue( "statuses",  "debuff-Poison", {type = "debuffType", subType = "Poison", color1 = {r=0,g=.6,b=0,a=1}})
-	Grid2:DbSetValue( "statuses",  "debuff-Curse", {type = "debuffType", subType = "Curse", color1 = {r=.6,g=0,b=1,a=1}})
-	Grid2:DbSetValue( "statuses",  "debuff-Disease", {type = "debuffType", subType = "Disease", color1 = {r=.6,g=.4,b=0,a=1}})
-	Grid2:DbSetValue( "statuses", "raid-icon-player", {type = "raid-icon-player", colorCount = 8,
-			color1 = {r = 1.0, g = 0.92, b = 0, a = 1},     -- Yellow Star
-			color2 = {r = 0.98, g = 0.57, b = 0, a = 1},    -- Orange Circle
-			color3 = {r = 0.83, g = 0.22, b = 0.9, a = 1},  -- Purple Diamond
-			color4 = {r = 0.04, g = 0.95, b = 0, a = 1},    -- Green Triangle
-			color5 = {r = 0.7, g = 0.82, b = 0.875, a = 1}, -- White Crescent Moon
-			color6 = {r = 0, g = 0.71, b = 1, a = 1},       -- Blue Square
-			color7 = {r = 1.0, g = 0.24, b = 0.168, a = 1}, -- Red 'X' Cross
-			color8 = {r = 0.98, g = 0.98, b = 0.98, a = 1},  -- White Skull
-			opacity = 1, --alpha setting
-	})
-	Grid2:DbSetValue( "statuses", "raid-icon-target", {type = "raid-icon-target", colorCount = 8,
-			color1 = {r = 1.0, g = 0.92, b = 0, a = 1},     -- Yellow Star
-			color2 = {r = 0.98, g = 0.57, b = 0, a = 1},    -- Orange Circle
-			color3 = {r = 0.83, g = 0.22, b = 0.9, a = 1},  -- Purple Diamond
-			color4 = {r = 0.04, g = 0.95, b = 0, a = 1},    -- Green Triangle
-			color5 = {r = 0.7, g = 0.82, b = 0.875, a = 1}, -- White Crescent Moon
-			color6 = {r = 0, g = 0.71, b = 1, a = 1},       -- Blue Square
-			color7 = {r = 1.0, g = 0.24, b = 0.168, a = 1}, -- Red 'X' Cross
-			color8 = {r = 0.98, g = 0.98, b = 0.98, a = 1},  -- White Skull
-			opacity = 0.5, --alpha setting
-	})
 end
-
 
 local MakeDefaultsClass
 do 
 	local class= select(2, UnitClass("player"))
 	if class=="SHAMAN" then MakeDefaultsClass= function()
-		-- statuses
 		Grid2:DbSetValue( "statuses",  "buff-Riptide-mine", {type = "buff", spellName = 61295, mine = true, color1 = {r=.8,g=.6,b=1,a=1}})
 		Grid2:DbSetValue( "statuses",  "buff-Earthliving", {type = "buff", spellName = 51945, mine= true, color1 = {r=.8,g=1,b=.5,a=1}})
 		Grid2:DbSetValue( "statuses",  "buff-EarthShield", {type = "buff", spellName = 974, color1 = {r=.8,g=.8,b=.2,a=1}})
 		Grid2:DbSetValue( "statuses",  "buff-EarthShield-mine", {type = "buff", spellName = 974, mine = true, colorCount = 2, color1 = {r=.9,g=.9,b=.4,a=1}, color2 = {r=.9,g=.9,b=.4,a=1} })
-		-- indicators
 		Grid2:DbSetValue( "indicators",  "corner-top-left", {type = "square", level = 9, location = Location("TOPLEFT"), size = 5,})
 		Grid2:DbSetMap( "corner-top-left", "buff-Riptide-mine", 99)
 		Grid2:DbSetValue( "indicators",  "side-top", {type = "square", level = 9, location= Location("TOP"), size = 5,})
@@ -218,12 +151,10 @@ do
 		Grid2:DbSetMap( "border", "debuff-Poison" , 70)
 		Grid2:DbSetMap( "border", "debuff-Disease", 60)
 	end elseif class=="DRUID" then MakeDefaultsClass= function()
-		-- statuses
 		Grid2:DbSetValue( "statuses",  "buff-Lifebloom-mine", {type = "buff", spellName = 33763, mine = true, colorCount = 3, color1 = {r=.2,g=.7,b=.2,a=1}, color2 = {r=.6,g=.9,b=.6,a=1}, color3 = {r=1,g=1,b=1,a=1}})
 		Grid2:DbSetValue( "statuses",  "buff-Rejuvenation-mine", {type = "buff", spellName = 774, mine = true, color1 = {r=1,g=0,b=.6,a=1}})
 		Grid2:DbSetValue( "statuses",  "buff-Regrowth-mine", {type = "buff", spellName = 8936, mine = true, color1 = {r=.5,g=1,b=0,a=1}})
 		Grid2:DbSetValue( "statuses",  "buff-WildGrowth-mine", {type = "buff", spellName = 48438, mine = true, color1 = {r=0.2,g=.9,b=.2,a=1}})
-		-- indicators
 		Grid2:DbSetValue( "indicators",  "corner-top-left", {type = "text", level = 9, location = Location("TOPLEFT"), textlength = 12, fontSize = 8, font = defaultFont, duration = true})
 		Grid2:DbSetMap( "corner-top-left", "buff-Lifebloom-mine", 99)
 		Grid2:DbSetValue( "indicators",  "corner-top-left-color", {type = "text-color"})
@@ -243,7 +174,6 @@ do
 		Grid2:DbSetMap( "border", "debuff-Curse"  , 70)
 		Grid2:DbSetMap( "border", "debuff-Disease", 60)
 	end elseif class=="PALADIN" then MakeDefaultsClass= function()
-		-- statuses
 		Grid2:DbSetValue( "statuses",  "buff-BeaconOfLight", {type = "buff", spellName = 53563, color1 = {r=.7,g=1,b=1,a=1}})
 		Grid2:DbSetValue( "statuses",  "buff-BeaconOfLight-mine", {type = "buff", spellName = 53563, mine = true, color1 = {r=1,g=1,b=1,a=1}})
 		Grid2:DbSetValue( "statuses",  "buff-DivineShield-mine", {type = "buff", spellName = 642, mine = true, color1 = {r=1,g=1,b=1,a=1}})
@@ -252,7 +182,6 @@ do
 		Grid2:DbSetValue( "statuses",  "buff-HandOfSalvation", {type = "buff", spellName = 1038, color1 = {r=1,g=1,b=1,a=1}})
 		Grid2:DbSetValue( "statuses",  "buff-HandOfSalvation-mine", {type = "buff", spellName = 1038, mine = true, color1 = {r=.8,g=.8,b=.7,a=1}})
 		Grid2:DbSetValue( "statuses",  "debuff-Forbearance", {type = "debuff", spellName = 25771, color1 = {r=1,g=0,b=0,a=1}})
-		-- indicators
 		Grid2:DbSetValue( "indicators",  "corner-top-left", {type = "text", level = 9, location = Location("TOPLEFT"), textlength = 12, fontSize = 8, font = defaultFont, duration = true})
 		Grid2:DbSetMap( "corner-top-left", "buff-BeaconOfLight", 99)
 		Grid2:DbSetMap( "corner-top-left", "buff-BeaconOfLight-mine", 89)
@@ -281,7 +210,6 @@ do
 		Grid2:DbSetMap( "border", "debuff-Magic"  , 70)
 		Grid2:DbSetMap( "border", "debuff-Curse"  , 60)
 	end elseif class=="PRIEST" then MakeDefaultsClass= function()
-		--statuses
 		Grid2:DbSetValue( "statuses",  "buff-DivineAegis", {type = "buff", spellName = 47509, color1 = {r=1,g=1,b=1,a=1}})
 		Grid2:DbSetValue( "statuses",  "buff-InnerFire", {type = "buff", spellName = 588, missing = true, color1 = {r=1,g=1,b=1,a=1}})
 		Grid2:DbSetValue( "statuses",  "buff-PowerWordShield", {type = "buff", spellName = 17, color1 = {r=0,g=1,b=1,a=1}})
@@ -293,7 +221,6 @@ do
 						colorCount = 5, color1 = {r=1,g=.2,b=.2,a=1}, color2 = {r=1,g=1,b=.4,a=.4}, 
 						color3 = {r=1,g=.6,b=.6,a=1}, color4 = {r=1,g=.8,b=.8,a=1}, color5 = {r=1,g=1,b=1,a=1}})
 		Grid2:DbSetValue( "statuses",  "debuff-WeakenedSoul", {type = "debuff", spellName = 6788, color1 = {r=0,g=.2,b=.9,a=1}})
-		-- indicators
 		Grid2:DbSetValue( "indicators",  "center-left", {type = "icon", level = 9, location = Location("LEFT"), size = 16, fontSize = 8,})
 		Grid2:DbSetMap( "center-left", "debuff-Disease", 10)
 		Grid2:DbSetValue( "indicators",  "center-right", {type = "icon", level = 9, location = Location("RIGHT"), size = 16, fontSize = 8,})
@@ -351,7 +278,7 @@ do
 	end else MakeDefaultsClass= function() end end
 end
 
--- Plugins: Must hook this function to initialize default values in database
+-- Plugins can hook this function to initialize or update values in database
 function Grid2:UpdateDefaults()
 
 	local version= Grid2:DbGetValue("versions","Grid2") or 0
@@ -363,45 +290,6 @@ function Grid2:UpdateDefaults()
 	end	
 	
 	if version<2 then
-		Grid2:DbSetMissingValue( "statuses", "banzai", { type = "banzai", color1 = {r=1,g=0,b=1,a=1} })
-		Grid2:DbSetMissingValue( "statuses", "banzai-threat", { type = "banzai-threat", color1 = {r=1,g=0,b=0,a=1} })
-		Grid2:DbSetMissingValue( "statuses", "direction", { type = "direction", color1 = { r= 0, g= 1, b= 0, a=1 } })
-		Grid2:DbSetMissingValue( "statuses", "dungeon-role", {	type = "dungeon-role", colorCount = 3,	
-			color1 = { r = 0.75, g = 0, b = 0 }, --dps
-			color2 = { r = 0, g = 0.75, b = 0 }, --heal
-			color3 = { r = 0, g = 0, b = 0.75 }, --tank
-			opacity = 0.75 
-		})
-		Grid2:DbSetMissingValue( "statuses", "creaturecolor", { type = "creaturecolor", colorHostile = true, colors= {
-			HOSTILE = { r = 1, g = 0.1, b = 0.1, a = 1 },
-			UNKNOWN_UNIT = { r = 0.5, g = 0.5, b = 0.5, a = 1 },
-			[L["Beast"]] = { r = 0.94, g = 0.75, b = 0.28, a = 1 },
-			[L["Demon"]] = { r = 0.5, g = 0.25, b = 0.69, a = 1 },
-			[L["Humanoid"]] = { r = 0.92, g = 0.67, b = 0.85, a = 1 },
-			[L["Elemental"]] = { r = 0.1, g = 0.3, b = 0.9, a = 1 }, }
-		})
-		Grid2:DbSetMissingValue( "statuses", "friendcolor", { type = "friendcolor",	
-			colorCount = 3,	
-			color1 = { r = 0, g = 1, b = 0, a=1 },    --player 
-			color2 = { r = 0, g = 1, b = 0, a=0.75 }, --pet 
-			color3 = { r = 1, g = 0, b = 0, a=1 },    --hostile
-		})
-		Grid2:DbSetMissingValue("statuses", "leader", { type = "leader", color1 = {r=0,g=.7,b=1,a=1}})
-		Grid2:DbSetMissingValue("statuses", "raid-assistant", { type = "raid-assistant", color1 = {r=1,g=.25,b=.2,a=1}})
-		Grid2:DbSetMissingValue("statuses", "master-looter", { type = "master-looter", color1 = {r=1,g=.5,b=0,a=1}})
-		Grid2:DbSetMissingValue( "statuses",  "power", {type = "power", colorCount = 5, 
-			color1 = {r=0,g=0.5,b=1  ,a=1},   -- mana
-			color2 = {r=1,g=0  ,b=0  ,a=1},   -- rage
-			color3 = {r=1,g=0.5,b=0  ,a=1},   -- focus
-			color4 = {r=1,g=1  ,b=0  ,a=1},   -- energy
-			color5 = {r=0,g=0.8,b=0.8,a=1},   -- runic power
-		})  
-		if Grid2:DbSetMissingValue( "statuses", "resurrection", { type = "resurrection", colorCount = 2,
-			color1 = { r = 0, g = 1, b = 0, a=1 },    
-			color2 = { r = 1, g = 1, b = 0, a=0.75 }, }) 
-		then
-			Grid2:DbSetMap( "icon-center", "resurrection", 160)
-		end	
 		-- Upgrade health&heals indicator
 		local health = Grid2:DbGetValue("indicators", "health")
 		local heals  = Grid2:DbGetValue("indicators", "heals")
@@ -410,13 +298,6 @@ function Grid2:UpdateDefaults()
 			heals.parentBar = "health"
 		end
 	end
-	
-	-- Upgrade shields indicator
-	Grid2:DbSetMissingValue( "statuses",  "shields", { type = "shields", maxShieldAmount = 50000, thresholdMedium = 15000, thresholdLow = 6000,  colorCount = 3,
-		color1 = { r = 0, g = 1,   b = 0, a=1 },    
-		color2 = { r = 1, g = 0.5, b = 0, a=1 },
-		color3 = { r = 1, g = 1,   b = 0, a=1 },
-	} ) 
 	
 	-- Set database version
 	Grid2:DbSetValue("versions","Grid2",3)

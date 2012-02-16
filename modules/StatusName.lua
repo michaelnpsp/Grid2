@@ -1,6 +1,6 @@
 local Name = Grid2.statusPrototype:new("name")
 
-local UnitName= UnitName
+local UnitName = UnitName
 
 function Name:OnEnable()
 	self:RegisterEvent("UNIT_NAME_UPDATE")
@@ -18,15 +18,16 @@ function Name:IsActive(unit)
 	return true
 end
 
-function Name:GetTextDefault(unit)
+function Name:GetText(unit)
 	return UnitName(unit)
 end
 
 local function Create(baseKey, dbx)
 	Grid2:RegisterStatus(Name, {"text"}, baseKey, dbx)
-	Grid2:MakeTextHandler(Name)
 
 	return Name
 end
 
 Grid2.setupFunc["name"] = Create
+
+Grid2:DbSetStatusDefaultValue( "name", {type = "name"})

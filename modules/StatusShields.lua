@@ -9,9 +9,6 @@ local min      = math.min
 local fmt      = string.format
 local UnitAura = UnitAura
 
-local shields     = {}  
-local shields_det = setmetatable({}, {__index = function(self,unit) local v= {} self[unit]= v return v end})
-local shields_tot = setmetatable({}, {__index = function(self,unit) return 0 end})
 local shields_ava = {   
 	17 ,   -- Power Word: Shield (Priest)
 	47509, -- Divine Aegis (Priest)
@@ -21,8 +18,11 @@ local shields_ava = {
 	77513, -- Blood shield (DK)
 	11426, -- Ice Barrier (Mage)
 	1463,  -- Mana Shield (Mage)
-	-- 7812,  -- Sacrifice (Warlock)
 }
+
+local shields     = {}  
+local shields_det = setmetatable({}, {__index = function(self,unit) local v= {} self[unit]= v return v end})
+local shields_tot = setmetatable({}, {__index = function(self,unit) return 0 end})
 
 function Shields:ApplyShield(unit,spellName, amount)
 	if amount and amount>0 then
@@ -164,3 +164,9 @@ local function Create(baseKey, dbx)
 end
 
 Grid2.setupFunc["shields"] = Create
+
+Grid2:DbSetStatusDefaultValue( "shields", { type = "shields", maxShieldAmount = 50000, thresholdMedium = 15000, thresholdLow = 6000,  colorCount = 3,
+	color1 = { r = 0, g = 1,   b = 0, a=1 },    
+	color2 = { r = 1, g = 0.5, b = 0, a=1 },
+	color3 = { r = 1, g = 1,   b = 0, a=1 },
+} ) 

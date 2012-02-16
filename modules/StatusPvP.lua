@@ -89,3 +89,5 @@ end
 
 Grid2.setupFunc["pvp"] = Create
 
+Grid2:DbSetStatusDefaultValue( "pvp", {type = "pvp", color1 = {r=0,g=1,b=1,a=.75}})
+

@@ -1,16 +1,59 @@
 --[[ Created by Grid2 original authors, modified by Michael --]]
 
-
-local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
-
-local Grid2= Grid2
+local Grid2 = Grid2
 local SecureButton_GetModifiedUnit = SecureButton_GetModifiedUnit
-local UnitFrame_OnEnter= UnitFrame_OnEnter
-local UnitFrame_OnLeave= UnitFrame_OnLeave
+local UnitFrame_OnEnter = UnitFrame_OnEnter
+local UnitFrame_OnLeave = UnitFrame_OnLeave
 local Grid2Frame
 
---{{{ Grid2Frame script handlers
+--{{{ Registered unit frames tracking
+local frames_of_unit = setmetatable({}, { __index = function (self, key)
+	local result = {}
+	rawset(self, key, result)
+	return result
+end})
+local unit_of_frame = {}
 
+function Grid2:SetFrameUnit(frame, unit)
+	local prev_unit = unit_of_frame[frame]
+	if prev_unit then
+		frames_of_unit[prev_unit][frame] = nil
+	end
+	if unit then
+		frames_of_unit[unit][frame] = true
+	end
+	unit_of_frame[frame] = unit
+end
+
+function Grid2:GetUnitFrames(unit)
+	return frames_of_unit[unit]
+end
+--}}}
+
+--{{{ Dropdown menu management
+local ToggleUnitMenu
+do
+	local frame, unit = CreateFrame("Frame","Grid2_UnitFrame_DropDown",UIParent,"UIDropDownMenuTemplate")
+	ToggleUnitMenu = function(self)
+		unit = self.unit
+		ToggleDropDownMenu(1, nil, frame, "cursor")
+	end
+	UIDropDownMenu_Initialize(frame, function()
+		if unit then
+			local menu,raid
+			if     UnitIsUnit(unit, "player") then menu = "SELF" 
+			elseif UnitIsUnit(unit, "pet")    then menu = "PET"
+			elseif Grid2:UnitIsPet(unit)      then menu = "RAID_TARGET_ICON"
+			elseif Grid2:UnitIsParty(unit) 	  then menu = "PARTY" 
+			elseif Grid2:UnitIsRaid(unit) 	  then menu,raid = "RAID_PLAYER", UnitInRaid(unit) 
+			else return end
+			UnitPopup_ShowMenu(frame, menu, unit, nil, raid)
+		end	
+	end, "MENU")
+end	
+--}}}
+
+--{{{ Grid2Frame script handlers
 local GridFrameEvents = {}
 function GridFrameEvents:OnShow()
 	Grid2Frame:SendMessage("Grid_UpdateLayoutSize")
@@ -45,9 +88,10 @@ end
 function GridFrameEvents:OnLeave()
 	Grid2Frame:OnFrameLeave(self)
 end
+--}}}
 
 --{{{ GridFramePrototype
-local pairs= pairs
+local pairs = pairs
 local GridFramePrototype = {}
 local function GridFrame_Init(frame, width, height)
 	for name, value in pairs(GridFramePrototype) do
@@ -63,42 +107,43 @@ local function GridFrame_Init(frame, width, height)
 		frame:SetAttribute("initial-height", height)
 	end
 	
+	frame.menu = ToggleUnitMenu
+
 	frame.container = frame:CreateTexture()
 
 	frame:CreateIndicators()
 
 	frame:Layout()
 
-	-- set up click casting
 	ClickCastFrames = ClickCastFrames or {}
 	ClickCastFrames[frame] = true
 end
 
 function GridFramePrototype:Layout()
-	local dbx= Grid2Frame.db.profile
-	local w= dbx.frameWidth 
-	local h= dbx.frameHeight
+	local dbx = Grid2Frame.db.profile
+	local w = dbx.frameWidth 
+	local h = dbx.frameHeight
 	-- external border controlled by the border indicator
-	local r,g,b,a= self:GetBackdropBorderColor() 
+	local r,g,b,a = self:GetBackdropBorderColor() 
 	local frameBorder = dbx.frameBorder
 	local borderTexture = Grid2:MediaFetch("border", dbx.frameBorderTexture, "Grid2 Flat")
 	self:SetBackdrop({
-		bgFile = "Interface\\Addons\\Grid2\\white16x16", tile = true, tileSize = 16,
+		bgFile = "Interface\\Addons\\Grid2\\media\\white16x16", tile = true, tileSize = 16,
 		edgeFile = borderTexture, edgeSize = frameBorder,
 		insets = {left = frameBorder, right = frameBorder, top = frameBorder, bottom = frameBorder},
 	})
 	self:SetBackdropBorderColor(r, g, b, a)
 	-- inner border color (sure that is the inner border)
-	local cf= dbx.frameColor
+	local cf = dbx.frameColor
 	self:SetBackdropColor( cf.r, cf.g, cf.b, cf.a )
 	-- visible background 
 	local container= self.container
 	container:SetPoint("CENTER", self, "CENTER")
 	-- visible background color
-	local cb= dbx.frameContentColor
+	local cb = dbx.frameContentColor
 	container:SetVertexColor(cb.r, cb.g, cb.b, cb.a)
-	-- shrink the background, to show part of the real frame background (that is behind) as a inner border.
-	local inset= (dbx.frameBorder+dbx.frameBorderDistance)*2
+	-- shrink the background, showing part of the real frame background (that is behind) as a inner border.
+	local inset = (dbx.frameBorder+dbx.frameBorderDistance)*2
 	container:SetSize( w-inset, h-inset )
 	-- visible background texture
 	local texture = Grid2:MediaFetch("statusbar", dbx.frameTexture, "Gradient" )
@@ -127,12 +172,10 @@ function GridFramePrototype:UpdateIndicators()
 		end
 	end	
 end
+--}}}
 
 --{{{ Grid2Frame
-
 Grid2Frame = Grid2:NewModule("Grid2Frame")
-
---{{{  AceDB defaults
 
 Grid2Frame.defaultDB = {
 	profile = {
@@ -153,66 +196,35 @@ Grid2Frame.defaultDB = {
 	},
 }
 
---}}}
-
---{{{  
-
 function Grid2Frame:OnModuleInitialize()
 	self.registeredFrames = {}
 end
 
 function Grid2Frame:OnModuleEnable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateFrameUnits")
-	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "UNIT_ENTERED_VEHICLE")
-	self:RegisterEvent("UNIT_EXITED_VEHICLE", "UNIT_EXITED_VEHICLE")
-	self:RegisterMessage("Grid_UnitUpdate", "Grid_UnitUpdate")
+	self:RegisterEvent("UNIT_ENTERED_VEHICLE")
+	self:RegisterEvent("UNIT_EXITED_VEHICLE")
+	self:RegisterMessage("Grid_UnitUpdate")
 	self:UpdateFrameUnits()
 	self:UpdateIndicators()
 end
 
 function Grid2Frame:OnModuleDisable()
-	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "UpdateFrameUnits")
-	self:UnregisterEvent("UNIT_ENTERED_VEHICLE", "UNIT_ENTERED_VEHICLE")
-	self:UnregisterEvent("UNIT_EXITED_VEHICLE", "UNIT_EXITED_VEHICLE")
-	self:UnregisterMessage("Grid_UnitUpdate", "Grid_UnitUpdate")
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	self:UnregisterEvent("UNIT_ENTERED_VEHICLE")
+	self:UnregisterEvent("UNIT_EXITED_VEHICLE")
+	self:UnregisterMessage("Grid_UnitUpdate")
 end
 
--- When profile changes, the modules reset sequence is: 
--- 1. Disable all modules  2. Update all modules 3. Enable all modules (see Grid2:ProfileChanged)
--- Grid2Layout uses the new frame size and can create/layout new frames when it is enabled, but could be 
--- enabled before Grid2Frame.  This is the reason because we recreate and relayout the indicators here.
 function Grid2Frame:OnModuleUpdate()
 	self:CreateIndicators()
 	self:LayoutFrames()
 end
 
---}}}
-
 function Grid2Frame:RegisterFrame(frame)
-	self:Debug("RegisterFrame", frame:GetName())
 	GridFrame_Init(frame, self:GetFrameSize())
 	self.registeredFrames[frame:GetName()] = frame
 end
-
--- shows the default unit tooltip
-local TooltipCheck= { 	
-	Always = function() return false end, 
-	Never  = function() return true end, 
-	OOC    = InCombatLockdown,
-}
-function Grid2Frame:OnFrameEnter(frame)
-	if TooltipCheck[self.db.profile.showTooltip]() then
-		UnitFrame_OnLeave(frame)
-	else
-		UnitFrame_OnEnter(frame)
-	end
-end
-
-function Grid2Frame:OnFrameLeave(frame)
-	UnitFrame_OnLeave(frame)
-end
-
---}}}
 
 function Grid2Frame:CreateIndicators()
 	for _, frame in next, self.registeredFrames do
@@ -240,11 +252,28 @@ function Grid2Frame:WithAllFrames(func, ...)
 end
 
 function Grid2Frame:GetFrameSize()
-	local p= self.db.profile
+	local p = self.db.profile
 	return p.frameWidth, p.frameHeight
 end
 
---{{{ Event handlers
+-- shows the default unit tooltip
+local TooltipCheck= { 	
+	Always = function() return false end, 
+	Never  = function() return true end, 
+	OOC    = InCombatLockdown,
+}
+function Grid2Frame:OnFrameEnter(frame)
+	if TooltipCheck[self.db.profile.showTooltip]() then
+		UnitFrame_OnLeave(frame)
+	else
+		UnitFrame_OnEnter(frame)
+	end
+end
+function Grid2Frame:OnFrameLeave(frame)
+	UnitFrame_OnLeave(frame)
+end
+
+-- Event handlers
 local next = next
 function Grid2Frame:UpdateFrameUnits()
 	for _, frame in next, self.registeredFrames do
@@ -291,38 +320,10 @@ function Grid2Frame:Grid_UnitUpdate(_, unit)
 		frame:UpdateIndicators()
 	end
 end
-
 --}}}
 
---{{ Debugging
-
-function Grid2Frame:ListRegisteredFrames()
-	print("--[ BEGIN Registered Frame List ]--")
-	print("FrameName", "UnitId", "UnitName", "Status")
-	for frameName, frame in pairs(self.registeredFrames) do
-		local frameStatus
-
-		if frame:IsVisible() then
-			frameStatus = "|cff00ff00visible|r"
-		elseif frame:IsShown() then
-			frameStatus = "|cff00ff00shown|r"
-		else
-			frameStatus = "|cffff0000hidden|r"
-		end
-
-		print(
-			(frameName == frame:GetName() and "|cff00ff00" or "|cffff0000")
-				..frameName.."|r",
-			(frame.unit == frame:GetAttribute("unit") and "|cff00ff00" or "|cffff0000")
-				..(frame.unit or "nil").."|r",
-				"|cff00ff00"..(frame.unit and UnitName(frame.unit) or "nil").."|r",
-			frameStatus)
-	end
-	print("--[ END Registered Frame List ]--")
-end
-
---}}}
 _G.Grid2Frame = Grid2Frame
+
 -- Allow other modules/addons to easily modify the grid unit frames
 Grid2Frame.Events = GridFrameEvents
 Grid2Frame.Prototype = GridFramePrototype

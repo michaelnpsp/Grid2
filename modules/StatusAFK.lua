@@ -52,3 +52,5 @@ local function CreateStatusAFK(baseKey, dbx)
 end
 
 Grid2.setupFunc["afk"] = CreateStatusAFK
+
+Grid2:DbSetStatusDefaultValue( "afk", {type = "afk",  color1= {r=1,g=0,b=0,a=1} } )

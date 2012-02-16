@@ -3,7 +3,6 @@
 local Grid2 = Grid2
 local GetTime = GetTime
 local string_sub = string.subutf8 or string.sub
-local dummy = function() end
 
 Grid2.defaults.profile.formatting = {
 	longDecimalFormat        = "%.1f",
@@ -289,7 +288,7 @@ local function Text_Disable(self, parent)
 	self.Layout = nil
 	self.OnUpdate = nil
 	self.SetTextFont = nil
-	self.OnUpdate = dummy
+	self.OnUpdate = Grid2.Dummy
 end
 
 local function Text_UpdateDB(self, dbx)
@@ -330,8 +329,8 @@ end
 
 local function TextColor_UpdateDB(self, dbx)
 	self.dbx = dbx
-	self.Create = dummy
-	self.Layout = dummy
+	self.Create = Grid2.Dummy
+	self.Layout = Grid2.Dummy
 	self.OnUpdate = TextColor_OnUpdate
 end
 
@@ -352,4 +351,4 @@ local function Create(indicatorKey, dbx)
 end
 
 Grid2.setupFunc["text"] = Create
-Grid2.setupFunc["text-color"] = dummy
+Grid2.setupFunc["text-color"] = Grid2.Dummy
