@@ -241,3 +241,6 @@ Grid2.setupFunc["banzai-threat"] = function(baseKey, dbx)
 	Grid2:RegisterStatus(BanzaiThreat, {"color", "text" }, baseKey, dbx)
 	return BanzaiThreat
 end
+
+Grid2:DbSetStatusDefaultValue( "banzai", { type = "banzai", color1 = {r=1,g=0,b=1,a=1} })
+Grid2:DbSetStatusDefaultValue( "banzai-threat", { type = "banzai-threat", color1 = {r=1,g=0,b=0,a=1} })

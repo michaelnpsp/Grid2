@@ -64,3 +64,9 @@ end
 
 Grid2.setupFunc["dungeon-role"] = Create
 
+Grid2:DbSetStatusDefaultValue( "dungeon-role", { type = "dungeon-role", colorCount = 3,	
+	color1 = { r = 0.75, g = 0, b = 0 }, --dps
+	color2 = { r = 0, g = 0.75, b = 0 }, --heal
+	color3 = { r = 0, g = 0, b = 0.75 }, --tank
+	opacity = 0.75 
+})

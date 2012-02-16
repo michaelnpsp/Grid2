@@ -106,7 +106,7 @@ function Direction:IsActive(unit)
 end
 
 function Direction:GetIcon(unit)
-	return "Interface\\Addons\\Grid2\\Arrows32-32x32"
+	return "Interface\\Addons\\Grid2\\media\\Arrows32-32x32"
 end
 
 function Direction:GetVertexColor()
@@ -126,3 +126,6 @@ local function Create(baseKey, dbx)
 end
 
 Grid2.setupFunc["direction"] = Create
+
+Grid2:DbSetStatusDefaultValue( "direction", { type = "direction", color1 = { r= 0, g= 1, b= 0, a=1 } })
+

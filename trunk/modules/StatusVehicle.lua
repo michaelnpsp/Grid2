@@ -17,14 +17,12 @@ function Vehicle:OnEnable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "UNIT_ENTERED_VEHICLE")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE", "UNIT_ENTERED_VEHICLE")
---	self:RegisterMessage("Grid_UnitJoined", "UNIT_ENTERED_VEHICLE")
 end
 
 function Vehicle:OnDisable()
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	self:UnregisterEvent("UNIT_ENTERED_VEHICLE")
 	self:UnregisterEvent("UNIT_EXITED_VEHICLE")
---	self:UnregisterMessage("Grid_UnitJoined")
 end
 
 function Vehicle:IsActive(unit)
@@ -66,3 +64,5 @@ local function Create(baseKey, dbx)
 end
 
 Grid2.setupFunc["vehicle"] = Create
+
+Grid2:DbSetStatusDefaultValue( "vehicle", {type = "vehicle", color1 = {r=0,g=1,b=1,a=.75}})

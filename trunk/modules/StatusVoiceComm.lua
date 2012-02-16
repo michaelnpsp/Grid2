@@ -56,3 +56,5 @@ local function Create(baseKey, dbx)
 end
 
 Grid2.setupFunc["voice"] = Create
+
+Grid2:DbSetStatusDefaultValue( "voice", {type = "voice", color1 = {r=1,g=1,b=0,a=1}})

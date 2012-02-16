@@ -10,7 +10,7 @@ local function Icon_Create(self, parent)
 	
 	local borderSize = self.borderSize or 1
 	f:SetBackdrop({
-		edgeFile = "Interface\\Addons\\Grid2\\white16x16", edgeSize = borderSize,
+		edgeFile = "Interface\\Addons\\Grid2\\media\\white16x16", edgeSize = borderSize,
 		insets = {left = borderSize, right = borderSize, top = borderSize, bottom = borderSize},
 	})
 	

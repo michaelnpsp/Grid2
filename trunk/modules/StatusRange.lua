@@ -54,20 +54,18 @@ end
 function Range:OnEnable()
 	self:CreateTimer()
 	self:UpdateDB()
-	self:RegisterMessage("Grid_UnitJoined")
-	self:RegisterMessage("Grid_UnitChanged", "Grid_UnitJoined")
+	self:RegisterMessage("Grid_UnitUpdated")
 	self:RegisterMessage("Grid_UnitLeft")
 	self.timer:Play()
 end
 
 function Range:OnDisable()
-	self:UnregisterMessage("Grid_UnitChanged")
-	self:UnregisterMessage("Grid_UnitJoined")
+	self:UnregisterMessage("Grid_UnitUpdated")
 	self:UnregisterMessage("Grid_UnitLeft")
 	self.timer:Stop() 
 end
 
-function Range:Grid_UnitJoined(_, unit)
+function Range:Grid_UnitUpdated(_, unit)
 	cache[unit] = UnitIsInRange(unit) and 1 or false
 end
 
@@ -111,3 +109,5 @@ local function Create(baseKey, dbx)
 end
 
 Grid2.setupFunc["range"] = Create
+
+Grid2:DbSetStatusDefaultValue( "range", {type = "range", range= 38, default = 0.25, elapsed = 0.5})

@@ -36,9 +36,7 @@ end
 -- 2 = insecurely tanking.
 -- 3 = securely tanking something
 function Threat:IsActive(unit)
-	local threat = unit 
-		and UnitExists(unit) -- hack thanks Potje
-		and UnitThreatSituation(unit)
+	local threat = UnitExists(unit) and UnitThreatSituation(unit) -- hack thanks Potje
 	if threat and threat > 0 then
 		return self.activeValue
 	end
@@ -62,3 +60,4 @@ end
 
 Grid2.setupFunc["threat"] = Create
 
+Grid2:DbSetStatusDefaultValue( "threat", {type = "threat", colorCount = 3, color1 = {r=1,g=0,b=0,a=1}, color2 = {r=.5,g=1,b=1,a=1}, color3 = {r=1,g=1,b=1,a=1}} )

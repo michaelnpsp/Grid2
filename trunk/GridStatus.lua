@@ -1,4 +1,4 @@
---[[ Created by Grid2 original authors, modified by Michael ]]--
+-- Created by Grid2 original authors, modified by Michael
 
 local Grid2 = Grid2
 local next = next
@@ -40,23 +40,21 @@ function status:GetColor()
 	return 0,0,0,1
 end
 -- returns~=nil to colorize icon border with status GetColor(): icon indicator
-function status:GetBorder()
-end
+status.GetBorder = Grid2.Dummy
 -- text indicator
-function status:GetText()
-end
+status.GetText = Grid2.Dummy
 -- expiration time in seconds: bar, icon, text indicators
-function status:GetExpirationTime()
-end
+status.GetExpirationTime = Grid2.Dummy
 -- duration in seconds: bar, icon, text indicators
-function status:GetDuration()
-end
+status.GetDuration = Grid2.Dummy
 -- percent value: alpha, bar indicators
-function status:GetPercent()
-end
+status.GetPercent = Grid2.Dummy
 -- texture: icon indicator
-function status:GetIcon()
-end
+status.GetIcon = Grid2.Dummy
+-- all indicators
+status.OnEnable = Grid2.Dummy
+-- all indicators
+status.OnDisable = Grid2.Dummy
 --}}
 
 function status:UpdateIndicators(unit)
@@ -96,6 +94,12 @@ function status:UpdateDB(dbx)
 	end
 end
 
+function status:Inject(data)
+	for k,f in next, data do
+		self[k] = f
+	end
+end
+
 Grid2.statusPrototype = {
 	__index = status,
 	new = function (self, ...)
@@ -123,7 +127,6 @@ function Grid2:RegisterStatus(status, types, baseKey, dbx)
 	end
 	status.dbx = dbx
 end
-
 
 function Grid2:UnregisterStatus(status)
     for _, indicator in Grid2:IterateIndicators() do

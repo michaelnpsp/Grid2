@@ -86,3 +86,7 @@ local function Create(baseKey, dbx)
 end
 
 Grid2.setupFunc["resurrection"] = Create
+
+Grid2:DbSetStatusDefaultValue( "resurrection", { type = "resurrection", colorCount = 2,
+	color1 = { r = 0, g = 1, b = 0, a=1 },    
+	color2 = { r = 1, g = 1, b = 0, a=0.75 }, }) 

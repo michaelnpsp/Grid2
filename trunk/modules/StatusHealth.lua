@@ -183,7 +183,7 @@ function HealthCurrent:GetPercent(unit)
 	end
 end
 
-function HealthCurrent:GetTextDefault(unit)
+function HealthCurrent:GetText(unit)
 	return fmt("%.1fk", UnitHealth(unit) / 1000)
 end
 
@@ -208,12 +208,13 @@ end
 
 local function CreateHealthCurrent(baseKey, dbx)
 	Grid2:RegisterStatus(HealthCurrent, {"percent", "text", "color"}, baseKey, dbx)
-	Grid2:MakeTextHandler(HealthCurrent)
 	HealthCurrent:UpdateDB()
 	return HealthCurrent
 end
 
 Grid2.setupFunc["health-current"] = CreateHealthCurrent
+
+Grid2:DbSetStatusDefaultValue( "health-current", {type = "health-current", colorCount=3, color1 = {r=0,g=1,b=0,a=1}, color2 = {r=1,g=1,b=0,a=1}, color3 = {r=1,g=0,b=0,a=1}  })
 
 -- health-low status
 HealthLow.OnEnable  = Health_Enable
@@ -230,6 +231,8 @@ local function CreateHealthLow(baseKey, dbx)
 end
 
 Grid2.setupFunc["health-low"] = CreateHealthLow
+
+Grid2:DbSetStatusDefaultValue( "health-low", {type = "health-low", threshold = 0.4, color1 = {r=1,g=0,b=0,a=1}})
 
 -- feign-death status
 local feign_cache = {}
@@ -273,6 +276,8 @@ end
 
 Grid2.setupFunc["feign-death"] = CreateFeignDeath
 
+Grid2:DbSetStatusDefaultValue( "feign-death", {type = "feign-death", color1 = {r=1,g=.5,b=1,a=1}})
+
 -- health-deficit status
 HealthDeficit.OnEnable  = Health_Enable
 HealthDeficit.OnDisable = Health_Disable
@@ -293,6 +298,8 @@ end
 
 Grid2.setupFunc["health-deficit"] = CreateHealthDeficit
 
+Grid2:DbSetStatusDefaultValue( "health-deficit", {type = "health-deficit", color1 = {r=1,g=1,b=1,a=1}, threshold = 0.05})
+
 -- heals-incoming status
 local heals_cache= setmetatable( {}, {__index = function() return 0 end} )
 
@@ -308,7 +315,7 @@ local Heals_GetHealAmount = Heals_get_without_user
 
 local function HealsUpdateEvent(unit)
 	if unit then
-		local cache= heals_cache[unit]
+		local cache = heals_cache[unit]
 		local heal = Heals_GetHealAmount(unit)
 		if heal<Heals.minimum then heal = 0 end
 		if cache ~= heal then
@@ -366,6 +373,8 @@ local function Create(baseKey, dbx)
 end
 
 Grid2.setupFunc["heals-incoming"] = Create
+
+Grid2:DbSetStatusDefaultValue( "heals-incoming", {type = "heals-incoming", includePlayerHeals = false, flags = 0, color1 = {r=0,g=1,b=0,a=1}})
 
 -- death status
 local dead_cache = {}
@@ -439,3 +448,5 @@ local function CreateDeath(baseKey, dbx)
 end
 
 Grid2.setupFunc["death"] = CreateDeath
+
+Grid2:DbSetStatusDefaultValue( "death", {type = "death", color1 = {r=1,g=1,b=1,a=1}})

@@ -63,8 +63,8 @@ function Grid2Blink:OnModuleDisable()
 end
 
 function Grid2Blink:Update()
-	self.frequency= self.db.profile.frequency or 4
-	self.typeFunc= Grid2Blink[self.db.profile.type] or Grid2Blink.Flash
+	self.frequency = self.db.profile.frequency or 4
+	self.typeFunc = Grid2Blink[self.db.profile.type] or Grid2Blink.Flash
 	Grid2:IndicatorsBlinkEnabled( self.db.profile.type~="None" )
 end
 

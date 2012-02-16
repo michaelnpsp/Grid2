@@ -13,7 +13,6 @@ local frames
 local layoutName
 local savedScale
 
-
 function Grid2Layout:ShowFrames(enabled)
 	for type, headers in pairs(self.groups) do
 		for i = 1, self.indexes[type] do
@@ -40,7 +39,7 @@ local function LayoutGetTestFrame(i)
 	end
 	f:SetBackdrop({
 		bgFile = texture, tile = false, tileSize = 0,
-		edgeFile = "Interface\\Addons\\Grid2\\white16x16", edgeSize = 1,
+		edgeFile = "Interface\\Addons\\Grid2\\media\\white16x16", edgeSize = 1,
 		insets = {left = 1, right = 1, top = 1, bottom = 1},
 	})
 	return f
@@ -95,7 +94,7 @@ do
 		if layoutName then LayoutHide(false) end
 		if not texture then
 			local media = LibStub("LibSharedMedia-3.0", true)
-			texture = media:Fetch("statusbar", Grid2Frame.db.profile.frameTexture) or "Interface\\Addons\\Grid2\\gradient32x32"		
+			texture = media:Fetch("statusbar", Grid2Frame.db.profile.frameTexture) or "Interface\\Addons\\Grid2\\media\\gradient32x32"		
 		end
 		if not frameLayout then frameLayout= Grid2Layout.frame end
 		savedScale= frameLayout:GetScale()

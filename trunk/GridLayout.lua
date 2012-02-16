@@ -7,11 +7,9 @@ local Grid2Layout = Grid2:NewModule("Grid2Layout")
 local pairs, ipairs, next = pairs, ipairs, next
 
 --{{{ Frame config function for secure headers
-
 local function GridHeader_InitialConfigFunction(self, name)
 	Grid2Frame:RegisterFrame(_G[name])
 end
-
 --}}}
 
 --{{{ Class for group headers
@@ -72,40 +70,23 @@ function GridLayoutHeaderClass.prototype:Reset()
 	self:Hide()
 end
 
+local anchorPoints = {
+	[false] = { TOPLEFT = "TOP" , TOPRIGHT= "TOP"  , BOTTOMLEFT = "BOTTOM", BOTTOMRIGHT = "BOTTOM" },
+	[true]  = { TOPLEFT = "LEFT", TOPRIGHT= "RIGHT", BOTTOMLEFT = "LEFT"  , BOTTOMRIGHT = "RIGHT"  },
+	TOP = -1, BOTTOM = 1, LEFT = 1, RIGHT = -1,
+}
 -- nil or false for vertical
 function GridLayoutHeaderClass.prototype:SetOrientation(horizontal)
 	if not self.initialConfigFunction then return end
-
-	local layoutSettings = Grid2Layout.db.profile
-	local groupAnchor = layoutSettings.groupAnchor
-	local padding = layoutSettings.Padding
-	local xOffset, yOffset, point
-
-	if horizontal then
-		if groupAnchor == "TOPLEFT" or groupAnchor == "BOTTOMLEFT" then
-			xOffset = padding
-			yOffset = 0
-			point = "LEFT"
-		else
-			xOffset = -padding
-			yOffset = 0
-			point = "RIGHT"
-		end
-	else
-		if groupAnchor == "TOPLEFT" or groupAnchor == "TOPRIGHT" then
-			xOffset = 0
-			yOffset = -padding
-			point = "TOP"
-		else
-			xOffset = 0
-			yOffset = padding
-			point = "BOTTOM"
-		end
-	end
-
-	self:SetLayoutAttribute("xOffset", xOffset)
-	self:SetLayoutAttribute("yOffset", yOffset)
-	self:SetLayoutAttribute("point", point)
+	local settings  = Grid2Layout.db.profile
+	local vertical  = not horizontal
+	local point     = anchorPoints[not vertical][settings.groupAnchor]
+	local direction = anchorPoints[point]
+	local xOffset   = horizontal and settings.Padding*direction or 0
+	local yOffset   = vertical   and settings.Padding*direction or 0
+	self:SetLayoutAttribute( "xOffset", xOffset )
+	self:SetLayoutAttribute( "yOffset", yOffset )
+	self:SetLayoutAttribute( "point", point )
 end
 
 -- MSaint fix see: http://forums.wowace.com/showpost.php?p=315982&postcount=215
@@ -129,10 +110,8 @@ function GridLayoutHeaderClass.prototype:ClearChildrenPoints()
 end
 
 --{{{ Grid2Layout
---{{{  Initialization
 
---{{{  AceDB defaults
-
+-- AceDB defaults
 Grid2Layout.defaultDB = {
 	profile = {
 		debug = false,
@@ -171,9 +150,6 @@ Grid2Layout.defaultDB = {
 		PosY = -200,
 	},
 }
-
---}}}
---}}}
 
 Grid2Layout.layoutSettings = {}
 Grid2Layout.layoutHeaderClass = GridLayoutHeaderClass
@@ -249,9 +225,7 @@ function Grid2Layout:StopMoveFrame()
 	end
 end
 
--- locked = nil : toggle
--- locked = false : disable movement
--- locked = true : enable movement
+-- nil:toggle, false:disable movement, true:enable movement
 function Grid2Layout:FrameLock(locked)
 	local p = self.db.profile
 	if (locked == nil) then
@@ -265,14 +239,8 @@ function Grid2Layout:FrameLock(locked)
 	end
 end
 
---
--- ConfigMode support
---
-
--- Create the global table if it does not exist yet
+--{{{ ConfigMode support
 CONFIGMODE_CALLBACKS = CONFIGMODE_CALLBACKS or {}
-
--- Declare our handler
 CONFIGMODE_CALLBACKS["Grid2"] = function(action)
 	if (action == "ON") then
 		Grid2Layout:FrameLock(false)
@@ -280,6 +248,7 @@ CONFIGMODE_CALLBACKS["Grid2"] = function(action)
 		Grid2Layout:FrameLock(true)
 	end
 end
+--}}}
 
 function Grid2Layout:CreateFrame()
 	local p = self.db.profile
@@ -299,60 +268,33 @@ function Grid2Layout:CreateFrame()
 	self.CreateFrame = nil
 end
 
-local function getRelativePoint(point, horizontal)
-	if point == "TOPLEFT" then
-		if horizontal then
-			return "BOTTOMLEFT", 1, -1
-		else
-			return "TOPRIGHT", 1, -1
-		end
-	elseif point == "TOPRIGHT" then
-		if horizontal then
-			return "BOTTOMRIGHT", -1, -1
-		else
-			return "TOPLEFT", -1, -1
-		end
-	elseif point == "BOTTOMLEFT" then
-		if horizontal then
-			return  "TOPLEFT", 1, 1
-		else
-			return "BOTTOMRIGHT", 1, 1
-		end
-	elseif point == "BOTTOMRIGHT" then
-		if horizontal then
-			return "TOPRIGHT", -1, 1
-		else
-			return "BOTTOMLEFT", -1, 1
-		end
-	end
-end
-
+local relativePoints = {
+	[false] = { TOPLEFT = "BOTTOMLEFT", TOPRIGHT = "BOTTOMRIGHT", BOTTOMLEFT = "TOPLEFT",     BOTTOMRIGHT = "TOPRIGHT"   },
+	[true]  = { TOPLEFT = "TOPRIGHT",   TOPRIGHT = "TOPLEFT",     BOTTOMLEFT = "BOTTOMRIGHT", BOTTOMRIGHT = "BOTTOMLEFT" },
+	xMult   = { TOPLEFT =  1, TOPRIGHT = -1, BOTTOMLEFT = 1, BOTTOMRIGHT = -1 },
+	yMult   = { TOPLEFT = -1, TOPRIGHT = -1, BOTTOMLEFT = 1, BOTTOMRIGHT =  1 },
+}
 local previousFrame
 function Grid2Layout:PlaceGroup(frame, groupNumber)
-
-	local settings = self.db.profile
+	local settings   = self.db.profile
 	local horizontal = settings.horizontal
-	local padding = settings.Padding
-	local spacing = settings.Spacing
-	local groupAnchor = settings.groupAnchor
-
-	local relPoint, xMult, yMult = getRelativePoint(groupAnchor, horizontal)
-
+	local vertical   = not horizontal
+	local padding    = settings.Padding
+	local spacing    = settings.Spacing
+	local anchor     = settings.groupAnchor
+	local relPoint   = relativePoints[vertical][anchor]
+	local xMult      = relativePoints.xMult[anchor] 
+	local yMult      = relativePoints.yMult[anchor] 
 	frame:ClearAllPoints()
 	frame:SetParent(self.frame)
 	if groupNumber == 1 then
-		frame:SetPoint(groupAnchor, self.frame, groupAnchor, spacing * xMult, spacing * yMult)
+		frame:SetPoint(anchor, self.frame, anchor, spacing * xMult, spacing * yMult)
 	else
-		if horizontal then	
-			xMult = 0 
-		else				
-			yMult = 0
-		end
-		frame:SetPoint(groupAnchor, previousFrame, relPoint, padding * xMult, padding * yMult)
+		xMult = vertical   and xMult*padding or 0
+		yMult = horizontal and yMult*padding or 0
+		frame:SetPoint(anchor, previousFrame, relPoint, xMult, yMult )
 	end
-
-	self:Debug("Placing group", groupNumber, frame:GetName(), groupAnchor, previousFrame and previousFrame:GetName(), relPoint)
-
+	self:Debug("Placing group", groupNumber, frame:GetName(), anchor, previousFrame and previousFrame:GetName(), relPoint)
 	previousFrame = frame
 end
 
@@ -373,30 +315,13 @@ function Grid2Layout:ReloadLayout()
 	self:LoadLayout( self.db.profile.layouts[self.partyType or "solo"] )
 end
 
-local function getColumnAnchorPoint(point, horizontal)
-	if not horizontal then
-		if point == "TOPLEFT" or point == "BOTTOMLEFT" then
-			return "LEFT"
-		elseif point == "TOPRIGHT" or point == "BOTTOMRIGHT" then
-			return "RIGHT"
-		end
-	else
-		if point == "TOPLEFT" or point == "TOPRIGHT" then
-			return "TOP"
-		elseif point == "BOTTOMLEFT" or point == "BOTTOMRIGHT" then
-			return "BOTTOM"
-		end
-	end
-	return point
-end
-
 local function SetAllAttributes(header, p, list, fix)
 	local petgroup = false
 	for attr, value in next, list do
 		if attr == "unitsPerColumn" then
 			header:SetLayoutAttribute("columnSpacing", p.Padding)
 			header:SetLayoutAttribute("unitsPerColumn", value)
-			header:SetLayoutAttribute("columnAnchorPoint", getColumnAnchorPoint(p.groupAnchor, p.horizontal))
+			header:SetLayoutAttribute("columnAnchorPoint", anchorPoints[not p.horizontal][p.groupAnchor] or p.groupAnchor )
 		elseif attr ~= "type" then
 			header:SetLayoutAttribute(attr, value)
 		else
@@ -495,9 +420,7 @@ function Grid2Layout:UpdateSize()
 	local curWidth, curHeight, maxWidth, maxHeight = 0, 0, 0, 0
 	local Padding, Spacing = p.Padding, p.Spacing * 2
 	
-	local GridFrame = Grid2:GetModule("Grid2Frame")
-	local frameWidth,frameHeight = GridFrame:GetFrameSize()
-
+	local frameWidth,frameHeight = Grid2Frame:GetFrameSize()
 	for i = 1, self.indexes.spacer do
 		self.groups.spacer[i]:SetSize(frameWidth,frameHeight)
 	end
@@ -512,15 +435,9 @@ function Grid2Layout:UpdateSize()
 			if maxHeight < height then maxHeight = height end
 		end
 	end
-
-	local x, y
-	if p.horizontal then
-		x = maxWidth + Spacing 
-		y = curHeight + Spacing - Padding
-	else
-		x = curWidth + Spacing - Padding
-		y = maxHeight + Spacing 
-	end
+	
+	local x = p.horizontal and maxWidth+Spacing          or curWidth+Spacing-Padding
+	local y = p.horizontal and curHeight+Spacing-Padding or maxHeight+Spacing 
 	
 	self.frame:SetWidth(x)
 	self.frame:SetHeight(y)
@@ -553,12 +470,9 @@ end
 
 function Grid2Layout:CheckVisibility()
 	local frameDisplay = self.db.profile.FrameDisplay
-
-	if frameDisplay == "Always" then
-		self.frame:Show()
-	elseif frameDisplay == "Grouped" and self.partyType ~= "solo" then
-		self.frame:Show()
-	elseif frameDisplay == "Raid" and (self.partyType == "raid10" or self.partyType == "raid15" or self.partyType == "raid20" or self.partyType == "raid25") then
+	if (frameDisplay == "Always") or
+       (frameDisplay == "Grouped" and self.partyType ~= "solo"    ) or
+	   (frameDisplay == "Raid"    and self.partyType:find("raid") ) then
 		self.frame:Show()
 	else
 		self.frame:Hide()
@@ -567,57 +481,27 @@ end
 
 function Grid2Layout:SavePosition()
 	local f = self.frame
-	local s = f:GetEffectiveScale()
-	local uiScale = UIParent:GetEffectiveScale()
-	local anchor = self.db.profile.anchor
-
-	local x, y
-
-	if not f:GetLeft() or not f:GetWidth() then return end
-
-	if anchor == "CENTER" then
-		x = (f:GetLeft() + f:GetWidth() / 2) * s - UIParent:GetWidth() / 2 * uiScale
-		y = (f:GetTop() - f:GetHeight() / 2) * s - UIParent:GetHeight() / 2 * uiScale
-	elseif anchor == "TOP" then
-		x = (f:GetLeft() + f:GetWidth() / 2) * s - UIParent:GetWidth() / 2 * uiScale
-		y = f:GetTop() * s - UIParent:GetHeight() * uiScale
-	elseif anchor == "LEFT" then
-		x = f:GetLeft() * s
-		y = (f:GetTop() - f:GetHeight() / 2) * s - UIParent:GetHeight() / 2 * uiScale
-	elseif anchor == "RIGHT" then
-		x = f:GetRight() * s - UIParent:GetWidth() * uiScale
-		y = (f:GetTop() - f:GetHeight() / 2) * s - UIParent:GetHeight() / 2 * uiScale
-	elseif anchor == "BOTTOM" then
-		x = (f:GetLeft() + f:GetWidth() / 2) * s - UIParent:GetWidth() / 2 * uiScale
-		y = f:GetBottom() * s
-	elseif anchor == "TOPLEFT" then
-		x = f:GetLeft() * s
-		y = f:GetTop() * s - UIParent:GetHeight() * uiScale
-	elseif anchor == "TOPRIGHT" then
-		x = f:GetRight() * s - UIParent:GetWidth() * uiScale
-		y = f:GetTop() * s - UIParent:GetHeight() * uiScale
-	elseif anchor == "BOTTOMLEFT" then
-		x = f:GetLeft() * s
-		y = f:GetBottom() * s
-	elseif anchor == "BOTTOMRIGHT" then
-		x = f:GetRight() * s - UIParent:GetWidth() * uiScale
-		y = f:GetBottom() * s
-	end
-
-	if x and y then
+	if f:GetLeft() and f:GetWidth() then 
+		local a = self.db.profile.anchor
+		local s = f:GetEffectiveScale()
+		local t = UIParent:GetEffectiveScale()
+		local x = (a:find("LEFT")  and f:GetLeft()*s) or
+				  (a:find("RIGHT") and f:GetRight()*s-UIParent:GetWidth()*t) or
+				  (f:GetLeft()+f:GetWidth()/2)*s-UIParent:GetWidth()/2*t
+		local y = (a:find("BOTTOM") and f:GetBottom()*s) or
+				  (a:find("TOP")    and f:GetTop()*s-UIParent:GetHeight()*t) or
+				  (f:GetTop()-f:GetHeight()/2)*s-UIParent:GetHeight()/2*t
 		self.db.profile.PosX = x
 		self.db.profile.PosY = y
 		self:Debug("Saved Position", anchor, x, y)
-	end
+	end	
 end
 
 function Grid2Layout:ResetPosition()
-	local uiScale = UIParent:GetEffectiveScale()
-
-	self.db.profile.PosX = UIParent:GetWidth() / 2 * uiScale
-	self.db.profile.PosY = - UIParent:GetHeight() / 2 * uiScale
+	local s = UIParent:GetEffectiveScale()
+	self.db.profile.PosX =   UIParent:GetWidth()  / 2 * s
+	self.db.profile.PosY = - UIParent:GetHeight() / 2 * s
 	self.db.profile.anchor = "TOPLEFT"
-
 	self:RestorePosition()
 	self:SavePosition()
 end
@@ -628,21 +512,19 @@ function Grid2Layout:RestorePosition()
 		return
 	end
 	restorePositionQueued = false
-
 	local f = self.frame
 	local s = f:GetEffectiveScale()
-	local x, y = self.db.profile.PosX / s, self.db.profile.PosY / s
-	local anchor = self.db.profile.anchor
-
+	local x = self.db.profile.PosX / s
+	local y = self.db.profile.PosY / s
+	local a = self.db.profile.anchor
 	f:ClearAllPoints()
-	f:SetPoint(anchor, x, y)
-
-	self:Debug("Restored Position", anchor, x, y)
+	f:SetPoint(a, x, y)
+	self:Debug("Restored Position", a, x, y)
 end
 
 function Grid2Layout:Scale()
+	local settings = self.db.profile
 	self:SavePosition()
-	local settings= self.db.profile
 	self.frame:SetScale(  settings.ScaleSize * (settings.layoutScales[self.layoutName or "solo"] or 1) )
 	self:RestorePosition()
 end
@@ -658,7 +540,6 @@ function Grid2Layout:SetFrameLock(FrameLock, ClickThrough)
 end
 
 function Grid2Layout:AddCustomLayouts()
-	-- Register user defined layouts
 	local customLayouts= self.db.global.customLayouts
 	if customLayouts then
 		for n,l in pairs(customLayouts) do

@@ -298,10 +298,6 @@ function Grid2Options.SetStatusColor(info, r, g, b, a)
 
 	c = dbx[colorKey]
 	c.r, c.g, c.b, c.a = r, g, b, a
-
-	if passValue.makeColorHandler then
-		Grid2:MakeStatusColorHandler(status)
-	end
 	
 	if status.UpdateDB then status:UpdateDB() end
 	
@@ -317,7 +313,6 @@ function Grid2Options:MakeStatusColorOptions(status, options, optionParams)
 	local name  = L["Color"]
 	local desc  = L["Color for %s."]:format(status.name)
 	local width = optionParams and optionParams.width or "half"
-	local makeColorHandler = optionParams and optionParams.makeColorHandler
 	for i = 1, colorCount, 1 do
 		local colorKey = "color" .. i
 		if (optionParams and optionParams[colorKey]) then
@@ -342,7 +337,7 @@ function Grid2Options:MakeStatusColorOptions(status, options, optionParams)
 			get = Grid2Options.GetStatusColor,
 			set = Grid2Options.SetStatusColor,
 			hasAlpha = true,
-			arg = {status = status, colorIndex = i, makeColorHandler = makeColorHandler},
+			arg = {status = status, colorIndex = i },
 		}
 	end
 
@@ -1756,8 +1751,8 @@ end
 			
 function Grid2Options:MakeStatusHandlers(reset)
 
-	self:AddOptionHandler("buff", self.MakeStatusStandardBuffOptions , { makeColorHandler= true } )
-	self:AddOptionHandler("debuff", self.MakeStatusStandardDebuffOptions, { makeColorHandler= true } )
+	self:AddOptionHandler("buff", self.MakeStatusStandardBuffOptions )
+	self:AddOptionHandler("debuff", self.MakeStatusStandardDebuffOptions )
 	self:AddOptionHandler("debuffType", self.MakeStatusDebuffTypeOptions)
 
 	self:AddOptionHandler("color", self.MakeStatusColorStatusOptions)

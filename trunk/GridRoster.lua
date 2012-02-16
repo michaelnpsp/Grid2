@@ -1,17 +1,20 @@
--- 
-local UnitExists = UnitExists
+-- Roster management
+
 local UnitName = UnitName
 local UnitGUID = UnitGUID
-local pairs, next= pairs, next
+local UnitExists = UnitExists
+local pairs, next = pairs, next
+
+-- realm name
+local my_realm = GetRealmName()
 
 -- indexed by unit ID
 local roster_names = {}
 local roster_realms = {}
 local roster_guids = {}
+
 -- indexed by GUID
 local roster_units = {}
-
-local my_realm = GetRealmName()
 
 -- unit tables
 local party_units = {}
@@ -19,8 +22,8 @@ local raid_units = {}
 local pet_of_unit = {}
 local owner_of_unit = {}
 
-do
-	-- populate unit tables
+-- populate unit tables
+do 	
 	local function register_unit(tbl, unit, pet)
 		table.insert(tbl, unit)
 		pet_of_unit[unit] = pet
@@ -38,6 +41,7 @@ do
 	end
 end
 
+-- roster query functions
 function Grid2:GetUnitByFullName(fullName)
 	local name, realm = fullName:match("^([^%-]+)%-(.*)$")
 	name = name or fullName
@@ -94,6 +98,61 @@ function Grid2:UnitIsRaid(unit)
 	end
 end
 
+-- Events to track raid type changes
+do 
+	local groupType
+	function Grid2:PLAYER_ENTERING_WORLD()
+		-- this is needed to trigger an update when switching from one BG directly to another
+		groupType = nil
+		self:GroupChanged("PLAYER_ENTERING_WORLD")
+		--
+		if self.db.profile.hideBlizzardRaidFrames then
+			Grid2:HideBlizzardRaidFrames()
+		end
+	end
+	function Grid2:GroupChanged(event)
+		local _, instType = IsInInstance()
+		if instType == "none" then
+			local raidMembers = GetNumRaidMembers()
+			if     raidMembers>25 then			instType = "raid40"
+			elseif raidMembers>10 then			instType = "raid25"
+			elseif raidMembers>0  then			instType = "raid10"
+			elseif GetNumPartyMembers()>0 then 	instType = "party"
+			else								instType = "solo"
+			end
+		else
+			if instType == "raid" then
+				local dif = GetRaidDifficulty()
+				instType= (dif == 2 or dif == 4) and "raid25" or "raid10"
+			elseif instType == "pvp" then
+				local raidMembers = GetNumRaidMembers()
+				if raidMembers<11 then		instType = "raid10"
+				elseif raidMembers<16 then	instType = "raid15"
+				else						instType = "raid40"
+				end
+			else
+				local raidMembers = GetNumRaidMembers()
+				if raidMembers>25 then				instType = "raid40"
+				elseif raidMembers>15 then			instType = "raid25"
+				elseif raidMembers>10 then			instType = "raid15"
+				elseif raidMembers>0 then			instType = "raid10"
+				elseif GetNumPartyMembers()>0 then	instType = "party"
+				else								instType = "solo"
+				end
+			end
+			if GetNumPartyMembers() == 0 and GetNumRaidMembers() == 0 then
+				instType = "solo"
+			end
+		end
+		self:Debug("GroupChanged", groupType, "=>", instType)
+		if groupType ~= instType then
+			groupType = instType
+			self:SendMessage("Grid_GroupTypeChanged", groupType)
+		end
+		self:UpdateRoster()
+	end
+end
+
 -- roster updating
 do
 	local units_to_remove = {}
@@ -115,6 +174,7 @@ do
 
 		if old_name ~= name or old_realm ~= realm then
 			self:SendMessage("Grid_UnitChanged", unit, guid)
+			self:SendMessage("Grid_UnitUpdated", unit, guid)
 			self:SendMessage("Grid_UnitUpdate", unit, guid)
 			self:SendMessage("Grid_RosterUpdated")
 		end
@@ -154,6 +214,7 @@ do
 			end
 			if updated then
 				self:SendMessage(exists and "Grid_UnitChanged" or "Grid_UnitJoined", unit, guid)
+				self:SendMessage("Grid_UnitUpdated", unit, guid)
 				self:SendMessage("Grid_UnitUpdate", unit, guid)
 				self:SendMessage("Grid_RosterUpdated")
 			end
@@ -253,7 +314,8 @@ do
 		end
 		
 		for unit, guid in pairs(units_updated) do
-			self:SendMessage("Grid_UnitUpdate", unit, guid) -- Used internally (by Grid2Frame) to update indicators.
+			self:SendMessage("Grid_UnitUpdated", unit, guid) -- Used by some statuses
+			self:SendMessage("Grid_UnitUpdate", unit, guid) --  Used internally by Grid2Frame to update indicators.
 			units_updated[unit] = nil
 		end
 
@@ -262,7 +324,3 @@ do
 		end
 	end
 end
---[[
-/dump Grid2:IterateRoster()
-/dump Grid2:IterateRosterUnits()
---]]

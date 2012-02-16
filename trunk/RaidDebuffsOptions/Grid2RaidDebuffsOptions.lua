@@ -101,8 +101,8 @@ local function GetInstances(module)
 	return values
 end
 
-local function SetEnableDebuff(status,instance, spellId, value, idTracking)
-	local dbx= status.dbx
+local function SetEnableDebuff(status,instance, spellId, value)
+	local dbx = status.dbx
 	if value then
 		if not dbx.debuffs then 
 			dbx.debuffs= {}	
@@ -110,26 +110,27 @@ local function SetEnableDebuff(status,instance, spellId, value, idTracking)
 		if not dbx.debuffs[instance] then
 			dbx.debuffs[instance]= {}
 		end
-		local debuffs= dbx.debuffs[instance]
-		selectedDebuffs[spellId]= true
-		if idTracking then
-			selectedDebuffs[-spellId]= true
-			debuffs[#debuffs+1]= -spellId
-		else
-			debuffs[#debuffs+1]= spellId
-		end
+		local debuffs = dbx.debuffs[instance]
+		debuffs[#debuffs+1] = spellId
+		selectedDebuffs[spellId] = #debuffs
 	else
-		local debuffs= dbx.debuffs and dbx.debuffs[instance]
-		if debuffs then
-			for i=#debuffs,1,-1 do
-				if debuffs[i]==spellId or debuffs[i]==-spellId then
-					table.remove(debuffs,i)
-				end
+		local debuffs = dbx.debuffs[instance]
+		local index   = selectedDebuffs[spellId]
+		table.remove( debuffs,  index )
+		selectedDebuffs[spellId]= nil
+		for k,v in pairs(selectedDebuffs) do
+			if v>index then 
+				selectedDebuffs[k] = v-1 
 			end
-			selectedDebuffs[spellId]= nil
-			selectedDebuffs[-spellId]= nil
-		end	
+		end
 	end
+	UpdateZoneSpells()
+end
+
+local function SetDebuffSpellIdTracking(status, instance, spellId, value)
+	local index    = selectedDebuffs[spellId]
+	local debuffs  = status.dbx.debuffs[instance]
+	debuffs[index] = value and -spellId or spellId
 	UpdateZoneSpells()
 end
 
@@ -139,10 +140,10 @@ local function FormatDebuffName(spellName,spellId)
 end
 
 local function EnableInstanceAllDebuffs(status)
-	local debuffs= {}
-	local module= selectedModule
-	local instance= selectedInstance
-	local dbx= status.dbx
+	local debuffs = {}
+	local module = selectedModule
+	local instance = selectedInstance
+	local dbx = status.dbx
 	if not dbx.debuffs then 
 		dbx.debuffs= {}	
 	end
@@ -150,7 +151,7 @@ local function EnableInstanceAllDebuffs(status)
 	for _,values in pairs(debuffsall) do
 		for _,spellId in ipairs(values) do
 			debuffs[#debuffs+1]= spellId
-			selectedDebuffs[spellId]= true
+			selectedDebuffs[spellId]= #debuffs
 		end
 	end
 	-- Enable user defined debuffs
@@ -159,7 +160,7 @@ local function EnableInstanceAllDebuffs(status)
 		for _,values in pairs(rddbx[instance]) do
 			for _,spellId in ipairs(values) do
 				debuffs[#debuffs+1]= spellId
-				selectedDebuffs[spellId]= true
+				selectedDebuffs[spellId]= #debuffs
 			end
 		end
 	end	
@@ -171,8 +172,8 @@ local function DisableInstanceAllDebuffs(status)
 	local instance= selectedInstance
 	local debuffs= status.dbx.debuffs
 	if debuffs and debuffs[instance] then
-		debuffs[instance]= nil
-		selectedDebuffs= {}
+		debuffs[instance] = nil
+		selectedDebuffs = {}
 		UpdateZoneSpells()
 	end
 end
@@ -257,9 +258,9 @@ local function CreateRaidDebuff(status,boss)
 		if not dbx[boss] then dbx[boss]= {}	end
 		dbx= dbx[boss]
 		dbx[#dbx+1]= spellId
-		local order= optionDebuffs.args[boss].order + 49
 		SetEnableDebuff(status,selectedInstance,spellId,true)
-		optionDebuffs.args[tostring(spellId)]= MakeDebuffGroup(status, boss, spellId, order, true)
+		local order = optionDebuffs.args[boss].order + selectedDebuffs[spellId]
+		optionDebuffs.args[tostring(spellId)] = MakeDebuffGroup(status, boss, spellId, order, true)
 	end
 	newDebuffName= nil
 	newSpellId= nil
@@ -270,7 +271,7 @@ local function DeleteRaidDebuff(status, spellId)
 	SetEnableDebuff(status,selectedInstance,spellId,false)
 	for boss, spells in pairs(dbx.debuffs[selectedInstance]) do
 		for i= 1, #spells do
-			if spellId== spells[i] then
+			if spellId == spells[i] then
 				optionDebuffs.args[tostring(spellId)]= nil
 				table.remove(spells,i)
 				if #spells==0 then
@@ -320,7 +321,9 @@ local function MakeDebuffOptions(status,bossName,spellId,spellName,spellIcon, is
 			get = function() return selectedDebuffs[spellId] end,
 			set = function(_, v)    
 				SetEnableDebuff(status,selectedInstance,spellId,v)
-				optionDebuffs.args[tostring(spellId)].name= FormatDebuffName(spellName,spellId)
+				local option = optionDebuffs.args[ tostring(spellId) ]
+				option.name  = FormatDebuffName(spellName,spellId)
+				option.order = math.floor( option.order / 200) * 200 + (selectedDebuffs[spellId] or 100)
 			end,
 		},	
 		header3={
@@ -334,10 +337,12 @@ local function MakeDebuffOptions(status,bossName,spellId,spellName,spellIcon, is
 			width = "full",
 			name = fmt( "%s ( %d )", L["Track by SpellId"], spellId ),
 			desc = L["Track by spellId instead of aura name"],
-			get = function() return selectedDebuffs[-spellId] end,
-			set = function(_, v)
-				SetEnableDebuff(status, selectedInstance, spellId, false)
-				SetEnableDebuff(status, selectedInstance, spellId, true, v)
+			get = function() 
+				local index = selectedDebuffs[spellId]
+				if index then return status.dbx.debuffs[selectedInstance][index] < 0 end	
+			end,
+			set = function(_, v) 
+				SetDebuffSpellIdTracking(status, selectedInstance, spellId, v)	
 			end,
 			disabled = function() return not selectedDebuffs[spellId] end,
 		},					
@@ -369,32 +374,28 @@ end
 function MakeDebuffGroup(status, bossName, spellId, order, isCustom)
 	local spellName,_, spellIcon = GetSpellInfo(spellId)
 	return {
-		type= "group",
-		name= FormatDebuffName(spellName,spellId),
-		nameBackup= spellName,
-		order= order,
-		args= MakeDebuffOptions(status,bossName,spellId,spellName,spellIcon, isCustom)
+		type = "group",
+		name = FormatDebuffName(spellName,spellId),
+		nameBackup = spellName,
+		desc = fmt("     (%d)", spellId ),
+		order = order,
+		args = MakeDebuffOptions(status,bossName,spellId,spellName,spellIcon,isCustom)
 	}
 end
 
 function MakeDebuffsOptions(status)
-	local module=selectedModule
-	local instance=selectedInstance
+	local module = selectedModule
+	local instance = selectedInstance
 	--
 	selectedDebuffs= {}
-	local dbx= status.dbx.debuffs[instance] or {}
+	local dbx = status.dbx.debuffs and status.dbx.debuffs[instance] or {}
 	for index,value in ipairs(dbx) do
-		if value>0 then
-			selectedDebuffs[value]= true
-		else
-			selectedDebuffs[ value]= true
-			selectedDebuffs[-value]= true
-		end
+		selectedDebuffs[ math.abs(value) ] = index
 	end
 	--
-	local dbx= GSRD.db.profile.debuffs and GSRD.db.profile.debuffs[selectedInstance]
-	local cacheKey= module..instance
-	local options= optionsDebuffsCache[cacheKey]
+	local dbx = GSRD.db.profile.debuffs and GSRD.db.profile.debuffs[selectedInstance]
+	local cacheKey = module..instance
+	local options = optionsDebuffsCache[cacheKey]
 	if not options then
 		options= {}
 		options.enableall={
@@ -416,10 +417,10 @@ function MakeDebuffsOptions(status)
 			end
 		}
 		local debuffs= RDDB[module][instance]
-		local ORDER= 10
+		local ORDER = 200
 		for name,values in pairs(debuffs) do
 			local bossName= BB[name] or name
-			options[name]= {	
+			options[name]= {
 				type= "group",
 				name=  fmt("|T%s:0|t%s", ICON_SKULL, bossName),
 				order= ORDER,
@@ -446,20 +447,18 @@ function MakeDebuffsOptions(status)
 					},
 				},
 			}
-			local childOrder = ORDER 
-			for _,spellId in ipairs(values) do
-				childOrder= childOrder + 1
+			for index,spellId in ipairs(values) do
+				local childOrder = ORDER + (selectedDebuffs[spellId] or (100+index))
 				options[tostring(spellId)]= MakeDebuffGroup(status, bossName, spellId, childOrder)
 			end
-			-- Add user defined raid debuffs
 			local userDebuffs= dbx and dbx[name]
 			if userDebuffs then
-				for _,spellId in ipairs(userDebuffs) do
-					childOrder= childOrder + 1
+				for index,spellId in ipairs(userDebuffs) do
+					local childOrder = ORDER + (selectedDebuffs[spellId] or (150+index))
 					options[tostring(spellId)]= MakeDebuffGroup(status, bossName, spellId, childOrder, true)
 				end
 			end
-			ORDER= ORDER + 50
+			ORDER= ORDER + 200
 		end
 		optionsDebuffsCache[cacheKey]= options
 	end
@@ -473,7 +472,7 @@ local function MakeModulesListOptions(self,status,options,optionParams)
 		name="",
 	}
 	options.modules= {
-		type = "multiselect",
+		type= "multiselect",
 		name= L["Enabled raid debuffs modules"],
 		order= 150,
 		width= "full",
@@ -527,11 +526,9 @@ local function MakeAdvancedOptions(self,status,options,optionPararms)
 		order = 20,
 		name = L["Select instance"],
 		desc = "",
-		get = function ()
-			return selectedInstance
-		end,
+		get = function () return selectedInstance end,
 		set = function (_, v)
-			selectedInstance= v
+			selectedInstance = v
 			optionDebuffs.name= BZ[v] or v
 			optionDebuffs.args= MakeDebuffsOptions(status)
 		end,
