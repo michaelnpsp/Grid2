@@ -3,11 +3,12 @@
 local Mana = Grid2.statusPrototype:new("mana",false)
 local LowMana = Grid2.statusPrototype:new("lowmana",false)
 local Power = Grid2.statusPrototype:new("power",false)
-local PowerAlt= Grid2.statusPrototype:new("poweralt",false)
+local PowerAlt = Grid2.statusPrototype:new("poweralt",false)
 
 local max = math.max
 local fmt = string.format
 local next = next
+local tostring = tostring
 local UnitMana = UnitMana
 local UnitManaMax = UnitManaMax
 local UnitPowerType = UnitPowerType
@@ -15,7 +16,7 @@ local UnitPower = UnitPower
 local UnitPowerMax = UnitPowerMax
 local UnitIsPlayer = UnitIsPlayer
 
-local statuses= {}  -- Enabled statuses
+local statuses = {}  -- Enabled statuses
 
 -- Methods shared by all statuses
 local status_OnEnable, status_OnDisable
@@ -47,12 +48,11 @@ do
 	end
 end
 
-local function status_GetColor(self)
-	local c = self.dbx.color1
-	return c.r, c.g, c.b, c.a
-end
-
 -- Mana status
+Mana.GetColor = Grid2.statusLibrary.GetColor
+Mana.OnEnable = status_OnEnable
+Mana.OnDisable= status_OnDisable
+
 function Mana:UpdateUnitPower(unit, powerType)
 	if powerType=="MANA" then
 		self:UpdateIndicators(unit)
@@ -71,21 +71,18 @@ function Mana:GetText(unit)
 	return fmt("%.1fk", UnitMana(unit) / 1000)
 end
 
-local function Create(baseKey, dbx)
+Grid2.setupFunc["mana"] = function(baseKey, dbx)
 	Grid2:RegisterStatus(Mana, {"percent", "text", "color"}, baseKey, dbx)
-
 	return Mana
 end
-
-Mana.GetColor = status_GetColor
-Mana.OnEnable = status_OnEnable
-Mana.OnDisable= status_OnDisable
-
-Grid2.setupFunc["mana"] = Create
 
 Grid2:DbSetStatusDefaultValue( "mana", {type = "mana", color1= {r=0,g=0,b=1,a=1}} )
 
 -- Low Mana status
+LowMana.GetColor  = Grid2.statusLibrary.GetColor
+LowMana.OnEnable  = status_OnEnable
+LowMana.OnDisable = status_OnDisable
+
 function LowMana:UpdateUnitPower(unit, powerType)
 	if powerType=="MANA" then
 		self:UpdateIndicators(unit)
@@ -96,20 +93,18 @@ function LowMana:IsActive(unit)
 	return (UnitPowerType(unit) == 0) and (Mana:GetPercent(unit) < self.dbx.threshold)
 end
 
-local function Create(baseKey, dbx)
+Grid2.setupFunc["lowmana"] = function(baseKey, dbx)
 	Grid2:RegisterStatus(LowMana, {"color"}, baseKey, dbx)
 	return LowMana
 end
 
-LowMana.GetColor  = status_GetColor
-LowMana.OnEnable  = status_OnEnable
-LowMana.OnDisable = status_OnDisable
-
-Grid2.setupFunc["lowmana"] = Create
-
 Grid2:DbSetStatusDefaultValue( "lowmana", {type = "lowmana", threshold = 0.75, color1 = {r=0.5,g=0,b=1,a=1}})
 
 -- Alternative power status
+PowerAlt.GetColor = Grid2.statusLibrary.GetColor
+PowerAlt.OnEnable = status_OnEnable
+PowerAlt.OnDisable= status_OnDisable
+
 function PowerAlt:UpdateUnitPower(unit, powerType)
 	if powerType=="ALTERNATE" then
 		self:UpdateIndicators(unit)
@@ -133,22 +128,18 @@ function PowerAlt:GetText(unit)
 	end
 end
 
-local function Create(baseKey, dbx)
+Grid2.setupFunc["poweralt"] = function(baseKey, dbx)
 	Grid2:RegisterStatus(PowerAlt, {"percent", "text", "color"}, baseKey, dbx)
-
 	return PowerAlt
 end
-
-PowerAlt.GetColor = status_GetColor
-PowerAlt.OnEnable = status_OnEnable
-PowerAlt.OnDisable= status_OnDisable
-
-Grid2.setupFunc["poweralt"] = Create
 
 Grid2:DbSetStatusDefaultValue( "poweralt", {type = "poweralt", color1= {r=1,g=0,b=0.5,a=1}} )
 
 -- Power status
 local powerColors= {}
+
+Power.OnEnable = status_OnEnable
+Power.OnDisable = status_OnDisable
 
 function Power:UpdateUnitPower(unit, powerType)
    if UnitIsPlayer(unit) and powerColors[ powerType ] then
@@ -165,7 +156,7 @@ function Power:GetPercent(unit)
 end
 
 function Power:GetText(unit)
-	local power= UnitPower(unit)
+	local power = UnitPower(unit)
 	if power>=1000 then
 		return fmt("%.1fk", power / 1000)
 	else
@@ -187,16 +178,11 @@ function Power:UpdateDB()
 	powerColors["RUNIC_POWER"] = self.dbx.color5
 end
 
-local function Create(baseKey, dbx)
+Grid2.setupFunc["power"] = function(baseKey, dbx)
 	Grid2:RegisterStatus(Power, {"percent", "text", "color"}, baseKey, dbx)
 	Power:UpdateDB()
 	return Power
 end
-
-Power.OnEnable = status_OnEnable
-Power.OnDisable = status_OnDisable
-
-Grid2.setupFunc["power"] = Create
 
 Grid2:DbSetStatusDefaultValue( "power", {type = "power", colorCount = 5, 
 	color1 = {r=0,g=0.5,b=1  ,a=1},   -- mana

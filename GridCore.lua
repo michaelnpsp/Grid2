@@ -198,24 +198,3 @@ function Grid2:ProfileChanged()
 		Grid2Options:MakeOptions()
 	end	
 end
-
---{{ Misc functions
-function Grid2:MediaFetch(mediatype, key, def)
-	return (key and media:Fetch(mediatype, key)) or (def and media:Fetch(mediatype, def))
-end
-
-local defaultColor= {r=0,g=0,b=0,a=0}
-function Grid2:MakeColor(color)
-	return color or defaultColor
-end
-
-function Grid2.Dummy()
-end
-
-function Grid2:HideBlizzardRaidFrames()
-	CompactRaidFrameManager:UnregisterAllEvents()
-	CompactRaidFrameManager:Hide()
-	CompactRaidFrameContainer:UnregisterAllEvents()
-	CompactRaidFrameContainer:Hide()
-end
---}}

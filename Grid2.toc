@@ -41,6 +41,7 @@ locales.xml
 
 # Grid
 GridCore.lua
+GridUtils.lua
 GridBlink.lua
 GridRoster.lua
 GridLayout.lua

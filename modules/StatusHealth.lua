@@ -158,18 +158,10 @@ local function Health_Disable(status)
 	if not next(statuses) then Health_UnregisterEvents() end	
 end
 
-local function Health_GetColor(self, unit)
-	local c = self.dbx.color1
-	return c.r, c.g, c.b, c.a
-end
-
 -- health-current status
 HealthCurrent.OnEnable  = Health_Enable
 HealthCurrent.OnDisable = Health_Disable
-
-function HealthCurrent:IsActive(unit)
-	return true
-end
+HealthCurrent.IsActive  = Grid2.statusLibrary.IsActive
 
 function HealthCurrent:GetPercent(unit)
 	if (self.deadAsFullHealth and UnitIsDeadOrGhost(unit)) then
@@ -178,9 +170,8 @@ function HealthCurrent:GetPercent(unit)
 	local m = UnitHealthMax(unit)
 	if m ~= 0 then
 		return UnitHealth(unit) / m
-	else
-		return 0
 	end
+	return 0
 end
 
 function HealthCurrent:GetText(unit)
@@ -189,7 +180,7 @@ end
 
 function HealthCurrent:GetColor(unit)
 	local f,t
-	local p= self:GetPercent(unit)
+	local p = self:GetPercent(unit)
 	if p>=0.5 then
 		f,t,p = self.color2, self.color1, (p-0.5)*2
 	else
@@ -219,7 +210,7 @@ Grid2:DbSetStatusDefaultValue( "health-current", {type = "health-current", color
 -- health-low status
 HealthLow.OnEnable  = Health_Enable
 HealthLow.OnDisable = Health_Disable
-HealthLow.GetColor  = Health_GetColor
+HealthLow.GetColor  = Grid2.statusLibrary.GetColor
 
 function HealthLow:IsActive(unit)
 	return HealthCurrent:GetPercent(unit) < self.dbx.threshold
@@ -237,7 +228,8 @@ Grid2:DbSetStatusDefaultValue( "health-low", {type = "health-low", threshold = 0
 -- feign-death status
 local feign_cache = {}
 
-FeignDeath.GetColor = Health_GetColor
+FeignDeath.GetColor = Grid2.statusLibrary.GetColor
+FeignDeath.GetPercent = Grid2.statusLibrary.GetPercent
 
 local function FeignDeathUpdateEvent(unit)
 	local feign = UnitIsFeignDeath(unit)
@@ -260,10 +252,6 @@ function FeignDeath:IsActive(unit)
 	return UnitIsFeignDeath(unit)
 end
 
-function FeignDeath:GetPercent(unit)
-	return self.dbx.color1.a 
-end
-
 local feignText = L["FD"]
 function FeignDeath:GetText(unit)
 	return feignText
@@ -281,7 +269,7 @@ Grid2:DbSetStatusDefaultValue( "feign-death", {type = "feign-death", color1 = {r
 -- health-deficit status
 HealthDeficit.OnEnable  = Health_Enable
 HealthDeficit.OnDisable = Health_Disable
-HealthDeficit.GetColor  = Health_GetColor
+HealthDeficit.GetColor  = Grid2.statusLibrary.GetColor
 
 function HealthDeficit:IsActive(unit)
 	return (1 - HealthCurrent:GetPercent(unit)) > self.dbx.threshold
@@ -303,7 +291,7 @@ Grid2:DbSetStatusDefaultValue( "health-deficit", {type = "health-deficit", color
 -- heals-incoming status
 local heals_cache= setmetatable( {}, {__index = function() return 0 end} )
 
-Heals.GetColor= Health_GetColor
+Heals.GetColor = Grid2.statusLibrary.GetColor
 
 local function Heals_get_with_user(unit)
 	return UnitGetIncomingHeals(unit) or 0
@@ -357,14 +345,9 @@ function Heals:GetPercent(unit)
 		local h = UnitHealth(unit)
 		local v = heals_cache[unit] 
 		local d = m - h
-		if v<d then
-			return v / m
-		else
-			return d / m
-		end	
-	else	
-		return 0
-	end	
+		return v < d and v / m or d / m
+	end
+	return 0
 end
 
 local function Create(baseKey, dbx)
@@ -379,7 +362,8 @@ Grid2:DbSetStatusDefaultValue( "heals-incoming", {type = "heals-incoming", inclu
 -- death status
 local dead_cache = {}
 
-Death.GetColor= Health_GetColor
+Death.GetColor = Grid2.statusLibrary.GetColor
+Death.GetPercent = Grid2.statusLibrary.GetPercent
 
 local function DeathTimerEvent()
 	for unit in next, dead_cache do
@@ -427,10 +411,6 @@ end
 
 function Death:GetIcon()
 	return [[Interface\TargetingFrame\UI-TargetingFrame-Skull]]
-end
-
-function Death:GetPercent(unit)
-	return self.dbx.color1.a 
 end
 
 function Death:GetText(unit)

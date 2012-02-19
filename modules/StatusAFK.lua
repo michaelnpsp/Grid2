@@ -7,14 +7,11 @@ local AFK = Grid2.statusPrototype:new("afk")
 local Grid2 = Grid2
 local UnitIsAFK = UnitIsAFK
 
+AFK.GetColor = Grid2.statusLibrary.GetColor
+AFK.UpdateAllUnits = Grid2.statusLibrary.UpdateAllUnits
+
 function AFK:UpdateUnit(_, unit)
 	if unit then
-		self:UpdateIndicators(unit)
-	end
-end
-
-function AFK:UpdateAllUnits()
-	for unit, _ in Grid2:IterateRosterUnits() do
 		self:UpdateIndicators(unit)
 	end
 end
@@ -35,11 +32,6 @@ end
 
 function AFK:IsActive(unit)
 	return UnitIsAFK(unit)
-end
-
-function AFK:GetColor(unit)
-	local c = self.dbx.color1
-	return c.r, c.g, c.b, c.a
 end
 
 function AFK:GetText(unit)

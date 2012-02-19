@@ -8,11 +8,7 @@ local Grid2= Grid2
 local UnitGroupRolesAssigned= UnitGroupRolesAssigned
 local GetTexCoordsForRoleSmallCircle= GetTexCoordsForRoleSmallCircle
 
-function DungeonRole:UpdateAllUnits(event)
-	for unit, guid in Grid2:IterateRosterUnits() do
-		self:UpdateIndicators(unit)
-	end
-end
+DungeonRole.UpdateAllUnits = Grid2.statusLibrary.UpdateAllUnits
 
 function DungeonRole:OnEnable()
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED", "UpdateAllUnits")
@@ -25,7 +21,7 @@ function DungeonRole:OnDisable()
 end
 
 function DungeonRole:IsActive(unit)
-	local role= UnitGroupRolesAssigned(unit)
+	local role = UnitGroupRolesAssigned(unit)
     return role and role~="NONE"
 end
 
@@ -39,7 +35,7 @@ function DungeonRole:GetColor(unit)
 	elseif role=="TANK" then
 		c = self.dbx.color3 
 	else 
-		c = { r=0, g=0, b=0, a=0 }
+		return 0,0,0,0
 	end
 	return c.r, c.g, c.b, c.a
 end

@@ -124,33 +124,27 @@ end
 --}}
 
 --{{ Auras Event 
-local EnableAuraFrame
+local EnableAuraFrame, DisableAuraFrame
 do
 	local frame
 	local count = 0
-	function EnableAuraFrame(enable)
-		local prev = (count == 0)
-		if enable then
-			count = count + 1
-		else
-			count = count - 1
+	function EnableAuraFrame()
+		if count == 0 then
+			if not frame then 
+				frame = CreateFrame("Frame", nil, Grid2LayoutFrame) 
+			end
+			frame:SetScript("OnEvent", AuraFrame_OnEvent)
+			frame:RegisterEvent("UNIT_AURA")
 		end
-		assert(count >= 0)
-		local curr = (count == 0)
-		if prev ~= curr then
-			if not frame then
-				frame = CreateFrame("Frame", nil, Grid2LayoutFrame)
-			end
-			if curr then
-				frame:SetScript("OnEvent", nil)
-				frame:UnregisterEvent("UNIT_AURA")
-			else
-				frame:SetScript("OnEvent", AuraFrame_OnEvent)
-				frame:RegisterEvent("UNIT_AURA")
-			end
+		count = count + 1
+	end	
+	function DisableAuraFrame()
+		count = count - 1
+		if count == 0 then
+			frame:SetScript("OnEvent", nil)
+			frame:UnregisterEvent("UNIT_AURA")
 		end
 	end
-	Grid2.EnableAuraFrame = EnableAuraFrame
 end
 --}}
 
@@ -158,49 +152,41 @@ end
 local DebuffCache = {}
 local DebuffTypeStatus = {}
 
-function CreateDebuffType(baseKey, dbx)
-	local type = dbx.subType
+local DebuffType = {
+	GetBorder = Grid2.statusLibrary.GetBorder,
+	GetColor  = Grid2.statusLibrary.GetColor,
+}
 
-	local c = {}
-	DebuffCache[type] = c
+function DebuffType:OnEnable()
+	self:UpdateDB()
+	EnableAuraFrame()
+end
 
+function DebuffType:OnDisable()
+	DisableAuraFrame()
+end
+
+function DebuffType:UpdateDB()
+	self.debuffFilter = self.dbx.debuffFilter
+end
+
+function DebuffType:IsActive(unit)
+	return self.cache[unit] ~= nil
+end
+
+function DebuffType:GetIcon(unit)
+	return self.cache[unit]
+end
+
+function Grid2.CreateDebuffType(baseKey, dbx)
 	local status = Grid2.statusPrototype:new(baseKey, false)
+	local cache = {}
+	local type = dbx.subType
+	DebuffCache[type] = cache
 	DebuffTypeStatus[type] = status
-
+	status.cache = cache
 	status.debuffType = type
-	status.dbx = dbx
-
-	function status:OnEnable()
-		EnableAuraFrame(true)
-	end
-
-	function status:OnDisable()
-		EnableAuraFrame(false)
-	end
-
-	function status:IsActive(unit)
-		return c[unit] ~= nil
-	end
-
-	function status:GetBorder(unit)
-		return 1
-	end
-
-	function status:GetColor(unit)
-		local color = self.dbx.color1
-		return color.r, color.g, color.b, color.a
-	end
-
-	function status:GetIcon(unit)
-		return c[unit]
-	end
-	
-	function status:UpdateDB()
-		self.debuffFilter = self.dbx.debuffFilter
-	end
-	
-	status:UpdateDB()
-	
+	status:Inject(DebuffType)
 	Grid2:RegisterStatus(status, { "color", "icon" }, baseKey, dbx)
 	return status
 end
@@ -216,19 +202,19 @@ end
 
 local function status_IsInactive(self, unit) -- used for "missing" status
 	local filtered = self.filtered
-	if filtered and filtered[unit] then return nil end
+	if filtered and filtered[unit] then return end
 	return not self.states[unit]
 end
 
 local function status_IsActive(self, unit)
 	local filtered = self.filtered
-	if filtered and filtered[unit] then return nil end
+	if filtered and filtered[unit] then return end
 	return self.states[unit]
 end
 
 local function status_IsActiveBlink(self, unit)
 	local filtered = self.filtered
-	if (filtered and filtered[unit]) or not self.states[unit] then return nil end
+	if (filtered and filtered[unit]) or not self.states[unit] then return end
 	if self.tracker[unit]==1 then
 		return true
 	else
@@ -238,7 +224,7 @@ end
 
 local function status_IsInactiveBlink(self, unit) -- A missing active status has no expiration time, always returns blink when is active
 	local filtered = self.filtered
-	if filtered and filtered[unit] then return nil end
+	if filtered and filtered[unit] then return end
 	return not self.states[unit] and "blink"
 end
 
@@ -275,7 +261,7 @@ local function status_GetExpirationTimeMissing() -- Expiration time is unknow, r
 end
 
 local function status_GetPercent(self, unit)
-	local t= GetTime()
+	local t = GetTime()
 	local expiration = (self.expirations[unit] or t) - t
 	return expiration / (self.durations[unit] or 1)
 end
@@ -363,7 +349,7 @@ local function GetSpellList(self)
 end
 
 local function status_OnBuffEnable(self)
-	EnableAuraFrame(true)
+	EnableAuraFrame()
 	if self.thresholds then AddTimeTracker(self) end
 	local auras = GetSpellList(self)
 	for _,spellName in next,auras do
@@ -378,7 +364,7 @@ local function status_OnBuffEnable(self)
 end
 
 local function status_OnBuffDisable(self)
-	EnableAuraFrame(false)
+	DisableAuraFrame()
 	if RemoveTimeTracker then RemoveTimeTracker(self) end
 	for key in next,self.keys do
 		BuffHandlers[key][self] = nil
@@ -389,7 +375,7 @@ local function status_OnBuffDisable(self)
 end
 
 local function status_OnDebuffEnable(self)
-	EnableAuraFrame(true)
+	EnableAuraFrame()
 	if self.thresholds then AddTimeTracker(self) end
 	local auras = GetSpellList(self)
 	for _,spellName in next,auras do
@@ -399,7 +385,7 @@ local function status_OnDebuffEnable(self)
 end
 
 local function status_OnDebuffDisable(self)
-	EnableAuraFrame(false)
+	DisableAuraFrame()
 	if RemoveTimeTracker then RemoveTimeTracker(self) end
 	for key in next,self.keys do
 		DebuffHandlers[key][self] = nil
@@ -578,7 +564,7 @@ end
 --}}
 
 --{{ 
-Grid2.setupFunc["debuffType"] = CreateDebuffType
+Grid2.setupFunc["debuffType"] = Grid2.CreateDebuffType
 Grid2.setupFunc["buff"]       = Grid2.CreateBuff
 Grid2.setupFunc["debuff"]     = Grid2.CreateDebuff
 --}}

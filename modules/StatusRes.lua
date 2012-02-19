@@ -4,14 +4,14 @@ local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 local Resurrection = Grid2.statusPrototype:new("resurrection")
 
-local Grid2= Grid2
-local GetTime= GetTime
-local UnitExists= UnitExists
-local UnitIsDeadOrGhost= UnitIsDeadOrGhost
-local UnitHasIncomingResurrection= UnitHasIncomingResurrection
-local next= next
+local Grid2 = Grid2
+local GetTime = GetTime
+local UnitExists = UnitExists
+local UnitIsDeadOrGhost = UnitIsDeadOrGhost
+local UnitHasIncomingResurrection = UnitHasIncomingResurrection
+local next = next
 
-local TimerId
+local timer
 local res_cache= {}
 
 function Resurrection:Timer()
@@ -22,9 +22,9 @@ function Resurrection:Timer()
 		end
 	end
 	if not next(res_cache) then
-		Grid2:CancelTimer(TimerId)
-		TimerId= nil
-	end		
+		Grid2:CancelTimer(timer)
+		timer = nil
+	end
 end
 
 function Resurrection:INCOMING_RESURRECT_CHANGED(_, unit)
@@ -33,8 +33,8 @@ function Resurrection:INCOMING_RESURRECT_CHANGED(_, unit)
 			if res_cache[unit] ~= 1 then
 				res_cache[unit]= 1
 				self:UpdateIndicators(unit)
-				if not TimerId then
-					TimerId = Grid2:ScheduleRepeatingTimer(Resurrection.Timer, 0.25, self)
+				if not timer then
+					timer = Grid2:ScheduleRepeatingTimer(Resurrection.Timer, 0.25, self)
 				end
 			end
 		else
@@ -62,7 +62,7 @@ function Resurrection:IsActive(unit)
 end
 
 function Resurrection:GetColor(unit)
-	local c= (res_cache[unit]==1) and self.dbx.color1 or self.dbx.color2
+	local c= res_cache[unit]==1 and self.dbx.color1 or self.dbx.color2
 	return c.r, c.g, c.b, c.a
 end
 
@@ -70,15 +70,13 @@ function Resurrection:GetIcon(unit)
 	return "Interface\\RaidFrame\\Raid-Icon-Rez"
 end
 
-function Resurrection:GetBorder(unit)
-	return 1
-end
-
 local resText1= L["Reviving"]
 local resText2= L["Revived"]
 function Resurrection:GetText(unit)
-	return (res_cache[unit]==1) and resText1 or resText2
+	return res_cache[unit]==1 and resText1 or resText2
 end
+
+Resurrection.GetBorder = Grid2.statusLibrary.GetBorder
 
 local function Create(baseKey, dbx)
 	Grid2:RegisterStatus(Resurrection, {"text","icon","color"}, baseKey, dbx)

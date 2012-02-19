@@ -109,15 +109,12 @@ function Direction:GetIcon(unit)
 	return "Interface\\Addons\\Grid2\\media\\Arrows32-32x32"
 end
 
-function Direction:GetVertexColor()
-	local c= self.dbx.color1
-	return c.r, c.g, c.b, c.a
-end
-
 function Direction:GetTexCoord(unit)
 	local y= directions[unit] / 32
 	return 0.05, 0.95, y+0.0015625, y+0.028125
 end
+
+Direction.GetVertexColor = Grid2.statusLibrary.GetColor
 
 local function Create(baseKey, dbx)
 	Grid2:RegisterStatus(Direction, {"icon"}, baseKey, dbx)
@@ -128,4 +125,3 @@ end
 Grid2.setupFunc["direction"] = Create
 
 Grid2:DbSetStatusDefaultValue( "direction", { type = "direction", color1 = { r= 0, g= 1, b= 0, a=1 } })
-

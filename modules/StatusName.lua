@@ -2,20 +2,18 @@ local Name = Grid2.statusPrototype:new("name")
 
 local UnitName = UnitName
 
+Name.IsActive = Grid2.statusLibrary.IsActive
+
+function Name:UNIT_NAME_UPDATE(_, unit)
+	self:UpdateIndicators(unit)
+end
+
 function Name:OnEnable()
 	self:RegisterEvent("UNIT_NAME_UPDATE")
 end
 
-function Name:UNIT_NAME_UPDATE(_, unit)
-	return self:UpdateIndicators(unit)
-end
-
 function Name:OnDisable()
 	self:UnregisterEvent("UNIT_NAME_UPDATE")
-end
-
-function Name:IsActive(unit)
-	return true
 end
 
 function Name:GetText(unit)

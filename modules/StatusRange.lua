@@ -39,7 +39,7 @@ end
 -- Roster ranges update function
 
 local function Update(self)
-	for unit, guid in Grid2:IterateRosterUnits() do
+	for unit in Grid2:IterateRosterUnits() do
 		local value = UnitIsInRange(unit) and 1 or false
 		if value ~= cache[unit] then
 			cache[unit] = value
@@ -79,7 +79,7 @@ function Range:CreateTimer()
 	timer.animation:SetOrder(1)
 	timer:SetScript("OnFinished", Update)
 	self.timer  = timer
-	self.CreateTimer = function() end
+	self.CreateTimer = Grid2.Dummy
 end
 
 function Range:UpdateDB()
@@ -91,10 +91,6 @@ function Range:UpdateDB()
 	end
 end
 
-function Range:IsActive(unit)
-	return true
-end
-
 function Range:GetPercent(unit)
 	return cache[unit] or self.defaultAlpha
 end
@@ -102,6 +98,8 @@ end
 function Range:GetRanges()
 	return Ranges
 end
+
+Range.IsActive = Grid2.statusLibrary.IsActive
 
 local function Create(baseKey, dbx)
 	Grid2:RegisterStatus(Range, {"percent"}, baseKey, dbx)

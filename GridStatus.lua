@@ -4,20 +4,11 @@ local Grid2 = Grid2
 local next = next
 local pairs = pairs
 
--- status prototype (statuses will override this methods to provide custom values)
-
 Grid2.statuses = {}
 Grid2.statusTypes = {}
 
+-- status prototype (statuses will override this methods to provide custom values)
 local status = {}
-
-function status:init(name, embed)
-	if embed ~= false then
-		LibStub("AceEvent-3.0"):Embed(self)
-	end
-	self.indicators = {}
-	self.name = name
-end
 
 -- shading color: icon indicator
 function status:GetVertexColor()
@@ -89,9 +80,7 @@ function status:UnregisterIndicator(indicator)
 end
 
 function status:UpdateDB(dbx)
-	if (dbx) then
-		self.dbx = dbx
-	end
+	if dbx then	self.dbx = dbx end
 end
 
 function status:Inject(data)
@@ -102,9 +91,11 @@ end
 
 Grid2.statusPrototype = {
 	__index = status,
-	new = function (self, ...)
+	new = function (self, name, embed)
 		local e = setmetatable({}, self)
-		e:init(...)
+		if embed ~= false then LibStub("AceEvent-3.0"):Embed(e)	end
+		e.name = name
+		e.indicators = {}
 		return e
 	end,
 }
