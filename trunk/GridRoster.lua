@@ -274,7 +274,7 @@ do
 		local units = (GetNumRaidMembers() == 0) and party_units or raid_units
 
 		for i= 1,#units do	
-			local unit= units[i]
+			local unit = units[i]
 			if not UnitExists(unit) then break end
 			UpdateUnit(unit)
 
@@ -324,3 +324,8 @@ do
 		end
 	end
 end
+
+--{{ Publish tables used by some statuses
+Grid2.party_units = party_units
+Grid2.raid_units  = raid_units
+--}}

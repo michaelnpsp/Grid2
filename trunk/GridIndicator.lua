@@ -7,16 +7,6 @@ Grid2.indicatorTypes = {}
 
 local indicator = {}
 
-function indicator:init(name)
-	self.statuses = {}
-	local priorities = {}
-	self.sortStatuses = function (a, b)
-		return priorities[a] > priorities[b]
-	end
-	self.priorities = priorities
-	self.name = name
-end
-
 function indicator:CreateFrame(type, parent)
 	local f = parent[self.name]
 	if not (f and f:GetObjectType()==type) then
@@ -89,15 +79,14 @@ function indicator:GetCurrentStatus(unit)
 end
 
 --{{ Update functions  
-
 local Grid2Blink = Grid2:GetModule("Grid2Blink")
-local blinking= Grid2Blink.registry
+local blinking = Grid2Blink.registry
 
 local function UpdateBlink(self, parent, unit)
 	local status, state = self:GetCurrentStatus(unit)
-	local frame= self.GetBlinkFrame  
+	local frame = self.GetBlinkFrame  
 	if frame then 
-		frame= frame(self,parent)
+		frame = frame(self,parent)
 		if blinking[frame] then
 			if state~="blink" then Grid2Blink:Remove(frame) end	
 		else
@@ -111,15 +100,18 @@ local function UpdateNoBlink(self, parent, unit)
 	self:OnUpdate(parent, unit, self:GetCurrentStatus(unit) )
 end
 
-indicator.Update= UpdateBlink
-
+indicator.Update = UpdateBlink
 --}}
 
 Grid2.indicatorPrototype = {
 	__index = indicator,
-	new = function (self, ...)
+	new = function (self, name)
 		local e = setmetatable({}, self)
-		e:init(...)
+		local p = {}
+		e.sortStatuses = function (a,b) return p[a] > p[b]	end
+		e.priorities = p
+		e.name = name
+		e.statuses = {}
 		return e
 	end,
 }
@@ -162,7 +154,7 @@ end
 
 -- We can choose which update function we want to use. UpdateNoBlink is faster 
 function Grid2:IndicatorsBlinkEnabled( enabled )
-  	indicator.Update= enabled and UpdateBlink or UpdateNoBlink
+  	indicator.Update = enabled and UpdateBlink or UpdateNoBlink
 end
 
 function Grid2:IsCompatiblePair(indicator, status)
@@ -182,4 +174,3 @@ end
 function Grid2:IterateIndicators(type)
 	return next, type and self.indicatorTypes[type] or self.indicators
 end
-

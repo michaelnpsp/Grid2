@@ -9,20 +9,11 @@ local UnitCreatureType= UnitCreatureType
 local UnitHasVehicleUI= UnitHasVehicleUI
 
 -- Simple static color status
-local Color = {}
-
-function Color:IsActive()
-	return true
-end
-
-function Color:GetColor()
-	local c = self.dbx.color1
-	return c.r, c.g, c.b, c.a
-end
-
-function Color:GetPercent()
-	return self.dbx.color1.a
-end
+local Color = {
+	IsActive = Grid2.statusLibrary.IsActive,
+	GetColor = Grid2.statusLibrary.GetColor,
+	GetPercent = Grid2.statusLibrary.GetPercent,
+}
 
 Grid2.setupFunc["color"] = function(baseKey, dbx)
 	local status = Grid2.statusPrototype:new(baseKey, false)
@@ -31,7 +22,7 @@ Grid2.setupFunc["color"] = function(baseKey, dbx)
 	return status
 end
 
--- Methods shared by several statuses 
+-- Shared methods
 local Shared = {}
 
 Shared.IsActive = Color.IsActive

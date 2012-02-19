@@ -64,15 +64,6 @@ function Offline:IsActive(unit)
 	return offline[unit]
 end
 
-function Offline:GetColor(unit)
-	local c = self.dbx.color1
-	return c.r, c.g, c.b, c.a
-end
-
-function Offline:GetPercent(unit)
-	return self.dbx.color1.a
-end
-
 local text = L["Offline"]
 function Offline:GetText(unit)
 	return text
@@ -81,6 +72,9 @@ end
 function Offline:GetIcon()
 	return "Interface\\CharacterFrame\\Disconnect-Icon"
 end 
+
+Offline.GetColor = Grid2.statusLibrary.GetColor
+Offline.GetPercent = Grid2.statusLibrary.GetPercent
 
 local function Create(baseKey, dbx)
 	Grid2:RegisterStatus(Offline, {"color", "icon", "percent", "text"}, baseKey, dbx)

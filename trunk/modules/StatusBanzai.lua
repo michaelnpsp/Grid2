@@ -106,11 +106,6 @@ local function status_OnDisable(self)
 	end	
 end
 
-local function status_GetColor(self, unit)
-	local c = self.dbx.color1
-	return c.r, c.g, c.b, c.a
-end
-
 local function status_SetUpdateRate(self, delay)
 	Banzai.dbx.updateRate       = delay
 	BanzaiThreat.dbx.updateRate = delay
@@ -194,13 +189,15 @@ end
 
 Banzai.OnEnable      = status_OnEnable
 Banzai.OnDisable     = status_OnDisable
-Banzai.GetColor      = status_GetColor
 Banzai.SetUpdateRate = status_SetUpdateRate
+Banzai.GetColor      = Grid2.statusLibrary.GetColor
 
 Grid2.setupFunc["banzai"] = function(baseKey, dbx)
 	Grid2:RegisterStatus(Banzai, {"color", "percent", "icon" }, baseKey, dbx)
 	return Banzai
 end
+
+Grid2:DbSetStatusDefaultValue( "banzai", { type = "banzai", color1 = {r=1,g=0,b=1,a=1} })
 
 -- banzai-threat status
 local units, units_prev = {}, {}
@@ -234,13 +231,12 @@ end
 
 BanzaiThreat.OnEnable  = status_OnEnable
 BanzaiThreat.OnDisable = status_OnDisable
-BanzaiThreat.GetColor  = status_GetColor
 BanzaiThreat.SetUpdateRate = status_SetUpdateRate
+BanzaiThreat.GetColor  = Grid2.statusLibrary.GetColor
 
 Grid2.setupFunc["banzai-threat"] = function(baseKey, dbx)
 	Grid2:RegisterStatus(BanzaiThreat, {"color", "text" }, baseKey, dbx)
 	return BanzaiThreat
 end
 
-Grid2:DbSetStatusDefaultValue( "banzai", { type = "banzai", color1 = {r=1,g=0,b=1,a=1} })
 Grid2:DbSetStatusDefaultValue( "banzai-threat", { type = "banzai-threat", color1 = {r=1,g=0,b=0,a=1} })

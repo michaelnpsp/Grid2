@@ -3,23 +3,26 @@ Created by Grid2 original authors, modified by Michael
 --]]
 
 local Grid2 = Grid2
-local GetTime = GetTime
+local ipairs = ipairs
 local UnitDebuff = UnitDebuff
 local GetSpellInfo = GetSpellInfo
-local next, ipairs = next, ipairs
 
 local BZ = LibStub("LibBabble-Zone-3.0"):GetReverseLookupTable()
 local GSRD = Grid2:NewModule("Grid2RaidDebuffs")
 local status = Grid2.statusPrototype:new("raid-debuffs")
 local frame = CreateFrame("Frame")
 local spells = {}
+local states = {}
+local textures = {}
+local counts = {}
+local types = {}
+local durations = {}
+local expirations = {}
 
-function GSRD:UpdateZoneSpells(zone)
-	zone = zone or GetRealZoneText()
-	if not zone then return end
+function status:UpdateZoneSpells()
+	local db, zone = self:GetCurrentZoneSpells()
 	wipe(spells)
 	local spell_order = 1
-	local db = status.dbx.debuffs[BZ[zone] or zone]
 	if db then
 		for _, spellId in ipairs(db) do
 			local name = spellId<0 and -spellId or GetSpellInfo(spellId)
@@ -36,16 +39,24 @@ function GSRD:UpdateZoneSpells(zone)
 	end
 	-- Debug Code
 	if IsInInstance() then
-		self:Debug("Zone [%s]: %d raid debuffs loaded", BZ[zone] or zone, spell_order-1)
+		GSRD:Debug("Zone [%s]: %d raid debuffs loaded", zone, spell_order-1)
 	end
 end
 
-local states = {}
-local textures = {}
-local counts = {}
-local types = {}
-local durations = {}
-local expirations = {}
+function status:GetCurrentZoneSpells()
+	local db, zone = self:GetZoneSpells( GetRealZoneText() )
+	if not db then 
+		db, zone = self:GetZoneSpells( GetInstanceInfo() )
+	end
+	return db, zone
+end
+
+function status:GetZoneSpells(zone)
+	if zone then
+		zone = BZ[zone] or zone
+		return self.dbx.debuffs[zone], zone
+	end	
+end
 
 function status:Grid_UnitLeft(_, unit)
 	states[unit] = nil
@@ -56,13 +67,13 @@ function status:Grid_UnitLeft(_, unit)
 end
 
 function status:OnEnable()
-	frame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "UpdateZoneSpells")
 	self:RegisterMessage("Grid_UnitLeft")
-	GSRD:UpdateZoneSpells()
+	self:UpdateZoneSpells()
 end
 
 function status:OnDisable()
-	frame:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
+	self:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
 	self:UnregisterMessage("Grid_UnitLeft")
 end
 
@@ -74,69 +85,62 @@ function status:GetIcon(unit)
 	return textures[unit]
 end
 
-function status:GetColor(unit)
-	local c = self.dbx.color1
-	return c.r, c.g, c.b, c.a
-end
-
 function status:GetCount(unit)
 	return counts[unit]
 end
 
 function status:GetDuration(unit)
-	return durations[unit] or (GetTime()+9999)
+	return durations[unit]
 end
 
 function status:GetExpirationTime(unit)
-	return expirations[unit] or (GetTime()+9999)
+	return expirations[unit]
 end
 
+status.GetColor = Grid2.statusLibrary.GetColor
+
 frame:SetScript("OnEvent", function (self, event, unit)
-	if event == "UNIT_AURA" then
-		local index, n_order, n_count, n_texture, n_type, n_duration, n_expiration = 1, 10000, 0
-		while true do
-			local name, _, te, count, ty, du, ex, _, _, _, id = UnitDebuff(unit, index)
-			if not name then break end
-			local order = spells[name] or spells[id]
-			if order and ( order < n_order or ( order == n_order and count > n_count ) ) then
-				n_order      = order
-				n_count      = count
-				n_texture    = te
-				n_type       = ty
-				n_duration   = du
-				n_expiration = ex
-			end
-			index = index + 1
+	local index, n_order, n_count, n_texture, n_type, n_duration, n_expiration = 1, 10000, 0
+	while true do
+		local name, _, te, count, ty, du, ex, _, _, _, id = UnitDebuff(unit, index)
+		if not name then break end
+		local order = spells[name] or spells[id]
+		if order and ( order < n_order or ( order == n_order and count > n_count ) ) then
+			n_order      = order
+			n_count      = count
+			n_texture    = te
+			n_type       = ty
+			n_duration   = du
+			n_expiration = ex
 		end
-		if n_texture then
-			if n_count==0 then n_count = 1 end
-			if	true         ~= states[unit]    or 
-				n_count      ~= counts[unit]    or 
-				n_type       ~= types[unit]     or
-				n_texture    ~= textures[unit]  or
-				n_duration   ~= durations[unit] or	
-				n_expiration ~= expirations[unit]
-			then
-				states[unit]      = true
-				counts[unit]      = n_count
-				textures[unit]    = n_texture
-				types[unit]       = n_type
-				durations[unit]   = n_duration
-				expirations[unit] = n_expiration
-				status:UpdateIndicators(unit)
-			end
-		elseif states[unit] then
-			states[unit] = nil
+		index = index + 1
+	end
+	if n_texture then
+		if n_count==0 then n_count = 1 end
+		if	true         ~= states[unit]    or 
+			n_count      ~= counts[unit]    or 
+			n_type       ~= types[unit]     or
+			n_texture    ~= textures[unit]  or
+			n_duration   ~= durations[unit] or	
+			n_expiration ~= expirations[unit]
+		then
+			states[unit]      = true
+			counts[unit]      = n_count
+			textures[unit]    = n_texture
+			types[unit]       = n_type
+			durations[unit]   = n_duration
+			expirations[unit] = n_expiration
 			status:UpdateIndicators(unit)
 		end
-	else
-		GSRD:UpdateZoneSpells()
+	elseif states[unit] then
+		states[unit] = nil
+		status:UpdateIndicators(unit)
 	end
 end)
 
 local function Create(baseKey, dbx)
 	if not dbx.debuffs then
-		dbx.debuffs= {}
+		dbx.debuffs = {}
 	end
 	Grid2:RegisterStatus(status, { "icon", "color", "text" }, baseKey, dbx)
 	return status
@@ -162,5 +166,3 @@ function Grid2:UpdateDefaults()
 		Grid2:DbSetValue("versions","Grid2RaidDebuffs",1)
 	end	
 end
-
- 

@@ -9,7 +9,7 @@ local Grid2Frame
 --{{{ Registered unit frames tracking
 local frames_of_unit = setmetatable({}, { __index = function (self, key)
 	local result = {}
-	rawset(self, key, result)
+	self[key] = result
 	return result
 end})
 local unit_of_frame = {}

@@ -638,6 +638,35 @@ function Grid2Options:MakeStatusShieldsOptions(status, options, optionParams)
 	return options
 end
 
+function Grid2Options:MakeStatusBossShieldsOptions(status, options)
+	options = options or {}
+	options = Grid2Options:MakeStatusColorOptions(status, options, {
+		color1 = L["Normal"], colorDesc1 = L["Normal shield color"],
+		color2 = L["Medium"], colorDesc2 = L["Medium shield color"],
+		color3 = L["Low"],    colorDesc3 = L["Low shield color"],
+	})
+	options.shields = {
+		type = "group",
+		order = 60,
+		inline= true,
+		name = L["shields"],
+		args = {},
+	}
+	for map,shields in pairs(status.ShieldsDB) do
+		for spell,value in pairs(shields) do
+			local spellName = GetSpellInfo(spell)
+			options.shields.args["shield"..spellName..spell] = {
+				type = "toggle",
+				width = "full",
+				name = string.format("%s - %s  (%.0fK)", spellName, map, value/1000 ),
+				get = function () return true end,
+				set = function () end,
+			}
+		end	
+	end
+	return options, "misc"
+end
+
 function Grid2Options:MakeStatusReadyCheckOptions(status, options, optionParams)
 	options = options or {}
 
@@ -1495,19 +1524,12 @@ end
 function Grid2Options:MakeStatusDebuffTypeOptions(status, options, optionParams)
 	options = options or {}
 	
-	if status.dbx.auras then
-		options = self:MakeStatusAuraListOptions(status, options, optionParams)
-	end	
 	options = self:MakeStatusColorOptions(status, options, optionParams)
 	options = self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
 	options = self:MakeStatusDebuffTypeFilterOptions(status, options, optionParams)
 
 	optionParams = optionParams or {}
 	optionParams.group = optionParams.group or "debuff"
-	-- Avoid deleting generic debuffs: Magic, Curse, etc.
-	if not status.debuffType then
-		options = self:MakeStatusDeleteOptions(status, options, optionParams)
-	end
 	--Add as a subtype.
 	return options, "debuff"
 end
@@ -1557,7 +1579,7 @@ function Grid2Options:MakeStatusDebuffTypeFilterOptions(status, options, optionP
 	}
 	options.aurasSpacer= {
 		type = "header",
-		order = 2,
+		order = 49,
 		name = "",
 	}
 	return options
@@ -1841,6 +1863,8 @@ function Grid2Options:MakeStatusHandlers(reset)
 
 	self:AddOptionHandler("shields", self.MakeStatusShieldsOptions)
 
+	self:AddOptionHandler("boss-shields", self.MakeStatusBossShieldsOptions )	
+	
 	if not self.typeMakeOptions["raid-debuffs"] then
 		self:AddOptionHandler("raid-debuffs", self.MakeStatusRaidDebuffsOptions)
 	end

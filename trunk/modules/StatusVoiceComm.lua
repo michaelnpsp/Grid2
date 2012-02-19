@@ -39,15 +39,12 @@ function Voice:IsActive(unit)
 	return cache[unit]
 end
 
-function Voice:GetColor(unit)
-	local color = self.dbx.color1
-	return color.r, color.g, color.b, color.a
-end
-
 local text = L["talking"]
 function Voice:GetText(unitid)
 	return text
 end
+
+Voice.GetColor = Grid2.statusLibrary.GetColor
 
 local function Create(baseKey, dbx)
 	Grid2:RegisterStatus(Voice, {"color", "text"}, baseKey, dbx)
