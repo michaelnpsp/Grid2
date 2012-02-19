@@ -35,9 +35,9 @@ function Grid2Options:GetRaidDebuffsTable()
 	return RDDB
 end
 
-local function UpdateZoneSpells()
+local function UpdateZoneSpells(status)
 	if IsInInstance() then
-		GSRD:UpdateZoneSpells()
+		status:UpdateZoneSpells(true)
 	end	
 end
 
@@ -124,14 +124,14 @@ local function SetEnableDebuff(status,instance, spellId, value)
 			end
 		end
 	end
-	UpdateZoneSpells()
+	UpdateZoneSpells(status)
 end
 
 local function SetDebuffSpellIdTracking(status, instance, spellId, value)
 	local index    = selectedDebuffs[spellId]
 	local debuffs  = status.dbx.debuffs[instance]
 	debuffs[index] = value and -spellId or spellId
-	UpdateZoneSpells()
+	UpdateZoneSpells(status)
 end
 
 local function FormatDebuffName(spellName,spellId) 
@@ -165,7 +165,7 @@ local function EnableInstanceAllDebuffs(status)
 		end
 	end	
 	dbx.debuffs[instance]= debuffs
-	UpdateZoneSpells()
+	UpdateZoneSpells(status)
 end
 
 local function DisableInstanceAllDebuffs(status)
@@ -174,7 +174,7 @@ local function DisableInstanceAllDebuffs(status)
 	if debuffs and debuffs[instance] then
 		debuffs[instance] = nil
 		selectedDebuffs = {}
-		UpdateZoneSpells()
+		UpdateZoneSpells(status)
 	end
 end
 
@@ -227,7 +227,7 @@ local function EnableDisableModule(status, module, state)
 	end
 	selectedModule= ""
 	optionModules.values= GetModules()
-	UpdateZoneSpells()
+	UpdateZoneSpells(status)
 end
 
 local function CreateStandardDebuff(bossName,spellId,spellName)
