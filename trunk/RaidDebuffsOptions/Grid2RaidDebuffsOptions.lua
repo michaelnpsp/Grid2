@@ -7,25 +7,31 @@ local BZ = LibStub("LibBabble-Zone-3.0"):GetUnstrictLookupTable()
 --local BB = LibStub("LibBabble-Boss-3.0"):GetUnstrictLookupTable() -- Disabled because uses too much memory
 local BB = {}
 
-local GSRD= Grid2:GetModule("Grid2RaidDebuffs")
-local RDDB= {}
+local GSRD = Grid2:GetModule("Grid2RaidDebuffs")
+local RDDB = {}
 
-local moduleList
-local moduleListAll
-local selectedModule
-local selectedInstance
-local selectedDebuffs 
+local statuses = {}
+
+local curModule
+local curInstance
+local curDebuffs = {}
+local curDebuffsOrder = {}
+local curBossesOrder = {}
+local moduleList = {}
+local statusesList = {}
+
 local optionModules
 local optionInstances
 local optionDebuffs
 local optionsDebuffsCache= {}
+
 local tipDebuff
 local newSpellId
 local newDebuffName
 local fmt= string.format
 
-local MakeDebuffOptions
-local MakeDebuffGroup
+-- forward declarations
+local AddBossDebuffOptions
 
 local ICON_SKULL= "Interface\\TargetingFrame\\UI-TargetingFrame-Skull"
 local ICON_CHECKED = READY_CHECK_READY_TEXTURE
@@ -35,19 +41,111 @@ function Grid2Options:GetRaidDebuffsTable()
 	return RDDB
 end
 
-local function UpdateZoneSpells(status)
-	if IsInInstance() then
-		status:UpdateZoneSpells(true)
+local function UpdateZoneSpells()
+	-- if IsInInstance() then
+		GSRD:UpdateZoneSpells()
+	-- end	
+end
+
+local function GetOptionsFromCache()
+	return optionsDebuffsCache[ curModule..curInstance ]
+end
+
+local function SetOptionsToCache(options)
+	optionsDebuffsCache[ curModule..curInstance ] = options
+end
+
+local function GetLocalizedStatusName(index)
+	local localizedText = L["raid-debuffs"]
+    return index==1 and localizedText or fmt( "%s(%d)",localizedText,index)
+end
+
+local function GetCustomDebuffs()
+	return GSRD.db.profile.debuffs and GSRD.db.profile.debuffs[curInstance] or {}
+end
+
+local function GetDebuffOrder(boss, spellId, isCustom, priority)
+	local status = curDebuffs[spellId]
+	if status then
+		return curBossesOrder[boss] * 1000 + statuses[status]*50 + curDebuffsOrder[spellId]
+	else
+		return curBossesOrder[boss] * 1000 + (isCustom and 750 or 500) + (priority or 200)
+	end
+end
+
+local function CalculateAvailableStatuses()
+	wipe(statuses)
+	for _,status in Grid2:IterateStatuses() do
+		if status.dbx.type == "raid-debuffs" then
+			statuses[#statuses+1]  = status
+		end
+	end
+	table.sort( statuses, function(a,b) return a.name < b.name  end )
+	wipe(statusesList)
+	for index,status in ipairs(statuses) do
+		statuses[status] = index
+		statusesList[index] = L[ status.name ]
 	end	
 end
 
+local function LoadEnabledDebuffs()
+	curDebuffs = {}
+	curDebuffsOrder = {}
+	for _,status in ipairs(statuses) do
+		local dbx = status.dbx.debuffs[curInstance] or {}
+		for index,value in ipairs(dbx) do
+			local key = math.abs(value)
+			curDebuffs[ key ] = status
+			curDebuffsOrder[ key ] = index
+		end	
+	end
+end
+
+local function ClearEnabledDebuffs()
+	curDebuffs = {}
+	curDebuffsOrder = {}
+end
+
+function LoadBosses()
+    wipe(curBossesOrder)
+	local order = 1
+	local bosses = RDDB[curModule][curInstance]
+	for boss in pairs(bosses) do
+		curBossesOrder[boss] = order
+		order = order + 1
+	end
+end
+
+local function LoadModuleList()
+	wipe(moduleList)
+	local modules = GSRD.db.profile.enabledModules or {}
+	for name in pairs(modules) do
+		moduleList[name] = L[name]
+	end
+end
+
 local function ResetAdvancedOptions()
-	moduleList= nil
-	moduleListAll= nil
-	selectedModule= ""
-	selectedInstance= ""
-    selectedDebuffs= nil
+	curModule= ""
+	curInstance= ""
+    curDebuffs = nil
+	curDebuffsOrder = nil
 	wipe(optionsDebuffsCache)
+	LoadModuleList()
+end
+
+local function FormatDebuffName(spellId) 
+	local name = GetSpellInfo(spellId)
+	local status = curDebuffs[spellId]
+	local index = statuses[status]
+	if status then
+		if index==1 then
+			return fmt("  |T%s:0|t%s", ICON_CHECKED, name or spellId)
+		else
+			return fmt("  |T%s:0|t%s(%d)", ICON_CHECKED, name or spellId, index)
+		end		
+	else
+		return fmt("  |T%s:0|t%s", ICON_UNCHECKED, name or spellId)
+	end
 end
 
 local function GetSpellDescription(spellId)
@@ -71,23 +169,6 @@ local function GetSpellDescription(spellId)
 	return table.concat(result,"\n")
 end
 
-local function GetModules(all)
-	if not moduleList then
-		moduleList= {}
-		local enabledModules= GSRD.db.profile.enabledModules or {}
-		for name,_ in pairs(enabledModules) do
-			moduleList[name]= L[name]
-		end
-	end
-	if not moduleListAll then
-		moduleListAll= {}
-		for name,_ in pairs(RDDB) do
-			moduleListAll[name]= L[name]
-		end
-	end
-	return all and moduleListAll or moduleList
-end
-
 local function GetInstances(module)
 	local values= {}
 	if module and module~="" then
@@ -101,80 +182,79 @@ local function GetInstances(module)
 	return values
 end
 
-local function SetEnableDebuff(status,instance, spellId, value)
+local function SetEnableDebuff(boss, status, spellId, value)
+	if not status then return end
 	local dbx = status.dbx
 	if value then
-		if not dbx.debuffs then 
-			dbx.debuffs= {}	
+		if not dbx.debuffs[curInstance] then
+			dbx.debuffs[curInstance]= {}
 		end
-		if not dbx.debuffs[instance] then
-			dbx.debuffs[instance]= {}
-		end
-		local debuffs = dbx.debuffs[instance]
+		local debuffs = dbx.debuffs[curInstance]
 		debuffs[#debuffs+1] = spellId
-		selectedDebuffs[spellId] = #debuffs
+		curDebuffs[spellId] = status
+		curDebuffsOrder[spellId] = #debuffs
+		UpdateZoneSpells()
 	else
-		local debuffs = dbx.debuffs[instance]
-		local index   = selectedDebuffs[spellId]
+		local debuffs = dbx.debuffs[curInstance]
+		local index   = curDebuffsOrder[spellId]
 		table.remove( debuffs,  index )
-		selectedDebuffs[spellId]= nil
-		for k,v in pairs(selectedDebuffs) do
-			if v>index then 
-				selectedDebuffs[k] = v-1 
+		curDebuffs[spellId] = nil
+		curDebuffsOrder[spellId] = nil
+		for k,v in pairs(curDebuffs) do
+			if status==v and curDebuffsOrder[k]>index then 
+				curDebuffsOrder[k] = curDebuffsOrder[k] - 1 
 			end
 		end
 	end
-	UpdateZoneSpells(status)
+	local option = optionDebuffs.args[ tostring(spellId) ]
+	option.name  = FormatDebuffName(spellId)
+	option.order = GetDebuffOrder(boss, spellId)
 end
 
-local function SetDebuffSpellIdTracking(status, instance, spellId, value)
-	local index    = selectedDebuffs[spellId]
-	local debuffs  = status.dbx.debuffs[instance]
-	debuffs[index] = value and -spellId or spellId
-	UpdateZoneSpells(status)
-end
-
-local function FormatDebuffName(spellName,spellId) 
-	local icon= selectedDebuffs[spellId] and ICON_CHECKED or ICON_UNCHECKED
-	return fmt("  |T%s:0|t%s", icon, spellName or spellId)
-end
-
-local function EnableInstanceAllDebuffs(status)
-	local debuffs = {}
-	local module = selectedModule
-	local instance = selectedInstance
-	local dbx = status.dbx
-	if not dbx.debuffs then 
-		dbx.debuffs= {}	
+local function GetDebuffStatus(spellId)
+	local status = curDebuffs[spellId]
+	if status then
+		return status, curDebuffsOrder[spellId]
 	end
-	local debuffsall= RDDB[module][instance]
-	for _,values in pairs(debuffsall) do
-		for _,spellId in ipairs(values) do
-			debuffs[#debuffs+1]= spellId
-			selectedDebuffs[spellId]= #debuffs
+end
+
+local function SetDebuffSpellIdTracking(spellId, value)
+	local spellName = GetSpellInfo(spellId)
+	for spell,status in pairs(curDebuffs) do
+		if spellName == GetSpellInfo(spell) then
+			local index = curDebuffsOrder[spell]
+			status.dbx.debuffs[curInstance][index] = value and -spell or spell
+		end
+	end
+	UpdateZoneSpells()
+end
+
+local function EnableInstanceAllDebuffs(curModule, curInstance)
+	local debuffs = {}
+	local status = statuses[1]
+	local dbx = status.dbx
+	if not dbx.debuffs then dbx.debuffs= {}	end
+	local debuffsall = RDDB[curModule][curInstance]
+	for instance,values in pairs(debuffsall) do
+		for boss,spellId in ipairs(values) do
+			debuffs[#debuffs+1]      = spellId
 		end
 	end
 	-- Enable user defined debuffs
-	local rddbx= GSRD.db.profile.debuffs
-	if rddbx and rddbx[instance] then
-		for _,values in pairs(rddbx[instance]) do
-			for _,spellId in ipairs(values) do
-				debuffs[#debuffs+1]= spellId
-				selectedDebuffs[spellId]= #debuffs
+	local rddbx = GSRD.db.profile.debuffs
+	if rddbx and rddbx[curInstance] then
+		for instance,values in pairs(rddbx[curInstance]) do
+			for boss,spellId in ipairs(values) do
+				debuffs[#debuffs+1]      = spellId
 			end
 		end
 	end	
-	dbx.debuffs[instance]= debuffs
-	UpdateZoneSpells(status)
+	dbx.debuffs[curInstance]= debuffs
 end
 
-local function DisableInstanceAllDebuffs(status)
-	local instance= selectedInstance
-	local debuffs= status.dbx.debuffs
-	if debuffs and debuffs[instance] then
-		debuffs[instance] = nil
-		selectedDebuffs = {}
-		UpdateZoneSpells(status)
+local function DisableInstanceAllDebuffs(curModule, curInstance)
+	for index,status in ipairs(statuses) do
+		status.dbx.debuffs[curInstance] = nil
 	end
 end
 
@@ -183,51 +263,32 @@ local function RefreshDebuffsOptions()
 	for key,value in pairs(items) do
 		local spellId = tonumber(key)
 		if spellId then
-			items[key].name= FormatDebuffName(value.nameBackup,spellId)
+			items[key].name= FormatDebuffName(spellId)
 		end
 	end
 end
 
-local function EnableDisableModule(status, module, state)
-	local dbx= status.dbx
-	if not dbx.debuffs then 
-		dbx.debuffs= {}	
-	end
-	local rddbx= GSRD.db.profile
-	if not rddbx.enabledModules then
-		rddbx.enabledModules= {}
-	end
+local function EnableDisableModule(module, state)
+	local rddbx = GSRD.db.profile
+	if not rddbx.enabledModules then rddbx.enabledModules= {} end
+	local instances = RDDB[module]
 	if state then
-		local instances= RDDB[module]
-		for name,instance in pairs(instances) do
-			local debuffs= {}
-			for _,boss in pairs(instance) do
-				for _,spellId in ipairs(boss) do
-					debuffs[#debuffs+1]= spellId
-				end
-			end	
-			dbx.debuffs[name]= debuffs
-			local cacheKey= module..name
-			if optionsDebuffsCache[cacheKey] then
-				optionsDebuffsCache[cacheKey]= nil
-			end	
+		for instance in pairs(instances) do
+			EnableInstanceAllDebuffs(module,instance)
+			optionsDebuffsCache[module..instance] = nil
 		end
 		rddbx.enabledModules[module]= true
-		moduleList[module]= L[module]	
+		moduleList[module] = L[module]	
 	else
-		local instances= RDDB[module]
-		for instance,_ in pairs(instances) do
-			if dbx.debuffs[instance] then 
-				dbx.debuffs[instance]= nil 
-			end
+		for instance in pairs(instances) do
+			DisableInstanceAllDebuffs(module,instance)
 		end
 		if rddbx.enabledModules[module] then rddbx.enabledModules[module]= nil end
 		if not next(rddbx.enabledModules) then rddbx.enabledModules= nil end
-		if moduleList[module] then moduleList[module]= nil end
+		moduleList[module] = nil
 	end
-	selectedModule= ""
-	optionModules.values= GetModules()
-	UpdateZoneSpells(status)
+	curModule= ""
+	UpdateZoneSpells()
 end
 
 local function CreateStandardDebuff(bossName,spellId,spellName)
@@ -246,38 +307,36 @@ local function CreateStandardDebuff(bossName,spellId,spellName)
 	end
 end
 
-local function CreateRaidDebuff(status,boss)
-	local spellId= newSpellId
-	local spellName= GetSpellInfo(newSpellId)
+local function CreateNewRaidDebuff(boss)
+	local spellId = newSpellId
+	local spellName = GetSpellInfo(newSpellId)
 	if spellId and spellName then
-		local dbx= GSRD.db.profile
+		local dbx = GSRD.db.profile
 		if not dbx.debuffs then	dbx.debuffs= {}	end
-		dbx= dbx.debuffs
-		if not dbx[selectedInstance] then dbx[selectedInstance]= {}	end
-		dbx= dbx[selectedInstance]
+		dbx = dbx.debuffs
+		if not dbx[curInstance] then dbx[curInstance]= {}	end
+		dbx = dbx[curInstance]
 		if not dbx[boss] then dbx[boss]= {}	end
-		dbx= dbx[boss]
-		dbx[#dbx+1]= spellId
-		SetEnableDebuff(status,selectedInstance,spellId,true)
-		local order = optionDebuffs.args[boss].order + selectedDebuffs[spellId]
-		optionDebuffs.args[tostring(spellId)] = MakeDebuffGroup(status, boss, spellId, order, true)
+		dbx = dbx[boss]
+		dbx[#dbx+1] = spellId
+		AddBossDebuffOptions( optionDebuffs.args, boss, spellId, true, #dbx)
 	end
-	newDebuffName= nil
-	newSpellId= nil
+	newDebuffName = nil
+	newSpellId = nil
 end
 
-local function DeleteRaidDebuff(status, spellId)
-	local dbx= GSRD.db.profile
-	SetEnableDebuff(status,selectedInstance,spellId,false)
-	for boss, spells in pairs(dbx.debuffs[selectedInstance]) do
+local function DeleteRaidDebuff(boss, spellId)
+	local dbx = GSRD.db.profile
+	SetEnableDebuff(boss, curDebuffs[spellId], spellId, false)
+	for boss, spells in pairs(dbx.debuffs[curInstance]) do
 		for i= 1, #spells do
 			if spellId == spells[i] then
 				optionDebuffs.args[tostring(spellId)]= nil
 				table.remove(spells,i)
 				if #spells==0 then
-					dbx.debuffs[selectedInstance][boss]= nil
-					if not next(dbx.debuffs[selectedInstance]) then
-						dbx.debuffs[selectedInstance]= nil
+					dbx.debuffs[curInstance][boss]= nil
+					if not next(dbx.debuffs[curInstance]) then
+						dbx.debuffs[curInstance]= nil
 						if not next(dbx.debuffs) then
 							dbx.debuffs= nil
 						end
@@ -289,12 +348,13 @@ local function DeleteRaidDebuff(status, spellId)
 	end
 end
 
-local function MakeDebuffOptions(status,bossName,spellId,spellName,spellIcon, isCustom)
+local function MakeDebuffOptions(bossName, spellId, isCustom)
+	local spellName,_, spellIcon = GetSpellInfo(spellId)
 	local options= {
 		spellname={
 			type="description",
 			order= 10,
-			name= spellName,
+			name= fmt ( "%s\n(%d)", spellName, spellId),
 			fontSize= "large",
 			image= spellIcon,
 		},
@@ -318,12 +378,9 @@ local function MakeDebuffOptions(status,bossName,spellId,spellName,spellIcon, is
 			type="toggle",
 			order = 30,
 			name = L["Enabled"],
-			get = function() return selectedDebuffs[spellId] end,
+			get = function() return curDebuffs[spellId]~=nil end,
 			set = function(_, v)    
-				SetEnableDebuff(status,selectedInstance,spellId,v)
-				local option = optionDebuffs.args[ tostring(spellId) ]
-				option.name  = FormatDebuffName(spellName,spellId)
-				option.order = math.floor( option.order / 200) * 200 + (selectedDebuffs[spellId] or 100)
+				SetEnableDebuff(bossName, curDebuffs[spellId] or statuses[1], spellId, v)
 			end,
 		},	
 		header3={
@@ -331,32 +388,49 @@ local function MakeDebuffOptions(status,bossName,spellId,spellName,spellIcon, is
 			order= 140,
 			name="",
 		},
+		assignedStatus = {	
+			type = "select",
+			order = 144,
+			name = L["Assigned to"],
+			-- desc = "",
+			get = function () 
+				return statuses[ curDebuffs[spellId] or statuses[1] ]
+			end,
+			set = function (_, v) 
+				SetEnableDebuff(bossName, curDebuffs[spellId], spellId, false) 
+				SetEnableDebuff(bossName, statuses[v]        , spellId, true)
+			end,
+			values = statusesList,
+			hidden = function() return not curDebuffs[spellId] end,
+		},
 		idTracking={
 			type="toggle",
 			order = 145,
-			width = "full",
-			name = fmt( "%s ( %d )", L["Track by SpellId"], spellId ),
+			-- width = "full",
+			name = L["Track by SpellId"],
 			desc = L["Track by spellId instead of aura name"],
-			get = function() 
-				local index = selectedDebuffs[spellId]
-				if index then return status.dbx.debuffs[selectedInstance][index] < 0 end	
+			get = function()
+				local status,index = GetDebuffStatus(spellId)
+				if status then 
+					return status.dbx.debuffs[curInstance][index] < 0	
+				end	
 			end,
 			set = function(_, v) 
-				SetDebuffSpellIdTracking(status, selectedInstance, spellId, v)	
+				SetDebuffSpellIdTracking(spellId, v)
 			end,
-			disabled = function() return not selectedDebuffs[spellId] end,
+			hidden = function() return not curDebuffs[spellId] end,
 		},					
 		header4={
 			type= "header",
 			order= 147,
 			name="",
+			hidden = function() return not curDebuffs[spellId] end,
 		},
 		createDebuff= {
 			type = "execute",
 			order = 150,
 			name = L["Copy to Debuffs"],
 			func = function() CreateStandardDebuff(bossName,spellId,spellName) end,
-			disabled = false,
 		}
 	}
 	if isCustom then
@@ -364,113 +438,116 @@ local function MakeDebuffOptions(status,bossName,spellId,spellName,spellIcon, is
 			type = "execute",
 			order = 155,
 			name = L["Delete raid debuff"],
-			func = function() DeleteRaidDebuff(status,spellId) end,
-			disabled = false,
+			func = function() DeleteRaidDebuff(bossName, spellId) end,
 		}
 	end
 	return options
 end
 
-function MakeDebuffGroup(status, bossName, spellId, order, isCustom)
-	local spellName,_, spellIcon = GetSpellInfo(spellId)
+local function MakeDebuffGroup(bossName, spellId, order, isCustom)
 	return {
 		type = "group",
-		name = FormatDebuffName(spellName,spellId),
-		nameBackup = spellName,
+		name = FormatDebuffName(spellId),
 		desc = fmt("     (%d)", spellId ),
 		order = order,
-		args = MakeDebuffOptions(status,bossName,spellId,spellName,spellIcon,isCustom)
+		args = MakeDebuffOptions(bossName,spellId,isCustom)
 	}
 end
 
-function MakeDebuffsOptions(status)
-	local module = selectedModule
-	local instance = selectedInstance
-	--
-	selectedDebuffs= {}
-	local dbx = status.dbx.debuffs and status.dbx.debuffs[instance] or {}
-	for index,value in ipairs(dbx) do
-		selectedDebuffs[ math.abs(value) ] = index
-	end
-	--
-	local dbx = GSRD.db.profile.debuffs and GSRD.db.profile.debuffs[selectedInstance]
-	local cacheKey = module..instance
-	local options = optionsDebuffsCache[cacheKey]
-	if not options then
-		options= {}
-		options.enableall={
-			type ="execute",
-			order= 5,
-			name = L["Enable All"],
-			func= function() 
-				EnableInstanceAllDebuffs(status)
-				RefreshDebuffsOptions()
-			end
-		}
-		options.disableall={
-			type ="execute",
-			order= 7,
-			name = L["Disable All"],
-			func= function() 
-				DisableInstanceAllDebuffs(status)
-				RefreshDebuffsOptions()
-			end
-		}
-		local debuffs= RDDB[module][instance]
-		local ORDER = 200
-		for name,values in pairs(debuffs) do
-			local bossName= BB[name] or name
-			options[name]= {
-				type= "group",
-				name=  fmt("|T%s:0|t%s", ICON_SKULL, bossName),
-				order= ORDER,
-				args= {
-					name = {
-						type = "input",
-						order = 1,
-						width = "full",
-						name = L["New raid debuff"],
-						desc = L["Type the SpellId of the new raid debuff"],
-						get = function()  return newDebuffName end,
-						set = function(_,v)	
-							newSpellId= tonumber(v)
-							newDebuffName= newSpellId and GetSpellInfo(newSpellId) or nil
-							if not newDebuffName or newDebuffName=="" then newSpellId= nil end
-						end,
-					},
-					exec = {
-						type = "execute",
-						order = 9,
-						name = L["Create raid debuff"],
-						func = function(info) CreateRaidDebuff( status, info[#info-1] ) end,
-						disabled= function() return not newSpellId or optionDebuffs.args[tostring(newSpellId)] end
-					},
-				},
-			}
-			for index,spellId in ipairs(values) do
-				local childOrder = ORDER + (selectedDebuffs[spellId] or (100+index))
-				options[tostring(spellId)]= MakeDebuffGroup(status, bossName, spellId, childOrder)
-			end
-			local userDebuffs= dbx and dbx[name]
-			if userDebuffs then
-				for index,spellId in ipairs(userDebuffs) do
-					local childOrder = ORDER + (selectedDebuffs[spellId] or (150+index))
-					options[tostring(spellId)]= MakeDebuffGroup(status, bossName, spellId, childOrder, true)
-				end
-			end
-			ORDER= ORDER + 200
+local function AddInstanceOptions(options)
+	options.enableall={
+		type ="execute",
+		order= 5,
+		name = L["Enable All"],
+		func= function() 
+			EnableInstanceAllDebuffs(curModule,curInstance)
+			LoadEnabledDebuffs()
+			UpdateZoneSpells()
+			RefreshDebuffsOptions()
 		end
-		optionsDebuffsCache[cacheKey]= options
+	}
+	options.disableall={
+		type ="execute",
+		order= 7,
+		name = L["Disable All"],
+		func= function() 
+			DisableInstanceAllDebuffs(curModule,curInstance)
+			ClearEnabledDebuffs()
+			UpdateZoneSpells()
+			RefreshDebuffsOptions()
+		end
+	}
+end
+
+local function AddBossOptions(options, name)
+	local order    = curBossesOrder[name] * 1000
+	local bossName = BB[name] or name
+	options[name]= {
+		type= "group",
+		name=  fmt("|T%s:0|t%s", ICON_SKULL, bossName),
+		order= order,
+		args= {
+			name = {
+				type = "input",
+				order = 1,
+				width = "full",
+				name = L["New raid debuff"],
+				desc = L["Type the SpellId of the new raid debuff"],
+				get = function()  return newDebuffName end,
+				set = function(_,v)	
+					newSpellId = tonumber(v)
+					newDebuffName= newSpellId and GetSpellInfo(newSpellId) or nil
+					if not newDebuffName or newDebuffName=="" then newSpellId= nil end
+				end,
+			},
+			exec = {
+				type = "execute",
+				order = 9,
+				name = L["Create raid debuff"],
+				func = function(info) CreateNewRaidDebuff( name ) end,
+				disabled= function() return not newSpellId or optionDebuffs.args[tostring(newSpellId)] end
+			},
+		},
+	}
+end
+
+-- Forward declared, dont add "local function"
+function AddBossDebuffOptions( options, boss, spellId, isCustom, priority )
+	local order = GetDebuffOrder(boss, spellId, isCustom, priority)
+	options[tostring(spellId)] = MakeDebuffGroup(boss, spellId, order, isCustom)
+end
+
+local function AddBossDebuffsOptions( options, boss, debuffs, isCustom)
+	if not debuffs then return end
+	for index,spellId in ipairs(debuffs) do
+		AddBossDebuffOptions( options, boss, spellId, isCustom, index)
+	end
+end
+
+local function MakeDebuffsOptions()
+	LoadBosses()
+	LoadEnabledDebuffs()
+	local options = GetOptionsFromCache()
+	if not options then
+		options = {}
+		local debuffs = RDDB[curModule][curInstance]
+		local custom  = GetCustomDebuffs()
+		AddInstanceOptions(options)
+		for boss,values in pairs(debuffs) do
+			AddBossOptions(options, boss)
+			AddBossDebuffsOptions(options, boss, values      , false)
+			AddBossDebuffsOptions(options, boss, custom[boss], true )
+		end
+		SetOptionsToCache(options)
 	end
 	return options
 end
 
-local function MakeModulesListOptions(self,status,options,optionParams)
-	options.header= {
-		type="header",
-		order= 149,
-		name="",
-	}
+local function MakeModulesListOptions(options)
+	modules = {}
+	for name in pairs(RDDB) do
+		modules[name] = L[name]
+	end
 	options.modules= {
 		type= "multiselect",
 		name= L["Enabled raid debuffs modules"],
@@ -480,77 +557,123 @@ local function MakeModulesListOptions(self,status,options,optionParams)
 			return (moduleList[key] ~= nil)
 		end,
 		set= function(_,key,value)
-			EnableDisableModule(status,key,value)
+			EnableDisableModule(key,value)
 		end,
-		values= GetModules(true)
+		values = modules
 	}
+end
+
+local function MakeOneStatusStandardOptions(options, status, index)
+	options[status.name] = { 
+		type  = "group", 
+		order = index, 
+		inline = true, 
+		name  = "",
+		args  = Grid2Options:MakeStatusStandardOptions(status, nil, { color1 = L[status.name], width = "full" }),
+	}
+end
+
+local function MakeStandardOptions(options)
+	for index,status in ipairs(statuses) do
+		MakeOneStatusStandardOptions( options, status, index )
+	end
+	options.add = {
+		type = "execute",
+		order = 250,
+		name = L["New Status"],
+		func = function(info) 
+			local name = fmt("raid-debuffs%d", #statuses+1)
+			Grid2:DbSetValue( "statuses", name, {type = "raid-debuffs", debuffs={}, color1 = {r=1,g=.5,b=1,a=1}} )
+			local status = Grid2.setupFunc["raid-debuffs"]( name, Grid2:DbGetValue("statuses", name) )
+			CalculateAvailableStatuses()
+			MakeOneStatusStandardOptions( options, status, #statuses )
+		end,
+		hidden = function() return #statuses>=5 end
+	}
+	options.del = {
+		type = "execute",
+		order = 251,
+		name = L["Delete Status"],
+		func = function(info) 
+			local status = statuses[#statuses]
+			options[status.name] = nil
+			Grid2:DbSetValue( "statuses", status.name, nil)
+			Grid2:UnregisterStatus( status )
+			CalculateAvailableStatuses()
+		end,
+		disabled = function()
+			local status = statuses[#statuses]
+			return status.enabled or next(status.dbx.debuffs)
+		end,
+		hidden = function() 
+			return #statuses<=1  
+		end,
+	}
+end
+
+local function MakeGeneralOptions(options)
+	CalculateAvailableStatuses()
+	options = options or {}
+	MakeStandardOptions(options)	
+	MakeModulesListOptions(options)
 	return options
 end
 
-local function MakeGeneralOptions(self, status, options, optionParams)
-	options= options or {}
-	options = Grid2Options:MakeStatusStandardOptions(status, options, optionParams)
-	options = Grid2Options:MakeStatusBlinkThresholdOptions(status, options, optionParams)
-	options = MakeModulesListOptions(self,status,options,optionParams)
-	return options
-end
-
-local function MakeAdvancedOptions(self,status,options,optionPararms)
+local function MakeAdvancedOptions(options)
+	options = options or {}
 	ResetAdvancedOptions()
-	optionModules= {
+	optionModules = {
 		type = "select",
 		order = 10,
 		name = L["Select module"],
 		desc = "",
 		get = function ()
-			if selectedModule=="" then
-				selectedModule= next(GetModules()) or ""
-				selectedInstance= ""
-				optionInstances.values= GetInstances(selectedModule)
+			if curModule=="" then
+				curModule = next(moduleList) or ""
+				curInstance = ""
+				optionInstances.values = GetInstances(curModule)
 				optionDebuffs.name= ""
-				optionDebuffs.args= {}
+				optionDebuffs.args = {}
 			end
-			return selectedModule
+			return curModule
 		end,
 		set = function (info, v)
-			selectedModule= v
-			selectedInstance=""
-			optionInstances.values= GetInstances(v)
+			curModule= v
+			curInstance=""
+			optionInstances.values = GetInstances(v)
 			optionDebuffs.name= ""
-			optionDebuffs.args= {}
+			optionDebuffs.args = {}
 		end,
-		values= GetModules()
+		values = moduleList,
 	}
 	optionInstances= {
 		type = "select",
 		order = 20,
 		name = L["Select instance"],
 		desc = "",
-		get = function () return selectedInstance end,
+		get = function () return curInstance end,
 		set = function (_, v)
-			selectedInstance = v
-			optionDebuffs.name= BZ[v] or v
-			optionDebuffs.args= MakeDebuffsOptions(status)
+			curInstance = v
+			optionDebuffs.name = BZ[v] or v
+			optionDebuffs.args = MakeDebuffsOptions()
 		end,
 		values= {}
 	}
-	optionDebuffs= {
-		type="group",
-		name="",
-		order= 30,
+	optionDebuffs = {
+		type ="group",
+		name ="",
+		order = 30,
 		childGroups= "tree",
-		args= {},
+		args = {},
 	}
-	local options= {}
 	options.modules  = optionModules
 	options.instances= optionInstances
 	options.debuffs  = optionDebuffs
 	return options
 end
 
-local function MakeStatusOptions(self, status, options, optionParams)
-	local generalOptions = MakeGeneralOptions(self,status,options,optionParams) 
-	local advancedOptions= MakeAdvancedOptions(self,status)
+local function MakeStatusOptions(self, status)
+	if status.name ~= "raid-debuffs" then return end
 	local options = {
 		type = "group",
 		order= 25,
@@ -560,13 +683,13 @@ local function MakeStatusOptions(self, status, options, optionParams)
 				type= "group",
 				name= L["General"],
 				order= 10,
-				args= generalOptions,
+				args = MakeGeneralOptions(),
 			},
 			advanced= {
 				type= "group",
 				name= L["Advanced"],
 				order= 20,
-				args= advancedOptions,
+				args = MakeAdvancedOptions(),
 			},
 		},
 	}

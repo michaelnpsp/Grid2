@@ -339,6 +339,7 @@ L["debuff"] = "debuff"
 
 L["New Color"] = "Nuevo Color"
 L["New Status"] = "Nuevo Estado"
+L["Delete Status"] = "Borrar Estado"
 L["Create a new status."] = "Crear un nuevo Estado"
 
 L["Threshold"] = "Umbral"
@@ -370,6 +371,7 @@ L["examples: Druid@Regrowth Chimaeron>Low Health"] = "por ejemplo: Druida@Recrec
 L["Threshold to activate Color"] = "Umbral para activar Color"
 L["Track by SpellId"] = "Seguimiento por SpellId"
 L["Track by spellId instead of aura name"] = "Seguimiento por identificador en lugar de por nombre"
+L["Assigned to"] = "Asignado a"
 
 L["Coloring based on"] = "Colorear por"
 L["Number of stacks"] = "No. Acumulaciones"
@@ -439,6 +441,11 @@ L["Disease"] = "Enfermedad"
 L["Magic"] = "Magia"
 
 L["raid-debuffs"] = "Debuffs de Raid"
+L["raid-debuffs2"] = "Debuffs de Raid(2)"
+L["raid-debuffs3"] = "Debuffs de Raid(3)"
+L["raid-debuffs4"] = "Debuffs de Raid(4)"
+L["raid-debuffs5"] = "Debuffs de Raid(5)"
+
 L["boss-shields"] = "escudos de jefes"
 
 -- class specific buffs & debuffs statuses

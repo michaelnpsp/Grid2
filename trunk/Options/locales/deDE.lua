@@ -339,6 +339,7 @@ L["debuff"] = "Schwächungszauber"
 
 L["New Color"] = "Neue Farbe"
 L["New Status"] = "Neuer Status"
+-- L["Delete Status"] = ""
 L["Create a new status."] = "Neuen Status erstellen."
 
 L["Threshold"] = "Schwelle"
@@ -370,6 +371,7 @@ L["examples: Druid@Regrowth Chimaeron>Low Health"] = "Beispiele: Druide@Nachwach
 -- L["Threshold to activate Color"] = ""
 -- L["Track by SpellId"] = ""
 -- L["Track by spellId instead of aura name"] = ""
+-- L["Assigned to"] = ""
 
 -- L["Coloring based on"] = ""
 -- L["Number of stacks"] = ""
@@ -439,6 +441,11 @@ L["Disease"] = "Krankheit"
 L["Magic"] = "Magie"
 
 L["raid-debuffs"] = "Schlachtzug-Schwächungszauber"
+-- L["raid-debuffs2"] = ""
+-- L["raid-debuffs3"] = ""
+-- L["raid-debuffs4"] = ""
+-- L["raid-debuffs5"] = ""
+
 -- L["boss-shields"] = ""
 
 -- class specific buffs & debuffs statuses
