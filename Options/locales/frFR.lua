@@ -339,6 +339,7 @@ L["debuff"] = "débuff"
 
 L["New Color"] = "Nouvelle couleur"
 L["New Status"] = "Nouveau statut"
+-- L["Delete Status"] = ""
 L["Create a new status."] = "Créé un nouveau statut."
 
 L["Threshold"] = "Seuil"
@@ -370,6 +371,7 @@ L["Display status only if the buff was not cast by you."] = "Affiche le statut u
 -- L["Threshold to activate Color"] = ""
 -- L["Track by SpellId"] = ""
 -- L["Track by spellId instead of aura name"] = ""
+-- L["Assigned to"] = ""
 
 -- L["Coloring based on"] = ""
 -- L["Number of stacks"] = ""
@@ -439,6 +441,11 @@ L["Disease"] = "Maladie"
 L["Magic"] = "Magie"
 
 L["raid-debuffs"] = "débuffs-raid"
+-- L["raid-debuffs2"] = ""
+-- L["raid-debuffs3"] = ""
+-- L["raid-debuffs4"] = ""
+-- L["raid-debuffs5"] = ""
+
 -- L["boss-shields"] = ""
 
 -- class specific buffs & debuffs statuses

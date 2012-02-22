@@ -339,6 +339,7 @@ L["debuff"] = true
 
 L["New Color"] = true
 L["New Status"] = true
+L["Delete Status"] = true
 L["Create a new status."] = true
 
 L["Threshold"] = true
@@ -370,6 +371,7 @@ L["examples: Druid@Regrowth Chimaeron>Low Health"]= true
 L["Threshold to activate Color"] = true
 L["Track by SpellId"] = true
 L["Track by spellId instead of aura name"] = true
+L["Assigned to"] = true
 
 L["Coloring based on"] = true
 L["Number of stacks"] = true
@@ -438,7 +440,12 @@ L["Poison"] = true
 L["Disease"] = true
 L["Magic"] = true
 
-L["raid-debuffs"] = "Raid Debuffs"
+L["raid-debuffs"]  = "Raid Debuffs"
+L["raid-debuffs2"] = "Raid Debuffs(2)"
+L["raid-debuffs3"] = "Raid Debuffs(3)"
+L["raid-debuffs4"] = "Raid Debuffs(4)"
+L["raid-debuffs5"] = "Raid Debuffs(5)"
+
 L["boss-shields"] = true
 
 -- class specific buffs & debuffs statuses

@@ -17,6 +17,7 @@ Shields.ShieldsDB  = {
 		[110214] = 100000, -- Consuming Shroud (Warmaster 10H)
 		[110598] = 150000, -- Consuming Shroud (Warmaster 25H)
 	},
+	-- ["Elwynn"] = { [61295] = 100000, }  -- (Riptide buff debug)
 }
 
 local timer
@@ -49,24 +50,32 @@ function Shields:ApplyShield(unit, ... )
 	shields_max = shields[ select(13,...) ]
 	shields_values[unit] = shields_max
 	self:UpdateIndicators(unit)
-	self:EnableTimer() 
+	self:EnableTimer()
 end
 
 function Shields:RemoveShield(unit)
-	shields_values[unit]  = nil
-	shields_updates[unit] = nil
-	self:UpdateIndicators(unit)
-	if not next(shields_values) then 
-		self:DisableTimer() 
-	end
+	if shields_values[unit] then
+		shields_values[unit]  = nil
+		shields_updates[unit] = nil
+		self:UpdateIndicators(unit)
+		if not next(shields_values) then 
+			self:DisableTimer()
+		end
+	end	
 end
 
 function Shields:UpdateShield(unit, ... )
-	shields_values[unit]  = max ( (shields_values[unit] or 0) - (select(18,...) or 0) , 0 )
-	shields_updates[unit] = true
+	local absorb = select(18,...) or 0 -- arg18=heal absorb arg16=heal amount, 
+	local value  = max ( shields_values[unit] - absorb , 0 )
+	if value>0 then
+		shields_values[unit]  = value
+		shields_updates[unit] = true
+	else	
+		self:RemoveShield(unit)
+	end	
 end
 
-local Actions= {
+local Actions = {
 	SPELL_AURA_APPLIED      = { true,  Shields.ApplyShield  },
 	SPELL_AURA_REFRESH      = { true,  Shields.ApplyShield  },
 	SPELL_AURA_REMOVED      = { true,  Shields.RemoveShield },
@@ -87,7 +96,9 @@ function Shields:COMBAT_LOG_EVENT_UNFILTERED(...)
 			end
 		elseif timer then 
 			local unit = Grid2:GetUnitidByGUID( select(9,...) )
-			if unit then action[2]( self, unit, ... ) end
+			if unit and shields_values[unit] then 
+				action[2]( self, unit, ... ) 
+			end
 		end	
 	end
 end

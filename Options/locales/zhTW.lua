@@ -339,6 +339,7 @@ L["debuff"] = "debuff"
 
 -- L["New Color"] = ""
 L["New Status"] = "新狀態"
+-- L["Delete Status"] = ""
 -- L["Create a new status."] = ""
 
 -- L["Threshold"] = ""
@@ -370,6 +371,7 @@ L["New Status"] = "新狀態"
 -- L["Threshold to activate Color"] = ""
 -- L["Track by SpellId"] = ""
 -- L["Track by spellId instead of aura name"] = ""
+-- L["Assigned to"] = ""
 
 -- L["Coloring based on"] = ""
 -- L["Number of stacks"] = ""
@@ -439,6 +441,11 @@ L["pvp"] = "pvp"
 -- L["Magic"] = ""
 
 -- L["raid-debuffs"] = ""
+-- L["raid-debuffs2"] = ""
+-- L["raid-debuffs3"] = ""
+-- L["raid-debuffs4"] = ""
+-- L["raid-debuffs5"] = ""
+
 -- L["boss-shields"] = ""
 
 -- class specific buffs & debuffs statuses
