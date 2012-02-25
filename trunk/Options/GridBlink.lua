@@ -58,7 +58,7 @@ end
 -- Hide raid frames options
 
 function Grid2Options:MakeBRFOptions()
-
+local textStore
 	Grid2Options:AddModuleOptions( "Misc", "Blizzard Raid Frames", {
 		hideBlizzardRaidFrames = {
 			type = "toggle",

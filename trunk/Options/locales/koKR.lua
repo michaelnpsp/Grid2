@@ -178,7 +178,6 @@ L["Name"] = "이름"
 L["Delete"] = "삭제"
 
 --{{{ Miscelaneous
-L["Name"] = "이름"
 L["New"] = "신규"
 L["Order"] = "순서"
 L["Delete"] = "삭제"
@@ -383,6 +382,7 @@ L["Show on %s."] = "%s 표시"
 L["Blink Threshold"] = "깜박임 수치"
 L["Blink Threshold at which to start blinking the status."] = "상태를 깜박이게 할 수치를 설정합니다."
 
+-- L["Name or SpellId"] = ""
 -- L["Select Type"] = ""
 -- L["Buff"] = ""
 -- L["Debuff"] = ""
@@ -636,6 +636,10 @@ L["Voice Chat"] = "음성 대화"
 -- L["The value below which a shield is considered medium."] = ""
 -- L["Custom Shields"] = ""
 -- L["Type shield names separated by commas."] = ""
+
+-- role related statuses
+-- L["Hide in combat"] = ""
+-- L["Hide Damagers"] = ""
 
 -- aoe heals
 -- L["aoe-"] = ""

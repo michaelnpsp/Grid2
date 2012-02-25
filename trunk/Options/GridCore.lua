@@ -25,6 +25,7 @@ local Grid2Options = {
 	},
 	typeMakeOptions = {},
 	optionParams = {},	
+	SpellEditDialogControl = type(LibStub("AceGUI-3.0").WidgetVersions["Aura_EditBox"]) == "number" and "Aura_EditBox" or nil,
 }
 
 local TABS_ORDER_DISPLAY = 10
@@ -223,8 +224,10 @@ function Grid2Options:AddElementSubType(elementType, subType, element, extraOpti
 
 	local name= Grid2Options.LocalizeStatus(element, true)
 	
-	-- Calculate order: Magic,Curse,Poison and Disease debuffs first
-	local order= element.dbx.subType and 10 or 20
+	-- Little hack to reorder some statuses:
+	-- Debuffs Types Magic,Curse,Poison and Disease debuffs first in the group
+	-- User defined color statues last in the group
+	local order = (element.dbx.subType or element.dbx.type~="color") and 10 or 20
 
 	local options = {}
 	subGroup.args[element.name] = {

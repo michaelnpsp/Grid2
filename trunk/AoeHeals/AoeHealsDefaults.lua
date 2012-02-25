@@ -22,7 +22,8 @@ elseif class=="PALADIN" then
 	spells = { 85222 }
 end	
 
-Grid2:DbSetStatusDefaultValue( "aoe-neighbors", {type = "aoe-heal", radius = 12.5, minPlayers = 4, color1 = {r=0,g=0.5,b=1,a=1}, } )
+Grid2:DbSetStatusDefaultValue( "aoe-neighbors", {type = "aoe-heal", radius = 12.5, minPlayers = 4, healthDeficit = 0, color1 = {r=0,g=0.5,b=1,a=1}, } )
+
 Grid2:DbSetStatusDefaultValue( "aoe-highlighter", {type = "aoe-heal", highlightStatus = "aoe-neighbors", color1 = {r=0,g=0.5,b=1,a=1}, } )
 
 if spells then

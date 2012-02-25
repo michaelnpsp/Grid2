@@ -178,7 +178,6 @@ L["Copy"] = "Copiar"
 L["Delete"] = "Borrar"
 
 --{{{ Miscelaneous
-L["Name"] = "Nombre"
 L["New"] = "Nuevo"
 L["Order"] = "Orden"
 L["Delete"] = "Borrar"
@@ -383,6 +382,7 @@ L["Show on %s."] = "Mostrar para %s."
 L["Blink Threshold"] = "Umbral de parpadeo"
 L["Blink Threshold at which to start blinking the status."] = "Elige el umbral a partir del cual el estado parpadeará"
 
+-- L["Name or SpellId"] = ""
 L["Select Type"] = "Seleccione tipo"
 L["Buff"] = "Buff"
 L["Debuff"] = "Debuff"
@@ -636,6 +636,10 @@ L["Maximum shield amount value. Only used by bar indicators."] = "Valor maximo d
 -- L["The value below which a shield is considered medium."] = ""
 -- L["Custom Shields"] = ""
 -- L["Type shield names separated by commas."] = ""
+
+-- role related statuses
+-- L["Hide in combat"] = ""
+-- L["Hide Damagers"] = ""
 
 -- aoe heals
 L["aoe-"] = "aoe: "

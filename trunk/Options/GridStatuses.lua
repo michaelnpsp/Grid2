@@ -7,7 +7,7 @@ local LG = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 
 local Grid2Blink = Grid2:GetModule("Grid2Blink")
 
-local Grid2Options= Grid2Options
+local Grid2Options = Grid2Options
 
 local BuffSubTypes= {
 	["Buff"] =  1,
@@ -1081,10 +1081,10 @@ NewBuffHandler.options = {
 		handler = NewBuffHandler,
 	},
 	newStatusBuffName = {
-		type = "input",
+		type = "input", dialogControl = Grid2Options.SpellEditDialogControl,
 		order = 2,
 		width = "full",
-		name = L["Name"],
+		name = L["Name or SpellId"],
 		usage = NewAuraUsageDescription,
 		get = "GetName",
 		set = "SetName",
@@ -1153,10 +1153,10 @@ NewDebuffHandler.options = {
 		handler = NewDebuffHandler,
 	},
 	newStatusDebuffName = {
-		type = "input",
+		type = "input", dialogControl = Grid2Options.SpellEditDialogControl,
 		order = 2,
 		width = "full",
-		name = L["Name"],
+		name = L["Name or SpellId"],
 		usage = NewAuraUsageDescription,
 		get = "GetName",
 		set = "SetName",
@@ -1752,6 +1752,50 @@ function Grid2Options:MakeStatusThreatOptions(status, options, optionParams)
 	return options
 end
 
+function Grid2Options:MakeStatusRoleOptions(status, options, optionParams)
+	options = options or {}
+	options = Grid2Options:MakeStatusColorOptions(status, options, optionParams)
+	options.spacer = {
+			type = "header",
+			order = 29,
+			name = "",
+		}
+	options.hideInCombat = {
+		type = "toggle",
+		name = L["Hide in combat"],
+		desc = L["Hide in combat"],
+		width = "full",
+		order = 30,
+		get = function () return status.dbx.hideInCombat end,
+		set = function (_, v) 
+			status.dbx.hideInCombat = v or nil 
+			status:SetHideInCombat(v)
+			status:UpdateAllUnits()
+		end,
+	}
+	return options
+end
+
+function Grid2Options:MakeStatusDungeonRoleOptions(status, options, optionParams)
+	options = options or {}
+	options = Grid2Options:MakeStatusRoleOptions(status, options, optionParams)
+	options.hideDamagers = {
+		type = "toggle",
+		name = L["Hide Damagers"],
+		desc = L["Hide Damagers"],
+		width = "full",
+		order = 40,
+		get = function () return status.dbx.hideDamagers end,
+		set = function (_, v) 
+			status.dbx.hideDamagers = v or nil 
+			status:UpdateDB()
+			status:UpdateAllUnits()
+		end,
+	}
+	return options
+end
+
+
 -- No options for the status
 function Grid2Options:MakeStatusNoOptions(status, options, optionParams)
 end
@@ -1825,10 +1869,19 @@ function Grid2Options:MakeStatusHandlers(reset)
 			threshold = L["Delay"],
 			thresholdDesc = L["Set the delay until ready check results are cleared."],
 	})
-	self:AddOptionHandler("role", self.MakeStatusStandardOptions, {
+
+	self:AddOptionHandler("leader", self.MakeStatusRoleOptions )
+	self:AddOptionHandler("raid-assistant", self.MakeStatusRoleOptions )
+	self:AddOptionHandler("master-looter", self.MakeStatusRoleOptions )
+	self:AddOptionHandler("role", self.MakeStatusRoleOptions, {
 			color1 = MAIN_ASSIST,
 			color2 = MAIN_TANK,
-			width = "full",
+			-- width = "full",
+	})
+	self:AddOptionHandler("dungeon-role", self.MakeStatusDungeonRoleOptions, {
+			color1 = LG["DAMAGER"],
+			color2 = LG["HEALER"],
+			color3 = LG["TANK"],
 	})
 	
 	self:AddOptionHandler("threat", self.MakeStatusThreatOptions, {
@@ -1855,12 +1908,6 @@ function Grid2Options:MakeStatusHandlers(reset)
 	
 	self:AddOptionHandler("direction", self.MakeStatusDirectionOptions)
 	
-	self:AddOptionHandler("dungeon-role", self.MakeStatusStandardOptions, {
-			color1 = LG["DAMAGER"],
-			color2 = LG["HEALER"],
-			color3 = LG["TANK"],
-	})
-
 	self:AddOptionHandler("shields", self.MakeStatusShieldsOptions)
 
 	self:AddOptionHandler("boss-shields", self.MakeStatusBossShieldsOptions )	

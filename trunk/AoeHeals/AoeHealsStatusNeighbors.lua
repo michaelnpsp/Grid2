@@ -4,6 +4,7 @@ local AOEM = Grid2:GetModule("Grid2AoeHeals")
 
 local radius
 local minPlayers
+local healthDeficit
 local IsActive
 
 local function CalcNeighbors(self, players)
@@ -19,10 +20,14 @@ local function CalcNeighbors(self, players)
 		for j=i+1,m do
 			local pj = players[j]
 			if radius2 >= (xi-pj.x)^2 + (yi-pj.y)^2 then
-				pi.count    = pi.count + 1 
-				pi.totMaskN = pi.totMaskN + pj.curMask
-				pj.count    = pj.count + 1
-				pj.totMaskN = pj.totMaskN + pi.curMask
+				if pj.deficit >= healthDeficit then
+					pi.count    = pi.count + 1 
+					pi.totMaskN = pi.totMaskN + pj.curMask
+				end
+				if pi.deficit >= healthDeficit then
+					pj.count    = pj.count + 1
+					pj.totMaskN = pj.totMaskN + pi.curMask
+				end	
 			end
 		end
 		if pi.count>=minPlayers then
@@ -46,6 +51,7 @@ local function UpdateDB(self, dbx)
 	dbx           = dbx or self.dbx
 	radius2       = dbx.radius ^ 2
 	minPlayers    = dbx.minPlayers
+	healthDeficit = dbx.healthDeficit or 0
 end
 
 AOEM.setupFunc["aoe-neighbors"] = function(self,dbx)

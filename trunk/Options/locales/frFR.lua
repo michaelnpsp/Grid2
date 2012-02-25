@@ -178,7 +178,6 @@ L["Name"] = "Nom"
 L["Delete"] = "Effacer"
 
 --{{{ Miscelaneous
-L["Name"] = "Nom"
 L["New"] = "Nouveau"
 L["Order"] = "Ordre"
 L["Delete"] = "Effacer"
@@ -383,6 +382,7 @@ L["Show on %s."] = "Montrer sur %s."
 L["Blink Threshold"] = "Seuil de clignotement"
 L["Blink Threshold at which to start blinking the status."] = "Seuil pour lequel le clignotement du statut commencera."
 
+-- L["Name or SpellId"] = ""
 L["Select Type"] = "Choix du type"
 L["Buff"] = "Buff"
 L["Debuff"] = "Débuff"
@@ -636,6 +636,10 @@ L["A resurrection spell has been casted on the unit"] = "Un sort de résurrectio
 -- L["The value below which a shield is considered medium."] = ""
 -- L["Custom Shields"] = ""
 -- L["Type shield names separated by commas."] = ""
+
+-- role related statuses
+-- L["Hide in combat"] = ""
+-- L["Hide Damagers"] = ""
 
 -- aoe heals
 -- L["aoe-"] = ""

@@ -178,7 +178,6 @@ L["Select which layout to use for arenas."] = "选择使用哪个竞技场布局
 -- L["Delete"] = ""
 
 --{{{ Miscelaneous
--- L["Name"] = ""
 -- L["New"] = ""
 -- L["Order"] = ""
 -- L["Delete"] = ""
@@ -383,6 +382,7 @@ L["Show on %s."] = "在%s上显示。"
 -- L["Blink Threshold"] = ""
 -- L["Blink Threshold at which to start blinking the status."] = ""
 
+-- L["Name or SpellId"] = ""
 -- L["Select Type"] = ""
 -- L["Buff"] = ""
 -- L["Debuff"] = ""
@@ -636,6 +636,10 @@ L["Voice Chat"] = "语音"
 -- L["The value below which a shield is considered medium."] = ""
 -- L["Custom Shields"] = ""
 -- L["Type shield names separated by commas."] = ""
+
+-- role related statuses
+-- L["Hide in combat"] = ""
+-- L["Hide Damagers"] = ""
 
 -- aoe heals
 -- L["aoe-"] = ""
