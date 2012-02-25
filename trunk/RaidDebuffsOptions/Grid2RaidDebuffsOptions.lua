@@ -354,7 +354,7 @@ local function MakeDebuffOptions(bossName, spellId, isCustom)
 		spellname={
 			type="description",
 			order= 10,
-			name= fmt ( "%s\n(%d)", spellName, spellId),
+			name= fmt ( "%s\n(%d)", spellName or "Unknow", spellId),
 			fontSize= "large",
 			image= spellIcon,
 		},
