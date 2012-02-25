@@ -64,7 +64,7 @@ local function MakeStatusAoeHealOptions(self, status, options)
 		}
 		options.minPlayers = {
 			type = "range",
-			order = 40,
+			order = 30,
 			name = L["Min players"],
 			desc = L["Minimum players to enable the status."],
 			min = 1,
@@ -90,21 +90,21 @@ local function MakeStatusAoeHealOptions(self, status, options)
 				status:UpdateDB() 
 			end,
 		}
+		options.healthThreshold = {
+			type = "range",
+			order = 40,
+			name = L["Health deficit"],
+			desc = L["Minimum health deficit of units to enable the status."],
+			min = 0,
+			softMax = 50000,
+			step = 1,
+			get = function () return status.dbx.healthDeficit end,
+			set = function (_, v) 
+				status.dbx.healthDeficit = v  
+				status:UpdateDB() 
+			end,
+		}
 		if status.name ~= "aoe-neighbors" then
-			options.healThreshold = {
-				type = "range",
-				order = 30,
-				name = L["Health deficit"],
-				desc = L["Minimum health deficit of units to enable the status."],
-				min = 0,
-				softMax = 50000,
-				step = 1,
-				get = function () return status.dbx.healthDeficit end,
-				set = function (_, v) 
-					status.dbx.healthDeficit = v  
-					status:UpdateDB() 
-				end,
-			}
 			if status.name ~= "aoe-PrayerOfHealing" then
 				options.keepPrevHeals = {
 					type = "toggle",

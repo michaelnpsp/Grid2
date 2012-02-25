@@ -178,7 +178,6 @@ L["Copy"] = true
 L["Delete"] = true
 
 --{{{ Miscelaneous
-L["Name"] = true
 L["New"] = true
 L["Order"] = true
 L["Delete"] = true
@@ -383,7 +382,8 @@ L["Show on %s."] = true
 L["Blink Threshold"] = true
 L["Blink Threshold at which to start blinking the status."] = true
 
-L["Select Type"]= true
+L["Name or SpellId"] = true
+L["Select Type"] = true
 L["Buff"] = true
 L["Debuff"] = true
 L["Buffs Group"] = true
@@ -636,6 +636,10 @@ L["Medium shield threshold"] = true
 L["The value below which a shield is considered medium."] = true
 L["Custom Shields"] = true
 L["Type shield names separated by commas."] = true
+
+-- role related statuses
+L["Hide in combat"] = true
+L["Hide Damagers"] = true
 
 -- aoe heals
 L["aoe-"] = true

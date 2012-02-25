@@ -178,7 +178,6 @@ L["Name"] = "Название"
 L["Delete"] = "Удалить"
 
 --{{{ Miscelaneous
-L["Name"] = "Название"
 L["New"] = "Новый"
 L["Order"] = "Порядок"
 L["Delete"] = "Удалить"
@@ -383,6 +382,7 @@ L["Show on %s."] = "Показать на %s."
 L["Blink Threshold"] = "Порог мерцания"
 L["Blink Threshold at which to start blinking the status."] = "Порог мерцания, при котором будет начинать мерцание статуса."
 
+-- L["Name or SpellId"] = ""
 -- L["Select Type"] = ""
 L["Buff"] = "Бафф"
 L["Debuff"] = "Дебафф"
@@ -636,6 +636,10 @@ L["Dead Units"] = "Мертвые юниты"
 -- L["The value below which a shield is considered medium."] = ""
 -- L["Custom Shields"] = ""
 -- L["Type shield names separated by commas."] = ""
+
+-- role related statuses
+-- L["Hide in combat"] = ""
+-- L["Hide Damagers"] = ""
 
 -- aoe heals
 -- L["aoe-"] = ""

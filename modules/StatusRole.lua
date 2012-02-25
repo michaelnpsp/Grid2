@@ -2,6 +2,7 @@ local Role = Grid2.statusPrototype:new("role")
 local Leader = Grid2.statusPrototype:new("leader")
 local Assistant = Grid2.statusPrototype:new("raid-assistant")
 local MasterLooter = Grid2.statusPrototype:new("master-looter")
+local DungeonRole = Grid2.statusPrototype:new("dungeon-role")
 
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
@@ -10,12 +11,57 @@ local UnitExists = UnitExists
 local GetRaidRosterInfo = GetRaidRosterInfo
 local GetPartyAssignment = GetPartyAssignment
 local UnitIsPartyLeader = UnitIsPartyLeader
+local UnitGroupRolesAssigned= UnitGroupRolesAssigned
+local GetTexCoordsForRoleSmallCircle= GetTexCoordsForRoleSmallCircle
 local MAIN_TANK = MAIN_TANK
 local MAIN_ASSIST = MAIN_ASSIST
+local next = next
+
+-- Code to disable statuses in combat
+local SetHideInCombat
+do
+	local statuses, frame
+	local function CombatEvent(_, event)
+		local inCombat = (event == "PLAYER_REGEN_DISABLED")
+		local Dummy    = Grid2.Dummy
+		for status in next,statuses do
+			status.IsActive = inCombat and Dummy or status.IsActiveB
+			status:UpdateActiveUnits()
+		end
+	end
+	function SetHideInCombat(status,value)
+		if value then
+			if not frame then
+				statuses, frame = {}, CreateFrame("Frame")
+				frame:SetScript("OnEvent", CombatEvent)
+			end
+			if not next(statuses) then
+				frame:RegisterEvent("PLAYER_REGEN_ENABLED")
+				frame:RegisterEvent("PLAYER_REGEN_DISABLED")
+			end
+			status.IsActiveB = status.IsActive
+			statuses[status] = true
+		elseif statuses and statuses[status] then
+			statuses[status] = nil
+			if not next(statuses) then
+				frame:UnregisterEvent("PLAYER_REGEN_ENABLED")
+				frame:UnregisterEvent("PLAYER_REGEN_DISABLED")
+			end
+		end
+	end
+end
 
 -- Role (maintank/mainassist) status
 
 local role_cache = {}
+
+Role.SetHideInCombat = SetHideInCombat
+
+function Role:UpdateActiveUnits()
+	for unit in next, role_cache do
+		self:UpdateIndicators(unit)
+	end
+end
 
 function Role:UpdatePartyUnits(event)
 	for i=1,5 do
@@ -56,12 +102,14 @@ function Role:Grid_UnitLeft(_, unit)
 end
 
 function Role:OnEnable()
+	self:SetHideInCombat(self.dbx.hideInCombat)
 	self:RegisterEvent("RAID_ROSTER_UPDATE", "UpdateAllUnits")
 	self:RegisterMessage("Grid_UnitLeft")
 	self:UpdateAllUnits()
 end
 
 function Role:OnDisable()
+	self:SetHideInCombat()
 	self:UnregisterEvent("RAID_ROSTER_UPDATE")
 	self:UnregisterMessage("Grid_UnitLeft")
 	wipe(role_cache)
@@ -115,6 +163,12 @@ Grid2:DbSetStatusDefaultValue( "role", {type = "role", colorCount = 2, color1 = 
 
 local assis_cache = {}
 
+function Assistant:UpdateActiveUnits()
+	for unit in next, assis_cache do
+		self:UpdateIndicators(unit)
+	end
+end
+
 function Assistant:UpdateAllUnits(event)
 	if GetNumRaidMembers() == 0 then return end
 	local units = Grid2.raid_units
@@ -135,12 +189,14 @@ function Assistant:Grid_UnitLeft(_, unit)
 end
 
 function Assistant:OnEnable()
+	self:SetHideInCombat(self.dbx.hideInCombat)
 	self:RegisterEvent("RAID_ROSTER_UPDATE", "UpdateAllUnits")
 	self:RegisterMessage("Grid_UnitLeft")
 	self:UpdateAllUnits()
 end
 
 function Assistant:OnDisable()
+	self:SetHideInCombat()
 	self:UnregisterEvent("RAID_ROSTER_UPDATE")
 	self:UnregisterMessage("Grid_UnitLeft")
 	wipe(assis_cache)
@@ -160,6 +216,7 @@ function Assistant:GetText(unit)
 end
 
 Assistant.GetColor = Grid2.statusLibrary.GetColor
+Assistant.SetHideInCombat = SetHideInCombat
 
 local function CreateAssistant(baseKey, dbx)
 	Grid2:RegisterStatus(Assistant, {"color", "icon", "text"}, baseKey, dbx)
@@ -173,6 +230,12 @@ Grid2:DbSetStatusDefaultValue( "raid-assistant", { type = "raid-assistant", colo
 -- Party/Raid Leader status
 
 local raidLeader
+
+function Leader:UpdateActiveUnits()
+	if raidLeader then
+		self:UpdateIndicators(raidLeader)
+	end
+end
 
 function Leader:UpdateLeader()
 	local prevLeader = raidLeader
@@ -194,12 +257,14 @@ function Leader:CalculateLeader()
 end
 
 function Leader:OnEnable()
+	self:SetHideInCombat(self.dbx.hideInCombat)
 	self:RegisterEvent("PARTY_LEADER_CHANGED", "UpdateLeader")
 	self:RegisterEvent("RAID_ROSTER_UPDATE", "UpdateLeader")
 	self:CalculateLeader()
 end
 
 function Leader:OnDisable()
+	self:SetHideInCombat()
 	self:UnregisterEvent("PARTY_LEADER_CHANGED")
 	self:UnregisterEvent("RAID_ROSTER_UPDATE")
 	raidLeader = nil
@@ -219,6 +284,7 @@ function Leader:GetText(unit)
 end
 
 Leader.GetColor = Grid2.statusLibrary.GetColor
+Leader.SetHideInCombat = SetHideInCombat
 
 local function CreateLeader(baseKey, dbx)
 	Grid2:RegisterStatus(Leader, {"color", "icon", "text"}, baseKey, dbx)
@@ -232,6 +298,13 @@ Grid2:DbSetStatusDefaultValue( "leader", { type = "leader", color1 = {r=0,g=.7,b
 -- Master looter status
 
 local masterLooter
+
+function MasterLooter:UpdateActiveUnits()
+	if masterLooter then
+		self:UpdateIndicators(masterLooter)
+	end
+end
+
 
 function MasterLooter:UpdateMasterLooter()
 	local prevMaster = masterLooter
@@ -256,12 +329,14 @@ function MasterLooter:CalculateMasterLooter()
 end
 
 function MasterLooter:OnEnable()
+	self:SetHideInCombat(self.dbx.hideInCombat)
 	self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED", "UpdateMasterLooter")
 	self:RegisterEvent("RAID_ROSTER_UPDATE", "UpdateMasterLooter")
 	self:CalculateMasterLooter()
 end
 
 function MasterLooter:OnDisable()
+	self:SetHideInCombat()
 	self:UnregisterEvent("PARTY_LOOT_METHOD_CHANGED")
 	self:UnregisterEvent("RAID_ROSTER_UPDATE")
 	masterLooter = nil
@@ -281,6 +356,7 @@ function MasterLooter:GetText(unit)
 end
 
 MasterLooter.GetColor = Grid2.statusLibrary.GetColor
+MasterLooter.SetHideInCombat = SetHideInCombat
 
 local function CreateMasterLooter(baseKey, dbx)
 	Grid2:RegisterStatus(MasterLooter, {"color", "icon", "text"}, baseKey, dbx)
@@ -290,3 +366,75 @@ end
 Grid2.setupFunc["master-looter"] = CreateMasterLooter
 
 Grid2:DbSetStatusDefaultValue( "master-looter", { type = "master-looter", color1 = {r=1,g=.5,b=0,a=1}})
+
+-- dungeon-role status
+
+local isValidRole = { TANK = true, HEALER = true, DAMAGER = true }
+
+DungeonRole.UpdateAllUnits = Grid2.statusLibrary.UpdateAllUnits
+DungeonRole.UpdateActiveUnits = Grid2.statusLibrary.UpdateAllUnits
+DungeonRole.SetHideInCombat = SetHideInCombat
+
+function DungeonRole:OnEnable()
+	self:SetHideInCombat(self.dbx.hideInCombat)
+	self:UpdateDB()
+	self:RegisterEvent("PLAYER_ROLES_ASSIGNED", "UpdateAllUnits")
+	self:RegisterEvent("PARTY_MEMBERS_CHANGED", "UpdateAllUnits")
+end
+
+function DungeonRole:OnDisable()
+	self:SetHideInCombat()
+	self:UnregisterEvent("PLAYER_ROLES_ASSIGNED")
+	self:UnregisterEvent("PARTY_MEMBERS_CHANGED")
+end
+
+function DungeonRole:IsActive(unit)
+	local role = UnitGroupRolesAssigned(unit)
+    return role and isValidRole[role]
+end
+
+function DungeonRole:GetColor(unit)
+	local c
+	local role = UnitGroupRolesAssigned(unit)
+	if role=="DAMAGER" then
+		c = self.dbx.color1
+	elseif role=="HEALER" then
+		c = self.dbx.color2
+	elseif role=="TANK" then
+		c = self.dbx.color3 
+	else 
+		return 0,0,0,0
+	end
+	return c.r, c.g, c.b, c.a
+end
+
+function DungeonRole:GetIcon(unit)
+	return "Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES"
+end
+
+function DungeonRole:GetTexCoord(unit)
+	return GetTexCoordsForRoleSmallCircle(UnitGroupRolesAssigned(unit))
+end
+
+function DungeonRole:GetText(unit)
+	return L[UnitGroupRolesAssigned(unit) or ""]
+end
+
+function DungeonRole:UpdateDB()
+	isValidRole["DAMAGER"] = (not self.dbx.hideDamagers) or nil
+end
+
+local function Create(baseKey, dbx)
+	Grid2:RegisterStatus(DungeonRole, {"color", "text", "icon"}, baseKey, dbx)
+
+	return DungeonRole
+end
+
+Grid2.setupFunc["dungeon-role"] = Create
+
+Grid2:DbSetStatusDefaultValue( "dungeon-role", { type = "dungeon-role", colorCount = 3,	
+	color1 = { r = 0.75, g = 0, b = 0 }, --dps
+	color2 = { r = 0, g = 0.75, b = 0 }, --heal
+	color3 = { r = 0, g = 0, b = 0.75 }, --tank
+	opacity = 0.75 
+})

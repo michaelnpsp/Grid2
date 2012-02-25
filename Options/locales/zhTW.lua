@@ -178,7 +178,6 @@ L["Name"] = "名稱"
 L["Delete"] = "刪除"
 
 --{{{ Miscelaneous
-L["Name"] = "名稱"
 -- L["New"] = ""
 L["Order"] = "命令"
 L["Delete"] = "刪除"
@@ -383,6 +382,7 @@ L["New Status"] = "新狀態"
 -- L["Blink Threshold"] = ""
 -- L["Blink Threshold at which to start blinking the status."] = ""
 
+-- L["Name or SpellId"] = ""
 -- L["Select Type"] = ""
 -- L["Buff"] = ""
 -- L["Debuff"] = ""
@@ -636,6 +636,10 @@ L["Voice Chat"] = "語音"
 -- L["The value below which a shield is considered medium."] = ""
 -- L["Custom Shields"] = ""
 -- L["Type shield names separated by commas."] = ""
+
+-- role related statuses
+-- L["Hide in combat"] = ""
+-- L["Hide Damagers"] = ""
 
 -- aoe heals
 -- L["aoe-"] = ""

@@ -11,7 +11,7 @@ local ipairs = ipairs
 local UnitDebuff = UnitDebuff
 local GetSpellInfo = GetSpellInfo
 
-local curzone      
+local curzone
 local statuses = {}
 local spells_order = {}
 local spells_status = {}
@@ -32,7 +32,7 @@ frame:SetScript("OnEvent", function (self, event, unit)
 	end
 	for status in next, statuses do
 		status:UpdateState(unit)
-	end	
+	end
 end)
 
 function GSRD:OnModuleEnable()
@@ -83,7 +83,7 @@ end
 
 function GSRD:Grid_UnitLeft(_, unit)
 	for status in next, statuses do
-		status:UpdateState(unit)
+		status:ResetState(unit)
 	end	
 end
 
@@ -124,18 +124,14 @@ function class:LoadZoneSpells()
 	end
 end
 
-function class:UpdateEvents()
-	GSRD:UpdateEvents()
+function class:OnEnable()
 	if not next(statuses) then
 		GSRD:RegisterEvent("ZONE_CHANGED_NEW_AREA", "UpdateZoneSpells")
 		GSRD:RegisterMessage("Grid_UnitLeft")
 	end
-end
-
-function class:OnEnable()
-	statuses[self] = true	
+	statuses[self] = true
 	self:LoadZoneSpells()
-	self:UpdateEvents()
+	GSRD:UpdateEvents()
 end
 
 function class:OnDisable()
@@ -182,6 +178,15 @@ function class:UpdateState(unit)
 		self.states[unit] = nil
 		self:UpdateIndicators(unit)
 	end
+end
+
+function class:ResetState(unit)
+	self.states[unit]      = nil
+	self.counts[unit]      = nil
+	self.textures[unit]    = nil
+	self.types[unit]       = nil
+	self.durations[unit]   = nil
+	self.expirations[unit] = nil
 end
 
 local function Create(baseKey, dbx)
