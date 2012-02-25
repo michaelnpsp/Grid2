@@ -47,9 +47,7 @@ function GSRD:UpdateZoneSpells(event)
 	local zone = IsInInstance() and GetInstanceInfo() or GetRealZoneText()
 	zone = zone and BZ[zone] or zone
 	if zone==curzone and event then return end
-	curzone = zone
-	wipe(spells_order)
-	wipe(spells_status)
+	self:ResetZoneSpells(zone)
 	for status in next,statuses do
 		status:LoadZoneSpells()
 	end
@@ -63,8 +61,8 @@ function GSRD:ClearAllIndicators()
 	end	
 end
 
-function GSRD:ResetZoneSpells()
-	curzone = nil
+function GSRD:ResetZoneSpells(newzone)
+	curzone = newzone
 	wipe(spells_order)
 	wipe(spells_status)
 end
