@@ -6,7 +6,7 @@ local Range = Grid2.statusPrototype:new("range")
 
 local Grid2 = Grid2
 local UnitIsUnit = UnitIsUnit
-local UnitIsDead = UnitIsDead
+local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local IsSpellInRange = IsSpellInRange
 local CheckInteractDistance = CheckInteractDistance
 
@@ -29,7 +29,7 @@ end
 local UnitIsInRange
 local UnitNoDeadInRange
 local function UnitDeadInRange(unit)
-	if UnitIsDead(unit) then
+	if UnitIsDeadOrGhost(unit) then
 		return UnitIsUnit(unit,"player") or IsSpellInRange(rezSpell,unit) == 1
 	else
 		return UnitNoDeadInRange(unit)

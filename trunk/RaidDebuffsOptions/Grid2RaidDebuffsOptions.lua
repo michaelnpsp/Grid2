@@ -42,9 +42,9 @@ function Grid2Options:GetRaidDebuffsTable()
 end
 
 local function UpdateZoneSpells()
-	-- if IsInInstance() then
+	if IsInInstance() then
 		GSRD:UpdateZoneSpells()
-	-- end	
+	end	
 end
 
 local function GetOptionsFromCache()
@@ -106,7 +106,7 @@ local function ClearEnabledDebuffs()
 	curDebuffsOrder = {}
 end
 
-function LoadBosses()
+local function LoadBosses()
     wipe(curBossesOrder)
 	local order = 1
 	local bosses = RDDB[curModule][curInstance]

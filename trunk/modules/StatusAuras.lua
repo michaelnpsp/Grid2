@@ -299,7 +299,7 @@ local function status_UpdateStateMine(self, unit, iconTexture, count, duration, 
 end
 
 local function status_UpdateStateNotMine(self, unit, iconTexture, count, duration, expiration, isMine)
-	if not IsMine then
+	if not isMine then
 		status_UpdateState(self, unit, iconTexture, count, duration, expiration)
 	end
 end
