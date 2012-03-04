@@ -1945,7 +1945,7 @@ function Grid2Options:MakeStatusOptions(reset)
 		if (status) then
 			local funcMakeOptions = self.typeMakeOptions[dbx.type] or self.MakeStatusStandardOptions 
 			local optionParams = self.optionParams[dbx.type]
-			local options, subType = funcMakeOptions(self, status, options, optionParams)
+			local options, subType = funcMakeOptions(self, status, nil, optionParams)
 			if subType=="root" or Categories[status.name]=="root" then
 				self:AddElement("statuses", status, options)
 			else
