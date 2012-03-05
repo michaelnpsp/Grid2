@@ -4,7 +4,7 @@ if not L then return end
 --{{{ Actually used
 L["Border"] = "테두리"
 L["Charmed"] = "매혹"
-L["Default"] = "Default"
+L["Default"] = "기본값"
 L["Grid2"] = "Grid2"
 L["Beast"] = "야수"
 L["Demon"] = "악마"
@@ -54,20 +54,20 @@ L["talking"] = "대화중"
 --}}}
 
 --{{{ GridStatusDungeonRole
--- L["TANK"] = ""
--- L["HEALER"] = ""
--- L["DAMAGER"] = ""
+L["TANK"] = "방어 전담"
+L["HEALER"] = "치유 전담"
+L["DAMAGER"] = "공격 전담"
 --}}}
 
 --{{{ Other roles
--- L["RL"] = ""
--- L["RA"] = ""
--- L["ML"] = ""
+L["RL"] = "RL"
+L["RA"] = "RA"
+L["ML"] = "ML"
 --}}}
 
 --{{{ Resurrection
--- L["Reviving"] = ""
--- L["Revived"] = ""
+L["Reviving"] = "부활"
+L["Revived"] = "부활"
 ---}}}
 
 --Layouts
@@ -90,8 +90,8 @@ L["By Class 1 x 25 Wide"] = "1 x 25인 직업별"
 L["By Class 2 x 15 Wide"] = "2 x 15인 직업별"
 L["By Group 4 x 10 Wide"] = "4 x 10인 공격대"
 L["By Group 20"] = "20인 공격대"
-L["By Group 25 w/tanks"] = "25인 공격대, 탱커"
+L["By Group 25 w/tanks"] = "25인 공격대, 방어 전담"
 L["By Group 40"] = "40인 공격대"
--- L["By Group 25 Tanks First"] = ""
--- L["By Group 10 Tanks First"] = ""
--- L["Select Layout"] = ""
+L["By Group 25 Tanks First"] = "25인 공격대, 첫 방어 전담"
+L["By Group 10 Tanks First"] = "10인 공격대, 첫 방어 전담"
+L["Select Layout"] = "배치 선택"
