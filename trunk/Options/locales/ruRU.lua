@@ -2,7 +2,8 @@ local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2Options", "ruRU")
 if not L then return end
 
 --{{{ General options
-L["GRID2_DESC"] = "Добро пожаловать в Grid2"
+L["GRID2_WELCOME"] = "Добро пожаловать в Grid2"
+-- L["GRID2_DESC"] = ""
 
 L["General Settings"] = "Основные настройки"
 
@@ -175,7 +176,6 @@ L["Name"] = "Название"
 -- L["raidpet"] = ""
 -- L["Insert"] = ""
 -- L["Copy"] = ""
-L["Delete"] = "Удалить"
 
 --{{{ Miscelaneous
 L["New"] = "Новый"
@@ -201,13 +201,14 @@ L["Opacity"] = "Непрозрачность"
 L["Set the opacity."] = "Установка непрозрачности"
 L["<CharacterOnlyString>"] = "<CharacterOnlyString>"
 L["Options for %s."] = " Опции для %s."
+-- L["Delete this element"] = ""
 
 --{{{ Indicator management
 L["New Indicator"] = "Новый индикатор"
+-- L["Create Indicator"] = ""
 L["Create a new indicator."] = "Создать новый индикатор."
 L["Name of the new indicator"] = "Название нового индикатора"
-L["Enable Test Mode"] = "Включить тестовый режим"
-L["Disable Test Mode"] = "Отключить тестовый режим"
+-- L["Enable or disable test mode for indicators"] = ""
 L["Appearance"] = "Вид true"
 L["Adjust the border size of the indicator."] = "Настройка размера границ индикатора."
 -- L["Stack Text"] = ""
@@ -223,6 +224,8 @@ L["Cooldown"] = "Восстановление"
 L["Type"] = "Тип"
 L["Type of indicator"] = "Тип индикатора"
 L["Type of indicator to create"] = "Тип создаваемого индикатора"
+-- L["Change type"] = ""
+-- L["Change the indicator type"] = ""
 
 L["Text Length"] = "Длина текста"
 L["Maximum number of characters to show."] = "Максимальное число отображаемх символов"
@@ -335,11 +338,17 @@ L["status"] = "Статус"
 
 L["buff"] = "Бафф"
 L["debuff"] = "Дебафф"
+-- L["debuffType"] = ""
 
+-- L["New Buff"] = ""
+-- L["New Debuff"] = ""
 -- L["New Color"] = ""
 L["New Status"] = "Новый статус"
 -- L["Delete Status"] = ""
 L["Create a new status."] = "Создать новый статус."
+-- L["Create Buff"] = ""
+-- L["Create Debuff"] = ""
+-- L["Create Color"] = ""
 
 L["Threshold"] = "Порог"
 -- L["Thresholds"] = ""
@@ -637,9 +646,19 @@ L["Dead Units"] = "Мертвые юниты"
 -- L["Custom Shields"] = ""
 -- L["Type shield names separated by commas."] = ""
 
+-- boss-shields status
+-- L["Supported debuffs"] = ""
+
 -- role related statuses
 -- L["Hide in combat"] = ""
 -- L["Hide Damagers"] = ""
+
+-- status descriptions
+-- L["highlights your target"] = ""
+-- L["hostile casts against raid members"] = ""
+-- L["advanced threat detection"] = ""
+-- L["arrows pointing to each raid member"] = ""
+-- L["display remaining amount of heal absorb shields"] = ""
 
 -- aoe heals
 -- L["aoe-"] = ""
@@ -697,3 +716,8 @@ L["Data size: %.1fKB"] = "Размер данных: %.1fКБ"
 -- L["Transmission completed"] = ""
 L["\"%s\" has sent you a profile configuration. Do you want to activate received profile ?"] = "\"%s\" послал вам профиль настроек. Хотите активировать полученный профиль?"
 -- L["Include Custom Layouts"] = ""
+
+-- Open manager
+-- L["Options management"] = ""
+-- L["Load options on demand (requires UI reload)"] = ""
+-- L["OPTIONS_ONDEMAND_DESC"] = ""

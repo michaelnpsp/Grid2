@@ -8,7 +8,7 @@ local next     = next
 local max      = math.max
 local fmt      = string.format
 
-Shields.ShieldsDB  = {   
+Shields.ShieldsDB  = {
 	["DragonSoul"] = {
 		[105479] = 200000, -- Searing Plasma (Spine of Deathwing 10N)
 		[109363] = 280000, -- Searing Plasma (Spine of Deathwing 10H)

@@ -4,7 +4,6 @@ Created by Michael
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 local BZ = LibStub("LibBabble-Zone-3.0"):GetUnstrictLookupTable()
---local BB = LibStub("LibBabble-Boss-3.0"):GetUnstrictLookupTable() -- Disabled because uses too much memory
 local BB = {}
 
 local GSRD = Grid2:GetModule("Grid2RaidDebuffs")
@@ -76,8 +75,8 @@ end
 local function CalculateAvailableStatuses()
 	wipe(statuses)
 	for _,status in Grid2:IterateStatuses() do
-		if status.dbx.type == "raid-debuffs" then
-			statuses[#statuses+1]  = status
+		if status.dbx and status.dbx.type == "raid-debuffs" then
+			statuses[#statuses+1] = status
 		end
 	end
 	table.sort( statuses, function(a,b) return a.name < b.name  end )
@@ -148,25 +147,29 @@ local function FormatDebuffName(spellId)
 	end
 end
 
-local function GetSpellDescription(spellId)
-	if not tipDebuff then
-		tipDebuff = CreateFrame("GameTooltip", "Grid2RaidDebuffsTooltip", nil, "GameTooltipTemplate")
-		tipDebuff:SetOwner(UIParent, "ANCHOR_NONE")
-		for i = 1, 5 do
-			tipDebuff[i] = _G["Grid2RaidDebuffsTooltipTextLeft"..i]
-			if not tipDebuff[i] then
-				tipDebuff[i] = tipDebuff:CreateFontString()
-				tipDebuff:AddFontStrings(tipDebuff[i], tipDebuff:CreateFontString())
+local GetSpellDescription
+do
+	local lines = {}
+	function GetSpellDescription(spellId)
+		if not tipDebuff then
+			tipDebuff = CreateFrame("GameTooltip", "Grid2RaidDebuffsTooltip", nil, "GameTooltipTemplate")
+			tipDebuff:SetOwner(UIParent, "ANCHOR_NONE")
+			for i = 1, 5 do
+				tipDebuff[i] = _G["Grid2RaidDebuffsTooltipTextLeft"..i]
+				if not tipDebuff[i] then
+					tipDebuff[i] = tipDebuff:CreateFontString()
+					tipDebuff:AddFontStrings(tipDebuff[i], tipDebuff:CreateFontString())
+				end
 			end
 		end
+		wipe(lines)
+		tipDebuff:ClearLines()
+		tipDebuff:SetHyperlink("spell:"..spellId)
+		for i=2, min(5,tipDebuff:NumLines()) do
+			lines[i-1]= tipDebuff[i]:GetText() 
+		end
+		return table.concat(lines,"\n")
 	end
-	local result= {}
-	tipDebuff:ClearLines()
-	tipDebuff:SetHyperlink("spell:"..spellId)
-	for i=2, min(5,tipDebuff:NumLines()) do
-		result[i-1]= tipDebuff[i]:GetText() 
-	end
-	return table.concat(result,"\n")
 end
 
 local function GetInstances(module)
@@ -544,15 +547,15 @@ local function MakeDebuffsOptions()
 end
 
 local function MakeModulesListOptions(options)
-	modules = {}
+	local modules = {}
 	for name in pairs(RDDB) do
 		modules[name] = L[name]
 	end
 	options.modules= {
-		type= "multiselect",
-		name= L["Enabled raid debuffs modules"],
-		order= 150,
-		width= "full",
+		type = "multiselect",
+		name = L["Enabled raid debuffs modules"],
+		order = 150,
+		width = "full",
 		get= function(info,key)
 			return (moduleList[key] ~= nil)
 		end,
@@ -564,13 +567,15 @@ local function MakeModulesListOptions(options)
 end
 
 local function MakeOneStatusStandardOptions(options, status, index)
+	local statusOptions = {}
 	options[status.name] = { 
 		type  = "group", 
-		order = index, 
+		order = index+10, 
 		inline = true, 
 		name  = "",
-		args  = Grid2Options:MakeStatusStandardOptions(status, nil, { color1 = L[status.name], width = "full" }),
+		args  = statusOptions,
 	}
+	Grid2Options:MakeStatusStandardOptions(status, statusOptions, { color1 = L[status.name], width = "full" } )
 end
 
 local function MakeStandardOptions(options)
@@ -579,8 +584,10 @@ local function MakeStandardOptions(options)
 	end
 	options.add = {
 		type = "execute",
-		order = 250,
-		name = L["New Status"],
+		order = 50,
+		width = "half",
+		name = L["New"],
+		desc = L["New Status"],
 		func = function(info) 
 			local name = fmt("raid-debuffs%d", #statuses+1)
 			Grid2:DbSetValue( "statuses", name, {type = "raid-debuffs", debuffs={}, color1 = {r=1,g=.5,b=1,a=1}} )
@@ -592,8 +599,10 @@ local function MakeStandardOptions(options)
 	}
 	options.del = {
 		type = "execute",
-		order = 251,
-		name = L["Delete Status"],
+		order = 51,
+		width = "half",
+		name = L["Delete"],
+		desc = L["Delete Status"],
 		func = function(info) 
 			local status = statuses[#statuses]
 			options[status.name] = nil
@@ -609,18 +618,20 @@ local function MakeStandardOptions(options)
 			return #statuses<=1  
 		end,
 	}
+	options.header3 = { type = "header", order = 52, name = "" }
 end
 
-local function MakeGeneralOptions(options)
+local function MakeGeneralOptions(self)
+	local options = {}
 	CalculateAvailableStatuses()
-	options = options or {}
+	self:MakeStatusTitleOptions( statuses[1], options)
 	MakeStandardOptions(options)	
 	MakeModulesListOptions(options)
 	return options
 end
 
-local function MakeAdvancedOptions(options)
-	options = options or {}
+local function MakeAdvancedOptions(self)
+	local options = {}
 	ResetAdvancedOptions()
 	optionModules = {
 		type = "select",
@@ -663,7 +674,7 @@ local function MakeAdvancedOptions(options)
 		type ="group",
 		name ="",
 		order = 30,
-		childGroups= "tree",
+		childGroups = "tree",
 		args = {},
 	}
 	options.modules  = optionModules
@@ -672,30 +683,25 @@ local function MakeAdvancedOptions(options)
 	return options
 end
 
-local function MakeStatusOptions(self, status)
-	if status.name ~= "raid-debuffs" then return end
-	local options = {
-		type = "group",
-		order= 25,
-		childGroups= "tab",
-		args= {
-			general= {
-				type= "group",
-				name= L["General"],
-				order= 10,
-				args = MakeGeneralOptions(),
-			},
-			advanced= {
-				type= "group",
-				name= L["Advanced"],
-				order= 20,
-				args = MakeAdvancedOptions(),
-			},
-		},
-	}
-	return options, "root"
-end
-
 -- Notify Grid2Options howto create the options for our status
+Grid2Options:RegisterStatusOptions("raid-debuffs", "debuff", function(self, status, options)
+	options.general= {
+			type = "group",
+			name = L["General"],
+			order = 10,
+			args = MakeGeneralOptions(self),
+		}
+	options.advanced= {
+			type = "group",
+			name = L["Advanced"],
+			order = 20,
+			args = MakeAdvancedOptions(self),
+		}
 
-Grid2Options:AddOptionHandler("raid-debuffs", MakeStatusOptions)
+end, {
+	hideTitle    = true,
+	childGroups  = "tab",
+	groupOrder   = 5,
+	masterStatus = "raid-debuffs", 
+	titleIcon    = "Interface\\Icons\\Spell_Shadow_Skull", -- DemonicEmpathy",
+})

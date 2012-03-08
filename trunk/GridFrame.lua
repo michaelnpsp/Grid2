@@ -4,6 +4,7 @@ local Grid2 = Grid2
 local SecureButton_GetModifiedUnit = SecureButton_GetModifiedUnit
 local UnitFrame_OnEnter = UnitFrame_OnEnter
 local UnitFrame_OnLeave = UnitFrame_OnLeave
+local next = next
 local Grid2Frame
 
 --{{{ Registered unit frames tracking
@@ -34,10 +35,6 @@ end
 local ToggleUnitMenu
 do
 	local frame, unit = CreateFrame("Frame","Grid2_UnitFrame_DropDown",UIParent,"UIDropDownMenuTemplate")
-	ToggleUnitMenu = function(self)
-		unit = self.unit
-		ToggleDropDownMenu(1, nil, frame, "cursor")
-	end
 	UIDropDownMenu_Initialize(frame, function()
 		if unit then
 			local menu,raid
@@ -50,6 +47,10 @@ do
 			UnitPopup_ShowMenu(frame, menu, unit, nil, raid)
 		end	
 	end, "MENU")
+	ToggleUnitMenu = function(self)
+		unit = self.unit
+		ToggleDropDownMenu(1, nil, frame, "cursor")
+	end
 end	
 --}}}
 
@@ -97,24 +98,17 @@ local function GridFrame_Init(frame, width, height)
 	for name, value in pairs(GridFramePrototype) do
 		frame[name] = value
 	end
-
 	for event, handler in pairs(GridFrameEvents) do
 		frame:SetScript(event, handler)
 	end
-
 	if frame:CanChangeAttribute() then
 		frame:SetAttribute("initial-width", width)
 		frame:SetAttribute("initial-height", height)
 	end
-	
 	frame.menu = ToggleUnitMenu
-
 	frame.container = frame:CreateTexture()
-
 	frame:CreateIndicators()
-
 	frame:Layout()
-
 	ClickCastFrames = ClickCastFrames or {}
 	ClickCastFrames[frame] = true
 end
@@ -148,9 +142,9 @@ function GridFramePrototype:Layout()
 	-- visible background texture
 	local texture = Grid2:MediaFetch("statusbar", dbx.frameTexture, "Gradient" )
 	self.container:SetTexture(texture)
-	--
+	-- set size
 	if not InCombatLockdown() then self:SetSize(w,h) end
-	--
+	-- highlight texture
 	self:SetHighlightTexture(dbx.mouseoverHighlight and "Interface\\QuestFrame\\UI-QuestTitleHighlight" or nil)
 	-- Adjust indicators position to the new size
 	for _, indicator in Grid2:IterateIndicators() do
@@ -245,36 +239,50 @@ function Grid2Frame:LayoutFrames()
 	self:SendMessage("Grid_UpdateLayoutSize")
 end
 
-function Grid2Frame:WithAllFrames(func, ...)
-	for _, frame in next, self.registeredFrames do
-		func(frame, ...)
-	end
-end
-
 function Grid2Frame:GetFrameSize()
 	local p = self.db.profile
 	return p.frameWidth, p.frameHeight
 end
 
--- shows the default unit tooltip
-local TooltipCheck= { 	
-	Always = function() return false end, 
-	Never  = function() return true end, 
-	OOC    = InCombatLockdown,
-}
-function Grid2Frame:OnFrameEnter(frame)
-	if TooltipCheck[self.db.profile.showTooltip]() then
-		UnitFrame_OnLeave(frame)
-	else
-		UnitFrame_OnEnter(frame)
+-- Grid2Frame:WithAllFrames()
+do
+	local type, with = type, {}
+	with["table"] = function(self, object, func, ...)
+		if type(func) == "string" then func = object[func] end
+		for _, frame in next, self.registeredFrames do
+			func(object, frame, ...)
+		end
+	end
+	with["function"] = function(self, func, ...)
+		for _, frame in next, self.registeredFrames do
+			func(frame, ...)
+		end
+	end
+	function Grid2Frame:WithAllFrames( param , ... )
+		with[type(param)](self, param, ...)
 	end
 end
-function Grid2Frame:OnFrameLeave(frame)
-	UnitFrame_OnLeave(frame)
+
+-- shows the default unit tooltip
+do
+	local TooltipCheck= { 	
+		Always = function() return false end, 
+		Never  = function() return true end, 
+		OOC    = InCombatLockdown,
+	}
+	function Grid2Frame:OnFrameEnter(frame)
+		if TooltipCheck[self.db.profile.showTooltip]() then
+			UnitFrame_OnLeave(frame)
+		else
+			UnitFrame_OnEnter(frame)
+		end
+	end
+	function Grid2Frame:OnFrameLeave(frame)
+		UnitFrame_OnLeave(frame)
+	end
 end
 
 -- Event handlers
-local next = next
 function Grid2Frame:UpdateFrameUnits()
 	for _, frame in next, self.registeredFrames do
 		local old_unit = frame.unit

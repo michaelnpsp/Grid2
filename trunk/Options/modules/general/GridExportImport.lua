@@ -1,15 +1,14 @@
 --[[
-	Created by Michael
+	Profiles export&import options
+	General -> Profiles Tab -> Advanced Tab
 --]]
 
-local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
-
-local Grid2= Grid2
+local L = Grid2Options.L
+local Grid2 = Grid2
 
 local includeCustomLayouts
 
 -- Plain hexadecimal encoding/decoding functions 
-
 local function HexEncode(s,title)
 	local hex= { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F" }
 	local b_rshift = bit.rshift
@@ -66,7 +65,6 @@ end
 
 -- Serialize current profile table into a string variable  
 -- Hex:  true/Encode in plain hexadecimal   false/Encode to be transmited by addon comm channel
-
 local function SerializeCurrentProfile(Hex, exportCustomLayouts )
 	local config= { ["Grid2"] = Grid2.db.profile }
 	for name, module in Grid2:IterateModules() do
@@ -90,7 +88,6 @@ end
 
 -- Deserialize a profile string into a table:  
 -- Hex:  true/String is encoded in plain hexadecimal   false/String is encoded to be transmited through chat channels
-
 local function UnserializeProfile(data,Hex)
 	local Compresor = LibStub:GetLibrary("LibCompress")
 	local err
@@ -109,7 +106,6 @@ local function UnserializeProfile(data,Hex)
 end
 
 -- Generates a new profile name 
-
 local function ExtractProfileName(data)
 	local header= strsub(data,1,64)
 	local name= (header:match("%[(.-)%]") or header):gsub("=",""):gsub("profile",""):trim() 
@@ -137,7 +133,6 @@ local function ValidateProfileName(profileName)
 end
 
 -- Unserialize a profile string into a new AceDB profile  
-
 local function ImportProfile(sender, data, Hex, importCustomLayouts)
 	if type(data)~="string" then
 		print("Grid2 Import profile failed, data supplied must be a string")
@@ -189,7 +184,6 @@ local function ImportProfile(sender, data, Hex, importCustomLayouts)
 end
 
 -- Show a Editbox where the user can copy or paste serialized profiles 
-
 local function ShowSerializeFrame(title,subtitle,data)
 	local AceGUI = LibStub("AceGUI-3.0")
 	local frame = AceGUI:Create("Frame")
@@ -228,8 +222,7 @@ local function ShowSerializeFrame(title,subtitle,data)
 end
 
 -- Network Communication management 
-
-local Comm= {}
+local Comm = {}
 
 function Comm:Enable(receive)
 	if not self.RegisterComm then
@@ -288,86 +281,76 @@ function Comm:OnCommReceived(prefix, message, distribution, sender)
 	)
 end
 
--- Create AceDB options 
-
-function Grid2Options:GetExportImportOptions()
-	local options= {
-		header1 ={
-			type = "header",
-			order = 60,
-			name = L["Profile import/export"],
-		},
-		incLayouts = {
-			type = "toggle",
-			order = 85,
-			name = L["Include Custom Layouts"],
-			width= "full",
-			get = function () return includeCustomLayouts end,
-			set = function () includeCustomLayouts = not includeCustomLayouts end,
-		},
-		import = {
-			type = "execute",
-			order = 70,
-			name = L["Import profile"],
-			func = function ()  
-				ShowSerializeFrame(	L["Paste here a profile in text format"],
-									L["Press CTRL-V to paste a Grid2 configuration text"] )
-			end,
-		},
-		export = {
-			type = "execute",
-			order = 80,
-			name = L["Export profile"],
-			func = function (info)
-				ShowSerializeFrame(	L["This is your current profile in text format"],
-									L["Press CTRL-C to copy the configuration to your clipboard"],
-									SerializeCurrentProfile(true, includeCustomLayouts) )
-			end,
-		},
-		header3 ={
-			type = "header",
-			order = 90,
-			name = "",
-		},
-		header2 ={
-			type = "header",
-			order = 35,
-			name = L["Network sharing"],
-		},
-		network= {
-			type = "toggle",
-			order = 60,
-			name = L["Accept profiles from other players"],
-			width= "double",
-			get = function () return Comm.listening	end,
-			set = function () Comm:Enable(not Comm.listening) end,
-		},
-		player = {
-			type = "input",
-			order = 40,
-			width = "normal",
-			name = L["Type player name"],
-			get = function()  return Comm.target or "" end,
-			set = function(_,v)	Comm.target= v end,
-		},
-		send = {
-			type = "execute",
-			order = 50,
-			name = L["Send current profile"],
-			func = function ()
-				if Comm.target and Comm.target~="" then
-					local message= SerializeCurrentProfile()
-					Comm:SendMessage(message, Comm.target)
-				end
-			end,	
-		},
-	}
-	local group = {
-		type = "group",
-		order= 200,
-		name = L["Advanced"],
-		desc = L["Options for %s."]:format(L["Advanced"]),
-		args = options,	
-	}
-	return group
-end
+-- {{ Create profile export&import options 
+Grid2Options.ExportImportOptions = { type = "group", order= 200, name = L["Advanced"], desc = L["Options for %s."]:format(L["Advanced"]), args = {	
+	header1 ={
+		type = "header",
+		order = 60,
+		name = L["Profile import/export"],
+	},
+	incLayouts = {
+		type = "toggle",
+		order = 85,
+		name = L["Include Custom Layouts"],
+		width = "double",
+		get = function () return includeCustomLayouts end,
+		set = function () includeCustomLayouts = not includeCustomLayouts end,
+	},
+	import = {
+		type = "execute",
+		order = 70,
+		name = L["Import profile"],
+		func = function ()  
+			ShowSerializeFrame(	L["Paste here a profile in text format"],
+								L["Press CTRL-V to paste a Grid2 configuration text"] )
+		end,
+	},
+	export = {
+		type = "execute",
+		order = 80,
+		name = L["Export profile"],
+		func = function (info)
+			ShowSerializeFrame(	L["This is your current profile in text format"],
+								L["Press CTRL-C to copy the configuration to your clipboard"],
+								SerializeCurrentProfile(true, includeCustomLayouts) )
+		end,
+	},
+	header3 ={
+		type = "header",
+		order = 90,
+		name = "",
+	},
+	header2 ={
+		type = "header",
+		order = 35,
+		name = L["Network sharing"],
+	},
+	network= {
+		type = "toggle",
+		order = 60,
+		name = L["Accept profiles from other players"],
+		width= "double",
+		get = function () return Comm.listening	end,
+		set = function () Comm:Enable(not Comm.listening) end,
+	},
+	player = {
+		type = "input",
+		order = 40,
+		width = "normal",
+		name = L["Type player name"],
+		get = function()  return Comm.target or "" end,
+		set = function(_,v)	Comm.target= v end,
+	},
+	send = {
+		type = "execute",
+		order = 50,
+		name = L["Send current profile"],
+		func = function ()
+			if Comm.target and Comm.target~="" then
+				local message = SerializeCurrentProfile()
+				Comm:SendMessage(message, Comm.target)
+			end
+		end,	
+	},
+} }
+-- }}

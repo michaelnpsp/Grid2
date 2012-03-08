@@ -178,14 +178,16 @@ function Grid2:LoadGrid2Options()
 	end
 	if Grid2Options then
 		self:LoadOptions()
-		self.LoadGrid2Options= nil
+		self.LoadGrid2Options = nil
 	else
 		Grid2:Print("You need Grid2Options addon enabled to be able to configure Grid2.")
 	end
 end
 
-function Grid2:LoadOptions() -- Hook this to load any options addon (See RaidDebuffs)
+-- Hook this to load any options addon (see RaidDebuffs & AoeHeals modules)
+function Grid2:LoadOptions() 
 	Grid2Options:Initialize()
+	Grid2Options.LoadOptions = nil
 end
 
 function Grid2:ProfileChanged()

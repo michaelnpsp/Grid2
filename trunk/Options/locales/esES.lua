@@ -2,7 +2,8 @@ local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2Options", "esES")
 if not L then return end
 
 --{{{ General options
-L["GRID2_DESC"] = "Bienvenido a Grid2"
+L["GRID2_WELCOME"] = "Bienvenido al Grid2"
+L["GRID2_DESC"] = "Grid2 es un addon de marcos de unidades. Grid2 muestra la vida y toda la informacion importante de los miembros del grupo o raid de una manera mas comprensible."
 
 L["General Settings"] = "General"
 
@@ -145,7 +146,7 @@ L["Test"] = "Prueba"
 L["Test the layout."] = "Prueba el diseño."
 L["Select Layout"] = "Elige diseño"
 L["New Layout Name"] = "Nombre de nuevo diseño"
-L["Delete selected layout"] = "Borra el diseño seleccionado"
+L["Delete selected layout"] = "Elimina el diseño seleccionado"
 L["Refresh"] = "Refrescar"
 L["Refresh the Layout"] = "Refresca el diseño"
 L["Toggle for vehicle"] = "Intercambia por vehículo"
@@ -175,12 +176,11 @@ L["partypet"] = "GrupoPet"
 L["raidpet"] = "RaidPet"
 L["Insert"] = "Añadir"
 L["Copy"] = "Copiar"
-L["Delete"] = "Borrar"
 
 --{{{ Miscelaneous
 L["New"] = "Nuevo"
 L["Order"] = "Orden"
-L["Delete"] = "Borrar"
+L["Delete"] = "Eliminar"
 L["Color"] = "Color"
 L["Color %d"] = "Color %d"
 L["Color for %s."] = "Color para %s."
@@ -200,14 +200,15 @@ L["Adjust background color and alpha."] = "Color del fondo y transparencia"
 L["Opacity"] = "Opacidad"
 L["Set the opacity."] = "Ajusta la opacidad."
 L["<CharacterOnlyString>"] = "Texto con solo caracteres"
-L["Options for %s."] = "Opciones para: %s"
+L["Options for %s."] = "opciones de: %s"
+L["Delete this element"] = "Elimina este elemento"
 
 --{{{ Indicator management
 L["New Indicator"] = "Nuevo Indicador"
+L["Create Indicator"] = "Crear Indicator"
 L["Create a new indicator."] = "Crea un nuevo indicador"
 L["Name of the new indicator"] = "Nombre del nuevo indicador"
-L["Enable Test Mode"] = "Activa Modo Test"
-L["Disable Test Mode"] = "Desactiva Modo Test"
+L["Enable or disable test mode for indicators"] = "Activa o desactiva el modo test para los indicatores"
 L["Appearance"] = "Apariencia"
 L["Adjust the border size of the indicator."] = "Grosor del borde del indicador"
 L["Stack Text"] = "Acumulaciones"
@@ -223,6 +224,8 @@ L["Disable OmniCC"] = "Desactivar OmniCC"
 L["Type"] = "Tipo"
 L["Type of indicator"] = "Tipo de Indicador"
 L["Type of indicator to create"] = "Tipo de Indicador a crear"
+L["Change type"] = "Cambiar tipo"
+L["Change the indicator type"] = "Cambio el tipo del indicador"
 
 L["Text Length"] = "Tamaño Texto"
 L["Maximum number of characters to show."] = "Numero máximo de caracteres a mostrar."
@@ -335,11 +338,17 @@ L["status"] = "estado"
 
 L["buff"] = "buff"
 L["debuff"] = "debuff"
+L["debuffType"] = "tipo de debuff"
 
+L["New Buff"] = "Nuevo Buff"
+L["New Debuff"] = "Nuevo Debuff"
 L["New Color"] = "Nuevo Color"
 L["New Status"] = "Nuevo Estado"
-L["Delete Status"] = "Borrar Estado"
+L["Delete Status"] = "Elimina Estado"
 L["Create a new status."] = "Crear un nuevo Estado"
+L["Create Buff"] = "Crear Buff"
+L["Create Debuff"] = "Crear Debuff"
+L["Create Color"] = "Crear Color"
 
 L["Threshold"] = "Umbral"
 L["Thresholds"] = "Umbrales"
@@ -597,7 +606,7 @@ L["The Burning Crusade"] = "La Cruzada Ardiente"
 L["New raid debuff"] = "Nuevo debuff de raid"
 L["Type the SpellId of the new raid debuff"] = "Teclea el número de hechizo (SpellId) del debuff de raid"
 L["Create raid debuff"] = "Crear debuff de raid"
-L["Delete raid debuff"] = "Borrar este debuff"
+L["Delete raid debuff"] = "Eliminar este debuff"
 
 -- direction
 L["Out of Range"] = "Fuera de rango"
@@ -637,9 +646,19 @@ L["The value below which a shield is considered medium."] = "Por debajo de este 
 L["Custom Shields"] = "Escudos personalizados"
 L["Type shield names separated by commas."] = "Teclee nombres de escudos separados por comas."
 
+-- boss-shields status
+L["Supported debuffs"] = "Debuffs soportados"
+
 -- role related statuses
 L["Hide in combat"] = "Ocultar en combate"
 L["Hide Damagers"] = "Ocultar rol de Daño"
+
+-- status descriptions
+L["highlights your target"] = "resalta tu objetivo"
+L["hostile casts against raid members"] = "casteos hostiles contra los miembros de la raid"
+L["advanced threat detection"] = "deteccion avanzada de amenaza"
+L["arrows pointing to each raid member"] = "flechas apuntando a cada miembro de la raid"
+L["display remaining amount of heal absorb shields"] = "muestra cantidad restante de escudos que absorben sanacion"
 
 -- aoe heals
 L["aoe-"] = "aoe: "
@@ -697,3 +716,8 @@ L["Transmision progress: %d%%"] = "Progreso de la transmisión: %d%%"
 L["Transmission completed"] = "Transmisión finalizada"
 L["\"%s\" has sent you a profile configuration. Do you want to activate received profile ?"] = "\"%s\" te ha enviado una configuración para el Grid2. Quieres activar el perfil recibido ?"
 L["Include Custom Layouts"] = "Incluir diseños personalizados"
+
+-- Open manager
+L["Options management"] = "Funcionamiento Opciones"
+L["Load options on demand (requires UI reload)"] = "Crear las opciones bajo demanda (requiere recargar UI)"
+L["OPTIONS_ONDEMAND_DESC"] = "Las opciones no son creadas hasta que el usuario hace click sobre ellas, lo que reduce la memoria usada y tiempo de carga. Si tiene algun problema con esta caracteristica, desactive esta opcion."

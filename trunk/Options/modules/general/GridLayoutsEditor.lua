@@ -1,5 +1,10 @@
-local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
-local GL = LibStub("AceLocale-3.0"):GetLocale("Grid2")
+--[[ 
+	Layouts Editor
+	General > Layouts Tab > Advanced Tab
+--]]	
+
+local L  = Grid2Options.L
+local LG = Grid2Options.LG
 
 local Grid2Layout = Grid2:GetModule("Grid2Layout")
 
@@ -62,7 +67,7 @@ local function GetAvailableLayouts(info)
 	local layouts = Grid2Layout.layoutSettings
 	local custom  = Grid2Layout.db.global.customLayouts or {}
 	for name in pairs(layouts) do
-		result[ name ] = custom[name] and GL[name].." *"  or GL[name]
+		result[ name ] = custom[name] and LG[name].." *"  or LG[name]
 	end
 	return result
 end
@@ -316,10 +321,9 @@ function Grid2Options:RefreshCustomLayoutsOptions()
 	layoutName = nil
 	options.selectLayout.values = GetAvailableLayouts()
 	LoadLayout(nil)
-	Grid2Options:RefreshLayoutsOptions()
 end
 
-function Grid2Options:MakeCustomLayoutOptions(reset)
+function Grid2Options:MakeLayoutsEditorOptions()
 	layoutName = nil
 	options= {
 		selectLayout = {
@@ -339,7 +343,6 @@ function Grid2Options:MakeCustomLayoutOptions(reset)
 			get = function()  end,
 			set = function(_,v)	
 				layoutName= CreateLayout(v) 
-				Grid2Options:RefreshLayoutsOptions()
 			end,
 		},
 		delete = {
@@ -353,7 +356,6 @@ function Grid2Options:MakeCustomLayoutOptions(reset)
 				Grid2Layout.layoutSettings[layoutName] = nil
 				LoadLayout(nil)
 				options.selectLayout.values = GetAvailableLayouts()
-				Grid2Options:RefreshLayoutsOptions()
 			end,
 			hidden= function() return not GetCustomLayout(layoutName) end,
 		},

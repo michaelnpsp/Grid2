@@ -137,7 +137,7 @@ function Grid2:UnregisterIndicator(indicator)
 	end
 	-- Hide indicator from created frame units
 	if indicator.Disable then
-		Grid2Frame:WithAllFrames(function (f) indicator:Disable(f) end)
+		Grid2Frame:WithAllFrames(indicator, "Disable")
 	end
 	-- unregister indicator
 	local name = indicator.name
