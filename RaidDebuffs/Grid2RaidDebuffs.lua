@@ -1,11 +1,10 @@
--- Raid Debuffs module, implements raid-debuffs and raid-debuffs-extra statuses
+-- Raid Debuffs module, implements raid-debuffs statuses
 
 local GSRD = Grid2:NewModule("Grid2RaidDebuffs")
 local BZ = LibStub("LibBabble-Zone-3.0"):GetReverseLookupTable()
 local frame = CreateFrame("Frame")
 
 local Grid2 = Grid2
-local abs = math.abs
 local next = next
 local ipairs = ipairs
 local UnitDebuff = UnitDebuff
@@ -210,11 +209,11 @@ Grid2:DbSetStatusDefaultValue( "raid-debuffs", {type = "raid-debuffs", debuffs={
 local prev_LoadOptions = Grid2.LoadOptions
 function Grid2:LoadOptions()
 	LoadAddOn("Grid2RaidDebuffsOptions")
-	prev_LoadOptions()
+	prev_LoadOptions(self)
 end
 
 -- Hook to update database config
-local prev_UpdateDefaults= Grid2.UpdateDefaults
+local prev_UpdateDefaults = Grid2.UpdateDefaults
 function Grid2:UpdateDefaults()
 	prev_UpdateDefaults(self)
 	if not Grid2:DbGetValue("versions", "Grid2RaidDebuffs") then 

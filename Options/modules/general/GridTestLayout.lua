@@ -1,5 +1,5 @@
 --[[
-Created by Michael
+	Layouts test mode
 --]]
 
 local Grid2Layout= Grid2:GetModule("Grid2Layout")

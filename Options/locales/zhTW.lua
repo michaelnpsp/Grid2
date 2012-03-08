@@ -2,7 +2,8 @@ local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2Options", "zhTW")
 if not L then return end
 
 --{{{ General options
-L["GRID2_DESC"] = "歡迎來到Grid2"
+L["GRID2_WELCOME"] = "歡迎來到Grid2"
+-- L["GRID2_DESC"] = ""
 
 L["General Settings"] = "一般設置"
 
@@ -175,7 +176,6 @@ L["Name"] = "名稱"
 -- L["raidpet"] = ""
 -- L["Insert"] = ""
 -- L["Copy"] = ""
-L["Delete"] = "刪除"
 
 --{{{ Miscelaneous
 -- L["New"] = ""
@@ -201,13 +201,14 @@ L["Adjust background color and alpha."] = "調整背景顏色和透明度。"
 -- L["Set the opacity."] = ""
 -- L["<CharacterOnlyString>"] = ""
 L["Options for %s."] = "%s狀態的選項。"
+-- L["Delete this element"] = ""
 
 --{{{ Indicator management
 -- L["New Indicator"] = ""
+-- L["Create Indicator"] = ""
 -- L["Create a new indicator."] = ""
 -- L["Name of the new indicator"] = ""
--- L["Enable Test Mode"] = ""
--- L["Disable Test Mode"] = ""
+-- L["Enable or disable test mode for indicators"] = ""
 -- L["Appearance"] = ""
 -- L["Adjust the border size of the indicator."] = ""
 -- L["Stack Text"] = ""
@@ -223,6 +224,8 @@ L["Reverse Cooldown"] = "反向冷卻"
 L["Type"] = "類型"
 L["Type of indicator"] = "指示器類型"
 L["Type of indicator to create"] = "創建指示器類型"
+-- L["Change type"] = ""
+-- L["Change the indicator type"] = ""
 
 -- L["Text Length"] = ""
 -- L["Maximum number of characters to show."] = ""
@@ -335,11 +338,17 @@ L["status"] = "status"
 
 L["buff"] = "buff"
 L["debuff"] = "debuff"
+-- L["debuffType"] = ""
 
+-- L["New Buff"] = ""
+-- L["New Debuff"] = ""
 -- L["New Color"] = ""
 L["New Status"] = "新狀態"
 -- L["Delete Status"] = ""
 -- L["Create a new status."] = ""
+-- L["Create Buff"] = ""
+-- L["Create Debuff"] = ""
+-- L["Create Color"] = ""
 
 -- L["Threshold"] = ""
 -- L["Thresholds"] = ""
@@ -637,9 +646,19 @@ L["Voice Chat"] = "語音"
 -- L["Custom Shields"] = ""
 -- L["Type shield names separated by commas."] = ""
 
+-- boss-shields status
+-- L["Supported debuffs"] = ""
+
 -- role related statuses
 -- L["Hide in combat"] = ""
 -- L["Hide Damagers"] = ""
+
+-- status descriptions
+-- L["highlights your target"] = ""
+-- L["hostile casts against raid members"] = ""
+-- L["advanced threat detection"] = ""
+-- L["arrows pointing to each raid member"] = ""
+-- L["display remaining amount of heal absorb shields"] = ""
 
 -- aoe heals
 -- L["aoe-"] = ""
@@ -697,3 +716,8 @@ L["Voice Chat"] = "語音"
 -- L["Transmission completed"] = ""
 -- L["\"%s\" has sent you a profile configuration. Do you want to activate received profile ?"] = ""
 -- L["Include Custom Layouts"] = ""
+
+-- Open manager
+-- L["Options management"] = ""
+-- L["Load options on demand (requires UI reload)"] = ""
+-- L["OPTIONS_ONDEMAND_DESC"] = ""

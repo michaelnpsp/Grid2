@@ -22,13 +22,9 @@ locales.xml
 
 # Grid2Options
 GridCore.lua
-GridFrame.lua
-GridLayout.lua
-GridLayoutEditor.lua
-GridBlink.lua
+GridGeneral.lua
 GridIndicators.lua
 GridStatuses.lua
-GridDebug.lua
-GridExportImport.lua
-GridTestIndicators.lua
-GridTestLayout.lua
+GridUtils.lua
+
+modules.xml

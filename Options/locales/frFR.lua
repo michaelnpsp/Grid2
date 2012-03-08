@@ -2,7 +2,8 @@ local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2Options", "frFR")
 if not L then return end
 
 --{{{ General options
-L["GRID2_DESC"] = "Bienvenue sur Grid2"
+L["GRID2_WELCOME"] = "Bienvenue sur Grid2"
+-- L["GRID2_DESC"] = ""
 
 L["General Settings"] = "Paramètres généraux"
 
@@ -175,7 +176,6 @@ L["Name"] = "Nom"
 -- L["raidpet"] = ""
 -- L["Insert"] = ""
 -- L["Copy"] = ""
-L["Delete"] = "Effacer"
 
 --{{{ Miscelaneous
 L["New"] = "Nouveau"
@@ -201,13 +201,14 @@ L["Opacity"] = "Opacité"
 L["Set the opacity."] = "Définit l'opacité"
 L["<CharacterOnlyString>"] = "<StringComposéUniquementDeCaractères>"
 L["Options for %s."] = "Options |2 %s."
+-- L["Delete this element"] = ""
 
 --{{{ Indicator management
 L["New Indicator"] = "Nouvel indicateur"
+-- L["Create Indicator"] = ""
 L["Create a new indicator."] = "Crée un nouvel indicateur."
 L["Name of the new indicator"] = "Nom du nouvel indicateur"
-L["Enable Test Mode"] = "Activer mode de test"
-L["Disable Test Mode"] = "Désactiver mode de test"
+-- L["Enable or disable test mode for indicators"] = ""
 L["Appearance"] = "Apparence"
 L["Adjust the border size of the indicator."] = "Définit la taille de la bordure de l'indicateur."
 -- L["Stack Text"] = ""
@@ -223,6 +224,8 @@ L["Disable OmniCC"] = "Désactiver OmniCC"
 L["Type"] = "Type"
 L["Type of indicator"] = "Type d'indicateur"
 L["Type of indicator to create"] = "Type d'indicateur à créer"
+-- L["Change type"] = ""
+-- L["Change the indicator type"] = ""
 
 L["Text Length"] = "Longueur du texte"
 L["Maximum number of characters to show."] = "Définit le nombre maximal de caractères à afficher."
@@ -335,11 +338,17 @@ L["status"] = "Statut"
 
 L["buff"] = "buff"
 L["debuff"] = "débuff"
+-- L["debuffType"] = ""
 
+-- L["New Buff"] = ""
+-- L["New Debuff"] = ""
 L["New Color"] = "Nouvelle couleur"
 L["New Status"] = "Nouveau statut"
 -- L["Delete Status"] = ""
 L["Create a new status."] = "Créé un nouveau statut."
+-- L["Create Buff"] = ""
+-- L["Create Debuff"] = ""
+-- L["Create Color"] = ""
 
 L["Threshold"] = "Seuil"
 -- L["Thresholds"] = ""
@@ -637,9 +646,19 @@ L["A resurrection spell has been casted on the unit"] = "Un sort de résurrectio
 -- L["Custom Shields"] = ""
 -- L["Type shield names separated by commas."] = ""
 
+-- boss-shields status
+-- L["Supported debuffs"] = ""
+
 -- role related statuses
 -- L["Hide in combat"] = ""
 -- L["Hide Damagers"] = ""
+
+-- status descriptions
+-- L["highlights your target"] = ""
+-- L["hostile casts against raid members"] = ""
+-- L["advanced threat detection"] = ""
+-- L["arrows pointing to each raid member"] = ""
+-- L["display remaining amount of heal absorb shields"] = ""
 
 -- aoe heals
 -- L["aoe-"] = ""
@@ -697,3 +716,8 @@ L["Transmision progress: %d%%"] = "Progression de la transmission : %d%%"
 L["Transmission completed"] = "Transmission terminée"
 L["\"%s\" has sent you a profile configuration. Do you want to activate received profile ?"] = "\"%s\" vous a envoyé une configuration de profil. Souhaitez-vous activer le profil reçu ?"
 -- L["Include Custom Layouts"] = ""
+
+-- Open manager
+-- L["Options management"] = ""
+-- L["Load options on demand (requires UI reload)"] = ""
+-- L["OPTIONS_ONDEMAND_DESC"] = ""

@@ -46,6 +46,8 @@ status.GetIcon = Grid2.Dummy
 status.OnEnable = Grid2.Dummy
 -- all indicators
 status.OnDisable = Grid2.Dummy
+-- all indicators
+status.UpdateAllIndicators = Grid2.statusLibrary.UpdateAllUnits
 --}}
 
 function status:UpdateIndicators(unit)

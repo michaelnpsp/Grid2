@@ -2,7 +2,8 @@ local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2Options", "enUS",
 if not L then return end
 
 --{{{ General options
-L["GRID2_DESC"] = true
+L["GRID2_WELCOME"] = "Welcome to Grid2"
+L["GRID2_DESC"]  = "Grid2 is a party&raid unit frame addon. Grid2 displays health and all relevant information about the party&raid members in a more comprehensible manner."
 
 L["General Settings"] = true
 
@@ -175,7 +176,6 @@ L["partypet"] = true
 L["raidpet"] = true
 L["Insert"] = true
 L["Copy"] = true
-L["Delete"] = true
 
 --{{{ Miscelaneous
 L["New"] = true
@@ -201,13 +201,14 @@ L["Opacity"] = true
 L["Set the opacity."] = true
 L["<CharacterOnlyString>"] = true
 L["Options for %s."]= true
+L["Delete this element"] = true
 
 --{{{ Indicator management
 L["New Indicator"] = true
+L["Create Indicator"] = true
 L["Create a new indicator."] = true
 L["Name of the new indicator"] = true
-L["Enable Test Mode"] = true
-L["Disable Test Mode"] = true
+L["Enable or disable test mode for indicators"] = true
 L["Appearance"] = true
 L["Adjust the border size of the indicator."] = true
 L["Stack Text"] = true
@@ -223,6 +224,8 @@ L["Disable OmniCC"]= true
 L["Type"] = true
 L["Type of indicator"] = true
 L["Type of indicator to create"] = true
+L["Change type"] = true
+L["Change the indicator type"] = true
 
 L["Text Length"] = true
 L["Maximum number of characters to show."] = true
@@ -335,11 +338,17 @@ L["status"] = true
 
 L["buff"] = true
 L["debuff"] = true
+L["debuffType"] = true
 
+L["New Buff"] = true
+L["New Debuff"] = true
 L["New Color"] = true
 L["New Status"] = true
 L["Delete Status"] = true
 L["Create a new status."] = true
+L["Create Buff"] = true
+L["Create Debuff"] = true
+L["Create Color"] = true
 
 L["Threshold"] = true
 L["Thresholds"] = true
@@ -637,9 +646,19 @@ L["The value below which a shield is considered medium."] = true
 L["Custom Shields"] = true
 L["Type shield names separated by commas."] = true
 
+-- boss-shields status
+L["Supported debuffs"] = true
+
 -- role related statuses
 L["Hide in combat"] = true
 L["Hide Damagers"] = true
+
+-- status descriptions
+L["highlights your target"] = true
+L["hostile casts against raid members"] = true
+L["advanced threat detection"] = true
+L["arrows pointing to each raid member"] = true
+L["display remaining amount of heal absorb shields"] = true
 
 -- aoe heals
 L["aoe-"] = true
@@ -697,3 +716,8 @@ L["Transmision progress: %d%%"]= true
 L["Transmission completed"]= true
 L["\"%s\" has sent you a profile configuration. Do you want to activate received profile ?"]= true
 L["Include Custom Layouts"] = true
+
+-- Open manager
+L["Options management"] = true
+L["Load options on demand (requires UI reload)"] = true
+L["OPTIONS_ONDEMAND_DESC"] = "Options are not created until user clicks on them, reducing memory usage and load time. If you experiment any problem with this feature disable this option."

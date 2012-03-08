@@ -1,8 +1,8 @@
 --[[
-Created by Grid2 original authors, modified by Michael
+	Debug options
 --]]
 
-local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
+local L = Grid2Options.L
 
 function Grid2Options:AddModuleDebugMenu(name, module)
 	local option= {}
@@ -18,12 +18,10 @@ function Grid2Options:AddModuleDebugMenu(name, module)
 			module.debugging = v
 		end,
 	}
-	Grid2Options:AddModuleOptions( "Debug", nil,  option )
+	Grid2Options:AddGeneralOptions( "Debug", nil,  option )
 end
 
-function Grid2Options:MakeDebugOptions(reset)
-	self:AddModuleDebugMenu("Grid2", Grid2 )
-	for name, module in Grid2:IterateModules() do
-		self:AddModuleDebugMenu(name, module)
-	end
+Grid2Options:AddModuleDebugMenu("Grid2", Grid2 )
+for name, module in Grid2:IterateModules() do
+	Grid2Options:AddModuleDebugMenu(name, module)
 end
