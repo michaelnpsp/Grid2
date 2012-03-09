@@ -90,6 +90,7 @@ function Grid2Options:MakeNewIndicatorOptions()
 		type = 'select',
 		order = 3,
 		name = L["Type"],
+		width = "half",
 		desc = L["Type of indicator to create"],
 		values = Grid2Options.indicatorTypes,
 		get = function() return newIndicatorValues.type end,
