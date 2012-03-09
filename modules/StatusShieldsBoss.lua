@@ -7,6 +7,7 @@ local select   = select
 local next     = next
 local max      = math.max
 local fmt      = string.format
+local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 
 Shields.ShieldsDB  = {
 	["DragonSoul"] = {
@@ -27,10 +28,14 @@ local shields_values = {}
 local shields_updates = {}
 
 function Shields_Timer()
-	for unit in next,shields_updates do
-		shields_updates[unit] = nil
-		Shields:UpdateIndicators(unit)
-	end	
+	for unit in next,shields_values do
+		if UnitIsDeadOrGhost(unit) then
+			Shields:RemoveShield(unit)
+		elseif shields_updates[unit] then
+			shields_updates[unit] = nil
+			Shields:UpdateIndicators(unit)
+		end
+	end
 end
 
 function Shields:EnableTimer()
