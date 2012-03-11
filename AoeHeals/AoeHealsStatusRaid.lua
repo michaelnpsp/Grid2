@@ -1,6 +1,7 @@
 -- Status: CircleofHealing and WildGrowth
 
 local AOEM = Grid2:GetModule("Grid2AoeHeals")
+if AOEM.playerClass ~= "PRIEST" and AOEM.playerClass ~= "DRUID" then return end
 
 local band   = bit.band
 local next   = next
@@ -137,28 +138,39 @@ local function UpdateDB(self)
 	healthThreshold = healthDeficit * minPlayers
 end
 
-AOEM.setupFunc["aoe-CircleOfHealing"]= function(self,dbx)
-	self.Update        = Update
-	self.spellId       = 34861 
-	self.texture       = select( 3, GetSpellInfo(self.spellId) )
-	self.HighlightField= "totMaskR"
-	self.UpdateDB      = UpdateDB
-	self.StatusEnabled = Enabled
-	self.StatusDisabled= Disabled
-	self.UpdateTalents = function(self) 
-		maxPlayers = AOEM:PlayerHasGlyph(55675) and 6 or 5 
+if AOEM.playerClass == "PRIEST" then
+	AOEM.setupFunc["aoe-CircleOfHealing"]= function(self,dbx)
+		self.Update        = Update
+		self.spellId       = 34861 
+		self.texture       = select( 3, GetSpellInfo(self.spellId) )
+		self.HighlightField= "totMaskR"
+		self.UpdateDB      = UpdateDB
+		self.StatusEnabled = Enabled
+		self.StatusDisabled= Disabled
+		self.UpdateTalents = function(self) 
+			maxPlayers = AOEM:PlayerHasGlyph(55675) and 6 or 5 
+		end
 	end
+	Grid2:DbSetStatusDefaultValue( "aoe-CircleOfHealing", { type = "aoe-CircleOfHealing", 
+		hideOnCooldown = true, healthDeficit = 10000, minPlayers = 5, maxSolutions = 1, radius = 30, keepPrevHeals = true,
+		color1 = {r=0, g=1, b=0, a=1}, 
+	} )
+elseif AOEM.playerClass == "DRUID" then
+	AOEM.setupFunc["aoe-WildGrowth"] = function(self,dbx)
+		self.Update        = Update
+		self.spellId       = 48438
+		self.texture       = select( 3, GetSpellInfo(self.spellId) )
+		self.HighlightField= "totMaskR"
+		self.UpdateDB      = UpdateDB
+		self.StatusEnabled = Enabled
+		self.StatusDisabled= Disabled
+		self.UpdateTalents = function(self) 
+			maxPlayers = AOEM:PlayerHasGlyph(45602) and 6 or 5 
+		end
+	end	
+	Grid2:DbSetStatusDefaultValue( "aoe-WildGrowth", { type = "aoe-WildGrowth",
+		hideOnCooldown = true, healthDeficit = 10000, minPlayers = 5,	maxSolutions = 1, radius = 30, keepPrevHeals = true,
+		color1 = {r=0, g=1, b=0, a=1}, 
+	})
+	print("===========> DRUID")
 end
-
-AOEM.setupFunc["aoe-WildGrowth"] = function(self,dbx)
-	self.Update        = Update
-	self.spellId       = 48438
-	self.texture       = select( 3, GetSpellInfo(self.spellId) )
-	self.HighlightField= "totMaskR"
-	self.UpdateDB      = UpdateDB
-	self.StatusEnabled = Enabled
-	self.StatusDisabled= Disabled
-	self.UpdateTalents = function(self) 
-		maxPlayers = AOEM:PlayerHasGlyph(45602) and 6 or 5 
-	end
-end	

@@ -1,6 +1,7 @@
 -- Status: PrayerOfHealing 
 
 local AOEM= Grid2:GetModule("Grid2AoeHeals")
+if AOEM.playerClass ~= "PRIEST" then return end
 
 local radius2
 local minPlayers
@@ -88,3 +89,8 @@ AOEM.setupFunc["aoe-PrayerOfHealing"] = function(self,dbx)
 	self.UpdateDB    = UpdateDB
 	UpdateDB(self,dbx)
 end
+
+Grid2:DbSetStatusDefaultValue( "aoe-PrayerOfHealing", { type = "aoe-PrayerOfHealing", 
+	healthDeficit = 10000, minPlayers = 5, maxSolutions = 1, radius = 30,
+	color1 = {r=0, g=1, b=0.5, a=1}, 
+})

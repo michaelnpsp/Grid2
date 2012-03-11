@@ -10,7 +10,6 @@
 AoeHeals.lua
 AoeHealsMapData.lua
 AoeHealsOptions.lua
-AoeHealsDefaults.lua
 AoeHealsStatusRaid.lua
 AoeHealsStatusParty.lua
 AoeHealsStatusChain.lua

@@ -51,7 +51,7 @@ local function Icon_Create(self, parent)
 		CooldownText:SetParent(TextFrame)
 		CooldownText:SetFontObject(GameFontHighlightSmall)
 		local font = Grid2:MediaFetch("font", self.dbx.font) or CooldownText:GetFont()
-		CooldownText:SetFont(font, self.dbx.fontSize, "OUTLINE" )
+		CooldownText:SetFont(font, self.dbx.fontSize, self.dbx.fontFlags or "OUTLINE" )
 		local c = self.dbx.stackColor
 		if c then CooldownText:SetTextColor(c.r, c.g, c.b, c.a) end	
 		CooldownText:Hide()

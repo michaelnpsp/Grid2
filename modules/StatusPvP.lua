@@ -14,7 +14,6 @@ local pvpTexture = UnitFactionGroup("player") == "Horde" and
 				   [[Interface\PVPFrame\PVP-Currency-Alliance]]
 
 PvP.GetColor = Grid2.statusLibrary.GetColor
-PvP.GetPercent = Grid2.statusLibrary.GetPercent
 PvP.UpdateAllUnits = Grid2.statusLibrary.UpdateAllUnits
 
 function PvP:UNIT_FACTION(_, unit)
@@ -51,6 +50,10 @@ end
 
 function PvP:GetText(unit)
 	return UnitIsPVP(unit) and pvpText or ffaText
+end
+
+function PvP:GetPercent(unit)
+	return self.dbx.color1.a, self:GetText(unit)
 end
 
 Grid2.setupFunc["pvp"] = function(baseKey, dbx)

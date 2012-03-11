@@ -188,6 +188,8 @@ L["Font"] = true
 L["Font Border"] = true
 L["Thin"] = true
 L["Thick"] = true
+L["Soft"] = true
+L["Sharp"] = true
 L["Adjust the font settings"] = true
 L["Border Texture"] = true
 L["Adjust the border texture."] = true
@@ -353,6 +355,8 @@ L["Create Color"] = true
 L["Threshold"] = true
 L["Thresholds"] = true
 L["Threshold at which to activate the status."] = true
+
+L["available statuses"] = true
 
 -- buff & debuff statuses management
 L["Auras"] = true

@@ -206,7 +206,7 @@ end
 local function Text_OnUpdateD(self, parent, unit, status)
 	local Text = parent[self.name].Text
 	if status then
-		local duration= GetDurationValue( status:GetExpirationTime(unit), Text, UpdateTextD )
+		local duration = GetDurationValue( status:GetExpirationTime(unit), Text, UpdateTextD )
 		if duration then
 			UpdateTextD(Text)
 		else
@@ -222,7 +222,7 @@ end
 local function Text_OnUpdateE(self, parent, unit, status)
 	local Text = parent[self.name].Text
 	if status then
-		local elapsed= GetElapsedTimeValue( status:GetExpirationTime(unit), status:GetDuration(unit), Text, UpdateTextE )
+		local elapsed = GetElapsedTimeValue( status:GetExpirationTime(unit), status:GetDuration(unit), Text, UpdateTextE )
 		if elapsed then
 			Text:SetFormattedText( "%.0f", elapsed )
 		else
@@ -254,8 +254,15 @@ end
 local function Text_OnUpdateP(self, parent, unit, status)
 	local Text = parent[self.name].Text
 	if status then
-		local percent = status:GetPercent(unit)
-		if percent then
+		local percent, text
+		if status.GetPercentText then
+			text = status:GetPercentText(unit)
+		else
+			percent, text = status:GetPercent(unit)
+		end	
+		if text then
+			Text:SetText( text )
+		elseif percent then
 			Text:SetFormattedText( "%.0f%%", percent*100 )
 		else
 			SetDefaultText(self, Text, status, unit)

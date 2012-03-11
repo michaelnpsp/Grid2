@@ -199,7 +199,7 @@ do
 			step = 1,
 			get = function () return status.dbx.maxSolutions end,
 			set = function (_, v) 
-				status.dbx.maxSolutions= v  
+				status.dbx.maxSolutions = v  
 				status:UpdateDB() 
 			end,
 		}
@@ -208,10 +208,9 @@ do
 			order = 15,
 			name = L["Hide on cooldown"],
 			desc = L["Hide the status while the spell is on cooldown."],
-			tristate = true,
 			get = function () return status.dbx.hideOnCooldown end,
 			set = function (_, v) 
-				status.dbx.hideOnCooldown = v	 
+				status.dbx.hideOnCooldown = v
 				status:UpdateDB() 
 			end,
 		}
@@ -287,7 +286,12 @@ local prev_LoadOptions = Grid2.LoadOptions
 function Grid2:LoadOptions()
 	L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 	Grid2Options:RegisterStatusCategory("aoe-heal", { name = L["AOE Heals"], icon = "Interface\\Icons\\Spell_holy_holynova", options = MakeCategoryOptions() } )
-	Grid2Options:RegisterStatusOptions("aoe-heal",          "aoe-heal", MakeStatusAoeHealOptions )
-	Grid2Options:RegisterStatusOptions("aoe-OutgoingHeals", "aoe-heal", MakeStatusOutgoingOptions )
+	Grid2Options:RegisterStatusOptions("aoe-OutgoingHeals", "aoe-heal", MakeStatusOutgoingOptions, { titleIcon ="Interface\\Icons\\Spell_holy_holybolt" } )
+	for name in next,AOEM.setupFunc do
+		local status = Grid2.statuses[name]
+		if status then
+			Grid2Options:RegisterStatusOptions( name, "aoe-heal", MakeStatusAoeHealOptions, { titleIcon = status.texture } )
+		end	
+	end
 	prev_LoadOptions(self)
 end

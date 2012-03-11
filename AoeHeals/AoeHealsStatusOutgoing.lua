@@ -1,5 +1,9 @@
 -- Status: Aoe-OutgoingHeals
 
+local AOEM = Grid2:GetModule("Grid2AoeHeals")
+local classSpells = ({ SHAMAN = {1064, 73921}, PRIEST = {34861, 64844, 15237}, PALADIN = {85222} })[AOEM.playerClass]
+if not classSpells then return end
+
 local Grid2 = Grid2
 local next = next
 local select = select
@@ -97,3 +101,7 @@ Grid2.setupFunc["aoe-OutgoingHeals"] = function(baseKey, dbx)
 	Grid2:RegisterStatus(OutgoingHeal, {"color", "icon"}, baseKey, dbx)
 	return OutgoingHeal
 end
+
+Grid2:DbSetStatusDefaultValue( "aoe-OutgoingHeals", { type = "aoe-OutgoingHeals", 
+	spells = classSpells, activeTime= 2, color1 = {r=0,g=0.8,b=1,a=1} 
+})
