@@ -78,7 +78,7 @@ function indicator:GetCurrentStatus(unit)
 	end
 end
 
---{{ Update functions  
+--{{ Update functions
 local Grid2Blink = Grid2:GetModule("Grid2Blink")
 local blinking = Grid2Blink.registry
 

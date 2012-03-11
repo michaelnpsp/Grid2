@@ -64,3 +64,6 @@ AOEM.setupFunc["aoe-neighbors"] = function(self,dbx)
 	UpdateDB(self,dbx)
 end	
 
+Grid2:DbSetStatusDefaultValue( "aoe-neighbors", {type = "aoe-neighbors", 
+	radius = 12.5, minPlayers = 4, healthDeficit = 0, color1 = {r=0,g=0.5,b=1,a=1}, 
+})

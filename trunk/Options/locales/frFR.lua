@@ -188,6 +188,8 @@ L["Font"] = "Style"
 -- L["Font Border"] = ""
 -- L["Thin"] = ""
 -- L["Thick"] = ""
+-- L["Soft"] = ""
+-- L["Sharp"] = ""
 L["Adjust the font settings"] = "Définit les paramètres de police d'écriture."
 L["Border Texture"] = "Texture de bordure"
 L["Adjust the border texture."] = "Définit la texture de la bordure."
@@ -353,6 +355,8 @@ L["Create a new status."] = "Créé un nouveau statut."
 L["Threshold"] = "Seuil"
 -- L["Thresholds"] = ""
 L["Threshold at which to activate the status."] = "Seuil d'activation du statut."
+
+-- L["available statuses"] = ""
 
 -- buff & debuff statuses management
 L["Auras"] = "Auras"

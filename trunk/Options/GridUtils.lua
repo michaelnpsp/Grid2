@@ -60,6 +60,28 @@ Grid2Options.pointValueList = {
 	["9"] = L["BOTTOMRIGHT"],
 }
 
+Grid2Options.pointValueListExtra = {
+	["0"] = L["None"],
+	["1"] = L["TOPLEFT"],
+	["2"] = L["LEFT"],
+	["3"] = L["BOTTOMLEFT"],
+	["4"] = L["TOP"],
+	["5"] = L["CENTER"],
+	["6"] = L["BOTTOM"],
+	["7"] = L["TOPRIGHT"],
+	["8"] = L["RIGHT"],
+	["9"] = L["BOTTOMRIGHT"],
+}
+
+Grid2Options.fontFlagsValues = { 
+	["NONE"] = L["Soft"],
+	["OUTLINE"] = string.format( "%s, %s", L["Soft"], L["Thin"] ), 
+	["THICKOUTLINE"] = string.format( "%s, %s", L["Soft"], L["Thick"] ), 
+	["MONOCHROME"] = L["Sharp"],
+	["MONOCHROME, OUTLINE"] = string.format( "%s, %s", L["Sharp"], L["Thin"] ), 
+	["MONOCHROME, THICKOUTLINE"] = string.format( "%s, %s", L["Sharp"], L["Thick"] ), 
+}
+
 -- Grid2Options:EnableLoadOnDemand()
 -- Delays the creation of indicators and statuses options, until the user clicks on each option, 
 -- reducing initial memory usage and load time. Instead of the real options, a "description" type option 

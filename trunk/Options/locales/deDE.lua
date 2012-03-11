@@ -188,6 +188,8 @@ L["Font"] = "Schrift"
 -- L["Font Border"] = ""
 -- L["Thin"] = ""
 -- L["Thick"] = ""
+-- L["Soft"] = ""
+-- L["Sharp"] = ""
 L["Adjust the font settings"] = "Die Schrifteinstellungen anpassen."
 L["Border Texture"] = "Rahmentextur"
 L["Adjust the border texture."] = "Die Rahmentextur anpassen."
@@ -353,6 +355,8 @@ L["Create a new status."] = "Neuen Status erstellen."
 L["Threshold"] = "Schwelle"
 -- L["Thresholds"] = ""
 L["Threshold at which to activate the status."] = "Schwelle ab wann der Status Aktiviert werden soll"
+
+-- L["available statuses"] = ""
 
 -- buff & debuff statuses management
 L["Auras"] = "Auren"

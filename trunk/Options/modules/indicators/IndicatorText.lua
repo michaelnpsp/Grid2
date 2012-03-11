@@ -12,7 +12,6 @@ Grid2Options:RegisterIndicatorOptions("text",   true, function(self, indicator)
 end)
 
 do
-	local fontFlagsValues = { ["DEFAULT"]= L["None"], ["OUTLINE"] = L["Thin"], ["THICKOUTLINE"] = L["Thick"] }
 	function Grid2Options:MakeIndicatorTextCustomOptions(indicator, options)
 		self:MakeHeaderOptions( options, "Appearance" )
 		options.textlength = {
@@ -99,12 +98,12 @@ do
 			order = 75,
 			name = L["Font Border"],
 			desc = L["Set the font border type."],
-			get = function () return indicator.dbx.fontFlags or "DEFAULT" end,
+			get = function () return indicator.dbx.fontFlags or "NONE" end,
 			set = function (_, v)
-				indicator.dbx.fontFlags =  v ~= "DEFAULT" and v or nil
+				indicator.dbx.fontFlags =  v ~= "NONE" and v or nil
 				self:RefreshIndicator(indicator, "SetTextFont")
 			end,
-			values = fontFlagsValues,
+			values = Grid2Options.fontFlagsValues,
 		}
 		options.font = {
 			type = "select", dialogControl = "LSM30_Font",

@@ -188,6 +188,8 @@ L["Font"] = "글꼴"
 L["Font Border"] = "글꼴 외곽선"
 L["Thin"] = "얇게"
 L["Thick"] = "두껍게"
+-- L["Soft"] = ""
+-- L["Sharp"] = ""
 L["Adjust the font settings"] = "글꼴 설정을 조정합니다."
 L["Border Texture"] = "테두리 무늬"
 L["Adjust the border texture."] = "테두리 무늬를 조정합니다."
@@ -353,6 +355,8 @@ L["Create a new status."] = "새로운 상태를 만듭니다."
 L["Threshold"] = "수치"
 L["Thresholds"] = "수치"
 L["Threshold at which to activate the status."] = "상태를 활성화할 수치를 설정합니다."
+
+-- L["available statuses"] = ""
 
 -- buff & debuff statuses management
 L["Auras"] = "오라들"

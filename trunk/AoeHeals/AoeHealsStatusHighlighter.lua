@@ -160,7 +160,12 @@ AOEM.setupFunc["aoe-highlighter"] = function(self,dbx)
 	self.IsActive        = IsActive
 	self.GetIcon         = GetIcon
 	self.GetCount        = GetCount
+	self.texture         = "Interface\\Icons\\Inv_misc_idol_05"
 	status 				 = self
 	roster               = self:GetRoster()
 	return { "color" , "icon" }
 end
+
+Grid2:DbSetStatusDefaultValue( "aoe-highlighter", { type = "aoe-highlighter", 
+	highlightStatus = "aoe-neighbors", color1 = {r=0,g=0.5,b=1,a=1},
+})

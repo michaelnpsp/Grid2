@@ -63,9 +63,9 @@ end
 function Grid2Options:MakeIndicatorsOptions(options)
 	-- remove old options
 	options = options or self.indicatorOptions;	wipe(options)
-	-- make new indicator
+	-- make new indicator options
 	if self.MakeNewIndicatorOptions then self:MakeNewIndicatorOptions() end	
-	-- make indicators
+	-- make indicators options
     local indicators = Grid2.db.profile.indicators
  	for baseKey,dbx in pairs(indicators) do
 		if self.typeMakeOptions[dbx.type] then -- filter bar-color&text-color indicators

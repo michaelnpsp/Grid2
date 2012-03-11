@@ -108,7 +108,6 @@ local Charmed = Grid2.statusPrototype:new("charmed")
 
 Charmed:Inject(Shared)
 Charmed.GetColor = Color.GetColor
-Charmed.GetPercent = Color.GetPerent
 
 function Charmed:IsActive(unit)
 	local owner = Grid2:GetOwnerUnitByUnit(unit)
@@ -120,6 +119,10 @@ end
 local charmedText = L["Charmed"]
 function Charmed:GetText(unit)
 	return charmedText
+end
+
+function Charmed:GetPercent(unit)
+	return self.dbx.color1.a, charmedText
 end
 
 Grid2.setupFunc["charmed"] =  function(baseKey, dbx)

@@ -168,10 +168,7 @@ function HealthCurrent:GetPercent(unit)
 		return 1
 	end
 	local m = UnitHealthMax(unit)
-	if m ~= 0 then
-		return UnitHealth(unit) / m
-	end
-	return 0
+	return m == 0 and 0 or UnitHealth(unit) / m 
 end
 
 function HealthCurrent:GetText(unit)
@@ -229,7 +226,6 @@ Grid2:DbSetStatusDefaultValue( "health-low", {type = "health-low", threshold = 0
 local feign_cache = {}
 
 FeignDeath.GetColor = Grid2.statusLibrary.GetColor
-FeignDeath.GetPercent = Grid2.statusLibrary.GetPercent
 
 local function FeignDeathUpdateEvent(unit)
 	local feign = UnitIsFeignDeath(unit)
@@ -257,6 +253,10 @@ function FeignDeath:GetText(unit)
 	return feignText
 end
 
+function Death:GetPercent(unit)
+	return self.dbx.color1.a, feignText
+end
+
 local function CreateFeignDeath(baseKey, dbx)
 	Grid2:RegisterStatus(FeignDeath, {"color", "percent", "text"}, baseKey, dbx)
 	return FeignDeath
@@ -272,15 +272,24 @@ HealthDeficit.OnDisable = Health_Disable
 HealthDeficit.GetColor  = Grid2.statusLibrary.GetColor
 
 function HealthDeficit:IsActive(unit)
-	return (1 - HealthCurrent:GetPercent(unit)) > self.dbx.threshold
+	return self:GetPercent(unit) >= self.dbx.threshold
 end
 
 function HealthDeficit:GetText(unit)
 	return fmt("%.1fk", (UnitHealth(unit) - UnitHealthMax(unit)) / 1000)
 end
 
+function HealthDeficit:GetPercent(unit)
+	local m = UnitHealthMax(unit)
+	return m == 0 and 1 or ( m - UnitHealth(unit) ) / m
+end
+
+function HealthDeficit:GetPercentText(unit)
+	return fmt( "%.0f%%", -self:GetPercent(unit)*100 )
+end
+
 local function CreateHealthDeficit(baseKey, dbx)
-	Grid2:RegisterStatus(HealthDeficit, {"color", "text"}, baseKey, dbx)
+	Grid2:RegisterStatus(HealthDeficit, { "percent", "color", "text"}, baseKey, dbx)
 	return HealthDeficit
 end
 
@@ -361,9 +370,10 @@ Grid2:DbSetStatusDefaultValue( "heals-incoming", {type = "heals-incoming", inclu
 
 -- death status
 local dead_cache = {}
+local textDeath = L["DEAD"]
+local textGhost = L["GHOST"]
 
 Death.GetColor = Grid2.statusLibrary.GetColor
-Death.GetPercent = Grid2.statusLibrary.GetPercent
 
 local function DeathTimerEvent()
 	for unit in next, dead_cache do
@@ -377,7 +387,7 @@ end
 
 local function DeathUpdateEvent(unit)
 	if UnitIsDeadOrGhost(unit) then
-		local dead = UnitIsGhost(unit) and 2 or 1
+		local dead = UnitIsGhost(unit) and textGhost or textDeath
 		if dead ~= dead_cache[unit] then
 			if not next(dead_cache) then EnableTimer(DeathTimerEvent,1) end	
 			dead_cache[unit] = dead
@@ -413,13 +423,12 @@ function Death:GetIcon()
 	return [[Interface\TargetingFrame\UI-TargetingFrame-Skull]]
 end
 
+function Death:GetPercent(unit)
+	return self.dbx.color1.a, dead_cache[unit]
+end
+
 function Death:GetText(unit)
-	local dead = dead_cache[unit]
-	if dead==2 then
-		return L["GHOST"]
-	elseif dead==1 then
-		return L["DEAD"]
-	end		
+	return dead_cache[unit]
 end
 
 local function CreateDeath(baseKey, dbx)

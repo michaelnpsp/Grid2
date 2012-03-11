@@ -188,6 +188,8 @@ L["Font"] = "Fuente"
 L["Font Border"] = "Borde de la fuente"
 L["Thin"] = "Fino"
 L["Thick"] = "Grueso"
+L["Soft"] = "Suave"
+L["Sharp"] = "Fuerte"
 L["Adjust the font settings"] = "Ajustes de la fuente"
 L["Border Texture"] = "Textura del Borde"
 L["Adjust the border texture."] = "Ajusta la texture del borde."
@@ -353,6 +355,8 @@ L["Create Color"] = "Crear Color"
 L["Threshold"] = "Umbral"
 L["Thresholds"] = "Umbrales"
 L["Threshold at which to activate the status."] = "Elige el umbral para activar el Estado"
+
+L["available statuses"] = "estados disponibles"
 
 -- buff & debuff statuses management
 L["Auras"] = "Auras"

@@ -188,6 +188,8 @@ L["Font"] = "字型"
 -- L["Font Border"] = ""
 -- L["Thin"] = ""
 -- L["Thick"] = ""
+-- L["Soft"] = ""
+-- L["Sharp"] = ""
 L["Adjust the font settings"] = "調整字型設定"
 -- L["Border Texture"] = ""
 -- L["Adjust the border texture."] = ""
@@ -353,6 +355,8 @@ L["New Status"] = "新狀態"
 -- L["Threshold"] = ""
 -- L["Thresholds"] = ""
 -- L["Threshold at which to activate the status."] = ""
+
+-- L["available statuses"] = ""
 
 -- buff & debuff statuses management
 -- L["Auras"] = ""

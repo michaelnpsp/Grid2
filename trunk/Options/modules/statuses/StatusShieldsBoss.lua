@@ -4,7 +4,7 @@ Grid2Options:RegisterStatusOptions("boss-shields", "misc", function(self, status
 	local lines = {}
 	for map,shields in pairs(status.ShieldsDB) do
 		for spell,value in pairs(shields) do
-			lines[#lines+1] = string.format("%s - %s  (%.0fK)", GetSpellInfo(spell) or "", map, value/1000 )
+			lines[#lines+1] = string.format("%s - %s  (%.0fK)", map, GetSpellInfo(spell) or "", value/1000 )
 		end	
 	end
 	table.sort(lines)

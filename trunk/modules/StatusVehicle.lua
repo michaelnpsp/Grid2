@@ -46,7 +46,10 @@ function Vehicle:GetText(unit)
 	end
 end
 
-Vehicle.GetPercent = Grid2.statusLibrary.GetPercent
+function Vehicle:GetPercent(unit)
+	return self.dbx.color1.a, text
+end
+
 Vehicle.GetColor = Grid2.statusLibrary.GetColor
 
 local function Create(baseKey, dbx)

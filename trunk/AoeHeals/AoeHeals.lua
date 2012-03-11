@@ -25,6 +25,7 @@ AOEM.defaultDB = {
 		showInRaid   = false,
 	}
 }
+AOEM.playerClass = select(2, UnitClass("player"))
 
 local Grid2 = Grid2
 local Grid2Layout = Grid2Layout
@@ -343,9 +344,15 @@ AOEM.setupFunc = {}
 AOEM.hlStatuses = hlStatuses
 AOEM.statuses   = statuses
 
-Grid2.setupFunc["aoe-heal"] = Create
+-- Grid2.setupFunc["aoe-heal"] = Create
 
---{{ Module public methods
+--{{ Module methods
+function AOEM:OnModuleInitialize()
+	for key in next,self.setupFunc do
+		Grid2.setupFunc[key] = Create
+	end
+end
+
 function AOEM:PlayerHasGlyph(id)
 	for i=1,9 do
 		if id == select(4,GetGlyphSocketInfo(i)) then

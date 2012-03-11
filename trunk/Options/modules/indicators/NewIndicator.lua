@@ -75,7 +75,7 @@ end
 
 function Grid2Options:MakeNewIndicatorOptions()
 	local options = self.indicatorOptions
-	self:MakeTitleOptions( options, L["New Indicator"], L["Options for %s."]:format(L["indicators"]), "Interface\\ICONS\\Spell_ChargePositive" )
+	self:MakeTitleOptions( options, L["indicators"], L["Options for %s."]:format(L["indicators"]), "Interface\\ICONS\\Spell_ChargePositive" )
 	options.newIndicatorName = {
 		type = "input",
 		order = 2,
