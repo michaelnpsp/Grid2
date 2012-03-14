@@ -283,10 +283,6 @@ local function Text_OnUpdate(self, parent, unit, status)
 	end	
 end
 
-local function Text_SetTextFont(self, parent, font, size, flags)
-	parent[self.name].Text:SetFont(font or self.textfont, size or self.dbx.fontSize, flags or self.dbx.fontFlags)
-end
-
 local function Text_Disable(self, parent)
 	local f = parent[self.name]
 	f:Hide()
@@ -294,7 +290,6 @@ local function Text_Disable(self, parent)
 	self.GetBlinkFrame = nil
 	self.Layout = nil
 	self.OnUpdate = nil
-	self.SetTextFont = nil
 	self.OnUpdate = Grid2.Dummy
 end
 
@@ -311,7 +306,6 @@ local function Text_UpdateDB(self, dbx)
 	self.Create = Text_Create
 	self.GetBlinkFrame = Text_GetBlinkFrame
 	self.Layout = Text_Layout
-	self.SetTextFont = Text_SetTextFont
 	self.Disable = Text_Disable
 	self.UpdateDB = Text_UpdateDB
 	self.OnUpdate = (dbx.duration  and dbx.stack and Text_OnUpdateDS) or 

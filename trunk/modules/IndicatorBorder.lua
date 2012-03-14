@@ -12,7 +12,7 @@ function Border:OnUpdate(parent, unit, status)
 	if status then
 		parent:SetBackdropBorderColor(status:GetColor(unit))
 	else
-		local c= self.dbx.color1
+		local c = self.dbx.color1
 		parent:SetBackdropBorderColor(c.r, c.g, c.b, c.a)
 	end
 end

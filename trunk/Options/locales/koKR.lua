@@ -13,6 +13,8 @@ L["indicators"] = "지시기"
 L["Frames"] = "창"
 L["frame"] = "창"
 
+-- L["Default Font"] = ""
+
 L["Invert Bar Color"] = "바 색상 반대로"
 L["Swap foreground/background colors on bars."] = "바의 전경/배경 색상을 변경합니다."
 

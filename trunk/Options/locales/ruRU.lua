@@ -13,6 +13,8 @@ L["statuses"] = "Статус"
 L["Frames"] = "Фреймы"
 L["frame"] = "Фрейм"
 
+-- L["Default Font"] = ""
+
 L["Invert Bar Color"] = "Обратить цвет панели"
 L["Swap foreground/background colors on bars."] = "Меняет местами окраску передниего плана/заднего на панели."
 

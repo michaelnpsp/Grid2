@@ -151,7 +151,14 @@ Grid2Layout.defaultDB = {
 	},
 }
 
+Grid2Layout.frameBackdrop = { 
+	 bgFile = "Interface\\ChatFrame\\ChatFrameBackground", 
+	 tile = true, tileSize = 16, edgeSize = 16,
+	 insets = {left = 4, right = 4, top = 4, bottom = 4},
+}
+
 Grid2Layout.layoutSettings = {}
+
 Grid2Layout.layoutHeaderClass = GridLayoutHeaderClass
 
 function Grid2Layout:OnModuleInitialize()
@@ -446,12 +453,9 @@ end
 function Grid2Layout:UpdateTextures()
 	local f = self.frame
 	local p = self.db.profile
-	local borderTexture = Grid2:MediaFetch("border", p.BorderTexture) or "Interface\\Tooltips\\UI-Tooltip-Border"
-	f:SetBackdrop({
-				 bgFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16,
-				 edgeFile = borderTexture, edgeSize = 16,
-				 insets = {left = 4, right = 4, top = 4, bottom = 4},
-			 })
+	-- update backdrop data
+	self.frameBackdrop.edgeFile = Grid2:MediaFetch("border", p.BorderTexture) or "Interface\\Tooltips\\UI-Tooltip-Border"
+	f:SetBackdrop( self.frameBackdrop )
 	-- create bg texture
 	f.texture = f.texture or f:CreateTexture(nil, "BORDER")
 	f.texture:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")

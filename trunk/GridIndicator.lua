@@ -4,8 +4,22 @@ Created by Grid2 original authors, modified by Michael
 
 Grid2.indicators = {}
 Grid2.indicatorTypes = {}
+Grid2.indicatorPrototype = {}
 
-local indicator = {}
+-- indicator prototype
+local indicator = Grid2.indicatorPrototype 
+indicator.__index = indicator
+
+-- constructor
+function indicator:new(name)
+	local e = setmetatable({}, self)
+	local p = {}
+	e.sortStatuses = function (a,b) return p[a] > p[b]	end
+	e.priorities = p
+	e.name = name
+	e.statuses = {}
+	return e
+end
 
 function indicator:CreateFrame(type, parent)
 	local f = parent[self.name]
@@ -102,19 +116,6 @@ end
 
 indicator.Update = UpdateBlink
 --}}
-
-Grid2.indicatorPrototype = {
-	__index = indicator,
-	new = function (self, name)
-		local e = setmetatable({}, self)
-		local p = {}
-		e.sortStatuses = function (a,b) return p[a] > p[b]	end
-		e.priorities = p
-		e.name = name
-		e.statuses = {}
-		return e
-	end,
-}
 
 function Grid2:RegisterIndicator(indicator, types)
 	local name = indicator.name

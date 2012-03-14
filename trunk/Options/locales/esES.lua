@@ -13,6 +13,8 @@ L["indicators"] = "Indicadores"
 L["Frames"] = "Celdas"
 L["frame"] = "celda"
 
+L["Default Font"] = "Fuente predeterminada"
+
 L["Invert Bar Color"] = "Invertir color de barra"
 L["Swap foreground/background colors on bars."] = "Intercambia los colores de frente y fondo de la barra"
 
