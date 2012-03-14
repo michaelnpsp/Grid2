@@ -54,6 +54,12 @@ do
 end	
 --}}}
 
+-- {{ Precalculated backdrop table, shared by all frames
+local frameBackdrop = {
+	bgFile = "Interface\\Addons\\Grid2\\media\\white16x16", tile = true, tileSize = 16,	insets = {}
+}
+-- }}
+
 --{{{ Grid2Frame script handlers
 local GridFrameEvents = {}
 function GridFrameEvents:OnShow()
@@ -119,13 +125,7 @@ function GridFramePrototype:Layout()
 	local h = dbx.frameHeight
 	-- external border controlled by the border indicator
 	local r,g,b,a = self:GetBackdropBorderColor() 
-	local frameBorder = dbx.frameBorder
-	local borderTexture = Grid2:MediaFetch("border", dbx.frameBorderTexture, "Grid2 Flat")
-	self:SetBackdrop({
-		bgFile = "Interface\\Addons\\Grid2\\media\\white16x16", tile = true, tileSize = 16,
-		edgeFile = borderTexture, edgeSize = frameBorder,
-		insets = {left = frameBorder, right = frameBorder, top = frameBorder, bottom = frameBorder},
-	})
+	self:SetBackdrop( frameBackdrop )
 	self:SetBackdropBorderColor(r, g, b, a)
 	-- inner border color (sure that is the inner border)
 	local cf = dbx.frameColor
@@ -199,6 +199,7 @@ function Grid2Frame:OnModuleEnable()
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE")
 	self:RegisterMessage("Grid_UnitUpdate")
+	self:UpdateBackdrop()
 	self:UpdateFrameUnits()
 	self:UpdateIndicators()
 end
@@ -232,7 +233,19 @@ function Grid2Frame:UpdateIndicators()
 	end
 end
 
+function Grid2Frame:UpdateBackdrop()
+	local dbx = self.db.profile
+	local frameBorder = dbx.frameBorder
+	frameBackdrop.edgeFile      = Grid2:MediaFetch("border", dbx.frameBorderTexture, "Grid2 Flat")
+	frameBackdrop.edgeSize      = frameBorder
+	frameBackdrop.insets.left   = frameBorder
+	frameBackdrop.insets.right  = frameBorder
+	frameBackdrop.insets.top    = frameBorder
+	frameBackdrop.insets.bottom = frameBorder
+end
+
 function Grid2Frame:LayoutFrames()
+	self:UpdateBackdrop()
 	for name, frame in next, self.registeredFrames do
 		frame:Layout()
 	end

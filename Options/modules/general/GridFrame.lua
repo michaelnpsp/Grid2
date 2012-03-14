@@ -35,15 +35,14 @@ Grid2Options:AddGeneralOptions("General", "Frames", { orientation = {
 }, font = {
 		type = "select", dialogControl = "LSM30_Font",
 		order = 30,
-		name = L["Font"],
+		name = L["Default Font"],
 		desc = L["Adjust the font settings"],
 		get = function(info) return Grid2Frame.db.profile.font end,
 		set = function(info,v)
 			Grid2Frame.db.profile.font = v
 			for _, indicator in Grid2:IterateIndicators() do
-				if indicator.SetTextFont and indicator.dbx.font==nil then
-					indicator:UpdateDB()
-					Grid2Frame:WithAllFrames( indicator, "SetTextFont" )
+				if indicator.textfont and indicator.dbx.font==nil then
+					Grid2Options:RefreshIndicator( indicator, "Create" )
 				end
 			end
 

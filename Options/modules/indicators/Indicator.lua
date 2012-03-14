@@ -160,63 +160,57 @@ end
 do
 	local levelValues = { 1,2,3,4,5,6,7,8,9 }
 	function Grid2Options:MakeIndicatorLocationOptions(indicator, options)
-		local baseKey   = indicator.name
 		local location  = indicator.dbx.location
 		self:MakeHeaderOptions( options, "Location" )
 		options.relPoint = {
-				type = 'select',
-				order = 4,
-				name = L["Location"],
-				desc = L["Align my align point relative to"],
-				values = self.pointValueList,
-				get = function() return self.pointMap[location.relPoint] end,
-				set = function(_, v)
-						location.relPoint= self.pointMap[v]
-						indicator.anchorRel = location.relPoint
-						location.point= location.relPoint
-						indicator.anchor= location.relPoint
-						Grid2Frame:WithAllFrames(indicator, "Layout")
-				end,
-			}
+			type = 'select',
+			order = 4,
+			name = L["Location"],
+			desc = L["Align my align point relative to"],
+			values = self.pointValueList,
+			get = function() return self.pointMap[location.relPoint] end,
+			set = function(_, v)
+				location.relPoint = self.pointMap[v]
+				location.point = location.relPoint
+				self:RefreshIndicator(indicator, "Layout")
+			end,
+		}
 		options.point = {
-				type = 'select',
-				order = 5,
-				name = L["Align Point"],
-				desc = L["Align this point on the indicator"],
-				values = self.pointValueList,
-				get = function() return self.pointMap[location.point] end,
-				set = function(_, v)
-						location.point = self.pointMap[v] 
-						indicator.anchor = location.point
-						Grid2Frame:WithAllFrames(indicator, "Layout")
-				end,
-			}
+			type = 'select',
+			order = 5,
+			name = L["Align Point"],
+			desc = L["Align this point on the indicator"],
+			values = self.pointValueList,
+			get = function() return self.pointMap[location.point] end,
+			set = function(_, v)
+				location.point = self.pointMap[v] 
+				self:RefreshIndicator(indicator, "Layout")
+			end,
+		}
 		options.x = {
-				type = "range",
-				order = 7,
-				name = L["X Offset"],
-				desc = L["X - Horizontal Offset"],
-				min = -50, max = 50, step = 1, bigStep = 1,
-				get = function() return location.x end,
-				set = function(_, v)
-						location.x = v 
-						indicator.offsetx = v
-						Grid2Frame:WithAllFrames(indicator, "Layout")						
-				end,
-			}
+			type = "range",
+			order = 7,
+			name = L["X Offset"],
+			desc = L["X - Horizontal Offset"],
+			min = -50, max = 50, step = 1, bigStep = 1,
+			get = function() return location.x end,
+			set = function(_, v)
+				location.x = v 
+				self:RefreshIndicator(indicator, "Layout")
+			end,
+		}
 		options.y = {
-				type = "range",
-				order = 8,
-				name = L["Y Offset"],
-				desc = L["Y - Vertical Offset"],
-				min = -50, max = 50, step = 1, bigStep = 1,
-				get = function() return location.y end,
-				set = function(_, v)
-						location.y = v
-						indicator.offsety = v
-						Grid2Frame:WithAllFrames(indicator, "Layout")						
-				end,
-			}
+			type = "range",
+			order = 8,
+			name = L["Y Offset"],
+			desc = L["Y - Vertical Offset"],
+			min = -50, max = 50, step = 1, bigStep = 1,
+			get = function() return location.y end,
+			set = function(_, v)
+				location.y = v
+				self:RefreshIndicator(indicator, "Layout")
+			end,
+		}
 		options.frameLevel = {
 			type = "select",
 			order = 6,
@@ -226,9 +220,8 @@ do
 				return indicator.dbx.level or 1
 			end,
 			set = function (_, v)
-				indicator.frameLevel = v
 				indicator.dbx.level = v
-				Grid2Frame:WithAllFrames(indicator, "Layout")				
+				self:RefreshIndicator(indicator, "Layout")
 			end,
 			values = levelValues,
 		}

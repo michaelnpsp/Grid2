@@ -113,8 +113,7 @@ function Grid2Options:MakeIndicatorBarAppearanceOptions(indicator,options)
 		set = function (_, v)
 			if v==0 then v= nil end
 			indicator.dbx.width = v
-			indicator.width = v
-			Grid2Frame:WithAllFrames(indicator, "Layout")			
+			self:RefreshIndicator(indicator, "Layout")
 		end,	
 	}
 	options.barHeight= {
@@ -131,8 +130,7 @@ function Grid2Options:MakeIndicatorBarAppearanceOptions(indicator,options)
 		set = function (_, v)
 			if v==0 then v= nil end
 			indicator.dbx.height = v
-			indicator.height= v
-			Grid2Frame:WithAllFrames(indicator, "Layout")			
+			self:RefreshIndicator(indicator, "Layout")
 		end,	
 	}
 	options.enableBack = {
@@ -166,8 +164,8 @@ function Grid2Options:MakeIndicatorBarAppearanceOptions(indicator,options)
 		end,
 		set = function(info,r,g,b,a) 
 			local c = indicator.dbx.backColor
-			if not c then c= {} indicator.dbx.backColor= c end
-			c.r,c.g,c.b,c.a = r,g,b,a
+			if not c then c = {}; indicator.dbx.backColor = c end
+			c.r, c.g, c.b, c.a = r, g, b, a
 			self:RefreshIndicator(indicator, "Layout", "Update")
 		end,
 		hidden = function() return not indicator.dbx.backColor end
@@ -214,11 +212,7 @@ function Grid2Options:MakeIndicatorBarMiscOptions(indicator, options)
 		set = function (_, v)
 			indicator.dbx.invertColor = v or nil
 			indicator.sideKick:UpdateDB()
-			if (not v) and (not indicator.dbx.parentBar) then
-				local c = Grid2Frame.db.profile.frameContentColor
-				Grid2Frame:WithAllFrames(function (f) f.container:SetVertexColor(c.r, c.g, c.b, c.a) end)
-			end	
-			Grid2Frame:UpdateIndicators()
+			self:RefreshIndicator(indicator, "Create")
 		end,
 	}	
 	self:MakeHeaderOptions( options, "Display" )

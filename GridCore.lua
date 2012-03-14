@@ -19,8 +19,6 @@ function Grid2:Debug(s, ...)
 	end
 end
 
-local media = LibStub("LibSharedMedia-3.0", true)
-
 --{{{ AceDB defaults
 Grid2.defaults = {
 	profile = {
@@ -115,16 +113,17 @@ function Grid2:OnInitialize()
 		LibDualSpec:EnhanceDatabase(self.db, "Grid2")
 	end
 
-	self:InitializeOptions()
-
-	self.OnInitialize= nil
-end
-
-function Grid2:OnEnable()
+	local media = LibStub("LibSharedMedia-3.0", true)
 	media:Register("statusbar", "Gradient", "Interface\\Addons\\Grid2\\media\\gradient32x32")
 	media:Register("statusbar", "Grid2 Flat", "Interface\\Addons\\Grid2\\media\\white16x16")
 	media:Register("border", "Grid2 Flat", "Interface\\Addons\\Grid2\\media\\white16x16")
-		
+	
+	self:InitializeOptions()
+
+	self.OnInitialize = nil
+end
+
+function Grid2:OnEnable()
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED", "GroupChanged")
 	self:RegisterEvent("RAID_ROSTER_UPDATE", "GroupChanged")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")

@@ -13,6 +13,8 @@ L["indicators"] = "Indikatoren"
 L["Frames"] = "Fenster"
 L["frame"] = "Fenster"
 
+-- L["Default Font"] = ""
+
 L["Invert Bar Color"] = "Leistenfarbe umkehren"
 L["Swap foreground/background colors on bars."] = "Umschalten Vorder/Hintergrund Farbe der Leisten"
 

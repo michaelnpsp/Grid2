@@ -17,7 +17,7 @@ local function Square_OnUpdate(self, parent, unit, status)
 	if status then
 		Square:SetBackdropColor(status:GetColor(unit))
 		if self.borderSize then
-			local c= self.color
+			local c = self.color
 			Square:SetBackdropBorderColor( c.r, c.g, c.b, c.a )
 		end
 		Square:Show()
@@ -35,15 +35,7 @@ local function Square_Layout(self, parent)
 	Square:SetHeight( self.height or container:GetHeight() )
 	local r1,g1,b1,a1 = Square:GetBackdropColor()
 	local r2,g2,b2,a2 = Square:GetBackdropBorderColor()
-	local borderSize  = self.borderSize 
-	if borderSize then
-		Square:SetBackdrop({ bgFile = self.texture, tile = false, tileSize = 0,
-							 edgeFile = "Interface\\Addons\\Grid2\\media\\white16x16", edgeSize = borderSize,
-							 insets = {left = borderSize, right = borderSize, top = borderSize, bottom = borderSize} })
-	else
-		Square:SetBackdrop({ bgFile = self.texture, tile = false, tileSize = 0,
-							 insets = {left = 0, right = 0, top = 0, bottom = 0} })
-	end
+	Square:SetBackdrop(self.backdrop)
 	Square:SetBackdropColor(r1,g1,b1,a1)
 	Square:SetBackdropBorderColor(r2,g2,b2,a2)
 end
@@ -56,20 +48,36 @@ local function Square_Disable(self, parent)
 end
 
 local function Square_UpdateDB(self, dbx)
-	dbx= dbx or self.dbx
-	self.texture = Grid2:MediaFetch("statusbar", dbx.texture, "Grid2 Flat")
-	local l= dbx.location
+	dbx = dbx or self.dbx
+	-- variables
+	local l = dbx.location
 	self.anchor = l.point
 	self.anchorRel = l.relPoint
 	self.offsetx = l.x
 	self.offsety = l.y
+	self.frameLevel = dbx.level
+	self.color = Grid2:MakeColor(dbx.color1)
+	self.borderSize = dbx.borderSize
 	self.width = dbx.size or dbx.width
 	if self.width==0 then self.width= nil end
 	self.height= dbx.size or dbx.height
 	if self.height==0 then self.height= nil end
-	self.frameLevel = dbx.level
-	self.color= Grid2:MakeColor(dbx.color1)
-	self.borderSize= dbx.borderSize
+	-- backdrop
+	local backdrop    = self.backdrop   or {}
+	backdrop.insets   = backdrop.insets or {}
+	local borderSize  = self.borderSize or 0
+	backdrop.tile     = false
+	backdrop.tileSize = 0
+	backdrop.bgFile   = Grid2:MediaFetch("statusbar", dbx.texture, "Grid2 Flat")
+	backdrop.edgeFile = borderSize>0 and "Interface\\Addons\\Grid2\\media\\white16x16" or nil
+	backdrop.edgeSize = borderSize>0 and borderSize or nil
+	local insets      = backdrop.insets
+	insets.left       = borderSize
+	insets.right      = borderSize
+	insets.top        = borderSize
+	insets.bottom     = borderSize
+	self.backdrop     = backdrop
+	-- Methods
 	self.Create = Square_Create
 	self.GetBlinkFrame = Square_GetBlinkFrame
 	self.Layout = Square_Layout

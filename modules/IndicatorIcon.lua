@@ -8,12 +8,6 @@ local function Icon_Create(self, parent)
 	local f = self:CreateFrame("Frame", parent)
 	if not f:IsShown() then	f:Show() end
 	
-	local borderSize = self.borderSize or 1
-	f:SetBackdrop({
-		edgeFile = "Interface\\Addons\\Grid2\\media\\white16x16", edgeSize = borderSize,
-		insets = {left = borderSize, right = borderSize, top = borderSize, bottom = borderSize},
-	})
-	
 	local Icon = f.Icon or f:CreateTexture(nil, "ARTWORK")
 	f.Icon = Icon
 	Icon:SetTexCoord(0.05, 0.95, 0.05, 0.95)
@@ -50,8 +44,7 @@ local function Icon_Create(self, parent)
 		local CooldownText = f.CooldownText or f:CreateFontString(nil, "OVERLAY")	
 		CooldownText:SetParent(TextFrame)
 		CooldownText:SetFontObject(GameFontHighlightSmall)
-		local font = Grid2:MediaFetch("font", self.dbx.font) or CooldownText:GetFont()
-		CooldownText:SetFont(font, self.dbx.fontSize, self.dbx.fontFlags or "OUTLINE" )
+		CooldownText:SetFont(self.textfont, self.dbx.fontSize, self.dbx.fontFlags or "OUTLINE" )
 		local c = self.dbx.stackColor
 		if c then CooldownText:SetTextColor(c.r, c.g, c.b, c.a) end	
 		CooldownText:Hide()
@@ -78,7 +71,7 @@ local function Icon_OnUpdate(self, parent, unit, status)
 	if self.useStatusColor or status:GetBorder(unit) then
 		Frame:SetBackdropBorderColor(r,g,b,a) 
 	elseif self.borderSize then
-		local c= self.color
+		local c = self.color
 		Frame:SetBackdropBorderColor(c.r, c.g, c.b, c.a) 
 	else
 		Frame:SetBackdropBorderColor(0,0,0,0)
@@ -118,22 +111,14 @@ local function Icon_Layout(self, parent)
 
 	local Icon = f.Icon
 	local r,g,b,a = f:GetBackdropBorderColor()
-	local backdrop = f:GetBackdrop()
 	local borderSize = self.borderSize
 	if borderSize then
 		Icon:SetPoint("TOPLEFT", f ,"TOPLEFT", borderSize, -borderSize)
 		Icon:SetPoint("BOTTOMRIGHT", f ,"BOTTOMRIGHT", -borderSize, borderSize)
-		backdrop.edgeSize = borderSize
 	else
 		Icon:SetAllPoints(f)
-		backdrop.edgeSize = 1
-		borderSize = 1
 	end
-	backdrop.insets.left = borderSize
-	backdrop.insets.right = borderSize
-	backdrop.insets.top = borderSize
-	backdrop.insets.bottom = borderSize
-	f:SetBackdrop(backdrop)
+	f:SetBackdrop(self.backdrop)
 	f:SetBackdropBorderColor(r, g, b, a)
 	
 	local size = self.dbx.size
@@ -167,24 +152,41 @@ local function Icon_Disable(self, parent)
 end
 
 local function Icon_UpdateDB(self, dbx)
-	dbx= dbx or self.dbx
-	local l= dbx.location
-	self.anchor = l.point
+	dbx = dbx or self.dbx
+	-- location
+	local l = dbx.location
+	self.anchor    = l.point
 	self.anchorRel = l.relPoint
-	self.offsetx = l.x
-	self.offsety = l.y
-	self.disableCooldown= dbx.disableCooldown
-	self.disableStack= dbx.disableStack
-	self.frameLevel = dbx.level
-	self.borderSize= dbx.borderSize
-	self.useStatusColor = dbx.useStatusColor
-	self.color= Grid2:MakeColor(dbx.color1)
-	self.Create = Icon_Create
+	self.offsetx   = l.x
+	self.offsety   = l.y
+	-- misc variables
+	self.disableCooldown = dbx.disableCooldown
+	self.disableStack    = dbx.disableStack
+	self.frameLevel      = dbx.level
+	self.borderSize      = dbx.borderSize
+	self.useStatusColor  = dbx.useStatusColor
+	self.color           = Grid2:MakeColor(dbx.color1)
+	self.textfont        = Grid2:MediaFetch("font", dbx.font or Grid2Frame.db.profile.font) or STANDARD_TEXT_FONT
+	-- backdrop
+	local backdrop    = self.backdrop   or {}
+	backdrop.insets   = backdrop.insets or {}
+	local borderSize  = self.borderSize or 1
+	backdrop.edgeFile = "Interface\\Addons\\Grid2\\media\\white16x16"
+	backdrop.edgeSize = borderSize
+	local insets      = backdrop.insets
+	insets.left       = borderSize
+	insets.right      = borderSize
+	insets.top        = borderSize
+	insets.bottom     = borderSize
+	self.backdrop     = backdrop
+	-- methods
+	self.Create        = Icon_Create
 	self.GetBlinkFrame = Icon_GetBlinkFrame
-	self.Layout = Icon_Layout
-	self.OnUpdate = Icon_OnUpdate
-	self.Disable = Icon_Disable
-	self.UpdateDB = Icon_UpdateDB
+	self.Layout        = Icon_Layout
+	self.OnUpdate      = Icon_OnUpdate
+	self.Disable       = Icon_Disable
+	self.UpdateDB      = Icon_UpdateDB
+	--
 	self.dbx = dbx
 end
 

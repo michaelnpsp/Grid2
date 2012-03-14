@@ -35,13 +35,12 @@ function Grid2Options:MakeIndicatorIconCustomOptions(indicator, options)
 		desc = L["Text Location"],
 		values = Grid2Options.pointValueListExtra,
 		get = function()
-			if indicator.dbx.disableStack then
-				return "0"
-			else
+			if not indicator.dbx.disableStack then
 				local JustifyH = indicator.dbx.fontJustifyH or "CENTER"
 				local JustifyV = indicator.dbx.fontJustifyV or "MIDDLE"
 				return self.pointMapText[ JustifyH..JustifyV ]
 			end	
+			return "0"
 		end,
 		set = function(_, v)
 			local dbx = indicator.dbx
@@ -65,10 +64,7 @@ function Grid2Options:MakeIndicatorIconCustomOptions(indicator, options)
 		get = function (info) return indicator.dbx.font end,
 		set = function (info, v)
 			indicator.dbx.font = v
-			local font = media:Fetch("font", v)
-			Grid2Frame:WithAllFrames(function (f) 
-				f[indicator.name].CooldownText:SetFont( font, indicator.dbx.fontSize, indicator.dbx.fontFlags )
-			end)
+			self:RefreshIndicator(indicator, "Create")
 		end,
 		values = AceGUIWidgetLSMlists.font,
 		hidden= function() return indicator.dbx.disableStack end,
@@ -84,10 +80,7 @@ function Grid2Options:MakeIndicatorIconCustomOptions(indicator, options)
 		end,
 		set = function (_, v)
 			indicator.dbx.fontFlags =  v ~= "NONE" and v or ""
-			Grid2Frame:WithAllFrames(function (f)
-				local text = f[indicator.name].CooldownText
-				text:SetFont( text:GetFont() , indicator.dbx.fontSize, indicator.dbx.fontFlags )
-			end)
+			self:RefreshIndicator(indicator, "Create")
 		end,
 		values = Grid2Options.fontFlagsValues,
 		hidden = function() return indicator.dbx.disableStack end,		
@@ -103,10 +96,7 @@ function Grid2Options:MakeIndicatorIconCustomOptions(indicator, options)
 		get = function () return indicator.dbx.fontSize	end,
 		set = function (_, v)
 			indicator.dbx.fontSize = v
-			Grid2Frame:WithAllFrames(function (f)
-				local text = f[indicator.name].CooldownText
-				text:SetFont( text:GetFont() , v, indicator.dbx.fontFlags )
-			end)
+			self:RefreshIndicator(indicator, "Create")
 		end,
 		hidden= function() return indicator.dbx.disableStack end,
 	}
@@ -116,7 +106,7 @@ function Grid2Options:MakeIndicatorIconCustomOptions(indicator, options)
 		name = L["Color"],
 		desc = L["Color"],
 		get = function()
-			local c= indicator.dbx.stackColor
+			local c = indicator.dbx.stackColor
 			if c then 	return c.r, c.g, c.b, c.a
 			else		return 1,1,1,1
 			end
@@ -127,9 +117,7 @@ function Grid2Options:MakeIndicatorIconCustomOptions(indicator, options)
 			else	  indicator.dbx.stackColor= { r=r, g=g, b=b, a=a}
 			end
 			local indicatorKey = indicator.name
-			Grid2Frame:WithAllFrames(function (f) 
-				f[indicator.name].CooldownText:SetTextColor(r,g,b,a)
-			end)
+			self:RefreshIndicator(indicator, "Create")
 		 end, 
 		hasAlpha = true,
 		hidden= function() return indicator.dbx.disableStack end,
@@ -156,10 +144,7 @@ function Grid2Options:MakeIndicatorIconCustomOptions(indicator, options)
 		get = function () return indicator.dbx.reverseCooldown end,
 		set = function (_, v)
 			indicator.dbx.reverseCooldown = v or nil
-			local indicatorKey = indicator.name
-			Grid2Frame:WithAllFrames(function (f)
-				f[indicatorKey].Cooldown:SetReverse(indicator.dbx.reverseCooldown)
-			end)
+			self:RefreshIndicator(indicator, "Create")
 		end,
 		hidden= function() return indicator.dbx.disableCooldown end,
 	}		
@@ -172,8 +157,7 @@ function Grid2Options:MakeIndicatorIconCustomOptions(indicator, options)
 		get = function () return indicator.dbx.disableOmniCC end,
 		set = function (_, v)
 			indicator.dbx.disableOmniCC = v or nil
-			local indicatorKey = indicator.name
-			Grid2Frame:WithAllFrames(function (f) f[indicatorKey].Cooldown.noCooldownCount = v end)
+			self:RefreshIndicator(indicator, "Create")
 		end,
 		hidden= function() return indicator.dbx.disableCooldown end,
 	}

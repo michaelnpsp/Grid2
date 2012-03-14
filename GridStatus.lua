@@ -6,10 +6,19 @@ local pairs = pairs
 
 Grid2.statuses = {}
 Grid2.statusTypes = {}
+Grid2.statusPrototype = {}
 
--- status prototype (statuses will override this methods to provide custom values)
-local status = {}
-
+-- {{ status prototype
+local status = Grid2.statusPrototype
+status.__index = status
+-- constructor
+function status:new(name, embed)
+	local e = setmetatable({}, self)
+	if embed ~= false then LibStub("AceEvent-3.0"):Embed(e)	end
+	e.name = name
+	e.indicators = {}
+	return e
+end
 -- shading color: icon indicator
 function status:GetVertexColor()
 	return 1,1,1,1
@@ -48,7 +57,16 @@ status.OnEnable = Grid2.Dummy
 status.OnDisable = Grid2.Dummy
 -- all indicators
 status.UpdateAllIndicators = Grid2.statusLibrary.UpdateAllUnits
---}}
+
+function status:UpdateDB(dbx)
+	if dbx then	self.dbx = dbx end
+end
+
+function status:Inject(data)
+	for k,f in next, data do
+		self[k] = f
+	end
+end
 
 function status:UpdateIndicators(unit)
 	for parent in next, Grid2:GetUnitFrames(unit) do
@@ -80,27 +98,6 @@ function status:UnregisterIndicator(indicator)
 		self:OnDisable()
 	end
 end
-
-function status:UpdateDB(dbx)
-	if dbx then	self.dbx = dbx end
-end
-
-function status:Inject(data)
-	for k,f in next, data do
-		self[k] = f
-	end
-end
-
-Grid2.statusPrototype = {
-	__index = status,
-	new = function (self, name, embed)
-		local e = setmetatable({}, self)
-		if embed ~= false then LibStub("AceEvent-3.0"):Embed(e)	end
-		e.name = name
-		e.indicators = {}
-		return e
-	end,
-}
 
 function Grid2:RegisterStatus(status, types, baseKey, dbx)
 	local name = status.name

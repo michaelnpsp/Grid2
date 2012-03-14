@@ -13,6 +13,8 @@ L["General Settings"] = "一般設置"
 -- L["Frames"] = ""
 L["frame"] = "frame"
 
+-- L["Default Font"] = ""
+
 L["Invert Bar Color"] = "反轉顏色"
 L["Swap foreground/background colors on bars."] = "反轉提示條上背景/前景的顏色。"
 

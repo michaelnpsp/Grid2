@@ -13,6 +13,8 @@ L["indicators"] ="Indicators"
 L["Frames"] = true
 L["frame"] = true
 
+L["Default Font"] = true
+
 L["Invert Bar Color"] = true
 L["Swap foreground/background colors on bars."] = true
 
