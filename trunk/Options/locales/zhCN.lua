@@ -653,6 +653,7 @@ L["Voice Chat"] = "语音"
 -- L["Type shield names separated by commas."] = ""
 
 -- boss-shields status
+-- L["Boss"] = ""
 -- L["Supported debuffs"] = ""
 
 -- role related statuses

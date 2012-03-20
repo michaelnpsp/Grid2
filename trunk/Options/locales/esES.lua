@@ -653,6 +653,7 @@ L["Custom Shields"] = "Escudos personalizados"
 L["Type shield names separated by commas."] = "Teclee nombres de escudos separados por comas."
 
 -- boss-shields status
+L["Boss"] = "Jefe"
 L["Supported debuffs"] = "Debuffs soportados"
 
 -- role related statuses

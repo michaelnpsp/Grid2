@@ -653,6 +653,7 @@ L["Custom Shields"] = true
 L["Type shield names separated by commas."] = true
 
 -- boss-shields status
+L["Boss"] = true
 L["Supported debuffs"] = true
 
 -- role related statuses

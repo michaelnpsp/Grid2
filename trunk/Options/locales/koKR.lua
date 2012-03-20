@@ -653,6 +653,7 @@ L["Custom Shields"] = "사용자 보호막"
 L["Type shield names separated by commas."] = "콤마로 분리시켜 보호막의 이름을 입력하세요."
 
 -- boss-shields status
+-- L["Boss"] = ""
 -- L["Supported debuffs"] = ""
 
 -- role related statuses
