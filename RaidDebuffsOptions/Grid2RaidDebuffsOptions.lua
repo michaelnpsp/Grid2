@@ -24,7 +24,6 @@ local optionInstances
 local optionDebuffs
 local optionsDebuffsCache= {}
 
-local tipDebuff
 local newSpellId
 local newDebuffName
 local fmt= string.format
@@ -151,17 +150,7 @@ local GetSpellDescription
 do
 	local lines = {}
 	function GetSpellDescription(spellId)
-		if not tipDebuff then
-			tipDebuff = CreateFrame("GameTooltip", "Grid2RaidDebuffsTooltip", nil, "GameTooltipTemplate")
-			tipDebuff:SetOwner(UIParent, "ANCHOR_NONE")
-			for i = 1, 5 do
-				tipDebuff[i] = _G["Grid2RaidDebuffsTooltipTextLeft"..i]
-				if not tipDebuff[i] then
-					tipDebuff[i] = tipDebuff:CreateFontString()
-					tipDebuff:AddFontStrings(tipDebuff[i], tipDebuff:CreateFontString())
-				end
-			end
-		end
+		local tipDebuff = Grid2Options.Tooltip
 		wipe(lines)
 		tipDebuff:ClearLines()
 		tipDebuff:SetHyperlink("spell:"..spellId)

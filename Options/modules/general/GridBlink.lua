@@ -15,7 +15,7 @@ Grid2Options:AddGeneralOptions( "Misc", "blink", {
 			Grid2Blink.db.profile.type = v
 			Grid2Blink:Update()
 			if f then
-				Grid2Options:MakeStatusesOptions()
+				Grid2Options:MakeStatusesOptions(Grid2Options.statusOptions)
 			end			
 		end,
 		values= {["None"] = L["None"], ["Blink"] = L["Blink"], ["Flash"] = L["Flash"]},

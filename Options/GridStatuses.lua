@@ -99,9 +99,13 @@ do
 				local dbx   = status.dbx
 				local spell = dbx.spellName
 				if spell then -- special case for buffs and debuffs
-					local spellName, _
-					spellName,_,icon = GetSpellInfo( tonumber(spell) or spell ) 
-					desc = string.format( "%s: %s", L[dbx.type], spellName or dbx.spellName )
+					if dbx.auras then
+						desc = dbx.type=="buff" and L["Buffs Group"] or L["Debuffs Group"]
+					else
+						local spellName, _
+						spellName,_,icon = GetSpellInfo( tonumber(spell) or spell )
+						desc = string.format( "%s: %s", L[dbx.type], spellName or dbx.spellName )
+					end
 				elseif dbx.type=="debuffType" then  -- special case for debuff types
 					icon = self.debuffTypeIcons[dbx.subType]
 					desc = L[dbx.type]

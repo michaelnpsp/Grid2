@@ -9,8 +9,8 @@ local BuffSubTypes= {
 			498,   --Divine Protection
 			86657, --Ancient Guardian (It the buff channeled by the Guardian of the Ancient Kings)
 			-- War
-			2565, --Shield Block
-			871, --Shield Wall
+			2565,  --Shield Block
+			871,   --Shield Wall
 			12975, --Last Stand
 			--Druid
 			61336, --Survival Instincts
@@ -61,8 +61,8 @@ local NewAuraHandlerMT = {
 	Init = function (self)
 		self.name = ""
 		self.mine = 1
-		self.colorCount= 1
-		self.spellName= nil
+		self.colorCount = 1
+		self.spellName = nil
 	end,
 	GetKey = function (self)
 		local name = self.name:gsub("[ %.\"]", "")
@@ -129,7 +129,16 @@ local NewAuraHandlerMT = {
 		return self.subType
 	end,
 	SetSubType= function(self,info,value)
-		self.subType= value
+		self.subType = value
+		if type(self.subTypes[value]) == "table" then
+			self.spellName = value
+			self.name = L[value]
+			self.mine = nil
+		else
+			self.spellName = nil
+			self.name = ""
+			self.mine = 1
+		end
 	end,
 	Create = function (self)
 		local baseKey = self:GetKey()
@@ -189,7 +198,7 @@ NewBuffHandler.options = {
 		handler = NewBuffHandler,
 	},
 	newStatusBuffName = {
-		type = "input", dialogControl = Grid2Options.SpellEditDialogControl,
+		type = "input", dialogControl = "EditBoxGrid2Buffs",
 		order = 5.1,
 		width = "full",
 		name = L["Name or SpellId"],
@@ -265,7 +274,7 @@ NewDebuffHandler.options = {
 		handler = NewDebuffHandler,
 	},
 	newStatusDebuffName = {
-		type = "input", dialogControl = Grid2Options.SpellEditDialogControl,
+		type = "input", dialogControl = "EditBoxGrid2Debuffs", 
 		order = 5.2,
 		width = "full",
 		name = L["Name or SpellId"],

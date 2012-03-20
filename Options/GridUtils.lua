@@ -122,11 +122,26 @@ do
 	end
 end	
 
+-- Grid2Options.Tooltip generic tooltip to parse hiperlinks
+do
+	local tip
+	tip = CreateFrame("GameTooltip", "Grid2OptionsTooltip", nil, "GameTooltipTemplate")
+	tip:SetOwner(UIParent, "ANCHOR_NONE")
+	for i = 1, 5 do
+		tip[i] = _G["Grid2OptionsTooltipTextLeft"..i]
+		if not tip[i] then
+			tip[i] = tip:CreateFontString()
+			tip:AddFontStrings(tip[i], tip:CreateFontString())
+		end
+	end
+	Grid2Options.Tooltip = tip
+end
+
 -- Grid2Options:MakeHeaderOptions()
 do
 	local headers = {
 		-- shared headers
-		Delete     = { type = "header", order = 151, name = "" },
+		Delete     = { type = "header", order = 250, name = "" },
 		-- indicators headers
 		Location   = { type = "header", order = 2,   name = L["Location"]   },
 		Appearance = { type = "header", order = 10,  name = L["Appearance"] },
@@ -135,9 +150,12 @@ do
 		StackText  = { type = "header", order = 90,  name = L["Stack Text"] },
 		Cooldown   = { type = "header", order = 125, name = L["Cooldown"]	},
 		-- statuses headers
-		Colors	   = { type = "header", order = 10,  name = L["Colors"]      },
-		Thresholds = { type = "header",	order = 50,  name = L["Thresholds"], },
-		Misc       = { type = "header", order = 100, name = L["Misc"]        },
+		Colors	     = { type = "header", order = 10,  name = L["Colors"]      },
+		Thresholds   = { type = "header", order = 50,  name = L["Thresholds"], },
+		Misc         = { type = "header", order = 100, name = L["Misc"]        },
+		Auras	     = { type = "header", order = 150, name = L["Auras"]       },		
+		DebuffFilter = { type = "header", order = 175, name = L["Filtered debuffs"] },		
+		ClassFilter  = { type = "header", order = 200, name = L["Class Filter"] },
 	}
 	function Grid2Options:MakeHeaderOptions( options, key )
 		options[ "header"..key ] = headers[key]
@@ -161,7 +179,7 @@ end
 do	
 	local titleCoords = { 0.05, 0.95, 0.05, 0.95 }
 	local titleMask   = NORMAL_FONT_COLOR_CODE .. "%s|r\n%s"
-	local titleFooter = { type = "header",	order = 1.1, width = "full", name = "" }
+	local titleFooter = { type = "header",	order = 1.5, width = "full", name = "" }
 	function Grid2Options:MakeTitleOptions(options, text, desc, icon, coords)
 		options.title = {
 			type        = "description",

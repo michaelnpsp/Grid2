@@ -4,6 +4,8 @@ local ColorCountValues = {1,2,3,4,5,6,7,8,9}
 
 local ColorizeByValues= { L["Number of stacks"] , L["Remaining time"] }
 
+local Grid2Blink = Grid2:GetModule("Grid2Blink")
+
 local function StatusAuraGenerateColors(status, newCount)
 	local oldCount = status.dbx.colorCount or 1
 	for i=oldCount+1,newCount do
@@ -34,12 +36,13 @@ local function StatusAuraGenerateColorThreshold(status)
 end
 
 function Grid2Options:MakeStatusClassFilterOptions(status, options, optionParams)
+	self:MakeHeaderOptions( options, "ClassFilter" )
 	options.classFilter = {
 		type = "group",
 		order = 205,
 		inline= true,
-		name = L["Class Filter"],
-		desc = L["Threshold at which to activate the status."],
+		name = "",
+		desc = "",
 		args = {},
 	}
 	for classType, className in pairs(LOCALIZED_CLASS_NAMES_MALE) do
@@ -47,6 +50,7 @@ function Grid2Options:MakeStatusClassFilterOptions(status, options, optionParams
 			type = "toggle",
 			name = className,
 			desc = (L["Show on %s."]):format(className),
+			width = "half",
 			tristate = false,
 			get = function ()
 				return not (status.dbx.classFilter and status.dbx.classFilter[classType])
@@ -76,11 +80,12 @@ end
 
 function Grid2Options:MakeStatusAuraListOptions(status, options, optionParams)
 	if not status.dbx.auras then return end
+	self:MakeHeaderOptions( options, "Auras" )
 	options.auras = {
 		type = "input",
-		order = 1,
+		order = 155,
 		width = "full",
-		name = L["Auras"],
+		name = "",
 		multiline= math.min(8,#status.dbx.auras),
 		get = function()
 				local auras= {}
@@ -102,7 +107,6 @@ function Grid2Options:MakeStatusAuraListOptions(status, options, optionParams)
 			status:UpdateAllIndicators()
 		end,
 	}
-	self:MakeSpacerOptions(options, 10)  -- ORDER = 2
 end
 
 function Grid2Options:MakeStatusAuraMissingOptions(status, options, optionParams)
@@ -125,6 +129,32 @@ function Grid2Options:MakeStatusAuraMissingOptions(status, options, optionParams
 	}
 end
 
+-- Grid2Options:MakeStatusBlinkThresholdOptions()
+function Grid2Options:MakeStatusBlinkThresholdOptions(status, options, optionParams)
+	if Grid2Blink.db.profile.type ~= "None" and (not status.dbx.colorThreshold) then
+		-- self:MakeSpacerOptions( options, 30 )
+		self:MakeHeaderOptions(options, "Thresholds")
+		options.blinkThreshold = {
+			type = "range",
+			order = 51,
+			name = L["Blink"],
+			desc = L["Blink Threshold at which to start blinking the status."],
+			min = 0,
+			max = 30,
+			step = 0.1,
+			bigStep  = 1,
+			get = function ()
+				return status.dbx.blinkThreshold or 0
+			end,
+			set = function (_, v)
+				if v == 0 then v = nil end
+				status.dbx.blinkThreshold = v
+				status:UpdateDB()
+			end,
+		}
+	end
+end
+
 function Grid2Options:MakeStatusAuraUseSpellIdOptions(status, options, optionParams)
 	if not tonumber(status.dbx.spellName) then return end
 	self:MakeHeaderOptions(options, "Misc")
@@ -132,7 +162,7 @@ function Grid2Options:MakeStatusAuraUseSpellIdOptions(status, options, optionPar
 		type = "toggle",
 		name = L["Track by SpellId"], 
 		desc = string.format( "%s (%d) ", L["Track by spellId instead of aura name"], status.dbx.spellName ),
-		order = 105,
+		order = 110,
 		get = function () return status.dbx.useSpellId end,
 		set = function (_, v)
 			status.dbx.useSpellId = v or nil
@@ -214,13 +244,12 @@ function Grid2Options:MakeStatusAuraColorThresholdOptions(status, options, optio
 end
 
 function Grid2Options:MakeStatusDebuffTypeFilterOptions(status, options, optionParams)
-	self:MakeSpacerOptions( options, 50 )
+	self:MakeHeaderOptions( options, "DebuffFilter" )
 	options.debuffFilter = {
 		type = "input",
-		order = 50.5,
+		order = 180,
 		width = "full",
-		name = L["Filtered debuffs"],
-		desc = L["Listed debuffs will be ignored."],
+		name = "", 
 		multiline = status.dbx.debuffFilter and math.max(#status.dbx.debuffFilter,3) or 3,
 		get = function()
 				if status.dbx.debuffFilter then
@@ -256,8 +285,26 @@ function Grid2Options:MakeStatusDebuffTypeFilterOptions(status, options, optionP
 	}
 end
 
+function Grid2Options:MakeStatusAuraDescriptionOptions(status, options, optionParams)
+	if status.dbx.auras then return end
+	local spellID = tonumber(status.dbx.spellName)
+	if not spellID then return end
+	local tip = Grid2Options.Tooltip
+	tip:ClearLines()
+	tip:SetHyperlink("spell:"..spellID)
+	if tip:NumLines() > 1 then
+		options.titleDescription = {
+			type        = "description",
+			order       = 1.2,
+			fontSize    = "small",
+			name        = tip[tip:NumLines()]:GetText(),
+		}
+	end
+end
+
 -- {{ Register
 Grid2Options:RegisterStatusOptions("buff", "buff", function(self, status, options, optionParams)
+	self:MakeStatusAuraDescriptionOptions(status, options, optionParams)
 	self:MakeStatusAuraListOptions(status, options, optionParams)
     self:MakeStatusAuraCommonOptions(status, options, optionParams)	
 	self:MakeStatusAuraMissingOptions(status, options, optionParams)
@@ -270,6 +317,7 @@ Grid2Options:RegisterStatusOptions("buff", "buff", function(self, status, option
 end )
 
 Grid2Options:RegisterStatusOptions("debuff", "debuff", function(self, status, options, optionParams)
+	self:MakeStatusAuraDescriptionOptions(status, options, optionParams)
 	self:MakeStatusAuraListOptions(status, options, optionParams)
 	self:MakeStatusAuraUseSpellIdOptions(status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)

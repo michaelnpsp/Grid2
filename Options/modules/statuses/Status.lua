@@ -121,38 +121,6 @@ function Grid2Options:MakeStatusMissingOptions(status, options, optionParams)
 	}
 end
 
--- Grid2Options:MakeStatusBlinkThresholdOptions()
-do
-	local Grid2Blink = Grid2:GetModule("Grid2Blink")
-	function Grid2Options:MakeStatusBlinkThresholdOptions(status, options, optionParams)
-		if Grid2Blink.db.profile.type ~= "None" and (not status.dbx.colorThreshold) then
-			options.blinkThresholdSpacer = {
-				type = "header",
-				order = 30,
-				name = "",
-			}
-			options.blinkThreshold = {
-				type = "range",
-				order = 31,
-				width = "full",
-				name = L["Blink Threshold"],
-				desc = L["Blink Threshold at which to start blinking the status."],
-				min = 0,
-				max = 30,
-				step = 0.1,
-				get = function ()
-					return status.dbx.blinkThreshold or 0
-				end,
-				set = function (_, v)
-					if v == 0 then v = nil end
-					status.dbx.blinkThreshold = v
-					status:UpdateDB()
-				end,
-			}
-		end
-	end
-end
-
 -- Grid2Options:MakeStatusToggleOptions()
 function Grid2Options:MakeStatusToggleOptions(status, options, optionParams, toggleKey)
 	local name = optionParams and optionParams[toggleKey] or L[toggleKey] or toggleKey
