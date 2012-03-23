@@ -357,13 +357,13 @@ end
 
 local function status_OnDebuffTypeEnable(self)
 	EnableAuraFrame()
-	DebuffHandlers[ self.dbx.subType ] = self
+	DebuffHandlers[ self.subType ] = self
 	StatusList[self]= true
 end
 
 local function status_OnDebuffTypeDisable(self)
 	DisableAuraFrame()
-	DebuffHandlers[ self.dbx.subType ] = nil
+	DebuffHandlers[ self.subType ] = nil
 	StatusList[self]= nil
 end
 
@@ -402,6 +402,7 @@ local function status_UpdateDB(self)
 		end
 	end
 	if dbx.type=="debuffType" then
+		self.subType      = self.dbx.subType
 		self.debuffFilter = self.dbx.debuffFilter
 		self.GetBorder    = Grid2.statusLibrary.GetBorder
 		self.UpdateState  = status_UpdateStateDebuffType
