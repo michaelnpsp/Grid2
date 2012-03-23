@@ -29,13 +29,10 @@ do
 		pet_of_unit[unit] = pet
 		owner_of_unit[pet] = unit
 	end
-
 	register_unit(party_units, "player", "pet")
-
 	for i = 1, MAX_PARTY_MEMBERS do
 		register_unit(party_units, ("party%d"):format(i),("partypet%d"):format(i))
 	end
-
 	for i = 1, MAX_RAID_MEMBERS do
 		register_unit(raid_units, ("raid%d"):format(i),("raidpet%d"):format(i))
 	end
@@ -58,8 +55,7 @@ function Grid2:GetUnitidByGUID(guid)
 end
 
 function Grid2:GetOwnerUnitidByGUID(guid)
-	local unitid = roster_units[guid]
-	return owner_of_unit[unitid]
+	return owner_of_unit[ roster_units[guid] ]
 end
 
 function Grid2:GetPetUnitidByUnitid(unitid)
@@ -110,39 +106,23 @@ do
 			Grid2:HideBlizzardRaidFrames()
 		end
 	end
+	local function GetGroupType(...)
+		local count = GetNumRaidMembers()
+		for i = select("#",...)-1, 1, -1 do 
+			if count > select(i,...) then 
+				return "raid"..select(i+1,...)	
+			end
+		end
+		return GetNumPartyMembers()>0 and "party" or "solo"
+	end
 	function Grid2:GroupChanged(event)
 		local _, instType = IsInInstance()
-		if instType == "none" then
-			local raidMembers = GetNumRaidMembers()
-			if     raidMembers>25 then			instType = "raid40"
-			elseif raidMembers>10 then			instType = "raid25"
-			elseif raidMembers>0  then			instType = "raid10"
-			elseif GetNumPartyMembers()>0 then 	instType = "party"
-			else								instType = "solo"
-			end
-		else
-			if instType == "raid" then
-				local dif = GetRaidDifficulty()
-				instType= (dif == 2 or dif == 4) and "raid25" or "raid10"
-			elseif instType == "pvp" then
-				local raidMembers = GetNumRaidMembers()
-				if raidMembers<11 then		instType = "raid10"
-				elseif raidMembers<16 then	instType = "raid15"
-				else						instType = "raid40"
-				end
-			else
-				local raidMembers = GetNumRaidMembers()
-				if raidMembers>25 then				instType = "raid40"
-				elseif raidMembers>15 then			instType = "raid25"
-				elseif raidMembers>10 then			instType = "raid15"
-				elseif raidMembers>0 then			instType = "raid10"
-				elseif GetNumPartyMembers()>0 then	instType = "party"
-				else								instType = "solo"
-				end
-			end
-			if GetNumPartyMembers() == 0 and GetNumRaidMembers() == 0 then
-				instType = "solo"
-			end
+		if instType == "raid" then
+			instType = GetRaidDifficulty()%2 == 0 and "raid25" or "raid10"
+		elseif instType == "pvp" then
+			instType = GetGroupType(0, 10, 15, 40)
+		elseif instType ~= "arena" then
+			instType = GetGroupType(0, 10, 25, 40)
 		end
 		self:Debug("GroupChanged", groupType, "=>", instType)
 		if groupType ~= instType then
@@ -185,11 +165,8 @@ do
 		if UnitExists(unit) then
 			local name, realm = UnitName(unit)
 			local guid = UnitGUID(unit)
-
 			if realm == "" then realm = nil end
-
 			local updated, exists = false, roster_guids[unit]
-
 			if name ~= roster_names[unit] then
 				roster_names[unit] = name
 				updated = true
@@ -224,7 +201,6 @@ do
 				roster_names[unit] = nil
 				roster_realms[unit] = nil
 				roster_guids[unit] = nil
-
 				local oldUnit = roster_units[oldGuid]
 				if (not UnitExists(oldUnit)) then
 					roster_units[oldGuid] = nil

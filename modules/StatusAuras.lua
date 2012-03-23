@@ -35,6 +35,21 @@ local function MakeStatusColorHandler(status)
 	status.GetColor = assert(loadstring(table.concat(handlerArray)))()
 	wipe(handlerArray)
 end
+
+local function GetStatusKey(self, spellName)
+	return type(spellName)=="number" and (not self.dbx.useSpellId) and GetSpellInfo(spellName) or spellName
+end
+
+local function IterateStatusSpells(status)
+	local auras = status.dbx.auras
+	if auras then
+		local i = 0
+		return function() i=i+1; return auras[i] end
+	else
+		local spell, value = status.dbx.spellName
+		return function() value, spell = spell, nil; return value end
+	end
+end
 --}}
 
 --{{ Timer to refresh auras remaining time 
@@ -145,50 +160,6 @@ do
 			frame:UnregisterEvent("UNIT_AURA")
 		end
 	end
-end
---}}
-
---{{ Debuffs types 
-local DebuffCache = {}
-local DebuffTypeStatus = {}
-
-local DebuffType = {
-	GetBorder = Grid2.statusLibrary.GetBorder,
-	GetColor  = Grid2.statusLibrary.GetColor,
-}
-
-function DebuffType:OnEnable()
-	self:UpdateDB()
-	EnableAuraFrame()
-end
-
-function DebuffType:OnDisable()
-	DisableAuraFrame()
-end
-
-function DebuffType:UpdateDB()
-	self.debuffFilter = self.dbx.debuffFilter
-end
-
-function DebuffType:IsActive(unit)
-	return self.cache[unit] ~= nil
-end
-
-function DebuffType:GetIcon(unit)
-	return self.cache[unit]
-end
-
-function Grid2.CreateDebuffType(baseKey, dbx)
-	local status = Grid2.statusPrototype:new(baseKey, false)
-	local cache = {}
-	local type = dbx.subType
-	DebuffCache[type] = cache
-	DebuffTypeStatus[type] = status
-	status.cache = cache
-	status.debuffType = type
-	status:Inject(DebuffType)
-	Grid2:RegisterStatus(status, { "color", "icon" }, baseKey, dbx)
-	return status
 end
 --}}
 
@@ -314,9 +285,9 @@ local function status_UpdateStateGroup(self, unit, iconTexture, count, duration,
 		self.expirations[unit] = expiration
 		self.counts[unit] = 1
 		self.tracker[unit] = 1
-		self.seen= 1
+		self.seen = 1
 	else
-		self.seen= -1
+		self.seen = -1
 	end
 end
 
@@ -332,71 +303,72 @@ local function status_UpdateStateGroupNotMine(self, unit, iconTexture, count, du
 	end
 end
 
-local function RegisterStatusKey(self, spellName)
-	local key = type(spellName)=="number" and (not self.dbx.useSpellId) and GetSpellInfo(spellName) or spellName
-	self.keys[key] = true
-	return key
-end
-
-local tempList = {}
-local function GetSpellList(self)
-	local auras = self.dbx.auras
-	if not auras then
-		tempList[1] = self.dbx.spellName
-		return tempList
-	end
-	return auras
+local function status_UpdateStateDebuffType(self, unit, iconTexture, count, duration, expiration, name)
+	if self.debuffFilter and self.debuffFilter[name] then return end
+	self.states[unit] = true
+	self.textures[unit] = iconTexture
+	self.durations[unit] = duration
+	self.expirations[unit] = expiration
+	self.counts[unit] = count~=0 and count or 1
+	self.seen = 1
 end
 
 local function status_OnBuffEnable(self)
 	EnableAuraFrame()
 	if self.thresholds then AddTimeTracker(self) end
-	local auras = GetSpellList(self)
-	for _,spellName in next,auras do
-		local key      = RegisterStatusKey(self,spellName)
+	for spellName in IterateStatusSpells(self) do
+		local key      = GetStatusKey(self,spellName)
 		local statuses = BuffHandlers[key]
-		if not statuses then 
-			statuses = {};	BuffHandlers[key] = statuses
-		end
+		if not statuses then statuses = {};	BuffHandlers[key] = statuses end
 		statuses[self] = true
 	end
-	StatusList[self]= true
+	StatusList[self] = true
 end
 
 local function status_OnBuffDisable(self)
 	DisableAuraFrame()
 	if RemoveTimeTracker then RemoveTimeTracker(self) end
-	for key in next,self.keys do
-		BuffHandlers[key][self] = nil
-		if not next(BuffHandlers[key]) then	BuffHandlers[key] = nil	end
+	for key,statuses in pairs(BuffHandlers) do
+		if statuses[self] then 	
+			statuses[self] = nil
+			if not next(statuses) then BuffHandlers[key] = nil end
+		end
 	end
-	wipe(self.keys)
-	StatusList[self]= nil
+	StatusList[self] = nil
 end
 
 local function status_OnDebuffEnable(self)
 	EnableAuraFrame()
 	if self.thresholds then AddTimeTracker(self) end
-	local auras = GetSpellList(self)
-	for _,spellName in next,auras do
-		DebuffHandlers[ RegisterStatusKey( self, spellName ) ] = self
+	for spellName in IterateStatusSpells(self) do
+		DebuffHandlers[ GetStatusKey(self, spellName) ] = self
 	end
-	StatusList[self]= true
+	StatusList[self] = true
 end
 
 local function status_OnDebuffDisable(self)
 	DisableAuraFrame()
 	if RemoveTimeTracker then RemoveTimeTracker(self) end
-	for key in next,self.keys do
-		DebuffHandlers[key][self] = nil
-	end
-	wipe(self.keys)
+	for key,status in pairs(DebuffHandlers) do
+		if self == status then DebuffHandlers[key] = nil end
+	end	
+	StatusList[self] = nil
+end
+
+local function status_OnDebuffTypeEnable(self)
+	EnableAuraFrame()
+	DebuffHandlers[ self.dbx.subType ] = self
+	StatusList[self]= true
+end
+
+local function status_OnDebuffTypeDisable(self)
+	DisableAuraFrame()
+	DebuffHandlers[ self.dbx.subType ] = nil
 	StatusList[self]= nil
 end
 
 local function status_UpdateDB(self)
 	if self.enabled then self:OnDisable() end
-	MakeStatusFilter(self)
 	local dbx = self.dbx
 	if dbx.missing then
 		local _, _, texture    = GetSpellInfo(auras and auras[1] or dbx.spellName )
@@ -426,19 +398,25 @@ local function status_UpdateDB(self)
 		else
 			self.thresholds = nil
 			self.IsActive   = status_IsActive
-			MakeStatusColorHandler(self)			
+			MakeStatusColorHandler(self)
 		end
 	end
-	if dbx.auras then  
-		self.UpdateState =  (dbx.mine==2 and status_UpdateStateGroupNotMine) or
-							(dbx.mine    and status_UpdateStateGroupMine) or
-							 status_UpdateStateGroup
-		
+	if dbx.type=="debuffType" then
+		self.debuffFilter = self.dbx.debuffFilter
+		self.GetBorder    = Grid2.statusLibrary.GetBorder
+		self.UpdateState  = status_UpdateStateDebuffType
 	else
-		self.UpdateState =  (dbx.mine==2 and status_UpdateStateNotMine) or
-							(dbx.mine    and status_UpdateStateMine) or
-							 status_UpdateState
-	end
+		MakeStatusFilter(self)
+		if dbx.auras then  
+			self.UpdateState =  (dbx.mine==2 and status_UpdateStateGroupNotMine) or
+								(dbx.mine    and status_UpdateStateGroupMine) or
+								 status_UpdateStateGroup
+		else
+			self.UpdateState =  (dbx.mine==2 and status_UpdateStateNotMine) or
+								(dbx.mine    and status_UpdateStateMine) or
+								 status_UpdateState
+		end
+	end	
 	if self.enabled then self:OnEnable() end
 end
 --}}
@@ -447,21 +425,26 @@ end
 local function CreateAuraCommon(baseKey, dbx, types)
 	local status = Grid2.statusPrototype:new(baseKey, false)
 
-	status.keys = {}
 	status.states = {}
 	status.textures = {}
 	status.counts = {}
 	status.expirations = {}
 	status.durations = {}
-	status.tracker = {}
 	
 	status.UpdateDB    = status_UpdateDB
 	status.Reset       = status_Reset
 	status.GetCountMax = status_GetCountMax
 	status.GetDuration = status_GetDuration
 	status.GetPercent  = status_GetPercent
-	status.OnEnable    = dbx.type=="buff" and status_OnBuffEnable  or status_OnDebuffEnable
-	status.OnDisable   = dbx.type=="buff" and status_OnBuffDisable or status_OnDebuffDisable
+	
+	if dbx.type == "debuffType" then
+		status.OnEnable  = status_OnDebuffTypeEnable
+		status.OnDisable = status_OnDebuffTypeDisable
+	else
+		status.tracker = {}
+		status.OnEnable  = dbx.type=="buff" and status_OnBuffEnable  or status_OnDebuffEnable
+		status.OnDisable = dbx.type=="buff" and status_OnBuffDisable or status_OnDebuffDisable
+	end
 
 	Grid2:RegisterStatus(status, types, baseKey, dbx)
 	
@@ -479,35 +462,38 @@ function Grid2.CreateDebuff(baseKey, dbx, statusTypesOverride)
 end
 --}}
 
+-- {{ Called from Grid2Options when an aura status is enabled
+function Grid2:RefreshAuras()
+	for unit in Grid2:IterateRosterUnits() do
+		AuraFrame_OnEvent(nil,nil,unit) 
+	end
+end	
+-- }}
+
 --{{ Aura events management
 do
-	local indicators = {}
-	local types = {}
 	local next = next
-	local myUnits = {
-		player = true,
-		pet = true,
-		vehicle = true,
-	}
+	local indicators = {}
+	local myUnits = { player = true, pet = true, vehicle = true }
 	function AuraFrame_OnEvent(_, _, unit)
 		local frames = Grid2:GetUnitFrames(unit)
 		if not next(frames) then return end
-		-- scan Debuffs and find the available debuff types
+		-- scan Debuffs and debuff Types
 		local i = 1
-		while true do 
+		while true do
 			local name, _, iconTexture, count, debuffType, duration, expirationTime, caster, _, _, spellId = UnitDebuff(unit, i)
 			if not name then break end
 			local status = DebuffHandlers[name] or DebuffHandlers[spellId]
 			if status then
 				status:UpdateState(unit, iconTexture, count, duration, expirationTime, myUnits[caster])
 			end
-			i = i + 1
-			if debuffType and (not types[debuffType]) then
-				status = DebuffTypeStatus[debuffType]
-				if not (status and status.debuffFilter and status.debuffFilter[name]) then
-					types[debuffType] = iconTexture
+			if debuffType then
+				status = DebuffHandlers[debuffType]
+				if status and (not status.seen) then
+					status:UpdateState(unit, iconTexture, count, duration, expirationTime, name)
 				end
 			end
+			i = i + 1
 		end
 		-- scan Buffs
 		i = 1
@@ -523,20 +509,7 @@ do
 			end
 			i = i + 1
 		end
-		-- Update the debuff cache and mark indicators that need updating
-		for type, status in next, DebuffTypeStatus do
-			if status.enabled then
-				local debuff = types[type]
-				local cache = DebuffCache[type]
-				if cache[unit] ~= debuff then
-					cache[unit] = debuff
-					for indicator in next, status.indicators do
-						indicators[indicator] = true
-					end
-				end
-			end
-			types[type] = nil
-		end
+		-- Mark indicators that need updating
 		for status in next, StatusList do
 			local seen = status.seen
 			if (seen==1) or ((not seen) and status.states[unit] and status:Reset(unit)) then
@@ -554,19 +527,13 @@ do
 		end
 		wipe(indicators)
 	end
-	-- Needed in Grid2Options to refresh auras when an aura status is enabled
-	function Grid2:RefreshAuras()
-		for unit, _ in Grid2:IterateRosterUnits() do
-			AuraFrame_OnEvent(nil,nil,unit) 
-		end
-	end	
 end
 --}}
 
 --{{ 
-Grid2.setupFunc["debuffType"] = Grid2.CreateDebuffType
 Grid2.setupFunc["buff"]       = Grid2.CreateBuff
 Grid2.setupFunc["debuff"]     = Grid2.CreateDebuff
+Grid2.setupFunc["debuffType"] = Grid2.CreateDebuff
 --}}
 
 --{{ 
