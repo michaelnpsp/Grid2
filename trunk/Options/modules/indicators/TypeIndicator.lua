@@ -101,7 +101,7 @@ function Grid2Options:MakeIndicatorTypeOptions(indicator, options, optionParams)
 	local baseKey = indicator.name
 	options.type = {
 	    type = 'select',
-		order = 200,
+		order = 260,
 		width = "half",
 		name = L["Change type"],
 		desc = L["Change the indicator type"],

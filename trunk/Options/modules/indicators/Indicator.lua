@@ -30,7 +30,7 @@ do
 		self:MakeHeaderOptions( options, "Delete" )
 		options.delete = {
 			type  = "execute",
-			order = 152,
+			order = 255,
 			width  = "half",
 			name  = L["Delete"],
 			desc  = L["Delete this element"],

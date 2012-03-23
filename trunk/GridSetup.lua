@@ -18,7 +18,6 @@ function Grid2:SetupIndicators(setup)
 			Grid2:Debug("SetupIndicators setupFunc not found for indicator: ", dbx.type)
 		end
 	end
-	
 end
 
 function Grid2:SetupStatuses(setup)
@@ -34,7 +33,6 @@ function Grid2:SetupStatuses(setup)
         else
 			 Grid2:Debug("SetupStatuses setupFunc not found for status: ", dbx.type)
 		end
-
 	end
 end
 
@@ -57,8 +55,8 @@ function Grid2:SetupStatusMap(setup)
 end
 
 function Grid2:Setup()
-   local config = Grid2.db.profile
-   Grid2:SetupIndicators(config.indicators)
-   Grid2:SetupStatuses(config.statuses)
-   Grid2:SetupStatusMap(config.statusMap)
+   local db = Grid2.db.profile
+   Grid2:SetupIndicators(db.indicators)
+   Grid2:SetupStatuses(db.statuses)
+   Grid2:SetupStatusMap(db.statusMap)
 end

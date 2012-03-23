@@ -57,10 +57,8 @@ do
 		MakeLayoutOptions( "arena" , "Arena Layout", "Select which layout to use for arenas." )
 		MakeLayoutOptions( "raid10" )
 		MakeLayoutOptions( "raid15" )
-		MakeLayoutOptions( "raid20" )
 		MakeLayoutOptions( "raid25" )
 		MakeLayoutOptions( "raid40" )	
-		MakeLayoutOptions( "pvp" , "Battleground Layout", "Select which layout to use for battlegrounds." )
 		return options
 	end	
 end

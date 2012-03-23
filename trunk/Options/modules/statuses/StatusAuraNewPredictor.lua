@@ -19,7 +19,7 @@ function AuraPredictor:new( type, spells )
 end
 
 function AuraPredictor:Initialize()
-	classNames = {}
+	classNames = { [""] = "" }
 	for class,translation in pairs(LOCALIZED_CLASS_NAMES_MALE) do
 		local c = RAID_CLASS_COLORS[class]
 		classNames[class] = string.format(", |cff%.2x%.2x%.2x%s|r ", c.r*255, c.g*255, c.b*255, translation) 
@@ -28,7 +28,7 @@ function AuraPredictor:Initialize()
 end
 
 function AuraPredictor:GetValues( text, values, max )
-	-- The user can optionally type a prefix, for example: "Druid>Rejuvantion", 
+	-- The user can optionally type a prefix, for example: "Druid>Rejuvenation", 
 	-- so we have to remove the prefix if exists, valid prefix separators: "@#>"
 	local _, suffix = strmatch(text, "^(.-[@#>])(.*)$")
 	text = suffix or text
@@ -42,7 +42,7 @@ function AuraPredictor:GetValues( text, values, max )
 		text = "^" .. strlower(suffix or text)
 		-- search buffs or debuffs
 		for className,spells in pairs(self.spells) do
-			max = self:GetTableValues(spells, values, text, max, classNames[className] and className or nil )
+			max = self:GetTableValues(spells, values, text, max, className )
 			if max == 0 then return end
 		end
 		-- search raid-debuffs if module is available
@@ -58,32 +58,32 @@ function AuraPredictor:GetValues( text, values, max )
 	end
 end
 
-function AuraPredictor:GetValue( text, spellID )
-	-- This is tricky, we dont want to lost the posible prefix typed by the user
-	-- so if exists, append this prefix to the spellID returned. For example:
-	-- "Druid>Rejuvenation" could be converted in "Druid>774" where 774 is the spellID,
-	local prefix, suffix = strmatch(text, "^(.-[@#>])(.*)$")	
-	if spellID then
-		if suffix then
-			if type(spellID)=="string" then
-				spellID = strmatch(spellID, "^.->(.*)$") or spellID
-			end
-			return prefix..spellID
+-- Validation function, its tricky:
+-- key param: two posible types: number | string
+--   number > Its a SpellID,  string > Prefixed spellID, ex: "Mage>10234"
+-- text param: spellID or spellName and could have a prefix too, ex:
+--   "Riptide" | "12304" | "Druid>Rejuvenation" | "Druid>102345"
+-- returns key or text: a prefix is added if exists: text prefix has priority over key prefix.
+-- If a number is provided in text param, validates the value checking if it is a valid spell
+function AuraPredictor:GetValue( text, key )
+	local prefix, suffix = strmatch(text, "^(.-[@#>])(.*)$")
+	if key then
+		if prefix then
+			return prefix .. ( type(key)=="string" and strmatch(key, "^.->(.*)$") or key )
 		else
-			return spellID
-		end
+			return key
+		end	
 	else
-		-- if the text typed is a number, check if is a valid spellID
-		spellID = suffix and tonumber(suffix) or tonumber(text)
-		if not spellID or GetSpellInfo(spellID) then
+		key = suffix and tonumber(suffix) or tonumber(text)
+		if not key or GetSpellInfo(key) then
 			return text
 		end	
 	end	
 end
 
-function AuraPredictor:GetHyperlink( spellID )
-	spellID = type(spellID) == "string" and strmatch(spellID, "^.->(.*)$") or spellID
-	return "spell:"..spellID
+function AuraPredictor:GetHyperlink( key )
+	key = type(key) == "string" and strmatch(key, "^.->(.*)$") or key
+	return "spell:"..key
 end
 
 function AuraPredictor:GetTableValues(spells, values, text, max, category, isBoss)
@@ -91,7 +91,7 @@ function AuraPredictor:GetTableValues(spells, values, text, max, category, isBos
 		local spellName,_,spellIcon = GetSpellInfo(spellID)
 		if spellName and strmatch(strlower(spellName), text) then
 			local key = self:GetSpellKey(spellID, category, isBoss)
-			values[ key] = self:GetSpellDescription(spellID, spellName, spellIcon, category, isBoss)
+			values[key] = self:GetSpellDescription(spellID, spellName, spellIcon, category, isBoss)
 			max = max - 1; if max == 0 then break end
 		end
 	end
@@ -100,7 +100,7 @@ end
 
 function AuraPredictor:GetSpellKey(spellID, category)
 	if self.type=="debuff" then
-		local key = category and LOCALIZED_CLASS_NAMES_MALE[category] or category
+		local key = LOCALIZED_CLASS_NAMES_MALE[category] or category
 		return key and key..">"..spellID or spellID
 	else
 		return spellID
@@ -108,11 +108,7 @@ function AuraPredictor:GetSpellKey(spellID, category)
 end
 
 function AuraPredictor:GetSpellDescription(spellID, spellName, spellIcon, className, isBoss)
-	if isBoss then  
-		className = string.format( ", |TInterface\\TargetingFrame\\UI-TargetingFrame-Skull:0|t|cFFff0000%s|r ", className) 
-	else
-		className = className and classNames[className] or ""
-	end	
+	className = isBoss and string.format( ", |TInterface\\TargetingFrame\\UI-TargetingFrame-Skull:0|t|cFFff0000%s|r ", className) or classNames[className]
 	return string.format( "|T%s:0|t%s %s, %s%d|r", spellIcon, spellName, className, GRAY_FONT_COLOR_CODE, spellID )
 end
 
