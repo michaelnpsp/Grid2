@@ -293,7 +293,7 @@ function Grid2Options:MakeStatusAuraDescriptionOptions(status, options, optionPa
 	tip:ClearLines()
 	tip:SetHyperlink("spell:"..spellID)
 	if tip:NumLines() > 1 then
-		options.titleDescription = {
+		options.titleDesc = {
 			type        = "description",
 			order       = 1.2,
 			fontSize    = "small",

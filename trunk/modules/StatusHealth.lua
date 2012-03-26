@@ -9,7 +9,7 @@ local HealthLow = Grid2.statusPrototype:new("health-low",false)
 local FeignDeath = Grid2.statusPrototype:new("feign-death", false)
 local HealthDeficit = Grid2.statusPrototype:new("health-deficit", false)
 local Death = Grid2.statusPrototype:new("death", false)
-local Heals = Grid2.statusPrototype:new("heals-incoming", false)
+local Heals = Grid2.statusPrototype:new("heals-incoming")
 
 local Grid2 = Grid2
 local GetTime = GetTime
@@ -322,6 +322,10 @@ local function HealsUpdateEvent(unit)
 	end
 end
 
+function Heals:Grid_RosterUpdated()
+	wipe(heals_cache)
+end
+
 function Heals:UpdateDB()
 	local m= self.dbx.flags
 	self.minimum= (m and m>1 and m ) or 1
@@ -331,12 +335,14 @@ end
 function Heals:OnEnable()
 	Health_Enable(self)
 	RegisterEvent("UNIT_HEAL_PREDICTION", HealsUpdateEvent)
+	self:RegisterMessage("Grid_RosterUpdated")
 	self:UpdateDB()
 end
 
 function Heals:OnDisable()
 	wipe(heals_cache)
 	UnregisterEvent("UNIT_HEAL_PREDICTION")
+	self:UnregisterMessage("Grid_RosterUpdated")
 	Health_Disable(self)
 end
 

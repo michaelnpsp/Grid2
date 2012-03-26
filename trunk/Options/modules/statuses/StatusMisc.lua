@@ -5,26 +5,26 @@ local L = Grid2Options.L
 Grid2Options:RegisterStatusOptions("name", "hidden")
 
 Grid2Options:RegisterStatusOptions("afk", "misc", nil, {
-  titleIcon = "Interface\\ICONS\\Spell_nature_sleep"
+	titleIcon = "Interface\\ICONS\\Spell_nature_sleep"
 })
 
 Grid2Options:RegisterStatusOptions("voice", "misc", nil, {
-  titleIcon = "Interface\\COMMON\\VOICECHAT-SPEAKER"
+	titleIcon = "Interface\\COMMON\\VOICECHAT-SPEAKER"
 })
 
 Grid2Options:RegisterStatusOptions("offline", "misc", nil, {
-  titleIcon = "Interface\\CharacterFrame\\Disconnect-Icon",
-  titleIconCoords = { 0.3,0.7,0.2,0.8},
+	titleIcon = "Interface\\CharacterFrame\\Disconnect-Icon",
+	titleIconCoords = {0.3,0.7,0.2,0.8},
 })
 
 Grid2Options:RegisterStatusOptions("vehicle", "misc", nil, {
-  titleIcon = "Interface\\Vehicles\\UI-Vehicles-Button-Exit-Up",
-  titleIconCoords = { 0.2,0.8,0.2,0.8},
+	titleIcon = "Interface\\Vehicles\\UI-Vehicles-Button-Exit-Up",
+	titleIconCoords = {0.2,0.8,0.2,0.8},
 })
 
 Grid2Options:RegisterStatusOptions("target", "target", nil, {
-  titleIcon = "Interface\\Icons\\Ability_hunter_mastermarksman",
-  titleDesc = L["highlights your target"],
+	title = L["highlights your target"],
+	titleIcon = "Interface\\Icons\\Ability_hunter_mastermarksman",
 } )
 
 Grid2Options:RegisterStatusOptions("pvp", "combat", nil, {

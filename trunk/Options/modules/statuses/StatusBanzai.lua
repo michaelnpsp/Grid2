@@ -17,11 +17,11 @@ local function MakeOptions(self, status, options, optionParams)
 end
 
 Grid2Options:RegisterStatusOptions("banzai", "combat", MakeOptions, {
-	titleDesc = L["hostile casts against raid members"],
+	title = L["hostile casts against raid members"],
 	titleIcon = "Interface\\Icons\\Spell_shadow_deathscream"
 })
 
 Grid2Options:RegisterStatusOptions("banzai-threat", "combat", MakeOptions, {
-	titleDesc = L["advanced threat detection"],
+	title = L["advanced threat detection"],
 	titleIcon = "Interface\\Icons\\Spell_shadow_deathscream"
 })

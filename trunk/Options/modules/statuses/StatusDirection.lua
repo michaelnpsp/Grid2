@@ -60,7 +60,7 @@ Grid2Options:RegisterStatusOptions( "direction", "target", function(self, status
 		end,
 	}
 end, {
+	title = L["arrows pointing to each raid member"],
 	titleIcon = "Interface\\Vehicles\\Arrow",
 	titleIconCoords = {0.1,1,0,1},
-	titleDesc = L["arrows pointing to each raid member"],
 })
