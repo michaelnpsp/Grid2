@@ -80,6 +80,7 @@ end
 function RaidIcon:OnEnable()
 	self:RegisterEvent( "RAID_TARGET_UPDATE", "UpdateAllUnits" )
 	self:RegisterMessage( "Grid_UnitUpdated" )
+	self:RegisterMessage( "Grid_UnitLeft", "Grid_UnitUpdated" )
 	if self.dbx.type=="raid-icon-target" then self:RegisterEvent("UNIT_TARGET", "UpdateUnit") end
 end
 
@@ -87,6 +88,7 @@ function RaidIcon:OnDisable()
 	wipe(self.cache)
 	self:UnregisterEvent( "RAID_TARGET_UPDATE" )
 	self:UnregisterMessage( "Grid_UnitUpdated" )
+	self:UnregisterMessage( "Grid_UnitLeft" )
 	if self.dbx.type=="raid-icon-target" then self:UnregisterEvent("UNIT_TARGET") end
 end
 

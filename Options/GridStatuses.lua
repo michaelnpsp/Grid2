@@ -66,7 +66,7 @@ function Grid2Options:AddStatusCategoryOptions(catKey, category)
 			category.title = category.name
 		end
 		if category.title then
-			self:MakeTitleOptions(options, category.title, category.desc or group.desc, category.icon )
+			self:MakeTitleOptions(options, category.title, category.desc or group.desc, nil, category.icon )
 		end
 		self.statusOptions[catKey] = group
 	end
@@ -111,7 +111,7 @@ do
 					desc = L[dbx.type]
 				end
 				name   = self.LocalizeStatus(status, true)
-				desc   = desc or (params and params.titleDesc) or L["Options for %s."]:format(name)
+				desc   = desc or (params and params.title) or L["Options for %s."]:format(name)
 				icon   = icon or (params and params.titleIcon) or category.icon
 				coords = params and params.titleIconCoords or iconCoords
 				return catGroup, name, desc, icon, coords, params
@@ -120,7 +120,7 @@ do
 	end
 end
 
--- Grid2Options:GetStatusCompIndicatorsText(status)
+-- Generates a text with the status compatible indicators icons
 function Grid2Options:GetStatusCompIndicatorsText(status)
 	local icons, text = self.statusTypesIcons, ""
 	for type,statuses in pairs(Grid2.statusTypes) do
@@ -142,7 +142,7 @@ function Grid2Options:MakeStatusTitleOptions(status, options, optionParams)
 	if not (options.title or (optionParams and optionParams.hideTitle) ) then
 		local group = self:GetStatusGroup(status)
 		local name = fmt( "%s  |cFF8681d1[%s]|r", group.name, self:GetStatusCompIndicatorsText(status) )
-		self:MakeTitleOptions(options, name, group.desc, group.icon, group.iconCoords)
+		self:MakeTitleOptions(options, name, group.desc, optionParams and optionParams.titleDesc, group.icon, group.iconCoords)
 	end	
 end
 
@@ -159,6 +159,12 @@ end
 -- {{ Published methods
 
 -- Register options for a status
+-- Variables to control title appearance in optionParams:
+--   title = string        subtitle text (title text is always the status name)
+--   titleDesc = string    description/comments
+--   titleIcon = string    icon path
+--   titleIconCoords = {}  icon texture coordinates
+--   hideTitle = boolean   true to cancel the creation of title options
 function Grid2Options:RegisterStatusOptions( type, categoryKey, funcMakeOptions, optionParams)
 	if funcMakeOptions then self.typeMakeOptions[type] = funcMakeOptions end
 	if optionParams    then self.optionParams[type]    = optionParams    end
@@ -166,6 +172,7 @@ function Grid2Options:RegisterStatusOptions( type, categoryKey, funcMakeOptions,
 end
 
 -- Register a status category
+-- See params table structure in Grid2Options.categories table above
 function Grid2Options:RegisterStatusCategory(catKey, params)
 	self.categories[catKey] = params
 end
@@ -205,12 +212,13 @@ function Grid2Options:DeleteStatusOptions(catKey, status)
 	self.statusOptions[catKey].args[status.name] = nil
 end
 
--- Create options for all statuses (dont remove options param is used by openmanager)
+-- Create options for all statuses 
+-- Don't remove options param is used by LoadOnDemand code that hooks this function
 function Grid2Options:MakeStatusesOptions(options)
 	-- remove old options
 	options = options or self.statusOptions; wipe(options)
 	-- title for statuses section
-	self:MakeTitleOptions(options, L["statuses"], L["available statuses"], "Interface\\Addons\\Grid2\\media\\icon")
+	self:MakeTitleOptions(options, L["statuses"], L["available statuses"], nil, "Interface\\Addons\\Grid2\\media\\icon")
 	-- make categories options
 	for key,category in pairs(self.categories) do
 		self:AddStatusCategoryOptions( key, category )

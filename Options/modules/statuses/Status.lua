@@ -140,6 +140,3 @@ end
 
 -- Grid2Options:MakeStatusStandardOptions()
 Grid2Options.MakeStatusStandardOptions = Grid2Options.MakeStatusColorOptions
-
--- No options for the status
-Grid2Options.MakeStatusNoOptions = Grid2.Dummy

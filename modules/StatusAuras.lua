@@ -163,7 +163,7 @@ do
 end
 --}}
 
---{{ Auras methods
+--{{ Methods shared by different status types
 local function status_Reset(self, unit)
 	self.states[unit] = nil
 	self.counts[unit] = nil
@@ -193,7 +193,7 @@ local function status_IsActiveBlink(self, unit)
 	end
 end
 
-local function status_IsInactiveBlink(self, unit) -- A missing active status has no expiration time, always returns blink when is active
+local function status_IsInactiveBlink(self, unit) -- A missing active status has no expiration, always returns blink
 	local filtered = self.filtered
 	if filtered and filtered[unit] then return end
 	return not self.states[unit] and "blink"
@@ -302,17 +302,9 @@ local function status_UpdateStateGroupNotMine(self, unit, iconTexture, count, du
 		status_UpdateStateGroup(self, unit,iconTexture, count, duration, expiration)
 	end
 end
+-- }}
 
-local function status_UpdateStateDebuffType(self, unit, iconTexture, count, duration, expiration, name)
-	if self.debuffFilter and self.debuffFilter[name] then return end
-	self.states[unit] = true
-	self.textures[unit] = iconTexture
-	self.durations[unit] = duration
-	self.expirations[unit] = expiration
-	self.counts[unit] = count~=0 and count or 1
-	self.seen = 1
-end
-
+-- {{ Buff & BuffGroup
 local function status_OnBuffEnable(self)
 	EnableAuraFrame()
 	if self.thresholds then AddTimeTracker(self) end
@@ -336,7 +328,9 @@ local function status_OnBuffDisable(self)
 	end
 	StatusList[self] = nil
 end
+-- }}
 
+-- {{ Debuff & DebuffGroup
 local function status_OnDebuffEnable(self)
 	EnableAuraFrame()
 	if self.thresholds then AddTimeTracker(self) end
@@ -354,19 +348,33 @@ local function status_OnDebuffDisable(self)
 	end	
 	StatusList[self] = nil
 end
+-- }}
 
+-- {{ DebuffType
 local function status_OnDebuffTypeEnable(self)
 	EnableAuraFrame()
 	DebuffHandlers[ self.subType ] = self
-	StatusList[self]= true
+	StatusList[self] = true
 end
 
 local function status_OnDebuffTypeDisable(self)
 	DisableAuraFrame()
 	DebuffHandlers[ self.subType ] = nil
-	StatusList[self]= nil
+	StatusList[self] = nil
 end
 
+local function status_UpdateStateDebuffType(self, unit, iconTexture, count, duration, expiration, name)
+	if self.debuffFilter and self.debuffFilter[name] then return end
+	self.states[unit] = true
+	self.textures[unit] = iconTexture
+	self.durations[unit] = duration
+	self.expirations[unit] = expiration
+	self.counts[unit] = count~=0 and count or 1
+	self.seen = 1
+end
+-- }}
+
+-- {{ UpdateDB shared by all statuses
 local function status_UpdateDB(self)
 	if self.enabled then self:OnDisable() end
 	local dbx = self.dbx

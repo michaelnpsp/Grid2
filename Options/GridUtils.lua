@@ -175,24 +175,21 @@ do
 	end
 end
 
--- Grid2:MakeTitleOptions(title, subtitle, options)	
+-- Grid2:MakeTitleOptions(options, title, subtitle, desc, icon, coords)
 do	
 	local titleCoords = { 0.05, 0.95, 0.05, 0.95 }
 	local titleMask   = NORMAL_FONT_COLOR_CODE .. "%s|r\n%s"
-	local titleFooter = { type = "header",	order = 1.5, width = "full", name = "" }
-	function Grid2Options:MakeTitleOptions(options, text, desc, icon, coords)
+	local titleSep    = { type = "header",	order = 1.5, width = "full", name = "" }
+	function Grid2Options:MakeTitleOptions(options, title, subtitle, desc, icon, coords)
 		options.title = {
-			type        = "description",
-			order       = 1,
-			width       = "full",
-			fontSize    = "large",
-			image       = icon,
-			imageWidth  = 30,
-			imageHeight = 30,
-			imageCoords = coords or titleCoords,
-			name        = string.format(titleMask, text, desc),
+			type  = "description", order = 1, width = "full", fontSize = "large", 
+			image = icon, imageWidth  = 30, imageHeight = 30, imageCoords = coords or titleCoords,
+			name  = string.format(titleMask, title, subtitle),
 		}
-		options.titlefooter = titleFooter
+		if desc then
+			options.titleDesc = { type = "description", order = 1.2, fontSize = "small", name = desc }
+		end
+		options.titleSep = titleSep
 	end
 end
 

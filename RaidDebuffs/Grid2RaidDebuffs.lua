@@ -43,8 +43,7 @@ function GSRD:OnModuleDisable()
 end
 
 function GSRD:UpdateZoneSpells(event)
-	local zone = IsInInstance() and GetInstanceInfo() or GetRealZoneText()
-	zone = zone and BZ[zone] or zone
+	local zone = self:GetCurrentZone()
 	if zone==curzone and event then return end
 	self:ResetZoneSpells(zone)
 	for status in next,statuses do
@@ -52,6 +51,19 @@ function GSRD:UpdateZoneSpells(event)
 	end
 	self:UpdateEvents()
 	self:ClearAllIndicators()
+end
+
+function GSRD:GetCurrentZone()
+	local zone, instance, realZone
+	if IsInInstance() then
+		instance = GetInstanceInfo()
+		zone = instance and BZ[instance]
+	end
+	if not zone then
+		realZone = GetRealZoneText()
+		zone = realZone and BZ[realZone]
+	end
+	return zone or instance or realZone
 end
 
 function GSRD:ClearAllIndicators()

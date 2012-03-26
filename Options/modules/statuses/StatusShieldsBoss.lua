@@ -24,6 +24,6 @@ end, {
 	colorDesc2 = L["Medium shield color"],
 	color3 = L["Low"],    
 	colorDesc3 = L["Low shield color"],
-	titleDesc = L["display remaining amount of heal absorb shields"],
+	title = L["display remaining amount of heal absorb shields"],
 	titleIcon = "Interface\\Icons\\spell_fire_ragnaros_lavabolt",
 })
