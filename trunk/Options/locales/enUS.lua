@@ -84,6 +84,13 @@ L["Position and Anchor"] = true
 L["Sets where groups are anchored relative to the layout frame."] = true
 L["Resets the layout frame's position and anchor."] = true
 
+L["Frame Strata"] = true
+L["Sets the strata in which the layout frame should be layered."] = true
+L["BACKGROUND"] = true
+L["LOW"] = true
+L["MEDIUM"] = true
+L["HIGH"] = true
+
 --blink
 L["Misc"] = true
 L["blink"] = true

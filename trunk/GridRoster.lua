@@ -58,28 +58,28 @@ function Grid2:GetOwnerUnitidByGUID(guid)
 	return owner_of_unit[ roster_units[guid] ]
 end
 
-function Grid2:GetPetUnitidByUnitid(unitid)
-	return pet_of_unit[unitid]
+function Grid2:IsGUIDInRaid(guid)
+	return roster_units[guid]
+end
+
+function Grid2:GetPetUnitByUnit(unit)
+	return pet_of_unit[unit]
 end
 
 function Grid2:GetOwnerUnitByUnit(unit)
 	return owner_of_unit[unit]
 end
 
-function Grid2:IsGUIDInRaid(guid)
-	return roster_units[guid]
+function Grid2:IsUnitInRaid(unit)
+	return roster_guids[unit]
 end
 
-function Grid2:IterateRoster()
-	return next, roster_units
+function Grid2:IsUnitNoPetInRaid(unit)
+	return roster_guids[unit] and pet_of_unit[unit]
 end
 
-function Grid2:IterateRosterUnits()
-	return next, roster_guids
-end
-
-function Grid2:UnitIsPet(unitid)
-	return owner_of_unit[unitid]
+function Grid2:UnitIsPet(unit)
+	return owner_of_unit[unit]
 end
 
 function Grid2:UnitIsParty(unit)
@@ -92,6 +92,14 @@ function Grid2:UnitIsRaid(unit)
 	for _, v in next, raid_units do
 		if unit == v then return true end
 	end
+end
+
+function Grid2:IterateRoster()
+	return next, roster_units
+end
+
+function Grid2:IterateRosterUnits()
+	return next, roster_guids
 end
 
 -- Events to track raid type changes
@@ -304,4 +312,5 @@ end
 --{{ Publish tables used by some statuses
 Grid2.party_units = party_units
 Grid2.raid_units  = raid_units
+Grid2.roster_units = roster_units
 --}}

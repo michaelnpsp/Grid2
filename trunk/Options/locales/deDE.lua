@@ -84,6 +84,13 @@ L["Position and Anchor"] = "Position und Ankerpunkt"
 L["Sets where groups are anchored relative to the layout frame."] = "Legt fest, wo die Gruppen im Verhältnis zum Bildschirm befestigt werden soll."
 L["Resets the layout frame's position and anchor."] = "Die Fensterpositionen und Ankerpunkte des Layout zurücksetzen."
 
+-- L["Frame Strata"] = ""
+-- L["Sets the strata in which the layout frame should be layered."] = ""
+-- L["BACKGROUND"] = ""
+-- L["LOW"] = ""
+-- L["MEDIUM"] = ""
+-- L["HIGH"] = ""
+
 --blink
 L["Misc"] = "Sonstige"
 L["blink"] = "Blink"

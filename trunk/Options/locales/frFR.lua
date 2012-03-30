@@ -84,6 +84,13 @@ L["Position and Anchor"] = "Position et Ancrage"
 L["Sets where groups are anchored relative to the layout frame."] = "Défini l'ancrage des groupes par rapport au cadre de la grille."
 L["Resets the layout frame's position and anchor."] = "Réinitialise la position et l'ancrage du cadre de la grille."
 
+-- L["Frame Strata"] = ""
+-- L["Sets the strata in which the layout frame should be layered."] = ""
+-- L["BACKGROUND"] = ""
+-- L["LOW"] = ""
+-- L["MEDIUM"] = ""
+-- L["HIGH"] = ""
+
 --blink
 L["Misc"] = "Divers"
 L["blink"] = "Clignotement"

@@ -84,6 +84,13 @@ L["Position and Anchor"] = "Позиция и якорь"
 L["Sets where groups are anchored relative to the layout frame."] = "Настройка местоположения якорей групп относительно расположения области."
 L["Resets the layout frame's position and anchor."] = "Обновляет позицию области и якоря."
 
+-- L["Frame Strata"] = ""
+-- L["Sets the strata in which the layout frame should be layered."] = ""
+-- L["BACKGROUND"] = ""
+-- L["LOW"] = ""
+-- L["MEDIUM"] = ""
+-- L["HIGH"] = ""
+
 --blink
 L["Misc"] = "Разное"
 L["blink"] = "Мигание"

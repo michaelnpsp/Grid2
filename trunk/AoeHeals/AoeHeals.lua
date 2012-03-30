@@ -344,8 +344,6 @@ AOEM.setupFunc = {}
 AOEM.hlStatuses = hlStatuses
 AOEM.statuses   = statuses
 
--- Grid2.setupFunc["aoe-heal"] = Create
-
 --{{ Module methods
 function AOEM:OnModuleInitialize()
 	for key in next,self.setupFunc do
