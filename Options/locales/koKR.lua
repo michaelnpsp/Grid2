@@ -84,6 +84,13 @@ L["Position and Anchor"] = "위치와 앵커"
 L["Sets where groups are anchored relative to the layout frame."] = "그룹 배치 창의 위치를 설정합니다."
 L["Resets the layout frame's position and anchor."] = "배경 창의 위치와 앵커를 초기화 합니다."
 
+-- L["Frame Strata"] = ""
+-- L["Sets the strata in which the layout frame should be layered."] = ""
+-- L["BACKGROUND"] = ""
+-- L["LOW"] = ""
+-- L["MEDIUM"] = ""
+-- L["HIGH"] = ""
+
 --blink
 L["Misc"] = "기타"
 L["blink"] = "깜박임"

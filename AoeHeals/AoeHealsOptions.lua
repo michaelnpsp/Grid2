@@ -33,18 +33,20 @@ do
 					local auras = {}
 					wipe(prev_spells)
 					for _,spell in pairs(status.dbx.spells) do
-						local name        = GetSpellInfo(spell)
-						auras[#auras+1]   = name
-						prev_spells[name] = spell
+						local name = GetSpellInfo(spell)
+						if name then 
+							auras[#auras+1] = name
+							prev_spells[name] = spell
+						end
 					end
 					return table.concat( auras, "\n" )
 			end,
 			set = function(_, v) 
 				wipe(status.dbx.spells)
-				local auras= { strsplit("\n,", v) }
+				local auras = { strsplit("\n,", v) }
 				for i,v in pairs(auras) do
-					local aura= strtrim(v)
-					if #aura>0 then
+					local aura = strtrim(v)
+					if #aura>0 and GetSpellInfo(aura) then
 						table.insert(status.dbx.spells, tonumber(aura) or prev_spells[aura] or aura )
 					end
 				end	

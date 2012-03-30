@@ -172,5 +172,4 @@ elseif AOEM.playerClass == "DRUID" then
 		hideOnCooldown = true, healthDeficit = 10000, minPlayers = 5,	maxSolutions = 1, radius = 30, keepPrevHeals = true,
 		color1 = {r=0, g=1, b=0, a=1}, 
 	})
-	print("===========> DRUID")
 end

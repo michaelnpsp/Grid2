@@ -8,8 +8,8 @@ local HealthCurrent = Grid2.statusPrototype:new("health-current", false)
 local HealthLow = Grid2.statusPrototype:new("health-low",false)
 local FeignDeath = Grid2.statusPrototype:new("feign-death", false)
 local HealthDeficit = Grid2.statusPrototype:new("health-deficit", false)
-local Death = Grid2.statusPrototype:new("death", false)
-local Heals = Grid2.statusPrototype:new("heals-incoming")
+local Heals = Grid2.statusPrototype:new("heals-incoming", false)
+local Death = Grid2.statusPrototype:new("death", true)
 
 local Grid2 = Grid2
 local GetTime = GetTime
@@ -34,7 +34,7 @@ local function UpdateIndicators(unit)
 end
 
 -- Events management
-local RegisterEvent, UnregisterEvent, EnableTimer, DisableTimer
+local RegisterEvent, UnregisterEvent
 do
 	local frame
 	local Events = {}
@@ -57,18 +57,12 @@ do
 			end
 		end
 	end
-	function EnableTimer(func, delay)
-		local t = delay
-		frame:SetScript("OnUpdate",	function(_,e) t = t - e; if t<=0 then t = delay; func() end end)
-	end
-	function DisableTimer()
-		frame:SetScript("OnUpdate",nil)
-	end
 end
 
 -- Quick/Instant Health management
 local EnableQuickHealth, DisableQuickHealth
 do
+	local roster_units = Grid2.roster_units
 	local UnitHealthOriginal = UnitHealth
 	local min = math.min
 	local max = math.max
@@ -94,13 +88,13 @@ do
 	local function CombatLogEvent(...)
 		local sign = HealthEvents[select(2,...)] 
 		if sign then
-			local unit = Grid2:GetUnitidByGUID( select(8,...) )
+			local unit = roster_units[select(8,...)]
 			if unit and strlen(unit)<8 then  
 				local health
 				if sign>0 then
-					health = min( UnitQuickHealth(unit) + select(sign,...), UnitHealthMax(unit) )
+					health = min( (health_cache[unit] or UnitHealthOriginal(unit)) + select(sign,...), UnitHealthMax(unit) )
 				elseif sign<0 then
-					health = max( UnitQuickHealth(unit) - select(-sign,...), 0 )
+					health = max( (health_cache[unit] or UnitHealthOriginal(unit)) - select(-sign,...), 0 )
 				end	
 				if health~=health_cache[unit] then
 					health_cache[unit] = health
@@ -162,6 +156,12 @@ end
 HealthCurrent.OnEnable  = Health_Enable
 HealthCurrent.OnDisable = Health_Disable
 HealthCurrent.IsActive  = Grid2.statusLibrary.IsActive
+
+function HealthCurrent:UpdateDeath(unit)
+	if self.enabled and self.deadAsFullHealth then
+		self:UpdateIndicators(unit)
+	end
+end
 
 function HealthCurrent:GetPercent(unit)
 	if (self.deadAsFullHealth and UnitIsDeadOrGhost(unit)) then
@@ -322,27 +322,28 @@ local function HealsUpdateEvent(unit)
 	end
 end
 
-function Heals:Grid_RosterUpdated()
-	wipe(heals_cache)
+function Heals:UpdateDeath(unit)
+	if self.enabled and heals_cache[unit]~=0 then
+		heals_cache[unit] = 0
+		self:UpdateIndicators(unit)
+	end
 end
 
 function Heals:UpdateDB()
-	local m= self.dbx.flags
-	self.minimum= (m and m>1 and m ) or 1
+	local m = self.dbx.flags
+	self.minimum = (m and m>1 and m ) or 1
 	Heals_GetHealAmount = self.dbx.includePlayerHeals and Heals_get_with_user or Heals_get_without_user
 end
 
 function Heals:OnEnable()
 	Health_Enable(self)
 	RegisterEvent("UNIT_HEAL_PREDICTION", HealsUpdateEvent)
-	self:RegisterMessage("Grid_RosterUpdated")
 	self:UpdateDB()
 end
 
 function Heals:OnDisable()
 	wipe(heals_cache)
 	UnregisterEvent("UNIT_HEAL_PREDICTION")
-	self:UnregisterMessage("Grid_RosterUpdated")
 	Health_Disable(self)
 end
 
@@ -375,49 +376,44 @@ Grid2.setupFunc["heals-incoming"] = Create
 Grid2:DbSetStatusDefaultValue( "heals-incoming", {type = "heals-incoming", includePlayerHeals = false, flags = 0, color1 = {r=0,g=1,b=0,a=1}})
 
 -- death status
-local dead_cache = {}
 local textDeath = L["DEAD"]
 local textGhost = L["GHOST"]
+local dead_cache = {}
 
 Death.GetColor = Grid2.statusLibrary.GetColor
 
-local function DeathTimerEvent()
-	for unit in next, dead_cache do
-		if not UnitIsDeadOrGhost(unit) then
-			dead_cache[unit] = nil
-			Death:UpdateIndicators(unit)
+local function DeathUpdateUnit(unit, noUpdate)
+	local new = UnitIsDeadOrGhost(unit) and (UnitIsGhost(unit) and textGhost or textDeath) or false
+	if new ~= dead_cache[unit] then
+		dead_cache[unit] = new
+		if not noUpdate then 
+			if new then
+				Heals:UpdateDeath(unit)
+				HealthCurrent:UpdateDeath(unit)
+			end	
+			Death:UpdateIndicators(unit) 
 		end
 	end
-	if not next(dead_cache) then DisableTimer()	end	
 end
 
-local function DeathUpdateEvent(unit)
-	if UnitIsDeadOrGhost(unit) then
-		local dead = UnitIsGhost(unit) and textGhost or textDeath
-		if dead ~= dead_cache[unit] then
-			if not next(dead_cache) then EnableTimer(DeathTimerEvent,1) end	
-			dead_cache[unit] = dead
-			Death:UpdateIndicators(unit)
-			if HealthCurrent.enabled and HealthCurrent.deadAsFullHealth then
-				HealthCurrent:UpdateIndicators(unit)
-			end
-			if Heals.enabled and heals_cache[unit]~=0 then
-				heals_cache[unit] = 0
-				Heals:UpdateIndicators(unit)
-			end
-		end	
-	elseif dead_cache[unit] then
-		dead_cache[unit] = nil
-		Death:UpdateIndicators(unit)
-	end
+function Death:Grid_UnitUpdated(_, unit)
+	DeathUpdateUnit(unit, true)	
+end
+	
+function Death:Grid_UnitLeft(_, unit)
+	dead_cache[unit] = nil
 end
 
 function Death:OnEnable()
-	RegisterEvent( "UNIT_HEALTH", DeathUpdateEvent )
+	RegisterEvent( "UNIT_HEALTH", DeathUpdateUnit )
+	self:RegisterMessage("Grid_UnitUpdated")
+	self:RegisterMessage("Grid_UnitLeft")
 end
 
 function Death:OnDisable()
 	UnregisterEvent( "UNIT_HEALTH" )
+	self:UnregisterMessage("Grid_UnitUpdated")
+	self:UnregisterMessage("Grid_UnitLeft")
 	wipe(dead_cache)
 end
 

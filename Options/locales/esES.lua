@@ -84,6 +84,13 @@ L["Position and Anchor"] = "Posición y anclaje"
 L["Sets where groups are anchored relative to the layout frame."] = "Indica donde se anclarán los grupos con respecto a la ventana del Grid2"
 L["Resets the layout frame's position and anchor."] = "Reinicia la posición y anclajes de la ventana del Grid2"
 
+L["Frame Strata"] = "Capa del Grid2"
+L["Sets the strata in which the layout frame should be layered."] = "Elige la capa en la que mostrar el Grid2."
+L["BACKGROUND"] = "FONDO"
+L["LOW"] = "BAJO"
+L["MEDIUM"] = "MEDIO"
+L["HIGH"] = "ALTO"
+
 --blink
 L["Misc"] = "Varios"
 L["blink"] = "Parpadeo"

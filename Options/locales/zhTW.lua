@@ -84,6 +84,13 @@ L["Position and Anchor"] = "位置與錨點"
 L["Sets where groups are anchored relative to the layout frame."] = "設定佈局中隊伍的錨點。"
 L["Resets the layout frame's position and anchor."] = "重置佈局框架的位置和錨點。"
 
+-- L["Frame Strata"] = ""
+-- L["Sets the strata in which the layout frame should be layered."] = ""
+-- L["BACKGROUND"] = ""
+-- L["LOW"] = ""
+-- L["MEDIUM"] = ""
+-- L["HIGH"] = ""
+
 --blink
 -- L["Misc"] = ""
 L["blink"] = "blink"

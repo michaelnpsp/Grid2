@@ -8,18 +8,7 @@ local order_layout  = 20
 local order_display = 30
 local order_anchor  = 40
 
-Grid2Options:AddGeneralOptions( "General" , "Layout Settings", { display = {
-		type = "select",
-		name = L["Show Frame"],
-		desc = L["Sets when the Grid is visible: Choose 'Always', 'Grouped', or 'Raid'."],
-		order = order_layout + 10,
-		get = function() return Grid2Layout.db.profile.FrameDisplay end,
-		set = function(_, v)
-			Grid2Layout.db.profile.FrameDisplay = v
-			Grid2Layout:CheckVisibility()
-		end,
-		values={["Always"] = L["Always"], ["Grouped"] = L["Grouped"], ["Raid"] = L["Raid"]},
-}, horizontal = {
+Grid2Options:AddGeneralOptions( "General" , "Layout Settings", { horizontal = {
 		type = "toggle",
 		name = L["Horizontal groups"],
 		desc = L["Switch between horzontal/vertical groups."],
@@ -57,26 +46,45 @@ Grid2Options:AddGeneralOptions( "General" , "Layout Settings", { display = {
 		type = "header",
 		order = order_display,
 		name = L["Display"],
-}, padding = {
-		type = "range",
-		name = L["Padding"],
-		desc = L["Adjust frame padding."],
+}, display = {
+		type = "select",
+		name = L["Show Frame"],
+		desc = L["Sets when the Grid is visible: Choose 'Always', 'Grouped', or 'Raid'."],
 		order = order_display + 1,
-		max = 20,
-		min = 0,
-		step = 1,
-		get = function ()
-				  return Grid2Layout.db.profile.Padding
-			  end,
-		set = function (_, v)
-				  Grid2Layout.db.profile.Padding = v
-				  Grid2Layout:ReloadLayout()
-			  end,
+		get = function() return Grid2Layout.db.profile.FrameDisplay end,
+		set = function(_, v)
+			Grid2Layout.db.profile.FrameDisplay = v
+			Grid2Layout:CheckVisibility()
+		end,
+		values={["Always"] = L["Always"], ["Grouped"] = L["Grouped"], ["Raid"] = L["Raid"]},
+}, frameStrata = {
+		type = "select",
+		name = L["Frame Strata"],
+		desc = L["Sets the strata in which the layout frame should be layered."],
+		order = order_display + 2,
+		get = function() return Grid2Layout.db.profile.FrameStrata or "MEDIUM" end,
+		set = function(_, v)
+			Grid2LayoutFrame:SetFrameStrata( v )
+			Grid2Layout.db.profile.FrameStrata = (v~="MEDIUM") and v or nil
+		end,
+		values ={ BACKGROUND = L["BACKGROUND"], LOW = L["LOW"], MEDIUM = L["MEDIUM"], HIGH = L["HIGH"] },		
+}, borderTexture = {
+		type = "select", dialogControl = "LSM30_Border",
+		order = order_display + 3,
+		name = L["Border Texture"],
+		desc = L["Adjust the border texture."],
+		get = function (info) return Grid2Layout.db.profile.BorderTexture or "Grid2 Flat" end,
+		set = function (info, v)
+			Grid2Layout.db.profile.BorderTexture = v
+			Grid2Layout:UpdateTextures()
+			Grid2Layout:UpdateColor()
+		end,
+		values = AceGUIWidgetLSMlists.border,
 }, spacing = {
 		type = "range",
 		name = L["Spacing"],
 		desc = L["Adjust frame spacing."],
-		order = order_display + 2,
+		order = order_display + 4,
 		max = 25,
 		min = 0,
 		step = 1,
@@ -87,11 +95,26 @@ Grid2Options:AddGeneralOptions( "General" , "Layout Settings", { display = {
 				  Grid2Layout.db.profile.Spacing = v
 				  Grid2Layout:ReloadLayout()
 			  end,
+}, padding = {
+		type = "range",
+		name = L["Padding"],
+		desc = L["Adjust frame padding."],
+		order = order_display + 5,
+		max = 20,
+		min = 0,
+		step = 1,
+		get = function ()
+				  return Grid2Layout.db.profile.Padding
+			  end,
+		set = function (_, v)
+				  Grid2Layout.db.profile.Padding = v
+				  Grid2Layout:ReloadLayout()
+			  end,
 }, scale = {
 		type = "range",
 		name = L["Scale"],
 		desc = L["Adjust Grid scale."],
-		order = order_display + 3,
+		order = order_display + 6,
 		min = 0.5,
 		max = 2.0,
 		step = 0.05,
@@ -107,7 +130,7 @@ Grid2Options:AddGeneralOptions( "General" , "Layout Settings", { display = {
 		type = "color",
 		name = L["Border Color"],
 		desc = L["Adjust border color and alpha."],
-		order = order_display + 5,
+		order = order_display + 7,
 		get = function ()
 				  local settings = Grid2Layout.db.profile
 				  return settings.BorderR, settings.BorderG, settings.BorderB, settings.BorderA
@@ -122,7 +145,7 @@ Grid2Options:AddGeneralOptions( "General" , "Layout Settings", { display = {
 		type = "color",
 		name = L["Background Color"],
 		desc = L["Adjust background color and alpha."],
-		order = order_display + 6,
+		order = order_display + 8,
 		get = function ()
 				  local settings = Grid2Layout.db.profile
 				  return settings.BackgroundR, settings.BackgroundG, settings.BackgroundB, settings.BackgroundA
@@ -133,18 +156,6 @@ Grid2Options:AddGeneralOptions( "General" , "Layout Settings", { display = {
 				  Grid2Layout:UpdateColor()
 			  end,
 		hasAlpha = true
-}, borderTexture = {
-		type = "select", dialogControl = "LSM30_Border",
-		order = order_display + 7,
-		name = L["Border Texture"],
-		desc = L["Adjust the border texture."],
-		get = function (info) return Grid2Layout.db.profile.BorderTexture or "Grid2 Flat" end,
-		set = function (info, v)
-			Grid2Layout.db.profile.BorderTexture = v
-			Grid2Layout:UpdateTextures()
-			Grid2Layout:UpdateColor()
-		end,
-		values = AceGUIWidgetLSMlists.border,			
 }, anchorheader = {
 		type = "header",
 		order = order_anchor,

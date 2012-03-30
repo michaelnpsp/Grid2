@@ -3,48 +3,52 @@ local Offline = Grid2.statusPrototype:new("offline")
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 local Grid2 = Grid2
-local next = next 
+local GetTime = GetTime
 local UnitIsConnected = UnitIsConnected
 
--- UNIT_CONNECTION event seems bugged (not fired when player reconnect):
--- Using a timer to track when a offline unit reconnects.
-local offline = {}
 local timer
-local function tevent()
-	for unit in next,offline do
-		if UnitIsConnected(unit) then
+local offline = {}
+
+-- Using a timer because UNIT_CONNECTION is not always fired when a unit reconnects :(
+-- UnitIsConnected() returns wrong result for the first 20-25 seconds 
+-- after the player disconnects so the code ignores the result in this case.
+local function TimerEvent()
+	local ct = GetTime()
+	for unit, dt in next,offline do
+		if UnitIsConnected(unit) and (ct-dt)>=25 then
 			offline[unit] = nil
 			Offline:UpdateIndicators(unit)
-		end	
+		end
 	end
 	if not next(offline) then
-		Grid2:CancelTimer(timer)
-		timer = nil
+		Grid2:CancelTimer(timer); timer = nil
 	end
 end
 
 function Offline:UNIT_CONNECTION(_, unit, hasConnected)
-	if not hasConnected then
-		self:UnitDisconnected(unit)
+	if Grid2:IsUnitNoPetInRaid(unit) then
+		self:SetConnected(unit, hasConnected)
 		self:UpdateIndicators(unit)
-	end
+	end	
 end
 
 function Offline:Grid_UnitUpdated(_, unit)
-	if UnitIsConnected(unit) then
-		offline[unit] = nil
-	else
-		self:UnitDisconnected(unit)
-	end
+	if Grid2:IsUnitNoPetInRaid(unit) then
+		self:SetConnected( unit, UnitIsConnected(unit) )
+	end	
 end
 
 function Offline:Grid_UnitLeft(_, unit)
 	offline[unit] = nil
 end
 
-function Offline:UnitDisconnected(unit)
-	offline[unit] = true
-	if not timer then timer = Grid2:ScheduleRepeatingTimer(tevent, 1) end	
+function Offline:SetConnected(unit, connected)
+	if connected then
+		offline[unit] = nil
+	else
+		offline[unit] = GetTime()
+		if not timer then timer = Grid2:ScheduleRepeatingTimer(TimerEvent, 2) end
+	end
 end
 
 function Offline:OnEnable()
@@ -57,11 +61,11 @@ function Offline:OnDisable()
 	self:UnregisterEvent("UNIT_CONNECTION")
 	self:UnregisterMessage("Grid_UnitUpdated")
 	self:UnregisterMessage("Grid_UnitLeft")
-	wipe(offline)
+	wipe(offline)	
 end
 
 function Offline:IsActive(unit)
-	return offline[unit]
+	if offline[unit] then return true end
 end
 
 local text = L["Offline"]
