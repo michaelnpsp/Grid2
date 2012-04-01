@@ -74,7 +74,9 @@ do
 			dbx["short"..formatType] = short
 			dbx["long" ..formatType] = long
 			if inverted ~= nil then	dbx.invertDurationStack = inverted end	
-			Grid2:UpdateTextFormating()
+			for _, indicator in Grid2:IterateIndicators("text") do
+				indicator:UpdateDB()
+			end
 		end
 	end
 end	

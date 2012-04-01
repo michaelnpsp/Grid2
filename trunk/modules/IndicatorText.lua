@@ -2,7 +2,12 @@
 
 local Grid2 = Grid2
 local GetTime = GetTime
-local string_sub = string.subutf8 or string.sub
+local string_cut = Grid2.strcututf8
+local min = math.min
+local next = next
+
+local justifyH = { CENTER = "CENTER", TOP = "CENTER", BOTTOM = "CENTER", LEFT = "LEFT",   RIGHT = "RIGHT",  TOPLEFT = "LEFT", TOPRIGHT = "RIGHT", BOTTOMLEFT = "LEFT",   BOTTOMRIGHT = "RIGHT"  }
+local justifyV = { CENTER = "CENTER", TOP = "TOP",    BOTTOM = "BOTTOM", LEFT = "CENTER", RIGHT = "CENTER", TOPLEFT = "TOP",  TOPRIGHT = "TOP",   BOTTOMLEFT = "BOTTOM", BOTTOMRIGHT = "BOTTOM" }
 
 Grid2.defaults.profile.formatting = {
 	longDecimalFormat        = "%.1f",
@@ -12,110 +17,101 @@ Grid2.defaults.profile.formatting = {
 	invertDurationStack      = false,
 }
 
-local justifyH = {
-	CENTER = "CENTER",
-	TOP = "CENTER",
-	BOTTOM = "CENTER",
-	LEFT = "LEFT",
-	RIGHT = "RIGHT",
-	TOPLEFT = "LEFT",
-	TOPRIGHT = "RIGHT",
-	BOTTOMLEFT = "LEFT",
-	BOTTOMRIGHT = "RIGHT",
-}
-
-local justifyV = {
-	CENTER = "CENTER",
-	TOP = "TOP",
-	BOTTOM = "BOTTOM",
-	LEFT = "CENTER",
-	RIGHT = "CENTER",
-	TOPLEFT = "TOP",
-	TOPRIGHT = "TOP",
-	BOTTOMLEFT = "BOTTOM",
-	BOTTOMRIGHT = "BOTTOM",
-}
-
-local MaskD  = {}
-local MaskDS = {}
+local timers = {}
 local stacks = {}
 local expirations = {}
-local durationTimers = {}
 
-local TimerFuncs = {
-	E = function(Text)
-		Text:SetFormattedText( "%.0f", GetTime() - expirations[Text]  )
-	end,
-	D = function(Text)
-		local timeLeft = expirations[Text] - GetTime()
-		if timeLeft>0 then
-			Text:SetFormattedText( MaskD[timeLeft<1], timeLeft )
-		else
-			Text:SetText("")
+local curTime -- Here goes current time to minimize GetTime() calls
+
+-- {{ Timer management
+local TimerStart, TimerStop
+do 
+	local timer
+	function TimerStart(text, func)
+		timer = CreateFrame("Frame", nil, Grid2LayoutFrame):CreateAnimationGroup()
+		local anim = timer:CreateAnimation()
+		timer:SetScript("OnFinished", function (self)
+			self:Play()
+			curTime = GetTime()
+			for text, func in next, timers do
+				func(text)
+			end
+		end)
+		anim:SetOrder(1)
+		anim:SetDuration(0.10)
+		timer:Play()
+		timers[text] = func 
+		TimerStart = function(text, func) 
+			if not next(timers) then timer:Play() end
+			timers[text] = func
 		end
-	end,
-	ES = function(Text)
-		Text:SetFormattedText( MaskDS[false], GetTime() - expirations[Text] , stacks[Text]  )
-	end,
-	SE = function(Text)
-		Text:SetFormattedText( MaskDS[false], stacks[Text], GetTime() - expirations[Text] )
-	end,
-	DS = function(Text)
-		local timeLeft = expirations[Text] - GetTime()
-		if timeLeft>0 then
-			Text:SetFormattedText( MaskDS[timeLeft<1], timeLeft, stacks[Text] )
-		else
-			Text:SetText("")
-		end	
-	end,
-	SD = function(Text)
-		local timeLeft = expirations[Text] - GetTime()
-		if timeLeft>0 then
-			Text:SetFormattedText( MaskDS[timeLeft<1], stacks[Text], timeLeft )
-		else
-			Text:SetText("")
-		end	
-	end,
-}
-local UpdateTextE  = TimerFuncs.E
-local UpdateTextD  = TimerFuncs.D
-local UpdateTextES = TimerFuncs.ES
-local UpdateTextDS = TimerFuncs.DS
+	end
+	function TimerStop(text)
+		timers[text], expirations[text], stacks[text] = nil, nil, nil
+		if not next(timers) then timer:Stop() end
+	end
+end	
+--}}
 
-local function fcancel(Text)
-	if durationTimers[Text] then
-		Grid2:CancelTimer(durationTimers[Text])
-		durationTimers[Text], expirations[Text], stacks[Text] = nil, nil, nil
+-- {{ Update functions
+local FmtDE  = {} -- masks for duration|elapsed
+local FmtDES = {} -- masks for duration|elapsed & stacks
+-- elapsed + stacks
+local function _UpdateES(text)
+	text:SetFormattedText( FmtDES[false], curTime - expirations[text] , stacks[text] or 1  )
+end
+-- stacks + elapsed
+local function _UpdateSE(text)
+	text:SetFormattedText( FmtDES[false], stacks[text] or 1, curTime - expirations[text] )
+end
+-- duration + stacks
+local function _UpdateDS(text)
+	local timeLeft = expirations[text] - curTime
+	if timeLeft>0 then
+		text:SetFormattedText( FmtDES[timeLeft<1], timeLeft, stacks[text] or 1 )
+	else
+		text:SetText("")
 	end	
 end
-
-local function UpdateTextFormatting()
-	local dbx = Grid2.db.profile.formatting
-	MaskD[true]   = dbx.longDecimalFormat
-	MaskD[false]  = dbx.shortDecimalFormat
-	MaskDS[true]  = dbx.longDurationStackFormat
-	MaskDS[false] = dbx.shortDurationStackFormat
-	UpdateTextES  = TimerFuncs[dbx.invertDurationStack and "SE" or "ES"]
-	UpdateTextDS  = TimerFuncs[dbx.invertDurationStack and "SD" or "DS"]
+-- stacks + duration
+local function _UpdateSD(text)
+	local timeLeft = expirations[text] - curTime
+	if timeLeft>0 then
+		text:SetFormattedText( FmtDES[timeLeft<1], stacks[text] or 1, timeLeft )
+	else
+		text:SetText("")
+	end	
 end
-Grid2.UpdateTextFormating = UpdateTextFormatting
-
---{{
-
-local function Text_Create(self, parent)
-	local f= self:CreateFrame("Frame", parent)
-	f:SetAllPoints()
-	if not f:IsShown() then
-		f:SetBackdrop(nil)
-		f:Show()
+-- elapsed
+local function UpdateE(text)
+	text:SetFormattedText( "%.0f", curTime - expirations[text]  )
+end
+-- duration
+local function UpdateD(text)
+	local timeLeft = expirations[text] - curTime
+	if timeLeft>0 then
+		text:SetFormattedText( FmtDE[timeLeft<1], timeLeft )
+	else
+		text:SetText("")
 	end
-	
+end
+-- elapsed+stacks | stacks+elapsed
+local UpdateES = _UpdateES
+-- duration+stacks | stacks+duration
+local UpdateDS = _UpdateDS
+-- }}
+
+--{{ Indicator methods
+local function Text_Create(self, parent)
+	local f = self:CreateFrame("Frame", parent)
+	f:SetAllPoints()
+	f:SetBackdrop(nil)
+	f:Show()
 	local Text = f.Text or f:CreateFontString(nil, "OVERLAY")
 	f.Text = Text
 	Text:SetFontObject(GameFontHighlightSmall)
 	Text:SetFont(self.textfont, self.dbx.fontSize, self.dbx.fontFlags)
-	Text:SetJustifyH("CENTER")
-	Text:SetJustifyV("CENTER")
+	Text:Show()	
 end
 
 local function Text_GetBlinkFrame(self, parent)
@@ -132,121 +128,49 @@ local function Text_Layout(self, parent)
 	Text:SetWidth(parent:GetWidth())
 end
 
-local function GetDurationValue(expiration, Text, func)
-	if expiration then
-		local timeLeft = expiration - GetTime()
-		if timeLeft>0 then
-			expirations[Text] = expiration
-			if not durationTimers[Text] then
-				durationTimers[Text] = Grid2:ScheduleRepeatingTimer(func, 0.1, Text)
+local function Text_OnUpdateDE(self, parent, unit, status)
+	local Text = parent[self.name].Text
+	if status then
+		Text:Show()
+		local expiration = status:GetExpirationTime(unit)
+		if expiration then
+			curTime = GetTime() -- not local because is used later by self.updateFunc
+			if expiration > curTime then
+				if self.stack then
+					stacks[Text] = status:GetCount(unit)				
+				end
+				if self.elapsed then
+					expirations[Text] = min( expiration - (status:GetDuration(unit) or 0), curTime )
+				else
+					expirations[Text] = expiration
+				end
+				if not timers[Text] then 
+					TimerStart(Text, self.updateFunc) 
+				end
+				self.updateFunc(Text)
+				return
 			end
-			return timeLeft
-		end
-		fcancel(Text)
-	end	
-end
-
-local function GetElapsedTimeValue(expiration, duration, Text, func)
-	if expiration and duration then
-		local curTime = GetTime()
-		local timeLeft = expiration - curTime
-		if timeLeft>0 then
-			local startTime   = expiration - duration
-			local timeElapsed = curTime - startTime
-			expirations[Text] = startTime
-			if not durationTimers[Text] then
-				durationTimers[Text] = Grid2:ScheduleRepeatingTimer(func, 0.1, Text)
-			end
-			return timeElapsed
-		end
-		fcancel(Text)
-	end	
-end
-
-local function SetDefaultText(self, Text, status, unit)
-	Text:SetText( string_sub(status:GetText(unit) or "", 1, self.textlength) )
-end
-
-local function Text_OnUpdateDS(self, parent, unit, status)
-	local Text = parent[self.name].Text
-	if status then
-		local stack = status:GetCount(unit) or 1
-		local duration = GetDurationValue( status:GetExpirationTime(unit), Text, UpdateTextDS )
-		if duration then
-			stacks[Text]= stack
-			UpdateTextDS(Text)
 		else
-			SetDefaultText(self, Text, status, unit)
+			Text:SetText( string_cut(status:GetText(unit) or "", self.textlength) )
+			if timers[Text] then TimerStop(Text) end
+			return
 		end
-		Text:Show()
-	else
-		fcancel(Text)
-		Text:Hide()
 	end
-end
-
-local function Text_OnUpdateES(self, parent, unit, status)
-	local Text = parent[self.name].Text
-	if status then
-		local stack   = status:GetCount(unit) or 1
-		local elapsed = GetElapsedTimeValue( status:GetExpirationTime(unit), status:GetDuration(unit), Text, UpdateTextES )
-		if elapsed then
-			stacks[Text]= stack
-			UpdateTextES(Text)
-		else
-			SetDefaultText(self, Text, status, unit)
-		end
-		Text:Show()
-	else
-		fcancel(Text)
-		Text:Hide()
-	end
-end
-
-local function Text_OnUpdateD(self, parent, unit, status)
-	local Text = parent[self.name].Text
-	if status then
-		local duration = GetDurationValue( status:GetExpirationTime(unit), Text, UpdateTextD )
-		if duration then
-			UpdateTextD(Text)
-		else
-			SetDefaultText(self, Text, status, unit)
-		end
-		Text:Show()
-	else
-		fcancel(Text)
-		Text:Hide()
-	end
-end
-
-local function Text_OnUpdateE(self, parent, unit, status)
-	local Text = parent[self.name].Text
-	if status then
-		local elapsed = GetElapsedTimeValue( status:GetExpirationTime(unit), status:GetDuration(unit), Text, UpdateTextE )
-		if elapsed then
-			Text:SetFormattedText( "%.0f", elapsed )
-		else
-			SetDefaultText(self, Text, status, unit)
-		end
-		Text:Show()
-	else
-		fcancel(Text)
-		Text:Hide()
-	end
+	Text:Hide()	
+	if timers[Text] then TimerStop(Text) end
 end
 
 local function Text_OnUpdateS(self, parent, unit, status)
 	local Text = parent[self.name].Text
 	if status then
-		local content = status:GetCount(unit)
-		if content then
-			Text:SetFormattedText( "%d", content )
+		local count = status:GetCount(unit)
+		if count then
+			Text:SetFormattedText( "%d", count )
 		else
-			SetDefaultText(self, Text, status, unit)
+			Text:SetText( string_cut(status:GetText(unit) or "", self.textlength) )
 		end
 		Text:Show()
 	else
-		fcancel(Text)
 		Text:Hide()
 	end
 end
@@ -265,7 +189,7 @@ local function Text_OnUpdateP(self, parent, unit, status)
 		elseif percent then
 			Text:SetFormattedText( "%.0f%%", percent*100 )
 		else
-			SetDefaultText(self, Text, status, unit)
+			Text:SetText( string_cut(status:GetText(unit) or "", self.textlength) )
 		end
 		Text:Show()
 	else
@@ -276,7 +200,7 @@ end
 local function Text_OnUpdate(self, parent, unit, status)
 	local Text = parent[self.name].Text
 	if status then
-		Text:SetText( string_sub(status:GetText(unit) or "", 1, self.textlength) )
+		Text:SetText( string_cut(status:GetText(unit) or "", self.textlength) )
 		Text:Show()
 	else
 		Text:Hide()
@@ -289,11 +213,19 @@ local function Text_Disable(self, parent)
 	f.Text:Hide()
 	self.GetBlinkFrame = nil
 	self.Layout = nil
-	self.OnUpdate = nil
 	self.OnUpdate = Grid2.Dummy
 end
 
 local function Text_UpdateDB(self, dbx)
+	-- text fmt
+	local fmt = Grid2.db.profile.formatting
+	FmtDE[true] = fmt.longDecimalFormat
+	FmtDE[false] = fmt.shortDecimalFormat
+	FmtDES[true] = fmt.longDurationStackFormat
+	FmtDES[false] = fmt.shortDurationStackFormat
+	UpdateES = fmt.invertDurationStack and _UpdateSE or _UpdateES
+	UpdateDS = fmt.invertDurationStack and _UpdateSD or _UpdateDS
+	-- indicator dbx
 	dbx = dbx or self.dbx
 	local l = dbx.location
 	self.anchor = l.point
@@ -308,15 +240,23 @@ local function Text_UpdateDB(self, dbx)
 	self.Layout = Text_Layout
 	self.Disable = Text_Disable
 	self.UpdateDB = Text_UpdateDB
-	self.OnUpdate = (dbx.duration  and dbx.stack and Text_OnUpdateDS) or 
-					(dbx.elapsed   and dbx.stack and Text_OnUpdateES) or
-					(dbx.duration  and Text_OnUpdateD) or 
-					(dbx.elapsed   and Text_OnUpdateE) or
-					(dbx.stack 	   and Text_OnUpdateS) or 
-					(dbx.percent   and Text_OnUpdateP) or
-					Text_OnUpdate
+	if dbx.duration or dbx.elapsed then
+		self.stack = dbx.stack
+		self.elapsed = dbx.elapsed
+		if dbx.stack then
+			self.updateFunc = dbx.elapsed and UpdateES or UpdateDS
+		else
+			self.updateFunc = dbx.elapsed and UpdateE or UpdateD
+		end
+		self.OnUpdate = Text_OnUpdateDE		
+	elseif dbx.stack then
+		self.OnUpdate = Text_OnUpdateS
+	elseif dbx.percent then
+		self.OnUpdate = Text_OnUpdateP
+	else
+		self.OnUpdate = Text_OnUpdate
+	end
 	self.dbx = dbx
-	UpdateTextFormatting()
 end
 
 local function TextColor_OnUpdate(self, parent, unit, status)
@@ -353,3 +293,4 @@ end
 
 Grid2.setupFunc["text"] = Create
 Grid2.setupFunc["text-color"] = Grid2.Dummy
+-- }}
