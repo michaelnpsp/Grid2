@@ -17,11 +17,6 @@
 ## X-ReleaseDate: "$Date$"
 ## X-Category: UnitFrame
 
-
-# Non-Ace Libraries
-Libs\utf8\utf8.lua
-
-
 # Ace Libraries
 #@no-lib-strip@
 Libs\LibStub\LibStub.lua
