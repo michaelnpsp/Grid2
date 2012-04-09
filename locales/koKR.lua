@@ -12,13 +12,7 @@ L["Humanoid"] = "인간형"
 L["Elemental"] = "정령"
 --}}}
 
---{{{ GridRange
--- used for getting spell range from tooltip
-L["(%d+) yd range"] = "(%d+)미터"
---}}}
-
 --{{{ GridStatusHealth
-L["Low HP"] = "생명력 낮음"
 L["DEAD"] = "죽음"
 L["GHOST"] = "유령"
 L["FD"] = "죽척"
@@ -89,7 +83,6 @@ L["By Role 25"] = "25인 역할별"
 L["By Class 1 x 25 Wide"] = "1 x 25인 직업별"
 L["By Class 2 x 15 Wide"] = "2 x 15인 직업별"
 L["By Group 4 x 10 Wide"] = "4 x 10인 공격대"
-L["By Group 20"] = "20인 공격대"
 L["By Group 25 w/tanks"] = "25인 공격대, 방어 전담"
 L["By Group 40"] = "40인 공격대"
 L["By Group 25 Tanks First"] = "25인 공격대, 첫 방어 전담"

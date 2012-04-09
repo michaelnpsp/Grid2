@@ -12,13 +12,7 @@ L["Humanoid"] = "Humanoïde"
 L["Elemental"] = "Elementaire"
 --}}}
 
---{{{ GridRange
--- used for getting spell range from tooltip
--- L["(%d+) yd range"] = ""
---}}}
-
 --{{{ GridStatusHealth
--- L["Low HP"] = ""
 -- L["DEAD"] = ""
 -- L["GHOST"] = ""
 -- L["FD"] = ""
@@ -89,7 +83,6 @@ L["By Role 25"] = "Par Rôle 25"
 L["By Class 1 x 25 Wide"] = "Par classe 1 x 25 Large"
 L["By Class 2 x 15 Wide"] = "Par classe 2 x 15 Large"
 L["By Group 4 x 10 Wide"] = "Par groupe de 4 x 10 Large"
-L["By Group 20"] = "Groupe de 20"
 L["By Group 25 w/tanks"] = "Groupe de 25 avec tanks"
 L["By Group 40"] = "Groupe de 40"
 L["By Group 25 Tanks First"] = "Groupe de 25 tanks"

@@ -71,7 +71,7 @@ local function SetIndicatorType(info, value)
 	if map then
 		for statusKey, priority in pairs(map) do
 			local status = Grid2.statuses[statusKey]
-			if (not status) or (not Grid2:IsCompatiblePair(newIndicator, status)) then
+			if (not status) or (not Grid2Options:IsCompatiblePair(newIndicator, status)) then
 				map[statusKey]= nil
 			end
 		end

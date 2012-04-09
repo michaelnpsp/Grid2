@@ -115,7 +115,7 @@ local function Text_Create(self, parent)
 end
 
 local function Text_GetBlinkFrame(self, parent)
-	return parent[self.name]:GetParent()
+	return parent[self.name]
 end
 
 local function Text_Layout(self, parent)

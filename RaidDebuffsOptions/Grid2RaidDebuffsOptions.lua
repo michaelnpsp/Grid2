@@ -284,7 +284,7 @@ local function EnableDisableModule(module, state)
 end
 
 local function CreateStandardDebuff(bossName,spellId,spellName)
-	local baseKey = fmt("%s>%s", string.match(bossName, "^(.-) .*$") or bossName, spellName):gsub("[ %.\"!']", "")
+	local baseKey = fmt("debuff-%s>%s", string.match(bossName, "^(.-) .*$") or bossName, spellName):gsub("[ %.\"!']", "")
 	if not Grid2:DbGetValue("statuses", baseKey) then
 		-- Save status in database
 		local dbx = {type = "debuff", spellName = spellId, color1 = {r=1, g=0, b=0, a=1} }
@@ -292,10 +292,7 @@ local function CreateStandardDebuff(bossName,spellId,spellName)
 		--Create status in runtime
 		local status = Grid2.setupFunc[dbx.type](baseKey, dbx)
 		--Create the status options
-		local funcMakeOptions = Grid2Options.typeMakeOptions[dbx.type]
-		local optionParams = Grid2Options.optionParams[dbx.type]
-		local options, subType = funcMakeOptions(Grid2Options, status, options, optionParams)
-		Grid2Options:AddElementSubType("statuses", subType, status, options)
+		Grid2Options:MakeStatusOptions(status)
 	end
 end
 

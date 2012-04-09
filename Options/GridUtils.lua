@@ -253,12 +253,25 @@ do
 	end	
 end
 
+-- checking that the status provides at least one of the required indicator types
+function Grid2Options:IsCompatiblePair(indicator, status)
+	for type, list in pairs(Grid2.indicatorTypes) do
+		if list[indicator.name] then
+			for _, s in Grid2:IterateStatuses(type) do
+				if s == status then
+					return type
+				end
+			end
+		end
+	end
+end
+
 -- Grid2Options:GetAvailableStatusValues()
 function Grid2Options:GetAvailableStatusValues(indicator, statusAvailable)
 	statusAvailable = statusAvailable or {}
 	wipe(statusAvailable)
 	for statusKey, status in Grid2:IterateStatuses() do
-		if (Grid2:IsCompatiblePair(indicator, status) and status.name~="test") then
+		if (self:IsCompatiblePair(indicator, status) and status.name~="test") then
 			statusAvailable[statusKey] = self.LocalizeStatus(status)
 		end
 	end
@@ -339,6 +352,7 @@ function Grid2Options:ConfirmDialog(message, funcAccept, funcCancel)
 		t= {}
 		StaticPopupDialogs["GRID2OPTIONS_CONFIRM_DIALOG"] = t
 	end
+	t.preferredIndex = 3
 	t.text = message
 	t.button1 = ACCEPT
 	t.button2 = CANCEL

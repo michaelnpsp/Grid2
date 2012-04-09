@@ -2,11 +2,8 @@
 
 local Border = Grid2.indicatorPrototype:new("border")
 
-function Border:Create()
-end
-
-function Border:Layout()
-end
+Border.Create = Grid2.Dummy
+Border.Layout = Grid2.Dummy
 
 function Border:OnUpdate(parent, unit, status)
 	if status then

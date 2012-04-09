@@ -1,5 +1,4 @@
 local L = Grid2Options.L
-local Grid2Blink = Grid2:GetModule("Grid2Blink")
 
 Grid2Options:AddGeneralOptions( "Misc", "blink", {
 	effect = {
@@ -7,33 +6,28 @@ Grid2Options:AddGeneralOptions( "Misc", "blink", {
 		name = L["Blink effect"],
 		desc = L["Select the type of Blink effect used by Grid2."],
 		order = 10,
-		get = function ()
-			return Grid2Blink.db.profile.type
-		end,
+		get = function () return Grid2Frame.db.profile.blinkType end,
 		set = function (_, v)
-			local f= Grid2Blink.db.profile.type=="None" or v=="None"
-			Grid2Blink.db.profile.type = v
-			Grid2Blink:Update()
-			if f then
-				Grid2Options:MakeStatusesOptions(Grid2Options.statusOptions)
-			end			
+			Grid2Frame.db.profile.blinkType = v
+			Grid2Frame:UpdateBlink()
+			Grid2Options:MakeStatusesOptions(Grid2Options.statusOptions)
 		end,
-		values= {["None"] = L["None"], ["Blink"] = L["Blink"], ["Flash"] = L["Flash"]},
+		values= {["None"] = L["None"], ["Flash"] = L["Flash"]},
 	},
 	frequency = {
 		type = "range",
 		name = L["Blink Frequency"],
 		desc = L["Adjust the frequency of the Blink effect."],
-		disabled = function () return Grid2Blink.db.profile.type == "None" end,
+		disabled = function () return Grid2Frame.db.profile.blinkType == "None" end,
 		min = 1,
 		max = 10,
 		step = .5,
 		get = function ()
-			return Grid2Blink.db.profile.frequency / 2
+			return Grid2Frame.db.profile.blinkFrequency 
 		end,
 		set = function (_, v)
-			Grid2Blink.db.profile.frequency = v * 2
-			Grid2Blink:Update()
+			Grid2Frame.db.profile.blinkFrequency = v
+			Grid2Frame:UpdateBlink()
 		end,
 	},
 })

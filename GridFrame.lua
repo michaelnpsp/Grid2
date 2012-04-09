@@ -187,7 +187,9 @@ Grid2Frame.defaultDB = {
 		orientation = "VERTICAL",
 		textOrientation = "VERTICAL",
 		intensity = 0.5,
-	},
+		blinkType = "Flash", 
+		blinkFrequency = 2,
+	}
 }
 
 function Grid2Frame:OnModuleInitialize()
@@ -199,6 +201,7 @@ function Grid2Frame:OnModuleEnable()
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE")
 	self:RegisterMessage("Grid_UnitUpdate")
+	self:UpdateBlink()
 	self:UpdateBackdrop()
 	self:UpdateFrameUnits()
 	self:UpdateIndicators()
@@ -292,6 +295,36 @@ do
 	end
 	function Grid2Frame:OnFrameLeave(frame)
 		UnitFrame_OnLeave(frame)
+	end
+end
+
+-- Frames blink animations management
+do
+	local blinkDuration
+	function Grid2Frame:SetBlinkEffect(frame, enabled)
+		local anim = frame.blinkAnim 
+		if enabled then
+			if not anim then
+				anim = frame:CreateAnimationGroup()
+				local alpha = anim:CreateAnimation("Alpha")
+				alpha:SetOrder(1) 
+				alpha:SetChange(-0.9)
+				anim:SetLooping("REPEAT")
+				anim.alpha = alpha			
+				frame.blinkAnim = anim
+			end
+			if not anim:IsPlaying() then 
+				anim.alpha:SetDuration(blinkDuration)
+				anim:Play() 
+			end
+		elseif anim then
+			anim:Stop()
+		end		
+	end	
+	function Grid2Frame:UpdateBlink()
+		local indicator = Grid2.indicatorPrototype
+		indicator.Update = self.db.profile.blinkType~="None" and indicator.UpdateBlink or indicator.UpdateNoBlink
+		blinkDuration = 1/self.db.profile.blinkFrequency
 	end
 end
 

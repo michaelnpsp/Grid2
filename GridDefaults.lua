@@ -3,8 +3,8 @@ Created by Michael, based on Grid2Options\GridDefaults.lua from original Grid2 a
 --]]
 
 local Grid2 = Grid2
+local Location = Grid2.CreateLocation
 local type, pairs = type, pairs
-
 local defaultFont = "Friz Quadrata TT"
 
 -- Database manipulation functions
@@ -50,30 +50,6 @@ function Grid2:DbSetMap(indicatorName, statusName, priority)
 		end		
 	end	
 end
-
--- Misc helper functions
-
-function Grid2.CopyTable(src, dst)
-	if type(dst)~="table" then dst = {} end
-	for k,v in pairs(src) do
-		if type(v)=="table" then
-			dst[k] = Grid2.CopyTable(v,dst[k])
-		elseif not dst[k] then
-			dst[k] = v
-		end
-	end
-	return dst
-end
-
-function Grid2.CreateLocation(a,b,c,d)
-    local p = a or "TOPLEFT"
-	if type(b)=="string" then
-		return { relPoint = p, point = b, x = c or 0, y = d or 0 }
-	else
-		return { relPoint = p, point = p, x = b or 0, y = c or 0 }
-	end
-end
-local Location = Grid2.CreateLocation
 
 -- Default configurations
 
@@ -296,5 +272,5 @@ function Grid2:UpdateDefaults()
 	
 	-- Set database version
 	Grid2:DbSetValue("versions","Grid2",3)
-	
+
 end

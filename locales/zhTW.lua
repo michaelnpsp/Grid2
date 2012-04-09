@@ -12,13 +12,7 @@ L["Humanoid"] = "人型"
 L["Elemental"] = "元素"
 --}}}
 
---{{{ GridRange
--- used for getting spell range from tooltip
-L["(%d+) yd range"] = "(%d+)碼距離"
---}}}
-
 --{{{ GridStatusHealth
-L["Low HP"] = "低血量"
 L["DEAD"] = "死亡"
 L["GHOST"] = "靈魂"
 L["FD"] = "假死"
@@ -89,7 +83,6 @@ L["By Class w/Pets"] = "職業以及寵物"
 -- L["By Class 1 x 25 Wide"] = ""
 -- L["By Class 2 x 15 Wide"] = ""
 -- L["By Group 4 x 10 Wide"] = ""
-L["By Group 20"] = "20人團隊"
 L["By Group 25 w/tanks"] = "25人團隊及坦克"
 L["By Group 40"] = "40人團隊"
 -- L["By Group 25 Tanks First"] = ""
