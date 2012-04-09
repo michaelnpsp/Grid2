@@ -12,13 +12,7 @@ L["Demon"] = "Demonio"
 -- L["Elemental"] = ""
 --}}}
 
---{{{ GridRange
--- used for getting spell range from tooltip
-L["(%d+) yd range"] = "Distancia"
---}}}
-
 --{{{ GridStatusHealth
-L["Low HP"] = "Pouca Vida"
 L["DEAD"] = "MORTE"
 L["GHOST"] = "Fantasma"
 -- L["FD"] = ""
@@ -89,7 +83,6 @@ L["By Class"] = "Por Classe"
 -- L["By Class 1 x 25 Wide"] = ""
 -- L["By Class 2 x 15 Wide"] = ""
 -- L["By Group 4 x 10 Wide"] = ""
-L["By Group 20"] = "Grupo de 20"
 -- L["By Group 25 w/tanks"] = ""
 L["By Group 40"] = "Grupo de 40"
 -- L["By Group 25 Tanks First"] = ""

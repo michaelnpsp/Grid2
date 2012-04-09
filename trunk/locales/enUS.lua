@@ -12,13 +12,7 @@ L["Humanoid"] = true
 L["Elemental"] = true
 --}}}
 
---{{{ GridRange
--- used for getting spell range from tooltip
-L["(%d+) yd range"] = true
---}}}
-
 --{{{ GridStatusHealth
-L["Low HP"] = true
 L["DEAD"] = true
 L["GHOST"] = true
 L["FD"] = true
@@ -89,7 +83,6 @@ L["By Role 25"] = true
 L["By Class 1 x 25 Wide"] = true
 L["By Class 2 x 15 Wide"] = true
 L["By Group 4 x 10 Wide"] = true
-L["By Group 20"] = true
 L["By Group 25 w/tanks"] = true
 L["By Group 40"] = true
 L["By Group 25 Tanks First"] = true

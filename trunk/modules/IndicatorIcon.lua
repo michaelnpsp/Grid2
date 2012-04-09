@@ -61,13 +61,13 @@ local function Icon_OnUpdate(self, parent, unit, status)
 	local Frame = parent[self.name]
 	if not status then Frame:Hide()	return end
 	
-	local Icon= Frame.Icon
+	local Icon = Frame.Icon
 	
 	Icon:SetTexture(status:GetIcon(unit))
 	Icon:SetTexCoord(status:GetTexCoord(unit))
 	Icon:SetVertexColor(status:GetVertexColor(unit))
 
-	local r,g,b,a= status:GetColor(unit)
+	local r,g,b,a = status:GetColor(unit)
 	if self.useStatusColor or status:GetBorder(unit) then
 		Frame:SetBackdropBorderColor(r,g,b,a) 
 	elseif self.borderSize then

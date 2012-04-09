@@ -1,10 +1,7 @@
 local Alpha = Grid2.indicatorPrototype:new("alpha")
 
-function Alpha:Create(parent)
-end
-
-function Alpha:Layout(parent)
-end
+Alpha.Create = Grid2.Dummy
+Alpha.Layout = Grid2.Dummy
 
 function Alpha:OnUpdate(parent, unit, status)
 	parent:SetAlpha(status and status:GetPercent(unit) or Alpha.dbx.color1.a)

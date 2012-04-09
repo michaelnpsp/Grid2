@@ -2,15 +2,15 @@
 Created by Grid2 original authors, modified by Michael
 --]]
 
+local Grid2Frame = Grid2Frame
+
 Grid2.indicators = {}
 Grid2.indicatorTypes = {}
 Grid2.indicatorPrototype = {}
 
--- indicator prototype
 local indicator = Grid2.indicatorPrototype 
 indicator.__index = indicator
 
--- constructor
 function indicator:new(name)
 	local e = setmetatable({}, self)
 	local p = {}
@@ -24,25 +24,18 @@ end
 function indicator:CreateFrame(type, parent)
 	local f = parent[self.name]
 	if not (f and f:GetObjectType()==type) then
-		f= CreateFrame(type, nil, parent)
-		parent[self.name]= f
+		f = CreateFrame(type, nil, parent)
+		parent[self.name] = f
 	end
 	return f
 end
 
 function indicator:RegisterStatus(status, priority)
-	if self.priorities[status] then
-		Grid2:Print(string.format("WARNING ! Status %s already registered with indicator %s", status.name, self.name))
-		return true
-	end
-	if (Grid2:IsCompatiblePair(self, status)) then
-		self.priorities[status] = priority
-		self.statuses[#self.statuses + 1] = status
-		table.sort(self.statuses, self.sortStatuses)
-		status:RegisterIndicator(self)
-		return true
-	end
-	return false
+	if self.priorities[status] then return end
+	self.priorities[status] = priority
+	self.statuses[#self.statuses + 1] = status
+	table.sort(self.statuses, self.sortStatuses)
+	status:RegisterIndicator(self)
 end
 
 function indicator:UnregisterStatus(status)
@@ -58,10 +51,7 @@ function indicator:UnregisterStatus(status)
 end
 
 function indicator:SetStatusPriority(status, priority)
-	if not self.priorities[status] then 
-		print( "Bad SetStatusPriority: "..self.name.." "..status.name )
-		return 
-	end
+	if not self.priorities[status] then return end
 	self.priorities[status] = priority
 	table.sort(self.statuses, self.sortStatuses)
 end
@@ -93,28 +83,18 @@ function indicator:GetCurrentStatus(unit)
 end
 
 --{{ Update functions
-local Grid2Blink = Grid2:GetModule("Grid2Blink")
-local blinking = Grid2Blink.registry
-
-local function UpdateBlink(self, parent, unit)
+function indicator:UpdateBlink(parent, unit)
 	local status, state = self:GetCurrentStatus(unit)
-	local frame = self.GetBlinkFrame  
-	if frame then 
-		frame = frame(self,parent)
-		if blinking[frame] then
-			if state~="blink" then Grid2Blink:Remove(frame) end	
-		else
-			if state=="blink" then Grid2Blink:Add(frame) end
-		end
-	end 
+	local func = self.GetBlinkFrame
+	if func then Grid2Frame:SetBlinkEffect( func(self,parent) , state=="blink" ) end
 	self:OnUpdate(parent, unit, status)
 end
 
-local function UpdateNoBlink(self, parent, unit)
+function indicator:UpdateNoBlink(parent, unit)
 	self:OnUpdate(parent, unit, self:GetCurrentStatus(unit) )
 end
 
-indicator.Update = UpdateBlink
+indicator.Update = indicator.UpdateBlink
 --}}
 
 function Grid2:RegisterIndicator(indicator, types)
@@ -131,44 +111,21 @@ function Grid2:RegisterIndicator(indicator, types)
 end
 
 function Grid2:UnregisterIndicator(indicator)
-	-- unregister statuses linked to this indicator
 	local statuses= indicator.statuses
-	while (#statuses>0) do
+	while #statuses>0 do
 		indicator:UnregisterStatus(statuses[#statuses])
 	end
-	-- Hide indicator from created frame units
 	if indicator.Disable then
 		Grid2Frame:WithAllFrames(indicator, "Disable")
 	end
-	-- unregister indicator
 	local name = indicator.name
 	self.indicators[name] = nil
 	for type, t in pairs(self.indicatorTypes) do
 		t[name] = nil
 	end
-	-- unregister asociated indicator if exists
-	if (indicator.sideKick) then
+	if indicator.sideKick then
 		Grid2:UnregisterIndicator(indicator.sideKick)
 		indicator.sideKick = nil
-	end
-end
-
--- We can choose which update function we want to use. UpdateNoBlink is faster 
-function Grid2:IndicatorsBlinkEnabled( enabled )
-  	indicator.Update = enabled and UpdateBlink or UpdateNoBlink
-end
-
-function Grid2:IsCompatiblePair(indicator, status)
-	-- we check that the status provides at least
-	-- one of the required indicator types
-	for type, list in pairs(self.indicatorTypes) do
-		if list[indicator.name] then
-			for _, s in self:IterateStatuses(type) do
-				if s == status then
-					return type
-				end
-			end
-		end
 	end
 end
 

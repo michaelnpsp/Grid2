@@ -1,6 +1,6 @@
 --[[ Square indicator, created by Grid2 original authors, modified by Michael ]]--
 
-local Grid2= Grid2
+local Grid2 = Grid2
 
 local function Square_Create(self, parent)
 	local Square = self:CreateFrame("Frame", parent)

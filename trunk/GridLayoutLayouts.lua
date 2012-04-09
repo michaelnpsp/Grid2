@@ -9,20 +9,19 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 local DEFAULT_GROUP_ORDER = "WARRIOR,DEATHKNIGHT,ROGUE,PALADIN,DRUID,SHAMAN,PRIEST,MAGE,WARLOCK,HUNTER"
 local DEFAULT_PET_ORDER = "HUNTER,WARLOCK,DEATHKNIGHT,PRIEST,MAGE,DRUID,SHAMAN,WARRIOR,ROGUE,PALADIN"
 
+local groupFilters =  { { groupFilter = "1" }, { groupFilter = "2" }, { groupFilter = "3" }, {	groupFilter = "4" }, {	groupFilter = "5" } }
+
 Grid2Layout:AddLayout("None", {
 	meta = {
 		raid40 = true,
 		raid25 = true,
-		raid20 = true,
 		raid15 = true,
 		raid10 = true,
 		party = true,
-		pvp = true,
 		arena = true,
 		solo = true,
 	},
 })
-
 
 Grid2Layout:AddLayout("Solo", {
 	meta = {
@@ -64,9 +63,9 @@ Grid2Layout:AddLayout("Solo w/Pet", {
 
 Grid2Layout:AddLayout("By Group 5", {
 	meta = {
+		solo = true,
 		party = true,
 		arena = true,
-		solo = true,
 	},
 	[1] = {
 		showPlayer = true,
@@ -102,7 +101,6 @@ Grid2Layout:AddLayout("By Group 5 w/Pets", {
 Grid2Layout:AddLayout("By Group 10", {
 	meta = {
 		raid10 = true,
-		pvp = true,
 		solo = true,
 	},
 	defaults = {
@@ -114,14 +112,13 @@ Grid2Layout:AddLayout("By Group 10", {
 		showRaid = true,
 		showSolo = true,
 	},
-	[1] = {	groupFilter = "1", },
-	[2] = {	groupFilter = "2", },
+	[1] = groupFilters[1],
+	[2] = groupFilters[2],
 })
 
 Grid2Layout:AddLayout("By Group 10 w/Pets", {
 	meta = {
 		raid10 = true,
-		pvp = true,
 	},
 	defaults = {
 		groupingOrder = DEFAULT_GROUP_ORDER,
@@ -130,8 +127,8 @@ Grid2Layout:AddLayout("By Group 10 w/Pets", {
 		showParty = true,
 		showRaid = true,
 	},
-	[1] = {	groupFilter = "1", },
-	[2] = {	groupFilter = "2", },
+	[1] = groupFilters[1],
+	[2] = groupFilters[2],
 	[3] = {
 		type = "raidpet",
 		groupingOrder = DEFAULT_PET_ORDER,
@@ -156,37 +153,35 @@ Grid2Layout:AddLayout("By Group 10 Tanks First", {
 		groupingOrder = "MAINTANK,MAINASSIST", 
 
 	},
-	[1] = { groupFilter = "1" },
-	[2] = {	groupFilter = "2" },
+	[1] = groupFilters[1],
+	[2] = groupFilters[2],
 })
 
 Grid2Layout:AddLayout("By Group 15", {
 	meta = {
 		raid15 = true,
-		pvp = true,
 	},
 	defaults = {
 		groupingOrder = DEFAULT_GROUP_ORDER,
         allowVehicleTarget = true,
 		toggleForVehicle = true,
 	},
-	[1] = {	groupFilter = "1", },
-	[2] = {	groupFilter = "2", },
-	[3] = {	groupFilter = "3", },
+	[1] = groupFilters[1],
+	[2] = groupFilters[2],
+	[3] = groupFilters[3],
 })
 
 Grid2Layout:AddLayout("By Group 15 w/Pets", {
 	meta = {
 		raid15 = true,
-		pvp = true,
 	},
 	defaults = {
 		groupingOrder = DEFAULT_GROUP_ORDER,
         allowVehicleTarget = true,
 	},
-	[1] = {	groupFilter = "1",	},
-	[2] = {	groupFilter = "2",	},
-	[3] = {	groupFilter = "3",	},
+	[1] = groupFilters[1],
+	[2] = groupFilters[2],
+	[3] = groupFilters[3],
 	[4] = {
 		type = "raidpet",
 		groupingOrder = DEFAULT_PET_ORDER,
@@ -203,7 +198,6 @@ Grid2Layout:AddLayout("By Group 25", {
 		raid40 = true,
 		raid25 = true,
 		raid10 = true,
-		pvp = true,
 		solo = true,
 	},
 	defaults = {
@@ -215,27 +209,26 @@ Grid2Layout:AddLayout("By Group 25", {
         allowVehicleTarget = true,
 		toggleForVehicle = true,
 	},
-	[1] = {	groupFilter = "1",	},
-	[2] = {	groupFilter = "2",	},
-	[3] = {	groupFilter = "3",	},
-	[4] = {	groupFilter = "4",	},
-	[5] = {	groupFilter = "5",	},
+	[1] = groupFilters[1],
+	[2] = groupFilters[2],
+	[3] = groupFilters[3],
+	[4] = groupFilters[4],
+	[5] = groupFilters[5],
 })
 
 Grid2Layout:AddLayout("By Group 25 w/Pets", {
 	meta = {
 		raid25 = true,
-		pvp = true,
 	},
 	defaults = {
 		groupingOrder = DEFAULT_GROUP_ORDER,
         allowVehicleTarget = true,
 	},
-	[1] = {	groupFilter = "1", },
-	[2] = {	groupFilter = "2", },
-	[3] = {	groupFilter = "3", },
-	[4] = {	groupFilter = "4", },
-	[5] = {	groupFilter = "5", },
+	[1] = groupFilters[1],
+	[2] = groupFilters[2],
+	[3] = groupFilters[3],
+	[4] = groupFilters[4],
+	[5] = groupFilters[5],
 	[6] = {
 		type = "raidpet",
 		groupingOrder = DEFAULT_PET_ORDER,
@@ -262,11 +255,11 @@ Grid2Layout:AddLayout("By Group 25 Tanks First", {
 		groupBy = "ROLE",
 		groupingOrder = "MAINTANK,MAINASSIST", 
 	},
-	[1] = {	groupFilter = "1"	},
-	[2] = {	groupFilter = "2"	},
-	[3] = {	groupFilter = "3"	},
-	[4] = {	groupFilter = "4"	},
-	[5] = {	groupFilter = "5"	},
+	[1] = groupFilters[1],
+	[2] = groupFilters[2],
+	[3] = groupFilters[3],
+	[4] = groupFilters[4],
+	[5] = groupFilters[5],
 })
 
 Grid2Layout:AddLayout("By Class 25", {
@@ -275,7 +268,6 @@ Grid2Layout:AddLayout("By Class 25", {
 		raid15 = true,
 		raid10 = true,
 		party = true,
-		pvp = true,
 		arena = true,
 		solo = true,
 	},
@@ -305,7 +297,6 @@ Grid2Layout:AddLayout("By Role 25", {
 		raid15 = true,
 		raid10 = true,
 		party = true,
-		pvp = true,
 		solo = true,
 	},
 	defaults = {
@@ -317,7 +308,6 @@ Grid2Layout:AddLayout("By Role 25", {
 		unitsPerColumn = 5,
 	},
 	[1] = {
-		groupFilter = "1,2,3,4,5",
 		groupBy = "ROLE",
 		groupFilter = "MAINTANK,MAINASSIST", 
 		groupingOrder = "MAINTANK,MAINASSIST", 
@@ -341,7 +331,6 @@ Grid2Layout:AddLayout("By Class 1 x 25 Wide", {
 		raid25 = true,
 		raid15 = true,
 		raid10 = true,
-		pvp = true,
 		arena = true,
 		solo = true,
 	},
@@ -370,7 +359,6 @@ Grid2Layout:AddLayout("By Class 2 x 15 Wide", {
 		raid25 = true,
 		raid15 = true,
 		raid10 = true,
-		pvp = true,
 		arena = true,
 		solo = true,
 	},
@@ -399,7 +387,6 @@ Grid2Layout:AddLayout("By Group 4 x 10 Wide", {
 		raid25 = true,
 		raid15 = true,
 		raid10 = true,
-        pvp = true,
 		solo = true,
     },
  	defaults = {
@@ -424,27 +411,12 @@ Grid2Layout:AddLayout("By Group 4 x 10 Wide", {
 
 })
 
-Grid2Layout:AddLayout("By Group 20", {
-	meta = {
-		raid20 = true,
-	},
-	defaults = {
-		groupingOrder = DEFAULT_GROUP_ORDER,
-		toggleForVehicle = true,
-	},
-	[1] = {	groupFilter = "1" },
-	[2] = {	groupFilter = "2" },
-	[3] = {	groupFilter = "3" },
-	[4] = {	groupFilter = "4"},
-})
-
 Grid2Layout:AddLayout("By Class", {
 	meta = {
 		raid40 = true,
 		raid25 = true,
 		raid15 = true,
 		raid10 = true,
-		pvp = true,
 		solo = true,
 	},
 	defaults = {
@@ -470,7 +442,6 @@ Grid2Layout:AddLayout("By Class w/Pets", {
 		raid25 = true,
 		raid15 = true,
 		raid10 = true,
-		pvp = true,
 	},
 	defaults = {
         allowVehicleTarget = true,
@@ -495,7 +466,6 @@ Grid2Layout:AddLayout("By Group 25 w/tanks", {
 	meta = {
 		raid25 = true,
 		raid10 = true,
-		pvp = true,
 		solo = true,
 	},
 	defaults = {
@@ -511,17 +481,16 @@ Grid2Layout:AddLayout("By Group 25 w/tanks", {
 		groupFilter = "MAINTANK,MAINASSIST",
 		groupingOrder = "MAINTANK,MAINASSIST",
 	},
-	[2] = {	groupFilter = "1" },
-	[3] = {	groupFilter = "2" },
-	[4] = {	groupFilter = "3" },
-	[5] = {	groupFilter = "4" },
-	[6] = {	groupFilter = "5" }
+	[2] = groupFilters[1],
+	[3] = groupFilters[2],
+	[4] = groupFilters[3],
+	[5] = groupFilters[4],
+	[6] = groupFilters[5],
 })
 
 Grid2Layout:AddLayout("By Group 40", {
 	meta = {
 		raid40 = true,
-		pvp = true,
 	},
 	defaults = {
 		showParty = true,
@@ -530,11 +499,11 @@ Grid2Layout:AddLayout("By Group 40", {
         allowVehicleTarget = true,
 		toggleForVehicle = true,
 	},
-	[1] = {	groupFilter = "1" },
-	[2] = {	groupFilter = "2" },
-	[3] = {	groupFilter = "3" },
-	[4] = {	groupFilter = "4" },
-	[5] = {	groupFilter = "5" },
+	[1] = groupFilters[1],
+	[2] = groupFilters[2],
+	[3] = groupFilters[3],
+	[4] = groupFilters[4],
+	[5] = groupFilters[5],
 	[6] = {	groupFilter = "6" },
 	[7] = {	groupFilter = "7" },
 	[8] = {	groupFilter = "8" },

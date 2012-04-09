@@ -63,7 +63,10 @@ function modulePrototype:OnInitialize()
 	end
 	self.debugFrame = Grid2.debugFrame
 	self.debugging = self.db.profile.debug
-	if self.OnModuleInitialize then self:OnModuleInitialize() end
+	if self.OnModuleInitialize then 
+		self:OnModuleInitialize() 
+		self.OnModuleInitialize = nil
+	end
 	self:Debug("OnInitialize")
 end
 
@@ -159,7 +162,7 @@ function Grid2:InitializeOptions()
 		self:SetScript("OnShow", nil)
 	end)
 	self.optionsFrame = optionsFrame
-	self.InitializeOptions= nil
+	self.InitializeOptions = nil
 end
 
 function Grid2:OnChatCommand(input)

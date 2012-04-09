@@ -4,8 +4,6 @@ local ColorCountValues = {1,2,3,4,5,6,7,8,9}
 
 local ColorizeByValues= { L["Number of stacks"] , L["Remaining time"] }
 
-local Grid2Blink = Grid2:GetModule("Grid2Blink")
-
 local function StatusAuraGenerateColors(status, newCount)
 	local oldCount = status.dbx.colorCount or 1
 	for i=oldCount+1,newCount do
@@ -131,7 +129,7 @@ end
 
 -- Grid2Options:MakeStatusBlinkThresholdOptions()
 function Grid2Options:MakeStatusBlinkThresholdOptions(status, options, optionParams)
-	if Grid2Blink.db.profile.type ~= "None" and (not status.dbx.colorThreshold) then
+	if Grid2Frame.db.profile.blinkType ~= "None" and (not status.dbx.colorThreshold) then
 		-- self:MakeSpacerOptions( options, 30 )
 		self:MakeHeaderOptions(options, "Thresholds")
 		options.blinkThreshold = {
