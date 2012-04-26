@@ -77,6 +77,10 @@ function Offline:GetPercent(unit)
 	return self.dbx.color1.a, text
 end
 
+function Offline:GetTexCoord()
+ return 0.2, 0.8, 0.2, 0.8
+end
+
 function Offline:GetIcon()
 	return "Interface\\CharacterFrame\\Disconnect-Icon"
 end 

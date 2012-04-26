@@ -13,7 +13,7 @@ do
 			name = L["Active time"],
 			desc = L["Show the status for the specified number of seconds."],
 			order = 40,
-			type = "range", min = 1, max = 5, step = 1,
+			type = "range", min = 0.2, max = 5, step = 0.1,
 			get = function()
 				return status.dbx.activeTime or 2
 			end,
