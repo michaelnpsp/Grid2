@@ -213,6 +213,7 @@ RDDB["Cataclysm"] = {
 		["Yor'sahj the Unsleeping"] = {
 		104849, -- Void bolt
 		109389, -- Deep Corruption
+		105695, -- Fixate 
 		},
 		["Warlord Zon'ozz"] = {
 		103434, -- Disrupting shadows

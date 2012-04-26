@@ -13,6 +13,7 @@ local OutgoingHeal
 local timer
 local playerGUID
 local activeTime
+local timerDelay
 local spells = {}
 local icons = {}
 local heal_cache = {}
@@ -44,7 +45,7 @@ local function CombatLogEvent(...)
 			if prev~=spellName then
 				OutgoingHeal:UpdateIndicators(unit)
 				if not timer then
-					timer = Grid2:ScheduleRepeatingTimer(TimerEvent, 1)
+					timer = Grid2:ScheduleRepeatingTimer(TimerEvent, timerDelay)
 				end	
 			end	
 		end
@@ -76,6 +77,10 @@ local function GetIcon(self, unit)
 	if spell then return icons[ spell ] end	
 end
 
+local function GetText(self, unit)
+	return heal_cache[unit]
+end
+
 local function UpdateDB(self)
 	wipe(icons)
 	wipe(spells)
@@ -87,6 +92,7 @@ local function UpdateDB(self)
 		end	
 	end
 	activeTime = self.dbx.activeTime or 2
+	timerDelay = math.min(0.1, activeTime / 2 )
 end
 
 Grid2.setupFunc["aoe-OutgoingHeals"] = function(baseKey, dbx)
@@ -97,8 +103,9 @@ Grid2.setupFunc["aoe-OutgoingHeals"] = function(baseKey, dbx)
 	OutgoingHeal.IsActive  = IsActive
 	OutgoingHeal.GetColor  = GetColor
 	OutgoingHeal.GetIcon   = GetIcon
+	OutgoingHeal.GetText   = GetText
 	OutgoingHeal.UpdateDB  = UpdateDB
-	Grid2:RegisterStatus(OutgoingHeal, {"color", "icon"}, baseKey, dbx)
+	Grid2:RegisterStatus(OutgoingHeal, {"color", "icon", "text"}, baseKey, dbx)
 	return OutgoingHeal
 end
 
