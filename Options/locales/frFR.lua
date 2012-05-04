@@ -231,6 +231,13 @@ L["Set cooldown to become darker over time instead of lighter."] = "Paramètre l
 -- L["Cooldown"] = ""
 -- L["Text Location"] = ""
 L["Disable OmniCC"] = "Désactiver OmniCC"
+-- L["Animations"] = ""
+-- L["Enable animation"] = ""
+-- L["Turn on/off zoom animation of icons."] = ""
+-- L["Duration"] = ""
+-- L["Sets the duration in seconds."] = ""
+L["Scale"] = "Agrandissement"
+-- L["Sets the zoom factor."] = ""
  
 L["Type"] = "Type"
 L["Type of indicator"] = "Type d'indicateur"

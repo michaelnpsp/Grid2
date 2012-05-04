@@ -57,6 +57,22 @@ local function Icon_GetBlinkFrame(self, parent)
 	return parent[self.name]
 end
 
+local function Icon_AnimationOnUpdate(frame, elapsed)
+	local status = frame.status
+	local duration = status.animDuration
+	elapsed = elapsed + frame.animElapsed
+	if elapsed < duration then
+		frame.animElapsed = elapsed
+		elapsed = elapsed / duration
+		if elapsed>0.5 then elapsed = 1-elapsed end
+		frame:SetScale( 1 + elapsed*status.animScale )
+	else
+		frame.animElapsed = nil
+		frame:SetScript("OnUpdate", nil)
+		frame:SetScale(1)
+	end
+end
+
 local function Icon_OnUpdate(self, parent, unit, status)
 	local Frame = parent[self.name]
 	if not status then Frame:Hide()	return end
@@ -79,7 +95,7 @@ local function Icon_OnUpdate(self, parent, unit, status)
 	Icon:SetAlpha(a or 1)
 
 	if not self.disableStack then
-		local count= status:GetCount(unit)
+		local count = status:GetCount(unit)
 		if count>1 then 
 			Frame.CooldownText:SetText(count)
 			Frame.CooldownText:Show()
@@ -97,6 +113,12 @@ local function Icon_OnUpdate(self, parent, unit, status)
 			Frame.Cooldown:Hide()	
 		end
 	end	
+
+	if self.animEnabled and (not Frame.animElapsed) then
+		Frame.status = self
+		Frame.animElapsed = 0
+		Frame:SetScript("OnUpdate", Icon_AnimationOnUpdate )
+	end
 	
 	Frame:Show()
 end
@@ -167,6 +189,12 @@ local function Icon_UpdateDB(self, dbx)
 	self.useStatusColor  = dbx.useStatusColor
 	self.color           = Grid2:MakeColor(dbx.color1)
 	self.textfont        = Grid2:MediaFetch("font", dbx.font or Grid2Frame.db.profile.font) or STANDARD_TEXT_FONT
+	-- animation
+	self.animEnabled  = dbx.animEnabled
+	if dbx.animEnabled then
+		self.animScale    = ((dbx.animScale or 1.5)-1) * 2
+		self.animDuration = dbx.animDuration or 0.7
+	end	
 	-- backdrop
 	local backdrop    = self.backdrop   or {}
 	backdrop.insets   = backdrop.insets or {}

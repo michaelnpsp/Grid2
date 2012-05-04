@@ -157,16 +157,13 @@ HealthCurrent.OnEnable  = Health_Enable
 HealthCurrent.OnDisable = Health_Disable
 HealthCurrent.IsActive  = Grid2.statusLibrary.IsActive
 
-function HealthCurrent:UpdateDeath(unit)
-	if self.enabled and self.deadAsFullHealth then
-		self:UpdateIndicators(unit)
-	end
+function HealthCurrent_GetPercent(self,unit)
+	local m = UnitHealthMax(unit)
+	return m == 0 and 0 or UnitHealth(unit) / m 
 end
 
-function HealthCurrent:GetPercent(unit)
-	if (self.deadAsFullHealth and UnitIsDeadOrGhost(unit)) then
-		return 1
-	end
+local function HealthCurrent_GetPercentDFH(self, unit)
+	if UnitIsDeadOrGhost(unit) then return 1 end
 	local m = UnitHealthMax(unit)
 	return m == 0 and 0 or UnitHealth(unit) / m 
 end
@@ -187,7 +184,7 @@ function HealthCurrent:GetColor(unit)
 end
 
 function HealthCurrent:UpdateDB()
-	self.deadAsFullHealth = self.dbx.deadAsFullHealth
+	self.GetPercent = self.dbx.deadAsFullHealth and HealthCurrent_GetPercentDFH or HealthCurrent_GetPercent
 	self.color1 = Grid2:MakeColor(self.dbx.color1)
 	self.color2 = Grid2:MakeColor(self.dbx.color2)
 	self.color3 = Grid2:MakeColor(self.dbx.color3)
@@ -322,13 +319,6 @@ local function HealsUpdateEvent(unit)
 	end
 end
 
-function Heals:UpdateDeath(unit)
-	if self.enabled and heals_cache[unit]~=0 then
-		heals_cache[unit] = 0
-		self:UpdateIndicators(unit)
-	end
-end
-
 function Heals:UpdateDB()
 	local m = self.dbx.flags
 	self.minimum = (m and m>1 and m ) or 1
@@ -387,9 +377,9 @@ local function DeathUpdateUnit(unit, noUpdate)
 	if new ~= dead_cache[unit] then
 		dead_cache[unit] = new
 		if not noUpdate then 
-			if new then
-				Heals:UpdateDeath(unit)
-				HealthCurrent:UpdateDeath(unit)
+			if new and heals_cache[unit]~=0 then
+				heals_cache[unit] = 0
+				Heals:UpdateIndicators(unit)
 			end	
 			Death:UpdateIndicators(unit) 
 		end

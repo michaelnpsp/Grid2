@@ -231,6 +231,13 @@ L["Set cooldown to become darker over time instead of lighter."] = "Устано
 L["Cooldown"] = "Восстановление"
 -- L["Text Location"] = ""
 -- L["Disable OmniCC"] = ""
+-- L["Animations"] = ""
+-- L["Enable animation"] = ""
+-- L["Turn on/off zoom animation of icons."] = ""
+-- L["Duration"] = ""
+-- L["Sets the duration in seconds."] = ""
+L["Scale"] = "Масштаб"
+-- L["Sets the zoom factor."] = ""
  
 L["Type"] = "Тип"
 L["Type of indicator"] = "Тип индикатора"
