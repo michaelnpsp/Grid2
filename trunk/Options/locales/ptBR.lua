@@ -231,6 +231,13 @@ L["Adjust background color and alpha."] = "Ajustar plano de fundo e transparenci
 -- L["Cooldown"] = ""
 -- L["Text Location"] = ""
 -- L["Disable OmniCC"] = ""
+-- L["Animations"] = ""
+-- L["Enable animation"] = ""
+-- L["Turn on/off zoom animation of icons."] = ""
+-- L["Duration"] = ""
+-- L["Sets the duration in seconds."] = ""
+-- L["Scale"] = ""
+-- L["Sets the zoom factor."] = ""
  
 -- L["Type"] = ""
 -- L["Type of indicator"] = ""

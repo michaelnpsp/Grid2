@@ -231,6 +231,13 @@ L["Set cooldown to become darker over time instead of lighter."] = true
 L["Cooldown"]= true
 L["Text Location"]= true
 L["Disable OmniCC"]= true
+L["Animations"] = true 
+L["Enable animation"] = true
+L["Turn on/off zoom animation of icons."] = true
+L["Duration"] = true
+L["Sets the duration in seconds."] = true
+L["Scale"] = true
+L["Sets the zoom factor."] = true
  
 L["Type"] = true
 L["Type of indicator"] = true

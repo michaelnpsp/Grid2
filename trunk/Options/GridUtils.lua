@@ -149,6 +149,7 @@ do
 		Display    = { type = "header", order = 80,  name = L["Display"]    },
 		StackText  = { type = "header", order = 90,  name = L["Stack Text"] },
 		Cooldown   = { type = "header", order = 125, name = L["Cooldown"]	},
+		Animation  = { type = "header", order = 150, name = L["Animations"]	},
 		-- statuses headers
 		Colors	     = { type = "header", order = 10,  name = L["Colors"]      },
 		Thresholds   = { type = "header", order = 50,  name = L["Thresholds"], },

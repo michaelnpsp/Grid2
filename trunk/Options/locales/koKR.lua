@@ -231,6 +231,13 @@ L["Set cooldown to become darker over time instead of lighter."] = "재사용 �
 L["Cooldown"] = "재사용 대기시간"
 L["Text Location"] = "문자 위치"
 L["Disable OmniCC"] = "OmniCC 사용 안함"
+-- L["Animations"] = ""
+-- L["Enable animation"] = ""
+-- L["Turn on/off zoom animation of icons."] = ""
+-- L["Duration"] = ""
+-- L["Sets the duration in seconds."] = ""
+L["Scale"] = "크기"
+-- L["Sets the zoom factor."] = ""
  
 L["Type"] = "타입"
 L["Type of indicator"] = "지시기 타입"
