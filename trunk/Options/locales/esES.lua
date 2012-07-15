@@ -404,6 +404,7 @@ L["Assigned to"] = "Asignado a"
 L["Coloring based on"] = "Colorear por"
 L["Number of stacks"] = "No. Acumulaciones"
 L["Remaining time"] = "Duracion restante"
+L["Elapsed time"] = "Tiempo transcurrido"
 
 L["Class Filter"] = "Filtro de clases"
 L["Show on %s."] = "Mostrar para %s."

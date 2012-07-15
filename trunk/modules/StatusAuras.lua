@@ -66,14 +66,26 @@ do
 			for status in next, tracked do
 				local tracker    = status.tracker
 				local thresholds = status.thresholds
-				for unit, expiration in next, status.expirations do
-					local timeLeft  = expiration - time
-					local threshold = thresholds[ tracker[unit] ]
-					if threshold and timeLeft <= threshold then
-						tracker[unit] = tracker[unit] + 1
-						status:UpdateIndicators(unit)
+				if status.trackElapsed then
+					local durations = status.durations
+					for unit, expiration in next, status.expirations do
+						local timeElapsed = time - (expiration - durations[unit])
+						local threshold = thresholds[ tracker[unit] ]
+						if threshold and timeElapsed >= threshold then
+							tracker[unit] = tracker[unit] + 1
+							status:UpdateIndicators(unit)
+						end
 					end
-				end
+				else
+					for unit, expiration in next, status.expirations do
+						local timeLeft  = expiration - time
+						local threshold = thresholds[ tracker[unit] ]
+						if threshold and timeLeft <= threshold then
+							tracker[unit] = tracker[unit] + 1
+							status:UpdateIndicators(unit)
+						end
+					end
+				end	
 			end
 			self:Play()
 		end)
@@ -396,10 +408,11 @@ local function status_UpdateDB(self)
 			self.IsActive   = status_IsActiveBlink
 			MakeStatusColorHandler(self)
 		elseif dbx.colorThreshold then
-			self.colors     = {}
-			self.thresholds = dbx.colorThreshold
-			self.GetColor   = status_GetThresholdColor
-			self.IsActive   = status_IsActive
+			self.colors       = {}
+			self.thresholds   = dbx.colorThreshold
+			self.trackElapsed = dbx.colorThresholdElapsed
+			self.GetColor     = status_GetThresholdColor
+			self.IsActive     = status_IsActive
 			for i=1,dbx.colorCount do
 				self.colors[i] = dbx["color"..i]
 			end

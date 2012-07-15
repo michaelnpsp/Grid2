@@ -47,7 +47,9 @@ function Offline:SetConnected(unit, connected)
 		offline[unit] = nil
 	else
 		offline[unit] = GetTime()
-		if not timer then timer = Grid2:ScheduleRepeatingTimer(TimerEvent, 2) end
+		if not timer then 
+			timer = Grid2:ScheduleRepeatingTimer(TimerEvent, 2)
+		end
 	end
 end
 

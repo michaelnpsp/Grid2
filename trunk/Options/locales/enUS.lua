@@ -404,6 +404,7 @@ L["Assigned to"] = true
 L["Coloring based on"] = true
 L["Number of stacks"] = true
 L["Remaining time"] = true
+L["Elapsed time"] = true
 
 L["Class Filter"] = true
 L["Show on %s."] = true

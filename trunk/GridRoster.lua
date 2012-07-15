@@ -1,9 +1,13 @@
 -- Roster management
 
+-- Local variables to speedup things
 local UnitName = UnitName
 local UnitGUID = UnitGUID
 local UnitExists = UnitExists
 local pairs, next = pairs, next
+-- MoP Compatibility
+local GetNumRaidMembers = GetNumRaidMembers or GetNumGroupMembers
+local GetNumPartyMembers = GetNumPartyMembers or GetNumSubgroupMembers
 
 -- realm name
 local my_realm = GetRealmName()

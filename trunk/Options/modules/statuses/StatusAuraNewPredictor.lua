@@ -101,7 +101,7 @@ end
 function AuraPredictor:GetSpellKey(spellID, category)
 	if self.type=="debuff" then
 		local key = LOCALIZED_CLASS_NAMES_MALE[category] or category
-		return key and key..">"..spellID or spellID
+		return key and key~="" and key..">"..spellID or spellID
 	else
 		return spellID
 	end	

@@ -2,7 +2,7 @@ local L = Grid2Options.L
 
 local ColorCountValues = {1,2,3,4,5,6,7,8,9}
 
-local ColorizeByValues= { L["Number of stacks"] , L["Remaining time"] }
+local ColorizeByValues= { L["Number of stacks"] , L["Remaining time"], L["Elapsed time"] }
 
 local function StatusAuraGenerateColors(status, newCount)
 	local oldCount = status.dbx.colorCount or 1
@@ -17,7 +17,7 @@ end
 
 local function StatusAuraGenerateColorThreshold(status)
 	if status.dbx.colorCount then
-		local newCount   =  status.dbx.colorCount - 1
+		local newCount   = status.dbx.colorCount - 1
 		local thresholds = status.dbx.colorThreshold or {}
 		local oldCount   = #thresholds
 		for i=oldCount+1,newCount do 
@@ -195,13 +195,17 @@ function Grid2Options:MakeStatusAuraCommonOptions(status, options, optionParams)
 				width ="normal",
 				name = L["Coloring based on"],
 				desc = L["Coloring based on"],
-				get = function() return status.dbx.colorThreshold and 2 or 1 end,
+				get = function() 
+					if status.dbx.colorThreshold then
+						return status.dbx.colorThresholdElapsed and 3 or 2
+					else
+						return 1
+					end
+				end,
 				set = function( _, v) 
-						if v == 1 then
-							status.dbx.colorThreshold = nil
-						else
-							StatusAuraGenerateColorThreshold(status)
-						end
+						status.dbx.colorThreshold = nil
+						status.dbx.colorThresholdElapsed = (v==3) and true or nil
+						if v ~= 1 then StatusAuraGenerateColorThreshold(status) end
 						status:UpdateDB()
 						self:MakeStatusOptions(status)
 				end,
@@ -224,13 +228,21 @@ function Grid2Options:MakeStatusAuraColorThresholdOptions(status, options, optio
 				name = colorKey .. (i+1),
 				desc = L["Threshold to activate Color"] .. (i+1),
 				min = 0,
-				max = 30,
+				max = 300,
+				softMin = 0,
+				softMax = 30,
 				step = 0.1,
 				bigStep = 1,
 				get = function () return status.dbx.colorThreshold[i] end,
 				set = function (_, v)
-					local min = status.dbx.colorThreshold[i+1] or 0
-					local max = status.dbx.colorThreshold[i-1] or 30
+					local min,max
+					if status.dbx.colorThresholdElapsed then
+						min = status.dbx.colorThreshold[i-1] or 0
+						max = status.dbx.colorThreshold[i+1] or 30
+					else
+						min = status.dbx.colorThreshold[i+1] or 0
+						max = status.dbx.colorThreshold[i-1] or 30
+					end
 					if v>=min and v<=max then
 						status.dbx.colorThreshold[i] = v
 						status:UpdateDB()
@@ -317,8 +329,10 @@ end )
 Grid2Options:RegisterStatusOptions("debuff", "debuff", function(self, status, options, optionParams)
 	self:MakeStatusAuraDescriptionOptions(status, options, optionParams)
 	self:MakeStatusAuraListOptions(status, options, optionParams)
+	self:MakeStatusAuraCommonOptions(status, options, optionParams)
 	self:MakeStatusAuraUseSpellIdOptions(status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
+	self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
 	self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
 	self:MakeStatusClassFilterOptions(status, options, optionParams)
 	self:MakeStatusDeleteOptions(status, options, optionParams)
