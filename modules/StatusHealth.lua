@@ -377,10 +377,15 @@ local function DeathUpdateUnit(unit, noUpdate)
 	if new ~= dead_cache[unit] then
 		dead_cache[unit] = new
 		if not noUpdate then 
-			if new and heals_cache[unit]~=0 then
-				heals_cache[unit] = 0
-				Heals:UpdateIndicators(unit)
-			end	
+			if new then
+				if heals_cache[unit]~=0 then
+					heals_cache[unit] = 0
+					Heals:UpdateIndicators(unit)
+				end	
+				if HealthCurrent.enabled then
+					HealthCurrent:UpdateIndicators(unit)
+				end
+			end
 			Death:UpdateIndicators(unit) 
 		end
 	end
