@@ -6,8 +6,8 @@ local UnitGUID = UnitGUID
 local UnitExists = UnitExists
 local pairs, next = pairs, next
 -- MoP Compatibility
-local GetNumRaidMembers = GetNumRaidMembers or GetNumGroupMembers
-local GetNumPartyMembers = GetNumPartyMembers or GetNumSubgroupMembers
+local GetNumRaidMembers = GetNumGroupMembers or GetNumRaidMembers 
+local GetNumPartyMembers = GetNumSubgroupMembers or GetNumPartyMembers
 
 -- realm name
 local my_realm = GetRealmName()

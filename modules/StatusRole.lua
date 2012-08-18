@@ -17,6 +17,8 @@ local MAIN_TANK = MAIN_TANK
 local MAIN_ASSIST = MAIN_ASSIST
 local next = next
 
+local RAID_UPDATE_EVENT = Grid2.wowMoP and "GROUP_ROSTER_UPDATE" or "RAID_ROSTER_UPDATE"
+
 -- Code to disable statuses in combat
 local SetHideInCombat
 do
@@ -103,14 +105,14 @@ end
 
 function Role:OnEnable()
 	self:SetHideInCombat(self.dbx.hideInCombat)
-	self:RegisterEvent("RAID_ROSTER_UPDATE", "UpdateAllUnits")
+	self:RegisterEvent(RAID_UPDATE_EVENT, "UpdateAllUnits")
 	self:RegisterMessage("Grid_UnitLeft")
 	self:UpdateAllUnits()
 end
 
 function Role:OnDisable()
 	self:SetHideInCombat()
-	self:UnregisterEvent("RAID_ROSTER_UPDATE")
+	self:UnregisterEvent(RAID_UPDATE_EVENT)
 	self:UnregisterMessage("Grid_UnitLeft")
 	wipe(role_cache)
 end
@@ -190,14 +192,14 @@ end
 
 function Assistant:OnEnable()
 	self:SetHideInCombat(self.dbx.hideInCombat)
-	self:RegisterEvent("RAID_ROSTER_UPDATE", "UpdateAllUnits")
+	self:RegisterEvent(RAID_UPDATE_EVENT, "UpdateAllUnits")
 	self:RegisterMessage("Grid_UnitLeft")
 	self:UpdateAllUnits()
 end
 
 function Assistant:OnDisable()
 	self:SetHideInCombat()
-	self:UnregisterEvent("RAID_ROSTER_UPDATE")
+	self:UnregisterEvent(RAID_UPDATE_EVENT)
 	self:UnregisterMessage("Grid_UnitLeft")
 	wipe(assis_cache)
 end
@@ -259,14 +261,14 @@ end
 function Leader:OnEnable()
 	self:SetHideInCombat(self.dbx.hideInCombat)
 	self:RegisterEvent("PARTY_LEADER_CHANGED", "UpdateLeader")
-	self:RegisterEvent("RAID_ROSTER_UPDATE", "UpdateLeader")
+	self:RegisterEvent(RAID_UPDATE_EVENT, "UpdateLeader")
 	self:CalculateLeader()
 end
 
 function Leader:OnDisable()
 	self:SetHideInCombat()
 	self:UnregisterEvent("PARTY_LEADER_CHANGED")
-	self:UnregisterEvent("RAID_ROSTER_UPDATE")
+	self:UnregisterEvent(RAID_UPDATE_EVENT)
 	raidLeader = nil
 end
 
@@ -331,14 +333,14 @@ end
 function MasterLooter:OnEnable()
 	self:SetHideInCombat(self.dbx.hideInCombat)
 	self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED", "UpdateMasterLooter")
-	self:RegisterEvent("RAID_ROSTER_UPDATE", "UpdateMasterLooter")
+	self:RegisterEvent(RAID_UPDATE_EVENT, "UpdateMasterLooter")
 	self:CalculateMasterLooter()
 end
 
 function MasterLooter:OnDisable()
 	self:SetHideInCombat()
 	self:UnregisterEvent("PARTY_LOOT_METHOD_CHANGED")
-	self:UnregisterEvent("RAID_ROSTER_UPDATE")
+	self:UnregisterEvent(RAID_UPDATE_EVENT)
 	masterLooter = nil
 end
 

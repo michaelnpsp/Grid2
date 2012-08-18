@@ -54,8 +54,8 @@ Grid2Options:RegisterStatusOptions("shields", "health", function(self, status, o
 			   status:UpdateDB()
 		end,
 	}	
-	local Grid2Blink = Grid2:GetModule("Grid2Blink")
-	if Grid2Blink.db.profile.type ~= "None" then
+	local Grid2Frame = Grid2:GetModule("Grid2Frame")
+	if Grid2Frame.db.profile.blinkType ~= "None" then
 		options.blinkThreshold = {
 			type = "range",
 			order = 35,
