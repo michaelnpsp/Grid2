@@ -18,4 +18,4 @@ Grid2RaidDebuffsOptions.lua
 RaidDebuffsCataclysm.lua
 RaidDebuffsLichKing.lua
 RaidDebuffsBC.lua
-
+RaidDebuffsMoP.lua

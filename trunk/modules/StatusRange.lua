@@ -15,7 +15,7 @@ local cache = {}
 local Ranges= {
 	["10"] = function(unit) return CheckInteractDistance(unit,3) end,
 	["28"] = function(unit) return CheckInteractDistance(unit,4) end,
-	["38"] = UnitInRange,
+	["38"] = function(unit) return unit=="player" or unit=="pet" or UnitInRange(unit) end,
 	["99"] = UnitIsVisible,
 }
 

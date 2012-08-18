@@ -107,6 +107,8 @@ end
 --}}}
 
 function Grid2:OnInitialize()
+	self.wowMoP = select( 4, GetBuildInfo() ) >= 50000
+
 	self.db = LibStub("AceDB-3.0"):New("Grid2DB", self.defaults)
 
 	self.debugging = self.db.profile.debug
@@ -128,7 +130,7 @@ end
 
 function Grid2:OnEnable()
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED", "GroupChanged")
-	self:RegisterEvent("RAID_ROSTER_UPDATE", "GroupChanged")
+	self:RegisterEvent( self.wowMoP and "GROUP_ROSTER_UPDATE" or "RAID_ROSTER_UPDATE", "GroupChanged")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("UNIT_PET")
 	self:RegisterEvent("UNIT_NAME_UPDATE")

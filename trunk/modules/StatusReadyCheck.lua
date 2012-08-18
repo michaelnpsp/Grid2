@@ -70,7 +70,7 @@ function ReadyCheck:OnEnable()
 	self:RegisterEvent("READY_CHECK")
 	self:RegisterEvent("READY_CHECK_CONFIRM")
 	self:RegisterEvent("READY_CHECK_FINISHED")
-	self:RegisterEvent("RAID_ROSTER_UPDATE")
+	self:RegisterEvent(Grid2.wowMoP and "GROUP_ROSTER_UPDATE" or "RAID_ROSTER_UPDATE", "RAID_ROSTER_UPDATE")
 	self:RegisterEvent("PARTY_LEADER_CHANGED", "CheckClearStatus")
 	self:RegisterMessage("Grid_GroupTypeChanged", "CheckClearStatus")
 end
@@ -81,7 +81,7 @@ function ReadyCheck:OnDisable()
 	self:UnregisterEvent("READY_CHECK_CONFIRM")
 	self:UnregisterEvent("READY_CHECK_FINISHED")
 	self:UnregisterEvent("PARTY_LEADER_CHANGED")
-	self:UnregisterEvent("RAID_ROSTER_UPDATE")
+	self:UnregisterEvent(Grid2.wowMoP and "GROUP_ROSTER_UPDATE" or "RAID_ROSTER_UPDATE")
 	self:UnregisterMessage("Grid_GroupTypeChanged")
 end
 
