@@ -4,6 +4,8 @@ local ReadyCheck = Grid2.statusPrototype:new("ready-check")
 
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
+local GetNumRaidMembers = Grid2.GetNumRaidMembers
+
 local readyChecking, timerClearStatus
 local readyStatuses = {}
 

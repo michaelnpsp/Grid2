@@ -17,6 +17,7 @@ local MAIN_TANK = MAIN_TANK
 local MAIN_ASSIST = MAIN_ASSIST
 local next = next
 
+local GetNumRaidMembers = Grid2.GetNumRaidMembers
 local RAID_UPDATE_EVENT = Grid2.wowMoP and "GROUP_ROSTER_UPDATE" or "RAID_ROSTER_UPDATE"
 
 -- Code to disable statuses in combat

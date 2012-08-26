@@ -35,6 +35,17 @@ Grid2.defaults = {
 Grid2.setupFunc = {} -- type setup functions for non-unique objects: "buff" statuses / "icon" indicators / etc.
 --}}}
 
+--{{{ MoP compatibility
+Grid2.wowMoP = select( 4, GetBuildInfo() ) >= 50000
+if Grid2.wowMoP then
+	Grid2.GetNumRaidMembers = function() return IsInRaid() and GetNumGroupMembers() or 0 end
+	Grid2.GetNumPartyMembers = GetNumSubgroupMembers
+else
+	Grid2.GetNumRaidMembers = GetNumRaidMembers
+	Grid2.GetNumPartyMembers = GetNumPartyMembers
+end
+--}}}
+
 --{{{ AceTimer-3.0, embedded upon use
 function Grid2:ScheduleRepeatingTimer(...)
 	LibStub("AceTimer-3.0"):Embed(Grid2)
@@ -107,8 +118,6 @@ end
 --}}}
 
 function Grid2:OnInitialize()
-	self.wowMoP = select( 4, GetBuildInfo() ) >= 50000
-
 	self.db = LibStub("AceDB-3.0"):New("Grid2DB", self.defaults)
 
 	self.debugging = self.db.profile.debug
