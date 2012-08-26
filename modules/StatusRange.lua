@@ -6,6 +6,7 @@ local Range = Grid2.statusPrototype:new("range")
 
 local Grid2 = Grid2
 local UnitIsUnit = UnitIsUnit
+local UnitInRange = UnitInRange
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local IsSpellInRange = IsSpellInRange
 local CheckInteractDistance = CheckInteractDistance
