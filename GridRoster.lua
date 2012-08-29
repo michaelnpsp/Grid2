@@ -130,7 +130,11 @@ do
 	function Grid2:GroupChanged(event)
 		local _, instType = IsInInstance()
 		if instType == "raid" then
-			instType = GetRaidDifficulty()%2 == 0 and "raid25" or "raid10"
+			if Grid2.wowMoP and IsInRaid() then
+				instType = select(5,GetInstanceInfo()) > 10 and "raid25" or "raid10"
+			else
+				instType = GetRaidDifficulty()%2 == 0 and "raid25" or "raid10"
+			end
 		elseif instType == "pvp" then
 			instType = GetGroupType(0, 10, 15, 40)
 		elseif instType ~= "arena" then

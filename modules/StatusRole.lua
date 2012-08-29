@@ -10,7 +10,7 @@ local Grid2 = Grid2
 local UnitExists = UnitExists
 local GetRaidRosterInfo = GetRaidRosterInfo
 local GetPartyAssignment = GetPartyAssignment
-local UnitIsPartyLeader = UnitIsPartyLeader
+local UnitIsGroupLeader = UnitIsGroupLeader
 local UnitGroupRolesAssigned= UnitGroupRolesAssigned
 local GetTexCoordsForRoleSmallCircle= GetTexCoordsForRoleSmallCircle
 local MAIN_TANK = MAIN_TANK
@@ -251,7 +251,7 @@ end
 
 function Leader:CalculateLeader()
 	for unit in Grid2:IterateRosterUnits() do
-		if UnitIsPartyLeader(unit) then
+		if UnitIsGroupLeader(unit) then
 			raidLeader = unit
 			return
 		end

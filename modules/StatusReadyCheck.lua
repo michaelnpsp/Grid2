@@ -10,7 +10,7 @@ local readyChecking, timerClearStatus
 local readyStatuses = {}
 
 function ReadyCheck:READY_CHECK(event, originator)
-    if IsRaidLeader() or IsRaidOfficer() or IsPartyLeader() then
+    if UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") then
         if timerClearStatus then
 			Grid2:CancelTimer(timerClearStatus, true)
 			timerClearStatus = nil
@@ -44,7 +44,7 @@ end
 function ReadyCheck:RAID_ROSTER_UPDATE()
     -- If you lose raid assist, you may not receive the READY_CHECK_FINISHED event.
     if (GetNumRaidMembers() > 0) then
-        local newAssist = IsRaidLeader() or IsRaidOfficer()
+        local newAssist = UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")
         if readyChecking and not newAssist then
 			self:ClearStatus()
         end
