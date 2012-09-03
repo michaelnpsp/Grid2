@@ -11,10 +11,10 @@ local UnitAura = UnitAura
 
 local shields_ava = {   
 	17 ,   -- Power Word: Shield (Priest)
-	47509, -- Divine Aegis (Priest)
+	47515, -- Divine Aegis (Priest)
+	114908, -- Spirit Shell (Priest)
 	76669, -- Illuminated Healing (Paladin)
-	85285, -- Sacred Shield (Paladin)
-	62600, -- Savage Defense (Druid)
+	65148, -- Sacred Shield (Paladin)
 	77513, -- Blood shield (DK)
 	11426, -- Ice Barrier (Mage)
 	1463,  -- Mana Shield (Mage)
@@ -142,7 +142,10 @@ function Shields:UpdateDB()
 	local filtered = dbx.filtered
 	for _,spellId in pairs(shields_ava) do
 		if (not filtered) or (not filtered[spellId]) then
-			shields[ GetSpellInfo(spellId) ] = true
+			local spell = GetSpellInfo(spellId)
+			if spell then 
+				shields[ spell ] = true 
+			end	
 		end	
 	end
 	if dbx.customShields then

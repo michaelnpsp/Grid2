@@ -191,7 +191,7 @@ do
 		Grid2:DbSetValue( "statuses",  "buff-PowerWordShield", {type = "buff", spellName = 17, color1 = {r=0,g=1,b=1,a=1}})
 		Grid2:DbSetValue( "statuses",  "buff-Renew-mine", {type = "buff", spellName = 139, mine = true, color1 = {r=1,g=1,b=1,a=1}})
 		Grid2:DbSetValue( "statuses",  "buff-SpiritOfRedemption", {type = "buff", spellName = 27827, blinkThreshold = 3, color1 = {r=1,g=1,b=1,a=1}})
-		Grid2:DbSetValue( "statuses",  "buff-Grace-mine", {type = "buff", spellName = 47516, mine = true,
+		Grid2:DbSetValue( "statuses",  "buff-Grace-mine", {type = "buff", spellName = 77613, mine = true,
 						colorCount = 3, color1 = {r=.6,g=.6,b=.6,a=1}, color2 = {r=.8,g=.8,b=.8,a=1}, color3 = {r=1,g=1,b=1,a=1}})
 		Grid2:DbSetValue( "statuses",  "buff-PrayerOfMending-mine", {type = "buff", spellName = 33076, mine = true,
 						colorCount = 5, color1 = {r=1,g=.2,b=.2,a=1}, color2 = {r=1,g=1,b=.4,a=.4}, 

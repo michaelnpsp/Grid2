@@ -86,7 +86,7 @@ Grid2Options:RegisterStatusOptions("shields", "health", function(self, status, o
 		options.filter.args["shield"..spellId] = {
 			type = "toggle",
 			width = "normal",
-			name = GetSpellInfo(spellId),
+			name = GetSpellInfo(spellId) or tostring(spellId),
 			get = function () return not (dbx.filtered and dbx.filtered[spellId]) end,
 			set = function (_, value)
 				if value then
