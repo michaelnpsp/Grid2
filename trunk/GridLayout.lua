@@ -452,7 +452,7 @@ function Grid2Layout:UpdateTextures()
 	local f = self.frame
 	local p = self.db.profile
 	-- update backdrop data
-	self.frameBackdrop.edgeFile = Grid2:MediaFetch("border", p.BorderTexture) or "Interface\\Tooltips\\UI-Tooltip-Border"
+	self.frameBackdrop.edgeFile = Grid2:MediaFetch("border", p.BorderTexture)
 	f:SetBackdrop( self.frameBackdrop )
 	-- create bg texture
 	f.texture = f.texture or f:CreateTexture(nil, "BORDER")
