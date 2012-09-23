@@ -112,8 +112,8 @@ Grid2Options:RegisterStatusOptions("shields", "health", function(self, status, o
 		set = function (_, v)
 			local shields = { strsplit( ",", strtrim(v, ", ")  ) }
 			for i=1,#shields do
-				local str  = strtrim(shields[i])
-				shields[i] = tonumber(str) and GetSpellInfo(str) or str
+				local spellId = tonumber(strtrim(shields[i]))
+				shields[i] = GetSpellInfo(spellId) and tostring(spellId) or nil
 			end
 			status.dbx.customShields = table.concat(shields,",")
 			status:UpdateDB()

@@ -451,6 +451,7 @@ L["Resets the layout frame's position and anchor."] = "Reset del layout, della p
 L["Reset to defaults."] = "Reset a default."
 L["Resurrected"] = "Risorto"
 L["resurrection"] = "resurrezione"
+L["self"] = "io"
 L["Reverse Cooldown"] = "Inverti Cooldown"
 L["RIGHT"] = "DESTRA"
 L["Riptide"] = "Riptide"

@@ -10,46 +10,46 @@ local fmt      = string.format
 local UnitAura = UnitAura
 
 local shields_ava = {   
-	17 ,   -- Power Word: Shield (Priest)
-	47515, -- Divine Aegis (Priest)
+	17 ,    -- Power Word: Shield (Priest)
+	47515,  -- Divine Aegis (Priest)
 	114908, -- Spirit Shell (Priest)
-	76669, -- Illuminated Healing (Paladin)
-	65148, -- Sacred Shield (Paladin)
-	77513, -- Blood shield (DK)
-	11426, -- Ice Barrier (Mage)
-	1463,  -- Mana Shield (Mage)
+	86273,  -- Illuminated Healing (Paladin)
+	65148,  -- Sacred Shield (Paladin)
+	77513,  -- Blood shield (DK)
+	11426,  -- Ice Barrier (Mage)
+	1463,   -- Mana Shield (Mage)
 }
 
 local shields     = {}  
 local shields_det = setmetatable({}, {__index = function(self,unit) local v= {} self[unit]= v return v end})
 local shields_tot = setmetatable({}, {__index = function(self,unit) return 0 end})
 
-function Shields:ApplyShield(unit,spellName, amount)
+function Shields:ApplyShield(unit, spellId, amount)
 	if amount and amount>0 then
-		local old = shields_det[unit][spellName] or 0
-		shields_det[unit][spellName] = amount
-		shields_tot[unit]            = shields_tot[unit] + amount - old
+		old = shields_det[unit][spellId] or 0
+		shields_det[unit][spellId] = amount
+		shields_tot[unit]          = shields_tot[unit] + amount - old
 		self:UpdateIndicators(unit)
 	end
 end
 
-function Shields:RemoveShield(unit,spellName)
-	local amount = shields_det[unit][spellName]
+function Shields:RemoveShield(unit, spellId)
+	local amount = shields_det[unit][spellId]
 	if amount and amount>0 then
-		shields_det[unit][spellName] = nil
-		shields_tot[unit]            = shields_tot[unit] - amount
+		shields_det[unit][spellId] = nil
+		shields_tot[unit]          = shields_tot[unit] - amount
 		self:UpdateIndicators(unit)
 	end	
 end
 
 function Shields:UpdateShields(unit)
-	for spellName in next, shields_det[unit] do
-		local amount = select(14, UnitAura(unit, spellName))
+	for spellId in next, shields_det[unit] do
+		local amount = select(14, UnitAura(unit, shields[spellId]) )
 		if amount then
 			if amount>0 then
-				self:ApplyShield(unit,spellName,amount)
+				self:ApplyShield(unit, spellId, amount)
 			else
-				self:RemoveShield(unit,spellName)
+				self:RemoveShield(unit, spellId)
 			end
 		end
 	end
@@ -75,12 +75,12 @@ function Shields:COMBAT_LOG_EVENT_UNFILTERED(...)
 			local unit= Grid2:GetUnitidByGUID( select(9,...) )
 			if unit then Shields:UpdateShields(unit) end	
 		else
-			local shieldName = select(14,...)
-			if shields[shieldName] then
-				local unit= Grid2:GetUnitidByGUID( select(9,...) )
+			local shieldId = select(13,...)
+			if shields[shieldId] then
+				local unit = Grid2:GetUnitidByGUID( select(9,...) )
 				if unit then 
-					local amount = select(17,...) or select(14, UnitAura(unit, shieldName))
-					action( self, unit, shieldName, amount ) 
+					local amount = select(17,...) or select(14, UnitAura(unit, select(14,...)))
+					action( self, unit, shieldId, amount ) 
 				end 
 			end	
 		end
@@ -142,16 +142,16 @@ function Shields:UpdateDB()
 	local filtered = dbx.filtered
 	for _,spellId in pairs(shields_ava) do
 		if (not filtered) or (not filtered[spellId]) then
-			local spell = GetSpellInfo(spellId)
-			if spell then 
-				shields[ spell ] = true 
-			end	
+			shields[ spellId ] = GetSpellInfo(spellId)
 		end	
 	end
 	if dbx.customShields then
 		local customShields = { strsplit(",", dbx.customShields) }
 		for i=1,#customShields do
-			shields[ customShields[i] ] = true
+			local spellId = tonumber(customShields[i])
+			if spellId then
+				shields[ spellId ] = GetSpellInfo(spellId)
+			end	
 		end
 	end	
 end

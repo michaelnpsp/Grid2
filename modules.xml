@@ -28,5 +28,6 @@
 <Script file="modules\StatusRes.lua"/>
 <Script file="modules\StatusShields.lua"/>
 <Script file="modules\StatusShieldsBoss.lua"/>
+<Script file="modules\StatusSelf.lua"/>
 
 </Ui>

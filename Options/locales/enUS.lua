@@ -464,6 +464,7 @@ L["voice"] = true
 L["pvp"] = true
 L["direction"] = true
 L["resurrection"] = true
+L["self"] = true
 
 L["Curse"] = true
 L["Poison"] = true
