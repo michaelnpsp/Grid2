@@ -464,6 +464,7 @@ L["voice"] = "chat de voz"
 L["pvp"] = "pvp"
 L["direction"] = "direccion"
 L["resurrection"] = "resurreccion"
+L["self"] = "yo mismo"
 
 L["Curse"] = "Maldicion"
 L["Poison"] = "Veneno"

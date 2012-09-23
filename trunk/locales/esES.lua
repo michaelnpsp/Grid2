@@ -64,6 +64,10 @@ L["Reviving"] = "Reviviendo"
 L["Revived"] = "Revivido"
 ---}}}
 
+--{{{ Self
+L["Me"] = "Yo"
+---}}}
+
 --Layouts
 L["None"] = "Ninguno"
 L["Solo"] = "Solo"

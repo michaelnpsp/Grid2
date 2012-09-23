@@ -25,11 +25,15 @@ Grid2Options:RegisterStatusOptions("vehicle", "misc", nil, {
 Grid2Options:RegisterStatusOptions("target", "target", nil, {
 	title = L["highlights your target"],
 	titleIcon = "Interface\\Icons\\Ability_hunter_mastermarksman",
-} )
+})
 
 Grid2Options:RegisterStatusOptions("pvp", "combat", nil, {
 	titleIcon = UnitFactionGroup("player") == "Horde" and  "Interface\\PVPFrame\\PVP-Currency-Horde" or "Interface\\PVPFrame\\PVP-Currency-Alliance"
 })	
+
+Grid2Options:RegisterStatusOptions("self", "target", nil, {
+	titleIcon = "Interface\\Icons\\Inv_wand_12",
+})
 
 Grid2Options:RegisterStatusOptions("resurrection", "combat", nil, {
 	color1 = L["Casting resurrection"],
