@@ -12,42 +12,42 @@ L["Humanoid"] = "人型"
 L["Elemental"] = "元素"
 --}}}
 
---{{{ GridStatusHealth
+--{{{ Health
 L["DEAD"] = "死"
 L["GHOST"] = "魂"
 L["FD"] = "假"
 L["Offline"] = "离"
 --}}}
 
---{{{ GridStatusPvp
+--{{{ Pvp
 L["PvP"] = "PvP"
 L["FFA"] = "FFA"
 --}}}
 
---{{{ GridStatusRange
+--{{{ Range
 L["OOR"] = "远"
 --}}}
 
---{{{ GridStatusReadyCheck
+--{{{ ReadyCheck
 L["?"] = "？"
 L["R"] = "是"
 L["X"] = "否"
 L["AFK"] = "暂离"
 --}}}
 
---{{{ GridStatusTarget
+--{{{ Target
 L["target"] = "目标"
 --}}}
 
---{{{ GridStatusVehicle
+--{{{ Vehicle
 L["vehicle"] = "vehicle"
 --}}}
 
---{{{ GridStatusVoiceComm
+--{{{ VoiceComm
 L["talking"] = "正在说话"
 --}}}
 
---{{{ GridStatusDungeonRole
+--{{{ DungeonRole
 -- L["TANK"] = ""
 -- L["HEALER"] = ""
 -- L["DAMAGER"] = ""
@@ -62,6 +62,10 @@ L["talking"] = "正在说话"
 --{{{ Resurrection
 -- L["Reviving"] = ""
 -- L["Revived"] = ""
+---}}}
+
+--{{{ Self
+-- L["Me"] = ""
 ---}}}
 
 --Layouts

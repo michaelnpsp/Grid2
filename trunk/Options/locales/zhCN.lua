@@ -404,6 +404,7 @@ L["Display status only if the buff was cast by you."] = "显示你施放增益�
 -- L["Coloring based on"] = ""
 -- L["Number of stacks"] = ""
 -- L["Remaining time"] = ""
+-- L["Elapsed time"] = ""
 
 L["Class Filter"] = "职业过滤"
 L["Show on %s."] = "在%s上显示。"
@@ -463,6 +464,7 @@ L["voice"] = "voice"
 L["pvp"] = "pvp"
 -- L["direction"] = ""
 -- L["resurrection"] = ""
+-- L["self"] = ""
 
 -- L["Curse"] = ""
 -- L["Poison"] = ""
@@ -664,7 +666,7 @@ L["Voice Chat"] = "语音"
 -- L["Medium shield threshold"] = ""
 -- L["The value below which a shield is considered medium."] = ""
 -- L["Custom Shields"] = ""
--- L["Type shield names separated by commas."] = ""
+-- L["Type shield spell IDs separated by commas."] = ""
 
 -- boss-shields status
 -- L["Boss"] = ""

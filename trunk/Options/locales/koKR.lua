@@ -404,6 +404,7 @@ L["Assigned to"] = "할당"
 L["Coloring based on"] = "색상"
 L["Number of stacks"] = "중첩 숫자"
 L["Remaining time"] = "남은 시간"
+-- L["Elapsed time"] = ""
 
 L["Class Filter"] = "직업 필터"
 L["Show on %s."] = "%s 표시합니다."
@@ -463,6 +464,7 @@ L["voice"] = "음성"
 L["pvp"] = "PvP"
 L["direction"] = "방향"
 L["resurrection"] = "부활"
+-- L["self"] = ""
 
 L["Curse"] = "저주"
 L["Poison"] = "독"
@@ -664,7 +666,7 @@ L["The value below which a shield is considered low."] = "The value below which 
 L["Medium shield threshold"] = "중간 보호막 수치"
 L["The value below which a shield is considered medium."] = "The value below which a shield is considered medium."
 L["Custom Shields"] = "사용자 보호막"
-L["Type shield names separated by commas."] = "콤마로 분리시켜 보호막의 이름을 입력하세요."
+-- L["Type shield spell IDs separated by commas."] = ""
 
 -- boss-shields status
 -- L["Boss"] = ""

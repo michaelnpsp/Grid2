@@ -12,42 +12,42 @@ L["Humanoid"] = "Гуманоид"
 L["Elemental"] = "Элементаль"
 --}}}
 
---{{{ GridStatusHealth
+--{{{ Health
 L["DEAD"] = "ТРУП"
 L["GHOST"] = "ПРИЗРАК"
 L["FD"] = "ПМ"
 L["Offline"] = "Вышел из сети"
 --}}}
 
---{{{ GridStatusPvp
+--{{{ Pvp
 -- L["PvP"] = ""
 -- L["FFA"] = ""
 --}}}
 
---{{{ GridStatusRange
+--{{{ Range
 -- L["OOR"] = ""
 --}}}
 
---{{{ GridStatusReadyCheck
+--{{{ ReadyCheck
 L["?"] = "?"
 L["R"] = "Г"
 L["X"] = "X"
 L["AFK"] = "Отсутствует"
 --}}}
 
---{{{ GridStatusTarget
+--{{{ Target
 L["target"] = "Цель"
 --}}}
 
---{{{ GridStatusVehicle
+--{{{ Vehicle
 L["vehicle"] = "Транспортное средство"
 --}}}
 
---{{{ GridStatusVoiceComm
+--{{{ VoiceComm
 L["talking"] = "Говорит"
 --}}}
 
---{{{ GridStatusDungeonRole
+--{{{ DungeonRole
 -- L["TANK"] = ""
 -- L["HEALER"] = ""
 -- L["DAMAGER"] = ""
@@ -62,6 +62,10 @@ L["talking"] = "Говорит"
 --{{{ Resurrection
 -- L["Reviving"] = ""
 -- L["Revived"] = ""
+---}}}
+
+--{{{ Self
+-- L["Me"] = ""
 ---}}}
 
 --Layouts

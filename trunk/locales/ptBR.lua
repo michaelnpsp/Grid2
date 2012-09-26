@@ -12,42 +12,42 @@ L["Demon"] = "Demonio"
 -- L["Elemental"] = ""
 --}}}
 
---{{{ GridStatusHealth
+--{{{ Health
 L["DEAD"] = "MORTE"
 L["GHOST"] = "Fantasma"
 -- L["FD"] = ""
 L["Offline"] = "Deslogado"
 --}}}
 
---{{{ GridStatusPvp
+--{{{ Pvp
 L["PvP"] = "JxJ"
 -- L["FFA"] = ""
 --}}}
 
---{{{ GridStatusRange
+--{{{ Range
 -- L["OOR"] = ""
 --}}}
 
---{{{ GridStatusReadyCheck
+--{{{ ReadyCheck
 -- L["?"] = ""
 -- L["R"] = ""
 -- L["X"] = ""
 -- L["AFK"] = ""
 --}}}
 
---{{{ GridStatusTarget
+--{{{ Target
 -- L["target"] = ""
 --}}}
 
---{{{ GridStatusVehicle
+--{{{ Vehicle
 L["vehicle"] = "veiculo"
 --}}}
 
---{{{ GridStatusVoiceComm
+--{{{ VoiceComm
 L["talking"] = "Conversar"
 --}}}
 
---{{{ GridStatusDungeonRole
+--{{{ DungeonRole
 -- L["TANK"] = ""
 L["HEALER"] = "Cura"
 L["DAMAGER"] = "DANOS"
@@ -62,6 +62,10 @@ L["DAMAGER"] = "DANOS"
 --{{{ Resurrection
 L["Reviving"] = "Revivendo"
 L["Revived"] = "Reviver"
+---}}}
+
+--{{{ Self
+-- L["Me"] = ""
 ---}}}
 
 --Layouts

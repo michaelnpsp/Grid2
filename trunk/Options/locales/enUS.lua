@@ -666,7 +666,7 @@ L["The value below which a shield is considered low."] = true
 L["Medium shield threshold"] = true
 L["The value below which a shield is considered medium."] = true
 L["Custom Shields"] = true
-L["Type shield names separated by commas."] = true
+L["Type shield spell IDs separated by commas."] = true
 
 -- boss-shields status
 L["Boss"] = true

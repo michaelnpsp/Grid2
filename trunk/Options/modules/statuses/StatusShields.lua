@@ -107,7 +107,7 @@ Grid2Options:RegisterStatusOptions("shields", "health", function(self, status, o
 		order = 120,
 		width = "full",
 		name = L["Custom Shields"], 
-		desc = L["Type shield names separated by commas."],
+		desc = L["Type shield spell IDs separated by commas."],
 		get = function () return status.dbx.customShields end,
 		set = function (_, v)
 			local shields = { strsplit( ",", strtrim(v, ", ")  ) }
