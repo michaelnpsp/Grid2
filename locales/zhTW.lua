@@ -8,60 +8,64 @@ L["Default"] = "預設"
 L["Grid2"] = "Grid2"
 L["Beast"] = "野獸"
 L["Demon"] = "惡魔"
-L["Humanoid"] = "人型"
-L["Elemental"] = "元素"
+L["Humanoid"] = "人型生物"
+L["Elemental"] = "元素生物"
 --}}}
 
---{{{ GridStatusHealth
+--{{{ Health
 L["DEAD"] = "死亡"
 L["GHOST"] = "靈魂"
 L["FD"] = "假死"
 L["Offline"] = "離線"
 --}}}
 
---{{{ GridStatusPvp
-L["PvP"] = "PvP"
-L["FFA"] = "FFA"
+--{{{ Pvp
+L["PvP"] = "玩家對玩家"
+L["FFA"] = "自由拾取"
 --}}}
 
---{{{ GridStatusRange
-L["OOR"] = "遠"
+--{{{ Range
+L["OOR"] = "超出距離"
 --}}}
 
---{{{ GridStatusReadyCheck
+--{{{ ReadyCheck
 L["?"] = "？"
 L["R"] = "是"
 L["X"] = "否"
 L["AFK"] = "暫離"
 --}}}
 
---{{{ GridStatusTarget
+--{{{ Target
 L["target"] = "目標"
 --}}}
 
---{{{ GridStatusVehicle
+--{{{ Vehicle
 L["vehicle"] = "載具"
 --}}}
 
---{{{ GridStatusVoiceComm
+--{{{ VoiceComm
 L["talking"] = "正在說話"
 --}}}
 
---{{{ GridStatusDungeonRole
--- L["TANK"] = ""
--- L["HEALER"] = ""
--- L["DAMAGER"] = ""
+--{{{ DungeonRole
+L["TANK"] = "坦克角色"
+L["HEALER"] = "治療角色"
+L["DAMAGER"] = "傷害輸出角色"
 --}}}
 
 --{{{ Other roles
--- L["RL"] = ""
--- L["RA"] = ""
--- L["ML"] = ""
+L["RL"] = "團隊隊長"
+L["RA"] = "團隊助手"
+L["ML"] = "拾取分配者"
 --}}}
 
 --{{{ Resurrection
--- L["Reviving"] = ""
--- L["Revived"] = ""
+L["Reviving"] = "復活中"
+L["Revived"] = "已復活"
+---}}}
+
+--{{{ Self
+-- L["Me"] = ""
 ---}}}
 
 --Layouts
@@ -78,13 +82,13 @@ L["By Group 25"] = "25人團隊"
 L["By Group 25 w/Pets"] = "25人團隊以及寵物"
 L["By Class"] = "職業"
 L["By Class w/Pets"] = "職業以及寵物"
--- L["By Class 25"] = ""
--- L["By Role 25"] = ""
--- L["By Class 1 x 25 Wide"] = ""
--- L["By Class 2 x 15 Wide"] = ""
--- L["By Group 4 x 10 Wide"] = ""
+L["By Class 25"] = "25人團隊 職業分組"
+L["By Role 25"] = "25人團隊 角色分組"
+L["By Class 1 x 25 Wide"] = "職業 1 組 x 25 人"
+L["By Class 2 x 15 Wide"] = "職業 2 組 x 15 人"
+L["By Group 4 x 10 Wide"] = "小隊 4 組 x 10 人"
 L["By Group 25 w/tanks"] = "25人團隊及坦克"
 L["By Group 40"] = "40人團隊"
--- L["By Group 25 Tanks First"] = ""
--- L["By Group 10 Tanks First"] = ""
--- L["Select Layout"] = ""
+L["By Group 25 Tanks First"] = "25人團隊 坦克優先"
+L["By Group 10 Tanks First"] = "10人團隊 坦克優先"
+L["Select Layout"] = "選擇佈局"

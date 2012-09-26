@@ -12,42 +12,42 @@ L["Humanoid"] = "인간형"
 L["Elemental"] = "정령"
 --}}}
 
---{{{ GridStatusHealth
+--{{{ Health
 L["DEAD"] = "죽음"
 L["GHOST"] = "유령"
 L["FD"] = "죽척"
 L["Offline"] = "오프라인"
 --}}}
 
---{{{ GridStatusPvp
+--{{{ Pvp
 L["PvP"] = "PvP"
 L["FFA"] = "FFA"
 --}}}
 
---{{{ GridStatusRange
+--{{{ Range
 L["OOR"] = "범위 벗어남"
 --}}}
 
---{{{ GridStatusReadyCheck
+--{{{ ReadyCheck
 L["?"] = "?"
 L["R"] = "R"
 L["X"] = "X"
 L["AFK"] = "자리비움"
 --}}}
 
---{{{ GridStatusTarget
+--{{{ Target
 L["target"] = "대상"
 --}}}
 
---{{{ GridStatusVehicle
+--{{{ Vehicle
 L["vehicle"] = "탈것"
 --}}}
 
---{{{ GridStatusVoiceComm
+--{{{ VoiceComm
 L["talking"] = "대화중"
 --}}}
 
---{{{ GridStatusDungeonRole
+--{{{ DungeonRole
 L["TANK"] = "방어 전담"
 L["HEALER"] = "치유 전담"
 L["DAMAGER"] = "공격 전담"
@@ -62,6 +62,10 @@ L["ML"] = "ML"
 --{{{ Resurrection
 L["Reviving"] = "부활"
 L["Revived"] = "부활"
+---}}}
+
+--{{{ Self
+-- L["Me"] = ""
 ---}}}
 
 --Layouts

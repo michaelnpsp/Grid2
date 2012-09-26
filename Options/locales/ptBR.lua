@@ -404,6 +404,7 @@ L["Adjust background color and alpha."] = "Ajustar plano de fundo e transparenci
 -- L["Coloring based on"] = ""
 -- L["Number of stacks"] = ""
 -- L["Remaining time"] = ""
+-- L["Elapsed time"] = ""
 
 -- L["Class Filter"] = ""
 -- L["Show on %s."] = ""
@@ -463,6 +464,7 @@ L["Adjust background color and alpha."] = "Ajustar plano de fundo e transparenci
 -- L["pvp"] = ""
 -- L["direction"] = ""
 -- L["resurrection"] = ""
+-- L["self"] = ""
 
 -- L["Curse"] = ""
 -- L["Poison"] = ""
@@ -664,7 +666,7 @@ L["A resurrection spell has been casted on the unit"] = "A magia reviver esta se
 -- L["Medium shield threshold"] = ""
 -- L["The value below which a shield is considered medium."] = ""
 -- L["Custom Shields"] = ""
--- L["Type shield names separated by commas."] = ""
+-- L["Type shield spell IDs separated by commas."] = ""
 
 -- boss-shields status
 -- L["Boss"] = ""

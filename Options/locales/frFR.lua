@@ -404,6 +404,7 @@ L["Display status only if the buff was not cast by you."] = "Affiche le statut u
 -- L["Coloring based on"] = ""
 -- L["Number of stacks"] = ""
 -- L["Remaining time"] = ""
+-- L["Elapsed time"] = ""
 
 L["Class Filter"] = "Filtre de classe"
 L["Show on %s."] = "Montrer sur %s."
@@ -463,6 +464,7 @@ L["voice"] = "voix"
 L["pvp"] = "jcj"
 L["direction"] = "direction"
 L["resurrection"] = "résurrection"
+-- L["self"] = ""
 
 L["Curse"] = "Malédiction"
 L["Poison"] = "Poison"
@@ -664,7 +666,7 @@ L["A resurrection spell has been casted on the unit"] = "Un sort de résurrectio
 -- L["Medium shield threshold"] = ""
 -- L["The value below which a shield is considered medium."] = ""
 -- L["Custom Shields"] = ""
--- L["Type shield names separated by commas."] = ""
+-- L["Type shield spell IDs separated by commas."] = ""
 
 -- boss-shields status
 -- L["Boss"] = ""

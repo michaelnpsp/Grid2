@@ -666,7 +666,7 @@ L["The value below which a shield is considered low."] = "Por debajo de este val
 L["Medium shield threshold"] = "Umbral medio"
 L["The value below which a shield is considered medium."] = "Por debajo de este valor el escudo se considera medio."
 L["Custom Shields"] = "Escudos personalizados"
-L["Type shield names separated by commas."] = "Teclee nombres de escudos separados por comas."
+L["Type shield spell IDs separated by commas."] = "Teclee identificadores de escudos separados por comas."
 
 -- boss-shields status
 L["Boss"] = "Jefe"

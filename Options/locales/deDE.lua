@@ -404,6 +404,7 @@ L["examples: Druid@Regrowth Chimaeron>Low Health"] = "Beispiele: Druide@Nachwach
 -- L["Coloring based on"] = ""
 -- L["Number of stacks"] = ""
 -- L["Remaining time"] = ""
+-- L["Elapsed time"] = ""
 
 L["Class Filter"] = "Klassen Filter"
 L["Show on %s."] = "Zeigt auf %s."
@@ -463,6 +464,7 @@ L["voice"] = "Stimme"
 L["pvp"] = "PvP"
 L["direction"] = "Richtung"
 -- L["resurrection"] = ""
+-- L["self"] = ""
 
 L["Curse"] = "Fluch"
 L["Poison"] = "Gift"
@@ -664,7 +666,7 @@ L["Resurrected"] = "Wiederbelebt"
 -- L["Medium shield threshold"] = ""
 -- L["The value below which a shield is considered medium."] = ""
 -- L["Custom Shields"] = ""
--- L["Type shield names separated by commas."] = ""
+-- L["Type shield spell IDs separated by commas."] = ""
 
 -- boss-shields status
 -- L["Boss"] = ""

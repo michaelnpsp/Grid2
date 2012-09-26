@@ -404,6 +404,7 @@ L["Assigned to"] = "Asignado a"
 L["Coloring based on"] = "Colorear por"
 L["Number of stacks"] = "No. Acumulaciones"
 L["Remaining time"] = "Duracion restante"
+-- L["Elapsed time"] = ""
 
 L["Class Filter"] = "Filtro de clases"
 L["Show on %s."] = "Mostrar para %s."
@@ -463,6 +464,7 @@ L["voice"] = "chat de voz"
 L["pvp"] = "pvp"
 L["direction"] = "direccion"
 L["resurrection"] = "resurreccion"
+-- L["self"] = ""
 
 L["Curse"] = "Maldicion"
 L["Poison"] = "Veneno"
@@ -664,7 +666,7 @@ L["The value below which a shield is considered low."] = "Por debajo de este val
 L["Medium shield threshold"] = "Umbral medio"
 L["The value below which a shield is considered medium."] = "Por debajo de este valor el escudo se considera medio."
 L["Custom Shields"] = "Escudos personalizados"
-L["Type shield names separated by commas."] = "Teclee nombres de escudos separados por comas."
+-- L["Type shield spell IDs separated by commas."] = ""
 
 -- boss-shields status
 -- L["Boss"] = ""
