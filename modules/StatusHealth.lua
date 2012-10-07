@@ -109,7 +109,7 @@ do
 	function EnableQuickHealth()
 		if HealthCurrent.dbx.quickHealth then
 			RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", CombatLogEvent)
-			RegisterEvent(Grid2.wowMoP and "GROUP_ROSTER_UPDATE" or "RAID_ROSTER_UPDATE", RosterUpdateEvent)
+			RegisterEvent("GROUP_ROSTER_UPDATE", RosterUpdateEvent)
 			RegisterEvent("PARTY_MEMBER_CHANGED", RosterUpdateEvent)
 			RegisterEvent("UNIT_HEALTH_FREQUENT", HealthChangedEvent)
 			RegisterEvent("UNIT_MAXHEALTH"      , HealthChangedEvent)
@@ -118,7 +118,7 @@ do
 	end
 	function DisableQuickHealth()
 		UnitHealth = UnitHealthOriginal
-		UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Grid2.wowMoP and "GROUP_ROSTER_UPDATE" or "RAID_ROSTER_UPDATE", "PARTY_MEMBER_CHANGED", "UNIT_HEALTH_FREQUENT", "UNIT_MAXHEALTH")
+		UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "GROUP_ROSTER_UPDATE", "PARTY_MEMBER_CHANGED", "UNIT_HEALTH_FREQUENT", "UNIT_MAXHEALTH")
 	end
 end
 

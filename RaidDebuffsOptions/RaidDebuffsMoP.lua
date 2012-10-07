@@ -49,7 +49,7 @@ RDDB["Mists of Pandaria"] = {
         123846, --Heart of Fear: Lure        
 		},
     },
-    ["Mogushan Vaults"] = {
+    ["Mogu'shan Vaults"] = {
         ["Trash"]={
         118562, --Petrified
         116596, --Smoke Bomb
