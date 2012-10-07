@@ -4,7 +4,8 @@ local ReadyCheck = Grid2.statusPrototype:new("ready-check")
 
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
-local GetNumRaidMembers = Grid2.GetNumRaidMembers
+local IsInRaid = IsInRaid
+local GetNumGroupMembers = GetNumGroupMembers
 
 local readyChecking, timerClearStatus
 local readyStatuses = {}
@@ -41,20 +42,19 @@ function ReadyCheck:READY_CHECK_FINISHED()
     timerClearStatus = Grid2:ScheduleTimer(self.ClearStatus, ReadyCheck.dbx.threshold or 0, self)
 end
 
-function ReadyCheck:RAID_ROSTER_UPDATE()
+function ReadyCheck:GROUP_ROSTER_UPDATE()
     -- If you lose raid assist, you may not receive the READY_CHECK_FINISHED event.
-    if (GetNumRaidMembers() > 0) then
-        local newAssist = UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")
-        if readyChecking and not newAssist then
+    if readyChecking then
+		if IsInRaid() and GetNumGroupMembers()>0 and not (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) then
 			self:ClearStatus()
-        end
+		end	
     end
 end
 
 function ReadyCheck:CheckClearStatus()
     -- Unfortunately, GetReadyCheckTimeLeft() only returns integral values.
     if readyChecking and GetReadyCheckTimeLeft() <= 0 then
-			self:ClearStatus()
+		self:ClearStatus()
     end
 end
 
@@ -72,7 +72,7 @@ function ReadyCheck:OnEnable()
 	self:RegisterEvent("READY_CHECK")
 	self:RegisterEvent("READY_CHECK_CONFIRM")
 	self:RegisterEvent("READY_CHECK_FINISHED")
-	self:RegisterEvent(Grid2.wowMoP and "GROUP_ROSTER_UPDATE" or "RAID_ROSTER_UPDATE", "RAID_ROSTER_UPDATE")
+	self:RegisterEvent("GROUP_ROSTER_UPDATE")
 	self:RegisterEvent("PARTY_LEADER_CHANGED", "CheckClearStatus")
 	self:RegisterMessage("Grid_GroupTypeChanged", "CheckClearStatus")
 end
@@ -83,7 +83,7 @@ function ReadyCheck:OnDisable()
 	self:UnregisterEvent("READY_CHECK_CONFIRM")
 	self:UnregisterEvent("READY_CHECK_FINISHED")
 	self:UnregisterEvent("PARTY_LEADER_CHANGED")
-	self:UnregisterEvent(Grid2.wowMoP and "GROUP_ROSTER_UPDATE" or "RAID_ROSTER_UPDATE")
+	self:UnregisterEvent("GROUP_ROSTER_UPDATE")
 	self:UnregisterMessage("Grid_GroupTypeChanged")
 end
 

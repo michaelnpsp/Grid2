@@ -4,10 +4,9 @@
 local UnitName = UnitName
 local UnitGUID = UnitGUID
 local UnitExists = UnitExists
+local IsInRaid = IsInRaid
+local GetNumGroupMembers = GetNumGroupMembers
 local pairs, next = pairs, next
--- MoP Compatibility
-local GetNumRaidMembers = Grid2.GetNumRaidMembers
-local GetNumPartyMembers = Grid2.GetNumPartyMembers
 
 -- realm name
 local my_realm = GetRealmName()
@@ -119,22 +118,20 @@ do
 		end
 	end
 	local function GetGroupType(...)
-		local count = GetNumRaidMembers()
-		for i = select("#",...)-1, 1, -1 do 
-			if count > select(i,...) then 
-				return "raid"..select(i+1,...)	
+		local count = GetNumGroupMembers()
+		if IsInRaid() then
+			for i = select("#",...)-1, 1, -1 do 
+				if count > select(i,...) then 
+					return "raid"..select(i+1,...)	
+				end
 			end
-		end
-		return GetNumPartyMembers()>0 and "party" or "solo"
+		end	
+		return count>0 and "party" or "solo"
 	end
 	function Grid2:GroupChanged(event)
 		local _, instType = IsInInstance()
 		if instType == "raid" then
-			if Grid2.wowMoP and IsInRaid() then
-				instType = select(5,GetInstanceInfo()) > 10 and "raid25" or "raid10"
-			else
-				instType = GetRaidDifficulty()%2 == 0 and "raid25" or "raid10"
-			end
+			instType = select(5,GetInstanceInfo()) > 10 and "raid25" or "raid10"
 		elseif instType == "pvp" then
 			instType = GetGroupType(0, 10, 15, 40)
 		elseif instType ~= "arena" then
@@ -263,7 +260,7 @@ do
 	function Grid2:UpdateRoster()
 		roster_guids, units_to_remove = units_to_remove, roster_guids
 		
-		local units = (GetNumRaidMembers() == 0) and party_units or raid_units
+		local units = IsInRaid() and raid_units or party_units
 
 		for i= 1,#units do	
 			local unit = units[i]

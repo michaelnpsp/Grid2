@@ -7,6 +7,7 @@ local DungeonRole = Grid2.statusPrototype:new("dungeon-role")
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 local Grid2 = Grid2
+local IsInRaid = IsInRaid
 local UnitExists = UnitExists
 local GetRaidRosterInfo = GetRaidRosterInfo
 local GetPartyAssignment = GetPartyAssignment
@@ -16,9 +17,6 @@ local GetTexCoordsForRoleSmallCircle= GetTexCoordsForRoleSmallCircle
 local MAIN_TANK = MAIN_TANK
 local MAIN_ASSIST = MAIN_ASSIST
 local next = next
-
-local GetNumRaidMembers = Grid2.GetNumRaidMembers
-local RAID_UPDATE_EVENT = Grid2.wowMoP and "GROUP_ROSTER_UPDATE" or "RAID_ROSTER_UPDATE"
 
 -- Code to disable statuses in combat
 local SetHideInCombat
@@ -93,10 +91,10 @@ function Role:UpdateRaidUnits(event)
 end
 
 function Role:UpdateAllUnits(event)
-	if GetNumRaidMembers()==0 then
-		self:UpdatePartyUnits(event)
-	else
+	if IsInRaid() then
 		self:UpdateRaidUnits(event)
+	else
+		self:UpdatePartyUnits(event)		
 	end
 end
 
@@ -106,14 +104,14 @@ end
 
 function Role:OnEnable()
 	self:SetHideInCombat(self.dbx.hideInCombat)
-	self:RegisterEvent(RAID_UPDATE_EVENT, "UpdateAllUnits")
+	self:RegisterEvent("GROUP_ROSTER_UPDATE", "UpdateAllUnits")
 	self:RegisterMessage("Grid_UnitLeft")
 	self:UpdateAllUnits()
 end
 
 function Role:OnDisable()
 	self:SetHideInCombat()
-	self:UnregisterEvent(RAID_UPDATE_EVENT)
+	self:UnregisterEvent("GROUP_ROSTER_UPDATE")
 	self:UnregisterMessage("Grid_UnitLeft")
 	wipe(role_cache)
 end
@@ -173,7 +171,7 @@ function Assistant:UpdateActiveUnits()
 end
 
 function Assistant:UpdateAllUnits(event)
-	if GetNumRaidMembers() == 0 then return end
+	if not IsInRaid() then return end
 	local units = Grid2.raid_units
 	for i=1,40 do
 		local name,rank = GetRaidRosterInfo(i)
@@ -193,14 +191,14 @@ end
 
 function Assistant:OnEnable()
 	self:SetHideInCombat(self.dbx.hideInCombat)
-	self:RegisterEvent(RAID_UPDATE_EVENT, "UpdateAllUnits")
+	self:RegisterEvent("GROUP_ROSTER_UPDATE", "UpdateAllUnits")
 	self:RegisterMessage("Grid_UnitLeft")
 	self:UpdateAllUnits()
 end
 
 function Assistant:OnDisable()
 	self:SetHideInCombat()
-	self:UnregisterEvent(RAID_UPDATE_EVENT)
+	self:UnregisterEvent("GROUP_ROSTER_UPDATE")
 	self:UnregisterMessage("Grid_UnitLeft")
 	wipe(assis_cache)
 end
@@ -262,14 +260,14 @@ end
 function Leader:OnEnable()
 	self:SetHideInCombat(self.dbx.hideInCombat)
 	self:RegisterEvent("PARTY_LEADER_CHANGED", "UpdateLeader")
-	self:RegisterEvent(RAID_UPDATE_EVENT, "UpdateLeader")
+	self:RegisterEvent("GROUP_ROSTER_UPDATE", "UpdateLeader")
 	self:CalculateLeader()
 end
 
 function Leader:OnDisable()
 	self:SetHideInCombat()
 	self:UnregisterEvent("PARTY_LEADER_CHANGED")
-	self:UnregisterEvent(RAID_UPDATE_EVENT)
+	self:UnregisterEvent("GROUP_ROSTER_UPDATE")
 	raidLeader = nil
 end
 
@@ -334,14 +332,14 @@ end
 function MasterLooter:OnEnable()
 	self:SetHideInCombat(self.dbx.hideInCombat)
 	self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED", "UpdateMasterLooter")
-	self:RegisterEvent(RAID_UPDATE_EVENT, "UpdateMasterLooter")
+	self:RegisterEvent("GROUP_ROSTER_UPDATE", "UpdateMasterLooter")
 	self:CalculateMasterLooter()
 end
 
 function MasterLooter:OnDisable()
 	self:SetHideInCombat()
 	self:UnregisterEvent("PARTY_LOOT_METHOD_CHANGED")
-	self:UnregisterEvent(RAID_UPDATE_EVENT)
+	self:UnregisterEvent("GROUP_ROSTER_UPDATE")
 	masterLooter = nil
 end
 

@@ -28,6 +28,7 @@ AOEM.defaultDB = {
 AOEM.playerClass = select(2, UnitClass("player"))
 
 local Grid2 = Grid2
+local IsInRaid = IsInRaid
 local Grid2Layout = Grid2Layout
 local UnitExists = UnitExists
 local UnitIsEnemy = UnitIsEnemy
@@ -35,8 +36,7 @@ local UnitIsVisible = UnitIsVisible
 local InCombatLockdown = InCombatLockdown
 local GetPlayerMapPosition = GetPlayerMapPosition
 local UnitGetIncomingHeals = UnitGetIncomingHeals
-local GetNumRaidMembers = Grid2.GetNumRaidMembers
-local GetNumPartyMembers = Grid2.GetNumPartyMembers 
+local GetNumGroupMembers = GetNumGroupMembers
 local next = next 
 local min = math.min
 local max= math.max
@@ -75,7 +75,7 @@ end
 local function UpdateRoster()
 	ClearAllIndicators()
 	wipe(roster)
-	local m= min(GetNumRaidMembers(),25)
+	local m = min( IsInRaid() and GetNumGroupMembers() or 0, 25 )
 	if m>0 then
 		local g = raidSizes[Grid2Layout.partyType or "solo"]  / 5
 		local i  = 1
@@ -222,20 +222,20 @@ end
 local function UpdateTimerState(InCombat)
 	if InCombat==nil then InCombat = InCombatLockdown() end
 	local disabled= (AOEM.db.profile.showInCombat and (not InCombat) ) or
-	                (AOEM.db.profile.showInRaid and GetNumRaidMembers()==0) or
-	                (GetNumRaidMembers()==0 and GetNumPartyMembers()==0)
+	                (AOEM.db.profile.showInRaid and (not IsInRaid()) ) or
+	                (GetNumGroupMembers()==0)
 	SetTimer(not disabled)
 end
 
 local function FrameEvents(self, event)
 	local dbx= AOEM.db.profile
-	if event=="RAID_ROSTER_UPDATE" or event=="GROUP_ROSTER_UPDATE" then
+	if event=="GROUP_ROSTER_UPDATE" then
 		rosterValid = false  
 		if dbx.showInRaid or (not timer) then 
 			UpdateTimerState() 
 		end	
 	elseif event=="PARTY_MEMBERS_CHANGED" then
-		if GetNumRaidMembers()==0 then 
+		if not IsInRaid() then 
 			rosterValid = false
 			UpdateTimerState() 
 		end	
@@ -252,7 +252,7 @@ local function status_OnEnable(self)
 			frame = CreateFrame("Frame")
 			frame:SetScript("OnEvent", FrameEvents )
 		end
-		frame:RegisterEvent( Grid2.wowMoP and "GROUP_ROSTER_UPDATE" or "RAID_ROSTER_UPDATE" )
+		frame:RegisterEvent("GROUP_ROSTER_UPDATE")
 		frame:RegisterEvent("PARTY_MEMBERS_CHANGED")
 		frame:RegisterEvent("PLAYER_REGEN_DISABLED")
 		frame:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -269,7 +269,7 @@ local function status_OnDisable(self)
 	  if statuses[i]==self then tremove(statuses,i)	break end
 	end 
 	if #statuses==0 and frame then
-		frame:UnregisterEvent(Grid2.wowMoP and "GROUP_ROSTER_UPDATE" or "RAID_ROSTER_UPDATE")
+		frame:UnregisterEvent("GROUP_ROSTER_UPDATE")
 		frame:UnregisterEvent("PARTY_MEMBERS_CHANGED")
 		frame:UnregisterEvent("PLAYER_REGEN_DISABLED" )
 		frame:UnregisterEvent("PLAYER_REGEN_ENABLED" )
