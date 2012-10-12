@@ -104,52 +104,6 @@ do
 end
 --}}
 
---{{ Auras filter
-local MakeStatusFilter
-do
-	local filter_mt = {
-		__index = function (self, unit)
-			local _, class = UnitClass(unit)
-			local result= self.source[class]
-			self[unit]= result
-			return result
-		end,
-	}
-	local filters = {}
-	MakeStatusFilter = function(status)
-		local dbx = status.dbx
-		local source, dest = dbx.classFilter, status.filtered
-		if not source then
-			if dest then
-				filters[dest] = nil
-				status.filtered = nil
-				dest = nil
-			end
-		elseif dest then
-			wipe(dest)
-			dest.source = source
-		else
-			dest = setmetatable({source = dbx.classFilter}, filter_mt)
-			status.filtered = dest
-			filters[dest] = true
-		end
-		return dest
-	end
-
-	local next = next
-	local Grid2_UnitIsPet = Grid2.UnitIsPet
-	local function status_ClearFilterUnit(_, unit)
-		if Grid2_UnitIsPet(nil, unit) then return end -- hackish
-		for filter in next, filters do
-			filter[unit] = nil
-		end
-		AuraFrame_OnEvent(nil,nil,unit)  -- Not related to class filter, update auras of new units in raid
-	end
-
-	Grid2.RegisterMessage(filter_mt, "Grid_UnitUpdated", status_ClearFilterUnit)
-end
---}}
-
 --{{ Auras Event 
 local EnableAuraFrame, DisableAuraFrame
 do
@@ -184,20 +138,15 @@ local function status_Reset(self, unit)
 end
 
 local function status_IsInactive(self, unit) -- used for "missing" status
-	local filtered = self.filtered
-	if filtered and filtered[unit] then return end
 	return not self.states[unit]
 end
 
 local function status_IsActive(self, unit)
-	local filtered = self.filtered
-	if filtered and filtered[unit] then return end
 	return self.states[unit]
 end
 
 local function status_IsActiveBlink(self, unit)
-	local filtered = self.filtered
-	if (filtered and filtered[unit]) or not self.states[unit] then return end
+	if not self.states[unit] then return end
 	if self.tracker[unit]==1 then
 		return true
 	else
@@ -206,8 +155,6 @@ local function status_IsActiveBlink(self, unit)
 end
 
 local function status_IsInactiveBlink(self, unit) -- A missing active status has no expiration, always returns blink
-	local filtered = self.filtered
-	if filtered and filtered[unit] then return end
 	return not self.states[unit] and "blink"
 end
 
@@ -258,8 +205,6 @@ end
 
 -- This function includes a workaround to expiration variations of Druid WildGrowth HoT (little differences in expirations are ignored)
 local function status_UpdateState(self, unit, iconTexture, count, duration, expiration)
-	local filtered = self.filtered
-	if filtered and filtered[unit] then return end 
 	local prevexp = self.expirations[unit]
 	if count==0 then count = 1 end
 	if self.states[unit]==nil or self.counts[unit] ~= count or prevexp==nil or abs(prevexp-expiration)>0.15 then 
@@ -288,8 +233,6 @@ local function status_UpdateStateNotMine(self, unit, iconTexture, count, duratio
 end
 
 local function status_UpdateStateGroup(self, unit, iconTexture, count, duration, expiration)
-	local filtered = self.filtered
-	if filtered and filtered[unit] then return end
 	if self.states[unit]==nil or self.expirations[unit] ~= expiration then
 		self.states[unit] = true
 		self.textures[unit] = iconTexture
@@ -428,7 +371,6 @@ local function status_UpdateDB(self)
 		self.GetBorder    = Grid2.statusLibrary.GetBorder
 		self.UpdateState  = status_UpdateStateDebuffType
 	else
-		MakeStatusFilter(self)
 		if dbx.auras then  
 			self.UpdateState =  (dbx.mine==2 and status_UpdateStateGroupNotMine) or
 								(dbx.mine    and status_UpdateStateGroupMine) or
@@ -484,8 +426,13 @@ function Grid2.CreateDebuff(baseKey, dbx, statusTypesOverride)
 end
 --}}
 
--- {{ Called from Grid2Options when an aura status is enabled
-function Grid2:RefreshAuras()
+--{{ Aura Refresh 
+-- Passing StatusList instead of nil, because i dont know if nil is valid for RegisterMessage
+Grid2.RegisterMessage( StatusList, "Grid_UnitUpdated", function(_, unit) 
+	AuraFrame_OnEvent(nil,nil,unit)
+end)
+-- Called by Grid2Options when an aura status is enabled
+function Grid2:RefreshAuras() 
 	for unit in Grid2:IterateRosterUnits() do
 		AuraFrame_OnEvent(nil,nil,unit) 
 	end
