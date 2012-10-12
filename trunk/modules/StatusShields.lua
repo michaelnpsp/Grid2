@@ -18,6 +18,7 @@ local shields_ava = {
 	77535,  -- Blood shield (DK)
 	11426,  -- Ice Barrier (Mage)
 	1463,   -- Mana Shield (Mage)
+	116849, -- LifeCocoon (Monk)
 }
 
 local shields     = {}  

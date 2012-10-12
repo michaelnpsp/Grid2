@@ -515,6 +515,11 @@ L["SpiritOfRedemption"] = "Espíritu redentor"
 L["CircleOfHealing"] = "Circulo de sanacion"
 L["PrayerOfHealing"] = "Rezo de sanacion"
 
+-- monk
+L["EnvelopingMist"]= "Niebla envolvente"
+L["RenewingMist"]= "Niebla renovadora"
+L["LifeCocoon"]= "Crisalida vital"
+
 -- mage
 L["FocusMagic"] = "Enfocar magia"
 L["IceArmor"] = "Armadura de Escarcha"

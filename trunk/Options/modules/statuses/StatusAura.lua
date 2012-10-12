@@ -33,49 +33,6 @@ local function StatusAuraGenerateColorThreshold(status)
 	end	
 end
 
-function Grid2Options:MakeStatusClassFilterOptions(status, options, optionParams)
-	self:MakeHeaderOptions( options, "ClassFilter" )
-	options.classFilter = {
-		type = "group",
-		order = 205,
-		inline= true,
-		name = "",
-		desc = "",
-		args = {},
-	}
-	for classType, className in pairs(LOCALIZED_CLASS_NAMES_MALE) do
-		options.classFilter.args[classType] = {
-			type = "toggle",
-			name = className,
-			desc = (L["Show on %s."]):format(className),
-			width = "half",
-			tristate = false,
-			get = function ()
-				return not (status.dbx.classFilter and status.dbx.classFilter[classType])
-			end,
-			set = function (_, value)
-				local on = not value
-				local dbx = status.dbx
-				if (on) then
-					if (not dbx.classFilter) then
-						dbx.classFilter = {}
-					end
-					dbx.classFilter[classType] = true
-				else
-					if dbx.classFilter then
-						dbx.classFilter[classType] = nil
-						if (not next(dbx.classFilter)) then
-							dbx.classFilter = nil
-						end
-					end	
-				end
-				status:UpdateDB()
-				status:UpdateAllIndicators()
-			end,
-		}
-	end
-end
-
 function Grid2Options:MakeStatusAuraListOptions(status, options, optionParams)
 	if not status.dbx.auras then return end
 	self:MakeHeaderOptions( options, "Auras" )
@@ -322,7 +279,6 @@ Grid2Options:RegisterStatusOptions("buff", "buff", function(self, status, option
 	self:MakeStatusColorOptions(status, options, optionParams)
 	self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
 	self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
-	self:MakeStatusClassFilterOptions(status, options, optionParams)
 	self:MakeStatusDeleteOptions(status, options, optionParams)
 end )
 
@@ -334,7 +290,6 @@ Grid2Options:RegisterStatusOptions("debuff", "debuff", function(self, status, op
 	self:MakeStatusColorOptions(status, options, optionParams)
 	self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
 	self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
-	self:MakeStatusClassFilterOptions(status, options, optionParams)
 	self:MakeStatusDeleteOptions(status, options, optionParams)
 end )
 

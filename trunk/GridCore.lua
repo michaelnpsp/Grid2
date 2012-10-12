@@ -176,6 +176,10 @@ end
 
 function Grid2:LoadGrid2Options()
 	if not IsAddOnLoaded("Grid2Options") then
+		if InCombatLockdown() then
+			Grid2:Print("Grid2Options cannot be loaded in combat.")
+			return
+		end
 		LoadAddOn("Grid2Options")
 	end
 	if Grid2Options then
