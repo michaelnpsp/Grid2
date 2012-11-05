@@ -724,6 +724,9 @@ L["Active time"] = "Tiempo activo"
 L["Show the status for the specified number of seconds."] = "Mostrar durante los segundos indicados."
 L["Spells"] = "Hechizos"
 L["You can type spell IDs or spell names."] = "Teclee un nombre o un identificador de hechizo."
+L["Display all solutions"] = "Muestra todas las soluciones"
+L["Display all solutions instead of only one solution per group."] = "Muestra todas las soluciones en lugar de una sola solucion por grupo."
+
 
 -- Import/export profiles module
 L["Import/export options"] = "Opciones de importación y exportación"

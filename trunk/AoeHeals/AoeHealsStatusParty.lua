@@ -8,6 +8,7 @@ local minPlayers
 local healthDeficit
 local healthThreshold
 local prevSolutions= {}
+local ProcessGroup
 
 local function CalcNeighbors(self, players, k, m)
 	for i=k,m do
@@ -45,10 +46,20 @@ local function GetBestUnit(self, players, k, m)
 	prevSolutions[b.group] = nil
 end
 
-local function ProcessGroup(self, roster, i, k)
+local function ProcessGroupOneSol(self, roster, i, k)
 	CalcNeighbors( self, roster, i, k )
 	local p = GetBestUnit( self, roster, i, k)
 	if p then self:AddUnit( p ) end	
+end
+
+local function ProcessGroupAllSol(self, players, k, m)
+	CalcNeighbors( self, players, k, m )
+	for i=k,m do
+		local p = players[i]
+		if p.totHeal>=healthThreshold and p.count>=minPlayers then
+			self:AddUnit( p )
+		end	
+	end
 end
 
 local function ProcessRoster(self, roster)
@@ -79,6 +90,7 @@ local function UpdateDB(self,dbx)
 	minPlayers     = dbx.minPlayers
 	healthDeficit  = dbx.healthDeficit
 	healthThreshold= healthDeficit * minPlayers
+	ProcessGroup   = dbx.showAllSolutions and ProcessGroupAllSol or ProcessGroupOneSol
 end
 
 AOEM.setupFunc["aoe-PrayerOfHealing"] = function(self,dbx)
