@@ -724,6 +724,8 @@ L["Active time"] = true
 L["Show the status for the specified number of seconds."] = true
 L["Spells"] = true
 L["You can type spell IDs or spell names."] = true
+L["Display all solutions"] = true
+L["Display all solutions instead of only one solution per group."] = true
 
 -- Import/export profiles module
 L["Import/export options"]= true

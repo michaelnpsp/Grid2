@@ -119,20 +119,6 @@ do
 			order = 20,
 			name = "",
 		}
-		options.minPlayers = {
-			type = "range",
-			order = 30,
-			name = L["Min players"],
-			desc = L["Minimum players to enable the status."],
-			min = 1,
-			max = 6,
-			step = 1,
-			get = function () return status.dbx.minPlayers end,
-			set = function (_, v) 
-				status.dbx.minPlayers = v  
-				status:UpdateDB() 
-			end,
-		}
 		options.radius = {
 			type = "range",
 			order = 29,
@@ -147,6 +133,20 @@ do
 				status:UpdateDB() 
 			end,
 		}
+		options.minPlayers = {
+			type = "range",
+			order = 30,
+			name = L["Min players"],
+			desc = L["Minimum players to enable the status."],
+			min = 1,
+			max = (status.name == "aoe-PrayerOfHealing") and 5 or 6,
+			step = 1,
+			get = function () return status.dbx.minPlayers end,
+			set = function (_, v) 
+				status.dbx.minPlayers = v  
+				status:UpdateDB() 
+			end,
+		}
 	end
 	local function MakeStatusHealthThresholdOptions(self, status, options)	
 		options.healthThreshold = {
@@ -155,8 +155,9 @@ do
 			name = L["Health deficit"],
 			desc = L["Minimum health deficit of units to enable the status."],
 			min = 0,
-			softMax = 50000,
+			softMax = 250000,
 			step = 1,
+			bigStep = 500,
 			get = function () return status.dbx.healthDeficit end,
 			set = function (_, v) 
 				status.dbx.healthDeficit = v  
@@ -173,6 +174,19 @@ do
 			get = function () return status.dbx.keepPrevHeals end,
 			set = function (_, v) 
 				status.dbx.keepPrevHeals = v	 
+				status:UpdateDB() 
+			end,
+		}
+	end
+	local function MakeStatusAllSolutionsOptions(self, status, options)
+		options.showAllSol = {
+			type = "toggle",
+			order = 17,
+			name = L["Display all solutions"],
+			desc = L["Display all solutions instead of only one solution per group."],
+			get = function () return status.dbx.showAllSolutions end,
+			set = function (_, v) 
+				status.dbx.showAllSolutions = v or nil
 				status:UpdateDB() 
 			end,
 		}
@@ -231,6 +245,8 @@ do
 			elseif name == "aoe-WildGrowth" or name == "aoe-CircleOfHealing" then
 				MakeStatusKeepPrevSolutionsOptions(self, status, options)
 				MakeStatusRaidHealOptions(self, status, options)
+			elseif name == "aoe-PrayerOfHealing" then 
+				MakeStatusAllSolutionsOptions(self, status, options)
 			end
 		end	
 	end

@@ -230,8 +230,6 @@ local Maps= {
 	['ScarletHalls'] = { 465.000,310.000, 468.000,312.000, },
 	['ShadowglenStart'] = { 1450.001,966.667, },
 	['ShadowpanHideout'] = { 310.000,206.667, 210.000,140.000, 390.000,260.000, },
-	['ShrineofSevenStars'] = { 0.000,0.000, },
-	['ShrineofTwoMoons'] = { 0.000,0.000, },
 	['SiegeofNiuzaoTemple'] = { 290.010,193.340, 290.010,193.340, },
 	['StormstoutBrewery'] = { 260.001,173.334, 260.001,173.334, 340.000,226.667, 230.001,153.334, },
 	['SunstriderIsleStart'] = { 1600.000,1066.667, },
@@ -248,7 +246,6 @@ local Maps= {
 	['ValleyOfPowerScenario'] = { 839.583,560.416, },
 	['ValleyofTrialsStart'] = { 1350.000,900.000, },
 	['ValleyoftheFourWinds'] = { 3925.001,2616.667, },
-	-- ['Scholomance'] = { 250.002,166.668, 445.000,296.667, 262.500,175.000, 262.500,175.000, },	
 }
 
 local AOEM = Grid2:GetModule("Grid2AoeHeals")
