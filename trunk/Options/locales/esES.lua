@@ -567,13 +567,16 @@ L["Demon"] = "Demonio"
 L["Humanoid"] = "Humanoide"
 L["Elemental"] = "Elemental"
 
--- heal-current status
+-- health-current status
 L["Full Health"] = "Vida llena"
 L["Medium Health"] = "Vida media"
 L["Low Health"] = "Vida baja"
 L["Show dead as having Full Health"] = "Muertos con vida llena"
 L["Frequent Updates"] = "Actualizaciones frecuentes"
 L["Instant Updates"] = "Actualizaciones instantaneas"
+
+-- health-low status
+L["Use Health Percent"] = "Usar Porcentajes"
 
 -- range status 
 L["Range"] = "Rango"

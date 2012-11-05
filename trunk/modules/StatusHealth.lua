@@ -209,12 +209,21 @@ HealthLow.OnEnable  = Health_Enable
 HealthLow.OnDisable = Health_Disable
 HealthLow.GetColor  = Grid2.statusLibrary.GetColor
 
-function HealthLow:IsActive(unit)
+function HealthLow:IsActive1(unit)
 	return HealthCurrent:GetPercent(unit) < self.dbx.threshold
+end
+
+function HealthLow:IsActive2(unit)
+	return UnitHealth(unit) < self.dbx.threshold
+end
+
+function HealthLow:UpdateDB()
+	self.IsActive = self.dbx.threshold<=1 and self.IsActive1 or self.IsActive2
 end
 
 local function CreateHealthLow(baseKey, dbx)
 	Grid2:RegisterStatus(HealthLow, {"color"}, baseKey, dbx)
+	HealthLow:UpdateDB()
 	return HealthLow
 end
 
