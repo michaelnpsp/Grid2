@@ -47,12 +47,32 @@ end, {
 	titleIcon ="Interface\\Icons\\Spell_Holy_DivineProvidence"
 })
 
-Grid2Options:RegisterStatusOptions("health-deficit", "health", Grid2Options.MakeStatusColorThresholdOptions, {
-	titleIcon = "Interface\\Icons\\Spell_shadow_lifedrain"
+Grid2Options:RegisterStatusOptions("health-low", "health", function(self, status, options, optionParams)
+	local min,max,step
+	if status.dbx.threshold>10 then
+		min,max,step = 1000, 250000, 500
+	end
+	self:MakeStatusColorOptions(status, options, optionParams)
+	self:MakeStatusThresholdOptions(status, options, optionParams, min, max, step)
+	options.useAbsoluteHealth = {
+		type = "toggle",
+		order = 110,
+		name = L["Use Health Percent"],
+		desc = L["Use Health Percent"],
+		tristate = false,
+		get = function () return status.dbx.threshold<10 end,
+		set = function (_, v)
+			status.dbx.threshold = v and 0.4 or 10000
+			status:UpdateDB()
+			self:MakeStatusOptions(status)
+		end,
+	}
+end, {
+	titleIcon = "Interface\\Icons\\Ability_rogue_bloodyeye"
 })
 
-Grid2Options:RegisterStatusOptions("health-low", "health", Grid2Options.MakeStatusColorThresholdOptions, {
-	titleIcon = "Interface\\Icons\\Ability_rogue_bloodyeye"
+Grid2Options:RegisterStatusOptions("health-deficit", "health", Grid2Options.MakeStatusColorThresholdOptions, {
+	titleIcon = "Interface\\Icons\\Spell_shadow_lifedrain"
 })
 
 Grid2Options:RegisterStatusOptions( "death", "combat", Grid2Options.MakeStatusColorOptions,{

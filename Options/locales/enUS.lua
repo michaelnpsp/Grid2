@@ -575,6 +575,9 @@ L["Show dead as having Full Health"] = true
 L["Frequent Updates"] = true
 L["Instant Updates"] = true
 
+-- health-low status
+L["Use Health Percent"] = true
+
 -- range status 
 L["Range"] = true
 L["%d yards"] = true
