@@ -4,6 +4,7 @@ local Shields = Grid2.statusPrototype:new("shields")
 
 local Grid2    = Grid2
 local select   = select
+local type     = type
 local next     = next
 local min      = math.min
 local fmt      = string.format
@@ -45,13 +46,11 @@ end
 
 function Shields:UpdateShields(unit)
 	for spellId in next, shields_det[unit] do
-		local amount = select(14, UnitAura(unit, shields[spellId]) )
-		if amount then
-			if amount>0 then
-				self:ApplyShield(unit, spellId, amount)
-			else
-				self:RemoveShield(unit, spellId)
-			end
+		local amount = select( 15, UnitAura(unit, shields[spellId]) )
+		if type(amount)=="number" and amount>0 then
+			self:ApplyShield(unit, spellId, amount)
+		 else
+			self:RemoveShield(unit, spellId)
 		end
 	end
 end
