@@ -353,7 +353,7 @@ function Grid2Options:ConfirmDialog(message, funcAccept, funcCancel)
 		t= {}
 		StaticPopupDialogs["GRID2OPTIONS_CONFIRM_DIALOG"] = t
 	end
-	t.preferredIndex = 3
+	t.preferredIndex = STATICPOPUP_NUMDIALOGS
 	t.text = message
 	t.button1 = ACCEPT
 	t.button2 = CANCEL
