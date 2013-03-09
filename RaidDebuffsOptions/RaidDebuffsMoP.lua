@@ -147,4 +147,94 @@ RDDB["Mists of Pandaria"] = {
         119775, --Reaching Attack
         },        
     },
+	["Throne of Thunder"] = {
+		["Trash"]= {
+		},
+		["Jin'rokh the Breaker"]= {
+		138349, --Static Wound
+		137399, --Focused Lightning
+		138733, --Ionization
+		},
+		["Horridon"]= {
+		136767, --Triple Puncture
+		136708, --Stone Gaze
+		136719, --Blazing Sunlight
+		136654, --Rending Charge
+		136587, --Venom Bolt Volley
+		136512, --Hex of Confusion
+		140946, --Dire Fixation
+		},
+		["Council of Elders"]= {
+		137650, --Shadowed Soul
+		137085, --Chilled to the Bone
+		136922, --Frostbite
+		136917, --Biting Cold
+		136903, --Frigid Assault
+		136857, --Entrapped
+		137359, --Marked Soul
+		137891, --Twisted Fate
+		},
+		["Tortos"]= {
+		137552, --Crystal Shell
+		},
+		["Megaera"]= {
+		139822, --Cinders
+		137731, --Ignite Flesh
+		139866, --Torrent of Ice
+		139841, --Arctic Freeze
+		134378, --Acid Rain
+		139839, --Rot Armor
+		140179, --Suppression
+		139994, --Diffusion
+		},
+		["Ji-Kun"]= {
+		140092, --Infected Talons
+		134256, --Slimed
+		138319, --Feed Pool
+		134366, --Talon Rake
+		140014, --Daedelian Wings
+		},
+		["Durumu the Forgotten"]= {
+		133767, --Serious Wound
+		133768, --Arterial Cut
+		134755, --Eye Sore
+		136413, --Force of Will
+		133795, --Life Drain
+		133597, --Dark Parasite
+		133598, --Dark Plague
+		134007, --Devour
+		},
+		["Primordius"]= {
+		136050, --Malformed Blood
+		140546, --Fully Mutated
+		137000, --Black Blood
+		},
+		["Dark Animus"]= {
+		138609, --Matter Swap
+		138569, --Explosive Slam
+		138659, --Touch of the Animus
+		136954, --Anima Ring
+		},
+		["Iron Qon"]= {
+		134691, --Impale
+		134647, --Scorched
+		136193, --Arcing Lightning
+		135145, --Freeze
+		},
+		["Twin Consorts"]= {
+		137341, --Beast of Nightmares
+		137360, --Corrupted Healing
+		137408, --Fan of Flames
+		137440, --Icy Shadows
+		},
+		["Lei Shen"]= {
+		134916, --Decapitate
+		135150, --Crashing Thunder
+		139011, --Helm of Command
+		136478, --Fusion Slash
+		136853, --Lightning Bolt
+		},
+		["Ra-den"]= {
+		}
+	}
 }
