@@ -155,11 +155,10 @@ end
 function class:LoadZoneSpells()
 	if curzone then		
 		local debuffs = self.dbx.debuffs
-		if debuffs and debuffs[k] ~= nil then --updating variables after LibBabble-Zone removal
+		if debuffs then --updating variables after LibBabble-Zone removal
 			for k,v in pairs(debuffs) do
-				if type(k) == "string" then
-					local mapID = GSRD.engMapName_to_mapID[k]
-					debuffs[mapID]=v
+				if type(k) == "string" and GSRD.engMapName_to_mapID[k] then
+					debuffs[GSRD.engMapName_to_mapID[k]]=v
 					debuffs[k]=nil
 				end
 			end
