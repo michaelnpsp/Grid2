@@ -1,7 +1,7 @@
 local RDDB= Grid2Options:GetRaidDebuffsTable()
 
 RDDB["The Lich King"] = {
-	["Naxxramas"] = {
+	[535] = {
 		["Trash"]= {
 		55314, --Strangulate
 		},
@@ -49,13 +49,13 @@ RDDB["The Lich King"] = {
 		27808,--Frost Blast (NH)
 		},		
 	},
-	["The Eye of Eternity"] = {
+	[527] = {
 		["Malygos"]= {
 		56272, --Arcane Breath (N, H)
 		57407, --Surge of Power (N, H)
 		}
 	},
-	["The Obsidian Sanctum"] = {
+	[531] = {
 		["Trash"]= {
 		39647,--Curse of Mending
 		58936,--Rain of Fire
@@ -65,7 +65,7 @@ RDDB["The Lich King"] = {
 		57491,--Flame Tsunami (N, H)
 		},		
 	},
-	["The Ruby Sanctum"] = {
+	[609] = {
 		["Baltharus the Warborn"]= {
 		74502,--Enervating Brand
 		},
@@ -82,7 +82,7 @@ RDDB["The Lich King"] = {
 		74795,--Mark of Consumption
 		},		
 	},
-	["Trial of the Crusader"] = {
+	[543] = {
 		--Gormok the Impaler
 		["Gormok the Impaler"]= {
 		66331, --Impale(10, 25, 10H, 25H)
@@ -133,7 +133,7 @@ RDDB["The Lich King"] = {
 		67863,--Acid-Drenched Mandibles(25H)
 		},		
 	},
-	["Ulduar"] = {
+	[529] = {
 		["Trash"]= {
 		62310, --Impale (N, H)
 		63612, --Lightning Brand (N, H)
@@ -208,7 +208,7 @@ RDDB["The Lich King"] = {
 		64412,--Phase Punch
 		},		
 	},
-	["Vault of Archavon"] = {
+	[532] = {
 		["Koralon"]= {
 		67332,--Flaming Cinder (10, 25)
 		},
@@ -216,7 +216,7 @@ RDDB["The Lich King"] = {
 		72004,--Frostbite
 		},
 	},
-	["Icecrown Citadel"] = {
+	[604] = {
 		["Trash"]= {
 		70980,--Web Wrap
 		70450,--Blood Mirror

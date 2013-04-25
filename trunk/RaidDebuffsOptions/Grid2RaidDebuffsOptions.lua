@@ -3,7 +3,7 @@ Created by Michael
 --]]
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
-local BZ = LibStub("LibBabble-Zone-3.0"):GetUnstrictLookupTable()
+-- local BZ = LibStub("LibBabble-Zone-3.0"):GetUnstrictLookupTable()
 local BB = {}
 
 local GSRD = Grid2:GetModule("Grid2RaidDebuffs")
@@ -59,6 +59,17 @@ local function GetLocalizedStatusName(index)
 end
 
 local function GetCustomDebuffs()
+	local debuffs = GSRD.db.profile.debuffs
+	if debuffs then --updating variables after LibBabble-Zone removal
+		for k,v in pairs(debuffs) do
+			if type(k) == "string" then
+				local mapID = GSRD.engMapName_to_mapID[k]
+				debuffs[mapID]=v
+				debuffs[k]=nil
+			end
+		end
+	end
+	
 	return GSRD.db.profile.debuffs and GSRD.db.profile.debuffs[curInstance] or {}
 end
 
@@ -166,8 +177,8 @@ local function GetInstances(module)
 	if module and module~="" then
 		local instances= RDDB[module]
 		if instances then
-			for name,_ in pairs(instances) do
-				values[name]= BZ[name] or name
+			for mapid,_ in pairs(instances) do
+				values[mapid] = GetMapNameByID(mapid)
 			end
 		end
 	end	
@@ -651,7 +662,7 @@ local function MakeAdvancedOptions(self)
 		get = function () return curInstance end,
 		set = function (_, v)
 			curInstance = v
-			optionDebuffs.name = BZ[v] or v
+			optionDebuffs.name =  GetMapNameByID(v)
 			optionDebuffs.args = MakeDebuffsOptions()
 		end,
 		values= {}
