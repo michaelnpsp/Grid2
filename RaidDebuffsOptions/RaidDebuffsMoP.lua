@@ -1,7 +1,7 @@
 local RDDB = Grid2Options:GetRaidDebuffsTable()
 
 RDDB["Mists of Pandaria"] = {
-    ["Heart of Fear"] = {
+    [897] = {
         ["Trash"]= { 
         },
         ["Imperial Vizier Zor'lok"]= {
@@ -49,7 +49,7 @@ RDDB["Mists of Pandaria"] = {
         123846, --Heart of Fear: Lure        
 		},
     },
-    ["Mogu'shan Vaults"] = {
+    [896] = {
         ["Trash"]={
         118562, --Petrified
         116596, --Smoke Bomb
@@ -102,7 +102,7 @@ RDDB["Mists of Pandaria"] = {
         116829, --Focused Energy
         },
     },
-    ["Kun-Lai Summit"] = {
+    [809] = {
         ["Sha of Anger"]= {
         119626, --Aggressive Behavior [NOTE: this is the MC]
         119488, --Unleashed Wrath [NOTE: Must heal these people. Lots of shadow dmg]
@@ -110,7 +110,7 @@ RDDB["Mists of Pandaria"] = {
         119601, --Bitter Thoughts (Silence)
         },        
     },
-    ["Terrace of Endless Spring"] = {
+    [886] = {
         ["Trash"]= {
         },
         ["Protector Kaolan"]= {
@@ -147,13 +147,14 @@ RDDB["Mists of Pandaria"] = {
         119775, --Reaching Attack
         },        
     },
-	["Throne of Thunder"] = {
+	[930] = {
 		["Trash"]= {
 		},
 		["Jin'rokh the Breaker"]= {
 		138349, --Static Wound
 		137399, --Focused Lightning
 		138733, --Ionization
+		138002, --Fluidity
 		},
 		["Horridon"]= {
 		136767, --Triple Puncture
@@ -163,6 +164,7 @@ RDDB["Mists of Pandaria"] = {
 		136587, --Venom Bolt Volley
 		136512, --Hex of Confusion
 		140946, --Dire Fixation
+		136710, --Deadly Plague
 		},
 		["Council of Elders"]= {
 		137650, --Shadowed Soul
@@ -208,6 +210,7 @@ RDDB["Mists of Pandaria"] = {
 		136050, --Malformed Blood
 		140546, --Fully Mutated
 		137000, --Black Blood
+		136228, --Volatile Pathogen
 		},
 		["Dark Animus"]= {
 		138609, --Matter Swap
@@ -233,6 +236,8 @@ RDDB["Mists of Pandaria"] = {
 		139011, --Helm of Command
 		136478, --Fusion Slash
 		136853, --Lightning Bolt
+		136295, --Overcharged
+		135703, --Static Shock
 		},
 		["Ra-den"]= {
 		}

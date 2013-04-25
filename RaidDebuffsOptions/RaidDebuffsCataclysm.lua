@@ -1,7 +1,7 @@
 local RDDB= Grid2Options:GetRaidDebuffsTable()
 
 RDDB["Cataclysm"] = {
-	["Blackwing Descent"] = {
+	[754] = {
 		["Magmaw"]= {
 		89773, -- Mangle
 		94679, -- Parasitic Infection
@@ -50,7 +50,7 @@ RDDB["Cataclysm"] = {
         79318, -- Dominion		
 		},
 	},
-	["The Bastion of Twilight"] = {
+	[758] = {
 		["Halfus Wyrmbreaker"]= {
 		83710, -- Furious Roar		
 		83908, -- Malevolent Strike
@@ -91,7 +91,7 @@ RDDB["Cataclysm"] = {
 		92955, -- Wrack
 		},
 	},
-	["Throne of the Four Winds"] = {
+	[773] = {
 		["Conclave of Wind"]= {
 		84645, -- Wind Chill
 		86107, -- Ice Patch
@@ -110,7 +110,7 @@ RDDB["Cataclysm"] = {
         87856, -- Squall Line		
 		},
 	},
-    ["Baradin Hold"] = {
+    [752] = {
         ["Argaloth"]= {
         88942, -- Meteor Slash
         88954, -- Consuming Darkness
@@ -123,7 +123,7 @@ RDDB["Cataclysm"] = {
 		105067, -- Seething Hate
 		},		
     },	
-	["Firelands"] = {
+	[800] = {
 		["Beth'tilac"]= {
 		49026, -- Fixate
 		97079, -- Seeping Venom
@@ -182,7 +182,7 @@ RDDB["Cataclysm"] = {
 		100767, -- Melt Armor
 		},		
 	},
-	["Dragon Soul"] = {
+	[824] = {
 		["Morchok"] = {
 		103687, -- Crush Armor
 		},
