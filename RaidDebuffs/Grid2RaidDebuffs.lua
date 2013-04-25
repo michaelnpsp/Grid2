@@ -18,20 +18,21 @@ local spells_status = {}
 GSRD.engMapName_to_mapID = { 
 	--this is for updating old saved settings after removing LibBabble-Zone, the names wont be used anymore
 	--users should not have to update all old settings
-	--MoP
+	
+	--Mists of Pandaria
 	["Heart of Fear"] = 897,
-    ["Mogu'shan Vaults"] = 896,
-    ["Kun-Lai Summit"] = 809,
-    ["Terrace of Endless Spring"] = 886,
+    	["Mogu'shan Vaults"] = 896,
+    	["Kun-Lai Summit"] = 809,
+   	["Terrace of Endless Spring"] = 886,
 	["Throne of Thunder"] = 930,
-	--Cata
+	--Cataclysm
 	["Blackwing Descent"] = 754,
 	["The Bastion of Twilight"] = 758,
 	["Throne of the Four Winds"] = 773,
-    ["Baradin Hold"] = 752,
+   	["Baradin Hold"] = 752,
 	["Firelands"] = 800,
 	["Dragon Soul"] = 824,
-	--WotLK
+	--Wrath of the Lich King
 	["Naxxramas"] = 535,
 	["The Eye of Eternity"] = 527,
 	["The Obsidian Sanctum"] = 531,
@@ -40,7 +41,7 @@ GSRD.engMapName_to_mapID = {
 	["Ulduar"] = 529,
 	["Vault of Archavon"] = 532,
 	["Icecrown Citadel"] = 604,
-	--TBC
+	--The Burning Crusade
 	["Karazhan"] = 799,
 	["Zul'Aman"] = 781,
 	["Serpentshrine Cavern"] = 780,
