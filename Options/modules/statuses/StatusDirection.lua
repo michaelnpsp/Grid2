@@ -7,9 +7,9 @@ Grid2Options:RegisterStatusOptions( "direction", "target", function(self, status
 		order = 90,
 		name = L["Update rate"],
 		desc = L["Rate at which the status gets updated"],
-		min = 0,
-		max = 5,
-		step = 0.1,
+		min = 0.1,
+		max = 2,
+		step = 0.05,
 		get = function ()
 			return status.dbx.updateRate or 0.2
 		end,
@@ -56,6 +56,47 @@ Grid2Options:RegisterStatusOptions( "direction", "target", function(self, status
 		get = function ()	return status.dbx.ShowDead end,
 		set = function (_, v)
 			status.dbx.ShowDead = v or nil
+			status:UpdateDB()
+		end,
+	}
+	options.spacer2 = {
+		type = "header",
+		order = 125,
+		name = L["Sticky Units"],
+	}
+	options.stickyTarget = {
+		type = "toggle",
+		order = 130,
+		name = L["Target"],
+		desc = L["Always display direction for target"],
+		tristate = false,
+		get = function ()	return status.dbx.StickyTarget end,
+		set = function (_, v)
+			status.dbx.StickyTarget = v or nil
+			status:UpdateDB()
+		end,
+	}
+	options.stickyMouseover = {
+		type = "toggle",
+		order = 140,
+		name = L["Mouseover"],
+		desc = L["Always display direction for mouseover"],
+		tristate = false,
+		get = function ()	return status.dbx.StickyMouseover end,
+		set = function (_, v)
+			status.dbx.StickyMouseover = v or nil
+			status:UpdateDB()
+		end,
+	}
+	options.stickyTanks = {
+		type = "toggle",
+		order = 150,
+		name = L["Tanks"],
+		desc = L["Always display direction for tanks"],
+		tristate = false,
+		get = function ()	return status.dbx.StickyTanks end,
+		set = function (_, v)
+			status.dbx.StickyTanks = v or nil
 			status:UpdateDB()
 		end,
 	}

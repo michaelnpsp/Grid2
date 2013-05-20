@@ -10,23 +10,26 @@ local GetPlayerFacing = GetPlayerFacing
 local GetPlayerMapPosition = GetPlayerMapPosition
 local SetMapToCurrentZone= SetMapToCurrentZone
 local UnitIsUnit= UnitIsUnit
-local UnitInRange= UnitInRange
-local UnitIsVisible= UnitIsVisible
-local UnitIsDead= UnitIsDead
+-- local UnitInRange= UnitInRange
+-- local UnitIsVisible= UnitIsVisible
+-- local UnitIsDead= UnitIsDead -- this is useless, loadstring functions dont reach this scope
 
 local timer
-local ValidMap
+-- local ValidMap
 local directions= {}
 local UnitCheck
 
 local function UpdateDirections()
 	local x1,y1 = GetPlayerMapPosition("player")
+	if x1 == 0 then Direction:ClearDirections() return end
 	local facing = GetPlayerFacing()
 	for unit,_ in Grid2:IterateRosterUnits() do
 		local direction
-		if UnitCheck(unit) then
+		if not UnitIsUnit(unit, "player") and UnitCheck(unit) then
 			local x2,y2 = GetPlayerMapPosition(unit)
-			direction= floor( (PI-atan2(x1 - x2, y2 - y1)-facing) / PI2 * 32 + 0.5) % 32
+			if x2~=0 then
+				direction = floor( (PI-atan2(x1 - x2, y2 - y1)-facing) / PI2 * 32 + 0.5) % 32
+			end
 		end	
 		if direction ~= directions[unit] then
 			directions[unit]= direction
@@ -38,12 +41,12 @@ end
 local function ZoneChanged()
 	if not WorldMapFrame:IsVisible() then 
 		SetMapToCurrentZone()
-		local x,y = GetPlayerMapPosition("player")
-		local ValidMap=  (x~=0 or y~=0)
-		Direction:SetTimer(ValidMap)
-		if not ValidMap then
-			Direction:ClearDirections()
-		end
+		-- local x,y = GetPlayerMapPosition("player")
+		-- local ValidMap=  (x~=0 or y~=0)
+		-- Direction:SetTimer(ValidMap)
+		-- if not ValidMap then
+			-- Direction:ClearDirections()
+		-- end
 	end
 end
 
@@ -75,11 +78,20 @@ function Direction:ClearDirections()
 end
 
 function Direction:UpdateDB()	
+	local isRestr = false
 	t= {}
-	t[1] = "return function(unit) return (not UnitIsUnit(unit, 'player')) "
-	if self.dbx.ShowOutOfRange 	then t[#t+1]= "and (not UnitInRange(unit)) "	end
-	if self.dbx.ShowVisible 	then t[#t+1]= "and UnitIsVisible(unit) "		end
-	if self.dbx.ShowDead 		then t[#t+1]= "and UnitIsDead(unit) "			end
+	t[1] = "return function(unit) return "
+	if self.dbx.ShowOutOfRange 	then t[#t+1]= "and (not UnitInRange(unit)) "; isRestr=true 	end
+	if self.dbx.ShowVisible 	then t[#t+1]= "and UnitIsVisible(unit) "; isRestr=true		end
+	if self.dbx.ShowDead 		then t[#t+1]= "and UnitIsDead(unit) "; isRestr=true			end
+	if isRestr then
+		t[2] = t[2]:sub(4)
+		if self.dbx.StickyTarget	then t[#t+1]= "or UnitIsUnit(unit, 'target') "		end
+		if self.dbx.StickyMouseover	then t[#t+1]= "or UnitIsUnit(unit, 'mouseover') "	end
+		if self.dbx.StickyTanks		then t[#t+1]= "or UnitGroupRolesAssigned(unit)=='TANK' " end
+	else
+		t[2] = "true " 
+	end
 	t[#t+1]= "end"
 	UnitCheck = assert(loadstring(table.concat(t)))()
 end
