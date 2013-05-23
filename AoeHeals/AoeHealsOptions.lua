@@ -33,8 +33,8 @@ do
 					local auras = {}
 					-- wipe(prev_spells)
 					for _,spell in pairs(status.dbx.spells[AOEM.playerClass]) do
-						local name = GetSpellInfo(spell) or spell
-						if name and name ~= "" then 
+						local name = GetSpellInfo(spell)
+						if name then 
 							auras[#auras+1] = name
 							-- prev_spells[name] = spell
 						end
@@ -46,8 +46,11 @@ do
 				local auras = { strsplit("\n,", v) }
 				for i,v in pairs(auras) do
 					local aura = strtrim(v)
-					if #aura>0 --[[ and GetSpellInfo(aura) ]] then
-						table.insert(status.dbx.spells[AOEM.playerClass], --[[ tonumber(aura) or prev_spells[aura] or ]] aura )
+					if #aura>0 then
+						local spellID = status:GetSpellID(aura)
+						if spellID > 0 then
+							table.insert(status.dbx.spells[AOEM.playerClass], spellID)
+						end
 					end
 				end	
 				status:UpdateDB()
