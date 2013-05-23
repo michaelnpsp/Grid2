@@ -95,6 +95,30 @@ local function ResetClassSpells(self)
 	end
 end
 
+local function GetSpellID(self, name)
+	local id = 0
+	print(name)
+	if tonumber(name) then
+		return tonumber(name)
+	end
+	for _,spell in next, defaultSpells[playerClass] do
+		local spellName = GetSpellInfo(spell)
+		if spellName == name then
+			return spell
+		end
+	end
+	local texture = select(3, GetSpellInfo(name))
+	for i=150000, 1, -1  do
+		if GetSpellInfo(i) == name then
+			id = i
+			if select(3, GetSpellInfo(i)) == texture then
+				return i
+			end
+		end
+	end
+	return id
+end
+
 local function UpdateDB(self)
 	wipe(icons)
 	wipe(spells)
@@ -125,6 +149,7 @@ Grid2.setupFunc["aoe-OutgoingHeals"] = function(baseKey, dbx)
 	OutgoingHeal.GetIcon   = GetIcon
 	OutgoingHeal.GetText   = GetText
 	OutgoingHeal.UpdateDB  = UpdateDB
+	OutgoingHeal.GetSpellID= GetSpellID
 	OutgoingHeal.ResetClassSpells  = ResetClassSpells
 	Grid2:RegisterStatus(OutgoingHeal, {"color", "icon", "text"}, baseKey, dbx)
 	return OutgoingHeal
