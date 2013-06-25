@@ -18,6 +18,7 @@ local timer
 -- local ValidMap
 local directions= {}
 local UnitCheck
+local mouseover = ""
 
 local function UpdateDirections()
 	local x1,y1 = GetPlayerMapPosition("player")
@@ -25,7 +26,7 @@ local function UpdateDirections()
 	local facing = GetPlayerFacing()
 	for unit,_ in Grid2:IterateRosterUnits() do
 		local direction
-		if not UnitIsUnit(unit, "player") and UnitCheck(unit) then
+		if not UnitIsUnit(unit, "player") and UnitCheck(unit, mouseover) then
 			local x2,y2 = GetPlayerMapPosition(unit)
 			if x2~=0 then
 				direction = floor( (PI-atan2(x1 - x2, y2 - y1)-facing) / PI2 * 32 + 0.5) % 32
@@ -77,22 +78,59 @@ function Direction:ClearDirections()
 	end
 end
 
+local SetMouseoverHooks -- UnitIsUnit(unit, "mouseover") does not work for units that are not Visible
+do
+	local prev_OnEnter
+	local function OnMouseEnter(self, frame)
+		mouseover = frame.unit
+		prev_OnEnter(self, frame)
+	end
+
+	local prev_OnLeave
+	local function OnMouseLeave(self, frame)
+		mouseover = ""
+		prev_OnLeave(self, frame)
+	end
+
+	SetMouseoverHooks = function(enable)
+		if not prev_OnEnter and enable then
+			prev_OnEnter = Grid2Frame.OnFrameEnter
+			prev_OnLeave = Grid2Frame.OnFrameLeave
+			Grid2Frame.OnFrameEnter = OnMouseEnter
+			Grid2Frame.OnFrameLeave = OnMouseLeave
+		elseif prev_OnEnter and not enable then
+			Grid2Frame.OnFrameEnter = prev_OnEnter
+			Grid2Frame.OnFrameLeave = prev_OnLeave
+			prev_OnEnter = nil
+			prev_OnLeave = nil
+			mouseover = ""
+		end
+	end
+end
+
 function Direction:UpdateDB()	
-	local isRestr = false
+	local isRestr
 	t= {}
 	t[1] = "return function(unit) return "
-	if self.dbx.ShowOutOfRange 	then t[#t+1]= "and (not UnitInRange(unit)) "; isRestr=true 	end
-	if self.dbx.ShowVisible 	then t[#t+1]= "and UnitIsVisible(unit) "; isRestr=true		end
-	if self.dbx.ShowDead 		then t[#t+1]= "and UnitIsDead(unit) "; isRestr=true			end
-	if isRestr then
-		t[2] = t[2]:sub(4)
-		if self.dbx.StickyTarget	then t[#t+1]= "or UnitIsUnit(unit, 'target') "		end
-		if self.dbx.StickyMouseover	then t[#t+1]= "or UnitIsUnit(unit, 'mouseover') "	end
-		if self.dbx.StickyTanks		then t[#t+1]= "or UnitGroupRolesAssigned(unit)=='TANK' " end
+	if not self.dbx.showOnlyStickyUnits then
+		if self.dbx.ShowOutOfRange 	then t[#t+1]= "and (not UnitInRange(unit)) "; isRestr=true 	end
+		if self.dbx.ShowVisible 	then t[#t+1]= "and UnitIsVisible(unit) "; isRestr=true		end
+		if self.dbx.ShowDead 		then t[#t+1]= "and UnitIsDead(unit) "; isRestr=true			end
+	end
+	if isRestr or self.dbx.showOnlyStickyUnits then
+		if self.dbx.StickyTarget	then t[#t+1]= "or  UnitIsUnit(unit, 'target') "		end
+		if self.dbx.StickyMouseover	then t[#t+1]= "or  UnitIsUnit(unit, mouseover) "
+										 t[1]	= "return function(unit, mouseover) return " end
+		if self.dbx.StickyFocus		then t[#t+1]= "or  UnitIsUnit(unit, 'focus') "	end
+		if self.dbx.StickyTanks		then t[#t+1]= "or  UnitGroupRolesAssigned(unit)=='TANK' " end
+	end
+	if t[2] then
+		t[2] = t[2]:sub(5)
 	else
 		t[2] = "true " 
 	end
 	t[#t+1]= "end"
+	SetMouseoverHooks((isRestr or self.dbx.showOnlyStickyUnits) and self.dbx.StickyMouseover)
 	UnitCheck = assert(loadstring(table.concat(t)))()
 end
 

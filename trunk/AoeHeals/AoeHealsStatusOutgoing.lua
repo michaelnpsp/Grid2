@@ -97,7 +97,6 @@ end
 
 local function GetSpellID(self, name)
 	local id = 0
-	print(name)
 	if tonumber(name) then
 		return tonumber(name)
 	end

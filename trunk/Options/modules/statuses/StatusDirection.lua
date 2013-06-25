@@ -5,11 +5,12 @@ Grid2Options:RegisterStatusOptions( "direction", "target", function(self, status
 	options.updateRate = {
 		type = "range",
 		order = 90,
+		width = "double",
 		name = L["Update rate"],
 		desc = L["Rate at which the status gets updated"],
-		min = 0.1,
+		min = 0.05,
 		max = 2,
-		step = 0.05,
+		step = 0.01,
 		get = function ()
 			return status.dbx.updateRate or 0.2
 		end,
@@ -34,6 +35,7 @@ Grid2Options:RegisterStatusOptions( "direction", "target", function(self, status
 			status.dbx.ShowOutOfRange = v or nil
 			status:UpdateDB()
 		end,
+		hidden = function ()	return status.dbx.showOnlyStickyUnits end,
 	}
 	options.showVisible = {
 		type = "toggle",
@@ -46,6 +48,7 @@ Grid2Options:RegisterStatusOptions( "direction", "target", function(self, status
 			status.dbx.ShowVisible = v or nil
 			status:UpdateDB()
 		end,
+		hidden = function ()	return status.dbx.showOnlyStickyUnits end,
 	}
 	options.showDead = {
 		type = "toggle",
@@ -58,6 +61,7 @@ Grid2Options:RegisterStatusOptions( "direction", "target", function(self, status
 			status.dbx.ShowDead = v or nil
 			status:UpdateDB()
 		end,
+		hidden = function ()	return status.dbx.showOnlyStickyUnits end,
 	}
 	options.spacer2 = {
 		type = "header",
@@ -88,15 +92,39 @@ Grid2Options:RegisterStatusOptions( "direction", "target", function(self, status
 			status:UpdateDB()
 		end,
 	}
-	options.stickyTanks = {
+	options.stickyFocus = {
 		type = "toggle",
 		order = 150,
+		name = L["Focus"],
+		desc = L["Always display direction for focus"],
+		tristate = false,
+		get = function ()	return status.dbx.StickyFocus end,
+		set = function (_, v)
+			status.dbx.StickyFocus = v or nil
+			status:UpdateDB()
+		end,
+	}
+	options.stickyTanks = {
+		type = "toggle",
+		order = 160,
 		name = L["Tanks"],
 		desc = L["Always display direction for tanks"],
 		tristate = false,
 		get = function ()	return status.dbx.StickyTanks end,
 		set = function (_, v)
 			status.dbx.StickyTanks = v or nil
+			status:UpdateDB()
+		end,
+	}
+	options.showOnlyStickyUnits = {
+		type = "toggle",
+		order = 170,
+		width = "full",
+		name = L["Show only selected sticky units"],
+		tristate = false,
+		get = function ()	return status.dbx.showOnlyStickyUnits end,
+		set = function (_, v)
+			status.dbx.showOnlyStickyUnits = v or nil
 			status:UpdateDB()
 		end,
 	}

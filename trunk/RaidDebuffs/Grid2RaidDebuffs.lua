@@ -21,9 +21,9 @@ GSRD.engMapName_to_mapID = {
 	
 	--Mists of Pandaria
 	["Heart of Fear"] = 897,
-    	["Mogu'shan Vaults"] = 896,
-    	["Kun-Lai Summit"] = 809,
-   	["Terrace of Endless Spring"] = 886,
+	["Mogu'shan Vaults"] = 896,
+	["Kun-Lai Summit"] = 809,
+	["Terrace of Endless Spring"] = 886,
 	["Throne of Thunder"] = 930,
 	--Cataclysm
 	["Blackwing Descent"] = 754,
@@ -78,12 +78,9 @@ function GSRD:OnModuleDisable()
 end
 
 function GSRD:UpdateZoneSpells(event)
-	--local zone = self:GetCurrentZone()
-	local current_zone_on_worldmap = GetCurrentMapAreaID()
-	SetMapToCurrentZone()
-	local zone = GetCurrentMapAreaID()
-	if zone ~= current_zone_on_worldmap then SetMapByID(current_zone_on_worldmap) end
+	local zone = self:GetCurrentZone()
 	if zone==curzone and event then return end
+	
 	self:ResetZoneSpells(zone)
 	for status in next,statuses do
 		status:LoadZoneSpells()
@@ -91,20 +88,17 @@ function GSRD:UpdateZoneSpells(event)
 	self:UpdateEvents()
 	self:ClearAllIndicators()
 end
---[[
+
 function GSRD:GetCurrentZone()
-	local zone, instance, realZone
-	if IsInInstance() then
-		instance = GetInstanceInfo()
-		zone = instance and BZ[instance] and GetMapNameByID(instance)
+	local current_zone_on_worldmap = GetCurrentMapAreaID()
+	SetMapToCurrentZone()
+	local zone = GetCurrentMapAreaID()
+	if zone ~= current_zone_on_worldmap then 
+		SetMapByID(current_zone_on_worldmap) 
 	end
-	if not zone then
-		realZone = GetRealZoneText()
-		zone = realZone and BZ[realZone] and GetMapNameByID(instance)
-	end
-	return zone or instance or realZone
+	return zone
 end
-]]
+
 function GSRD:ClearAllIndicators()
 	for status in next, statuses do
 		status:ClearAllIndicators()
