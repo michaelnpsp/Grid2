@@ -183,7 +183,7 @@ do
 				if name then -- this may still work due to having the same name
 					GSRD:Debug("|cFF00FFFFSpellLink not Availible|r: %s  (%s)", spellId, name)
 				else -- this wont work
-					GSRD:Debug("|cFFFF0000Invalid spellID|r: %s", spellId) 
+					GSRD:Debug("|cFFFF0000Invalid spellId|r: %s", spellId) 
 				end
 			end
 		end
@@ -323,7 +323,16 @@ local function EnableDisableModule(module, state)
 	UpdateZoneSpells()
 end
 
-local function CreateStandardDebuff(bossName,spellId,spellName)
+local StripEJinfo
+do
+	local strgsub = string.gsub
+	StripEJinfo = function(boss)
+		return (strgsub(boss, "%[.-%]", ""))
+	end
+end
+
+local function CreateStandardDebuff(bossNameKey,spellId,spellName)
+	local bossName = StripEJinfo(bossNameKey)
 	local baseKey = fmt("debuff-%s>%s", string.match(bossName, "^(.-) .*$") or bossName, spellName):gsub("[ %.\"!']", "")
 	if not Grid2:DbGetValue("statuses", baseKey) then
 		-- Save status in database
@@ -333,14 +342,6 @@ local function CreateStandardDebuff(bossName,spellId,spellName)
 		local status = Grid2.setupFunc[dbx.type](baseKey, dbx)
 		--Create the status options
 		Grid2Options:MakeStatusOptions(status)
-	end
-end
-
-local StripEJinfo
-do
-	local strgsub = string.gsub
-	StripEJinfo = function(boss)
-		return (strgsub(boss, "%[.-%]", ""))
 	end
 end
 
@@ -463,6 +464,22 @@ local function MakeDebuffOptions(bossName, spellId, isCustom)
 			order= 147,
 			name="",
 			hidden = function() return not curDebuffs[spellId] end,
+		},
+		chatLink={
+			type = "execute",
+			order = 149,
+			name = L["Link to Chat"],
+			func = function() 
+				local link = GetSpellLink(spellId)
+				if link then
+					local ChatBox = ChatEdit_ChooseBoxForSend()
+					if not ChatBox:HasFocus() then
+						ChatFrame_OpenChat(link)
+					else
+						ChatBox:Insert(link) 
+					end
+				end
+			end,
 		},
 		createDebuff= {
 			type = "execute",
