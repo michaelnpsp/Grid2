@@ -7,9 +7,9 @@ Created by Grid2 original authors, modified by Michael
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 
 local DEFAULT_GROUP_ORDER = "WARRIOR,DEATHKNIGHT,ROGUE,PALADIN,DRUID,SHAMAN,PRIEST,MAGE,WARLOCK,HUNTER"
-local DEFAULT_PET_ORDER = "HUNTER,WARLOCK,DEATHKNIGHT,PRIEST,MAGE,DRUID,SHAMAN,WARRIOR,ROGUE,PALADIN"
+local DEFAULT_PET_ORDER = "HUNTER,WARLOCK,DEATHKNIGHT,MAGE,PRIEST,DRUID,SHAMAN,WARRIOR,ROGUE,PALADIN"
 
-local groupFilters =  { { groupFilter = "1" }, { groupFilter = "2" }, { groupFilter = "3" }, {	groupFilter = "4" }, {	groupFilter = "5" } }
+local groupFilters =  { { groupFilter = "1" }, { groupFilter = "2" }, { groupFilter = "3" }, {	groupFilter = "4" }, {	groupFilter = "5" }, {	groupFilter = "6" } }
 
 Grid2Layout:AddLayout("None", {
 	meta = {
