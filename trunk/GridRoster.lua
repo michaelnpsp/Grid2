@@ -131,7 +131,7 @@ do
 	function Grid2:GroupChanged(event)
 		local _, instType = IsInInstance()
 		if instType == "raid" and IsInRaid() then
-			instType = select(5,GetInstanceInfo()) > 10 and "raid25" or "raid10"
+			instType = select(5,GetInstanceInfo()) > 10 and "raid25" or "raid10" or "raid20"
 		elseif instType == "pvp" then
 			instType = GetGroupType(0, 10, 15, 40)
 		elseif instType ~= "arena" then
