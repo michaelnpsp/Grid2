@@ -59,6 +59,7 @@ do
 		MakeLayoutOptions( "raid15" )
 		MakeLayoutOptions( "raid20" )
 		MakeLayoutOptions( "raid25" )
+		MakeLayoutOptions( "raid30" )
 		MakeLayoutOptions( "raid40" )	
 		return options
 	end	

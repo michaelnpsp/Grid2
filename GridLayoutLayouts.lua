@@ -232,6 +232,49 @@ Grid2Layout:AddLayout("By Group 20 w/Pets", {
 	},
  })
 
+Grid2Layout:AddLayout("By Group 30", {
+	meta = {
+		raid30 = true,
+	},
+	defaults = {
+		groupingOrder = DEFAULT_GROUP_ORDER,
+        allowVehicleTarget = true,
+		toggleForVehicle = true,
+	},
+	[1] = groupFilters[1],
+	[2] = groupFilters[2],
+	[3] = groupFilters[3],
+	[4] = groupFilters[4],
+	[5] = groupFilters[5],
+	[6] = groupFilters[6],
+
+})
+
+Grid2Layout:AddLayout("By Group 30 w/Pets", {
+	meta = {
+		raid30 = true,
+	},
+	defaults = {
+		groupingOrder = DEFAULT_GROUP_ORDER,
+        allowVehicleTarget = true,
+	},
+	[1] = groupFilters[1],
+	[2] = groupFilters[2],
+	[3] = groupFilters[3],
+	[4] = groupFilters[4],
+	[5] = groupFilters[5],
+	[6] = groupFilters[6],
+	[7] = {
+		type = "raidpet",
+		groupingOrder = DEFAULT_PET_ORDER,
+		showPlayer = true,
+		showParty = true,
+		showRaid = true,
+		unitsPerColumn = 5,
+		maxColumns = 3,
+	},
+ })
+
 Grid2Layout:AddLayout("By Group 25", {
 	meta = {
 		raid40 = true,
