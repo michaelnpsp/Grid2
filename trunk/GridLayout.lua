@@ -121,6 +121,7 @@ Grid2Layout.defaultDB = {
 					party = "By Group 5 w/Pets",
 					raid10 = "By Group 10 w/Pets",
 					raid15 = "By Group 15 w/Pets",
+					raid20 = "By Group 20",
 					raid25 = "By Group 25 w/Pets",
 					raid40 = "By Group 40",
 					arena = "By Group 5 w/Pets",
