@@ -253,7 +253,6 @@ local function status_OnEnable(self)
 		frame:RegisterEvent("PARTY_MEMBERS_CHANGED")
 		frame:RegisterEvent("PLAYER_REGEN_DISABLED")
 		frame:RegisterEvent("PLAYER_REGEN_ENABLED")
-		AOEM:MapEnable()
 		UpdateTimerState()
 	end	
 	tinsert(statuses, self)
@@ -270,7 +269,6 @@ local function status_OnDisable(self)
 		frame:UnregisterEvent("PARTY_MEMBERS_CHANGED")
 		frame:UnregisterEvent("PLAYER_REGEN_DISABLED" )
 		frame:UnregisterEvent("PLAYER_REGEN_ENABLED" )
-		AOEM:MapDisable()
 		SetTimer(false)
 	end	
 	if self.StatusDisabled then	self:StatusDisabled() end
