@@ -19,3 +19,4 @@ RaidDebuffsCataclysm.lua
 RaidDebuffsLichKing.lua
 RaidDebuffsBC.lua
 RaidDebuffsMoP.lua
+RaidDebuffsWoD.lua
