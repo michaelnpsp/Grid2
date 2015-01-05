@@ -43,6 +43,21 @@ Grid2Options:RegisterStatusOptions("heals-incoming", "health", function(self, st
 			status:UpdateDB()
 		end,
 	}
+	options.multiplier = {
+		type = "range",
+		order = 130,
+		name = L["Heals multiplier"],
+		desc = L["Apply this multiplier value to incoming heals."],
+		min = 1,
+		max = 10,
+		step = 0.01,
+		bigStep = 0.1,
+		get = function () return status.dbx.multiplier	end,
+		set = function (_, v)
+			status.dbx.multiplier = tonumber(v) or 1
+			status:UpdateDB()
+		end,
+	}	
 end, {
 	titleIcon ="Interface\\Icons\\Spell_Holy_DivineProvidence"
 })

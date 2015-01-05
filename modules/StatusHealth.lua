@@ -103,9 +103,6 @@ do
 			end	
 		end	
 	end
-	
-	
-	
 	function EnableQuickHealth()
 		if HealthCurrent.dbx.quickHealth then
 			RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", CombatLogEvent)
@@ -325,7 +322,7 @@ local function HealsUpdateEvent(unit)
 		local heal = Heals_GetHealAmount(unit)
 		if heal<Heals.minimum then heal = 0 end
 		if cache ~= heal then
-			heals_cache[unit] = heal
+			heals_cache[unit] = heal * Heals.multiplier
 			Heals:UpdateIndicators(unit)
 		end
 	end
@@ -334,6 +331,7 @@ end
 function Heals:UpdateDB()
 	local m = self.dbx.flags
 	self.minimum = (m and m>1 and m ) or 1
+	self.multiplier = self.dbx.multiplier or 1
 	Heals_GetHealAmount = self.dbx.includePlayerHeals and Heals_get_with_user or Heals_get_without_user
 end
 
@@ -375,7 +373,7 @@ end
 
 Grid2.setupFunc["heals-incoming"] = Create
 
-Grid2:DbSetStatusDefaultValue( "heals-incoming", {type = "heals-incoming", includePlayerHeals = false, flags = 0, color1 = {r=0,g=1,b=0,a=1}})
+Grid2:DbSetStatusDefaultValue( "heals-incoming", {type = "heals-incoming", includePlayerHeals = false, flags = 0, multiplier=1, color1 = {r=0,g=1,b=0,a=1}})
 
 -- death status
 local textDeath = L["DEAD"]
