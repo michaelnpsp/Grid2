@@ -16,7 +16,7 @@ local function Bar_CreateHH(self, parent)
 	bar:SetMinMaxValues(0, 1)
 	bar:SetValue(0)
 	if self.backColor then
-		bar.bgBar = bar.bgBar or CreateFrame("StatusBar", nil, bar)
+		bar.bgBar = bar.bgBar or CreateFrame("StatusBar", nil, parent)
 		bar.bgBar:SetMinMaxValues(0, 1)
 		bar.bgBar:SetValue(1)
 		bar.bgBar:Show()
@@ -27,11 +27,13 @@ end
 local function Bar_Layout(self, parent)
 	local chBar
 	local Bar    = parent[self.name]
+	local bgBar  = Bar.bgBar
 	local width  = self.width  or parent.container:GetWidth()
 	local height = self.height or parent.container:GetHeight()
 	local orient = self.orientation or Grid2Frame.db.profile.orientation
 	local points = AlignPoints[orient]
 	local level  = parent:GetFrameLevel() + self.frameLevel
+
 	Bar:ClearAllPoints()
 	Bar:SetOrientation(orient)
 	Bar:SetFrameLevel(level)
@@ -42,7 +44,7 @@ local function Bar_Layout(self, parent)
 		chBar = parent[self.childIndicator.name]
 		chBar:SetOrientation(orient)
 		chBar:SetStatusBarTexture(self.childIndicator.texture)
-		chBar:SetFrameLevel(level)
+		chBar:SetFrameLevel( level + (self.backColor and 1 or 0) )
 		chBar:ClearAllPoints()
 		chBar:SetPoint( points[1], Bar:GetStatusBarTexture(), points[2], 0, 0)
 		chBar:SetPoint( points[3], Bar:GetStatusBarTexture(), points[4], 0, 0);
@@ -53,20 +55,18 @@ local function Bar_Layout(self, parent)
 		end	
 	end
 	if self.backColor then
-		local bgBar = Bar.bgBar
-		local bar   = chBar or Bar
 		local color = self.dbx.backColor 
 		bgBar:SetStatusBarTexture(self.texture)
 		bgBar:SetStatusBarColor(color.r,color.g,color.b,color.a)
 		bgBar:SetOrientation(orient)
 		bgBar:SetFrameLevel(level)
 		bgBar:ClearAllPoints()
-		bgBar:SetPoint( points[1], bar:GetStatusBarTexture(), points[2], 0, 0)
-		bgBar:SetPoint( points[3], bar:GetStatusBarTexture(), points[4], 0, 0);
+		bgBar:SetPoint( points[1], Bar:GetStatusBarTexture(), points[2], 0, 0)
+		bgBar:SetPoint( points[3], Bar:GetStatusBarTexture(), points[4], 0, 0);
 		bgBar:SetPoint( points[2], Bar, points[2], 0, 0)
 		bgBar:SetPoint( points[4], Bar, points[4], 0, 0)
-	elseif Bar.bgBar then
-		Bar.bgBar:Hide()
+	elseif bgBar then
+		bgBar:Hide()
 	end
 end
 
@@ -121,6 +121,7 @@ end
 local function Bar_OnUpdate(self, parent, unit, status)
 	parent[self.name]:SetValue(status and status:GetPercent(unit) or 0)
 end
+
 --}}}
 
 local function Bar_SetOrientation(self, orientation)
@@ -223,4 +224,3 @@ end
 Grid2.setupFunc["bar"] = Create
 
 Grid2.setupFunc["bar-color"] = Grid2.Dummy
-

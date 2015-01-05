@@ -308,7 +308,7 @@ local function CreateLayout(name)
 		Grid2Layout.db.global.customLayouts= layouts
 	end
 	layouts[name]= {
-		meta     = { raid40 = true,	raid25 = true,	raid20 = true,	raid15 = true,	raid10 = true,	party = true, pvp = true, arena = true, solo = true },
+		meta     = { raid40 = true,	raid35 = true, raid30 = true, raid25 = true, raid20 = true,	raid15 = true,	raid10 = true,	party = true, pvp = true, arena = true, solo = true },
 		defaults = { toggleForVehicle = true, showPlayer = true, showParty = true, showRaid = true, showSolo = true },
 		[1]      = CreateNewGroupHeader(),
 	}
