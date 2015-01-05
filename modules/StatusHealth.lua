@@ -108,6 +108,7 @@ do
 			RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", CombatLogEvent)
 			RegisterEvent("GROUP_ROSTER_UPDATE", RosterUpdateEvent)
 			RegisterEvent("PARTY_MEMBER_CHANGED", RosterUpdateEvent)
+			RegisterEvent("UNIT_HEALTH", HealthChangedEvent)			
 			RegisterEvent("UNIT_HEALTH_FREQUENT", HealthChangedEvent)
 			RegisterEvent("UNIT_MAXHEALTH"      , HealthChangedEvent)
 			UnitHealth = UnitQuickHealth
@@ -115,19 +116,20 @@ do
 	end
 	function DisableQuickHealth()
 		UnitHealth = UnitHealthOriginal
-		UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "GROUP_ROSTER_UPDATE", "PARTY_MEMBER_CHANGED", "UNIT_HEALTH_FREQUENT", "UNIT_MAXHEALTH")
+		UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "GROUP_ROSTER_UPDATE", "PARTY_MEMBER_CHANGED", "UNIT_HEALTH", "UNIT_HEALTH_FREQUENT", "UNIT_MAXHEALTH")
 	end
 end
 
 -- Functions shared by several Health statuses
 local function Health_RegisterEvents()
+	RegisterEvent("UNIT_HEALTH", UpdateIndicators )	
 	RegisterEvent("UNIT_HEALTH_FREQUENT", UpdateIndicators )
 	RegisterEvent("UNIT_MAXHEALTH", UpdateIndicators )
 	EnableQuickHealth()
 end
 
 local function Health_UnregisterEvents()
-	UnregisterEvent( "UNIT_HEALTH_FREQUENT", "UNIT_MAXHEALTH" )
+	UnregisterEvent( "UNIT_HEALTH", "UNIT_HEALTH_FREQUENT", "UNIT_MAXHEALTH" )
 	DisableQuickHealth() 
 end
 

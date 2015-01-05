@@ -313,8 +313,9 @@ end
 -- Grid2Options:GetLayouts()
 function Grid2Options:GetLayouts( meta )
     local list= { }
+	local raid = strfind(meta,"raid")
 	for name, layout in pairs(Grid2Layout.layoutSettings) do
-      if layout.meta[meta] == true then
+      if layout.meta[meta] or (raid and layout.meta["raid"]) then
 	     list[name]= LG[name]
 	  end
 	end
