@@ -75,6 +75,7 @@ local anchorPoints = {
 	[true]  = { TOPLEFT = "LEFT", TOPRIGHT= "RIGHT", BOTTOMLEFT = "LEFT"  , BOTTOMRIGHT = "RIGHT"  },
 	TOP = -1, BOTTOM = 1, LEFT = 1, RIGHT = -1,
 }
+
 -- nil or false for vertical
 function GridLayoutHeaderClass.prototype:SetOrientation(horizontal)
 	if not self.initialConfigFunction then return end
@@ -117,15 +118,10 @@ Grid2Layout.defaultDB = {
 		debug = false,
 		FrameDisplay = "Always",
 		layouts = {
-					solo = "Solo w/Pet",
-					party = "By Group 5 w/Pets",
-					raid10 = "By Group 10 w/Pets",
-					raid15 = "By Group 15 w/Pets",
-					raid20 = "By Group 20",
-					raid25 = "By Group 25 w/Pets",
-					raid30 = "By Group 30",
-					raid40 = "By Group 40",
-					arena = "By Group 5 w/Pets",
+					solo  = "Solo w/Pet",
+					party = "Party w/Pets",
+					arena = "Party w/Pets",
+					raid  = "By Group w/Pets",
 		},
 		layoutScales= {},
 		horizontal = true,
@@ -149,6 +145,11 @@ Grid2Layout.defaultDB = {
 		PosX = 500,
 		PosY = -200,
 	},
+}
+
+Grid2Layout.groupFilters =  { 
+	{ groupFilter = "1" }, { groupFilter = "2" }, { groupFilter = "3" }, {	groupFilter = "4" }, 
+	{ groupFilter = "5" }, { groupFilter = "6" }, {	groupFilter = "7" }, {	groupFilter = "8" },
 }
 
 Grid2Layout.frameBackdrop = { 
@@ -185,7 +186,7 @@ function Grid2Layout:OnModuleEnable()
 	end
 	self:RestorePosition()
 	if self.layoutName then
-		self:ReloadLayout()
+		self:ReloadLayout(true)
 	end	
 	self:RegisterMessage("Grid_GroupTypeChanged")
 	self:RegisterMessage("Grid_UpdateLayoutSize", "UpdateSize")
@@ -203,15 +204,19 @@ end
 
 local reloadLayoutQueued, updateSizeQueued, restorePositionQueued
 function Grid2Layout:PLAYER_REGEN_ENABLED()
-	if reloadLayoutQueued then return self:ReloadLayout() end
+	if reloadLayoutQueued then return self:ReloadLayout(true) end
 	if updateSizeQueued then return self:UpdateSize() end
 	if restorePositionQueued then return self:RestorePosition() end
 end
 
-function Grid2Layout:Grid_GroupTypeChanged(_, type)
-	Grid2Layout:Debug("GroupTypeChanged", type)
-	self.partyType = type
-	self:ReloadLayout()
+function Grid2Layout:Grid_GroupTypeChanged(_, groupType, instType, maxPlayers)
+	Grid2Layout:Debug("GroupTypeChanged", groupType, instType, maxPlayers)
+	local force = (maxPlayers ~= self.instMaxPlayers)
+	self.partyType = groupType
+	self.instType = instType
+	self.instMaxPlayers = maxPlayers
+	self.maxInstGroups = math.floor( (maxPlayers + 4) / 5 )
+	self:ReloadLayout(force)
 end
 
 --}}}
@@ -313,18 +318,29 @@ function Grid2Layout:SetClamp()
 	self.frame:SetClampedToScreen(self.db.profile.clamp)
 end
 
-function Grid2Layout:ReloadLayout()
-	if InCombatLockdown() then
-		reloadLayoutQueued = true
-		return
-	end
+function Grid2Layout:ReloadLayout(force)
 	reloadLayoutQueued = false
-	self:LoadLayout( self.db.profile.layouts[self.partyType or "solo"] )
+	local partyType  = self.partyType or "solo"
+	local instType   = self.instType or ""
+	local layouts    = self.db.profile.layouts
+	local layoutName = layouts[partyType.."@"..instType] or layouts[partyType]
+	if self.layoutName ~= layoutName or force then
+		if InCombatLockdown() then
+			reloadLayoutQueued = true
+		else
+			self:LoadLayout( layoutName )
+		end
+	end	
 end
+
+local groupFilters = { "1", "1,2", "1,2,3", "1,2,3,4", "1,2,3,4,5", "1,2,3,4,5,6", "1,2,3,4,5,6,7", "1,2,3,4,5,6,7,8" }
 
 local function SetAllAttributes(header, p, list, fix)
 	local petgroup = false
 	for attr, value in next, list do
+		if attr=="groupFilter" and value=="auto" then
+			value = groupFilters[Grid2Layout.maxInstGroups] or "1"
+		end
 		if attr == "unitsPerColumn" then
 			header:SetLayoutAttribute("columnSpacing", p.Padding)
 			header:SetLayoutAttribute("unitsPerColumn", value)
@@ -359,18 +375,45 @@ local function ForceFramesCreation(header)
 	end	
 end
 
+local function AddLayoutHeader(self, profile, defaults, header, visualIndex)
+	local type = header.type or (defaults and defaults.type) or "raid"
+	local headers = assert(self.groups[type], "Bad " .. type)
+	local index = self.indexes[type] + 1
+	local layoutGroup = headers[index]
+	if not layoutGroup then
+		layoutGroup = self.layoutHeaderClass:new(type)
+		headers[index] = layoutGroup
+	end
+	self.indexes[type] = index
+	if type ~= "spacer" then
+		if defaults then 
+			SetAllAttributes(layoutGroup, profile, defaults)	
+		end
+		SetAllAttributes(layoutGroup, profile, header, true)
+		ForceFramesCreation(layoutGroup)
+		layoutGroup:SetOrientation(profile.horizontal)
+	end
+	self:PlaceGroup(layoutGroup, visualIndex)
+	layoutGroup:Show()
+	return visualIndex+1
+end
+
+local function GenerateLayoutHeaders(self, profile, defaults, index)
+	for i=1,self.maxInstGroups do
+		AddLayoutHeader( self, profile, defaults, self.groupFilters[i], index )
+		index = index + 1
+	end	
+	return index
+end
+
 function Grid2Layout:LoadLayout(layoutName)
 	local layout = self.layoutSettings[layoutName]
 	if not layout then return end
 	
 	self:Debug("LoadLayout", layoutName)
 
-	self.layoutName= layoutName
-	
+	self.layoutName = layoutName	
 	self:Scale()
-	
-	local p = self.db.profile
-	local horizontal = p.horizontal
 	
 	for type, headers in pairs(self.groups) do
 		self.indexes[type] = 0
@@ -379,32 +422,21 @@ function Grid2Layout:LoadLayout(layoutName)
 		end
 	end
 
+	local profile = self.db.profile
 	local defaults = layout.defaults
-	local default_type = defaults and defaults.type or "raid"
-
-	for i, l in ipairs(layout) do
-		local type = l.type or default_type
-		local headers = assert(self.groups[type], "Bad " .. type)
-		local index = self.indexes[type] + 1
-		local layoutGroup = headers[index]
-		if not layoutGroup then
-			layoutGroup = self.layoutHeaderClass:new(type)
-			headers[index] = layoutGroup
-		end
-		self.indexes[type] = index
-
-		if type ~= "spacer" then
-			if defaults then
-				SetAllAttributes(layoutGroup, p, defaults)
+	
+	if layout[1] then
+		local i = 1
+		for _, header in ipairs(layout) do
+			if header=="auto" then
+				i = GenerateLayoutHeaders(self, profile, defaults, i)
+			else
+				i = AddLayoutHeader(self, profile, defaults, header, i)	
 			end
-			SetAllAttributes(layoutGroup, p, l, true)
-			ForceFramesCreation(layoutGroup)
-			layoutGroup:SetOrientation(horizontal)
 		end
-		self:PlaceGroup(layoutGroup, i)
-		
-		layoutGroup:Show()
-	end
+	else
+		GenerateLayoutHeaders(self, profile, defaults, 1)
+	end	
 
 	self:UpdateDisplay()
 end
