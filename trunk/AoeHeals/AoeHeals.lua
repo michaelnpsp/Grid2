@@ -48,7 +48,6 @@ local tostring = tostring
 local bit_band = bit.band
 
 --{{
-local raidSizes = {raid40= 30, raid30= 30, raid25= 25, raid20= 20, raid15=15, raid10=10, party=5, solo=5}
 
 local frame, timer
 local statuses = {} 
@@ -76,7 +75,7 @@ local function UpdateRoster()
 	wipe(roster)
 	local m = min( IsInRaid() and GetNumGroupMembers() or 0, 40 )
 	if m>0 then
-		local g = raidSizes[Grid2Layout.partyType or "solo"]  / 5
+		local g = Grid2Layout.maxInstanceGroups or 8
 		local i  = 1
 		for j=1,m do 
 			local h = select( 3, GetRaidRosterInfo(j) )
