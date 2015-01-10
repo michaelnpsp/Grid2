@@ -587,6 +587,12 @@ L["Low Health"] = "Vida baja"
 L["Show dead as having Full Health"] = "Muertos con vida llena"
 L["Frequent Updates"] = "Actualizaciones frecuentes"
 L["Instant Updates"] = "Actualizaciones instantaneas"
+L["Normal"] = "Normal"
+L["Fast"] = "Rapido"
+L["Instant"] = "Instantaneo"
+L["Update frequency"] = "Frecuencia de actualizaciones"
+L["Select the health update frequency."] = "Elige la frequencia de actualización de las vidas."
+
 
 -- health-low status
 L["Use Health Percent"] = "Usar Porcentajes"

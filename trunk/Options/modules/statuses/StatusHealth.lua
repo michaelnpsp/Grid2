@@ -3,11 +3,29 @@ local L = Grid2Options.L
 Grid2Options:RegisterStatusOptions("health-current", "health", function(self, status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
 	self:MakeSpacerOptions(options, 30)
-	self:MakeStatusToggleOptions(status, options, optionParams, "quickHealth")
+	options.healthUpdate = {
+		type  = "select",
+		order = 35,
+		name  = L["Update frequency"],
+		desc  = L["Select the health update frequency."],
+		get   = function () 
+			return  (status.dbx.quickHealth and "q") or
+					(status.dbx.frequentHealth and "p") or
+					"n"
+		end,
+		set   = function (_, v)
+			status.dbx.frequentHealth = (v=="p") or nil
+			status.dbx.quickHealth = (v=="q") or nil
+			status:UpdateDB()
+			status:UpdateAllIndicators()
+		end,
+		values= { n = L["Normal"],  p = L["Fast"], q = L["Instant"] },
+	}	
 	self:MakeStatusToggleOptions(status, options, optionParams, "deadAsFullHealth")
 end, {
 	deadAsFullHealth = L["Show dead as having Full Health"],
 	quickHealth = L["Instant Updates"],
+	frequentHealth = L["Frequent Updates"],
 	color1 = L["Full Health"],
 	color2 = L["Medium Health"],
 	color3 = L["Low Health"],

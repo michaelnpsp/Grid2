@@ -23,8 +23,6 @@ Grid2Layout:AddLayout("None", {
 Grid2Layout:AddLayout("Solo", {
 	meta = {
 		solo = true,
-		party = true,
-		arena = true,
 	},
 	[1] = {
 		type = "party",
@@ -39,8 +37,6 @@ Grid2Layout:AddLayout("Solo", {
 Grid2Layout:AddLayout("Solo w/Pet", {
 	meta = {
 		solo = true,
-		party = true,
-		arena = true,
 	},
 	defaults = {
 		groupingOrder = DEFAULT_GROUP_ORDER,
@@ -95,8 +91,6 @@ Grid2Layout:AddLayout("By Group w/Pets", {
 		raid = true,
 	},
 	defaults = {
-		showPlayer = true,
-		showParty = true,
 		showRaid = true,	
 		groupingOrder = DEFAULT_GROUP_ORDER,
         allowVehicleTarget = true,
@@ -185,6 +179,7 @@ Grid2Layout:AddLayout("By Role", {
 		arena = true,
 	},
 	defaults = {
+		showPlayer = true,
 		showParty = true,
 		showRaid = true,
         allowVehicleTarget = true,
@@ -202,8 +197,6 @@ Grid2Layout:AddLayout("By Role", {
 Grid2Layout:AddLayout("By Group & Role", {
 	meta = {
 		raid  = true,
-		party = true,
-		arena = true,
 	},
 	defaults = {
 		showRaid = true,
@@ -222,6 +215,7 @@ Grid2Layout:AddLayout("By Role w/Pets", {
 		arena = true,
 	},
 	defaults = {
+		showPlayer = true,
 		showParty = true,
 		showRaid = true,
         allowVehicleTarget = true,
@@ -244,6 +238,7 @@ Grid2Layout:AddLayout("By Class | 1x25", {
 		raid = true,
 	},
 	defaults = {
+		showPlayer = true,
 		showRaid = true,
         allowVehicleTarget = true,
 		unitsPerColumn = 25,
@@ -285,7 +280,6 @@ Grid2Layout:AddLayout("By Group | 40", {
 		raid = true,
 	},
 	defaults = {
-		showParty = true,
 		showRaid = true,
 		groupingOrder = DEFAULT_GROUP_ORDER,
         allowVehicleTarget = true,
@@ -306,7 +300,6 @@ Grid2Layout:AddLayout("By Group | 40 w/Pets", {
 		raid = true,
 	},
 	defaults = {
-		showParty = true,
 		showRaid = true,
 		groupingOrder = DEFAULT_GROUP_ORDER,
         allowVehicleTarget = true,
