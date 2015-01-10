@@ -585,6 +585,11 @@ L["Low Health"] = true
 L["Show dead as having Full Health"] = true
 L["Frequent Updates"] = true
 L["Instant Updates"] = true
+L["Normal"] = true
+L["Fast"] = true
+L["Instant"] = true
+L["Update frequency"] = true
+L["Select the health update frequency."] = true
 
 -- health-low status
 L["Use Health Percent"] = true

@@ -107,38 +107,38 @@ do
 		if HealthCurrent.dbx.quickHealth then
 			RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", CombatLogEvent)
 			RegisterEvent("GROUP_ROSTER_UPDATE", RosterUpdateEvent)
-			RegisterEvent("PARTY_MEMBER_CHANGED", RosterUpdateEvent)		
+			RegisterEvent("PARTY_MEMBER_CHANGED", RosterUpdateEvent)
 			RegisterEvent("UNIT_HEALTH_FREQUENT", HealthChangedEvent)
-			RegisterEvent("UNIT_MAXHEALTH"      , HealthChangedEvent)
+			RegisterEvent("UNIT_HEALTH", HealthChangedEvent)						
+			RegisterEvent("UNIT_MAXHEALTH", HealthChangedEvent)
 			UnitHealth = UnitQuickHealth
 		end	
 	end
 	function DisableQuickHealth()
 		UnitHealth = UnitHealthOriginal
-		UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "GROUP_ROSTER_UPDATE", "PARTY_MEMBER_CHANGED", "UNIT_HEALTH_FREQUENT", "UNIT_MAXHEALTH")
+		UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "GROUP_ROSTER_UPDATE", "PARTY_MEMBER_CHANGED", "UNIT_HEALTH","UNIT_HEALTH_FREQUENT", "UNIT_MAXHEALTH")
 	end
 end
 
 -- Functions shared by several Health statuses
 local function Health_RegisterEvents()
-	RegisterEvent("UNIT_HEALTH_FREQUENT", UpdateIndicators )
+	RegisterEvent("UNIT_HEALTH", UpdateIndicators )	
 	RegisterEvent("UNIT_MAXHEALTH", UpdateIndicators )
+	if HealthCurrent.dbx.frequentHealth then
+		RegisterEvent("UNIT_HEALTH_FREQUENT", UpdateIndicators )
+	end	
 	EnableQuickHealth()
 end
 
 local function Health_UnregisterEvents()
-	UnregisterEvent( "UNIT_HEALTH_FREQUENT", "UNIT_MAXHEALTH" )
+	UnregisterEvent( "UNIT_HEALTH", "UNIT_HEALTH_FREQUENT", "UNIT_MAXHEALTH" )
 	DisableQuickHealth() 
 end
 
 local function Health_UpdateStatuses()
 	if next(statuses) then
-		local new = (HealthCurrent.dbx.quickHealth or false)
-		local cur = (UnitHealth == UnitQuickHealth)
-		if new~=cur then
-			Health_UnregisterEvents()
-			Health_RegisterEvents()
-		end	
+		Health_UnregisterEvents()
+		Health_RegisterEvents()
 	end	
 end
 
@@ -382,7 +382,7 @@ local dead_cache = {}
 
 Death.GetColor = Grid2.statusLibrary.GetColor
 
-local function DeathUpdateUnit(unit, noUpdate)
+local function DeathUpdateUnit(_, unit, noUpdate)
 	local new = UnitIsDeadOrGhost(unit) and (UnitIsGhost(unit) and textGhost or textDeath) or false
 	if new ~= dead_cache[unit] then
 		dead_cache[unit] = new
@@ -402,7 +402,7 @@ local function DeathUpdateUnit(unit, noUpdate)
 end
 
 function Death:Grid_UnitUpdated(_, unit)
-	DeathUpdateUnit(unit, true)	
+	DeathUpdateUnit(_, unit, true)	
 end
 	
 function Death:Grid_UnitLeft(_, unit)
@@ -410,13 +410,13 @@ function Death:Grid_UnitLeft(_, unit)
 end
 
 function Death:OnEnable()
-	RegisterEvent( "UNIT_HEALTH", DeathUpdateUnit )
+	self:RegisterEvent( "UNIT_HEALTH", DeathUpdateUnit )
 	self:RegisterMessage("Grid_UnitUpdated")
 	self:RegisterMessage("Grid_UnitLeft")
 end
 
 function Death:OnDisable()
-	UnregisterEvent( "UNIT_HEALTH" )
+	self:UnregisterEvent( "UNIT_HEALTH" )
 	self:UnregisterMessage("Grid_UnitUpdated")
 	self:UnregisterMessage("Grid_UnitLeft")
 	wipe(dead_cache)
