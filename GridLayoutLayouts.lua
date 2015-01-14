@@ -51,7 +51,6 @@ Grid2Layout:AddLayout("Solo w/Pet", {
 Grid2Layout:AddLayout("Party", {
 	meta = {
 		party = true,
-		arena = true,
 	},
 	defaults = {
 		showPlayer = true,
@@ -67,7 +66,6 @@ Grid2Layout:AddLayout("Party", {
 Grid2Layout:AddLayout("Party w/Pets", {
 	meta = {
 		party = true,
-		arena = true,
 	},
 	defaults = {
 		showPlayer = true,
@@ -89,6 +87,7 @@ Grid2Layout:AddLayout("Party w/Pets", {
 Grid2Layout:AddLayout("By Group w/Pets", {
 	meta = {
 		raid = true,
+		arena = true,
 	},
 	defaults = {
 		showRaid = true,	
@@ -107,6 +106,7 @@ Grid2Layout:AddLayout("By Group w/Pets", {
 Grid2Layout:AddLayout("By Class", {
 	meta = {
 		raid = true,
+		arena = true,
 	},
 	defaults = {
         allowVehicleTarget = true,
@@ -125,6 +125,7 @@ Grid2Layout:AddLayout("By Class", {
 Grid2Layout:AddLayout("By Class w/Pets", {
 	meta = {
 		raid = true,
+		arena = true,		
 	},
 	defaults = {
         allowVehicleTarget = true,
@@ -163,6 +164,7 @@ Grid2Layout:AddLayout("By Group w/Tanks", {
 Grid2Layout:AddLayout("By Group", {
 	meta = {
 		raid = true,
+		arena = true,
 	},
 	defaults = {
 		showRaid = true,

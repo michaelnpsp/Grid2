@@ -166,7 +166,10 @@ local function LayoutRefresh()
 			i= i + 1
 		end	
 	end	
-	frameLayout:SetSize( Spacing*2 + realCols * (width+Padding) - Padding, Spacing*2 + realRows * (height+Padding) - Padding )
+	local layWidth = Spacing*2 + realCols * (width+Padding) - Padding 
+	local layHeight= Spacing*2 + realRows * (height+Padding) - Padding
+	frameLayout:SetSize(layWidth,layHeight)
+	Grid2Layout:SetSize(layWidth,layHeight)
 end	
 
 local function LayoutEnable(self, name)
