@@ -294,6 +294,8 @@ L["Bar Height"] = true
 L["Choose zero to set the bar to the same height as parent frame"] = true
 L["Anchor to"] = true
 L["Anchor the indicator to the selected bar."] = true
+L["Reverse Fill"] = true
+L["Fill the bar in reverse."] = true
 
 L["Border Size"] = true
 L["Adjust the border of each unit's frame."] = true
@@ -617,6 +619,8 @@ L["Color for AFK."] = true
 
 -- heals-incoming status 
 L["Include player heals"] = true
+L["Substract heal absorbs"] =  true
+L["Substract heal absorbs shields from the incoming heals"] = true
 L["Display status for the player's heals."] = true
 L["Minimum value"] = true
 L["Incoming heals below the specified value will not be shown."] = true
@@ -678,7 +682,7 @@ L["Runic Power"] = true
 -- shields status
 L["shields"] = true
 L["Maximum shield amount"] = true
-L["Maximum shield amount value. Only used by bar indicators."] = true
+L["Value used by bar indicators. Select zero to use players Maximum Health."] = true
 L["Normal"] = true
 L["Medium"] = true
 L["Low"] = true
@@ -692,9 +696,11 @@ L["The value below which a shield is considered medium."] = true
 L["Custom Shields"] = true
 L["Type shield spell IDs separated by commas."] = true
 
--- boss-shields status
-L["Boss"] = true
-L["Supported debuffs"] = true
+-- heal-absorbs status
+L["heal-absorbs"] = true
+L["Maximum absorb amount"] = true
+L["Medium absorb threshold"] = true
+L["Low absorb threshold"] = true
 
 -- role related statuses
 L["Hide in combat"] = true
@@ -706,6 +712,7 @@ L["hostile casts against raid members"] = true
 L["advanced threat detection"] = true
 L["arrows pointing to each raid member"] = true
 L["display remaining amount of heal absorb shields"] = true
+L["display remaining amount of damage absorption shields"] = true
 
 -- aoe heals
 L["aoe-"] = true

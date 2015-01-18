@@ -15,7 +15,7 @@ L["frame"] = "celda"
 
 L["Default Font"] = "Fuente predeterminada"
 
-L["Invert Bar Color"] = "Invertir color de barra"
+L["Invert Bar Color"] = "Invertir color"
 L["Swap foreground/background colors on bars."] = "Intercambia los colores de frente y fondo de la barra"
 
 L["Background Color"] = "Color del fondo"
@@ -296,6 +296,9 @@ L["Bar Height"] = "Alto de la barra"
 L["Choose zero to set the bar to the same height as parent frame"] = "Si elige cero la barra tendrá el mismo alto que la celda"
 L["Anchor to"] = "Anclar a"
 L["Anchor the indicator to the selected bar."] = "Seleccione la barra a la que desee anclar este indicador."
+L["Reverse Fill"] = "Relleno inverso"
+L["Fill the bar in reverse."] = "Invertir el relleno de la barra."
+
 
 L["Border Size"] = "Grosor del borde"
 L["Adjust the border of each unit's frame."] = "Ajusta el grosor del borde de cada celda"
@@ -620,6 +623,8 @@ L["Color for AFK."] = "Color si el jugador esta Ausente"
 
 -- heals-incoming status 
 L["Include player heals"] = "Incluir mis curas"
+L["Substract heal absorbs"] =  "Restar absorbciones"
+L["Substract heal absorbs shields from the incoming heals"] = "Restar a las curas entrantes los escudos que absorben sanacion"
 L["Display status for the player's heals."] = "Muestra el estado de las curas del jugador"
 L["Minimum value"] = "Valor mínimo"
 L["Incoming heals below the specified value will not be shown."] = "Las curas entrantes por debajo del valor indicado no se mostrarán"
@@ -649,6 +654,7 @@ L["Disable All"] = "Desactivar todos"
 L["Copy to Debuffs"] = "Copiar a Debuffs"
 L["Select module"] = "Selecciona módulo"
 L["Select instance"] = "Selecciona mazmorra"
+L["Debuff Configuration"] = "Debuffs"
 L["Cataclysm"] = "Cataclismo"
 L["The Lich King"] = "El Rey Exánime"
 L["The Burning Crusade"] = "La Cruzada Ardiente"
@@ -656,6 +662,7 @@ L["New raid debuff"] = "Nuevo debuff de raid"
 L["Type the SpellId of the new raid debuff"] = "Teclea el número de hechizo (SpellId) del debuff de raid"
 L["Create raid debuff"] = "Crear debuff de raid"
 L["Delete raid debuff"] = "Eliminar este debuff"
+L["Link to Chat"] = "Pegar en el Chat"
 
 -- direction
 L["Out of Range"] = "Fuera de rango"
@@ -681,7 +688,7 @@ L["Runic Power"] = "Poder Runico"
 -- shields status
 L["shields"] = "escudos"
 L["Maximum shield amount"] = "Valor maximo"
-L["Maximum shield amount value. Only used by bar indicators."] = "Valor maximo de los escudos. Solo usado por los indicadores de tipo barra."
+L["Value used by bar indicators. Select zero to use players Maximum Health."] = "Usado para los indicadores de tipo barra. Elige cero para usar la vida maxima de los jugadores"
 L["Normal"] = "Normal"
 L["Medium"] = "Medio"
 L["Low"] = "Bajo"
@@ -692,12 +699,12 @@ L["Low shield threshold"] = "Umbral bajo"
 L["The value below which a shield is considered low."] = "Por debajo de este valor el escudo se considera bajo."
 L["Medium shield threshold"] = "Umbral medio"
 L["The value below which a shield is considered medium."] = "Por debajo de este valor el escudo se considera medio."
-L["Custom Shields"] = "Escudos personalizados"
-L["Type shield spell IDs separated by commas."] = "Teclee identificadores de escudos separados por comas."
 
--- boss-shields status
-L["Boss"] = "Jefe"
-L["Supported debuffs"] = "Debuffs soportados"
+-- heal-absorbs status
+L["heal-absorbs"] = "absorcion curas"
+L["Maximum absorb amount"] = "Valor maximo"
+L["Medium absorb threshold"] = "Umbral medio"
+L["Low absorb threshold"] = "Umbral bajo"
 
 -- role related statuses
 L["Hide in combat"] = "Ocultar en combate"
@@ -709,6 +716,7 @@ L["hostile casts against raid members"] = "casteos hostiles contra los miembros 
 L["advanced threat detection"] = "deteccion avanzada de amenaza"
 L["arrows pointing to each raid member"] = "flechas apuntando a cada miembro de la raid"
 L["display remaining amount of heal absorb shields"] = "muestra cantidad restante de escudos que absorben sanacion"
+L["display remaining amount of damage absorb shields"] = "muestra cantidad restante de escudos que absorben daño"
 
 -- aoe heals
 L["aoe-"] = "aoe: "

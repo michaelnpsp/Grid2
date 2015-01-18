@@ -308,18 +308,26 @@ local heals_cache= setmetatable( {}, {__index = function() return 0 end} )
 
 Heals.GetColor = Grid2.statusLibrary.GetColor
 
-local function Heals_get_with_user(unit)
+local function HealsPlayer(unit)
 	return UnitGetIncomingHeals(unit) or 0
 end
-local function Heals_get_without_user(unit)
-	return (UnitGetIncomingHeals(unit) or 0)  - (UnitGetIncomingHeals(unit, "player") or 0)
+local function HealsNoPlayer(unit)
+	return (UnitGetIncomingHeals(unit) or 0)  - (UnitGetIncomingHeals(unit, "player") or 0) 
 end
-local Heals_GetHealAmount = Heals_get_without_user
+local function HealsAbsorbPlayer(unit)
+	local v = (UnitGetIncomingHeals(unit) or 0) - (UnitGetTotalHealAbsorbs(unit) or 0)
+	return v>=0 and v or 0
+end
+local function HealsAbsorbNoPlayer(unit)
+	local v = (UnitGetIncomingHeals(unit) or 0)  - (UnitGetIncomingHeals(unit, "player") or 0) - (UnitGetTotalHealAbsorbs(unit) or 0)
+	return v>=0 and v or 0
+end
+local HealsGetAmount = HealsNoPlayer
 
 local function HealsUpdateEvent(unit)
 	if unit then
 		local cache = heals_cache[unit]
-		local heal = Heals_GetHealAmount(unit)
+		local heal = HealsGetAmount(unit)
 		if heal<Heals.minimum then heal = 0 end
 		if cache ~= heal then
 			heals_cache[unit] = heal * Heals.multiplier
@@ -332,19 +340,27 @@ function Heals:UpdateDB()
 	local m = self.dbx.flags
 	self.minimum = (m and m>1 and m ) or 1
 	self.multiplier = self.dbx.multiplier or 1
-	Heals_GetHealAmount = self.dbx.includePlayerHeals and Heals_get_with_user or Heals_get_without_user
+	if self.dbx.includeHealAbsorbs then
+		HealsGetAmount = self.dbx.includePlayerHeals and HealsAbsorbPlayer or HealsAbsorbNoPlayer
+	else
+		HealsGetAmount = self.dbx.includePlayerHeals and HealsPlayer or HealsNoPlayer
+	end
 end
 
 function Heals:OnEnable()
-	Health_Enable(self)
-	RegisterEvent("UNIT_HEAL_PREDICTION", HealsUpdateEvent)
 	self:UpdateDB()
+	RegisterEvent("UNIT_HEAL_PREDICTION", HealsUpdateEvent)
+	if self.dbx.includeHealAbsorbs then
+		RegisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", HealsUpdateEvent)
+	end	
 end
 
 function Heals:OnDisable()
 	wipe(heals_cache)
 	UnregisterEvent("UNIT_HEAL_PREDICTION")
-	Health_Disable(self)
+	if self.dbx.includeHealAbsorbs then
+		UnregisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED")	
+	end	
 end
 
 function Heals:IsActive(unit)
@@ -357,13 +373,7 @@ end
 
 function Heals:GetPercent(unit)
 	local m = UnitHealthMax(unit)
-	if m ~= 0 then
-		local h = UnitHealth(unit)
-		local v = heals_cache[unit] 
-		local d = m - h
-		return v < d and v / m or d / m
-	end
-	return 0
+	return m == 0 and 0 or heals_cache[unit] / m 
 end
 
 local function Create(baseKey, dbx)

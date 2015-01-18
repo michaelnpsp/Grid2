@@ -39,12 +39,25 @@ Grid2Options:RegisterStatusOptions("heals-incoming", "health", function(self, st
 		type = "toggle",
 		order = 110,
 		name = L["Include player heals"],
-		desc = L["Display status for the player's heals."],
+		desc = L["Include player heals"],
 		tristate = false,
 		get = function () return status.dbx.includePlayerHeals end,
 		set = function (_, v)
 			status.dbx.includePlayerHeals = v or nil
 			status:UpdateDB()
+		end,
+	}
+	options.includeHealAbsorbs = {
+		type = "toggle",
+		order = 115,
+		name = L["Substract heal absorbs"],
+		desc = L["Substract heal absorbs shields from the incoming heals"],
+		tristate = false,
+		get = function () return status.dbx.includeHealAbsorbs end,
+		set = function (_, v)
+			status:OnDisable()		
+			status.dbx.includeHealAbsorbs = v or nil
+			status:OnEnable()
 		end,
 	}
 	options.healTypes = {

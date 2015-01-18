@@ -3,8 +3,10 @@ Created by Grid2 original authors, modified by Michael
 --]]
 
 local Grid2Frame = Grid2Frame
+local next = next
 
 Grid2.indicators = {}
+Grid2.indicatorSorted = {}
 Grid2.indicatorTypes = {}
 Grid2.indicatorPrototype = {}
 
@@ -99,7 +101,8 @@ indicator.Update = indicator.UpdateBlink
 
 function Grid2:RegisterIndicator(indicator, types)
 	local name = indicator.name
-	self.indicators[name] = indicator
+	self.indicators[name]  = indicator
+	table.insert(self.indicatorSorted,indicator)
 	for _, type in ipairs(types) do
 		local t = self.indicatorTypes[type]
 		if not t then
@@ -123,10 +126,20 @@ function Grid2:UnregisterIndicator(indicator)
 	for type, t in pairs(self.indicatorTypes) do
 		t[name] = nil
 	end
+	for i in ipairs(self.indicatorSorted) do
+		if self.indicatorSorted[i]==indicator then
+			table.remove(self.indicatorSorted, i)
+			break
+		end
+	end	
 	if indicator.sideKick then
 		Grid2:UnregisterIndicator(indicator.sideKick)
 		indicator.sideKick = nil
 	end
+end
+
+function Grid2:GetIndicatorsSorted()
+	return self.indicatorSorted
 end
 
 function Grid2:IterateIndicators(type)

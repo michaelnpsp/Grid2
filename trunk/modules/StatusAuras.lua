@@ -8,6 +8,7 @@ local GetTime = GetTime
 local UnitBuff = UnitBuff
 local UnitDebuff = UnitDebuff
 local abs = math.abs
+local strlen = strlen
 
 --{{ Local variables
 local StatusList = {}
@@ -138,7 +139,7 @@ local function status_Reset(self, unit)
 end
 
 local function status_IsInactive(self, unit) -- used for "missing" status
-	return not self.states[unit]
+	return not ( self.states[unit] or Grid2:UnitIsPet(unit) )
 end
 
 local function status_IsActive(self, unit)
