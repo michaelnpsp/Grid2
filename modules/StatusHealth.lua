@@ -9,6 +9,7 @@ local HealthLow = Grid2.statusPrototype:new("health-low",false)
 local FeignDeath = Grid2.statusPrototype:new("feign-death", false)
 local HealthDeficit = Grid2.statusPrototype:new("health-deficit", false)
 local Heals = Grid2.statusPrototype:new("heals-incoming", false)
+local MyHeals = Grid2.statusPrototype:new("my-heals-incoming", false)
 local Death = Grid2.statusPrototype:new("death", true)
 
 local Grid2 = Grid2
@@ -304,35 +305,49 @@ Grid2.setupFunc["health-deficit"] = CreateHealthDeficit
 Grid2:DbSetStatusDefaultValue( "health-deficit", {type = "health-deficit", color1 = {r=1,g=1,b=1,a=1}, threshold = 0.05})
 
 -- heals-incoming status
-local heals_cache= setmetatable( {}, {__index = function() return 0 end} )
+local heals_cache = setmetatable( {}, {__index = function() return 0 end} )
+local myheals_cache = setmetatable( {}, {__index = function() return 0 end} )
+local myheal_required = 0
 
 Heals.GetColor = Grid2.statusLibrary.GetColor
 
 local function HealsPlayer(unit)
 	return UnitGetIncomingHeals(unit) or 0
 end
-local function HealsNoPlayer(unit)
-	return (UnitGetIncomingHeals(unit) or 0)  - (UnitGetIncomingHeals(unit, "player") or 0) 
+local function HealsNoPlayer(unit, myheal)
+	return (UnitGetIncomingHeals(unit) or 0) - myheal
 end
 local function HealsAbsorbPlayer(unit)
 	local v = (UnitGetIncomingHeals(unit) or 0) - (UnitGetTotalHealAbsorbs(unit) or 0)
 	return v>=0 and v or 0
 end
-local function HealsAbsorbNoPlayer(unit)
-	local v = (UnitGetIncomingHeals(unit) or 0)  - (UnitGetIncomingHeals(unit, "player") or 0) - (UnitGetTotalHealAbsorbs(unit) or 0)
+local function HealsAbsorbNoPlayer(unit, myheal)
+	local v = (UnitGetIncomingHeals(unit) or 0)  - myheal - (UnitGetTotalHealAbsorbs(unit) or 0)
 	return v>=0 and v or 0
 end
 local HealsGetAmount = HealsNoPlayer
 
 local function HealsUpdateEvent(unit)
 	if unit then
-		local cache = heals_cache[unit]
-		local heal = HealsGetAmount(unit)
-		if heal<Heals.minimum then heal = 0 end
-		if cache ~= heal then
-			heals_cache[unit] = heal * Heals.multiplier
-			Heals:UpdateIndicators(unit)
+		local myheal
+		if myheal_required>0 then
+			myheal = UnitGetIncomingHeals(unit, "player") or 0
 		end
+		if MyHeals.enabled then
+			local heal = myheal>=MyHeals.minimum and myheal * MyHeals.multiplier or 0
+			if myheals_cache[unit] ~= heal then
+				myheals_cache[unit] = heal
+				MyHeals:UpdateIndicators(unit) 
+			end
+		end	
+		if Heals.enabled then
+			local heal = HealsGetAmount(unit, myheal)
+			heal = heal>=Heals.minimum and heal * Heals.multiplier or 0
+			if heals_cache[unit] ~= heal then
+				heals_cache[unit] = heal
+				Heals:UpdateIndicators(unit)
+			end
+		end	
 	end
 end
 
@@ -341,26 +356,34 @@ function Heals:UpdateDB()
 	self.minimum = (m and m>1 and m ) or 1
 	self.multiplier = self.dbx.multiplier or 1
 	if self.dbx.includeHealAbsorbs then
-		HealsGetAmount = self.dbx.includePlayerHeals and HealsAbsorbPlayer or HealsAbsorbNoPlayer
+		HealsGetAmount = self.dbx.includePlayer and HealsAbsorbPlayer or HealsAbsorbNoPlayer
 	else
-		HealsGetAmount = self.dbx.includePlayerHeals and HealsPlayer or HealsNoPlayer
+		HealsGetAmount = self.dbx.includePlayer and HealsPlayer or HealsNoPlayer
 	end
 end
 
 function Heals:OnEnable()
 	self:UpdateDB()
-	RegisterEvent("UNIT_HEAL_PREDICTION", HealsUpdateEvent)
+	if not MyHeals.enabled then
+		RegisterEvent("UNIT_HEAL_PREDICTION", HealsUpdateEvent)
+	end
 	if self.dbx.includeHealAbsorbs then
 		RegisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", HealsUpdateEvent)
+	end	
+	if not self.dbx.includePlayer then
+		myheal_required = bit.bor(myheal_required,1)
 	end	
 end
 
 function Heals:OnDisable()
 	wipe(heals_cache)
-	UnregisterEvent("UNIT_HEAL_PREDICTION")
+	if not MyHeals.enabled then
+		UnregisterEvent("UNIT_HEAL_PREDICTION")
+	end	
 	if self.dbx.includeHealAbsorbs then
 		UnregisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED")	
 	end	
+	myheal_required = bit.band(myheal_required,2)
 end
 
 function Heals:IsActive(unit)
@@ -384,6 +407,54 @@ end
 Grid2.setupFunc["heals-incoming"] = Create
 
 Grid2:DbSetStatusDefaultValue( "heals-incoming", {type = "heals-incoming", includePlayerHeals = false, flags = 0, multiplier=1, color1 = {r=0,g=1,b=0,a=1}})
+
+-- my-heals-incoming status
+
+MyHeals.GetColor = Grid2.statusLibrary.GetColor
+
+function MyHeals:UpdateDB()
+	local m = self.dbx.flags
+	self.minimum = (m and m>1 and m ) or 1
+	self.multiplier = self.dbx.multiplier or 1
+end
+
+function MyHeals:OnEnable()
+	self:UpdateDB()
+	if not Heals.enabled then
+		RegisterEvent("UNIT_HEAL_PREDICTION", HealsUpdateEvent)
+	end	
+	myheal_required = bit.bor(myheal_required,2)
+end
+
+function MyHeals:OnDisable()
+	wipe(myheals_cache)
+	if not Heals.enabled then
+		UnregisterEvent("UNIT_HEAL_PREDICTION")
+	end	
+	myheal_required = bit.band(myheal_required,1)
+end
+
+function MyHeals:IsActive(unit)
+	return myheals_cache[unit] > 1
+end
+
+function MyHeals:GetText(unit)
+	return fmt("+%.1fk", myheals_cache[unit] / 1000)
+end
+
+function MyHeals:GetPercent(unit)
+	local m = UnitHealthMax(unit)
+	return m == 0 and 0 or myheals_cache[unit] / m 
+end
+
+local function Create(baseKey, dbx)
+	Grid2:RegisterStatus(MyHeals, {"color", "text", "percent"}, baseKey, dbx)
+	return MyHeals
+end
+
+Grid2.setupFunc["my-heals-incoming"] = Create
+
+Grid2:DbSetStatusDefaultValue( "my-heals-incoming", {type = "my-heals-incoming", flags = 0, multiplier=1, color1 = {r=0,g=1,b=0,a=1}})
 
 -- death status
 local textDeath = L["DEAD"]

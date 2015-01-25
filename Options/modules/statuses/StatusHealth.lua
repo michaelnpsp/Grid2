@@ -93,6 +93,42 @@ end, {
 	titleIcon ="Interface\\Icons\\Spell_Holy_DivineProvidence"
 })
 
+Grid2Options:RegisterStatusOptions("my-heals-incoming", "health", function(self, status, options, optionParams)
+	self:MakeStatusStandardOptions(status, options, optionParams)
+	options.healTypes = {
+		type = "input",
+		order = 120,
+		width = "full",
+		name = L["Minimum value"], 
+		desc = L["Incoming heals below the specified value will not be shown."],
+		get = function ()
+			return tostring(status.dbx.flags or 0)
+		end,
+		set = function (_, v)
+			status.dbx.flags = tonumber(v) or nil
+			status:UpdateDB()
+		end,
+	}
+	options.multiplier = {
+		type = "range",
+		order = 130,
+		name = L["Heals multiplier"],
+		desc = L["Apply this multiplier value to incoming heals."],
+		min = 1,
+		max = 10,
+		step = 0.01,
+		bigStep = 0.1,
+		get = function () return status.dbx.multiplier	end,
+		set = function (_, v)
+			status.dbx.multiplier = tonumber(v) or 1
+			status:UpdateDB()
+		end,
+	}	
+end, {
+	titleIcon ="Interface\\Icons\\Spell_Holy_DivineProvidence"
+})
+
+
 Grid2Options:RegisterStatusOptions("health-low", "health", function(self, status, options, optionParams)
 	local min,max,step
 	if status.dbx.threshold>10 then

@@ -5,16 +5,7 @@ local Grid2Frame = Grid2Frame
 local GetTime = GetTime
 local min = min
 
-local AlignPoints= {
-	HORIZONTAL = { 
-		[true]  = { "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT" },    -- normal Fill
-		[false] = { "BOTTOMRIGHT",  "BOTTOMLEFT", "TOPRIGHT", "TOPLEFT"  },  -- reverse Fill
-	},	
-	VERTICAL   = {
-		[true]  = { "BOTTOMLEFT","TOPLEFT","BOTTOMRIGHT","TOPRIGHT" }, -- normal Fill
-		[false] = { "TOPRIGHT", "BOTTOMRIGHT","TOPLEFT","BOTTOMLEFT" }, -- reverse Fill
-	}	
-}
+local AlignPoints = Grid2.AlignPoints
 
 local function Bar_CreateHH(self, parent)
 	local bar = self:CreateFrame("StatusBar", parent)

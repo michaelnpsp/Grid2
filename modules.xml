@@ -4,6 +4,7 @@
 <Script file="modules\IndicatorAlpha.lua"/>
 <Script file="modules\IndicatorBorder.lua"/>
 <Script file="modules\IndicatorBar.lua"/>
+<Script file="modules\IndicatorMultiBar.lua"/>
 <Script file="modules\IndicatorText.lua"/>
 <Script file="modules\IndicatorIcon.lua"/>
 <Script file="modules\IndicatorSquare.lua"/>
