@@ -18,6 +18,7 @@ Grid2Layout:AddLayout("None", {
 		arena = true,
 		solo = true,
 	},
+	empty = true
 })
 
 Grid2Layout:AddLayout("Solo", {
