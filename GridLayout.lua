@@ -419,7 +419,7 @@ end
 function Grid2Layout:LoadLayout(layoutName)
 	local layout = self.layoutSettings[layoutName]
 	if not layout then return end
-	
+
 	self:Debug("LoadLayout", layoutName)
 
 	self.layoutName = layoutName	
@@ -447,7 +447,7 @@ function Grid2Layout:LoadLayout(layoutName)
 				i = AddLayoutHeader(self, profile, defaults, header, i)	
 			end
 		end
-	else
+	elseif not layout.empty then
 		GenerateLayoutHeaders(self, profile, defaults, 1)
 	end	
 

@@ -2,9 +2,9 @@
 
 local Grid2 = Grid2
 local Grid2Frame = Grid2Frame
-local GetTime = GetTime
 local min = min
 local max = max
+local pairs = pairs
 local ipairs = ipairs
 
 local AlignPoints = Grid2.AlignPoints

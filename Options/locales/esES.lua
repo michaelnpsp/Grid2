@@ -683,6 +683,8 @@ L["Type the SpellId of the new raid debuff"] = "Teclea el número de hechizo (Sp
 L["Create raid debuff"] = "Crear debuff de raid"
 L["Delete raid debuff"] = "Eliminar este debuff"
 L["Link to Chat"] = "Pegar en el Chat"
+L["Show in Encounter Journal"] = "Mostrar Guia de mazmorras"
+L["Encounter Journal difficulty"] = "Dificultal Guia de mazmorras"
 
 -- direction
 L["Out of Range"] = "Fuera de rango"
