@@ -49,7 +49,7 @@ do
 			if indicator.dbx.type=="bar" and indicator.sideKick then
 				Grid2Options:MakeIndicatorOptions(indicator)
 			end
-		end	
+		end
 	end
 	function Grid2Options:MakeIndicatorBarLocationOptions(indicator,options)
 		if indicator.barParent then

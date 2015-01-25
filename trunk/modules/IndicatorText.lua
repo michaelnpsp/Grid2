@@ -126,6 +126,7 @@ local function Text_Layout(self, parent)
 	Text:SetJustifyH(justifyH[self.anchorRel])
 	Text:SetJustifyV(justifyV[self.anchorRel])
 	Text:SetWidth(parent:GetWidth())
+	Text:SetShadowColor(0,0,0, self.shadowAlpha)
 end
 
 local function Text_OnUpdateDE(self, parent, unit, status)
@@ -234,6 +235,7 @@ local function Text_UpdateDB(self, dbx)
 	self.offsety = l.y
 	self.frameLevel = dbx.level
 	self.textlength = dbx.textlength or 16
+	self.shadowAlpha = dbx.shadowDisabled and 0 or 1
 	self.textfont  = Grid2:MediaFetch("font", dbx.font or Grid2Frame.db.profile.font) or STANDARD_TEXT_FONT
 	self.Create = Text_Create
 	self.GetBlinkFrame = Text_GetBlinkFrame

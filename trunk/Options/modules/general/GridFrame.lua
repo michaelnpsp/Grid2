@@ -16,7 +16,7 @@ Grid2Options:AddGeneralOptions("General", "Frames", { orientation = {
 			Grid2Frame.db.profile.orientation = v
 			for _, indicator in Grid2:IterateIndicators() do
 				if indicator.SetOrientation and indicator.orientation==nil then
-					Grid2Frame:WithAllFrames( indicator, "Layout" )
+					Grid2Options:RefreshIndicator(indicator, "Layout", "Update")
 				end
 			end
 		end,
