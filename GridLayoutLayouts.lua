@@ -119,7 +119,7 @@ Grid2Layout:AddLayout("By Class", {
 		groupBy = "CLASS",
 		groupingOrder = DEFAULT_GROUP_ORDER,
 		unitsPerColumn = 5,
-		maxColumns = 5,	
+		maxColumns = 8,	
 	}
 })
 
@@ -132,7 +132,7 @@ Grid2Layout:AddLayout("By Class w/Pets", {
         allowVehicleTarget = true,
 		showRaid = true,
 		unitsPerColumn = 5,
-		maxColumns = 5,
+		maxColumns = 8,
 		groupBy = "CLASS",
 	},
 	[1]= {

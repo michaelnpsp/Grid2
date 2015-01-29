@@ -44,15 +44,16 @@ local function Bar_OnFrameUpdate(bar)
 				offset  = valueTo - size
 				valueTo = valueTo - value
 			elseif texture.myNoOverlap then
-				size    = min(value, 1-valueMax)
-				offset  = valueMax	
-				valueTo = valueMax + value
+				size     = min(value, 1-valueMax)
+				offset   = valueMax	
+				valueTo  = valueMax + value
+				valueMax = valueTo
 			else
-				offset  = max(valueTo,0)
-				valueTo = valueTo + value
-				size    = min(valueTo,1) - offset
+				offset   = max(valueTo,0)
+				valueTo  = valueTo + value
+				size     = min(valueTo,1) - offset
+				valueMax = max(valueMax, valueTo)				
 			end
-			valueMax = max(valueMax, valueTo)
 			if size>0 then
 				if horizontal then
 					texture:SetPoint( points[1], bar, points[1], direction*offset*barSize, 0)
