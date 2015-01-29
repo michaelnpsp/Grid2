@@ -47,7 +47,7 @@ do
 		end	
 	end
 	local function CreateMenuTable()
-		if not layoutName then layoutName= Grid2Layout.db.profile.layouts[partyType or "solo"] end
+		layoutName = Grid2Layout.layoutName
 		if partyType~=Grid2Layout.partyType or instType~=Grid2Layout.instType then
 			local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 			partyType= Grid2Layout.partyType
