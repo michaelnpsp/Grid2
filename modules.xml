@@ -30,6 +30,5 @@
 <Script file="modules\StatusShields.lua"/>
 <Script file="modules\StatusHealAbsorbs.lua"/>
 <Script file="modules\StatusSelf.lua"/>
-<Script file="modules\StatusPurgatory.lua"/>
 
 </Ui>

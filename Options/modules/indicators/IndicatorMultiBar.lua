@@ -3,10 +3,6 @@
 local Grid2Options = Grid2Options
 local L = Grid2Options.L
 
-local function AddOptions(indicator, barOptions, layoutOptions, colorOptions )
-
-end
-
 Grid2Options:RegisterIndicatorOptions("multibar", true, function(self, indicator)
 	local layout, bars  = {}, {}
 	self:MakeIndicatorLocationOptions(indicator,layout)
@@ -56,7 +52,7 @@ function Grid2Options:MakeIndicatorMultiBarAppearanceOptions(indicator,options)
 		set = function (_, v)
 			if v==0 then v= nil end
 			indicator.dbx.width = v
-			self:RefreshIndicator(indicator, "Layout")
+			self:RefreshIndicator(indicator, "Layout", "Update")
 		end,	
 	}
 	options.barHeight= {
@@ -73,7 +69,7 @@ function Grid2Options:MakeIndicatorMultiBarAppearanceOptions(indicator,options)
 		set = function (_, v)
 			if v==0 then v= nil end
 			indicator.dbx.height = v
-			self:RefreshIndicator(indicator, "Layout")
+			self:RefreshIndicator(indicator, "Layout", "Update")
 		end,	
 	}
 	options.reverseFill= {
@@ -197,7 +193,10 @@ do
 			type = "select",
 			order = 50.5,
 			name = L["Status"],
-			desc = L["Status"],
+			desc = function()
+				local status = indicator.statuses[1] 
+				return status and self.LocalizeStatus(status)
+			end,
 			get = function () 
 				local status = indicator.statuses[1] 
 				return status and status.name or nil
@@ -283,7 +282,10 @@ do
 				type = "select",
 				order = 50+i*5+0.5,
 				name = L["Status"],
-				desc = L["Status"],
+				desc = function()
+					local status = indicator.statuses[i+1] 
+					return status and self.LocalizeStatus(status)
+				end,
 				get = function () 
 					local status = indicator.statuses[i+1] 
 					return status and status.name or nil

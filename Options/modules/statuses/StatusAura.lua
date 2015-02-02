@@ -1,8 +1,9 @@
 local L = Grid2Options.L
 
 local ColorCountValues = {1,2,3,4,5,6,7,8,9}
-
-local ColorizeByValues= { L["Number of stacks"] , L["Remaining time"], L["Elapsed time"] }
+local ColorizeByValues1= { L["Number of stacks"] , L["Remaining time"], L["Elapsed time"] }
+local ColorizeByValues2= { L["Number of stacks"] , L["Remaining time"], L["Elapsed time"], L["Value"] }
+local MonitorizeValues = { [0]= L["NONE"], [1] = L["Value1"], [2] = L["Value2"], [3] = L["Value3"] }
 
 local function StatusAuraGenerateColors(status, newCount)
 	local oldCount = status.dbx.colorCount or 1
@@ -76,6 +77,7 @@ function Grid2Options:MakeStatusAuraMissingOptions(status, options, optionParams
 			if v then
 				StatusAuraGenerateColors(status,1)
 				status.dbx.colorThreshold = nil
+				status.dbx.valueIndex = nil
 			end
 			status:UpdateDB()
 			status:UpdateAllIndicators()
@@ -116,6 +118,7 @@ function Grid2Options:MakeStatusAuraUseSpellIdOptions(status, options, optionPar
 	options.useSpellId = {
 		type = "toggle",
 		name = L["Track by SpellId"], 
+		width = "double",
 		desc = string.format( "%s (%d) ", L["Track by spellId instead of aura name"], status.dbx.spellName ),
 		order = 110,
 		get = function () return status.dbx.useSpellId end,
@@ -154,7 +157,8 @@ function Grid2Options:MakeStatusAuraCommonOptions(status, options, optionParams)
 				desc = L["Coloring based on"],
 				get = function() 
 					if status.dbx.colorThreshold then
-						return status.dbx.colorThresholdElapsed and 3 or 2
+						return  (status.dbx.colorThresholdValue and 4)   or
+								(status.dbx.colorThresholdElapsed and 3) or 2
 					else
 						return 1
 					end
@@ -162,13 +166,14 @@ function Grid2Options:MakeStatusAuraCommonOptions(status, options, optionParams)
 				set = function( _, v) 
 						status.dbx.colorThreshold = nil
 						status.dbx.colorThresholdElapsed = (v==3) and true or nil
+						status.dbx.colorThresholdValue   = (v==4) and true or nil
 						if v ~= 1 then StatusAuraGenerateColorThreshold(status) end
 						status:UpdateDB()
 						self:MakeStatusOptions(status)
 				end,
-				values = ColorizeByValues, 
+				values = status.dbx.valueIndex and ColorizeByValues2 or ColorizeByValues1, 
 			}
-		end	
+		end
 	end
 	self:MakeHeaderOptions(options, "Colors")
 end
@@ -178,6 +183,8 @@ function Grid2Options:MakeStatusAuraColorThresholdOptions(status, options, optio
 	if thresholds then 
 		self:MakeHeaderOptions(options, "Thresholds")
 		local colorKey = L["Color"]
+		local maxValue = status.dbx.colorThresholdValue and 200000 or 30
+		local step     = status.dbx.colorThresholdValue and 50 or 0.1
 		for i=1,#thresholds do
 			options[ "colorThreshold" .. i ] = {
 				type = "range",
@@ -185,20 +192,20 @@ function Grid2Options:MakeStatusAuraColorThresholdOptions(status, options, optio
 				name = colorKey .. (i+1),
 				desc = L["Threshold to activate Color"] .. (i+1),
 				min = 0,
-				max = 300,
+				max = maxValue * 10,
 				softMin = 0,
-				softMax = 30,
-				step = 0.1,
-				bigStep = 1,
+				softMax = maxValue,
+				step = step,
+				bigStep = step*10,
 				get = function () return status.dbx.colorThreshold[i] end,
 				set = function (_, v)
 					local min,max
 					if status.dbx.colorThresholdElapsed then
 						min = status.dbx.colorThreshold[i-1] or 0
-						max = status.dbx.colorThreshold[i+1] or 30
+						max = status.dbx.colorThreshold[i+1] or maxValue
 					else
 						min = status.dbx.colorThreshold[i+1] or 0
-						max = status.dbx.colorThreshold[i-1] or 30
+						max = status.dbx.colorThreshold[i-1] or maxValue
 					end
 					if v>=min and v<=max then
 						status.dbx.colorThreshold[i] = v
@@ -269,29 +276,72 @@ function Grid2Options:MakeStatusAuraDescriptionOptions(status, options, optionPa
 	end
 end
 
+function Grid2Options:MakeStatusAuraValueOptions(status, options, optionParams)
+	if status.dbx.auras or status.dbx.missing then return end
+	self:MakeHeaderOptions( options, "Value" )
+	options.trackValue = {
+		type = "select",
+		order = 91,
+		width ="half",
+		name = L["Value"],
+		desc = L["AURAVALUE_DESC"],
+		get = function() return status.dbx.valueIndex or 0 end,
+		set = function( _, v)
+				if v==0 then
+					status.dbx.valueIndex = nil
+					status.dbx.colorThresholdValue = nil
+				else	
+					status.dbx.valueIndex = v
+				end	
+				status:UpdateDB()
+				self:MakeStatusOptions(status)
+		end,
+		values = MonitorizeValues,
+	}
+	options.valueMax = {
+		type = "range",
+		order = 92,
+		name = L["Maximum Value"],
+		desc = L["Value used by bar indicators. Select zero to use players Maximum Health."],
+		min = 0,
+		softMax = 200000,
+		bigStep = 1000,
+		step = 1,
+		get = function () return status.dbx.valueMax or 0 end,
+		set = function (_, v) 
+			status.dbx.valueMax = v>0 and v or nil
+			status:UpdateDB()
+			status:UpdateAllIndicators()
+		end,
+		disabled = function() return not status.dbx.valueIndex end
+	}
+end
+
 -- {{ Register
 Grid2Options:RegisterStatusOptions("buff", "buff", function(self, status, options, optionParams)
-	self:MakeStatusAuraDescriptionOptions(status, options, optionParams)
+	self:MakeStatusAuraDescriptionOptions(status, options)
 	self:MakeStatusAuraListOptions(status, options, optionParams)
-    self:MakeStatusAuraCommonOptions(status, options, optionParams)	
+	self:MakeStatusAuraCommonOptions(status, options, optionParams)	
 	self:MakeStatusAuraMissingOptions(status, options, optionParams)
 	self:MakeStatusAuraUseSpellIdOptions(status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
 	self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
 	self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
+	self:MakeStatusAuraValueOptions(status, options, optionParams)
 	self:MakeStatusDeleteOptions(status, options, optionParams)
-end )
+end)
 
 Grid2Options:RegisterStatusOptions("debuff", "debuff", function(self, status, options, optionParams)
-	self:MakeStatusAuraDescriptionOptions(status, options, optionParams)
+	self:MakeStatusAuraDescriptionOptions(status, options, optionParams)	
 	self:MakeStatusAuraListOptions(status, options, optionParams)
 	self:MakeStatusAuraCommonOptions(status, options, optionParams)
 	self:MakeStatusAuraUseSpellIdOptions(status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
 	self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
 	self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
-	self:MakeStatusDeleteOptions(status, options, optionParams)
-end )
+	self:MakeStatusAuraValueOptions(status, options, optionParams)
+	self:MakeStatusDeleteOptions(status, options, optionParams)	
+end)
 
 Grid2Options:RegisterStatusOptions("debuffType", "debuff", function(self, status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
