@@ -65,10 +65,11 @@ local NewAuraHandlerMT = {
 		self.spellName = nil
 	end,
 	GetKey = function (self)
+		local result 
 		local name = self.name:gsub("[ %.\"]", "")
 		if name == "" then return end
 		if self.type == "debuff" then
-			return self.type.."-"..name
+			result = self.type.."-"..name
 		else
 			local mine = self.mine
 			if mine == 2 then
@@ -78,8 +79,9 @@ local NewAuraHandlerMT = {
 			else
 				mine = ""
 			end
-			return self.type.."-"..name..mine
+			result = self.type.."-"..name..mine
 		end	
+		return result
 	end,
 	GetName = function (self)
 		return self.name
@@ -143,8 +145,8 @@ local NewAuraHandlerMT = {
 	Create = function (self)
 		local baseKey = self:GetKey()
 		if baseKey then
-			--Add to options and runtime db 
-			local dbx	
+			--Add to options and runtime db
+			local dbx
 			if self.type == "debuff" then
 				dbx = {type = self.type, spellName = self.spellName, color1 = self.color}
 			else
@@ -162,7 +164,7 @@ local NewAuraHandlerMT = {
 				for i,v in pairs(subType) do
 					dbx.auras[i]= v
 				end
-			end				
+			end
 			Grid2.db.profile.statuses[baseKey]= dbx
 			--Create the status
 			local status = Grid2.setupFunc[dbx.type](baseKey, dbx)
@@ -227,10 +229,15 @@ NewBuffHandler.options = {
 		disabled = "GetMine",
 		handler = NewBuffHandler,
 	},
+	newStatusBuffSpacer0 = {
+		type = "header",
+		order = 5.44,
+		name = ""
+	},
 	newStatusColorCount = {
 		type = "select",
-		order = 5.4,
-		width="half",
+		order = 5.46,
+		width = "half",
 		name = L["Color count"],
 		desc = L["Select how many colors the status must provide."],
 		get = "GetColorCount",
@@ -283,9 +290,14 @@ NewDebuffHandler.options = {
 		set = "SetName",
 		handler = NewDebuffHandler,
 	},
+	newStatusDebuffSpacer = {
+		type = "header",
+		order = 5.4,
+		name = ""
+	},
 	newStatusDebuff = {
 		type = "execute",
-		order = 5.3,
+		order = 5.5,
 		name = L["Create Debuff"],
 		desc = L["Create a new status."],
 		func = "Create",

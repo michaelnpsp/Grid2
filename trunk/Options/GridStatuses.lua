@@ -140,9 +140,15 @@ end
 -- Add a title option to the status options
 function Grid2Options:MakeStatusTitleOptions(status, options, optionParams)
 	if not (options.title or (optionParams and optionParams.hideTitle) ) then
+		local name, desc, icon, iconCoords, _
 		local group = self:GetStatusGroup(status)
-		local name = fmt( "%s  |cFF8681d1[%s]|r", group.name, self:GetStatusCompIndicatorsText(status) )
-		self:MakeTitleOptions(options, name, group.desc, optionParams and optionParams.titleDesc, group.icon, group.iconCoords)
+		if group then
+			name, desc, icon, iconCoords = group.name, group.desc, group.icon, group.iconCoords
+		else
+			_, name, desc, icon, iconCoords = self:GetStatusInfo(status)
+		end
+		name = fmt( "%s  |cFF8681d1[%s]|r", name, self:GetStatusCompIndicatorsText(status) )
+		self:MakeTitleOptions(options, name, desc, optionParams and optionParams.titleDesc, icon, iconCoords)
 	end	
 end
 
@@ -191,8 +197,8 @@ function Grid2Options:MakeStatusOptions(status)
 		if not group then
 			group = {
 				type  = "group",
-				order = (params and params.groupOrder) or (status.name~=status.dbx.type) and 200 or nil,
-				name  = name, 
+				order = (params and params.groupOrder) or (status.name~=status.dbx.type and status.dbx.trackValue and 300 or 200 ) or nil,
+				name  = name,
 				desc  = desc,
 				icon  = icon,
 				iconCoords = coords,
