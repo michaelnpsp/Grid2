@@ -245,6 +245,10 @@ L["Set cooldown to become darker over time instead of lighter."] = "Cooldown se 
 L["Cooldown"] = "Cooldown"
 L["Text Location"] = "Posición del texto"
 L["Disable OmniCC"] = "Desactivar OmniCC"
+L["Max Icons"] = "Maximo de iconos"
+L["Icons per row"] = "Iconos por fila"
+L["Icon Size"] = "Tamaño iconos"
+L["Icon Spacing"] = "Separacion"
 L["Animations"] = "Animaciones"
 L["Enable animation"] = "Activar animacion"
 L["Turn on/off zoom animation of icons."] = "Activa/desactiva animacion(zoom) del icono"
@@ -335,10 +339,11 @@ L["indicator"] = "indicador"
 
 -- indicator types
 L["icon"] = "icono"
+L["icons"] = "iconos"
 L["square"] = "cuadrado"
 L["text"] = "texto"
 L["bar"] = "barra"
-L["multibar"] = "barra multiple"
+L["multibar"] = "barras"
 
 -- indicators
 L["corner-top-left"] = "esquina superior izquierda"

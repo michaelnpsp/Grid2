@@ -122,7 +122,6 @@ function Grid2Options:MakeNewIndicatorOptions()
 		type = 'select',
 		order = 3,
 		name = L["Type"],
-		-- width = "half",
 		desc = L["Type of indicator to create"],
 		values = Grid2Options.indicatorTypes,
 		get = function() return newIndicatorValues.type end,
@@ -130,8 +129,10 @@ function Grid2Options:MakeNewIndicatorOptions()
 			newIndicatorValues.type= v  
 			if v=="icon" or v=="text" then
 				newIndicatorValues.relPoint= "CENTER"
-			elseif v=="bar" then
+			elseif v=="bar" or v=="multibar" then
 				newIndicatorValues.relPoint= "BOTTOM"
+			elseif v=="icons" then
+				newIndicatorValues.relPoint= "BOTTOMLEFT"
 			else
 				newIndicatorValues.relPoint= "TOPLEFT"
 			end

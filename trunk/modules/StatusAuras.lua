@@ -319,9 +319,26 @@ local function status_OnDisable(self)
 	UnregisterStatusAura(self)
 end
 
+local AuraFunc = { buff = UnitBuff,	debuff = UnitDebuff }
+local function status_IterateAuras(self, unit)
+	local i, spells, UnitAura = 0, self.auraNames, AuraFunc[self.dbx.type]
+	return function() 
+		while true do
+			i = i + 1
+			local name, _, texture, count, _, duration, expiration = UnitAura(unit, i)
+			if name then
+				if spells[name] then return name, texture, count, expiration, duration end	
+			else
+				return
+			end
+		end
+	end
+end
+
 local function status_UpdateDB(self)
 	if self.enabled then self:OnDisable() end
 	local dbx = self.dbx
+	local auras = dbx.auras
 	self.valueIndex = self.dbx.valueIndex or 0
 	self.valueMax   = self.dbx.valueMax
 	self.GetPercent = self.valueMax and status_GetPercentMax or status_GetPercentHealth
@@ -358,7 +375,13 @@ local function status_UpdateDB(self)
 			MakeStatusColorHandler(self)
 		end
 	end
-	if dbx.auras then  
+	if auras then
+		self.auraNames = self.auraNames or {}
+		wipe(self.auraNames)
+		for _,name in ipairs(auras) do 
+			self.auraNames[name] = true
+		end
+		self.IterateAuras = status_IterateAuras		
 		self.UpdateState =  (dbx.mine==2 and status_UpdateStateGroupNotMine) or
 							(dbx.mine    and status_UpdateStateGroupMine) or
 							 status_UpdateStateGroup
