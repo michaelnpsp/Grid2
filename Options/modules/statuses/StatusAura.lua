@@ -349,4 +349,8 @@ Grid2Options:RegisterStatusOptions("debuffType", "debuff", function(self, status
 end,{
 	groupOrder = 10
 } )
+
+Grid2Options:RegisterStatusOptions("boss-debuffs", "debuff", Grid2Options.MakeStatusColorOptions, { groupOrder = 9 } )
+
+
 -- }}
