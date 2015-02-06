@@ -513,9 +513,6 @@ do
 					status:UpdateState(unit, iconTexture, count, duration, expirationTime, name)
 				end
 			end
-			if isBossDebuff and bossdebuffs.enabled then
-				bossdebuffs:UpdateState(unit)
-			end
 			i = i + 1
 		end
 		-- scan Buffs
