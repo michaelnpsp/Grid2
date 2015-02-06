@@ -537,6 +537,8 @@ L["raid-debuffs3"] = "Debuffs de Raid(3)"
 L["raid-debuffs4"] = "Debuffs de Raid(4)"
 L["raid-debuffs5"] = "Debuffs de Raid(5)"
 
+L["boss-debuffs"] = "Debuffs de Jefes"
+
 L["boss-shields"] = "escudos de jefes"
 
 -- class specific buffs & debuffs statuses

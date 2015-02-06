@@ -58,7 +58,7 @@ local function Bar_Layout(self, parent)
 			bgBar:SetPoint( points[4], Bar, points[4], 0, 0)
 			bgBar:Show()
 		elseif bgBar then bgBar:Hide() end				
-	end    
+	end
 end
 
 local function Bar_GetBlinkFrame(self, parent)

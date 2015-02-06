@@ -19,7 +19,7 @@ local DebuffHandlers = {}
 local BuffHandlers = {}
 local DebuffTypeHandlers = {}
 local Handlers = { buff = BuffHandlers, debuff = DebuffHandlers }
-local statusTypes = { "color", "icon", "percent", "text" }
+local statusTypes = { "color", "icon", "icons", "percent", "text" }
 local statusTypesDebuffType = { "color", "icon", "text" }
 --}}
 
@@ -480,7 +480,7 @@ end)
 -- Called by Grid2Options when an aura status is enabled
 function Grid2:RefreshAuras() 
 	for unit in Grid2:IterateRosterUnits() do
-		AuraFrame_OnEvent(nil,nil,unit) 
+		AuraFrame_OnEvent(nil,nil,unit)
 	end
 end	
 -- }}
@@ -497,8 +497,8 @@ do
 		-- scan Debuffs and Debuff Types
 		local i = 1
 		while true do
-			local name, iconTexture, count, debuffType, duration, expirationTime, caster, spellId, _
-			name, _, iconTexture, count, debuffType, duration, expirationTime, caster, _, _, spellId, _, _, _, values[1], values[2], values[3] = UnitDebuff(unit, i)
+			local name, iconTexture, count, debuffType, duration, expirationTime, caster, spellId, isBossDebuff, _
+			name, _, iconTexture, count, debuffType, duration, expirationTime, caster, _, _, spellId, _, isBossDebuff, _, values[1], values[2], values[3] = UnitDebuff(unit, i)
 			if not name then break end
 			local statuses = DebuffHandlers[name] or DebuffHandlers[spellId]
 			if statuses then
@@ -512,6 +512,9 @@ do
 				if status and (not status.seen) then
 					status:UpdateState(unit, iconTexture, count, duration, expirationTime, name)
 				end
+			end
+			if isBossDebuff and bossdebuffs.enabled then
+				bossdebuffs:UpdateState(unit)
 			end
 			i = i + 1
 		end
@@ -552,9 +555,9 @@ end
 --}}
 
 --{{
-Grid2.setupFunc["buff"]       = CreateAura
-Grid2.setupFunc["debuff"]     = CreateAura
-Grid2.setupFunc["debuffType"] = CreateDebuffType
+Grid2.setupFunc["buff"]         = CreateAura
+Grid2.setupFunc["debuff"]       = CreateAura
+Grid2.setupFunc["debuffType"]   = CreateDebuffType
 --}}
 
 --{{ 

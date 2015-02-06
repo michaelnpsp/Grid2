@@ -52,7 +52,9 @@ local function NewIndicator()
 				dbx.height= 4
 				dbx.orientation= "HORIZONTAL"
 			end
-			Grid2:DbSetIndicator( newIndicatorName.."-color" , { type="multibar-color" })			
+			Grid2:DbSetIndicator( newIndicatorName.."-color" , { type="multibar-color" })
+		elseif (newIndicatorValues.type == "icons") then
+			dbx.level = 8
 		end
 		Grid2:DbSetIndicator(newIndicatorName,dbx)
 		-- Create runtime indicator 

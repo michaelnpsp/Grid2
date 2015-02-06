@@ -15,6 +15,7 @@ Grid2Options.statusTypesIcons = {
 	generic = Grid2Options.indicatorIconPath .. "color",
 	color   = Grid2Options.indicatorIconPath .. "square",
 	icon    = Grid2Options.indicatorIconPath .. "icon",
+	icons   = Grid2Options.indicatorIconPath .. "icons",
 	text    = Grid2Options.indicatorIconPath .. "text",
 	percent = Grid2Options.indicatorIconPath .. "bar",
 }
