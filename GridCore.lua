@@ -133,6 +133,7 @@ function Grid2:OnEnable()
 	self:RegisterEvent("UNIT_PET")
 	self:RegisterEvent("UNIT_NAME_UPDATE")
 	
+	self.db.RegisterCallback(self, "OnProfileShutdown", "ProfileShutdown")
     self.db.RegisterCallback(self, "OnProfileChanged", "ProfileChanged")
 	self.db.RegisterCallback(self, "OnProfileCopied", "ProfileChanged")
 	self.db.RegisterCallback(self, "OnProfileReset", "ProfileChanged")
@@ -176,10 +177,6 @@ end
 
 function Grid2:LoadGrid2Options()
 	if not IsAddOnLoaded("Grid2Options") then
-		if InCombatLockdown() then
-			Grid2:Print("Grid2Options cannot be loaded in combat.")
-			return
-		end
 		LoadAddOn("Grid2Options")
 	end
 	if Grid2Options then
@@ -194,6 +191,11 @@ end
 function Grid2:LoadOptions() 
 	Grid2Options:Initialize()
 	Grid2Options.LoadOptions = nil
+end
+
+function Grid2:ProfileShutdown()
+	self:Debug("Shutdown profile (", self.db:GetCurrentProfile(),")")
+	self:SetupShutdown()
 end
 
 function Grid2:ProfileChanged()

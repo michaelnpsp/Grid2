@@ -199,11 +199,13 @@ end
 do
 	local fmt = string.format
 	local HexDigits = "0123456789ABCDEF"
-	local prefixes = { "color-", "buff-", "debuff-", "aoe-" }
-	local suffixes = { "-mine", "-not-mine" }
+	local prefixes = { "color-", "buff-", "debuff-", "buffs-", "debuffs-", "aoe-" }
+	local suffixes = { "-not-mine", "-mine" }
 	local prefixes_colors = { 
 		["buff-"]   = "|cFF00ff00%s|r",
 		["debuff-"] = "|cFFff0000%s|r",
+		["buffs-"]   = "|cFF00ffa0%s|r",
+		["debuffs-"] = "|cFFff00a0%s|r",
 		["aoe-"]    = "|cFF0080ff%s|r",
 		["color-"]  = "|cFFffff00%s|r",
 	}
@@ -221,13 +223,13 @@ do
 		local body
 		for _, value in ipairs(prefixes) do
 			if strsub(name,1,strlen(value))==value then 
-				prefix= value
+				prefix = value
 				break
 			end
 		end
 		for _, value in ipairs(suffixes) do
 			if strsub(name,-strlen(value))==value then 
-				suffix= value
+				suffix = value
 				break
 			end
 		end

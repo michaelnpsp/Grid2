@@ -12,7 +12,6 @@
 <Script file="modules\StatusHealth.lua"/>
 <Script file="modules\StatusMana.lua"/>
 <Script file="modules\StatusColor.lua"/>
-<Script file="modules\StatusAuras.lua"/>
 <Script file="modules\StatusName.lua"/>
 <Script file="modules\StatusOffline.lua"/>
 <Script file="modules\StatusPvP.lua"/>
@@ -31,5 +30,10 @@
 <Script file="modules\StatusShields.lua"/>
 <Script file="modules\StatusHealAbsorbs.lua"/>
 <Script file="modules\StatusSelf.lua"/>
+<Script file="modules\StatusAuras.lua"/>
+<Script file="modules\StatusAurasBuffs.lua"/>
+<Script file="modules\StatusAurasDebuffs.lua"/>
+<Script file="modules\StatusAurasBuffDebuff.lua"/>
+<Script file="modules\StatusAurasDebuffType.lua"/>
 
 </Ui>
