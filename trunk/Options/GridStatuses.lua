@@ -95,19 +95,17 @@ do
 			local catKey   = self:GetStatusCategory(status)
 			local catGroup = self.statusOptions[catKey]
 			if catGroup then
-				local name, desc, icon, coords
+				local name, desc, icon, coords, _
 				local category = self.categories[catKey]
 				local dbx   = status.dbx
-				local spell = dbx.spellName
-				if spell then -- special case for buffs and debuffs
-					if dbx.auras then
-						desc = dbx.type=="buff" and L["Buffs Group"] or L["Debuffs Group"]
-					else
-						local spellName, _
-						spellName,_,icon = GetSpellInfo( tonumber(spell) or spell )
-						desc = string.format( "%s: %s", L[dbx.type], spellName or dbx.spellName )
-					end
-				elseif dbx.type=="debuffType" then  -- special case for debuff types
+				if dbx.type == "buff" or dbx.type == "debuff" then 
+					name,_,icon = GetSpellInfo( tonumber(dbx.spellName) or dbx.spellName )
+					desc = string.format( "%s: %s", L[dbx.type], name or dbx.spellName )
+				elseif dbx.type == "buffs" then
+					desc = L["Buffs Group"]
+				elseif dbx.type == "debuffs" then
+					desc = L["Debuffs Group"]
+				elseif dbx.type=="debuffType" then
 					icon = self.debuffTypeIcons[dbx.subType]
 					desc = L[dbx.type]
 				end
@@ -198,7 +196,7 @@ function Grid2Options:MakeStatusOptions(status)
 		if not group then
 			group = {
 				type  = "group",
-				order = (params and params.groupOrder) or (status.name~=status.dbx.type and status.dbx.trackValue and 300 or 200 ) or nil,
+				order = (params and params.groupOrder) or (status.name~=status.dbx.type and 200) or nil,
 				name  = name,
 				desc  = desc,
 				icon  = icon,

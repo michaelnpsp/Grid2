@@ -23,6 +23,7 @@ Grid2Options:RegisterStatusOptions( "direction", "target", function(self, status
 		type = "header",
 		order = 99,
 		name = L["Display"],
+		hidden = function ()	return status.dbx.showOnlyStickyUnits end,
 	}
 	options.showOutOfRange = {
 		type = "toggle",

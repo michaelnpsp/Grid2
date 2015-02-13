@@ -2,6 +2,8 @@
 
 local Grid2 = Grid2
 local min = min
+local pairs = pairs
+local ipairs = ipairs
 
 local function Icon_Create(self, parent)
 	local f = self:CreateFrame("Frame", parent)
@@ -19,21 +21,27 @@ local function Icon_OnFrameUpdate(f)
 	local unit   = parent.unit
 	local max    = self.maxIcons
 	local auras  = f.auras
+	local showStack = self.showStack
+	local showCool  = self.showCooldown
+	local useStatus = self.useStatusColor
 	local i = 1
 	for _, status in ipairs(self.statuses) do
 		if status:IsActive(unit) then
-			if status.IterateAuras then
+			if status.GetIcons then
 				local auras = f.auras
-				for name, texture, count, expiration, duration in status:IterateAuras(unit) do
+				local k, textures, counts, expirations, durations = status:GetIcons(unit)
+				for j=1,k do
 					local aura = auras[i]
-					aura.icon:SetTexture(texture)
-					if self.showStack then 
+					aura.icon:SetTexture(textures[j])
+					if showStack then
+						local count = counts[j]
 						aura.text:SetText(count>1 and count or "") 
 					end
-					if self.showCooldown then 
+					if showCool then
+						local expiration, duration = expirations[j], durations[j]
 						aura.cooldown:SetCooldown(expiration - duration, duration) 
 					end
-					if self.useStatusColor then
+					if useStatus then
 						local r,g,b,a = status:GetColor(unit)
 						aura:SetBackdropBorderColor(r,g,b, min(a,self.borderOpacity) )
 					end
@@ -44,15 +52,15 @@ local function Icon_OnFrameUpdate(f)
 			else
 				local aura = auras[i]
 				aura.icon:SetTexture(status:GetIcon(unit))
-				if self.showStack then 
+				if showStack then 
 					local count = status:GetCount(unit)
 					aura.text:SetText(count>1 and count or "") 
 				end
-				if self.showCooldown then 
+				if showCool then 
 					local expiration, duration = status:GetExpirationTime(unit) or 0, status:GetDuration(unit) or 0
 					aura.cooldown:SetCooldown(expiration - duration, duration) 
 				end
-				if self.useStatusColor then
+				if useStatus then
 					local r,g,b,a = status:GetColor(unit)
 					aura:SetBackdropBorderColor(r,g,b, min(a,self.borderOpacity) )
 				end
@@ -70,11 +78,13 @@ local function Icon_OnFrameUpdate(f)
 end
 
 -- Delayed updates
+local count = 0
 local updates = {}
 local EnableDelayedUpdates = function()
 	CreateFrame("Frame", nil, Grid2LayoutFrame):SetScript("OnUpdate", function()
-		for f in pairs(updates) do
-			Icon_OnFrameUpdate(f)
+		for i=1,#updates do
+			count = count + 1
+			Icon_OnFrameUpdate(updates[i])
 		end
 		wipe(updates)
 	end)
@@ -82,7 +92,7 @@ local EnableDelayedUpdates = function()
 end
 
 local function Icon_Update(self, parent)
-	updates[ parent[self.name] ] = true
+	updates[#updates+1] = parent[self.name]
 end
 
 local function Icon_Layout(self, parent)
@@ -121,7 +131,7 @@ local function Icon_Layout(self, parent)
 		if self.showStack then
 			local text = frame.text
 			text:SetFontObject(GameFontHighlightSmall)
-			text:SetFont(self.font, self.fontSize, self.fontFlags or "OUTLINE" )
+			text:SetFont(self.font, self.fontSize, self.fontFlags )
 			local c = self.colorStack
 			text:SetTextColor(c.r, c.g, c.b, c.a)
 			local justifyH = self.dbx.fontJustifyH or "CENTER"
@@ -201,7 +211,7 @@ local function Icon_UpdateDB(self, dbx)
 	self.borderOpacity   = dbx.borderOpacity  or 1
 	self.colorBorder     = Grid2:MakeColor(dbx.color1, "WHITE")
 	self.colorStack      = Grid2:MakeColor(dbx.colorStack, "WHITE")
-	self.fontFlags       = dbx.fontFlags
+	self.fontFlags       = dbx.fontFlags or "OUTLINE"
 	self.fontSize        = dbx.fontSize or 9
 	self.font            = Grid2:MediaFetch("font", dbx.font or Grid2Frame.db.profile.font) or STANDARD_TEXT_FONT
 	-- backdrop
