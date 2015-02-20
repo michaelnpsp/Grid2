@@ -177,7 +177,7 @@ RDDB["Warlords of Draenor"] = {
 		176004, -- Savage Vines
 		}
 	},
-	[989] = { -- Spires of Arak
+	[948] = { -- Spires of Arak
 		["Rukhmar"] = {
 		ejid = 1262,
 		167615, -- Pierced Armor
