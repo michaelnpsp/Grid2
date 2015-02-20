@@ -140,6 +140,7 @@ Grid2Layout.defaultDB = {
 		groupAnchor = "TOPLEFT",
 		PosX = 500,
 		PosY = -200,
+		minimapIcon = { hide = false },
 	},
 }
 

@@ -1,59 +1,38 @@
 -- Raid Debuffs module, implements raid-debuffs statuses
 
 local GSRD = Grid2:NewModule("Grid2RaidDebuffs")
--- local BZ = LibStub("LibBabble-Zone-3.0"):GetReverseLookupTable()
 local frame = CreateFrame("Frame")
 
 local Grid2 = Grid2
 local next = next
 local ipairs = ipairs
+local GetTime = GetTime
+local UnitGUID = UnitGUID
 local UnitDebuff = UnitDebuff
 local GetSpellInfo = GetSpellInfo
 
+GSRD.defaultDB = { profile = { autodetect = { zones = {}, debuffs = {}, incoming = {} }, debuffs = {} } }
+
+-- general variables
 local curzone
+local curzonetype
 local statuses = {}
 local spells_order = {}
 local spells_status = {}
 
-GSRD.engMapName_to_mapID = { 
-	--this is for updating old saved settings after removing LibBabble-Zone, the names wont be used anymore
-	--users should not have to update all old settings
-	
-	--Mists of Pandaria
-	["Heart of Fear"] = 897,
-	["Mogu'shan Vaults"] = 896,
-	["Kun-Lai Summit"] = 809,
-	["Terrace of Endless Spring"] = 886,
-	["Throne of Thunder"] = 930,
-	--Cataclysm
-	["Blackwing Descent"] = 754,
-	["The Bastion of Twilight"] = 758,
-	["Throne of the Four Winds"] = 773,
-   	["Baradin Hold"] = 752,
-	["Firelands"] = 800,
-	["Dragon Soul"] = 824,
-	--Wrath of the Lich King
-	["Naxxramas"] = 535,
-	["The Eye of Eternity"] = 527,
-	["The Obsidian Sanctum"] = 531,
-	["The Ruby Sanctum"] = 609,
-	["Trial of the Crusader"] = 543,
-	["Ulduar"] = 529,
-	["Vault of Archavon"] = 532,
-	["Icecrown Citadel"] = 604,
-	--The Burning Crusade
-	["Karazhan"] = 799,
-	["Zul'Aman"] = 781,
-	["Serpentshrine Cavern"] = 780,
-	["Hyjal Summit"] = 775,
-	["Black Temple"] = 796,
-	["Sunwell Plateau"] = 789,
-}
+-- autdetect debuffs variables
+local status_auto
+local boss_auto
+local time_auto
+local spells_known
+local get_known_spells
 
+-- GSRD 
 frame:SetScript("OnEvent", function (self, event, unit)
+	if not next(Grid2:GetUnitFrames(unit)) then return end
 	local index = 1
 	while true do
-		local name, _, te, co, ty, du, ex, _, _, _, id = UnitDebuff(unit, index)
+		local name, _, te, co, ty, du, ex, ca, _, _, id, _, isBoss = UnitDebuff(unit, index)
 		if not name then break end
 		local order = spells_order[name]
 		if not order then
@@ -61,7 +40,9 @@ frame:SetScript("OnEvent", function (self, event, unit)
 		end
 		if order then
 			spells_status[name]:AddDebuff(order, te, co, ty, du, ex)
-		end	
+		elseif time_auto and (not spells_known[id]) and (ex<=0 or du<=0 or ex-du>=time_auto) then
+			GSRD:RegisterNewDebuff(id, ca, te, co, ty, du, ex, isBoss)
+		end
 		index = index + 1
 	end
 	for status in next, statuses do
@@ -80,7 +61,8 @@ end
 function GSRD:UpdateZoneSpells(event)
 	local zone = self:GetCurrentZone()
 	if zone==curzone and event then return end
-	
+	curzonetype = select(2,GetInstanceInfo())
+	if status_auto then	self:RegisterNewZone(zone) end
 	self:ResetZoneSpells(zone)
 	for status in next,statuses do
 		status:LoadZoneSpells()
@@ -112,7 +94,7 @@ function GSRD:ResetZoneSpells(newzone)
 end
 
 function GSRD:UpdateEvents()
-	local new = not next(spells_order)
+	local new = not ( next(spells_order) or status_auto )
 	local old = not frame:IsEventRegistered("UNIT_AURA")
 	if new ~= old then
 		if new then
@@ -129,6 +111,125 @@ function GSRD:Grid_UnitLeft(_, unit)
 	end	
 end
 
+-- zones & debuffs autodetection
+function GSRD:RegisterNewZone(zone)
+	if zone then
+		if IsInInstance() then
+			self.db.profile.autodetect.zones[zone] = true
+		end
+		spells_known = get_known_spells and get_known_spells(zone) or {}
+	end
+end
+
+function GSRD:RegisterNewDebuff(spellId, caster, te, co, ty, du, ex, isBoss)
+	spells_known[spellId] = true
+	if (not isBoss) and (caster and Grid2:IsGUIDInRaid(UnitGUID(caster))) then return end
+	--
+	local zone = status_auto.dbx.debuffs[curzone]
+	if not zone then
+		zone = {}; status_auto.dbx.debuffs[curzone] = zone
+	end
+	local order = #zone + 1
+	zone[order] = spellId
+	--
+	if (not boss_auto) then
+		boss_auto = self:CheckBoss(caster)
+		if boss_auto then 
+			self:ProcessIncomingDebuffs(boss_auto) 
+		end
+	end
+	--
+	self:ProcessIncomingDebuff(spellId)
+	--
+	spells_order[spellId]  = order
+	spells_status[spellId] = status_auto
+	status_auto:AddDebuff(order, te, co, ty, du, ex)
+end
+
+function GSRD:ProcessIncomingDebuff(spellId)
+	local zone =  curzone .. '@' ..(EJ_GetCurrentInstance() or 0)
+	if boss_auto then
+		self.db.profile.autodetect.debuffs[spellId] = zone .. '@' .. boss_auto
+	else
+		self.db.profile.autodetect.incoming[spellId] = zone
+	end
+end
+
+function GSRD:ProcessIncomingDebuffs(boss)
+	local incoming = self.db.profile.autodetect.incoming
+	if next(incoming) then
+		local debuffs = self.db.profile.autodetect.debuffs
+		boss = boss or ""
+		for spellId,zone in pairs(incoming) do
+			debuffs[spellId] = zone .. '@' .. boss
+		end
+		wipe(incoming)
+	end	
+end
+
+function GSRD:EnableAutodetect(status, func)
+	status_auto = status
+	get_known_spells = func or get_known_spells
+	self:UpdateEvents()
+	self:RegisterNewZone(curzone)
+	self:RegisterEvent("PLAYER_REGEN_DISABLED")
+	self:RegisterEvent("PLAYER_REGEN_ENABLED")
+	if InCombatLockdown() then self:PLAYER_REGEN_DISABLED()	end	
+end
+
+function GSRD:DisableAutodetect()
+	time_auto    = nil
+	status_auto  = nil
+	spells_known = nil
+	self:UpdateEvents()	
+	self:UnregisterEvent("PLAYER_REGEN_DISABLED")
+	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+end
+
+-- boss heuristic detection
+function GSRD:CheckBoss(unit)
+	return self:CheckBossFrame() or self:CheckBossUnit(unit) or 
+		   self:CheckBossUnit("target") or  self:CheckBossUnit("targettarget") or self:CheckBossUnit("focus")
+end
+
+function GSRD:CheckBossUnit(unit)
+	if unit and UnitAffectingCombat(unit) then
+		local level = UnitLevel(unit)
+		local isBoss = level==-1
+		if not isBoss then
+			local class = UnitClassification(unit) or ""
+			isBoss = string.find(class, "boss")
+			if (not isBoss) and curzonetype=="party" then -- 5 man instances bosses
+				isBoss = class == "elite" and level>=GetMaxPlayerLevel()+2 
+			end
+		end
+		if isBoss then 
+			return UnitName(unit)
+		end
+	end	
+end
+
+function GSRD:CheckBossFrame()
+	local boss = UnitName("boss1")
+	if boss and boss ~= UNKNOWNOBJECT then 
+		return boss
+	end
+end
+
+function GSRD:PLAYER_REGEN_DISABLED()
+	self:ProcessIncomingDebuffs(boss_auto)
+	time_auto = GetTime()
+	boss_auto = self:CheckBoss()
+end
+
+function GSRD:PLAYER_REGEN_ENABLED()
+	self:ProcessIncomingDebuffs(boss_auto)
+	if UnitIsDeadOrGhost("player") then return end
+	time_auto = nil
+	boss_auto = nil
+end
+
+-- statuses
 local class = {
 	GetColor          = Grid2.statusLibrary.GetColor,
 	IsActive          = function(self, unit) return self.states[unit]      end,
@@ -148,15 +249,6 @@ end
 
 function class:LoadZoneSpells()
 	if curzone then		
-		local debuffs = self.dbx.debuffs
-		if debuffs then --updating variables after LibBabble-Zone removal
-			for k,v in pairs(debuffs) do
-				if type(k) == "string" and GSRD.engMapName_to_mapID[k] then
-					debuffs[GSRD.engMapName_to_mapID[k]]=v
-					debuffs[k]=nil
-				end
-			end
-		end
 		local count = 0
 		local db = self.dbx.debuffs[curzone]
 		if db then

@@ -53,6 +53,9 @@ externals:
 	Options/Libs/LibCompress:
 		url: svn://svn.wowace.com/wow/libcompress/mainline/trunk
 		tag: latest
+	LDB/Libs/LibDBIcon-1.0:
+		url: svn://svn.wowace.com/wow/libdbicon-1-0/mainline/trunk/LibDBIcon-1.0/
+		tag: latest
 
 move-folders:
 	Grid2/Options: Grid2Options
