@@ -10,6 +10,7 @@
 <Script file="modules\general\GridLayouts.lua"/>
 <Script file="modules\general\GridTextFormat.lua"/>
 <Script file="modules\general\GridBlink.lua"/>
+<Script file="modules\general\GridMinimapIcon.lua"/>
 <Script file="modules\general\GridHideBlizzardFrames.lua"/>
 <Script file="modules\general\GridLoadOnDemand.lua"/>
 <Script file="modules\general\GridProfile.lua"/>

@@ -15,6 +15,7 @@ local UnitPowerType = UnitPowerType
 local UnitPower = UnitPower
 local UnitPowerMax = UnitPowerMax
 local UnitIsPlayer = UnitIsPlayer
+local UnitGroupRolesAssigned = UnitGroupRolesAssigned
 
 local statuses = {}  -- Enabled statuses
 
@@ -59,8 +60,12 @@ function Mana:UpdateUnitPower(unit, powerType)
 	end
 end
 
-function Mana:IsActive(unit)
+function Mana:IsActiveStandard(unit)
 	return UnitPowerType(unit) == 0
+end
+
+function Mana:IsActiveHealer(unit)
+	return UnitPowerType(unit) == 0  and UnitGroupRolesAssigned(unit) == "HEALER"
 end
 
 function Mana:GetPercent(unit)
@@ -71,8 +76,13 @@ function Mana:GetText(unit)
 	return fmt("%.1fk", UnitMana(unit) / 1000)
 end
 
+function Mana:UpdateDB()
+	Mana.IsActive = self.dbx.showOnlyHealers and Mana.IsActiveHealer or Mana.IsActiveStandard
+end
+
 Grid2.setupFunc["mana"] = function(baseKey, dbx)
 	Grid2:RegisterStatus(Mana, {"percent", "text", "color"}, baseKey, dbx)
+	Mana:UpdateDB()	
 	return Mana
 end
 

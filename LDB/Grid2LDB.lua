@@ -3,8 +3,7 @@
 local DataBroker = LibStub("LibDataBroker-1.1", true)
 if not DataBroker then return end
 
-local Grid2Layout= Grid2Layout
-
+local Grid2Layout = Grid2Layout
 
 local MenuLayoutsShow
 
@@ -26,7 +25,12 @@ local Grid2LDB = DataBroker:NewDataObject("Grid2", {
 	end,
 })
 
-
+local icon = LibStub("LibDBIcon-1.0")
+if icon then 
+	icon:Register("Grid2", Grid2LDB, Grid2Layout.db.profile.minimapIcon) 
+	Grid2Layout.minimapIcon = icon
+end	
+	
 --
 -- Layouts popup menu
 --

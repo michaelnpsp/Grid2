@@ -410,7 +410,6 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 		hidden = function() return status.dbx.useWhiteList or status.dbx.filterBossDebuffs==false end
 	}
 	options.filterSep3 = { type = "description", name = "", order = 153.9 }	
-	-- options.listHeader = { type = "header", order = 153.9,  name = "", hidden = function() return status.dbx.useWhiteList end  }
 	options.useWhiteList = {
 		type = "toggle",
 		name = L["Whitelist"],
