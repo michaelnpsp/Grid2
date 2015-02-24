@@ -72,50 +72,57 @@ options.deleteStatus = {
 	end,
 	disabled = function()
 		local status = RDO.statuses[#RDO.statuses]
-		print(">", status.enabled, next(status.dbx.debuffs) )
-		return status.enabled or next(status.dbx.debuffs)
+		return status.enabled or next(status.dbx.debuffs) or RDO.auto_enabled 
 	end,
 	hidden = function() 
-		return #RDO.statuses<=1  
+		return #RDO.statuses<=1
 	end,
 }
 
 -- debuffs autodetection
-options.autodetect = { type = "group", order = 100,	name = L["Debuffs Autodetection"], inline= true, args = {
-	autoenable = {
-		type = "toggle",
-		order = 1,
-		name = L["Enable Autodetection"],
-		desc = L["Enable Zones and Debuffs autodetection"],
-		get = function() 
-			return RDO.auto_enabled 
-		end,
-		set = function(_, v) 
-			RDO:SetAutodetect(v) 
-			if (not v) and RDO:RegisterAutodetectedDebuffs() then
-				RDO:RefreshAdvancedOptions()
-			end	
-		end,
-	},
-	autostatus = {	
-		type = "select",
-		order = 2,
-		name = L["Assigned to"],
-		desc = L["Assign autodetected raid debuffs to the specified status"],
-		get = function () 
-			return RDO.db.profile.autodetect.status or 1
-		end,
-		set = function (_, v) 
-			local status = statuses[v]
-			if status then
-				RDO.db.profile.autodetect.status = v>1 and v or nil
-				RDO:RefreshAutodetect()
-			end
-		end,
-		values = RDO.statusesNames,
-		disabled = function() return RDO.auto_enabled end
-	}
-} }
+
+do
+	function AddToTooltip(tooltip)
+		tooltip:AddDoubleLine( L["RaidDebuffs Autodetection"], L["Enabled"], 255,255,255, 255,255,0)
+	end
+
+	options.autodetect = { type = "group", order = 100,	name = L["Debuffs Autodetection"], inline= true, args = {
+		autoenable = {
+			type = "toggle",
+			order = 1,
+			name = L["Enable Autodetection"],
+			desc = L["Enable Zones and Debuffs autodetection"],
+			get = function() 
+				return RDO.auto_enabled 
+			end,
+			set = function(_, v) 
+				RDO:SetAutodetect(v) 
+				if (not v) and RDO:RegisterAutodetectedDebuffs() then
+					RDO:RefreshAdvancedOptions()
+				end	
+				Grid2.tooltipFunc["Grid2RaidDebuffs"] = v and AddToTooltip or nil
+			end,
+		},
+		autostatus = {	
+			type = "select",
+			order = 2,
+			name = L["Assigned to"],
+			desc = L["Assign autodetected raid debuffs to the specified status"],
+			get = function () 
+				return RDO.db.profile.autodetect.status or 1
+			end,
+			set = function (_, v) 
+				local status = RDO.statuses[v]
+				if status then
+					RDO.db.profile.autodetect.status = v>1 and v or nil
+					RDO:RefreshAutodetect()
+				end
+			end,
+			values = RDO.statusesNames,
+			disabled = function() return RDO.auto_enabled end
+		}
+	} }
+end
 
 -- enabled/disable modules
 do
@@ -124,7 +131,6 @@ do
 		type = "multiselect",
 		name = L["Enabled raid debuffs modules"],
 		order = 150,
-		width = "full",
 		get = function(info,key)
 			return RDO.db.profile.enabledModules[key] ~= nil
 		end,

@@ -655,7 +655,7 @@ do
 		end,
 		fontSize= "large",
 		image = function(info)
-			return select(3, GetSpellInfo(info.handler.spellId)), 36, 36
+			return select(3, GetSpellInfo(info.handler.spellId)), 34, 34
 		end
 	}
 

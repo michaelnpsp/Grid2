@@ -19,6 +19,8 @@ function Grid2:Debug(s, ...)
 	end
 end
 
+Grid2.tooltipFunc = {}
+
 --{{{ AceDB defaults
 Grid2.defaults = {
 	profile = {

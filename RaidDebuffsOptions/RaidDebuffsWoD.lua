@@ -457,6 +457,7 @@ RDDB["Warlords of Draenor"] = {
 		["Ner'zhul"] = {
 		order = 4, ejid = 1160,
 		154442, -- Malevolencia
+		154469, -- Ritual de huesos
 		},
 		["Trash"] = {
 		order = 100, ejid = nil,
