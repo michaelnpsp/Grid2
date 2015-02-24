@@ -264,7 +264,8 @@ end
 
 function RDO:InitAdvancedOptions()
 	RDDB["[Custom Debuffs]"] = RDO.db.profile.debuffs 
-	MakeRaidDebuffsOptions(true)
+	self:RegisterAutodetectedDebuffs()
+	self:RefreshAdvancedOptions()
 end
 
 --=================================================================
