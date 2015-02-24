@@ -10,8 +10,11 @@ local GetTime = GetTime
 local UnitGUID = UnitGUID
 local UnitDebuff = UnitDebuff
 local GetSpellInfo = GetSpellInfo
+local UnitLevel = UnitLevel
+local UnitClassification = UnitClassification
+local UnitAffectingCombat = UnitAffectingCombat
 
-GSRD.defaultDB = { profile = { autodetect = { zones = {}, debuffs = {}, incoming = {} }, debuffs = {} } }
+GSRD.defaultDB = { profile = { autodetect = { zones = {}, debuffs = {}, incoming = {} }, debuffs = {}, enabledModules = {} } }
 
 -- general variables
 local curzone
@@ -24,6 +27,7 @@ local spells_status = {}
 local status_auto
 local boss_auto
 local time_auto
+local timer_auto
 local spells_known
 local get_known_spells
 
@@ -132,12 +136,7 @@ function GSRD:RegisterNewDebuff(spellId, caster, te, co, ty, du, ex, isBoss)
 	local order = #zone + 1
 	zone[order] = spellId
 	--
-	if (not boss_auto) then
-		boss_auto = self:CheckBoss(caster)
-		if boss_auto then 
-			self:ProcessIncomingDebuffs(boss_auto) 
-		end
-	end
+	if (not boss_auto) then	boss_auto = self:CheckBossUnit(caster) end
 	--
 	self:ProcessIncomingDebuff(spellId)
 	--
@@ -178,6 +177,8 @@ function GSRD:EnableAutodetect(status, func)
 end
 
 function GSRD:DisableAutodetect()
+	self:ProcessIncomingDebuffs(boss_auto)
+	self:CancelBossTimer()
 	time_auto    = nil
 	status_auto  = nil
 	spells_known = nil
@@ -187,11 +188,6 @@ function GSRD:DisableAutodetect()
 end
 
 -- boss heuristic detection
-function GSRD:CheckBoss(unit)
-	return self:CheckBossFrame() or self:CheckBossUnit(unit) or 
-		   self:CheckBossUnit("target") or  self:CheckBossUnit("targettarget") or self:CheckBossUnit("focus")
-end
-
 function GSRD:CheckBossUnit(unit)
 	if unit and UnitAffectingCombat(unit) then
 		local level = UnitLevel(unit)
@@ -215,16 +211,38 @@ function GSRD:CheckBossFrame()
 		return boss
 	end
 end
+function GSRD:CreateBossTimer()
+	if not (boss_auto or timer_auto) then
+		timer_auto = Grid2:ScheduleRepeatingTimer(function()
+			if not boss_auto then
+				boss_auto = self:CheckBossFrame() or self:CheckBossUnit("target") or self:CheckBossUnit("targettarget")
+			end
+			if boss_auto then
+				self:CancelBossTimer()
+				self:ProcessIncomingDebuffs(boss_auto) 
+			end
+		end, 1.5)
+	end	
+end
+
+function GSRD:CancelBossTimer()
+	if timer_auto then
+		Grid2:CancelTimer(timer_auto)
+		timer_auto = nil
+	end
+end
 
 function GSRD:PLAYER_REGEN_DISABLED()
 	self:ProcessIncomingDebuffs(boss_auto)
 	time_auto = GetTime()
-	boss_auto = self:CheckBoss()
+	boss_auto = self:CheckBossFrame() or self:CheckBossUnit("target") or self:CheckBossUnit("targettarget") or self:CheckBossUnit("focus")
+	self:CreateBossTimer()
 end
 
 function GSRD:PLAYER_REGEN_ENABLED()
 	self:ProcessIncomingDebuffs(boss_auto)
 	if UnitIsDeadOrGhost("player") then return end
+	self:CancelBossTimer()
 	time_auto = nil
 	boss_auto = nil
 end

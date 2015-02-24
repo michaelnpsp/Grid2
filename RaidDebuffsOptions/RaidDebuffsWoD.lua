@@ -28,6 +28,7 @@ RDDB["Warlords of Draenor"] = {
 		order = 3, ejid = 1195,
 		162346, -- Crystalline Barrage
 		162892, -- Petrification
+		162370, -- Crystalline Barrage2
 		},
 		["Brackenspore"] = {
 		order = 4, ejid = 1196,
@@ -56,6 +57,8 @@ RDDB["Warlords of Draenor"] = {
 		161345, -- Suppression Field
 		161242, -- Caustic Energy
 		163472, -- Dominating Power
+		163134, -- Barrera anuladora
+		172886, -- Marca anuladora
 		},
 		["Imperator Mar'gok"] = {
 		order = 7, ejid = 1197,
@@ -98,6 +101,10 @@ RDDB["Warlords of Draenor"] = {
 		161635, -- Molten Bomb
 		174473, -- Corrupted Blood
 		174475, -- Corrupted Blood
+		174405, -- Nucleo helado
+		172066, -- Veneno radiante
+		175636, -- Runa de destruccion
+		175816, -- Alma de vacio
 		},
 	},
 	[988] = { -- Blackrock Foundry
