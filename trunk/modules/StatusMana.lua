@@ -65,7 +65,7 @@ function Mana:IsActiveStandard(unit)
 end
 
 function Mana:IsActiveHealer(unit)
-	return UnitPowerType(unit) == 0  and UnitGroupRolesAssigned(unit) == "HEALER"
+	return UnitPowerType(unit) == 0  and (unit=="player" or UnitGroupRolesAssigned(unit) == "HEALER")
 end
 
 function Mana:GetPercent(unit)

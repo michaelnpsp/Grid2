@@ -15,6 +15,11 @@
 #@end-no-lib-strip@
 
 Grid2RaidDebuffsOptions.lua
+OptionsGeneral.lua
+OptionsAdvanced.lua
+OptionsRegAuto.lua
+OptionsLuaCode.lua
+
 RaidDebuffsCataclysm.lua
 RaidDebuffsLichKing.lua
 RaidDebuffsBC.lua
