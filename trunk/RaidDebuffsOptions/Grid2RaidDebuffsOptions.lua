@@ -1,31 +1,32 @@
 -- Grid2RaidDebuffsOptions, Created by Michael
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
+local GSRD = Grid2:GetModule("Grid2RaidDebuffs")
 
 Grid2Options:RegisterStatusOptions("raid-debuffs", "debuff", function(self, status, options)
 	self.RDO:Init()
+	local empty = not (next(GSRD.db.profile.enabledModules) or next(GSRD.db.profile.debuffs))
 	options.general= {
 			type = "group",
 			name = L["General Settings"],
-			order = 20,
+			order = empty and 10 or 20,
 			args = self.RDO.OPTIONS_GENERAL,
 		}
 	options.advanced= {
 			type = "group",
 			name = L["Debuff Configuration"],
-			order = 10,
+			order = empty and 20 or 10,
 			args = self.RDO.OPTIONS_ADVANCED,
 		}
 end, {
 	hideTitle    = true,
 	childGroups  = "tab",
 	groupOrder   = 5,
-	masterStatus = "raid-debuffs", 
-	titleIcon    = "Interface\\Icons\\Spell_Shadow_Skull", -- DemonicEmpathy,
+	titleIcon    = "Interface\\Icons\\Spell_Shadow_Skull", 
+	-- To avoid creating options for raid-debuffs(2), raid-debuffs(3), etc.
+	masterStatus = "raid-debuffs",  
 })
 
 --===================================================================
-
-local GSRD = Grid2:GetModule("Grid2RaidDebuffs")
 
 Grid2Options.RDO = {
 	-- Grid2RaidDebuffs status acedb database
