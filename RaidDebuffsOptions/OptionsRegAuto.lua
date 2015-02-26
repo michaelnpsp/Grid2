@@ -5,7 +5,11 @@ local GSRD = Grid2:GetModule("Grid2RaidDebuffs")
 local RDO = Grid2Options.RDO
 local RDDB = RDO.RDDB
 
+-- bosses_creatures[instanceID][creatureName] = { encounterID, encounterNameLocalized, encounterIndex }
+local bosses_creatures = {}
+-- known_debuffs[spellID] = true
 local known_debuffs = {}
+-- blacklisted debuffs
 local black_debuffs = { 160029, 36032, 6788, 95223, 114216 }
 
 local DbGetValue      = RDO.DbGetValue
@@ -13,34 +17,58 @@ local DbSetValue      = RDO.DbSetValue
 local DbAddTableValue = RDO.DbAddTableValue
 local DbDelTableValue = RDO.DbDelTableValue
 
--- Function called from Grid2RaidDebuffs.lua status to collect already known debuffs of the current zone.
+-- Generates a table of already known raid debuffs of a zone
 local function GetKnownDebuffs(curZoneId)
-	wipe(known_debuffs)
-	-- Add already known debuffs of enabled modules
-	local enabledModules = GSRD.db.profile.enabledModules or {}
-	for moduleName in pairs(RDDB) do
-		if moduleName=="[Custom Debuffs]" or enabledModules[moduleName] then
-			local zone = RDDB[moduleName][curZoneId]
-			if zone then
-				for _,boss in pairs(zone) do
-					for _,spell in ipairs(boss) do
-						known_debuffs[spell] = true
-					end
+	local function GetZoneDebuffs(zone)
+		if zone then
+			for _,boss in pairs(zone) do
+				for _,spell in ipairs(boss) do
+					known_debuffs[spell] = true
 				end
-			end	
+			end
 		end	
 	end
-	-- Add blacklisted debuffs
+	wipe(known_debuffs)
+	for moduleName in pairs(GSRD.db.profile.enabledModules) do
+		GetZoneDebuffs( RDDB[moduleName][curZoneId] )
+	end
+	GetZoneDebuffs( GSRD.db.profile.debuffs[curZoneId] )
 	for _,spellId in ipairs(black_debuffs) do
 		known_debuffs[spellId] = true
 	end	
 	return known_debuffs
 end
 
+-- Collects all localized bosses names of an instance using the Encounter Journal info.
+local function GetKnownBosses(instanceID)
+	local creatures = bosses_creatures[instanceID]
+	if not creatures then
+		creatures = {}; bosses_creatures[instanceID] = creatures
+		if instanceID>0 then
+			-- if not IsAddOnLoaded("Blizzard_EncounterJournal") then LoadAddOn("Blizzard_EncounterJournal") end
+			EJ_SelectInstance(instanceID)
+			local encounterIndex = 1
+			while true do
+				local encounterName, _, encounterID = EJ_GetEncounterInfoByIndex(encounterIndex, instanceID)
+				if not encounterID then break end
+				local creatureIndex = 1
+				while true do
+					 local _, creatureName = EJ_GetCreatureInfo( creatureIndex, encounterID ) 
+					 if not creatureName then break end
+					 creatures[creatureName] = { encounterID, encounterName, encounterIndex }
+					 creatureIndex = creatureIndex + 1
+				end    
+				encounterIndex = encounterIndex + 1
+			end
+		end	
+	end
+	return creatures
+end
+
 function RDO:SetAutodetect(value)
 	if value then
 		local status = self.statuses[GSRD.db.profile.autodetect.status or 1] or statuses[1]
-		GSRD:EnableAutodetect( status, GetKnownDebuffs )
+		GSRD:EnableAutodetect( status, GetKnownDebuffs, GetKnownBosses )
 	else
 		GSRD:DisableAutodetect()
 	end
@@ -68,8 +96,6 @@ do
 	local bosses_localized
 	-- bosses_encounters[encounterID] = encounter_key
 	local bosses_encounters
-	-- bosses_creatures[instanceID][creatureName] = { encounterID, encounterNameLocalized, encounterIndex }
-	local bosses_creatures = {}
 	-- When a debuff is autodetected, we have a localized boss name and maybe the encounter ID, and we want to know the encounter
 	-- key in the RDDB database (to avoid duplicating bosses), the encounter key usually is the english encounter name, but this info is 
 	-- not available in non-english clients. Using two aproaches, first trying to identify the bossKey using the encounter journal ID,
@@ -93,34 +119,10 @@ do
 			end	
 		end
 	end
-	-- Collecting all bosses from an Instance. This is a hackish way to identify a boss encounter knowing 
-	-- a boss localized name (We want the Encounter Journal Identifier (ejid) because is locale independent)
-	local function GetJournalInstanceCreatures(instanceID)
-	   local creatures = bosses_creatures[instanceID]
-	   if not creatures then
-		   creatures = {}; bosses_creatures[instanceID] = creatures
-		   if not IsAddOnLoaded("Blizzard_EncounterJournal") then LoadAddOn("Blizzard_EncounterJournal") end
-		   EJ_SelectInstance(instanceID)
-		   local encounterIndex = 1
-		   while true do
-			  local encounterName, _, encounterID = EJ_GetEncounterInfoByIndex(encounterIndex, instanceID)
-			  if not encounterID then break end
-			  local creatureIndex = 1
-			  while true do
-				 local _, creatureName = EJ_GetCreatureInfo( creatureIndex, encounterID ) 
-				 if not creatureName then break end
-				 creatures[creatureName] = { encounterID, encounterName, encounterIndex }
-				 creatureIndex = creatureIndex + 1
-			  end    
-			  encounterIndex = encounterIndex + 1        
-		   end
-		end 
-		return creatures
-	end
 	-- instanceID = Encounter Journal instance ID / bossName = Localized boss name
 	local function GetJournalEncounterInfo(instanceID, bossName)
 		if instanceID and instanceID>0 and bossName then
-			local encounter = GetJournalInstanceCreatures(instanceID)[bossName]
+			local encounter = GetKnownBosses(instanceID)[bossName]
 			if encounter then
 				return encounter[1], encounter[2], encounter[3]
 			end

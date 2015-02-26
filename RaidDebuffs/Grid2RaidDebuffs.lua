@@ -6,10 +6,12 @@ local frame = CreateFrame("Frame")
 local Grid2 = Grid2
 local next = next
 local ipairs = ipairs
+local strfind = strfind
 local GetTime = GetTime
 local UnitGUID = UnitGUID
 local UnitDebuff = UnitDebuff
 local GetSpellInfo = GetSpellInfo
+local UnitName = UnitName
 local UnitLevel = UnitLevel
 local UnitClassification = UnitClassification
 local UnitAffectingCombat = UnitAffectingCombat
@@ -29,7 +31,9 @@ local boss_auto
 local time_auto
 local timer_auto
 local spells_known
+local bosses_known
 local get_known_spells
+local get_known_bosses
 
 -- GSRD 
 frame:SetScript("OnEvent", function (self, event, unit)
@@ -45,7 +49,10 @@ frame:SetScript("OnEvent", function (self, event, unit)
 		if order then
 			spells_status[name]:AddDebuff(order, te, co, ty, du, ex)
 		elseif time_auto and (not spells_known[id]) and (ex<=0 or du<=0 or ex-du>=time_auto) then
-			GSRD:RegisterNewDebuff(id, ca, te, co, ty, du, ex, isBoss)
+			order = GSRD:RegisterNewDebuff(id, ca, te, co, ty, du, ex, isBoss)
+			if order then
+				status_auto:AddDebuff(order, te, co, ty, du, ex)
+			end	
 		end
 		index = index + 1
 	end
@@ -66,13 +73,15 @@ function GSRD:UpdateZoneSpells(event)
 	local zone = self:GetCurrentZone()
 	if zone==curzone and event then return end
 	curzonetype = select(2,GetInstanceInfo())
-	if status_auto then	self:RegisterNewZone(zone) end
 	self:ResetZoneSpells(zone)
 	for status in next,statuses do
 		status:LoadZoneSpells()
 	end
 	self:UpdateEvents()
 	self:ClearAllIndicators()
+	if status_auto then	
+		self:RegisterNewZone() 
+	end
 end
 
 function GSRD:GetCurrentZone()
@@ -116,12 +125,12 @@ function GSRD:Grid_UnitLeft(_, unit)
 end
 
 -- zones & debuffs autodetection
-function GSRD:RegisterNewZone(zone)
-	if zone then
+function GSRD:RegisterNewZone()
+	if curzone then
 		if IsInInstance() then
-			self.db.profile.autodetect.zones[zone] = true
+			self.db.profile.autodetect.zones[curzone] = true
 		end
-		spells_known = get_known_spells and get_known_spells(zone) or {}
+		spells_known = get_known_spells(curzone)
 	end
 end
 
@@ -135,53 +144,52 @@ function GSRD:RegisterNewDebuff(spellId, caster, te, co, ty, du, ex, isBoss)
 	end
 	local order = #zone + 1
 	zone[order] = spellId
-	--
-	if (not boss_auto) then	boss_auto = self:CheckBossUnit(caster) end
-	--
-	self:ProcessIncomingDebuff(spellId)
-	--
 	spells_order[spellId]  = order
 	spells_status[spellId] = status_auto
-	status_auto:AddDebuff(order, te, co, ty, du, ex)
-end
-
-function GSRD:ProcessIncomingDebuff(spellId)
-	local zone =  curzone .. '@' ..(EJ_GetCurrentInstance() or 0)
-	if boss_auto then
-		self.db.profile.autodetect.debuffs[spellId] = zone .. '@' .. boss_auto
-	else
-		self.db.profile.autodetect.incoming[spellId] = zone
+	--
+	if (not boss_auto) then	
+		boss_auto = self:CheckBossUnit(caster) 
 	end
+	--
+	local zone_name = curzone .. '@' .. EJ_GetCurrentInstance()
+	if boss_auto then
+		self.db.profile.autodetect.debuffs[spellId] = zone_name .. '@' .. boss_auto
+	else
+		self.db.profile.autodetect.incoming[spellId] = zone_name
+	end
+	--
+	return order
 end
 
-function GSRD:ProcessIncomingDebuffs(boss)
+function GSRD:ProcessIncomingDebuffs()
 	local incoming = self.db.profile.autodetect.incoming
 	if next(incoming) then
 		local debuffs = self.db.profile.autodetect.debuffs
-		boss = boss or ""
 		for spellId,zone in pairs(incoming) do
-			debuffs[spellId] = zone .. '@' .. boss
+			debuffs[spellId] = zone .. '@' .. (boss_auto or "")
 		end
 		wipe(incoming)
 	end	
 end
 
-function GSRD:EnableAutodetect(status, func)
+function GSRD:EnableAutodetect(status, func_spells, func_bosses)
 	status_auto = status
-	get_known_spells = func or get_known_spells
+	get_known_spells = func_spells or get_known_spells
+	get_known_bosses = func_bosses or get_known_bosses
 	self:UpdateEvents()
-	self:RegisterNewZone(curzone)
+	self:RegisterNewZone()
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	if InCombatLockdown() then self:PLAYER_REGEN_DISABLED()	end	
 end
 
 function GSRD:DisableAutodetect()
-	self:ProcessIncomingDebuffs(boss_auto)
+	self:ProcessIncomingDebuffs()
 	self:CancelBossTimer()
-	time_auto    = nil
-	status_auto  = nil
-	spells_known = nil
+	time_auto     = nil
+	status_auto   = nil
+	spells_known  = nil
+	bosses_known  = nil
 	self:UpdateEvents()	
 	self:UnregisterEvent("PLAYER_REGEN_DISABLED")
 	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
@@ -190,19 +198,13 @@ end
 -- boss heuristic detection
 function GSRD:CheckBossUnit(unit)
 	if unit and UnitAffectingCombat(unit) then
+		local name  = UnitName(unit)
 		local level = UnitLevel(unit)
-		local isBoss = level==-1
-		if not isBoss then
-			local class = UnitClassification(unit) or ""
-			isBoss = string.find(class, "boss")
-			if (not isBoss) and curzonetype=="party" then -- 5 man instances bosses
-				isBoss = class == "elite" and level>=GetMaxPlayerLevel()+2 
-			end
+		local class = UnitClassification(unit)
+		if level==-1 or (bosses_known and bosses_known[name]) or strfind(class or "", "boss") or (curzonetype=="party" and class=="elite" and level>=GetMaxPlayerLevel()+2) then 
+			return name
 		end
-		if isBoss then 
-			return UnitName(unit)
-		end
-	end	
+	end
 end
 
 function GSRD:CheckBossFrame()
@@ -211,6 +213,7 @@ function GSRD:CheckBossFrame()
 		return boss
 	end
 end
+
 function GSRD:CreateBossTimer()
 	if not (boss_auto or timer_auto) then
 		timer_auto = Grid2:ScheduleRepeatingTimer(function()
@@ -219,7 +222,7 @@ function GSRD:CreateBossTimer()
 			end
 			if boss_auto then
 				self:CancelBossTimer()
-				self:ProcessIncomingDebuffs(boss_auto) 
+				self:ProcessIncomingDebuffs() 
 			end
 		end, 1.5)
 	end	
@@ -233,18 +236,22 @@ function GSRD:CancelBossTimer()
 end
 
 function GSRD:PLAYER_REGEN_DISABLED()
-	self:ProcessIncomingDebuffs(boss_auto)
+	self:ProcessIncomingDebuffs()
 	time_auto = GetTime()
+	-- It's more correct to collect zone bosses from RegisterNewZone(), but EJ_GetCurrentInstance() returns a wrong instanceID 
+	-- (the previous instanceID) just after a zone change, so we cannot collect known boses in the zone_change event.
+	bosses_known = get_known_bosses(EJ_GetCurrentInstance()) 
 	boss_auto = self:CheckBossFrame() or self:CheckBossUnit("target") or self:CheckBossUnit("targettarget") or self:CheckBossUnit("focus")
 	self:CreateBossTimer()
 end
 
 function GSRD:PLAYER_REGEN_ENABLED()
-	self:ProcessIncomingDebuffs(boss_auto)
-	if UnitIsDeadOrGhost("player") then return end
-	self:CancelBossTimer()
-	time_auto = nil
-	boss_auto = nil
+	self:ProcessIncomingDebuffs()
+	if not UnitIsDeadOrGhost("player") then
+		self:CancelBossTimer()
+		time_auto = nil
+		boss_auto = nil
+	end	
 end
 
 -- statuses

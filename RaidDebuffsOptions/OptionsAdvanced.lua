@@ -478,7 +478,7 @@ do
 		order= 60,
 		width = "full",
 		name = L["Disable All"],
-		func= function() 
+		func= function()
 			RDO:DisableInstanceAllDebuffs(visibleInstance)
 			LoadEnabledDebuffs()
 			RefreshDebuffsItemsNames()
@@ -675,7 +675,7 @@ do
 				tipDebuff:ClearLines()
 				local name = GetSpellInfo(spellId)
 				if not name then return "" end --invalid spellIds break the tooltip
-				tipDebuff:SetHyperlink("spell:"..spellId) 
+				tipDebuff:SetHyperlink("spell:"..spellId)
 				for i=2, min(5,tipDebuff:NumLines()) do
 					lines[i-1]= tipDebuff[i]:GetText() 
 				end
@@ -689,7 +689,6 @@ do
 	options.enableSpell = {
 		type="toggle",
 		order = 30,
-		fontSize = "medium",
 		name = L["Enabled"],
 		get = function(info) return debuffsStatuses[info.handler.spellId]~=nil end,
 		set = function(info, v)

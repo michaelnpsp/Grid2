@@ -23,7 +23,7 @@ end, {
 	groupOrder   = 5,
 	titleIcon    = "Interface\\Icons\\Spell_Shadow_Skull", 
 	-- To avoid creating options for raid-debuffs(2), raid-debuffs(3), etc.
-	masterStatus = "raid-debuffs",  
+	masterStatus = "raid-debuffs",
 })
 
 --===================================================================
