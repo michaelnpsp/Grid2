@@ -107,6 +107,7 @@ function Grid2Options:MakeStatusAuraCommonOptions(status, options, optionParams)
 			desc = L["Select how many colors the status must provide."],
 			get = function() return status.dbx.colorCount or 1 end,
 			set = function(_,v) 
+				status.dbx.debuffTypeColorize = nil
 				StatusAuraGenerateColors(status, v)
 				if status.dbx.colorThreshold then
 					StatusAuraGenerateColorThreshold(status)
@@ -141,6 +142,19 @@ function Grid2Options:MakeStatusAuraCommonOptions(status, options, optionParams)
 				end,
 				values = status.dbx.valueIndex and ColorizeByValues2 or ColorizeByValues1, 
 			}
+		elseif status.dbx.type == "debuffs" then
+			options.debuffTypeColor = {
+				type = "toggle",
+				name = L["Use debuff Type color"],
+				desc = L["Use the debuff Type color first. The specified color will be applied only if the debuff has no type."],
+				order = 19,
+				get = function () return status.dbx.debuffTypeColorize end,
+				set = function (_, v)
+					status.dbx.debuffTypeColorize = v or nil
+					status:UpdateDB()
+					status:UpdateAllIndicators()
+				end,
+			}			
 		end
 	end
 	self:MakeHeaderOptions(options, "Colors")
