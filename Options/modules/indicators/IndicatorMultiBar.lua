@@ -205,20 +205,6 @@ do
 			values = GetAvailableStatusValues,
 			arg = { indicator = indicator, index = 1}
 		}
-		-- options.barMainLevel = {
-			-- type = "select", 
-			-- order = 50.7,
-			-- width = "half",
-			-- name = L["Sublevel"],
-			-- desc = L["Bars with higher numbers always show up on top of lower numbers."],
-			-- get = function (info) return indicator.dbx.textureSublayer or 0 end,
-			-- set = function (info, v)
-				-- v = tonumber(v)
-				-- indicator.dbx.textureSublayer = v~=0 and v or nil
-				-- self:RefreshIndicator(indicator, "Layout", "Update")
-			-- end,
-			-- values = { [0]=0, [1]=1, [2]=2, [3]=3, [4]=4, [5]=5 }
-		-- }
 		options.barMainTexture = {
 			type = "select", dialogControl = "LSM30_Statusbar",
 			order = 51,
@@ -295,20 +281,6 @@ do
 				disabled = function() return not indicator.statuses[i] end,
 				arg = { indicator = indicator, index = i+1},				
 			}
-			-- options["barLevel"..i] = {
-				-- type = "select", 
-				-- order = 50+i*5+0.7,
-				-- width = "half",
-				-- name = L["Sublevel"],
-				-- desc = L["Bars with higher numbers always show up on top of lower numbers."],
-				-- get = function (info) return GetBarValue(indicator, i, "sublayer") or 1 end,
-				-- set = function (info, v)
-					-- v= tonumber(v)
-					-- SetBarValue(indicator, i, "sublayer", v~=1 and v or nil)
-					-- self:RefreshIndicator(indicator, "Layout", "Update")
-				-- end,
-				-- values = { [0]=0, [1]=1, [2]=2, [3]=3, [4]=4, [5]=5 }
-			-- }
 			options["barTexture"..i] = {
 				type = "select", dialogControl = "LSM30_Statusbar",
 				order = 50+i*5+1,
