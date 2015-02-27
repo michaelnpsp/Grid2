@@ -117,6 +117,11 @@ Grid2Options:RegisterStatusOptions( "direction", "target", function(self, status
 			status:UpdateDB()
 		end,
 	}
+	options.spacer3 = {
+		type = "header",
+		order = 165,
+		name = "",
+	}
 	options.showOnlyStickyUnits = {
 		type = "toggle",
 		order = 170,

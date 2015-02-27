@@ -147,7 +147,7 @@ function Grid2Options:MakeStatusAuraCommonOptions(status, options, optionParams)
 				type = "toggle",
 				name = L["Use debuff Type color"],
 				desc = L["Use the debuff Type color first. The specified color will be applied only if the debuff has no type."],
-				order = 19,
+				order = 6,
 				get = function () return status.dbx.debuffTypeColorize end,
 				set = function (_, v)
 					status.dbx.debuffTypeColorize = v or nil

@@ -54,8 +54,14 @@ Mana.GetColor = Grid2.statusLibrary.GetColor
 Mana.OnEnable = status_OnEnable
 Mana.OnDisable= status_OnDisable
 
-function Mana:UpdateUnitPower(unit, powerType)
+function Mana:UpdateUnitPowerStandard(unit, powerType)
 	if powerType=="MANA" then
+		self:UpdateIndicators(unit)
+	end
+end
+
+function Mana:UpdateUnitPowerHealer(unit, powerType)
+	if powerType=="MANA" and (unit=="player" or UnitGroupRolesAssigned(unit) == "HEALER") then
 		self:UpdateIndicators(unit)
 	end
 end
@@ -77,7 +83,8 @@ function Mana:GetText(unit)
 end
 
 function Mana:UpdateDB()
-	Mana.IsActive = self.dbx.showOnlyHealers and Mana.IsActiveHealer or Mana.IsActiveStandard
+	Mana.IsActive        = self.dbx.showOnlyHealers and Mana.IsActiveHealer        or Mana.IsActiveStandard
+	Mana.UpdateUnitPower = self.dbx.showOnlyHealers and Mana.UpdateUnitPowerHealer or Mana.UpdateUnitPowerStandard
 end
 
 Grid2.setupFunc["mana"] = function(baseKey, dbx)
