@@ -44,7 +44,7 @@ do
 			end
 			for status in next, DebuffsHandlers do
 				if not status.seen then	
-					status:UpdateState(unit, name, texture, count, duration, expiration, caster, isBossDebuff)
+					status:UpdateState(unit, name, texture, count, duration, expiration, caster, isBossDebuff, debuffType)
 				end	
 			end
 			i = i + 1
@@ -207,6 +207,18 @@ do
 	end
 end
 
+-- Grid2:SetStatusAuraDebuffTypeColor( debuffType, color )
+-- Grid2:GetStatusAuraDebuffTypeColors()
+do
+	local debuffTypeColor = {}
+	function Grid2:SetStatusAuraDebuffTypeColor( debuffType, color )
+		debuffTypeColor[ debuffType ] = color
+	end
+	function Grid2:GetStatusAuraDebuffTypeColors()
+		return debuffTypeColor
+	end
+end
+
 -- Grid2:SetupStatusAura()
 do
 	local fmt = string.format
@@ -331,6 +343,8 @@ end
 Grid2:SetupStatusAura(status)
 Grid2:RegisterStatusAura(status, auraType, [spell|subType] )
 Grid2:UnregisterStatusAura(status, auraType, subType )
+Grid2:SetStatusAuraDebuffTypeColor( debuffType, color )
+Grid2:GetStatusAuraDebuffTypeColors()
 Grid2:RegisterTimeTrackerStatus(status, elapsed)
 Grid2:UnregisterTimeTrackerStatus(status)
 Grid2:MakeStatusColorHandler(status)

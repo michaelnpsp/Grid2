@@ -29,7 +29,7 @@ local function Icon_OnFrameUpdate(f)
 		if status:IsActive(unit) then
 			if status.GetIcons then
 				local auras = f.auras
-				local k, textures, counts, expirations, durations = status:GetIcons(unit)
+				local k, textures, counts, expirations, durations, colors = status:GetIcons(unit)
 				for j=1,k do
 					local aura = auras[i]
 					aura.icon:SetTexture(textures[j])
@@ -42,8 +42,8 @@ local function Icon_OnFrameUpdate(f)
 						aura.cooldown:SetCooldown(expiration - duration, duration) 
 					end
 					if useStatus then
-						local r,g,b,a = status:GetColor(unit)
-						aura:SetBackdropBorderColor(r,g,b, min(a,self.borderOpacity) )
+						local c = colors[j]
+						aura:SetBackdropBorderColor(c.r,c.g,c.b, min(c.a,self.borderOpacity) )
 					end
 					aura:Show()
 					i = i + 1

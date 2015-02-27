@@ -27,6 +27,7 @@ local function status_UpdateDB(self)
 	self.subType = self.dbx.subType
 	self.debuffFilter = self.dbx.debuffFilter
 	Grid2:SetupStatusAura(self)
+	Grid2:SetStatusAuraDebuffTypeColor( self.dbx.subType, self.dbx.color1 )
 end
 
 Grid2.setupFunc["debuffType"] = function(baseKey, dbx)
