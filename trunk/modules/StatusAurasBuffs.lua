@@ -48,13 +48,18 @@ do
 	local counts = {}
 	local expirations = {}
 	local durations = {}
+	local colors = {}
+	local color = {}
 	status_GetIcons = function(self, unit)
-		local i, j, spells, filter = 1, 1, self.auraNames, self.filterMine
-		local name, caster
+		color.r, color.g, color.b, color.a = self:GetColor(unit)
+		local i, j, spells, filter, name, caster = 1, 1, self.auraNames, self.filterMine
 		while true do
 			name, _, textures[j], counts[j], _, durations[j], expirations[j], caster = UnitBuff(unit, i)
-			if not name then return j-1, textures, counts, expirations, durations end
-			if spells[name] and (filter==false or filter==myUnits[caster]) then j = j + 1 end	
+			if not name then return j-1, textures, counts, expirations, durations, colors end
+			if spells[name] and (filter==false or filter==myUnits[caster]) then 
+				colors[j] = color
+				j = j + 1 
+			end	
 			i = i + 1
 		end
 	end

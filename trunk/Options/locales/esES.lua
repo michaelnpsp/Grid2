@@ -489,6 +489,8 @@ L["Non Self Casted"] = "No propios"
 L["Self Casted"] = "Propios"
 L["Whitelist"] = "Lista blanca"
 L["Blacklist"] = "Lista negra"
+L["Use debuff Type color"] = "Color tipo de debuff"
+L["Use the debuff Type color first. The specified color will be applied only if the debuff has no type."] = "Usar el color del tipo de debuff. El color configurado solo se usará si el debuff no tiene tipo."
 
 L["Low value"] = "Valor bajo"
 L["Medium value"] = "Valor medio"
@@ -653,9 +655,11 @@ L["Instant"] = "Instantaneo"
 L["Update frequency"] = "Frecuencia de actualizaciones"
 L["Select the health update frequency."] = "Elige la frequencia de actualización de las vidas."
 
-
 -- health-low status
 L["Use Health Percent"] = "Usar Porcentajes"
+
+-- mana
+L["Hide mana of non healer players"] = "Ocultar mana de jugadores no sanadores"
 
 -- range status 
 L["Range"] = "Rango"
@@ -665,6 +669,8 @@ L["Default alpha"] = "Transparencia"
 L["Default alpha value when units are way out of range."] = "Transparencia predeterminada de las unidades fuera de rango"
 L["Update rate"] = "Frecuencia"
 L["Rate at which the status gets updated"] = "Frecuencia de actualización de este estado"
+L["Out of range alpha"] = "Opacidad fuera rango"
+L["Out of range"] = "Fuera de rango"
 
 -- ready-check status
 L["Delay"] = "Espera"
@@ -723,6 +729,17 @@ L["Delete raid debuff"] = "Eliminar este debuff"
 L["Link to Chat"] = "Pegar en el Chat"
 L["Show in Encounter Journal"] = "Mostrar Guia de mazmorras"
 L["Encounter Journal difficulty"] = "Dificultal Guia de mazmorras"
+L["Delete this Instance"] = "Eliminar esta mazmorra"
+L["Bosses"] = "Jefes"
+L["Move To"] = "Mover a"
+L["Add a New Boss"] = "Añadir un nuevo Jefe"
+L["RaidDebuffs Autodetection"] = "RaidDebuffs Autodeteccion"
+L["Debuffs Autodetection"] = "Autodeteccion de Debuffs"
+L["Enable Autodetection"] = "Activar Autodeteccion"
+L["Enable Zones and Debuffs autodetection"] = "Activa la autodeteccion de zonas y debuffs"
+L["Move to Top"] = "Mover al principio"
+L["Move to Bottom"] = "Mover al final"
+L["Delete Boss"] = "Eliminar este Jefe"
 
 -- direction
 L["Out of Range"] = "Fuera de rango"
@@ -777,6 +794,10 @@ L["advanced threat detection"] = "deteccion avanzada de amenaza"
 L["arrows pointing to each raid member"] = "flechas apuntando a cada miembro de la raid"
 L["display remaining amount of heal absorb shields"] = "muestra cantidad restante de escudos que absorben sanacion"
 L["display remaining amount of damage absorb shields"] = "muestra cantidad restante de escudos que absorben daño"
+L["Sticky Units"] =  "Unidades especiales"
+L["Target"] = "Objetivo"
+L["Tanks"] = "Tanques"
+L["Show only selected sticky units"] = "Mostrar solo para las unidades especiales"
 
 -- aoe heals
 L["aoe-"] = "aoe: "
