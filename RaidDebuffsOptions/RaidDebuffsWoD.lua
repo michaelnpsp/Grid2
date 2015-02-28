@@ -107,70 +107,105 @@ RDDB["Warlords of Draenor"] = {
 		175816, -- Alma de vacio
 		},
 	},
-	[988] = { -- Blackrock Foundry
+	[988] = { -- Fundición Roca Negra 
 		["Gruul"] = {
 		order = 1, ejid = 1161,
-		155078, -- Overwhelming Blows
-		155323, -- Petrifying Slam
-		155506, -- Petrified
+		155078, -- Golpes sobrecogedores
+		155323, -- Embate petrificador
+		155506, -- Petrificado
+		162322, -- Golpe de inferno
+		155080, -- Tajo infernal
+		173192, -- Derrumbamiento
 		},
 		["Oregorger"] = {
 		order = 2, ejid = 1202,
-		173471, -- Acid Maw
+		173471, -- Fauces ácidas
+		156297, -- Torrente ácido
+		156374, -- Fragmento explosivo
 		},
 		["Beastlord Darmac"] = {
 		order = 3, ejid = 1122,
-		154960, -- Pinned Down
-		154981, -- Conflagration
-		155061, -- Rend and Tear
-		155030, -- Seared Flesh
-		155236, -- Crush Armor
+		154960, -- Inmovilizado
+		154981, -- Conflagración
+		155061, -- Desgarrar y rasgar
+		155030, -- Carne chamuscada
+		155236, -- Machacar armadura
+		154989, -- Aliento infernal
+		156824, -- Pira infernal
+		155499, -- Metralla sobrecalentada
+		156823, -- Chatarra sobrecalentada
+		155657, -- Infusión de llamas
 		},
 		["Flamebender Ka'graz"] = {
 		order = 4, ejid = 1123,
-		154932, -- Molten Torrent
-		163284, -- Rising Flames
-		154952, -- Fixate
+		154932, -- Torrente de magma
+		163284, -- Llamas crecientes
+		154952, -- Fijar
 		},
 		["Hans'gar and Franzok"] = {
 		order = 5, ejid = 1155,
-		157139, -- Shattered Vertebrae
+		157139, -- Vértebras destrozadas
+		157853, -- Réplica
+		155818, -- Quemaduras agostadoras
+		161570, -- Placas abrasadoras
 		},
 		["Operator Thogar"] = {
 		order = 6, ejid = 1147,
-		155921, -- Enkindle
-		155864, -- Prototype Pulse Grenade
-		159481, -- Delayed Siege Bomb
-		164380, -- Burning
+		155921, -- Incendiar
+		155864, -- Prototipo de granada de pulso
+		159481, -- Bomba de asedio tardía
+		164380, -- Ardiendo
+		155701, -- Tajo dentado
 		},
 		["The Blast Furnace"] = {
 		order = 7, ejid = 1154,
-		155196, -- Fixate (Slag Elemental)
-		155192, -- Bomb
-		176121, -- Volatile Fire
-		175104, -- Melt Armor
-		155242, -- Heat
+		155196, -- Fijar
+		155192, -- Bomba
+		176121, -- Fuego volátil
+		175104, -- Fundir armadura
+		155242, -- Calor
+		158246, -- Sangre caliente
+		156934, -- Ruptura
+		156932, -- Ruptura
+		155743, -- Charco de escoria
 		},
 		["Kromog"] = {
 		order = 8, ejid = 1162,
-		156766, -- Warped Armor
+		156766, -- Armadura alabeada
 		},
 		["The Iron Maidens"] = {
 		order = 9, ejid = 1203,
-		156626, -- Rapid Fire
-		164271, -- Penetrating Shot
-		156214, -- Convulsive Shadows
-		156007, -- Impale
-		158315, -- Dark Hunt
-		157950, -- Bloodsoaked Heartseeker
+		156626, -- Fuego rápido
+		164271, -- Disparo penetrante
+		156214, -- Sombras convulsivas
+		156007, -- Empalar
+		158315, -- Cacería oscura
+		157950, -- Buscacorazones empapado de sangre
 		},
 		["Blackhand"] = {
 		order = 10, ejid = 959,
-		156096, -- Marked for Death
-		157000, -- Attach Slag Bombs
+		157000, -- Adherir bombas de escoria
+		156096, -- Marcado para morir
 		},
 		["Trash"] = {
-		order= 50,
+		order = 50, ejid = nil,
+		175987, -- Pinchar herida
+		159632, -- Apetito insaciable
+		159520, -- Carga devastadora
+		159939, -- Fauceácida
+		162508, -- Embate con escudo
+		162516, -- Acero giratorio
+		162672, -- Flagelo sangriento
+		162663, -- Tormenta eléctrica
+		162748, -- Disparo de dispersión
+		162761, -- Trampa de hielo
+		1604, -- Atontado
+		174773, -- Vapores de combustión
+		160260, -- Bomba de Fuego
+		160109, -- Intimidación
+		163126, -- Capón
+		177891, -- Patada ascendente ardiente
+		177855, -- Ascuas en el viento
 		},
 	},
 	-- world bosses
