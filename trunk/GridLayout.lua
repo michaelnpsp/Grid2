@@ -34,6 +34,7 @@ local GridLayoutHeaderClass = {
 		frame:SetAttribute("initialConfigFunction", [[
 			RegisterUnitWatch(self)
 			self:SetAttribute("*type1", "target")
+			self:SetAttribute("*type2", "menu")
 			self:SetAttribute("useparent-toggleForVehicle", true)
 			self:SetAttribute("useparent-allowVehicleTarget", true)
 			self:SetAttribute("useparent-unitsuffix", true)
