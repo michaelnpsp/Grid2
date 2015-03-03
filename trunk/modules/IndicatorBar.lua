@@ -149,7 +149,6 @@ end
 local function Bar_Disable(self, parent)
 	local bar = parent[self.name]
 	bar:Hide()
-	if bar.bgTex then bar.bgTex:Hide() end
 	self.Layout   = nil
 	self.OnUpdate = nil
 end

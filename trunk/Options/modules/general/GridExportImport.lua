@@ -281,8 +281,36 @@ function Comm:OnCommReceived(prefix, message, distribution, sender)
 	)
 end
 
--- {{ Create profile export&import options 
-Grid2Options.ExportImportOptions = { type = "group", order= 200, name = L["Advanced"], desc = L["Options for %s."]:format(L["Advanced"]), args = {	
+-- Profile database cleaning
+local function CleanDatabaseItems( itemType, setup )
+	for baseKey, dbx in pairs(setup) do
+		if not (dbx.type and Grid2.setupFunc[dbx.type]) then
+			setup[baseKey] = nil
+			print( string.format( "Grid2: Removed orphan %s type=[%s] name=[%s]:", itemType, dbx.type or "nil", baseKey) )
+		end
+	end
+end
+
+local function CleanStatusMap(setup)
+	for baseKey, map in pairs(setup) do
+		local indicator = Grid2.indicators[baseKey]
+		if indicator then
+			for statusKey, priority in pairs(map) do
+				local status = Grid2.statuses[statusKey]
+				if not( status and tonumber(priority) ) then
+					map[statusKey] = nil
+					print( string.format( "Grid2: Removed map for indicator=[%s] <=> status=[%s], reason: status does not exists or wrong priority.", baseKey, statusKey ) )
+				end
+			end
+		else
+			setup[baseKey] = nil
+			print( string.format( "Grid2: Removed statusMap for non existent [%s] indicator ", baseKey ) )
+		end
+	end
+end
+
+-- {{ Create profile advanced options
+Grid2Options.AdvancedProfileOptions = { type = "group", order= 200, name = L["Advanced"], desc = L["Options for %s."]:format(L["Advanced"]), args = {	
 	header1 ={
 		type = "header",
 		order = 60,
@@ -315,11 +343,6 @@ Grid2Options.ExportImportOptions = { type = "group", order= 200, name = L["Advan
 								SerializeCurrentProfile(true, includeCustomLayouts) )
 		end,
 	},
-	header3 ={
-		type = "header",
-		order = 90,
-		name = "",
-	},
 	header2 ={
 		type = "header",
 		order = 35,
@@ -351,6 +374,25 @@ Grid2Options.ExportImportOptions = { type = "group", order= 200, name = L["Advan
 				Comm:SendMessage(message, Comm.target)
 			end
 		end,	
+	},
+	header3 ={
+		type = "header",
+		order = 90,
+		name = "Profile database maintenance",
+	},
+	cleanDatabase = {
+		type = "execute",
+		order= 100,
+		width = "full",
+		name = "Clean Current Profile",
+		desc = "Remove wrong or obsolete objects (indicators, statuses, etc) from the current profile database.",
+		func = function()
+			CleanDatabaseItems( "status", Grid2.db.profile.statuses )
+			CleanDatabaseItems( "indicator", Grid2.db.profile.indicators )
+			CleanStatusMap( Grid2.db.profile.statusMap )
+			print("Grid2 Database cleaning finished.")
+		end,
+		confirm = function() return L["Warning, the clean process will remove statuses and indicators of non enabled modules. Are you sure you want to clean the current profile ?"] end,
 	},
 } }
 -- }}
