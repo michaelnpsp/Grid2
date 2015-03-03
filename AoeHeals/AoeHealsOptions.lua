@@ -6,12 +6,20 @@ local L
 local select = select
 local GetSpellInfo = GetSpellInfo
 
-local longCdHeals = {
-	740,    -- Druid Traquility
-	127944, -- Shaman Tide Totem
-	64843,  -- Priest Divine Himn
-	115310, -- Monk Revival
+local classHeals = {
+	SHAMAN  = { 1064, 73921, 127944 },     	  -- Chain Heal, Healing Rain, Tide Totem
+	PRIEST  = { 34861, 23455, 88686, 64843 }, -- Circle of Healing, Holy Nova, Holy Word: Sanctuary, Divine Himn
+	PALADIN = { 85222, 114871, 119952 },   	  -- Light of Dawn, Holy Prism, Arcing Light(Light Hammer's effect)
+	DRUID   = { 81269, 740 }, 			      -- Wild Mushroom, Tranquility
+	MONK    = { 124040, 130654, 124101, 132463, 115310 }, -- Chi Torpedo, Chi Burst, Zen Sphere: Detonate, Chi Wave, Revival
+	RAID    = {
+				740,    -- Druid Traquility
+				127944, -- Shaman Tide Totem
+				64843,  -- Priest Divine Himn
+				115310, -- Monk Revival
+	},
 }
+
 
 -- Misc util functions
 local function GetSpellID(name, defaultSpells)
@@ -113,7 +121,7 @@ do
 						if spellID then 
 							spellID = GetSpellInfo(spellID) and spellID or 0
 						else
-							spellID = GetSpellID(aura, status.defaultSpells)
+							spellID = GetSpellID(aura, classHeals)
 						end
 						if spellID > 0 then
 							table.insert(status.dbx.spellList, spellID)
@@ -130,33 +138,25 @@ do
 			desc = L[""],
 			get = function () end,
 			set = function(_,v)
-				if v == "long" then
-					for _,spellID in pairs(longCdHeals) do
-						table.insert(status.dbx.spellList, spellID)
-					end
-				else
-					for className,spells in pairs(status.defaultSpells) do
-						if v=="" or v==className then
-							for _,spellID in pairs(spells) do
-								table.insert(status.dbx.spellList, spellID)
-							end
-						end	
-					end
-				end	
+				for className,spells in pairs(classHeals) do
+					if v==className or (v=="" and className~="RAID") then
+						for _,spellID in pairs(spells) do
+							table.insert(status.dbx.spellList, spellID)
+						end
+					end	
+				end
+				status:UpdateDB()
 			end,
 			values = function()
 				local list = {}
-				for class in pairs(status.defaultSpells) do
-					list[class] = LOCALIZED_CLASS_NAMES_MALE[class]
+				for class in pairs(classHeals) do
+					list[class] = LOCALIZED_CLASS_NAMES_MALE[class] or L["Raid Cooldowns"]
 				end
 				list[""] = L["All Classes"]
-				list["long"] = L["Raid Cooldowns"]
 				return list
 			end
 		}
-		if status.name ~= "aoe-heals" then
-			self:MakeStatusDeleteOptions(status, options)
-		end	
+		self:MakeStatusDeleteOptions(status, options)
 	end
 end
 
@@ -428,7 +428,7 @@ local function MakeCategoryOptions()
 			func = function() 
 				local baseKey = "aoe-" .. NewStatusName
 				if not Grid2:DbGetValue("statuses",baseKey ) then
-					local dbx = { type = "aoe-heals", spellList = {}, activeTime =2, color1 = {r=0, g=0, b=1, a=1} }
+					local dbx = { type = "aoe-heals", spellList = {}, activeTime =2, color1 = {r=0, g=0.8, b=1, a=1} }
 					Grid2:DbSetValue("statuses", baseKey, dbx) 
 					local status = Grid2.setupFunc[dbx.type](baseKey, dbx)
 					Grid2Options:MakeStatusOptions(status)
