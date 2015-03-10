@@ -72,6 +72,7 @@ local function SerializeCurrentProfile(Hex, exportCustomLayouts )
 			config[name]= module.db.profile
 		end 
 	end
+	config["@Grid2Options"] = Grid2Options.db.profile
 	if exportCustomLayouts then -- Special ugly case for Custom Layouts
 		config["@Grid2Layout"] = Grid2:GetModule("Grid2Layout").db.global
 	end
@@ -166,6 +167,8 @@ local function ImportProfile(sender, data, Hex, importCustomLayouts)
 			local db	
 			if key=="Grid2" then
 				db= self.db
+			elseif key=="@Grid2Options" then
+				db= Grid2Options.db
 			else
 				db= self:GetModule(key,true) and self.db:GetNamespace(key,true)
 			end	
@@ -195,8 +198,8 @@ local function ShowSerializeFrame(title,subtitle,data)
 							AceGUI:Release(widget) 
 							collectgarbage() 
 						 end)
-	frame:SetWidth(475)
-	frame:SetHeight(350)
+	frame:SetWidth(525)
+	frame:SetHeight(375)
 	local editbox = AceGUI:Create("MultiLineEditBox")
 	editbox.editBox:SetFontObject(GameFontHighlightSmall)
 	editbox:SetLabel(title)

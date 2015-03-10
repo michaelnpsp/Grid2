@@ -11,7 +11,7 @@ Grid2Options:RegisterStatusOptions( "direction", "target", function(self, status
 	} or nil )
 	options.colorCount = {
 		type = "toggle",
-		order = 20,
+		order = 80,
 		name = "Color by distance",
 		get = function () return status.dbx.colorCount~=nil end,
 		set = function (_, v)
@@ -30,7 +30,7 @@ Grid2Options:RegisterStatusOptions( "direction", "target", function(self, status
 	}
 	options.colorSpacer = {
 		type = "header",
-		order = 80,
+		order = 50,
 		name = "",
 	}
 	options.updateRate = {
