@@ -212,6 +212,108 @@ RDDB["Warlords of Draenor"] = {
 		175624, -- Heridas mortalmente graves
 		},
 	},
+	[1026] = {
+		["Hellfire Assault"] = {
+		order = 1, ejid = 1426,
+		184243, -- Slam
+		185806, -- Conducted Shock Pulse
+		},
+		["Iron Reaver"] = {
+		order = 2, ejid = 1425,		
+		182001, -- Orbe inestable
+		182074, -- Inmolation
+		179897, -- Blitz
+		182022, -- Pounding
+		},
+		["Kormrok"] = {
+		order = 3, ejid = 1392,
+		181306, -- Explosive Burst	
+		181321, -- Fel Touch
+		180244, -- Pound
+		187819, -- Crush
+		},
+		["Hellfire High Council"] = {
+		order = 4, ejid = 1432,
+		184450, -- Mark of the Necromancer
+		184358, -- Fel Rage
+		184355, -- Bloodboil
+		184847, -- Acidic Wound
+		184357, -- Tainted Blood
+		184652, -- Reap
+		
+		},
+		["Kilrogg Deadeye"] = {
+		order = 5, ejid = 1396,	
+		180372, -- Heart Seeker
+		182159, -- Fel Corruption
+		180200, -- Shredded Armor
+		180224, -- Death Throes
+		},
+		["Gorefiend"] = {
+		order = 6, ejid = 1372,
+		179864, -- Shadow of Death
+		179978, -- Touch of Doom
+		179909, -- Shared Fate
+		},
+		["Shadow-Lord Iskar"] = {
+		order = 7, ejid = 1433,
+		179202,  -- Eye of Anzu
+		181956,  -- Phantasmal Winds
+		182323,  -- Phantasmal Wounds
+		179202,  -- Eye of Anzu
+		182173,  -- Fel Chakram
+		181753,  -- Fel Bomb
+		179218,  -- Phantasmal Obliteration
+		185239,  -- Radiance-of-anzu
+		},
+		["Socrethar the Eternal"] = {
+		order = 8, ejid = 1427,	
+		182038, -- Shattered Defenses
+		182635, -- Reverberating Blow
+		184239, -- Shadow Word Agony
+		136913, -- Overwhelming Power
+		},
+		["Fel Lord Zakuun"] = {
+		order = 9, ejid = 1391,	
+		181508, -- Seed of destruction
+		189260, -- Cloven Soul		
+		179711, -- Befouled
+		182008, -- Latent Energy
+		179620, -- Fel Crystal
+		},
+		["Xhul'horac"] = {
+		order = 10, ejid = 1447,	
+		186490, -- Chains of Fel
+		186333, -- Void Surge
+		186063, -- Wasting Void
+		186546, -- Black Hole		
+		},
+		["Tyrant Velhari"] = {
+		order = 11, ejid = 1394,
+		180166, -- Touch of Harm
+		180128, -- Edict of Condemnation
+		179999, -- Seal of decay
+		180300, -- Infernal tempest
+		180526, -- Font of corruption
+		},
+		["Mannoroth"] = {
+		order = 12, ejid = 1395,
+		181099, -- Mark of Doom
+		181597, -- Mannoroth's Gaze	
+		181359, -- Massive Blast	
+		184252, -- Puncture Wound	
+		181116, -- Doom Spike		
+		},
+		["Archimonde"] = {
+		order = 13, ejid = 1438,
+		189891, -- Nether Tear
+		185590, -- Desecrate
+		183864, -- Shadow Blast
+		183828, -- Death Brand
+		184931, -- Shackled Torment		
+		182879, -- Doomfire Fixate
+		},
+	},
 	-- world bosses
 	[949] = { -- Gorgrond
 		["Drov the Ruiner"] = {
