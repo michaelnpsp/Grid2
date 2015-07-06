@@ -217,6 +217,7 @@ RDDB["Warlords of Draenor"] = {
 		order = 1, ejid = 1426,
 		184243, -- Slam
 		185806, -- Conducted Shock Pulse
+		184379, -- Howling Axe
 		},
 		["Iron Reaver"] = {
 		order = 2, ejid = 1425,		
@@ -224,6 +225,7 @@ RDDB["Warlords of Draenor"] = {
 		182074, -- Inmolation
 		179897, -- Blitz
 		182022, -- Pounding
+		182280, -- Artillery
 		},
 		["Kormrok"] = {
 		order = 3, ejid = 1392,
@@ -240,7 +242,6 @@ RDDB["Warlords of Draenor"] = {
 		184847, -- Acidic Wound
 		184357, -- Tainted Blood
 		184652, -- Reap
-		
 		},
 		["Kilrogg Deadeye"] = {
 		order = 5, ejid = 1396,	
@@ -254,15 +255,17 @@ RDDB["Warlords of Draenor"] = {
 		179864, -- Shadow of Death
 		179978, -- Touch of Doom
 		179909, -- Shared Fate
+		180148, -- Hunger for Life
 		},
 		["Shadow-Lord Iskar"] = {
 		order = 7, ejid = 1433,
 		179202,  -- Eye of Anzu
 		181956,  -- Phantasmal Winds
 		182323,  -- Phantasmal Wounds
-		179202,  -- Eye of Anzu
 		182173,  -- Fel Chakram
 		181753,  -- Fel Bomb
+		185747,  -- Fel Beam Fixate
+		182600,  -- Fel Fire
 		179218,  -- Phantasmal Obliteration
 		185239,  -- Radiance-of-anzu
 		},
@@ -272,6 +275,8 @@ RDDB["Warlords of Draenor"] = {
 		182635, -- Reverberating Blow
 		184239, -- Shadow Word Agony
 		136913, -- Overwhelming Power
+		184124, -- Gift of the Man'ari
+		182769, -- Ghastly Fixation		
 		},
 		["Fel Lord Zakuun"] = {
 		order = 9, ejid = 1391,	
@@ -286,7 +291,9 @@ RDDB["Warlords of Draenor"] = {
 		186490, -- Chains of Fel
 		186333, -- Void Surge
 		186063, -- Wasting Void
-		186546, -- Black Hole		
+		186546, -- Black Hole
+		186407, -- Fel Surge
+		186448, -- Felblaze Flurry		
 		},
 		["Tyrant Velhari"] = {
 		order = 11, ejid = 1394,
@@ -302,7 +309,10 @@ RDDB["Warlords of Draenor"] = {
 		181597, -- Mannoroth's Gaze	
 		181359, -- Massive Blast	
 		184252, -- Puncture Wound	
-		181116, -- Doom Spike		
+		181116, -- Doom Spike
+		181275, -- Curse of the Legion
+		181841, -- Shadowforce
+		182088, -- Empowered Shadowforce		
 		},
 		["Archimonde"] = {
 		order = 13, ejid = 1438,
@@ -312,6 +322,21 @@ RDDB["Warlords of Draenor"] = {
 		183828, -- Death Brand
 		184931, -- Shackled Torment		
 		182879, -- Doomfire Fixate
+		183586, -- Doomfire
+		183634, -- Shadowfel Burst
+		187047, -- Devour Life
+		186123, -- Wrought Chaos
+		185014, -- Focused Chaos
+		190341, -- Nether Corruption
+		183963, -- Light of the Naaru
+		186952, -- Nether Banish
+		189895, -- Void Star Fixate
+		187255, -- Nether Storm		
+		},
+		["Trash"] = {
+		order = 50, ejid = nil,
+		184621, -- Hellfire Blast
+		184587, -- Touch of Mortality		
 		},
 	},
 	-- world bosses
