@@ -218,14 +218,19 @@ RDDB["Warlords of Draenor"] = {
 		184243, -- Slam
 		185806, -- Conducted Shock Pulse
 		184379, -- Howling Axe
+		184238, -- Cower (movement)
+		180022, -- Bore (frontal cone damage)
+		185157, -- Burn (cone dot)
+		180079, -- Felfire Munitions (carrying, dot)		
 		},
 		["Iron Reaver"] = {
 		order = 2, ejid = 1425,		
 		182001, -- Orbe inestable
 		182074, -- Inmolation
-		179897, -- Blitz
+		179897, -- Blitz (carry, silence, not dispellable)
 		182022, -- Pounding
 		182280, -- Artillery
+		182003, -- Fuel Streak (movement)		
 		},
 		["Kormrok"] = {
 		order = 3, ejid = 1392,
@@ -233,15 +238,23 @@ RDDB["Warlords of Draenor"] = {
 		181321, -- Fel Touch
 		180244, -- Pound
 		187819, -- Crush
+		188081, -- Crush (dot)
+		181345, -- Foul Crush (tank dot)
+		186559, -- Fiery Pool (standing in pool)
+		185519, -- Fiery Globule (dot)
+		181082, -- Shadowy Pool (standing in pool)
+		180270, -- Shadow Globule (dot)
+		186560, -- Foul Pool (standing in pool)
+		185521, -- Foul Globule (dot)		
 		},
 		["Hellfire High Council"] = {
 		order = 4, ejid = 1432,
-		184450, -- Mark of the Necromancer
-		184358, -- Fel Rage
-		184355, -- Bloodboil
-		184847, -- Acidic Wound
-		184357, -- Tainted Blood
-		184652, -- Reap
+		184450, -- Mark of the Necromancer (dot, dispellable)
+		184358, -- Fel Rage (aggro target)
+		184355, -- Bloodboil (dot, stacks)
+		184847, -- Acidic Wound (tank dot, stacks)
+		184357, -- Tainted Blood (debuff, stacks)
+		184652, -- Reap (standing in puddle?)		
 		},
 		["Kilrogg Deadeye"] = {
 		order = 5, ejid = 1396,	
@@ -285,14 +298,21 @@ RDDB["Warlords of Draenor"] = {
 		179711, -- Befouled
 		182008, -- Latent Energy
 		179620, -- Fel Crystal
+		189030, -- BEFOULEDRED
+		189031, -- BEFOULEDORANGE
+		189032, -- BEFOULEDGREEN		
 		},
 		["Xhul'horac"] = {
 		order = 10, ejid = 1447,	
 		186490, -- Chains of Fel
-		186333, -- Void Surge
-		186063, -- Wasting Void
 		186546, -- Black Hole
 		186407, -- Fel Surge
+		186073, -- Felsinged
+		186134, -- Feltouched
+		185656, -- Shadowfel Annihilation		
+		186333, -- Void Surge
+		186063, -- Wasting Void
+		186135, -- Voidtouched		
 		186448, -- Felblaze Flurry		
 		},
 		["Tyrant Velhari"] = {
@@ -302,6 +322,9 @@ RDDB["Warlords of Draenor"] = {
 		179999, -- Seal of decay
 		180300, -- Infernal tempest
 		180526, -- Font of corruption
+		180533, -- Tainted Shadows
+		180569, -- Tainted Shadows
+		180604, -- Despoiled Ground		
 		},
 		["Mannoroth"] = {
 		order = 12, ejid = 1395,
@@ -311,25 +334,27 @@ RDDB["Warlords of Draenor"] = {
 		184252, -- Puncture Wound	
 		181116, -- Doom Spike
 		181275, -- Curse of the Legion
+		186362, -- Wrath of Gul'dan
+		186350, -- Gripping Shadows		
 		181841, -- Shadowforce
 		182088, -- Empowered Shadowforce		
 		},
 		["Archimonde"] = {
 		order = 13, ejid = 1438,
 		189891, -- Nether Tear
+		186952, -- Nether Banish		
 		185590, -- Desecrate
 		183864, -- Shadow Blast
 		183828, -- Death Brand
 		184931, -- Shackled Torment		
 		182879, -- Doomfire Fixate
 		183586, -- Doomfire
+		186123, -- Wrought Chaos		
 		183634, -- Shadowfel Burst
 		187047, -- Devour Life
-		186123, -- Wrought Chaos
-		185014, -- Focused Chaos
+		185014, -- Focused Chaos		
 		190341, -- Nether Corruption
 		183963, -- Light of the Naaru
-		186952, -- Nether Banish
 		189895, -- Void Star Fixate
 		187255, -- Nether Storm		
 		},
