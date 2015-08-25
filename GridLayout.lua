@@ -120,7 +120,7 @@ Grid2Layout.defaultDB = {
 					arena = "By Group w/Pets",
 					raid  = "By Group w/Pets",
 		},
-		layoutScales= {},
+		layoutScales = {},
 		horizontal = true,
 		clamp = true,
 		FrameLock = false,
@@ -314,8 +314,6 @@ function Grid2Layout:PlaceGroup(frame, groupNumber)
 	previousFrame = frame
 end
 
-
-
 function Grid2Layout:AddLayout(layoutName, layout)
 	self.layoutSettings[layoutName] = layout
 end
@@ -424,9 +422,9 @@ function Grid2Layout:LoadLayout(layoutName)
 
 	self:Debug("LoadLayout", layoutName)
 
-	self.layoutName = layoutName	
+	self.layoutName = layoutName
 	self:Scale()
-	
+
 	self.layoutMaxColumns = 0
 	self.layoutMaxRows = 0
 	wipe(self.groupsUsed)
@@ -452,7 +450,7 @@ function Grid2Layout:LoadLayout(layoutName)
 	elseif not layout.empty then
 		GenerateLayoutHeaders(self, profile, defaults, 1)
 	end	
-
+	
 	self:UpdateDisplay()
 end
 
@@ -460,7 +458,22 @@ function Grid2Layout:UpdateDisplay()
 	self:UpdateTextures()
 	self:UpdateColor()
 	self:CheckVisibility()
+	self:UpdateFramesSize()	
 	self:UpdateSize()
+end
+
+function Grid2Layout:UpdateFramesSize()
+	local nw,nh = Grid2Frame:GetFrameSize()
+	local ow = self.layoutFrameWidth  or nw
+	local oh = self.layoutFrameHeight or nh
+	if nw~=ow or nh~=oh then
+		self.layoutFrameWidth  = nw
+		self.layoutFrameHeight = nh
+		Grid2Frame:LayoutFrames()
+		self:UpdateHeadersSize()
+	end
+	self.layoutFrameWidth  = nw
+	self.layoutFrameHeight = nh
 end
 
 function Grid2Layout:UpdateSize()
@@ -495,7 +508,6 @@ function Grid2Layout:UpdateSizeQueued()
 	updateSizeQueued = false
 end
 
-
 function Grid2Layout:UpdateTextures()
 	local f = self.frameBack
 	local p = self.db.profile
@@ -522,6 +534,17 @@ function Grid2Layout:UpdateColor()
 		frame:Show()
 	else
 		frame:Hide()
+	end
+end
+
+-- Force GridLayoutHeaders size refresh, without this g:GetWidth/g:GetHeight in UpdateSize() return old values.
+function Grid2Layout:UpdateHeadersSize()
+	for type, headers in pairs(self.groups) do
+		for i = 1, self.indexes[type] do
+			local g = headers[i]
+			g:Hide()
+			g:Show()
+		end
 	end
 end
 

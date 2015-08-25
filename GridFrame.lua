@@ -121,8 +121,7 @@ end
 
 function GridFramePrototype:Layout()
 	local dbx = Grid2Frame.db.profile
-	local w = dbx.frameWidth 
-	local h = dbx.frameHeight
+	local w, h = Grid2Frame:GetFrameSize()
 	-- external border controlled by the border indicator
 	local r,g,b,a = self:GetBackdropBorderColor() 
 	self:SetBackdrop( frameBackdrop )
@@ -192,6 +191,8 @@ Grid2Frame.defaultDB = {
 		intensity = 0.5,
 		blinkType = "Flash", 
 		blinkFrequency = 2,
+		frameWidths  = {},
+		frameHeights = {},
 	}
 }
 
@@ -260,7 +261,9 @@ end
 
 function Grid2Frame:GetFrameSize()
 	local p = self.db.profile
-	return p.frameWidth, p.frameHeight
+	local l = Grid2Layout.layoutName or "NoLayout"
+	local m = Grid2Layout.instMaxPlayers or 0
+	return p.frameWidths[l] or p.frameWidths[m] or p.frameWidth, p.frameHeights[l] or p.frameHeights[m] or p.frameHeight
 end
 
 -- Grid2Frame:WithAllFrames()
