@@ -150,7 +150,7 @@ do
 				self:Debug("HFC Tyrant Velhari Encounter Max Health Fix: DISABLED")				
 			end 	
 			velhari_fix = v
-		end	
+		end
 	end
 end
 
