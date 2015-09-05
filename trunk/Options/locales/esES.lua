@@ -139,6 +139,8 @@ L["About"] = "Acerca de"
 L["Layout"] = "Diseño"
 L["Layouts"] = "Diseños"
 L["layout"] = "diseño"
+L["By Instance Type"] = "Por tipo Instancia"
+L["By Raid Size"] = "Por tamaño Raid"
 L["Layouts for each type of groups you're in."] = "Diseños para cada tipo de grupo."
 L["Select which layout to use for: "] = "Elige que diseño usar para: "
 L["Layout editor"] = "Editor de diseños"
@@ -199,6 +201,7 @@ L["partypet"] = "GrupoPet"
 L["raidpet"] = "RaidPet"
 L["Insert"] = "Añadir"
 L["Copy"] = "Copiar"
+L["Default"] = "Predeterminado"
 
 --{{{ Miscelaneous
 L["New"] = "Nuevo"
@@ -258,7 +261,7 @@ L["Sets the duration in seconds."] = "Duracion en segundos."
 L["Scale"] = "Escala"
 L["Sets the zoom factor."] = "Ajusta la escala del zoom."
 L["Rename indicator"] = "Renombrar indicador"
- 
+
 L["Type"] = "Tipo"
 L["Type of indicator"] = "Tipo de Indicador"
 L["Type of indicator to create"] = "Tipo de Indicador a crear"
@@ -662,7 +665,7 @@ L["Use Health Percent"] = "Usar Porcentajes"
 -- mana
 L["Hide mana of non healer players"] = "Ocultar mana de jugadores no sanadores"
 
--- range status 
+-- range status
 L["Range"] = "Rango"
 L["%d yards"] = "%d metros"
 L["Range in yards beyond which the status will be lost."] = "Rango máximo para este estado"
@@ -685,7 +688,7 @@ L["Color for Not Ready."] = "Color si el jugador no esta listo"
 L["AFK color"] = "Ausente"
 L["Color for AFK."] = "Color si el jugador esta Ausente"
 
--- heals-incoming status 
+-- heals-incoming status
 L["Heals multiplier"] = "Multiplicador de curas"
 L["Include player heals"] = "Incluir mis curas"
 L["Substract heal absorbs"] =  "Restar absorbciones"
@@ -755,7 +758,7 @@ L["Casting resurrection"] = "Resucitando"
 L["A resurrection spell is being casted on the unit"] = "Alguien esta resucitando a esta unidad"
 L["Resurrected"] = "Resucitado"
 L["A resurrection spell has been casted on the unit"] = "Alguien ya ha resucitado a esta unidad"
-		
+
 -- power
 L["Mana"] = "Mana"
 L["Rage"] = "Ira"

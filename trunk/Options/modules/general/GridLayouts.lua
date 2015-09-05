@@ -80,83 +80,137 @@ do
 	end
 end
 
-local function MakeFrameSizesOptions(exclude)
-	local options = {}
-	local sizevalues = {1,5,10,20,25,30,40}
-	local function MakeOptions(m)
-		options["instance"..m] = {
-			type  = "group",
-			inline = true,
-			order = m,
-			name  = m>1 and string.format(L["%d man instances"],m) or L["Solo"],
-			args  = {
-				frameWidth = {
-					type = "range",
-					name = L["Frame Width"],
-					desc = L["Select zero to use default Frame Width"],
-					order = 1,
-					softMin = 0,
-					softMax = 100,
-					step = 1,
-					get = function() return Grid2Frame.db.profile.frameWidths[m] or 0 end,
-					set = function(_, v)
-							Grid2Frame.db.profile.frameWidths[m] = (v~=0) and v or nil
-							if m == Grid2Layout.instMaxPlayers then
-								Grid2Layout:UpdateDisplay()
-							end
-						  end,
-				},
-				frameHeight = {
-					type = "range",
-					name = L["Frame Height"],
-					desc = L["Select zero to use default Frame Height"],
-					order = 2,
-					softMin = 0,
-					softMax = 100,
-					step = 1,
-					get = function () return Grid2Frame.db.profile.frameHeights[m] or 0 end,
-					set = function (_, v)
-							Grid2Frame.db.profile.frameHeights[m] = (v~=0) and v or nil
-							if m == Grid2Layout.instMaxPlayers then
-								Grid2Layout:UpdateDisplay()
-							end
-						  end,
-				},
-				delete = {
-					type = "execute",
-					width = "half",
-					order = 3,
-					name = L["Delete"],
-					desc = L["Delete"],
-					func = function (info)
-						options["instance"..m] = nil
-						Grid2Frame.db.profile.frameWidths[m] = nil
-						Grid2Frame.db.profile.frameHeights[m] = nil
-						if m == Grid2Layout.instMaxPlayers then
-							Grid2Layout:UpdateDisplay()
-						end
-					end,
-				},
-			}
-		}
+-- MakeFrameSizesOptions()
+local MakeFrameSizesOptions
+do
+	local function GetRaidType(m)
+		return (m==1 and "solo") or (m==5 and "party") or "raid"
 	end
-	options["add"] ={
-		type   = 'select',
-		order  = 500,
-		width = "half",
-		name   = L["Add"],
-		desc   = L["Add instance size"],
-		get    = function() end,
-		set    = function(_,v) MakeOptions( tonumber(options.add.values[v]) ) end,
-		values = sizevalues,
-	}
-	local p = Grid2Frame.db.profile
-	for _,value in pairs(sizevalues) do
-		if p.frameWidths[value] or p.frameHeights[value] then
-			MakeOptions(value)
+	local function GetValues(info)
+		local layouts = Grid2Options:GetLayouts( GetRaidType(info.arg) )
+		layouts["default"] = "*" .. L["Default"] .. "*"
+		return layouts
+	end
+	local function GetLayout(info)
+		return Grid2Layout.db.profile.layoutBySize[info.arg] or "default"
+	end
+	local function SetLayout(info,v)
+		Grid2Layout.db.profile.layoutBySize[info.arg] = (v~="default") and v or nil
+		Grid2Layout:ReloadLayout()
+	end
+	local function TestMode(info)
+		if Grid2Options.LayoutTestEnable then
+			Grid2Options:LayoutTestEnable(
+				Grid2Layout.db.profile.layoutBySize[info.arg] or Grid2Layout.db.profile.layouts[ GetRaidType(info.arg) ],
+				Grid2Frame.db.profile.frameWidths[info.arg],
+				Grid2Frame.db.profile.frameHeights[info.arg],
+				info.arg
+			)
 		end
 	end
-	return options
+	function MakeFrameSizesOptions(exclude)
+		local options = {}
+		local sizevalues = {1,5,10,20,25,30,40}
+		local function MakeOptions(m)
+			options["instance"..m] = {
+				type  = "group",
+				inline = true,
+				order = m,
+				name  = m>1 and string.format(L["%d man instances"],m) or L["Solo"],
+				args  = {
+					layoutName = {
+						type   = "select",
+						name   = L["Layout"],
+						desc   = L["Layout"],
+						order  = 1,
+						width  = "normal",
+						get    = GetLayout,
+						set    = SetLayout,
+						values = GetValues,
+						arg    = m,
+					},
+					frameWidth = {
+						type = "range",
+						name = L["Frame Width"],
+						desc = L["Select zero to use default Frame Width"],
+						order = 2,
+						softMin = 0,
+						softMax = 100,
+						step = 1,
+						get = function() return Grid2Frame.db.profile.frameWidths[m] or 0 end,
+						set = function(_, v)
+								Grid2Frame.db.profile.frameWidths[m] = (v~=0) and v or nil
+								if m == Grid2Layout.instMaxPlayers then
+									Grid2Layout:UpdateDisplay()
+								end
+							  end,
+					},
+					frameHeight = {
+						type = "range",
+						name = L["Frame Height"],
+						desc = L["Select zero to use default Frame Height"],
+						order = 3,
+						softMin = 0,
+						softMax = 100,
+						step = 1,
+						get = function () return Grid2Frame.db.profile.frameHeights[m] or 0 end,
+						set = function (_, v)
+								Grid2Frame.db.profile.frameHeights[m] = (v~=0) and v or nil
+								if m == Grid2Layout.instMaxPlayers then
+									Grid2Layout:UpdateDisplay()
+								end
+							  end,
+					},
+					test = {
+						type = "execute",
+						width = "half",
+						order = 1.25,
+						name = L["Test"],
+						desc = L["Test"],
+						disabled = InCombatLockdown,
+						func = TestMode,
+						arg = m,
+					},
+					delete = {
+						type = "execute",
+						width = "half",
+						order = 1.5,
+						name = L["Delete"],
+						desc = L["Delete"],
+						func = function (info)
+							options["instance"..m] = nil
+							Grid2Frame.db.profile.frameWidths[m] = nil
+							Grid2Frame.db.profile.frameHeights[m] = nil
+							Grid2Layout.db.profile.layoutBySize[m] = nil
+							if m == Grid2Layout.instMaxPlayers then
+								Grid2Layout:UpdateDisplay()
+								Grid2Layout:ReloadLayout()
+							end
+						end,
+						confirm = function() return L["Are you sure?"] end,
+					},
+				}
+			}
+		end
+		options["add"] ={
+			type   = 'select',
+			order  = 500,
+			width = "half",
+			name   = L["Add"],
+			desc   = L["Add instance size"],
+			get    = function() end,
+			set    = function(_,v) MakeOptions( sizevalues[v] ) end,
+			values = sizevalues,
+		}
+		local p = Grid2Frame.db.profile
+		local l = Grid2Layout.db.profile
+		for _,value in pairs(sizevalues) do
+			if l.layoutBySize[value] or p.frameWidths[value] or p.frameHeights[value] then
+				MakeOptions(value)
+			end
+		end
+		return options
+	end
 end
 
 Grid2Options:AddGeneralOptions( "Layouts", nil, {
@@ -173,13 +227,13 @@ Grid2Options:AddGeneralOptions( "Layouts", nil, {
 		advanced = {
 			type = "group",
 			order= 201,
-			name = L["Advanced"],
+			name = L["By Instance Type"],
 			args = MakeLayoutsOptions(true),
 		},
 		frameSizes = {
 			type = "group",
 			order= 202,
-			name = L["Misc"],
+			name = L["By Raid Size"],
 			args = MakeFrameSizesOptions(),
 		},
 		editor = {

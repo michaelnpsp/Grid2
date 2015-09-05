@@ -121,6 +121,7 @@ Grid2Layout.defaultDB = {
 					raid  = "By Group w/Pets",
 		},
 		layoutScales = {},
+		layoutBySize = {},
 		horizontal = true,
 		clamp = true,
 		FrameLock = false,
@@ -324,10 +325,10 @@ end
 
 function Grid2Layout:ReloadLayout(force)
 	reloadLayoutQueued = false
+	local p          = self.db.profile
 	local partyType  = self.partyType or "solo"
 	local instType   = self.instType or ""
-	local layouts    = self.db.profile.layouts
-	local layoutName = layouts[partyType.."@"..instType] or layouts[partyType]
+	local layoutName = p.layoutBySize[self.instMaxGroups] or p.layouts[partyType.."@"..instType] or p.layouts[partyType]
 	if self.layoutName ~= layoutName or force then
 		if InCombatLockdown() then
 			reloadLayoutQueued = true
