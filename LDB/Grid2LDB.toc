@@ -1,4 +1,4 @@
-## Interface: 60200
+## Interface: 70000
 ## Title: Grid2 |cd3ff7d0aLDB|r
 ## Notes: Grid2 Databroker Launcher.
 ## Notes-esES: Lanzador del Grid2 (Databroker)
