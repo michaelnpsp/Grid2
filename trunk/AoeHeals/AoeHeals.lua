@@ -346,11 +346,12 @@ function AOEM:OnModuleInitialize()
 end
 
 function AOEM:PlayerHasGlyph(id)
-	for i=1,9 do
-		if id == select(4,GetGlyphSocketInfo(i)) then
-			return true
-		end
-	end
+	return false
+	--for i=1,9 do
+	--	if id == select(4,GetGlyphSocketInfo(i)) then
+	--		return true
+	--	end
+	--end
 end
 
 function AOEM.SortByDeficit(p1,p2)
