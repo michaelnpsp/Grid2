@@ -59,7 +59,6 @@ externals:
 
 move-folders:
 	Grid2/Options: Grid2Options
-	Grid2/AoeHeals: Grid2AoeHeals
 	Grid2/RaidDebuffs: Grid2RaidDebuffs
 	Grid2/RaidDebuffsOptions: Grid2RaidDebuffsOptions
 	Grid2/LDB: Grid2LDB
