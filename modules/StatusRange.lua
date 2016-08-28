@@ -24,8 +24,8 @@ local UnitRangeCheck
 local UnitIsInRange
 
 local playerClass = select(2, UnitClass("player"))
-
-local rangeSpell = ({PALADIN=19750,SHAMAN=77472,DRUID=774,PRIEST=2060,MONK=115450})[playerClass]
+ 
+local rangeSpell = ({PALADIN=19750,SHAMAN=77472,DRUID=774,PRIEST=73325,MONK=115450})[playerClass]
 if rangeSpell then
 	rangeSpell = GetSpellInfo(rangeSpell)
 	Ranges[ rangeSpell ] = function(unit) return IsSpellInRange(rangeSpell, unit) == 1 end
