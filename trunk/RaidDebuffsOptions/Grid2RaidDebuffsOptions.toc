@@ -25,3 +25,5 @@ RaidDebuffsLichKing.lua
 RaidDebuffsBC.lua
 RaidDebuffsMoP.lua
 RaidDebuffsWoD.lua
+RaidDebuffsLegion.lua
+
