@@ -35,5 +35,6 @@
 <Script file="modules\StatusAurasDebuffs.lua"/>
 <Script file="modules\StatusAurasBuffDebuff.lua"/>
 <Script file="modules\StatusAurasDebuffType.lua"/>
+<Script file="modules\StatusDirection.lua"/>
 
 </Ui>
