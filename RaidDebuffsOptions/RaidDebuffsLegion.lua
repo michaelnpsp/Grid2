@@ -498,9 +498,6 @@ RDDB["Legion"] = {
 		},
 		["Xavius"] = {
 		order = 7, ejid = 1726,
-		--206005, -- Dream Simulacrum (buff)
-		--206109, -- Awakening to the Nightmare (buff)
-		--208431, -- Descent into Madness (buff)
 		207409, -- Madness (mind control)
 		206651, -- Darkening Soul (dot, magic)
 		211802, -- Nightmare Blades (fixate)
@@ -512,4 +509,36 @@ RDDB["Legion"] = {
 		211634, -- The Infinite Dark (standing in?)
 		},
 	},
+	[1114] = { -- Trial of Valor (RAID)
+		["Odyn"] = {
+        order = 1, ejid = 1819,
+        192044, -- Expel Light
+        198088, -- Glowing Fragment (Stun)
+        228915, -- Stormforged Spear (Tank)
+		227959,  -- Storm of Justice
+		227475,  -- Cleansing Flame
+		192044,  -- Expel Light
+		227781,  -- Glowing Fragment		
+		},
+		["Guarm"] = {
+        order = 2, ejid = 1830,
+        227570, -- Dark Discharge (Shadow)
+        227566, -- Salty Spittle (Frost)
+        227539, -- Fiery Phlegm (Fire)
+        228250, -- Shadow Lick (Shadow Heal Absorb)
+        228246, -- Frost Lick (Frost Stun)
+        228226, -- Flame Lick (Fire DoT)
+		},
+		["Helya"] = {
+        order = 3, ejid = 1829,
+        228054, -- Taint of the Sea (Dispel)
+        227982, -- Bilewater Redox (100% armor reduce)
+        193367, -- Fetid Rot (DoT, spread)
+		227903, -- Orb of Corruption
+		228058, -- Orb of Corrosion
+		228519, -- Anchor Slam
+		202476, -- Rabid
+		232450, -- Corrupted Axion
+		},
+	},	
 }	
