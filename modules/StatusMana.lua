@@ -193,6 +193,11 @@ function Power:UpdateDB()
 	powerColors["FOCUS"] = self.dbx.color3
 	powerColors["ENERGY"] = self.dbx.color4
 	powerColors["RUNIC_POWER"] = self.dbx.color5
+	powerColors["INSANITY"] = self.dbx.color6
+	powerColors["MAELSTROM"] = self.dbx.color7
+	powerColors["LUNAR_POWER"] = self.dbx.color8
+	powerColors["FURY"] = self.dbx.color9
+	powerColors["PAIN"] = self.dbx.color10		
 end
 
 Grid2.setupFunc["power"] = function(baseKey, dbx)
@@ -201,10 +206,15 @@ Grid2.setupFunc["power"] = function(baseKey, dbx)
 	return Power
 end
 
-Grid2:DbSetStatusDefaultValue( "power", {type = "power", colorCount = 5, 
+Grid2:DbSetStatusDefaultValue( "power", {type = "power", colorCount = 10, 
 	color1 = {r=0,g=0.5,b=1  ,a=1},   -- mana
 	color2 = {r=1,g=0  ,b=0  ,a=1},   -- rage
 	color3 = {r=1,g=0.5,b=0  ,a=1},   -- focus
 	color4 = {r=1,g=1  ,b=0  ,a=1},   -- energy
 	color5 = {r=0,g=0.8,b=0.8,a=1},   -- runic power
+	color6 = {r=0.40, g=0.00, b=0.80, a=1}, -- insanity
+	color7 = {r=0.00, g=0.50, b=1.00, a=1}, -- maelstrom
+	color8 = {r=0.30, g=0.52, b=0.90, a=1}, -- astral power
+	color9 = {r=0.788, g=0.259, b=0.992, a=1}, -- fury
+	color10 = {r=1.00, g=0.61, b=0.00, a=1} -- pain	
 })  
