@@ -37,10 +37,19 @@ Grid2Options:RegisterStatusOptions("power",    "mana", Grid2Options.MakeStatusCo
 	colorDesc4 = L["Energy"],
 	color5 = L["Runic Power"],
 	colorDesc5 = L["Runic Power"],
+	color6 = L["Insanity"],
+	colorDesc6 = L["Insanity"],
+	color7 = L["Maelstrom"],
+	colorDesc7 = L["Maelstrom"],
+	color8 = L["Lunar Power"],
+	colorDesc8 = L["Lunar Power"],
+	color9 = L["Fury"],
+	colorDesc9 = L["Fury"],
+	color10 = L["Pain"],
+	colorDesc10 = L["Pain"],
 	width = "full",
 	titleIcon = "Interface\\Icons\\Inv_potion_33"
 })
-
-
+	
 
 

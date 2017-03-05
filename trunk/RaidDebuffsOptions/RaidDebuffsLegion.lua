@@ -540,5 +540,94 @@ RDDB["Legion"] = {
 		202476, -- Rabid
 		232450, -- Corrupted Axion
 		},
-	},	
+	},
+	[1088] = { -- The Nighthold (RAID)
+        ["Skorpyron"] = {
+        order = 1, ejid = 1706,
+        204766, -- Energy Surge (non-dispellable, stacks) (DMG + Debuff)
+        214657, -- Acidic Fragments (non-dispellable) (DMG + Debuff)
+        214662, -- Volatile Fragments (non-dispellable) (DMG + Debuff)
+        211659, -- Arcane Tether (non-dispellable, stacks) (Stacking Ground AoE)
+        204471, -- Focused Blast (non-dispellable) (Frontal Cone AoE)
+        },
+        ["Chronomatic Anomaly"] = {
+        order = 2, ejid = 1725,
+        206607, -- Chronometric Particles (non-dispellable, stacks) (Stacking DoT)
+        206609, -- Time Release (non-dispellable) (heal absorb)
+        206615, -- Time Bomb (non-dispellable) (Not a Debuff?)
+        212099, -- Temporal Charge (non-dispellable) (DoT)
+        },
+        ["Trilliax"] = {
+        order = 3, ejid = 1731,
+        206482, -- Arcane Seepage (non-dispellable) (Ground AoE)
+        206788, -- Toxic Slice (non-dispellable) (DMG + Debuff Stacking DoT)
+        208924, -- Arcing Bonds (non-dispellable) (bond between 2 Player)
+        208506, -- Sterilize (non-dispellable) (DoT)
+        206641, -- Arcane Slash (non-dispellable) (Tank debuff, DMG increase)
+        },
+        ["Spellblade Aluriel"] = {
+        order = 4, ejid = 1751,
+        212492, -- Annihilate (non-dispellable) (DMG + Tank Debuff)
+        215458, -- Annihilated (debuff from Annihilate)
+        212587, -- Mark of Frost (non-dispellable) (DMG + Increase DMG taken per stack explodes if two people with it get close)
+        212647, -- Frostbitten (stacking debuff from Mark of Frost)
+        213083, -- Frozen Tempest (non-dispellable) (DoT)
+        },
+        ["Tichondrius"] = {
+        order = 5, ejid = 1762,
+        206480, -- Carrion Plague (non-dispellable) (DoT)
+        213238, -- Seeker Swarm (non-dispellable) (DMG + Adds Carrion Plague DoT)
+        212795, -- Brand of Argus (non-dispellable) (Explodes if players clump)
+        208230, -- Feast of Blood (non-dispellable) (Increases DMG Taken)
+        216024, -- Volatile Wound (non-dispellable, Stacks) (DMG + Increases Future DMG Taken)
+        216040, -- Burning Soul (dispellable) (DMG + Mana Drain + Explode on Dispell)
+        },
+        ["Krosus"] = {
+        order = 6, ejid = 1713,
+        208203, -- Isolated Rage (non-dispellable) (Ground AoE Not Avoidable)
+        205344, -- Orb of Destruction (non-dispellable) (Ground AoE Not Avoidable)
+        206677, -- Searing Brand (Tank debuff, DoT)
+        },
+        ["High Botanist Tel'arn"] = {
+        order = 7, ejid = 1761,
+        218502, -- Recursive Strikes (non-dispellable, stacks) (Increases DMG Taken)
+        219049, -- Toxic Spores (non-dispellable) (Ground AoE)
+        218424, -- Parasitic Fetter (dispellable) (Root + Increaseing DMG)
+        218342, -- Parasitic Fiate (non-dispellable) (Fixate of the Lasher Add)
+        218809, -- Call of Night (non-dispellable) (AoE when no other player nearby)
+        },
+        ["Star Augur Etraeus"] = {
+        order = 8, ejid = 1732,
+        206585, -- Absolute Zero (non-dispellable, stacks) (DMG + Dispellable by Player Clump That then causes Chill)
+        206936, -- Icy Ejection (non-dispellable, stacks) (DoT + Slow-to-Stun)
+        206589, -- Chilled (non-dispellable) (debuff from cleaning Absolute Zero)
+        206388, -- Felburst (non-dispellable, stacks) (DMG + DoT)
+        205649, -- Fel Ejection (non-dispellable, stacks) (DMG + DoT)
+        206398, -- Felflame (non-dispellable, stacks) (DMG)
+        206965, -- Voidburst (non-dispellable) (DoT)
+        207143, -- Void Ejection (non-dispellable) (DMG + DoT)
+        },
+        ["Grand Magistrix Elisande"] = {
+        order = 9, ejid = 1743,
+        211261, -- Permeliative Torment
+        209615, -- Ablation (non-dispellable) (Tank debuff, DoT, stacks)
+        209973, -- Ablating Explosion (non-dispellable) (Tank debuff)
+        209971, -- Ablative Pulse (non-dispellable) (Tank debuff)
+        211887, -- Ablated (non-dispellable) (stacking debuff, increase Ablative effects DMG)
+        209170, -- Spanning Singularity (soakable Void)
+        209599, -- Conflexive Burst (non-dispellable) (heavy AoE DMG)
+        },
+        ["Gul'dan"] = {
+        order = 10, ejid = 1737,
+        212568, -- Drain (dispellable) (Life Steal)
+        206883, -- Soul Vortex (non-dispellable, stacks) (AoE DMG + DoT)
+        206222, -- Bonds of Fel (non-dispellable) (chain + Slow + Explosion when seperated)
+        206221, -- Empowered Bonds of Fel (non-dispellable) (chain + Slow + Explosion when seperated)
+        208672, -- Carrion Wave (non-dispellable) (AoE DMG + Sleep)
+        208802, -- Soul Corrosion (non-dispellable) (DMG + DoT)
+        221891, -- Soul Siphon (non-dispellable) (DMG + Heal-Absorb)
+        221603, -- Flames of Sargeras (non-dispellable) (DMG + DoT)
+        206896, -- Torn Soul (non-dispellable) (Tank debuff, DMG increase)
+        },        
+    },	
 }	
