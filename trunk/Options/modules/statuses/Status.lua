@@ -16,7 +16,7 @@ do
 		self:MakeHeaderOptions( options, "Delete")
 		options.delete = {
 			type = "execute",
-			order = 255,
+			order = 500,
 			width = "half",
 			name = L["Delete"],
 			desc = L["Delete this element"],
@@ -24,6 +24,10 @@ do
 			confirm = function() return "Are you sure you want to delete this status ?" end,
 			disabled = function() return next(status.indicators)~=nil end,
 			arg = { status = status },
+		}
+		options.deletemsg = { 
+			type = "description", order = 510, fontSize = "small", width = "double", name = L["There are indicators linked to this status. Assigned indicators must be unchecked to be able to delete this status."],
+			hidden = function() return next(status.indicators)==nil end,		
 		}
 	end
 end
