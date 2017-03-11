@@ -3,26 +3,21 @@
 local Grid2Options = Grid2Options
 local L = Grid2Options.L
 
-local function RegisterIndicatorStatus(indicator, status, priority)
-	if not priority then
-		if #indicator.statuses>0 then
-			priority = indicator.priorities[indicator.statuses[1]] + 1 
-		else
-			priority = 50
-		end	
-	end	
-	Grid2:DbSetMap(indicator.name, status.name, priority)
-	indicator:RegisterStatus(status, priority)
-	-- special case for auras
-	local type = status.dbx.type
-	if type=="buff" or type=="debuff" or type=="debuffType" then
-		Grid2:RefreshAuras() 
+local function RegisterIndicatorStatus(indicator, status, value)
+	if value then
+		local priority = #indicator.statuses>0 and indicator.priorities[indicator.statuses[1]] + 1 or 50 
+		Grid2:DbSetMap(indicator.name, status.name, priority)
+		indicator:RegisterStatus(status, priority)
+		-- special case for auras
+		local type = status.dbx.type
+		if type=="buff" or type=="debuff" or type=="debuffType" then
+			Grid2:RefreshAuras() 
+		end
+	else
+		Grid2:DbSetMap(indicator.name, status.name, nil)
+		indicator:UnregisterStatus(status)	
 	end
-end
-
-local function UnregisterIndicatorStatus(indicator, status)
-	Grid2:DbSetMap(indicator.name, status.name, nil)
-	indicator:UnregisterStatus(status)
+	Grid2Options:RefreshIndicator(indicator, "Layout", "Update")
 end
 
 local function SetStatusPriority(indicator, status, priority)
@@ -36,16 +31,11 @@ local function RefreshIndicatorCurrentStatusOptions(info)
 end
 
 local function SetIndicatorStatus(info, statusKey, value)
-	local indicator = info.arg.indicator
 	for key, status in Grid2:IterateStatuses() do
 		if key == statusKey then
-			if value then
-				RegisterIndicatorStatus(indicator, status)
-			else
-				UnregisterIndicatorStatus(indicator, status)
-			end
-			Grid2Options:RefreshIndicator(indicator, "Layout", "Update")
+			RegisterIndicatorStatus(info.arg.indicator, status, value)
 			RefreshIndicatorCurrentStatusOptions(info)
+			return
 		end
 	end
 end
@@ -56,7 +46,7 @@ end
 
 local function GetIndicatorStatus(info, statusKey)
 	local indicator = info.arg.indicator
-	statusKey = statusKey or info[# info]
+	statusKey = statusKey or info[#info]
 	for key, status in Grid2:IterateStatuses() do
 		if (key == statusKey) then
 			return status.indicators[indicator]
@@ -137,16 +127,16 @@ function Grid2Options:MakeIndicatorCurrentStatusOptions(indicator, options, call
 					arg = arg,
 				}
 				options[statusKey .."S"] = {
-				  type= "description",
-				  name= "",
-				  order= order + 3
+				  type = "description",
+				  name = "",
+				  order = order + 3
 				}
 			end	
 		end
 	end
 end
 
---{{ Public method
+-- Public method
 function Grid2Options:MakeIndicatorStatusOptions(indicator, options)
 	local curOptions = {}
 	self:MakeIndicatorCurrentStatusOptions(indicator, curOptions)
@@ -169,4 +159,27 @@ function Grid2Options:MakeIndicatorStatusOptions(indicator, options)
 		arg = { indicator = indicator, options = curOptions },
 	}
 end
---}}
+
+-- Grid2Options:MakeStatusIndicatorOptions()
+function Grid2Options:MakeStatusIndicatorsOptions( status, options )
+	options.indicators = {
+	    type = "multiselect",
+		order = 10,
+		name = L['Assigned indicators'],
+		values = function() 
+			return self:GetAvailableIndicatorValues(status) 
+		end,
+		get = function(info,key) 
+			return status.indicators[ Grid2.indicators[key] ] 
+		end,
+		set = function(info,key,value)
+			local indicator = Grid2.indicators[key]
+			if indicator.dbx.type ~= 'multibar' then
+				RegisterIndicatorStatus(indicator, status, value)
+			end	
+		end,
+		confirm = function(info,key)  
+			return Grid2.indicators[key].dbx.type == 'multibar' and L['This indicator cannot be changed from here: go to "indicators" section to assign/unassign statuses to this indicator.']
+		end,	
+	}
+end

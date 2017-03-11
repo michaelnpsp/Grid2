@@ -242,7 +242,7 @@ function Grid2Options:MakeStatusDebuffTypeFilterOptions(status, options, optionP
 end
 
 function Grid2Options:MakeStatusAuraDescriptionOptions(status, options, optionParams)
-	if status.dbx.auras then return end
+	if status.dbx.auras or true then return end
 	local spellID = tonumber(status.dbx.spellName)
 	if not spellID then return end
 	local tip = Grid2Options.Tooltip

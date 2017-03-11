@@ -73,6 +73,22 @@ function Grid2Options:AddStatusCategoryOptions(catKey, category)
 	end
 end
 
+function Grid2Options:GetStatusDescription(status)
+	local dbx = status.dbx
+	if dbx.type == "buff" or dbx.type == "debuff" then
+		local spellId = tonumber(dbx.spellName)
+		if spellId then
+			local tip = Grid2Options.Tooltip
+			tip:ClearLines()
+			tip:SetHyperlink("spell:"..spellId)
+			local count = tip:NumLines() 
+			if count > 1 then
+				return tip[count]:GetText()
+			end
+		end
+	end	
+end
+
 -- returns AceConfigTable status group option
 function Grid2Options:GetStatusGroup(status)
 	local key = self:GetStatusCategory(status)
@@ -97,8 +113,8 @@ do
 			if catGroup then
 				local name, desc, icon, coords, _
 				local category = self.categories[catKey]
-				local dbx   = status.dbx
-				if dbx.type == "buff" or dbx.type == "debuff" then 
+				local dbx = status.dbx
+				if dbx.type == "buff" or dbx.type == "debuff" then
 					name,_,icon = GetSpellInfo( tonumber(dbx.spellName) or dbx.spellName )
 					desc = string.format( "%s: %s", L[dbx.type], name or dbx.spellName )
 				elseif dbx.type == "buffs" then
@@ -146,19 +162,32 @@ function Grid2Options:MakeStatusTitleOptions(status, options, optionParams)
 		else
 			_, name, desc, icon, iconCoords = self:GetStatusInfo(status)
 		end
-		name = fmt( "%s  |cFF8681d1[%s]|r", name, self:GetStatusCompIndicatorsText(status) )
-		self:MakeTitleOptions(options, name, desc, optionParams and optionParams.titleDesc, icon, iconCoords)
+		self:MakeTitleOptions(
+			options, 
+			fmt( "%s  |cFF8681d1[%s]|r", name, self:GetStatusCompIndicatorsText(status) ), 
+			desc, 
+			optionParams and optionParams.titleDesc or self:GetStatusDescription(status), 
+			icon, 
+			iconCoords
+		)
 	end	
 end
 
 -- Create status options in AceConfigTable (this function is hooked by open manager)
 function Grid2Options:MakeStatusChildOptions(status, options)
 	options = options or self:GetStatusOptions(status, true)
-	local setupFunc, optionParams = self:GetStatusSetupFunc(status) 
+	local setupFunc, optionParams = self:GetStatusSetupFunc(status)
 	if setupFunc then
+		if not (optionParams and optionParams.hideTitle) then
+			self:MakeStatusTitleOptions(status, options, optionParams)
+			options.settings   = { type = "group", order = 100, name = L['status'],   args = {} }
+			options.indicators = { type = "group", order = 200, name = L['indicators'], args = {} }
+			self:MakeStatusIndicatorsOptions( status, options.indicators.args )
+			options = options.settings.args
+		end
 		setupFunc(self, status, options, optionParams)
-		self:MakeStatusTitleOptions(status, options, optionParams)
 	end
+		
 end
 
 -- {{ Published methods
@@ -201,7 +230,7 @@ function Grid2Options:MakeStatusOptions(status)
 				desc  = desc,
 				icon  = icon,
 				iconCoords = coords,
-				childGroups = params and params.childGroups or nil,				
+				childGroups = params and params.childGroups or "tab",				
 				args  = {},
 			}
 			catGroup.args[status.name] = group

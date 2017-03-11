@@ -9,6 +9,7 @@ L["General Settings"] = "General"
 
 L["statuses"] = "Estados"
 L["indicators"] = "Indicadores"
+L["Assigned indicators"] = "Indicadores assignados"
 
 L["Frames"] = "Celdas"
 L["frame"] = "celda"
@@ -401,7 +402,7 @@ L["debuffs-"] = "debuffs: "
 
 L["color-"] = "color: "
 
-L["status"] = "estado"
+L["status"] = "Estado"
 L["Status"] = "Estado"
 
 L["buff"] = "buff"

@@ -257,6 +257,22 @@ do
 	end	
 end
 
+-- Grid2Options.LocalizeIndicator()
+function Grid2Options:LocalizeIndicator(indicator)
+	local icon, suffix
+	local type = indicator.dbx.type
+	local name = indicator.name
+	if strsub(name,-6)=="-color" then 
+		name = strsub(name,1,-7)
+		icon = self.indicatorIconPath .. 'color'
+		suffix = '(color)'
+	else
+		icon = self.indicatorIconPath .. (self.indicatorTypesOrder[type] and type or "default")
+		suffix = ''
+	end
+	return string.format( "|T%s:0|t%s%s", icon, self.LI[name] or L[name], suffix )
+end
+
 -- checking that the status provides at least one of the required indicator types
 function Grid2Options:IsCompatiblePair(indicator, status)
 	for type, list in pairs(Grid2.indicatorTypes) do
@@ -285,6 +301,29 @@ function Grid2Options:GetAvailableStatusValues(indicator, statusAvailable, statu
 		end	
 	end
 	return statusAvailable
+end
+
+-- Grid2Options:GetAvailableIndicatorValues()
+function Grid2Options:GetAvailableIndicatorValues(status, indicatorAvailable)
+	indicatorAvailable = indicatorAvailable or {}
+	wipe(indicatorAvailable)
+	for key, indicator in Grid2:IterateIndicators() do
+		-- if indicator.dbx.type ~= 'multibar' and 
+		if self:IsCompatiblePair(indicator, status) then
+			indicatorAvailable[key] = self:LocalizeIndicator( indicator )
+		end
+	end
+	return indicatorAvailable
+end
+
+-- Grid2Options:GetAvailableIndicatorColorValues()
+function Grid2Options:GetAvailableIndicatorColorValues(status, indicatorAvailable)
+	indicatorAvailable = indicatorAvailable or {}
+	wipe(indicatorAvailable)
+	for key, indicator in Grid2:IterateIndicators('color') do
+		indicatorAvailable[key] = self:LocalizeIndicator( indicator )
+	end
+	return indicatorAvailable
 end
 
 -- Reload indicator database configuration and refresh the indicator frames.

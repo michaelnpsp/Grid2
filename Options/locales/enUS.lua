@@ -8,7 +8,8 @@ L["GRID2_DESC"]  = "Grid2 is a party&raid unit frame addon. Grid2 displays healt
 L["General Settings"] = true
 
 L["statuses"] = "Statuses"
-L["indicators"] ="Indicators"
+L["indicators"] = "Indicators"
+L["Assigned indicators"] = true 
 
 L["Frames"] = true
 L["frame"] = true
