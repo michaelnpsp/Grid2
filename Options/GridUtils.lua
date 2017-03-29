@@ -270,7 +270,7 @@ function Grid2Options:LocalizeIndicator(indicator)
 		icon = self.indicatorIconPath .. (self.indicatorTypesOrder[type] and type or "default")
 		suffix = ''
 	end
-	return string.format( "|T%s:0|t%s%s", icon, self.LI[name] or L[name], suffix )
+ 	return string.format( type == 'multibar' and "|T%s:0|t|cFF808080%s%s|r" or "|T%s:0|t%s%s", icon, self.LI[name] or L[name], suffix )
 end
 
 -- checking that the status provides at least one of the required indicator types
@@ -308,7 +308,6 @@ function Grid2Options:GetAvailableIndicatorValues(status, indicatorAvailable)
 	indicatorAvailable = indicatorAvailable or {}
 	wipe(indicatorAvailable)
 	for key, indicator in Grid2:IterateIndicators() do
-		-- if indicator.dbx.type ~= 'multibar' and 
 		if self:IsCompatiblePair(indicator, status) then
 			indicatorAvailable[key] = self:LocalizeIndicator( indicator )
 		end

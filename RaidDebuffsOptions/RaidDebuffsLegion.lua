@@ -561,7 +561,7 @@ RDDB["Legion"] = {
         order = 3, ejid = 1731,
         206482, -- Arcane Seepage (non-dispellable) (Ground AoE)
         206788, -- Toxic Slice (non-dispellable) (DMG + Debuff Stacking DoT)
-        208924, -- Arcing Bonds (non-dispellable) (bond between 2 Player)
+        208910, -- Arcing Bonds (non-dispellable) (bond between 2 Player)
         208506, -- Sterilize (non-dispellable) (DoT)
         206641, -- Arcane Slash (non-dispellable) (Tank debuff, DMG increase)
         },

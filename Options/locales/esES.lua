@@ -9,7 +9,7 @@ L["General Settings"] = "General"
 
 L["statuses"] = "Estados"
 L["indicators"] = "Indicadores"
-L["Assigned indicators"] = "Indicadores assignados"
+L["Assigned indicators"] = "Indicadores asignados"
 
 L["Frames"] = "Celdas"
 L["frame"] = "celda"
