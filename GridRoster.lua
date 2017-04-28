@@ -161,7 +161,9 @@ do
 				newGroupType, newInstType, maxPlayers = "solo", "other", 1
 			end
 		end
-		maxPlayers = maxPlayers or 40
+		if maxPlayers == nil or maxPlayers == 0 then
+			maxPlayers = 40
+		end	
 		self:Debug("GroupChanged", groupType, instType, "=>", newGroupType, newInstType, maxPlayers)
 		if groupType ~= newGroupType or instType ~= newInstType or instMaxPlayers ~= maxPlayers then
 			groupType, instType, instMaxPlayers = newGroupType, newInstType, maxPlayers
