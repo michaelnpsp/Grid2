@@ -559,5 +559,84 @@ RDDB["Legion"] = {
         221603, -- Flames of Sargeras (non-dispellable) (DMG + DoT)
         206896, -- Torn Soul (non-dispellable) (Tank debuff, DMG increase)
         },        
-    },	
+    },
+    [1147] = { -- Tomb of Sargeras (RAID)
+		["Goroth"] = {
+		order = 1, ejid = 1862,
+		231363, -- Burning Armor (non-dispellable) (DMG + Debuff)
+		230345, -- Crashing Comet (non-dispellable) (DMG + Debuff)
+		234264, -- Melted Armor (non-dispellable) (Debuff)
+		233279, -- Shattering Star (non-dispellable)
+		233062, -- Infernal Burning (non-dispellable) GG
+		},
+		["Demonic Inquisition"] = {
+		order = 2, ejid = 1867,
+		233430, -- Unbearable Torment (non-dispellable)
+		233983, -- Echoing Anguish (dispellable, stagger dispel)
+		},
+		["Harjatan"] = {
+		order = 3, ejid =1856,
+		231998, -- Jagged Abrasion (non-dispellable)
+		231729, -- Aqueous Burst (non-dispellable)
+		231770, -- Drenched (non-dispellable,stacks)
+		234128, -- Driven Assault (non-dispellable,fixate)
+		},
+		["Sisters of the Moon"] = {
+		order = 4, ejid = 1903,
+		236304, -- Incorporeal Shot (non-dispellable) (heavy dmg,split with raid)
+		236550, -- Discorporate (non-dispellable) (Tank debuff)
+		236519, -- Moon Burn (non-dispellable) (DoT)
+		236603, -- Rapid Shot (non-dispellable) (heavy dmg DoT)
+		234996, -- Umbra Suffusion (non-dispellable,stacks)
+		234995, -- Lunar Suffusion (non-dispellable,stacks)
+		236330, -- Astral Vulnerability (non-dispellable) (applied when switching between light/dark)
+		236541, -- Twilight Glaive (non-dispellable) (moderate dmg to target)
+		233263, -- Embrace of the Eclipse (non-dispellable,healing abosrb)
+		239264, -- Lunar Flare (non-dispellable) (Tank debuff)
+		236712, -- Lunar Beacon (non-dispellable) (moderate dmg to target)
+		},
+		["Mistress Sassz'ine"] = {
+		order = 5, ejid = 1861,
+		232913, -- Befouling Ink (bring to maw)
+		230139, -- Hydra Shot (split among some players)
+		232754, -- Hydra Acid (dot after hydra shot, stacks)
+		230201, -- Burden of Pain (tank)
+		230384, -- Consuming Hunger (murlocs eat your face, knock them off with thundering shock)
+		230358, -- Thundering Shock (stun)
+		},
+		["The Desolate Host"] = {
+		order = 6, ejid = 1896,
+		236449, -- Soul Bind (move to another player with it in other realm)
+		236241, -- Soul Rot (don’t stand in it)
+		236515, -- Shattering Scream (need it to remove bonecage armor)
+		235989, -- Tormented Cries (places wedge of goo on ground)
+		236361, -- Spirit Chains (players get linked & slowed)
+		235968, -- Grasping Darkness (ticking dot,non-dispellable,bounces)
+		},
+		["Maiden of Vigilance"] = {
+		order = 7, ejid = 1897,
+		235213, -- Light Infusion (don’t cross the streams)
+		235240, -- Fel Infusion (don’t cross the streams)
+		240209, -- Unstable Soul (You crossed the streams, go boom! Must fall in hole 1.5 sec or less)
+		},
+		["Fallen Avatar"] = {
+		order = 8, ejid = 1873,
+		236494, -- Desolate (tank swap thingy)
+		236604, -- Shadowy Blades (going to boom and poop goop, keep away from people)
+		239739, -- Dark Mark (will knock back, must share or use immunity)
+		},
+		["Kil’Jaeden"] = {
+		order = 9, ejid = 1898,
+		239932, -- Felclaws (tank thingy)
+		234295, -- Armageddon Rain (small, must be soaked by 1 person, leaves dot)
+		240911, -- Armageddon Hail (large, must be immuned or tank soaked, leaves dot)
+		238505, -- Focused Dreadflame (need to share the dmg)
+		238429, -- Bursting Dreadflame (move away from raid)
+		239216, -- Darkness of the Thousand Souls (really painful dot)
+		239155, -- Gravity Squeeze (need this for thousand souls)
+		236710, -- Shadow Reflection: Erupting (spawns adds that need to dps'd asap)
+		241822, -- Choking Shadow (inc heal absorb during intermission)
+		236555, -- Deceiver's Veil (intermission debuff)
+		},        
+	},
 }	
