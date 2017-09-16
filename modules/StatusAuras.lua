@@ -37,7 +37,7 @@ do
 				end
 			end
 			if debuffType then
-				status = DebuffTypeHandlers[debuffType]
+				local status = DebuffTypeHandlers[debuffType]
 				if status and (not status.seen) then
 					status:UpdateState(unit, texture, count, duration, expiration, name)
 				end
@@ -200,7 +200,7 @@ do
 				handlerArray[#handlerArray+1] = (" if count == %d then return %s, %s, %s, %s end"):format(i, color.r, color.g, color.b, color.a)
 			end
 		end
-		color = dbx["color" .. colorCount]
+		local color = dbx["color" .. colorCount]
 		handlerArray[#handlerArray+1] = (" return %s, %s, %s, %s end"):format(color.r, color.g, color.b, color.a)
 		status.GetColor = assert(loadstring(table.concat(handlerArray)))()
 		wipe(handlerArray)
