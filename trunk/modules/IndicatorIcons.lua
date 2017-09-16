@@ -4,6 +4,7 @@ local Grid2 = Grid2
 local min = min
 local pairs = pairs
 local ipairs = ipairs
+local format = string.format
 
 local function Icon_Create(self, parent)
 	local f = self:CreateFrame("Frame", parent)
@@ -102,6 +103,11 @@ local function Icon_Layout(self, parent)
 	local ux,uy = self.ux,self.uy
 	local vx,vy = self.vx,self.vy
 	local size  = self.iconTotSize
+	local frameName
+	if not self.dbx.disableOmniCC then
+		local i,j  = parent:GetName():match("Grid2LayoutHeader(%d+)UnitButton(%d+)")
+		frameName  = format( "Grid2Icons%s%02d%02d", self.name:gsub("%-","") , i, j ) 
+	end
 	f:ClearAllPoints()
 	f:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
 	f:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
@@ -112,8 +118,8 @@ local function Icon_Layout(self, parent)
 		if not frame then
 			frame = CreateFrame("Frame", nil, f)
 			frame.icon = frame:CreateTexture(nil, "ARTWORK")
-			frame.text = frame:CreateFontString(nil, "OVERLAY")
-			frame.cooldown = CreateFrame("Cooldown", nil, frame, "CooldownFrameTemplate")
+			frame.text = frame:CreateFontString(nil, "OVERLAY")			
+			frame.cooldown = CreateFrame("Cooldown", frameName and frameName..i or nil, frame, "CooldownFrameTemplate")
 			frame.cooldown:SetHideCountdownNumbers(true)
 			auras[i] = frame
 		end

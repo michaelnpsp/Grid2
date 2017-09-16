@@ -45,7 +45,7 @@ do
 	local colors = {}
 	status_GetIconsWhiteList = function(self, unit)
 		local i, j, spells, typeColors = 1, 1, self.auraNames, self.typeColors
-		local name, _
+		local name, debuffType, _
 		while true do
 			name, _, textures[j], counts[j], debuffType, durations[j], expirations[j] = UnitDebuff(unit, i)
 			if not name then return j-1, textures, counts, expirations, durations, colors end
