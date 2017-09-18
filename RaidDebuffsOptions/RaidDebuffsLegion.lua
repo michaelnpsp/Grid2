@@ -292,6 +292,157 @@ RDDB["Legion"] = {
 		197941, -- elunes-light
 		},
 	},
+	[1115] = { -- Karazhan (5man)
+		["Sala de la Opera: Makaku"] = {
+		order = 1, ejid = 1820,
+		227405, -- defy-gravity
+		},
+		["Sala de la Opera: Historia de Poniente"] = {
+		order = 1, ejid = 1826,
+		227568, -- burning-leg-sweep
+		227567, -- knocked-down
+		227480, -- flame-gale
+		227325, -- poisonous-shank
+		},	
+		["Sala de la Opera: Bella Bestia"] = {
+		order = 3, ejid = 1827,
+		228221, -- Limpieza a fondo
+		228013, -- Calado
+		228215, -- Limpieza a fondo
+		228200, -- Llamarada ardiente
+		232135, -- Punzada sangrienta
+		},
+		["Doncella de Virtud"] = {
+		order = 4, ejid = 1825,
+		227848, -- Suelo Sagrado
+		227800, -- Choque Sagrado
+		},
+		["Attumen el Montero"] = {
+		order = 5, ejid = 1835,
+		227404, -- Presencia intangible
+		227493, -- Golpe mortal
+		},
+		["Moroes"] = {
+		order = 6, ejid = 1837,
+		227742, -- Garrote
+		},
+		["Curator"] = {
+		order = 7, ejid = 1836,
+		227465, -- Descarga de poder
+		},
+		["Sombra de Medivh"] = {
+		order = 8, ejid = 1817,
+		228249, -- Descarga infernal
+		227592, -- Congelamiento
+		228958, -- Descarga infernal
+		},
+		["Devorador de mana"] = {
+		order = 9, ejid = 1818,
+		227502, -- Mana inestable
+		},		
+		["Viz'aduum el Observador"] = {
+		order = 10, ejid = 1838,
+		229241, -- Fijando objetivo
+		229248, -- Haz vil
+		},
+		["Trash"] = {
+		order = 100, ejid = nil,
+		228252, -- Desgarro de las Sombras
+		228164, -- Impacto de martillo
+		227965, -- Picar entrada
+		227977, -- Linterna
+		228278, -- Grito desmoralizador
+		228576, -- Atraído
+		241774, -- Machaque con escudo
+		228559, -- Perfume encantador
+		1604, -- Atontado
+		228280, -- Juramento de observancia
+		228277, -- Grilletes de servidumbre
+		29930, -- Maldición de agonía
+		29928, -- Inmolar
+		29583, -- Empalar
+		228331, -- Carga volátil
+		238606, -- Erupción Arcana
+		228241, -- Toque maldito
+		230083, -- Invalidación
+		230050, -- Hoja de fuerza
+		229693, -- Colmillo venenoso
+		229705, -- Telaraña
+		},
+	},
+	[1178] = { -- Trono del Triunvirato (5man)
+		["Zuraal el Ascendido"] = {
+		order = 1, ejid = 1979,
+		244653, -- Fijar
+		},
+		["Saprish"] = {
+		order = 2, ejid = 1980,
+		247245, -- Flanqueo umbrío
+		246026, -- Trampa de vacío
+		},
+		["Virrey Nezhar"] = {
+		order = 3, ejid = 1981,
+		1604, -- Atontado
+		244751, -- Oscuridad aulladora
+		244916, -- Azote del Vacío
+		},
+		["L'ura"] = {
+		order = 4, ejid = 1982,
+		245289, -- Explosión del Vacío
+		},
+		["Trash"] = {
+		order = 100, ejid = nil,
+		245735, -- Marchitación oscura
+		246677, -- Campo de anulación
+		248239, -- Acoplamiento oscuro
+		245736, -- Desgarre del Vacío
+		245748, -- Toque corruptor
+		248298, -- Chirrido
+		245706, -- Golpe ruinoso
+		245722, -- Herida oscura
+		245510, -- Vacío corruptor
+		248184, -- Tortura oscura
+		248133, -- Explosión estigia
+		246697, -- Marca de anulación
+		245727, -- Consumir esencia
+		246900, -- Contagio oscuro
+		},
+	},	
+	[1146] = { -- Catedral de la Noche Eterna (5man) 
+		["Agronox"] = {
+		order = 1, ejid = 1905,
+		243613, -- Fijar
+		236524, -- Esporas venenosas
+		},
+		["Tollinador el Desdenoso"] = {
+		order = 2, ejid = 1906,
+		237726, -- scornful-gaze
+		237276, -- pulverizing-cudgel
+		},
+		["Domatrax"] = {
+		order = 3, ejid = 1904,
+		241609, -- searing-presence
+		},	
+		["Mephistroth"] = {
+		order = 4, ejid = 1878,
+		233963, -- Agitación demoníaca
+		233177, -- Enjambre carroñero
+		234830, -- Soledad oscura
+		},
+		["Trash"] = {
+		order = 100, ejid = nil,
+		236954, -- Colmillos siniestros
+		239288, -- Hebras ardientes
+		238583, -- Devorar magia
+		236975, -- Cuchilla dentada
+		238688, -- Vides asfixiantes
+		239022, -- Descarga vil
+		238991, -- Espinas con púas
+		237391, -- Aroma atrayente
+		238674, -- Fijar
+		239217, -- Mirada cegadora
+		},
+	},	
 	[1017] = { -- Stormhein (World Bosses)
 		["Ana-Mouz"] = {
 		order = 1, ejid = 1790,
@@ -639,4 +790,123 @@ RDDB["Legion"] = {
 		236555, -- Deceiver's Veil (intermission debuff)
 		},        
 	},
+    [1188] = { -- Antorus the burning trone (RAID)	InstanceID = 946
+		["Rompemundos garothi"] = {
+			order = 1, ejid = 1992,
+			244761, -- annihilation
+			246369, -- searing-barrage
+			246848, -- luring-destruction
+			246220, -- bombardeo-vil
+			247159, -- destruccion-atrayente
+			244122, -- carniceria	
+		},
+		["Canes manafagos de Sargeras"] = {
+			order = 2, ejid = 1987,
+			245022, -- burning-remnant
+			251445, -- smouldering
+			251448, -- burning-maw
+			244086, -- molten-touch
+			244091, -- singed
+			244768, -- desolate-gaze
+			244767, -- desolate-path
+			244471, -- enflame-corruption
+			248815, -- enflamed
+			244517, -- lingering-flames
+			245098, -- decay
+			251447, -- corrupting-maw
+			244131, -- consuming-sphere
+			245024, -- consumed
+			244071, -- weight-of-darkness
+			244578, -- siphon-corruption
+			248819, -- siphoned
+		},
+		["Alto Mando antoran"] = {
+			order = 3, ejid = 1997,
+			245121, -- entropic-blast
+			244748, -- shocked
+			244824, -- warp-field
+			244892, -- sundering-claws
+			244172, -- psychic-assault
+			244388, -- psychic-scarring
+			244420, -- chaos-pulse			
+		},
+		["Vigilante de portal Hasabel"] = {
+			order = 4, ejid = 1985,
+			244016, -- reality-tear
+			245157, -- everburning-light
+			245075, -- hungering-gloom
+			245240, -- oppressive-gloom
+			244709, -- fiery-detonation
+			246208, -- acidic-web
+			246075, -- catastrophic-implosion
+			244826, -- fel-miasma
+			246316, -- poison-essence
+			244849, -- caustic-slime
+			245118, -- cloying-shadows
+			245050, -- delusions
+			245040, -- corrupt
+			244926, -- felsilk-wrap
+			244607, -- flames-of-xoroth
+		},
+		["Eonar"] = {
+			order = 5, ejid = 2025,
+			248326, -- rain-of-fel
+			248861, -- spear-of-doom
+			249016, -- feedback-targeted
+			249015, -- feedback-burning-embers
+			249014, -- feedback-foul-steps
+			249017, -- feedback-arcane-singularity
+		},
+		["Imonar"] = {
+			order = 6, ejid = 2009,
+			248424, -- gathering-power
+			247552, -- sleep-canister
+			247565, -- slumber-gas
+			250224, -- shocked
+			248252, -- infernal-rockets
+			247687, -- sever
+			247716, -- charged-blasts
+			250255, -- empowered-shock-lance
+			247641, -- stasis-trap
+		},
+		["Kin'garoth"] = {
+			order = 7, ejid = 2004,
+			233062, -- infernal-burning
+			230345, -- crashing-comet
+			244312, -- forging-strike
+			246840, -- ruiner
+			248061, -- cleansing-protocol
+			246706, -- demolish	
+		},
+		["Varimathras"] = {
+			order = 8, ejid = 1983,
+			244042, -- marked-prey
+			243961, -- misery
+			248732, -- echoes-of-doom
+			244093, -- necrotic-embrace
+		},
+		["Aquelarre shivarra"] = {
+			order = 9, ejid = 1986,
+			244899, -- fiery-strike
+			245518, -- flashfreeze
+			245586, -- chilled-blood
+			246763, -- fury-of-golganneth
+			245674, -- flames-of-khazgoroth
+			245910, -- spectral-army-of-norgannon	
+		},
+		["Aggramar"] = {
+			order = 10, ejid = 1984,
+			244291, -- foe-breaker
+			245995, -- scorching-blaze
+			246014, -- searing-tempest
+			244912, -- blazing-eruption
+			247135, -- scorched-earth
+			247091, -- catalyzed
+			245631, -- unchecked-flame
+			245916, -- molten-remnants
+		},
+		["Argus el Aniquilador"] = {
+			order = 11, ejid = 2031,
+		},
+	}
 }	
