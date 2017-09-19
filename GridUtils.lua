@@ -7,13 +7,6 @@ local Grid2 = Grid2
 function Grid2.Dummy()
 end
 
-function Grid2:HideBlizzardRaidFrames()
-	CompactRaidFrameManager:UnregisterAllEvents()
-	CompactRaidFrameManager:Hide()
-	CompactRaidFrameContainer:UnregisterAllEvents()
-	CompactRaidFrameContainer:Hide()
-end
-
 local defaultColors = {
 	TRANSPARENT = {r=0,g=0,b=0,a=0},
 	BLACK       = {r=0,g=0,b=0,a=1},
