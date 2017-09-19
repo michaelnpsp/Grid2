@@ -331,6 +331,20 @@ function Grid2Options:MakeStatusAuraListOptions(status, options, optionParams)
 end
 
 function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionParams)
+	options.showDispelDebuffs = {
+		type = "toggle",
+		name = L["Dispellable by Me"],
+		desc = L["Display only debuffs i can dispell"],
+		order = 150.9,
+		width = "full",
+		get = function () return status.dbx.filterDispelDebuffs end,
+		set = function (_, v)
+			status.dbx.filterDispelDebuffs = v or nil
+			status:UpdateDB()
+			Grid2:RefreshAuras()
+		end,
+		hidden = function() return status.dbx.useWhiteList end
+	}
 	options.showBossDebuffs = {
 		type = "toggle",
 		name = L["Boss Debuffs"],
@@ -342,7 +356,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			status:UpdateDB()
 			Grid2:RefreshAuras()
 		end,
-		hidden = function() return status.dbx.useWhiteList end
+		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs end
 	}
 	options.showNonBossDebuffs = {
 		type = "toggle",
@@ -359,7 +373,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			status:UpdateDB()
 			Grid2:RefreshAuras() 
 		end,
-		hidden = function() return status.dbx.useWhiteList end
+		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs end
 	}
 	options.filterSep1 = { type = "description", name = "", order = 151.9 }
 	options.showLongDebuffs = {
@@ -373,7 +387,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			status:UpdateDB()
 			Grid2:RefreshAuras()
 		end,
-		hidden = function() return status.dbx.useWhiteList or status.dbx.filterBossDebuffs==false end
+		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs or status.dbx.filterBossDebuffs==false end
 	}
 	options.showShortDebuffs = {
 		type = "toggle",
@@ -390,7 +404,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			status:UpdateDB()
 			Grid2:RefreshAuras()
 		end,
-		hidden = function() return status.dbx.useWhiteList or status.dbx.filterBossDebuffs==false end
+		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs or status.dbx.filterBossDebuffs==false end
 	}
 	options.filterSep2 = { type = "description", name = "", order = 152.9 }	
 	options.showSelfDebuffs = {
@@ -404,7 +418,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			status:UpdateDB()
 			Grid2:RefreshAuras()
 		end,
-		hidden = function() return status.dbx.useWhiteList or status.dbx.filterBossDebuffs==false end
+		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs or status.dbx.filterBossDebuffs==false end
 	}
 	options.showNonSelfDebuffs = {
 		type = "toggle",
@@ -421,7 +435,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			status:UpdateDB()
 			Grid2:RefreshAuras()
 		end,
-		hidden = function() return status.dbx.useWhiteList or status.dbx.filterBossDebuffs==false end
+		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs or status.dbx.filterBossDebuffs==false end
 	}
 	options.filterSep3 = { type = "description", name = "", order = 153.9 }	
 	options.useWhiteList = {
@@ -444,6 +458,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			Grid2:RefreshAuras()
 			status:UpdateAllIndicators()			
 		end,
+		hidden = function() return status.dbx.filterDispelDebuffs end,
 	}
 	options.useBlackList = {
 		type = "toggle",
@@ -464,6 +479,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			Grid2:RefreshAuras()
 			status:UpdateAllIndicators()			
 		end,
+		hidden = function() return status.dbx.filterDispelDebuffs end,
 	}
 end
 
