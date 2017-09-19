@@ -44,7 +44,7 @@ do
 			end
 			for status in next, DebuffsHandlers do
 				if not status.seen then	
-					status:UpdateState(unit, name, texture, count, duration, expiration, caster, isBossDebuff, debuffType, i)
+					status:UpdateState(unit, name, texture, count, duration, expiration, caster, isBossDebuff, debuffType)
 				end	
 			end
 			i = i + 1
