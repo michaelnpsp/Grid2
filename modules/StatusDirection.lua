@@ -10,6 +10,8 @@ local sqrt  = math.sqrt
 local GetPlayerFacing = GetPlayerFacing
 local UnitPosition = UnitPosition
 local UnitIsUnit= UnitIsUnit
+local UnitGUID = UnitGUID
+local C_GetNamePlateForUnit = C_NamePlate.GetNamePlateForUnit
 
 local f_env = {
 	UnitIsUnit= UnitIsUnit,
@@ -25,28 +27,71 @@ local directions = {}
 local UnitCheck
 local mouseover = ""
 
+local guessDirections = false
+local roster_units    = Grid2.roster_units
+local curtime   = 0
+local plates    = {}  -- [guid] = PlateFrame.UnitFrame 
+local guid2guid = {}  -- 
+local guid2time	= {}  -- 
+local playerx,playery
+
+--
+local function PlateAdded(_, unit)
+	local plateFrame = C_GetNamePlateForUnit(unit) 
+	if plateFrame then
+		plates[ UnitGUID(unit) ] = plateFrame.UnitFrame
+	end	
+end
+
+local function PlateRemoved(_, unit )
+	plates[ UnitGUID(unit) ] = nil
+end
+
+local function CombatLogEvent(_, timestamp, event,_,srcGUID, _,_,_, dstGUID)
+	if event=='SWING_DAMAGE' then
+		local unit = roster_units[srcGUID]
+		if unit then
+			guid2guid[srcGUID] = dstGUID
+			guid2time[srcGUID] = timestamp
+		end
+	end
+	curtime = timestamp
+end
+--
+
 local function UpdateDirections()
+	local function GetPlate(guid)
+		local dguid = guid2guid[guid]
+		return dguid and curtime-guid2time[guid]<3 and plates[dguid]
+	end
 	local x1,y1, _, map1 = UnitPosition("player")
-	if not x1 then Direction:ClearDirections() return end
 	local facing = GetPlayerFacing()
-	for unit in Grid2:IterateRosterUnits() do
-		local update, direction, distance
+	for unit,guid in Grid2:IterateRosterUnits() do
+		local direction, distance
 		if not UnitIsUnit(unit, "player") and UnitCheck(unit, mouseover) then
 			local x2,y2, _, map2 = UnitPosition(unit)
-			if not x2 then return end
 			if map1 == map2 then
-				local dx, dy = x2 - x1, y2 - y1
-				direction = floor((atan2(dy,dx)-facing) / PI2 * 32 + 0.5) % 32
-				if distances then distance = floor( ((dx*dx+dy*dy)^0.5)/10 ) + 1 end	
+				if x2 then
+					local dx, dy = x2 - x1, y2 - y1
+					direction = floor((atan2(dy,dx)-facing) / PI2 * 32 + 0.5) % 32
+					if distances then distance = floor( ((dx*dx+dy*dy)^0.5)/10 ) + 1 end
+				elseif guessDirections then
+					local frame = plates[guid] or GetPlate(guid) 					
+					if frame then
+						local s = frame:GetEffectiveScale()
+						local x, y = frame:GetCenter()
+						local dx, dy = x*s - playerx, y*s - playery
+						direction = floor( (atan2(dy,dx)/PI2+0.75) * 32 ) % 32 
+					end
+				else
+					Direction:ClearDirections()
+					return
+				end
 			end
 		end	
-		if distances and distances[unit] ~= distance then
-			distances[unit], update = distance, true
-		end
-		if direction ~= directions[unit] then
-			directions[unit], update = direction, true
-		end	
-		if update then	
+		if (distances and distances[unit]~=distance) or (direction~=directions[unit]) then
+			distances[unit]  = distance
+			directions[unit] = direction
 			Direction:UpdateIndicators(unit)
 		end
 	end
@@ -147,15 +192,29 @@ function Direction:UpdateDB()
 		distances = nil
 		self.GetVertexColor = Grid2.statusLibrary.GetColor
 	end
+	--
+	guessDirections = self.dbx.guessDirections
 end
 
 function Direction:OnEnable()
 	self:UpdateDB()
 	self:SetTimer(true)
+	if guessDirections then
+		playerx = UIParent:GetWidth()  * UIParent:GetEffectiveScale() / 2
+		playery = UIParent:GetHeight() * UIParent:GetEffectiveScale() / 2
+		self:RegisterEvent("NAME_PLATE_UNIT_ADDED", PlateAdded )
+		self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", PlateRemoved )
+		self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", CombatLogEvent)
+	end	
 end
 
 function Direction:OnDisable()
 	self:SetTimer(false)
+	if guestDirections then
+		self:UnregisterEvent("NAME_PLATE_UNIT_ADDED")
+		self:UnregisterEvent("NAME_PLATE_UNIT_REMOVED")
+		self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+	end	
 end
 
 function Direction:IsActive(unit)

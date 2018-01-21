@@ -880,33 +880,77 @@ RDDB["Legion"] = {
 		},
 		["Varimathras"] = {
 			order = 8, ejid = 1983,
-			244042, -- marked-prey
-			243961, -- misery
-			248732, -- echoes-of-doom
-			244093, -- necrotic-embrace
+			244094, -- Necrotic Embrace
+			243961, -- Misery
+			244042, -- Marked Prey
+			244005, -- Dark Fissure
+			243980, -- Torment of Fel
+			243968, -- Torment of Flames
+			243977, -- Torment of Frost
+			243974, -- Torment of Shadows
+			248732, -- Echoes of Doom (M)			
 		},
 		["Aquelarre shivarra"] = {
 			order = 9, ejid = 1986,
-			244899, -- fiery-strike
-			245518, -- flashfreeze
-			245586, -- chilled-blood
-			246763, -- fury-of-golganneth
-			245674, -- flames-of-khazgoroth
-			245910, -- spectral-army-of-norgannon	
+			253203, -- Shivan Pact
+			244899, -- Fiery Strike
+			245518, -- Flashfreeze
+			253520, -- Fulminating Pulse
+			253752, -- Sense of Dread
+			245627, -- Whirling Saber
+			253697, -- Orb of Frost
+			252861, -- Storm of Darkness
+			246763, -- Fury of Golganneth
+			245586, -- Chilled Blood (healing absorb)
+			245921, -- Spectral Army
+			245671, -- Flames of Khaz'goroth
+			250757, -- Cosmic Glare (M)			
 		},
 		["Aggramar"] = {
 			order = 10, ejid = 1984,
-			244291, -- foe-breaker
-			245995, -- scorching-blaze
-			246014, -- searing-tempest
-			244912, -- blazing-eruption
-			247135, -- scorched-earth
-			247091, -- catalyzed
-			245631, -- unchecked-flame
-			245916, -- molten-remnants
+			244291, -- Foe Breaker
+			245990, -- Taeschalach’s Reach
+			245994, -- Scorching Blaze
+			246014, -- Searing Tempest
+			244736, -- Wake of Flame
+			244912, -- Blazing Eruption
+			245916, -- Molten Remnants
+			254452, -- Ravenous Blaze (M)
+			247079, -- Empowered Flame Rend
+			255062, -- Empowered Searing Tempest
+			255060, -- Empowered Foe Breaker
+			255528, -- Searing Binding			
 		},
 		["Argus el Aniquilador"] = {
 			order = 11, ejid = 2031,
+			248499, -- Sweeping Scythe
+			258039, -- Deadly Scythe 
+			248396, -- Soulblight
+			253901, -- Strength of Sea
+			253903, -- Strength of Sky
+			258647, -- Gift of the Sea
+			258646, -- Gift of the Sky
+			255199, -- Avatar of Aggramar
+			250669, -- Soulburst
+			255200, -- Aggramar’s Boon
+			251570, -- Soulbomb
+			257299, -- Ember of Rage
+			252729, -- Cosmic Ray
+			252634, -- Cosmic Smash
+			257215, -- Titanforged
+			248167, -- Death Fog
+			256899, -- Soul Detonation
+			251815, -- Edge of Obliteration
+			257299, -- Ember of Rage
+			258373, -- Grasp (M)
+			257961, -- Chains of Sargeras (M)
+			257966, -- Sentence of Sargeras (M)
+			258026, -- Punishment (M)
+			258000, -- Shattered Bonds (M)
+			257930, -- Crushing (M)
+			257931, -- Sargeras Fear (M)
+			257869, -- Unleashed (M)
+			257911, -- Sargeras Rage (M)			
 		},
 	}
 }	
