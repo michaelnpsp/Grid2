@@ -1,12 +1,11 @@
 -- Direction status, shows arrows pointing to the players, created by Michael
 local Direction = Grid2.statusPrototype:new("direction")
 
-local Grid2= Grid2
+local Grid2 = Grid2
 local PI= math.pi
 local PI2 = PI*2
 local floor = math.floor
 local atan2 = math.atan2
-local sqrt  = math.sqrt
 local GetPlayerFacing = GetPlayerFacing
 local UnitPosition = UnitPosition
 local UnitIsUnit= UnitIsUnit
@@ -30,17 +29,17 @@ local mouseover = ""
 local guessDirections = false
 local roster_units    = Grid2.roster_units
 local curtime   = 0
-local plates    = {}  -- [guid] = PlateFrame.UnitFrame 
-local guid2guid = {}  -- 
-local guid2time	= {}  -- 
+local plates    = {}  -- [guid] = PlateFrame.UnitFrame
+local guid2guid = {}  --
+local guid2time	= {}  --
 local playerx,playery
 
 --
 local function PlateAdded(_, unit)
-	local plateFrame = C_GetNamePlateForUnit(unit) 
+	local plateFrame = C_GetNamePlateForUnit(unit)
 	if plateFrame then
 		plates[ UnitGUID(unit) ] = plateFrame.UnitFrame
-	end	
+	end
 end
 
 local function PlateRemoved(_, unit )
@@ -76,21 +75,23 @@ local function UpdateDirections()
 					direction = floor((atan2(dy,dx)-facing) / PI2 * 32 + 0.5) % 32
 					if distances then distance = floor( ((dx*dx+dy*dy)^0.5)/10 ) + 1 end
 				elseif guessDirections then
-					local frame = plates[guid] or GetPlate(guid) 					
+					local frame = plates[guid] or GetPlate(guid)
 					if frame then
 						local s = frame:GetEffectiveScale()
 						local x, y = frame:GetCenter()
 						local dx, dy = x*s - playerx, y*s - playery
-						direction = floor( (atan2(dy,dx)/PI2+0.75) * 32 ) % 32 
+						direction = floor( (atan2(dy,dx)/PI2+0.75) * 32 ) % 32
 					end
 				else
 					Direction:ClearDirections()
 					return
 				end
 			end
-		end	
-		if (distances and distances[unit]~=distance) or (direction~=directions[unit]) then
-			distances[unit]  = distance
+		end
+		if (distances and distances[unit] ~= distance) or (direction ~= directions[unit]) then
+			if distances then
+				distances[unit] = distance
+			end
 			directions[unit] = direction
 			Direction:UpdateIndicators(unit)
 		end
@@ -156,7 +157,7 @@ end
 
 function Direction:UpdateDB()
 	local isRestr
-	t= {}
+	local t = {}
 	t[1] = "return function(unit) return "
 	if not self.dbx.showOnlyStickyUnits then
 		if self.dbx.ShowOutOfRange 	then t[#t+1]= "and (not UnitInRange(unit)) "; isRestr=true 	end
@@ -166,14 +167,14 @@ function Direction:UpdateDB()
 	if isRestr or self.dbx.showOnlyStickyUnits then
 		if self.dbx.StickyTarget	then t[#t+1]= "or  UnitIsUnit(unit, 'target') "		end
 		if self.dbx.StickyMouseover	then t[#t+1]= "or  UnitIsUnit(unit, mouseover) "
-										 t[1]	= "return function(unit, mouseover) return " end
+											t[1]	= "return function(unit, mouseover) return " end
 		if self.dbx.StickyFocus		then t[#t+1]= "or  UnitIsUnit(unit, 'focus') "	end
 		if self.dbx.StickyTanks		then t[#t+1]= "or  UnitGroupRolesAssigned(unit)=='TANK' " end
 	end
 	if t[2] then
 		t[2] = t[2]:sub(5)
 	else
-		t[2] = "true " 
+		t[2] = "true "
 	end
 	t[#t+1]= "end"
 	SetMouseoverHooks((isRestr or self.dbx.showOnlyStickyUnits) and self.dbx.StickyMouseover)
@@ -205,23 +206,23 @@ function Direction:OnEnable()
 		self:RegisterEvent("NAME_PLATE_UNIT_ADDED", PlateAdded )
 		self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", PlateRemoved )
 		self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", CombatLogEvent)
-	end	
+	end
 end
 
 function Direction:OnDisable()
 	self:SetTimer(false)
-	if guestDirections then
+	if guessDirections then
 		self:UnregisterEvent("NAME_PLATE_UNIT_ADDED")
 		self:UnregisterEvent("NAME_PLATE_UNIT_REMOVED")
 		self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	end	
+	end
 end
 
 function Direction:IsActive(unit)
 	return directions[unit] and true
 end
 
-function Direction:GetIcon(unit)
+function Direction.GetIcon(unit)
 	return "Interface\\Addons\\Grid2\\media\\Arrows32-32x32"
 end
 
