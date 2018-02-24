@@ -50,6 +50,3 @@ Grid2Options:RegisterStatusOptions("power",    "mana", Grid2Options.MakeStatusCo
 	width = "full",
 	titleIcon = "Interface\\Icons\\Inv_potion_33"
 })
-	
-
-

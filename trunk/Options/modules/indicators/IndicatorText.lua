@@ -1,7 +1,7 @@
 local L = Grid2Options.L
 
 Grid2Options:RegisterIndicatorOptions("text",   true, function(self, indicator)
-	local colors, statuses, options = {}, {}, {} 
+	local colors, statuses, options = {}, {}, {}
 	self:MakeIndicatorTypeOptions(indicator, options)
 	self:MakeIndicatorLocationOptions(indicator, options)
 	self:MakeIndicatorTextCustomOptions(indicator, options)

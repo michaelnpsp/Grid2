@@ -20,23 +20,23 @@ do
 		-- local excludeIndicator = info.arg or info
 		local list = {}
 		for _, ind in Grid2:IterateIndicators() do
-			if ind.dbx.type=="bar" and ind.sideKick and ind~=exclude and 
+			if ind.dbx.type=="bar" and ind.sideKick and ind~=exclude and
 			   ( ((not ind.barParent) and (not ind.barChild)) or ind.barChild==exclude )
 			then
 				list[ind.name] = L[ind.name]
-			end	
+			end
 		end
 		if next(list) then
 			list["NONE"] = L["None"]
 			return list
-		end	
+		end
 	end
 	local function SetParent(info,v)
 		local child = info.arg
 		local oldParent = child.barParent
 		local newParent = v and Grid2.indicators[v]
-		if oldParent then 
-			oldParent.barChild = nil 
+		if oldParent then
+			oldParent.barChild = nil
 			oldParent:UpdateDB() -- really not necessary in current implementation
 		end
 		child.dbx.anchorTo = newParent and newParent.name or nil
@@ -54,7 +54,7 @@ do
 	function Grid2Options:MakeIndicatorBarLocationOptions(indicator,options)
 		if indicator.barParent then
 			self:MakeHeaderOptions( options, "Location" )
-		else	
+		else
 			self:MakeIndicatorLocationOptions(indicator, options)
 		end
 		if not indicator.barChild then
@@ -70,9 +70,9 @@ do
 					values = values,
 					arg    = indicator,
 				}
-			end	
-		end	
-	end	
+			end
+		end
+	end
 end
 
 -- Grid2Options:MakeIndicatorBarDisplayOptions()
@@ -90,7 +90,7 @@ function Grid2Options:MakeIndicatorBarAppearanceOptions(indicator,options)
 		set = function (_, v)
 			if v=="DEFAULT" then v= nil	end
 			indicator:SetOrientation(v)
-			Grid2Frame:WithAllFrames(indicator, "Layout")			
+			Grid2Frame:WithAllFrames(indicator, "Layout")
 			if indicator.barChild then
 				self:RefreshIndicator(indicator.barChild, "Layout")
 			end
@@ -112,7 +112,7 @@ function Grid2Options:MakeIndicatorBarAppearanceOptions(indicator,options)
 			if v==0 then v= nil end
 			indicator.dbx.width = v
 			self:RefreshIndicator(indicator, "Layout")
-		end,	
+		end,
 	}
 	options.barHeight= {
 		type = "range",
@@ -129,7 +129,7 @@ function Grid2Options:MakeIndicatorBarAppearanceOptions(indicator,options)
 			if v==0 then v= nil end
 			indicator.dbx.height = v
 			self:RefreshIndicator(indicator, "Layout")
-		end,	
+		end,
 	}
 	options.enableBack = {
 		type = "toggle",
@@ -152,15 +152,15 @@ function Grid2Options:MakeIndicatorBarAppearanceOptions(indicator,options)
 		name = L["Background Color"],
 		desc = L["Background Color"],
 		hasAlpha = true,
-		get = function() 
+		get = function()
 			local c = indicator.dbx.backColor
 			if c then
 				return c.r, c.g, c.b, c.a
 			else
 				return 0,0,0,1
-			end	
+			end
 		end,
-		set = function(info,r,g,b,a) 
+		set = function(info,r,g,b,a)
 			local c = indicator.dbx.backColor
 			if not c then c = {}; indicator.dbx.backColor = c end
 			c.r, c.g, c.b, c.a = r, g, b, a
@@ -197,7 +197,7 @@ function Grid2Options:MakeIndicatorBarMiscOptions(indicator, options)
 			indicator.dbx.texture = v
 			self:RefreshIndicator(indicator, "Layout")
 		end,
-		values = AceGUIWidgetLSMlists.statusbar,		
+		values = AceGUIWidgetLSMlists.statusbar,
 	}
 	options.barOpacity = {
 		type = "range",
@@ -227,7 +227,7 @@ function Grid2Options:MakeIndicatorBarMiscOptions(indicator, options)
 			indicator.sideKick:UpdateDB()
 			self:RefreshIndicator(indicator, "Create")
 		end,
-	}	
+	}
 	self:MakeHeaderOptions( options, "Display" )
 	options.duration = {
 		type = "toggle",

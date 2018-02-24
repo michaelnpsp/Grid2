@@ -20,21 +20,21 @@ local function RegisterIndicatorStatusesFromDatabase(indicator)
 				if (status and tonumber(priority)) then
 					indicator:RegisterStatus(status, priority)
 				end
-			end	
-		end	
+			end
+		end
 	end
-end	
+end
 
 local function GetIndicatorTypeValues(info)
 	local indicator = info.arg
 	local typeKey = indicator.dbx.type
 	local typeMorphValues = typeMorphValues
-	
+
 	if (not typeMorphValues[typeKey]) then
 		typeMorphValues[typeKey] = {}
 		typeMorphValues[typeKey][typeKey] = L[typeKey]
 	end
-	
+
 	return typeMorphValues[typeKey]
 end
 
@@ -51,7 +51,7 @@ local function SetIndicatorType(info, value)
 	local oldType = dbx.type
 
 	if  dbx.type == value then return end
-	
+
 	-- Set new fields width defaults values
 	dbx.type = value
 	for k, v in pairs(Grid2Options.indicatorDefaultValues[value]) do
@@ -75,11 +75,11 @@ local function SetIndicatorType(info, value)
 				map[statusKey]= nil
 			end
 		end
-	end	
+	end
 	-- Register indicator statuses from database
 	RegisterIndicatorStatusesFromDatabase(newIndicator)
 	RegisterIndicatorStatusesFromDatabase(newIndicator.sideKick)
-	-- Recreate indicators in frame units 
+	-- Recreate indicators in frame units
 	Grid2Frame:WithAllFrames(function (f)
 		newIndicator:Create(f)
 		newIndicator:Layout(f)

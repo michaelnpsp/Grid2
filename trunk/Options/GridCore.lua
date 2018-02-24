@@ -17,22 +17,22 @@ local Grid2Options = {
 				name = L["General Settings"],
 				desc = L["General Settings"],
 				childGroups = "tab",
-				args = {}, 
+				args = {},
 			},
 			["indicators"] = {
 				order = 20,
 				type = "group",
 				name = L["indicators"],
 				desc = L["indicators"],
-				args = {}, 
-			
+				args = {},
+
 			},
 			["statuses"] = {
 				order = 30,
 				type = "group",
 				name = L["statuses"],
 				desc = L["statuses"],
-				args = {}, 
+				args = {},
 			},
 		},
 	},
@@ -47,13 +47,13 @@ local Grid2Options = {
 function Grid2Options:Initialize()
 
 	self.db = Grid2.db:RegisterNamespace("Grid2Options",  { profile = { L = { indicators = {} } } } )
-	
+
 	self:EnableLoadOnDemand(not Grid2.db.global.LoadOnDemandDisabled)
 
 	self:MakeOptions()
 
 	LibStub("AceConfig-3.0"):RegisterOptionsTable("Grid2", self.options)
-	
+
 	self.Initialize = nil
 end
 

@@ -1,6 +1,6 @@
 local RDDB = Grid2Options:GetRaidDebuffsTable()
 RDDB["Legion"] = {
-	[1066] = { -- Assault on Violet Hold (5man) 
+	[1066] = { -- Assault on Violet Hold (5man)
 		["Festerface"] = {
 		order = 1, ejid = 1693,
 		202266, -- icky-goo
@@ -203,7 +203,7 @@ RDDB["Legion"] = {
 		197858, -- turbulent-waters
 		},
 	},
-	[1065] = { -- Neltharion's Lair (5man) 
+	[1065] = { -- Neltharion's Lair (5man)
 		["Rokmora"] = {
 		order = 1, ejid = 1662,
 		192799, -- choking-dust
@@ -303,7 +303,7 @@ RDDB["Legion"] = {
 		227567, -- knocked-down
 		227480, -- flame-gale
 		227325, -- poisonous-shank
-		},	
+		},
 		["Sala de la Opera: Bella Bestia"] = {
 		order = 3, ejid = 1827,
 		228221, -- Limpieza a fondo
@@ -339,7 +339,7 @@ RDDB["Legion"] = {
 		["Devorador de mana"] = {
 		order = 9, ejid = 1818,
 		227502, -- Mana inestable
-		},		
+		},
 		["Viz'aduum el Observador"] = {
 		order = 10, ejid = 1838,
 		229241, -- Fijando objetivo
@@ -352,22 +352,22 @@ RDDB["Legion"] = {
 		227965, -- Picar entrada
 		227977, -- Linterna
 		228278, -- Grito desmoralizador
-		228576, -- Atraído
+		228576, -- Atraï¿½do
 		241774, -- Machaque con escudo
 		228559, -- Perfume encantador
 		1604, -- Atontado
 		228280, -- Juramento de observancia
 		228277, -- Grilletes de servidumbre
-		29930, -- Maldición de agonía
+		29930, -- Maldiciï¿½n de agonï¿½a
 		29928, -- Inmolar
 		29583, -- Empalar
-		228331, -- Carga volátil
-		238606, -- Erupción Arcana
+		228331, -- Carga volï¿½til
+		238606, -- Erupciï¿½n Arcana
 		228241, -- Toque maldito
-		230083, -- Invalidación
+		230083, -- Invalidaciï¿½n
 		230050, -- Hoja de fuerza
 		229693, -- Colmillo venenoso
-		229705, -- Telaraña
+		229705, -- Telaraï¿½a
 		},
 	},
 	[1178] = { -- Trono del Triunvirato (5man)
@@ -377,38 +377,38 @@ RDDB["Legion"] = {
 		},
 		["Saprish"] = {
 		order = 2, ejid = 1980,
-		247245, -- Flanqueo umbrío
-		246026, -- Trampa de vacío
+		247245, -- Flanqueo umbrï¿½o
+		246026, -- Trampa de vacï¿½o
 		},
 		["Virrey Nezhar"] = {
 		order = 3, ejid = 1981,
 		1604, -- Atontado
 		244751, -- Oscuridad aulladora
-		244916, -- Azote del Vacío
+		244916, -- Azote del Vacï¿½o
 		},
 		["L'ura"] = {
 		order = 4, ejid = 1982,
-		245289, -- Explosión del Vacío
+		245289, -- Explosiï¿½n del Vacï¿½o
 		},
 		["Trash"] = {
 		order = 100, ejid = nil,
-		245735, -- Marchitación oscura
-		246677, -- Campo de anulación
+		245735, -- Marchitaciï¿½n oscura
+		246677, -- Campo de anulaciï¿½n
 		248239, -- Acoplamiento oscuro
-		245736, -- Desgarre del Vacío
+		245736, -- Desgarre del Vacï¿½o
 		245748, -- Toque corruptor
 		248298, -- Chirrido
 		245706, -- Golpe ruinoso
 		245722, -- Herida oscura
-		245510, -- Vacío corruptor
+		245510, -- Vacï¿½o corruptor
 		248184, -- Tortura oscura
-		248133, -- Explosión estigia
-		246697, -- Marca de anulación
+		248133, -- Explosiï¿½n estigia
+		246697, -- Marca de anulaciï¿½n
 		245727, -- Consumir esencia
 		246900, -- Contagio oscuro
 		},
-	},	
-	[1146] = { -- Catedral de la Noche Eterna (5man) 
+	},
+	[1146] = { -- Catedral de la Noche Eterna (5man)
 		["Agronox"] = {
 		order = 1, ejid = 1905,
 		243613, -- Fijar
@@ -422,11 +422,11 @@ RDDB["Legion"] = {
 		["Domatrax"] = {
 		order = 3, ejid = 1904,
 		241609, -- searing-presence
-		},	
+		},
 		["Mephistroth"] = {
 		order = 4, ejid = 1878,
-		233963, -- Agitación demoníaca
-		233177, -- Enjambre carroñero
+		233963, -- Agitaciï¿½n demonï¿½aca
+		233177, -- Enjambre carroï¿½ero
 		234830, -- Soledad oscura
 		},
 		["Trash"] = {
@@ -437,12 +437,12 @@ RDDB["Legion"] = {
 		236975, -- Cuchilla dentada
 		238688, -- Vides asfixiantes
 		239022, -- Descarga vil
-		238991, -- Espinas con púas
+		238991, -- Espinas con pï¿½as
 		237391, -- Aroma atrayente
 		238674, -- Fijar
 		239217, -- Mirada cegadora
 		},
-	},	
+	},
 	[1017] = { -- Stormhein (World Bosses)
 		["Ana-Mouz"] = {
 		order = 1, ejid = 1790,
@@ -458,7 +458,7 @@ RDDB["Legion"] = {
 		order = 3, ejid = 1756,
 		213665, -- Marauding Mists (non-dispellable) DMG + Disorient
 		},
-	},	
+	},
 	[1015] = { -- Azsura (World Bosses)
 		["Calamir"] = {
 		order = 1, ejid = 1774,
@@ -475,7 +475,7 @@ RDDB["Legion"] = {
 		},
 		["Withered J'im"] = {
 		order = 3, ejid = 1796,
-		},		
+		},
 	},
 	[1024] = { -- Highmountain (World Bosses)
 		["Drugon the Frostblood"] = {
@@ -487,7 +487,7 @@ RDDB["Legion"] = {
 		223373, -- Yaksam (non-dispellable) Cone AoE
 		223355, -- Oozing Bile (non-dispellable)
 		},
-	},	
+	},
 	[1018] = { -- Val'shrah (World Bosses)
 		["Humongris"] = {
 		order = 1, ejid = 1770,
@@ -500,7 +500,7 @@ RDDB["Legion"] = {
 		215876, -- Burning Earth (non-dispellable) Ground AoE
 		216044, -- Cry of the Tormented (non-dispellable) AoE Fear
 		},
-	},	
+	},
 	[1018] = { -- Suramar (World Bosses)
 		["Na'zak the Fiend"] = {
 		order = 1, ejid = 1783,
@@ -599,7 +599,7 @@ RDDB["Legion"] = {
 		227959,  -- Storm of Justice
 		227475,  -- Cleansing Flame
 		192044,  -- Expel Light
-		227781,  -- Glowing Fragment		
+		227781,  -- Glowing Fragment
 		},
 		["Guarm"] = {
         order = 2, ejid = 1830,
@@ -709,7 +709,7 @@ RDDB["Legion"] = {
         221891, -- Soul Siphon (non-dispellable) (DMG + Heal-Absorb)
         221603, -- Flames of Sargeras (non-dispellable) (DMG + DoT)
         206896, -- Torn Soul (non-dispellable) (Tank debuff, DMG increase)
-        },        
+        },
     },
     [1147] = { -- Tomb of Sargeras (RAID)
 		["Goroth"] = {
@@ -758,7 +758,7 @@ RDDB["Legion"] = {
 		["The Desolate Host"] = {
 		order = 6, ejid = 1896,
 		236449, -- Soul Bind (move to another player with it in other realm)
-		236241, -- Soul Rot (don’t stand in it)
+		236241, -- Soul Rot (donï¿½t stand in it)
 		236515, -- Shattering Scream (need it to remove bonecage armor)
 		235989, -- Tormented Cries (places wedge of goo on ground)
 		236361, -- Spirit Chains (players get linked & slowed)
@@ -766,8 +766,8 @@ RDDB["Legion"] = {
 		},
 		["Maiden of Vigilance"] = {
 		order = 7, ejid = 1897,
-		235213, -- Light Infusion (don’t cross the streams)
-		235240, -- Fel Infusion (don’t cross the streams)
+		235213, -- Light Infusion (donï¿½t cross the streams)
+		235240, -- Fel Infusion (donï¿½t cross the streams)
 		240209, -- Unstable Soul (You crossed the streams, go boom! Must fall in hole 1.5 sec or less)
 		},
 		["Fallen Avatar"] = {
@@ -776,7 +776,7 @@ RDDB["Legion"] = {
 		236604, -- Shadowy Blades (going to boom and poop goop, keep away from people)
 		239739, -- Dark Mark (will knock back, must share or use immunity)
 		},
-		["Kil’Jaeden"] = {
+		["Kilï¿½Jaeden"] = {
 		order = 9, ejid = 1898,
 		239932, -- Felclaws (tank thingy)
 		234295, -- Armageddon Rain (small, must be soaked by 1 person, leaves dot)
@@ -788,7 +788,7 @@ RDDB["Legion"] = {
 		236710, -- Shadow Reflection: Erupting (spawns adds that need to dps'd asap)
 		241822, -- Choking Shadow (inc heal absorb during intermission)
 		236555, -- Deceiver's Veil (intermission debuff)
-		},        
+		},
 	},
     [1188] = { -- Antorus the burning trone (RAID)	InstanceID = 946
 		["Rompemundos garothi"] = {
@@ -798,7 +798,7 @@ RDDB["Legion"] = {
 			246848, -- luring-destruction
 			246220, -- bombardeo-vil
 			247159, -- destruccion-atrayente
-			244122, -- carniceria	
+			244122, -- carniceria
 		},
 		["Canes manafagos de Sargeras"] = {
 			order = 2, ejid = 1987,
@@ -828,7 +828,7 @@ RDDB["Legion"] = {
 			244892, -- sundering-claws
 			244172, -- psychic-assault
 			244388, -- psychic-scarring
-			244420, -- chaos-pulse			
+			244420, -- chaos-pulse
 		},
 		["Vigilante de portal Hasabel"] = {
 			order = 4, ejid = 1985,
@@ -876,7 +876,7 @@ RDDB["Legion"] = {
 			244312, -- forging-strike
 			246840, -- ruiner
 			248061, -- cleansing-protocol
-			246706, -- demolish	
+			246706, -- demolish
 		},
 		["Varimathras"] = {
 			order = 8, ejid = 1983,
@@ -888,7 +888,7 @@ RDDB["Legion"] = {
 			243968, -- Torment of Flames
 			243977, -- Torment of Frost
 			243974, -- Torment of Shadows
-			248732, -- Echoes of Doom (M)			
+			248732, -- Echoes of Doom (M)
 		},
 		["Aquelarre shivarra"] = {
 			order = 9, ejid = 1986,
@@ -904,12 +904,12 @@ RDDB["Legion"] = {
 			245586, -- Chilled Blood (healing absorb)
 			245921, -- Spectral Army
 			245671, -- Flames of Khaz'goroth
-			250757, -- Cosmic Glare (M)			
+			250757, -- Cosmic Glare (M)
 		},
 		["Aggramar"] = {
 			order = 10, ejid = 1984,
 			244291, -- Foe Breaker
-			245990, -- Taeschalach’s Reach
+			245990, -- Taeschalachï¿½s Reach
 			245994, -- Scorching Blaze
 			246014, -- Searing Tempest
 			244736, -- Wake of Flame
@@ -919,12 +919,12 @@ RDDB["Legion"] = {
 			247079, -- Empowered Flame Rend
 			255062, -- Empowered Searing Tempest
 			255060, -- Empowered Foe Breaker
-			255528, -- Searing Binding			
+			255528, -- Searing Binding
 		},
 		["Argus el Aniquilador"] = {
 			order = 11, ejid = 2031,
 			248499, -- Sweeping Scythe
-			258039, -- Deadly Scythe 
+			258039, -- Deadly Scythe
 			248396, -- Soulblight
 			253901, -- Strength of Sea
 			253903, -- Strength of Sky
@@ -932,7 +932,7 @@ RDDB["Legion"] = {
 			258646, -- Gift of the Sky
 			255199, -- Avatar of Aggramar
 			250669, -- Soulburst
-			255200, -- Aggramar’s Boon
+			255200, -- Aggramarï¿½s Boon
 			251570, -- Soulbomb
 			257299, -- Ember of Rage
 			252729, -- Cosmic Ray
@@ -950,7 +950,7 @@ RDDB["Legion"] = {
 			257930, -- Crushing (M)
 			257931, -- Sargeras Fear (M)
 			257869, -- Unleashed (M)
-			257911, -- Sargeras Rage (M)			
+			257911, -- Sargeras Rage (M)
 		},
 	}
-}	
+}

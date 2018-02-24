@@ -29,7 +29,7 @@ Grid2Options:RegisterStatusOptions("target", "target", nil, {
 
 Grid2Options:RegisterStatusOptions("pvp", "combat", nil, {
 	titleIcon = UnitFactionGroup("player") == "Horde" and  "Interface\\PVPFrame\\PVP-Currency-Horde" or "Interface\\PVPFrame\\PVP-Currency-Alliance"
-})	
+})
 
 Grid2Options:RegisterStatusOptions("self", "target", nil, {
 	titleIcon = "Interface\\Icons\\Inv_wand_12",
@@ -43,4 +43,3 @@ Grid2Options:RegisterStatusOptions("resurrection", "combat", nil, {
 	width = "full",
 	titleIcon = "Interface\\RaidFrame\\Raid-Icon-Rez",
 })
-

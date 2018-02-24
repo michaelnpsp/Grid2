@@ -23,7 +23,7 @@ Grid2Options:RegisterStatusOptions("health-current", "health", function(self, st
 		order = 35,
 		name  = L["Update frequency"],
 		desc  = L["Select the health update frequency."],
-		get   = function () 
+		get   = function ()
 			return  (status.dbx.quickHealth and "q") or
 					(status.dbx.frequentHealth and "p") or
 					"n"
@@ -35,7 +35,7 @@ Grid2Options:RegisterStatusOptions("health-current", "health", function(self, st
 			status:UpdateAllIndicators()
 		end,
 		values= { n = L["Normal"],  p = L["Fast"], q = L["Instant"] },
-	}	
+	}
 	self:MakeStatusToggleOptions(status, options, optionParams, "deadAsFullHealth")
 end, {
 	deadAsFullHealth = L["Show dead as having Full Health"],
@@ -70,7 +70,7 @@ Grid2Options:RegisterStatusOptions("heals-incoming", "health", function(self, st
 		tristate = false,
 		get = function () return status.dbx.includeHealAbsorbs end,
 		set = function (_, v)
-			status:OnDisable()		
+			status:OnDisable()
 			status.dbx.includeHealAbsorbs = v or nil
 			status:OnEnable()
 		end,
@@ -79,7 +79,7 @@ Grid2Options:RegisterStatusOptions("heals-incoming", "health", function(self, st
 		type = "input",
 		order = 120,
 		width = "full",
-		name = L["Minimum value"], 
+		name = L["Minimum value"],
 		desc = L["Incoming heals below the specified value will not be shown."],
 		get = function ()
 			return tostring(status.dbx.flags or 0)
@@ -103,7 +103,7 @@ Grid2Options:RegisterStatusOptions("heals-incoming", "health", function(self, st
 			status.dbx.multiplier = tonumber(v) or 1
 			status:UpdateDB()
 		end,
-	}	
+	}
 end, {
 	titleIcon ="Interface\\Icons\\Spell_Holy_DivineProvidence"
 })
@@ -114,7 +114,7 @@ Grid2Options:RegisterStatusOptions("my-heals-incoming", "health", function(self,
 		type = "input",
 		order = 120,
 		width = "full",
-		name = L["Minimum value"], 
+		name = L["Minimum value"],
 		desc = L["Incoming heals below the specified value will not be shown."],
 		get = function ()
 			return tostring(status.dbx.flags or 0)
@@ -138,7 +138,7 @@ Grid2Options:RegisterStatusOptions("my-heals-incoming", "health", function(self,
 			status.dbx.multiplier = tonumber(v) or 1
 			status:UpdateDB()
 		end,
-	}	
+	}
 end, {
 	titleIcon ="Interface\\Icons\\Spell_Holy_DivineProvidence"
 })

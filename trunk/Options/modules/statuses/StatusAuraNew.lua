@@ -3,7 +3,7 @@ local L = Grid2Options.L
 local BuffSubTypes= {
 	["Buff"] =  1,
 	["Buffs"] =  {},
-	["Buffs: Defensive Cooldowns"] = { 
+	["Buffs: Defensive Cooldowns"] = {
 			6940,  --Hand of Sacrifice
 			31850, --Ardent Defender
 			498,   --Divine Protection
@@ -30,14 +30,14 @@ local BuffSubTypes= {
 local DebuffSubTypes= {
 	["Debuff"] =  1,
 	["Debuffs"] =  {},
-	["Debuffs: Healing Prevented "] = { 
+	["Debuffs: Healing Prevented "] = {
 		82170, -- Corrupcion absoluta (Chogall)
 		82890, -- Mortalidad (Chimaeron)
 		85576, -- Vientos fulminadores (Alakir)
 		92787, -- Oscuridad engullidora (Maloriak Hc)
 		76903, -- Prision antimagia (Void Seeker/Hall of Originations)
 	},
-	["Debuffs: Healing Reduced"] = { 
+	["Debuffs: Healing Reduced"] = {
 		83908, -- Golpes malevolos (Halfus)
 		76727, -- Golpe mortal (Grim Batol)
 		22687, -- Velo de sombras (Nefarian)
@@ -52,9 +52,9 @@ local ColorCountValues = {1,2,3,4,5,6,7,8,9}
 local ColorizeByValues= { L["Number of stacks"] , L["Remaining time"] }
 
 
-local NewAuraUsageDescription= L["You can include a descriptive prefix using separators \"@#>\""] 
-							   .. " ".. 
-							   L["examples: Druid@Regrowth Chimaeron>Low Health"]	
+local NewAuraUsageDescription= L["You can include a descriptive prefix using separators \"@#>\""]
+							   .. " "..
+							   L["examples: Druid@Regrowth Chimaeron>Low Health"]
 
 -- {{ Shared code
 local NewAuraHandlerMT = {
@@ -79,7 +79,7 @@ local NewAuraHandlerMT = {
 				mine = ""
 			end
 			result = self.realType.."-"..name..mine
-		end	
+		end
 		return result
 	end,
 	GetName = function (self)
@@ -90,7 +90,7 @@ local NewAuraHandlerMT = {
 		local prefix, spell= string.match(value, "^(.-[@#>])(.*)$")
 		if not spell then
 			spell, prefix = value, ""
-		end	
+		end
 		spellName = tonumber(spell) or spell
 		if type(spellName)=="number" then
 			spell= GetSpellInfo(spellName)
@@ -127,7 +127,7 @@ local NewAuraHandlerMT = {
 		self.subType  = value
 		self.isGroup  = type(self.subTypes[value]) == "table"
 		self.realType = self.isGroup and self.type.."s" or self.type
-		self.spellName = nil		
+		self.spellName = nil
 		if self.isGroup then
 			self.spellName = value
 			self.name = L[ string.match(value, "^.-: (.*)$") or value ]
@@ -152,14 +152,14 @@ local NewAuraHandlerMT = {
 			if self.isGroup then -- Buffs or Debuffs Group
 				local auras = self.subTypes[self.subType]
 				if #auras>0 or self.type == "buff" then
-					dbx.auras= {} 
+					dbx.auras= {}
 					for i,v in pairs(auras) do
 						dbx.auras[i]= v
 					end
-					if self.type == "debuff" then 
+					if self.type == "debuff" then
 						dbx.useWhiteList = true
-					end	
-				end	
+					end
+				end
 			end
 			Grid2.db.profile.statuses[baseKey]= dbx
 			--Create the status
@@ -170,7 +170,7 @@ local NewAuraHandlerMT = {
 		end
 	end,
 	IsDisabled = function (self)
-		local key = self:GetKey() 
+		local key = self:GetKey()
 		if key and self.spellName then
 			return not not Grid2.statuses[key]
 		end
@@ -261,7 +261,7 @@ NewDebuffHandler.options = {
 		handler = NewDebuffHandler,
 	},
 	newStatusDebuffName = {
-		type = "input", dialogControl = "EditBoxGrid2Debuffs", 
+		type = "input", dialogControl = "EditBoxGrid2Debuffs",
 		order = 5.2,
 		width = "full",
 		name = L["Name or SpellId"],

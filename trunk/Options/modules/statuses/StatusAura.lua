@@ -8,7 +8,7 @@ local MonitorizeValues = { [0]= L["NONE"], [1] = L["Value1"], [2] = L["Value2"],
 local function StatusAuraGenerateColors(status, newCount)
 	local oldCount = status.dbx.colorCount or 1
 	for i=oldCount+1,newCount do
-		status.dbx["color"..i] = { r=1, g=1, b=1, a=1 } 
+		status.dbx["color"..i] = { r=1, g=1, b=1, a=1 }
 	end
 	for i=newCount+1,oldCount do
 		status.dbx["color"..i] = nil
@@ -21,9 +21,9 @@ local function StatusAuraGenerateColorThreshold(status)
 		local newCount   = status.dbx.colorCount - 1
 		local thresholds = status.dbx.colorThreshold or {}
 		local oldCount   = #thresholds
-		for i=oldCount+1,newCount do 
+		for i=oldCount+1,newCount do
 			thresholds[i] = 0
-		end	
+		end
 		for i=oldCount,newCount+1,-1 do
 			table.remove(thresholds)
 		end
@@ -31,7 +31,7 @@ local function StatusAuraGenerateColorThreshold(status)
 		status.dbx.blinkThreshold = nil
 	else
 		status.dbx.colorThreshold = nil
-	end	
+	end
 end
 
 function Grid2Options:MakeStatusAuraMissingOptions(status, options, optionParams)
@@ -49,7 +49,7 @@ function Grid2Options:MakeStatusAuraMissingOptions(status, options, optionParams
 				status.dbx.valueIndex = nil
 			end
 			status:UpdateDB()
-			Grid2:RefreshAuras() 
+			Grid2:RefreshAuras()
 			self:MakeStatusOptions(status)
 		end,
 	}
@@ -85,7 +85,7 @@ function Grid2Options:MakeStatusAuraUseSpellIdOptions(status, options, optionPar
 	self:MakeHeaderOptions(options, "Misc")
 	options.useSpellId = {
 		type = "toggle",
-		name = L["Track by SpellId"], 
+		name = L["Track by SpellId"],
 		width = "double",
 		desc = string.format( "%s (%d) ", L["Track by spellId instead of aura name"], status.dbx.spellName ),
 		order = 110,
@@ -106,12 +106,12 @@ function Grid2Options:MakeStatusAuraCommonOptions(status, options, optionParams)
 			name = L["Color count"],
 			desc = L["Select how many colors the status must provide."],
 			get = function() return status.dbx.colorCount or 1 end,
-			set = function(_,v) 
+			set = function(_,v)
 				status.dbx.debuffTypeColorize = nil
 				StatusAuraGenerateColors(status, v)
 				if status.dbx.colorThreshold then
 					StatusAuraGenerateColorThreshold(status)
-				end	
+				end
 				status:UpdateDB()
 				self:MakeStatusOptions(status)
 			end,
@@ -124,7 +124,7 @@ function Grid2Options:MakeStatusAuraCommonOptions(status, options, optionParams)
 				width ="normal",
 				name = L["Coloring based on"],
 				desc = L["Coloring based on"],
-				get = function() 
+				get = function()
 					if status.dbx.colorThreshold then
 						return  (status.dbx.colorThresholdValue and 4)   or
 								(status.dbx.colorThresholdElapsed and 3) or 2
@@ -132,7 +132,7 @@ function Grid2Options:MakeStatusAuraCommonOptions(status, options, optionParams)
 						return 1
 					end
 				end,
-				set = function( _, v) 
+				set = function( _, v)
 						status.dbx.colorThreshold = nil
 						status.dbx.colorThresholdElapsed = (v==3) and true or nil
 						status.dbx.colorThresholdValue   = (v==4) and true or nil
@@ -140,7 +140,7 @@ function Grid2Options:MakeStatusAuraCommonOptions(status, options, optionParams)
 						status:UpdateDB()
 						self:MakeStatusOptions(status)
 				end,
-				values = status.dbx.valueIndex and ColorizeByValues2 or ColorizeByValues1, 
+				values = status.dbx.valueIndex and ColorizeByValues2 or ColorizeByValues1,
 			}
 		elseif status.dbx.type == "debuffs" then
 			options.debuffTypeColor = {
@@ -154,7 +154,7 @@ function Grid2Options:MakeStatusAuraCommonOptions(status, options, optionParams)
 					status:UpdateDB()
 					status:UpdateAllIndicators()
 				end,
-			}			
+			}
 		end
 	end
 	self:MakeHeaderOptions(options, "Colors")
@@ -162,7 +162,7 @@ end
 
 function Grid2Options:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
 	local thresholds = status.dbx.colorThreshold
-	if thresholds then 
+	if thresholds then
 		self:MakeHeaderOptions(options, "Thresholds")
 		local colorKey = L["Color"]
 		local maxValue = status.dbx.colorThresholdValue and 200000 or 30
@@ -192,7 +192,7 @@ function Grid2Options:MakeStatusAuraColorThresholdOptions(status, options, optio
 					if v>=min and v<=max then
 						status.dbx.colorThreshold[i] = v
 						status:UpdateDB()
-					end	
+					end
 				end,
 			}
 		end
@@ -205,7 +205,7 @@ function Grid2Options:MakeStatusDebuffTypeFilterOptions(status, options, optionP
 		type = "input",
 		order = 180,
 		width = "full",
-		name = "", 
+		name = "",
 		multiline = status.dbx.debuffFilter and math.max(#status.dbx.debuffFilter,3) or 3,
 		get = function()
 				if status.dbx.debuffFilter then
@@ -216,7 +216,7 @@ function Grid2Options:MakeStatusDebuffTypeFilterOptions(status, options, optionP
 					return table.concat( debuffs, "\n" )
 				end
 		end,
-		set = function(_, v) 
+		set = function(_, v)
 			local debuffs= { strsplit("\n,", v) }
 			if next(debuffs) then
 				if status.dbx.debuffFilter then
@@ -234,7 +234,7 @@ function Grid2Options:MakeStatusDebuffTypeFilterOptions(status, options, optionP
 			end
 			if not next(status.dbx.debuffFilter) then
 				status.dbx.debuffFilter = nil
-			end			
+			end
 			status:UpdateDB()
 			status:UpdateAllIndicators()
 		end,
@@ -272,9 +272,9 @@ function Grid2Options:MakeStatusAuraValueOptions(status, options, optionParams)
 				if v==0 then
 					status.dbx.valueIndex = nil
 					status.dbx.colorThresholdValue = nil
-				else	
+				else
 					status.dbx.valueIndex = v
-				end	
+				end
 				status:UpdateDB()
 				self:MakeStatusOptions(status)
 		end,
@@ -290,7 +290,7 @@ function Grid2Options:MakeStatusAuraValueOptions(status, options, optionParams)
 		bigStep = 1000,
 		step = 1,
 		get = function () return status.dbx.valueMax or 0 end,
-		set = function (_, v) 
+		set = function (_, v)
 			status.dbx.valueMax = v>0 and v or nil
 			status:UpdateDB()
 			status:UpdateAllIndicators()
@@ -322,9 +322,9 @@ function Grid2Options:MakeStatusAuraListOptions(status, options, optionParams)
 				if #aura>0 then
 					table.insert(status.dbx.auras, tonumber(aura) or aura )
 				end
-			end	
+			end
 			status:UpdateDB()
-			Grid2:RefreshAuras() 			
+			Grid2:RefreshAuras()
 		end,
 		hidden = function() return status.dbx.auras==nil end
 	}
@@ -369,9 +369,9 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 				status.dbx.filterBossDebuffs = nil
 			else
 				status.dbx.filterBossDebuffs = false
-			end	
+			end
 			status:UpdateDB()
-			Grid2:RefreshAuras() 
+			Grid2:RefreshAuras()
 		end,
 		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs end
 	}
@@ -406,7 +406,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 		end,
 		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs or status.dbx.filterBossDebuffs==false end
 	}
-	options.filterSep2 = { type = "description", name = "", order = 152.9 }	
+	options.filterSep2 = { type = "description", name = "", order = 152.9 }
 	options.showSelfDebuffs = {
 		type = "toggle",
 		name = L["Self Casted"],
@@ -437,7 +437,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 		end,
 		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs or status.dbx.filterBossDebuffs==false end
 	}
-	options.filterSep3 = { type = "description", name = "", order = 153.9 }	
+	options.filterSep3 = { type = "description", name = "", order = 153.9 }
 	options.useWhiteList = {
 		type = "toggle",
 		name = L["Whitelist"],
@@ -453,10 +453,10 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 				status.dbx.aurasBak = status.dbx.auras
 				status.dbx.auras = nil
 				status.dbx.useWhiteList = nil
-			end	
+			end
 			status:UpdateDB()
 			Grid2:RefreshAuras()
-			status:UpdateAllIndicators()			
+			status:UpdateAllIndicators()
 		end,
 		hidden = function() return status.dbx.filterDispelDebuffs end,
 	}
@@ -473,11 +473,11 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			else
 				status.dbx.aurasBak = status.dbx.auras
 				status.dbx.auras = nil
-			end	
+			end
 			status.dbx.useWhiteList = nil
 			status:UpdateDB()
 			Grid2:RefreshAuras()
-			status:UpdateAllIndicators()			
+			status:UpdateAllIndicators()
 		end,
 		hidden = function() return status.dbx.filterDispelDebuffs end,
 	}
@@ -486,7 +486,7 @@ end
 -- {{ Register
 Grid2Options:RegisterStatusOptions("buff", "buff", function(self, status, options, optionParams)
 	self:MakeStatusAuraDescriptionOptions(status, options)
-	self:MakeStatusAuraCommonOptions(status, options, optionParams)	
+	self:MakeStatusAuraCommonOptions(status, options, optionParams)
 	self:MakeStatusAuraMissingOptions(status, options, optionParams)
 	self:MakeStatusAuraUseSpellIdOptions(status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
@@ -501,7 +501,7 @@ end,{
 Grid2Options:RegisterStatusOptions("buffs", "buff", function(self, status, options, optionParams)
 	self:MakeStatusAuraDescriptionOptions(status, options)
 	self:MakeStatusAuraListOptions(status, options, optionParams)
-	self:MakeStatusAuraCommonOptions(status, options, optionParams)	
+	self:MakeStatusAuraCommonOptions(status, options, optionParams)
 	self:MakeStatusAuraMissingOptions(status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
 	self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
@@ -526,20 +526,20 @@ Grid2Options:RegisterStatusOptions("debuffs", "debuff", function(self, status, o
 	self:MakeStatusColorOptions(status, options, optionParams)
 	self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
 	self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
-	self:MakeStatusDeleteOptions(status, options, optionParams)	
+	self:MakeStatusDeleteOptions(status, options, optionParams)
 end,{
 	groupOrder = 20
 })
 
 Grid2Options:RegisterStatusOptions("debuff", "debuff", function(self, status, options, optionParams)
-	self:MakeStatusAuraDescriptionOptions(status, options, optionParams)	
+	self:MakeStatusAuraDescriptionOptions(status, options, optionParams)
 	self:MakeStatusAuraCommonOptions(status, options, optionParams)
 	self:MakeStatusAuraUseSpellIdOptions(status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
 	self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
 	self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
 	self:MakeStatusAuraValueOptions(status, options, optionParams)
-	self:MakeStatusDeleteOptions(status, options, optionParams)	
+	self:MakeStatusDeleteOptions(status, options, optionParams)
 end,{
 	groupOrder = 30
 })

@@ -2,12 +2,12 @@ local L = Grid2Options.L
 
 Grid2Options:RegisterStatusOptions( "direction", "target", function(self, status, options)
 	local mask = L["%d yards"]
-	self:MakeStatusColorOptions( status, options, status.dbx.colorCount and { 
-		color1 = string.format( mask, 10), 
-		color2 = string.format( mask, 20), 
-		color3 = string.format( mask, 30), 
-		color4 = string.format( mask, 40), 
-		color5 = string.format( "+"..mask, 40), 
+	self:MakeStatusColorOptions( status, options, status.dbx.colorCount and {
+		color1 = string.format( mask, 10),
+		color2 = string.format( mask, 20),
+		color3 = string.format( mask, 30),
+		color4 = string.format( mask, 40),
+		color5 = string.format( "+"..mask, 40),
 	} or nil )
 	options.colorCount = {
 		type = "toggle",
@@ -112,7 +112,7 @@ Grid2Options:RegisterStatusOptions( "direction", "target", function(self, status
 			status.dbx.StickyTanks = v or nil
 			status:UpdateDB()
 		end,
-	}	
+	}
 	options.stickyTarget = {
 		type = "toggle",
 		order = 140,
@@ -138,7 +138,7 @@ Grid2Options:RegisterStatusOptions( "direction", "target", function(self, status
 			status.dbx.StickyFocus = v or nil
 			status:UpdateDB()
 		end,
-	}	
+	}
 	options.stickyMouseover = {
 		type = "toggle",
 		order = 160,
@@ -187,7 +187,7 @@ Grid2Options:RegisterStatusOptions( "direction", "target", function(self, status
 				status:OnEnable()
 			end
 		end,
-	}	
+	}
 end, {
 	title = L["arrows pointing to each raid member"],
 	titleIcon = "Interface\\Vehicles\\Arrow",

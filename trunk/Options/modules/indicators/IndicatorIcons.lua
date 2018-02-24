@@ -136,19 +136,19 @@ function Grid2Options:MakeIndicatorAuraIconsCustomOptions(indicator, options)
 				local JustifyH = indicator.dbx.fontJustifyH or "CENTER"
 				local JustifyV = indicator.dbx.fontJustifyV or "MIDDLE"
 				return self.pointMapText[ JustifyH..JustifyV ]
-			end	
+			end
 			return "0"
 		end,
 		set = function(_, v)
 			local dbx = indicator.dbx
 			if v ~= "0" then
 				local justify =  self.pointMapText[v]
-				dbx.fontJustifyH = justify[1] 
+				dbx.fontJustifyH = justify[1]
 				dbx.fontJustifyV = justify[2]
-				dbx.disableStack = nil				
-			else	
+				dbx.disableStack = nil
+			else
 				dbx.disableStack = true
-			end	
+			end
 			self:RefreshIndicator( indicator, "Layout", "Update")
 		end,
 	}
@@ -170,7 +170,7 @@ function Grid2Options:MakeIndicatorAuraIconsCustomOptions(indicator, options)
 		order = 106,
 		name = L["Font Border"],
 		desc = L["Set the font border type."],
-		get = function () 
+		get = function ()
 			local flags = indicator.dbx.fontFlags
 			return (flags == nil and "OUTLINE") or (flags == "" and "NONE") or flags
 		end,
@@ -179,7 +179,7 @@ function Grid2Options:MakeIndicatorAuraIconsCustomOptions(indicator, options)
 			self:RefreshIndicator(indicator, "Layout", "Update")
 		end,
 		values = Grid2Options.fontFlagsValues,
-		hidden = function() return indicator.dbx.disableStack end,		
+		hidden = function() return indicator.dbx.disableStack end,
 	}
 	options.fontsize = {
 		type = "range",
@@ -214,11 +214,11 @@ function Grid2Options:MakeIndicatorAuraIconsCustomOptions(indicator, options)
 			end
 			local indicatorKey = indicator.name
 			self:RefreshIndicator(indicator, "Layout", "Update" )
-		 end, 
+		 end,
 		hasAlpha = true,
 		hidden= function() return indicator.dbx.disableStack end,
 	}
-	self:MakeHeaderOptions( options, "Cooldown" )	
+	self:MakeHeaderOptions( options, "Cooldown" )
 	options.disableCooldown = {
 		type = "toggle",
 		order = 130,
@@ -230,7 +230,7 @@ function Grid2Options:MakeIndicatorAuraIconsCustomOptions(indicator, options)
 			indicator.dbx.disableCooldown = v or nil
 			self:RefreshIndicator(indicator, "Layout", "Update" )
 		end,
-	}		
+	}
 	options.reverseCooldown = {
 		type = "toggle",
 		order = 135,
@@ -243,7 +243,7 @@ function Grid2Options:MakeIndicatorAuraIconsCustomOptions(indicator, options)
 			self:RefreshIndicator(indicator, "Layout", "Update" )
 		end,
 		hidden= function() return indicator.dbx.disableCooldown end,
-	}		
+	}
 	options.disableOmniCC = {
 		type = "toggle",
 		order = 140,

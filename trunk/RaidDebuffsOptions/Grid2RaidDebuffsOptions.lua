@@ -21,7 +21,7 @@ end, {
 	hideTitle    = true,
 	childGroups  = "tab",
 	groupOrder   = 5,
-	titleIcon    = "Interface\\Icons\\Spell_Shadow_Skull", 
+	titleIcon    = "Interface\\Icons\\Spell_Shadow_Skull",
 	-- To avoid creating options for raid-debuffs(2), raid-debuffs(3), etc.
 	masterStatus = "raid-debuffs",
 })
@@ -59,7 +59,7 @@ function RDO:Init()
 	self:InitGeneralOptions()
 end
 
--- Trying to fix or delete instances in old database formats, now the 
+-- Trying to fix or delete instances in old database formats, now the
 -- instance keys must be integers, we don't allow strings.
 function RDO:FixWrongInstances()
 	local saved = {}
@@ -89,7 +89,7 @@ function RDO:LoadStatuses()
 	for index,status in ipairs(self.statuses) do
 		self.statusesIndexes[status] = index
 		self.statusesNames[index] = string.format( "%s(%d)", text, index )
-	end	
+	end
 	self.statusesNames[1] = text
 end
 
@@ -107,7 +107,7 @@ function RDO:EnableInstanceAllDebuffs(curModule, curInstance)
 				debuffs[#debuffs+1] = spellId
 			end
 		end
-	end	
+	end
 	self.statuses[1].dbx.debuffs[curInstance]= debuffs
 	self:UpdateZoneSpells(curInstance)
 end
@@ -170,7 +170,7 @@ function RDO.DbAddTableValue(value, db, ...)
 	local count = select("#",...)
 	for i = 1, count do
 		local field = select(i,...)
-		if db[field]==nil then db[field] = {} end	
+		if db[field]==nil then db[field] = {} end
 		db = db[field]
 	end
 	db[#db+1] = value
@@ -186,7 +186,7 @@ function RDO.DbDelTableValue(value, db, ...)
 			if data then
 				Remove(data, index+1, ...)
 				if not next(data) then dbi[field] = nil end
-			end    
+			end
 		else
 			local i = 1
 			while i<=#dbi do

@@ -19,7 +19,7 @@ Grid2Options:AddGeneralOptions( "General" , "Layout Settings", { horizontal = {
 		set = function ()
 			Grid2Layout.db.profile.horizontal = not Grid2Layout.db.profile.horizontal
 			Grid2Layout:ReloadLayout(true)
-			if Grid2Options.LayoutTestRefresh then Grid2Options:LayoutTestRefresh()	end	
+			if Grid2Options.LayoutTestRefresh then Grid2Options:LayoutTestRefresh()	end
 		 end,
 }, lock = {
 		type = "toggle",
@@ -78,7 +78,7 @@ Grid2Options:AddGeneralOptions( "General" , "Layout Settings", { horizontal = {
 			Grid2LayoutFrame:SetFrameStrata( v )
 			Grid2Layout.db.profile.FrameStrata = (v~="MEDIUM") and v or nil
 		end,
-		values ={ BACKGROUND = L["BACKGROUND"], LOW = L["LOW"], MEDIUM = L["MEDIUM"], HIGH = L["HIGH"] },		
+		values ={ BACKGROUND = L["BACKGROUND"], LOW = L["LOW"], MEDIUM = L["MEDIUM"], HIGH = L["HIGH"] },
 }, borderTexture = {
 		type = "select", dialogControl = "LSM30_Border",
 		order = order_display + 3,
@@ -192,7 +192,7 @@ Grid2Options:AddGeneralOptions( "General" , "Layout Settings", { horizontal = {
 		set = function (_, v)
 			Grid2Layout.db.profile.groupAnchor = v
 			Grid2Layout:ReloadLayout(true)
-			if Grid2Options.LayoutTestRefresh then Grid2Options:LayoutTestRefresh() end	
+			if Grid2Options.LayoutTestRefresh then Grid2Options:LayoutTestRefresh() end
 		end,
 		values={["TOPLEFT"] = L["TOPLEFT"], ["TOPRIGHT"] = L["TOPRIGHT"], ["BOTTOMLEFT"] = L["BOTTOMLEFT"], ["BOTTOMRIGHT"] = L["BOTTOMRIGHT"] },
 }, clamp = {

@@ -35,7 +35,7 @@ local bosses_known
 local get_known_spells
 local get_known_bosses
 
--- GSRD 
+-- GSRD
 frame:SetScript("OnEvent", function (self, event, unit)
 	if not next(Grid2:GetUnitFrames(unit)) then return end
 	local index = 1
@@ -52,7 +52,7 @@ frame:SetScript("OnEvent", function (self, event, unit)
 			order = GSRD:RegisterNewDebuff(id, ca, te, co, ty, du, ex, isBoss)
 			if order then
 				status_auto:AddDebuff(order, te, co, ty, du, ex)
-			end	
+			end
 		end
 		index = index + 1
 	end
@@ -79,8 +79,8 @@ function GSRD:UpdateZoneSpells(event)
 	end
 	self:UpdateEvents()
 	self:ClearAllIndicators()
-	if status_auto then	
-		self:RegisterNewZone() 
+	if status_auto then
+		self:RegisterNewZone()
 	end
 end
 
@@ -88,8 +88,8 @@ function GSRD:GetCurrentZone()
 	local current_zone_on_worldmap = GetCurrentMapAreaID()
 	SetMapToCurrentZone()
 	local zone = GetCurrentMapAreaID()
-	if zone ~= current_zone_on_worldmap then 
-		SetMapByID(current_zone_on_worldmap) 
+	if zone ~= current_zone_on_worldmap then
+		SetMapByID(current_zone_on_worldmap)
 	end
 	return zone
 end
@@ -97,7 +97,7 @@ end
 function GSRD:ClearAllIndicators()
 	for status in next, statuses do
 		status:ClearAllIndicators()
-	end	
+	end
 end
 
 function GSRD:ResetZoneSpells(newzone)
@@ -111,7 +111,7 @@ function GSRD:UpdateEvents()
 	local old = not frame:IsEventRegistered("UNIT_AURA")
 	if new ~= old then
 		if new then
-			frame:UnregisterEvent("UNIT_AURA")					
+			frame:UnregisterEvent("UNIT_AURA")
 		else
 			frame:RegisterEvent("UNIT_AURA")
 		end
@@ -121,7 +121,7 @@ end
 function GSRD:Grid_UnitLeft(_, unit)
 	for status in next, statuses do
 		status:ResetState(unit)
-	end	
+	end
 end
 
 -- zones & debuffs autodetection
@@ -147,8 +147,8 @@ function GSRD:RegisterNewDebuff(spellId, caster, te, co, ty, du, ex, isBoss)
 	spells_order[spellId]  = order
 	spells_status[spellId] = status_auto
 	--
-	if (not boss_auto) then	
-		boss_auto = self:CheckBossUnit(caster) 
+	if (not boss_auto) then
+		boss_auto = self:CheckBossUnit(caster)
 	end
 	--
 	local zone_name = curzone .. '@' .. EJ_GetCurrentInstance()
@@ -169,7 +169,7 @@ function GSRD:ProcessIncomingDebuffs()
 			debuffs[spellId] = zone .. '@' .. (boss_auto or "")
 		end
 		wipe(incoming)
-	end	
+	end
 end
 
 function GSRD:EnableAutodetect(status, func_spells, func_bosses)
@@ -180,7 +180,7 @@ function GSRD:EnableAutodetect(status, func_spells, func_bosses)
 	self:RegisterNewZone()
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
-	if InCombatLockdown() then self:PLAYER_REGEN_DISABLED()	end	
+	if InCombatLockdown() then self:PLAYER_REGEN_DISABLED()	end
 end
 
 function GSRD:DisableAutodetect()
@@ -190,7 +190,7 @@ function GSRD:DisableAutodetect()
 	status_auto   = nil
 	spells_known  = nil
 	bosses_known  = nil
-	self:UpdateEvents()	
+	self:UpdateEvents()
 	self:UnregisterEvent("PLAYER_REGEN_DISABLED")
 	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 end
@@ -201,7 +201,7 @@ function GSRD:CheckBossUnit(unit)
 		local name  = UnitName(unit)
 		local level = UnitLevel(unit)
 		local class = UnitClassification(unit)
-		if level==-1 or (bosses_known and bosses_known[name]) or strfind(class or "", "boss") or (curzonetype=="party" and class=="elite" and level>=GetMaxPlayerLevel()+2) then 
+		if level==-1 or (bosses_known and bosses_known[name]) or strfind(class or "", "boss") or (curzonetype=="party" and class=="elite" and level>=GetMaxPlayerLevel()+2) then
 			return name
 		end
 	end
@@ -209,7 +209,7 @@ end
 
 function GSRD:CheckBossFrame()
 	local boss = UnitName("boss1")
-	if boss and boss ~= UNKNOWNOBJECT then 
+	if boss and boss ~= UNKNOWNOBJECT then
 		return boss
 	end
 end
@@ -222,10 +222,10 @@ function GSRD:CreateBossTimer()
 			end
 			if boss_auto then
 				self:CancelBossTimer()
-				self:ProcessIncomingDebuffs() 
+				self:ProcessIncomingDebuffs()
 			end
 		end, 1.5)
-	end	
+	end
 end
 
 function GSRD:CancelBossTimer()
@@ -238,9 +238,9 @@ end
 function GSRD:PLAYER_REGEN_DISABLED()
 	self:ProcessIncomingDebuffs()
 	time_auto = GetTime()
-	-- It's more correct to collect zone bosses from RegisterNewZone(), but EJ_GetCurrentInstance() returns a wrong instanceID 
+	-- It's more correct to collect zone bosses from RegisterNewZone(), but EJ_GetCurrentInstance() returns a wrong instanceID
 	-- (the previous instanceID) just after a zone change, so we cannot collect known boses in the zone_change event.
-	bosses_known = get_known_bosses(EJ_GetCurrentInstance()) 
+	bosses_known = get_known_bosses(EJ_GetCurrentInstance())
 	boss_auto = self:CheckBossFrame() or self:CheckBossUnit("target") or self:CheckBossUnit("targettarget") or self:CheckBossUnit("focus")
 	self:CreateBossTimer()
 end
@@ -251,7 +251,7 @@ function GSRD:PLAYER_REGEN_ENABLED()
 		self:CancelBossTimer()
 		time_auto = nil
 		boss_auto = nil
-	end	
+	end
 end
 
 -- statuses
@@ -262,7 +262,7 @@ local class = {
 	GetCount          = function(self, unit) return self.counts[unit]      end,
 	GetDuration       = function(self, unit) return self.durations[unit]   end,
 	GetExpirationTime = function(self, unit) return self.expirations[unit] end,
-}	
+}
 
 function class:ClearAllIndicators()
 	local states = self.states
@@ -273,7 +273,7 @@ function class:ClearAllIndicators()
 end
 
 function class:LoadZoneSpells()
-	if curzone then		
+	if curzone then
 		local count = 0
 		local db = self.dbx.debuffs[curzone]
 		if db then
@@ -309,7 +309,7 @@ function class:OnDisable()
 		GSRD:UnregisterMessage("Grid_UnitLeft")
 		GSRD:ResetZoneSpells()
 		GSRD:UpdateEvents()
-	end	
+	end
 end
 
 function class:AddDebuff(order, te, co, ty, du, ex, id)
@@ -326,11 +326,11 @@ end
 function class:UpdateState(unit)
 	if self.order<10000 then
 		if self.count==0 then self.count = 1 end
-		if	true            ~= self.states[unit]    or 
-			self.count      ~= self.counts[unit]    or 
+		if	true            ~= self.states[unit]    or
+			self.count      ~= self.counts[unit]    or
 			self.type       ~= self.types[unit]     or
 			self.texture    ~= self.textures[unit]  or
-			self.duration   ~= self.durations[unit] or	
+			self.duration   ~= self.durations[unit] or
 			self.expiration ~= self.expirations[unit]
 		then
 			self.states[unit]      = true
@@ -387,8 +387,8 @@ end
 local prev_UpdateDefaults = Grid2.UpdateDefaults
 function Grid2:UpdateDefaults()
 	prev_UpdateDefaults(self)
-	if not Grid2:DbGetValue("versions", "Grid2RaidDebuffs") then 
+	if not Grid2:DbGetValue("versions", "Grid2RaidDebuffs") then
 		Grid2:DbSetMap( "icon-center", "raid-debuffs", 155)
 		Grid2:DbSetValue("versions","Grid2RaidDebuffs",1)
-	end	
+	end
 end

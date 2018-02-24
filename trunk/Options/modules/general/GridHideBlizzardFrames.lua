@@ -15,10 +15,10 @@ Grid2Options:AddGeneralOptions( "Misc", "Blizzard Raid Frames", {
 		order = 120,
 		get = function () return not IsAddOnLoaded( addons[1] ) end,
 		set = function (_, v)
-			local func = v and DisableAddOn or EnableAddOn 
-			for _, v in pairs(addons) do 
-				func(v) 
-			end 
+			local func = v and DisableAddOn or EnableAddOn
+			for _, v in pairs(addons) do
+				func(v)
+			end
 			ReloadUI()
 		end,
 		confirm = function() return "UI will be reloaded. Are your sure ?" end,

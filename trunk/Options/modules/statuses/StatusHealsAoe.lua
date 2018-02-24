@@ -10,7 +10,7 @@ local classHeals = {
 	PALADIN = { 85222, 114871, 119952 },   	  -- Light of Dawn, Holy Prism, Arcing Light(Light Hammer's effect)
 	DRUID   = { 81269, 740 }, 			      -- Wild Mushroom, Tranquility
 	MONK    = { 124040, 130654, 124101, 132463, 115310 }, -- Chi Torpedo, Chi Burst, Zen Sphere: Detonate, Chi Wave, Revival
-	ZRAID    = {
+	ZRAID   = {
 				740,    -- Druid Traquility
 				127944, -- Shaman Tide Totem
 				64843,  -- Priest Divine Himn
@@ -30,7 +30,7 @@ local function GetSpellID(name, defaultSpells)
 				return spell
 			end
 		end
-	end	
+	end
 	local id = 0
 	local texture = select(3, GetSpellInfo(name))
 	for i=150000, 1, -1  do
@@ -57,9 +57,9 @@ do
 			name = L["Show if mine"],
 			desc = L["Show my spells only."],
 			get = function () return status.dbx.mine == true end,
-			set = function (_, v) 
+			set = function (_, v)
 				status.dbx.mine = v or nil
-				status:UpdateDB() 
+				status:UpdateDB()
 			end,
 		}
 		options.showIfNotMine = {
@@ -68,13 +68,13 @@ do
 			name = L["Show if not mine"],
 			desc = L["Show others spells only."],
 			get = function () return status.dbx.mine == false end,
-			set = function (_, v) 
+			set = function (_, v)
 				if v then
 					status.dbx.mine = false
 				else
 					status.dbx.mine = nil
-				end	
-				status:UpdateDB() 
+				end
+				status:UpdateDB()
 			end,
 		}
 		options.spacer = { type = "header", order = 39, name = "" }
@@ -102,20 +102,20 @@ do
 					local auras = {}
 					for _,spell in pairs(status.dbx.spellList) do
 						local name = GetSpellInfo(spell)
-						if name then 
+						if name then
 							auras[#auras+1] = name
 						end
 					end
 					return table.concat( auras, "\n" )
 			end,
-			set = function(_, v) 
+			set = function(_, v)
 				wipe(status.dbx.spellList)
 				local auras = { strsplit("\n,", v) }
 				for i,v in pairs(auras) do
 					local aura = strtrim(v)
 					if #aura>0 then
 						local spellID = tonumber(aura)
-						if spellID then 
+						if spellID then
 							spellID = GetSpellInfo(spellID) and spellID or 0
 						else
 							spellID = GetSpellID(aura, classHeals)
@@ -124,7 +124,7 @@ do
 							table.insert(status.dbx.spellList, spellID)
 						end
 					end
-				end	
+				end
 				status:UpdateDB()
 			end,
 		}
@@ -140,7 +140,7 @@ do
 						for _,spellID in pairs(spells) do
 							table.insert(status.dbx.spellList, spellID)
 						end
-					end	
+					end
 				end
 				status:UpdateDB()
 			end,
@@ -157,9 +157,9 @@ do
 	end
 end
 
--- MakeCategoryOptions() 
-local function MakeCategoryOptions() 
-	local NewStatusName, NewClassHeals 
+-- MakeCategoryOptions()
+local function MakeCategoryOptions()
+	local NewStatusName, NewClassHeals
 	return {
 		newOutgoingStatusName = {
 			type = "input",
@@ -167,9 +167,9 @@ local function MakeCategoryOptions()
 			name = L["Type New Status Name"],
 			desc = L["Type the name of the new AOE-Heals status to create."],
 			get = function() return NewStatusName end,
-			set = function(_, v) 
+			set = function(_, v)
 				NewStatusName = strtrim(v)
-			end,	
+			end,
 			validate = function(_,v)
 				v = strtrim(v)
 				return (v == "" or Grid2:DbGetValue( "statuses", "aoe-" .. v )) and L["Invalid status name or already in use."] or true
@@ -180,7 +180,7 @@ local function MakeCategoryOptions()
 			order = 51,
 			name = L["Select heal spells"],
 			desc = L[""],
-			get = function () 
+			get = function ()
 				return NewClassHeals or '~'
 			end,
 			set = function(_,v)
@@ -201,7 +201,7 @@ local function MakeCategoryOptions()
 			order = 55,
 			width = "half",
 			name = L["Create"],
-			func = function() 
+			func = function()
 				local baseKey = "aoe-" .. NewStatusName
 				local spellList = {}
 				if not Grid2:DbGetValue("statuses",baseKey) then
@@ -210,10 +210,10 @@ local function MakeCategoryOptions()
 							for _,spellID in pairs(spells) do
 								table.insert(spellList, spellID)
 							end
-						end	
+						end
 					end
 					local dbx = { type = "aoe-heals", spellList = spellList, activeTime =2, color1 = {r=0, g=0.8, b=1, a=1} }
-					Grid2:DbSetValue("statuses", baseKey, dbx) 
+					Grid2:DbSetValue("statuses", baseKey, dbx)
 					local status = Grid2.setupFunc[dbx.type](baseKey, dbx)
 					Grid2Options:MakeStatusOptions(status)
 				end
@@ -222,7 +222,7 @@ local function MakeCategoryOptions()
 			end,
 			disabled = function() return NewStatusName==nil end,
 		},
-	} 
+	}
 end
 
 Grid2Options:RegisterStatusCategory("aoe-heal", { name = L["AOE Heals"], icon = "Interface\\Icons\\Spell_holy_holynova", options = MakeCategoryOptions() } )

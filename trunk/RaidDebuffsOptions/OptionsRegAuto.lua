@@ -26,7 +26,7 @@ local function GetKnownDebuffs(curZoneId)
 					known_debuffs[spell] = true
 				end
 			end
-		end	
+		end
 	end
 	wipe(known_debuffs)
 	for moduleName in pairs(GSRD.db.profile.enabledModules) do
@@ -35,7 +35,7 @@ local function GetKnownDebuffs(curZoneId)
 	GetZoneDebuffs( GSRD.db.profile.debuffs[curZoneId] )
 	for _,spellId in ipairs(black_debuffs) do
 		known_debuffs[spellId] = true
-	end	
+	end
 	return known_debuffs
 end
 
@@ -53,14 +53,14 @@ local function GetKnownBosses(instanceID)
 				if not encounterID then break end
 				local creatureIndex = 1
 				while true do
-					 local _, creatureName = EJ_GetCreatureInfo( creatureIndex, encounterID ) 
+					 local _, creatureName = EJ_GetCreatureInfo( creatureIndex, encounterID )
 					 if not creatureName then break end
 					 creatures[creatureName] = { encounterID, encounterName, encounterIndex }
 					 creatureIndex = creatureIndex + 1
-				end    
+				end
 				encounterIndex = encounterIndex + 1
 			end
-		end	
+		end
 	end
 	return creatures
 end
@@ -92,12 +92,12 @@ end
 
 -- function RDO:RegisterAutodetectedDebuffs()
 do
-	-- bosses_localized[localized_encounter_name] = encounter_key = RDDB[module][mapId][encounter_key] = usually english encounter name  
+	-- bosses_localized[localized_encounter_name] = encounter_key = RDDB[module][mapId][encounter_key] = usually english encounter name
 	local bosses_localized
 	-- bosses_encounters[encounterID] = encounter_key
 	local bosses_encounters
 	-- When a debuff is autodetected, we have a localized boss name and maybe the encounter ID, and we want to know the encounter
-	-- key in the RDDB database (to avoid duplicating bosses), the encounter key usually is the english encounter name, but this info is 
+	-- key in the RDDB database (to avoid duplicating bosses), the encounter key usually is the english encounter name, but this info is
 	-- not available in non-english clients. Using two aproaches, first trying to identify the bossKey using the encounter journal ID,
 	-- and if not available, using a boss_localized>boss_english table, here we generate two hash tables for fast search the info.
 	local function GenerateBossesLocalizationTable()
@@ -109,14 +109,14 @@ do
 					for bossKey,boss in pairs(zone) do
 						if boss.ejid and boss.ejid>0 then
 							 local name_localized = EJ_GetEncounterInfo(boss.ejid)
-							 if name_localized then 
-								bosses_localized[name_localized] = bossKey 
+							 if name_localized then
+								bosses_localized[name_localized] = bossKey
 								bosses_encounters[boss.ejid] = bossKey
 							 end
 						end
 					end
 				end
-			end	
+			end
 		end
 	end
 	-- instanceID = Encounter Journal instance ID / bossName = Localized boss name
@@ -126,7 +126,7 @@ do
 			if encounter then
 				return encounter[1], encounter[2], encounter[3]
 			end
-		end	
+		end
 	end
 	function RDO:RegisterAutodetectedDebuffs()
 		local result
@@ -137,13 +137,13 @@ do
 				if not GSRD.db.profile.debuffs[zone] then
 					GSRD.db.profile.debuffs[zone] = {}
 					result = true
-				end	
+				end
 			end
 			wipe(new_zones)
 		end
 		-- Register new debuffs
 		local new_debuffs = GSRD.db.profile.autodetect.debuffs
-		if next(new_debuffs) then 
+		if next(new_debuffs) then
 			GenerateBossesLocalizationTable()
 			for spellId,zoneboss in pairs(new_debuffs) do
 				local zoneName, instanceID, bossName = strsplit("@", zoneboss)
@@ -155,15 +155,15 @@ do
 					DbAddTableValue( spellId, GSRD.db.profile.debuffs, zoneName, bossKey)
 					if not DbGetValue(GSRD.db.profile.debuffs, zoneName, bossKey, "order") then
 						DbSetValue( encounterIndex or (bossKey ~= "Unknown" and 50 or 100), GSRD.db.profile.debuffs, zoneName, bossKey, "order" )
-					end	
+					end
 					if encounterID and (not DbGetValue(GSRD.db.profile.debuffs, zoneName, bossKey, "ejid")) then
 						DbSetValue( encounterID, GSRD.db.profile.debuffs, zoneName, bossKey, "ejid" )
 					end
-				end	
+				end
 			end
 			wipe(new_debuffs)
 			result = true
-		end	
+		end
 		return result
 	end
 	function RDO:InitAutodetect()

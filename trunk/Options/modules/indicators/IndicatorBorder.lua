@@ -41,7 +41,7 @@ function Grid2Options:MakeIndicatorBorderCustomOptions(indicator,options)
 			Grid2Frame.db.profile.frameBorderDistance = v
 			Grid2Frame:LayoutFrames()
 		end,
-	}		
+	}
 	options.borderTexture = {
 		type = "select", dialogControl = "LSM30_Border",
 		order = 25,
@@ -51,7 +51,7 @@ function Grid2Options:MakeIndicatorBorderCustomOptions(indicator,options)
 		set = function (info, v)
 			Grid2Frame.db.profile.frameBorderTexture = v
 			Grid2Frame:LayoutFrames()
-		end, 
+		end,
 		values = AceGUIWidgetLSMlists.border,
 	}
 end

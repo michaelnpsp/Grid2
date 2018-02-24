@@ -42,8 +42,8 @@ Grid2Options:RegisterStatusOptions("range", "target", function(self, status, opt
 		order = 20,
 		name = "",
 	}
-	self:MakeStatusColorOptions(status, options, { 
+	self:MakeStatusColorOptions(status, options, {
 		width = "full",
-		color1 = L["Out of range"] 
+		color1 = L["Out of range"]
 	} )
 end )

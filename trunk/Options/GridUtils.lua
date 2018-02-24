@@ -44,7 +44,7 @@ Grid2Options.pointMapText = {
 	["5"] = { "CENTER", "MIDDLE" },
 	["6"] = {"CENTER", "BOTTOM" },
 	["7"] = { "RIGHT", "TOP" },
-	["8"] = { "RIGHT", "MIDDLE" }, 
+	["8"] = { "RIGHT", "MIDDLE" },
 	["9"] = { "RIGHT", "BOTTOM" },
 }
 
@@ -73,25 +73,25 @@ Grid2Options.pointValueListExtra = {
 	["9"] = L["BOTTOMRIGHT"],
 }
 
-Grid2Options.fontFlagsValues = { 
+Grid2Options.fontFlagsValues = {
 	["NONE"] = L["Soft"],
-	["OUTLINE"] = string.format( "%s, %s", L["Soft"], L["Thin"] ), 
-	["THICKOUTLINE"] = string.format( "%s, %s", L["Soft"], L["Thick"] ), 
+	["OUTLINE"] = string.format( "%s, %s", L["Soft"], L["Thin"] ),
+	["THICKOUTLINE"] = string.format( "%s, %s", L["Soft"], L["Thick"] ),
 	["MONOCHROME"] = L["Sharp"],
-	["MONOCHROME, OUTLINE"] = string.format( "%s, %s", L["Sharp"], L["Thin"] ), 
-	["MONOCHROME, THICKOUTLINE"] = string.format( "%s, %s", L["Sharp"], L["Thick"] ), 
+	["MONOCHROME, OUTLINE"] = string.format( "%s, %s", L["Sharp"], L["Thin"] ),
+	["MONOCHROME, THICKOUTLINE"] = string.format( "%s, %s", L["Sharp"], L["Thick"] ),
 }
 
 -- Grid2Options:EnableLoadOnDemand()
--- Delays the creation of indicators and statuses options, until the user clicks on each option, 
--- reducing initial memory usage and load time. Instead of the real options, a "description" type option 
--- is inserted in the options table. When the user clicks on the parent option, the "hidden" callback 
+-- Delays the creation of indicators and statuses options, until the user clicks on each option,
+-- reducing initial memory usage and load time. Instead of the real options, a "description" type option
+-- is inserted in the options table. When the user clicks on the parent option, the "hidden" callback
 -- of our "description" option is called, and at this point the module creates the real options.
 -- This function can be safety removed, Grid2Option will continue working without this feature.
 do
-	local openManager = {	
-		type = "description", 
-		name = "", 
+	local openManager = {
+		type = "description",
+		name = "",
 		hidden = function(info)
 			local self = Grid2Options
 			local key = info[#info-1]
@@ -117,10 +117,10 @@ do
 				self[ f.."_" ] = self[ f ]
 				self[ f ] = Hook
 			end
-		end		
+		end
 		self.EnableLoadOnDemand = nil
 	end
-end	
+end
 
 -- Grid2Options.Tooltip generic tooltip to parse hiperlinks
 do
@@ -155,7 +155,7 @@ do
 		Thresholds   = { type = "header", order = 50,  name = L["Thresholds"], },
 		Value        = { type = "header", order = 90,  name = L["Value Track"] },
 		Misc         = { type = "header", order = 100, name = L["Misc"]        },
-		Auras	     = { type = "header", order = 150, name = L["Auras"]       },		
+		Auras	     = { type = "header", order = 150, name = L["Auras"]       },
 		DebuffFilter = { type = "header", order = 175, name = L["Filtered debuffs"] },
 		ClassFilter  = { type = "header", order = 200, name = L["Class Filter"] },
 	}
@@ -178,13 +178,13 @@ do
 end
 
 -- Grid2:MakeTitleOptions(options, title, subtitle, desc, icon, coords)
-do	
+do
 	local titleCoords = { 0.05, 0.95, 0.05, 0.95 }
 	local titleMask   = NORMAL_FONT_COLOR_CODE .. "%s|r\n%s"
 	local titleSep    = { type = "header",	order = 1.5, width = "full", name = "" }
 	function Grid2Options:MakeTitleOptions(options, title, subtitle, desc, icon, coords)
 		options.title = {
-			type  = "description", order = 1, width = "full", fontSize = "large", 
+			type  = "description", order = 1, width = "full", fontSize = "large",
 			image = icon, imageWidth  = 30, imageHeight = 30, imageCoords = coords or titleCoords,
 			name  = string.format(titleMask, title, subtitle),
 		}
@@ -201,7 +201,7 @@ do
 	local HexDigits = "0123456789ABCDEF"
 	local prefixes = { "color-", "buff-", "debuff-", "buffs-", "debuffs-", "aoe-" }
 	local suffixes = { "-not-mine", "-mine" }
-	local prefixes_colors = { 
+	local prefixes_colors = {
 		["buff-"]   = "|cFF00ff00%s|r",
 		["debuff-"] = "|cFFff0000%s|r",
 		["buffs-"]   = "|cFF00ffa0%s|r",
@@ -212,23 +212,23 @@ do
 	local function byteToHex(byte)
 		local L = byte % 16 + 1
 		local H = math.floor( byte / 16 ) + 1
-		return HexDigits:sub(H,H) .. HexDigits:sub(L,L)  
+		return HexDigits:sub(H,H) .. HexDigits:sub(L,L)
 	end
 	local function rgbToHex(c)
 		return byteToHex(math.floor(c.r*255)) .. byteToHex(math.floor(c.g*255)) .. byteToHex(math.floor(c.b*255))
-	end		
+	end
 	local function SplitStatusName(name)
 		local prefix= ""
 		local suffix= ""
 		local body
 		for _, value in ipairs(prefixes) do
-			if strsub(name,1,strlen(value))==value then 
+			if strsub(name,1,strlen(value))==value then
 				prefix = value
 				break
 			end
 		end
 		for _, value in ipairs(suffixes) do
-			if strsub(name,-strlen(value))==value then 
+			if strsub(name,-strlen(value))==value then
 				suffix = value
 				break
 			end
@@ -241,9 +241,9 @@ do
 		local prefix, body, suffix = SplitStatusName(name)
 		if RemovePrefix then
 			prefix = ""
-		end	
+		end
 		if prefix=="color-" then
-			body = "|cFF" .. rgbToHex(status.dbx.color1) .. L[body] .. "|r" 
+			body = "|cFF" .. rgbToHex(status.dbx.color1) .. L[body] .. "|r"
 		else
 			body = L[body]
 		end
@@ -254,7 +254,7 @@ do
 			suffix = L[suffix]
 		end
 		return prefix .. body .. suffix
-	end	
+	end
 end
 
 -- Grid2Options.LocalizeIndicator()
@@ -262,7 +262,7 @@ function Grid2Options:LocalizeIndicator(indicator)
 	local icon, suffix
 	local type = indicator.dbx.type
 	local name = indicator.name
-	if strsub(name,-6)=="-color" then 
+	if strsub(name,-6)=="-color" then
 		name = strsub(name,1,-7)
 		icon = self.indicatorIconPath .. 'color'
 		suffix = '(color)'
@@ -270,7 +270,7 @@ function Grid2Options:LocalizeIndicator(indicator)
 		icon = self.indicatorIconPath .. (self.indicatorTypesOrder[type] and type or "default")
 		suffix = ''
 	end
- 	return string.format( type == 'multibar' and "|T%s:0|t|cFF808080%s%s|r" or "|T%s:0|t%s%s", icon, self.LI[name] or L[name], suffix )
+	return string.format( type == 'multibar' and "|T%s:0|t|cFF808080%s%s|r" or "|T%s:0|t%s%s", icon, self.LI[name] or L[name], suffix )
 end
 
 -- checking that the status provides at least one of the required indicator types
@@ -298,7 +298,7 @@ function Grid2Options:GetAvailableStatusValues(indicator, statusAvailable, statu
 	for _, status in ipairs(indicator.statuses) do
 		if status ~= statusToKeep then
 			statusAvailable[status.name] = nil
-		end	
+		end
 	end
 	return statusAvailable
 end
@@ -337,22 +337,22 @@ end
 function Grid2Options:RefreshIndicator(indicator, method, extraAction )
 	if method == "Create" then
 		Grid2Frame:WithAllFrames(indicator, "Disable")
-	end	
-	if indicator.UpdateDB then 
-		indicator:UpdateDB() 
-		if indicator.sideKick and indicator.sideKick.UpdateDB then 
+	end
+	if indicator.UpdateDB then
+		indicator:UpdateDB()
+		if indicator.sideKick and indicator.sideKick.UpdateDB then
 			indicator.sideKick:UpdateDB()
-		end	
+		end
 	end
 	if method and method ~= "Update" then
-		Grid2Frame:WithAllFrames(indicator, method) 
+		Grid2Frame:WithAllFrames(indicator, method)
 	end
 	if method == "Create" then
 		Grid2Frame:WithAllFrames(indicator, "Layout")
 	end
 	if method == "Create" or method == "Update" or extraAction == "Update" then
 		Grid2Frame:UpdateIndicators()
-	end	
+	end
 end
 
 
@@ -375,7 +375,7 @@ function Grid2Options:GetValidatedName(name)
 	return name
 end
 
--- Copy elements of a table into another table, 
+-- Copy elements of a table into another table,
 -- Does not wipe the destination table
 -- Does not do a deep copy, only root keys are copied
 -- If dst is not specified creates an empty table to copy src into
@@ -386,7 +386,7 @@ function Grid2Options:CopyOptionsTable(src, dst)
 		for k,v in pairs(src) do
 			dst[k] = v
 		end
-	end	
+	end
 	return dst
 end
 

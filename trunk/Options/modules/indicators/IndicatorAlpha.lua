@@ -4,7 +4,3 @@ Grid2Options:RegisterIndicatorOptions("alpha",  false, function(self, indicator)
 	self:MakeIndicatorStatusOptions(indicator, options)
 	self:AddIndicatorOptions(indicator, options)
 end)
-
-
-
-

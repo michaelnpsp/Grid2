@@ -17,9 +17,9 @@ Grid2Options:RegisterStatusOptions("shields", "health", function(self, status, o
 		bigStep = 1000,
 		step = 1,
 		get = function () return status.dbx.maxShieldValue or 0 end,
-		set = function (_, v) 
+		set = function (_, v)
 			status.dbx.maxShieldValue = v>0 and v or nil
-			status:UpdateDB() 
+			status:UpdateDB()
 		end,
 	}
 	options.thresholdMedium = {
@@ -34,7 +34,7 @@ Grid2Options:RegisterStatusOptions("shields", "health", function(self, status, o
 		get = function () return status.dbx.thresholdMedium end,
 		set = function (_, v)
 			   if status.dbx.thresholdLow > v then v = status.dbx.thresholdLow end
-			   status.dbx.thresholdMedium = v  
+			   status.dbx.thresholdMedium = v
 			   status:UpdateDB()
 		end,
 	}
@@ -50,10 +50,10 @@ Grid2Options:RegisterStatusOptions("shields", "health", function(self, status, o
 		get = function () return status.dbx.thresholdLow end,
 		set = function (_, v)
 			   if status.dbx.thresholdMedium < v then v = status.dbx.thresholdMedium end
-			   status.dbx.thresholdLow = v  
+			   status.dbx.thresholdLow = v
 			   status:UpdateDB()
 		end,
-	}	
+	}
 	local Grid2Frame = Grid2:GetModule("Grid2Frame")
 	if Grid2Frame.db.profile.blinkType ~= "None" then
 		options.blinkThreshold = {

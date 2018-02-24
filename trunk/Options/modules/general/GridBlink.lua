@@ -23,7 +23,7 @@ Grid2Options:AddGeneralOptions( "Misc", "blink", {
 		max = 10,
 		step = .5,
 		get = function ()
-			return Grid2Frame.db.profile.blinkFrequency 
+			return Grid2Frame.db.profile.blinkFrequency
 		end,
 		set = function (_, v)
 			Grid2Frame.db.profile.blinkFrequency = v

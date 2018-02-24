@@ -13,9 +13,9 @@ Grid2Options:RegisterStatusOptions("heal-absorbs", "health", function(self, stat
 		bigStep = 1000,
 		step = 1,
 		get = function () return status.dbx.maxShieldValue or 0 end,
-		set = function (_, v) 
-			status.dbx.maxShieldValue = v>0 and v or nil  
-			status:UpdateDB() 
+		set = function (_, v)
+			status.dbx.maxShieldValue = v>0 and v or nil
+			status:UpdateDB()
 		end,
 	}
 	options.thresholdMedium = {
@@ -30,7 +30,7 @@ Grid2Options:RegisterStatusOptions("heal-absorbs", "health", function(self, stat
 		get = function () return status.dbx.thresholdMedium end,
 		set = function (_, v)
 			   if status.dbx.thresholdLow > v then v = status.dbx.thresholdLow end
-			   status.dbx.thresholdMedium = v  
+			   status.dbx.thresholdMedium = v
 			   status:UpdateDB()
 		end,
 	}
@@ -46,16 +46,16 @@ Grid2Options:RegisterStatusOptions("heal-absorbs", "health", function(self, stat
 		get = function () return status.dbx.thresholdLow end,
 		set = function (_, v)
 			   if status.dbx.thresholdMedium < v then v = status.dbx.thresholdMedium end
-			   status.dbx.thresholdLow = v  
+			   status.dbx.thresholdLow = v
 			   status:UpdateDB()
 		end,
 	}
 end, {
-	color1 = L["Normal"], 
+	color1 = L["Normal"],
 	colorDesc1 = L["Normal heal absorbs color"],
-	color2 = L["Medium"], 
+	color2 = L["Medium"],
 	colorDesc2 = L["Medium heal absorbs color"],
-	color3 = L["Low"],    
+	color3 = L["Low"],
 	colorDesc3 = L["Low heal absorbs color"],
 	title = L["display remaining amount of heal absorb shields"],
 	titleIcon = "Interface\\Icons\\spell_fire_ragnaros_lavabolt",

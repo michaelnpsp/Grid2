@@ -1,13 +1,13 @@
 --[[
 	Text formatting options for indicators durations&stacks
 	General -> Misc Tab -> Text Formatting section
-	
+
 	Text formatting database variables and default values:
 	Grid2.db.profile.formatting = {
 		longDecimalFormat        = "%.1f",
 		shortDecimalFormat       = "%.0f",
 		longDurationStackFormat  = "%.1f:%d",
-		shortDurationStackFormat = "%.0f:%d", 
+		shortDurationStackFormat = "%.0f:%d",
 		invertDurationStack      = false,
 	}
 	shortFormat = used when duration >= 1 sec
@@ -60,26 +60,26 @@ do
 			if i1 and i2 then
 				local short, long = ToDbFormat("DecimalFormat", mask, tenths)
 				return (short:gsub("%%s","%%d")), (long:gsub("%%s","%%d")), i1>i2
-			end	
+			end
 		end
-	end 
+	end
 	function SetFormat(formatType, mask, tenths)
-		mask   = mask   or GetFormat(formatType) 
+		mask   = mask   or GetFormat(formatType)
 		tenths = tenths or GetTenths(formatType)
 		local short, long, inverted = ToDbFormat(formatType, mask, tenths)
 		if short then
 			-- sanity sheck, string.format will crash if format is wrong, and nothing is saved
 			string.format(short, 1, 1); string.format(long , 1, 1)
-			local dbx = Grid2.db.profile.formatting	
+			local dbx = Grid2.db.profile.formatting
 			dbx["short"..formatType] = short
 			dbx["long" ..formatType] = long
-			if inverted ~= nil then	dbx.invertDurationStack = inverted end	
+			if inverted ~= nil then	dbx.invertDurationStack = inverted end
 			for _, indicator in Grid2:IterateIndicators("text") do
 				indicator:UpdateDB()
 			end
 		end
 	end
-end	
+end
 
 -- Generate the options for AceConfigTable
 Grid2Options:AddGeneralOptions( "Misc", "Text Formatting", {

@@ -10,7 +10,7 @@ Grid2.indicatorSorted = {}
 Grid2.indicatorTypes = {}
 Grid2.indicatorPrototype = {}
 
-local indicator = Grid2.indicatorPrototype 
+local indicator = Grid2.indicatorPrototype
 indicator.__index = indicator
 
 function indicator:new(name)
@@ -52,7 +52,7 @@ function indicator:GetStatusIndex(status)
 		if s == status then
 			return i
 		end
-	end	
+	end
 end
 
 function indicator:SortStatuses()
@@ -128,7 +128,7 @@ function Grid2:UnregisterIndicator(indicator)
 			table.remove(self.indicatorSorted, i)
 			break
 		end
-	end	
+	end
 	if indicator.sideKick then
 		Grid2:UnregisterIndicator(indicator.sideKick)
 		indicator.sideKick = nil
