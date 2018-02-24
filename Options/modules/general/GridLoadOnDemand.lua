@@ -1,4 +1,3 @@
-
 local L = Grid2Options.L
 
 Grid2Options:AddGeneralOptions( "Misc", "Options management", {

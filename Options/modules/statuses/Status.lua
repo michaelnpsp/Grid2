@@ -3,7 +3,7 @@
 local L = Grid2Options.L
 
 -- Grid2Options:MakeStatusDeleteOptions()
-do 
+do
 	local function DeleteStatus(info)
 		local status   = info.arg.status
 		local category = Grid2Options:GetStatusCategory(status)
@@ -25,9 +25,9 @@ do
 			disabled = function() return next(status.indicators)~=nil end,
 			arg = { status = status },
 		}
-		options.deletemsg = { 
+		options.deletemsg = {
 			type = "description", order = 510, fontSize = "small", width = "double", name = L["There are indicators linked to this status. Assigned indicators must be unchecked to be able to delete this status."],
-			hidden = function() return next(status.indicators)==nil end,		
+			hidden = function() return next(status.indicators)==nil end,
 		}
 	end
 end

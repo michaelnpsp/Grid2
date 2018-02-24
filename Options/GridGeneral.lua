@@ -25,13 +25,13 @@ function Grid2Options:AddGeneralOptions(TabName, SectionName, extraOptions)
 			if extraOptions.args  then
 				extraOptions.order = sect_order
 				CurTab.args[SectionName] = extraOptions
-			else	
-				CurTab.args[SectionName] = { type = "group", inline = true, order = sect_order, 
+			else
+				CurTab.args[SectionName] = { type = "group", inline = true, order = sect_order,
 											name = L[SectionName],	desc = L["Options for %s."]:format(L[SectionName]),
 											args = extraOptions,	}
 			end
 			sect_order = sect_order + 1
-		end			
+		end
 	else
 		if extraOptions.args then
 			extraOptions.order = tabs_order

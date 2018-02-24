@@ -5,17 +5,17 @@ local L = Grid2Options.L
 
 local function RegisterIndicatorStatus(indicator, status, value)
 	if value then
-		local priority = #indicator.statuses>0 and indicator.priorities[indicator.statuses[1]] + 1 or 50 
+		local priority = #indicator.statuses>0 and indicator.priorities[indicator.statuses[1]] + 1 or 50
 		Grid2:DbSetMap(indicator.name, status.name, priority)
 		indicator:RegisterStatus(status, priority)
 		-- special case for auras
 		local type = status.dbx.type
 		if type=="buff" or type=="debuff" or type=="debuffType" then
-			Grid2:RefreshAuras() 
+			Grid2:RefreshAuras()
 		end
 	else
 		Grid2:DbSetMap(indicator.name, status.name, nil)
-		indicator:UnregisterStatus(status)	
+		indicator:UnregisterStatus(status)
 	end
 	Grid2Options:RefreshIndicator(indicator, "Layout", "Update")
 end
@@ -131,7 +131,7 @@ function Grid2Options:MakeIndicatorCurrentStatusOptions(indicator, options, call
 				  name = "",
 				  order = order + 3
 				}
-			end	
+			end
 		end
 	end
 end
@@ -166,20 +166,20 @@ function Grid2Options:MakeStatusIndicatorsOptions( status, options )
 	    type = "multiselect",
 		order = 10,
 		name = L['Assigned indicators'],
-		values = function() 
-			return self:GetAvailableIndicatorValues(status) 
+		values = function()
+			return self:GetAvailableIndicatorValues(status)
 		end,
-		get = function(info,key) 
-			return status.indicators[ Grid2.indicators[key] ] 
+		get = function(info,key)
+			return status.indicators[ Grid2.indicators[key] ]
 		end,
 		set = function(info,key,value)
 			local indicator = Grid2.indicators[key]
 			if indicator.dbx.type ~= 'multibar' then
 				RegisterIndicatorStatus(indicator, status, value)
-			end	
+			end
 		end,
-		confirm = function(info,key)  
+		confirm = function(info,key)
 			return Grid2.indicators[key].dbx.type == 'multibar' and L['This indicator cannot be changed from here: go to "indicators" section to assign/unassign statuses to this indicator.']
-		end,	
+		end,
 	}
 end

@@ -1,5 +1,5 @@
 local L = Grid2Options.L
-	
+
 local function MakeOptions(self, status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
 	options.update = {

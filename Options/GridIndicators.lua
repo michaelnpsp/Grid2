@@ -27,9 +27,9 @@ end
 -- Insert options of a indicator in AceConfigTable
 function Grid2Options:AddIndicatorOptions(indicator, statusOptions, layoutOptions, colorOptions)
 	local options = self.indicatorOptions[indicator.name].args;	wipe(options)
-	if statusOptions then options["statuses"] = { type = "group", order = 10, name = L["statuses"], args = statusOptions } end	
+	if statusOptions then options["statuses"] = { type = "group", order = 10, name = L["statuses"], args = statusOptions } end
 	if colorOptions  then options["colors"]   = { type = "group", order = 20, name = L["Colors"],	args = colorOptions  } end
-	if layoutOptions then options["layout"]   = { type = "group", order = 30, name = L["Layout"],	args = layoutOptions } end	
+	if layoutOptions then options["layout"]   = { type = "group", order = 30, name = L["Layout"],	args = layoutOptions } end
 end
 
 -- Don't remove options param (openmanager hooks this function and needs this parameter)
@@ -65,15 +65,15 @@ function Grid2Options:MakeIndicatorsOptions(options)
 	-- remove old options
 	options = options or self.indicatorOptions;	wipe(options)
 	-- make new indicator options
-	if self.MakeNewIndicatorOptions then self:MakeNewIndicatorOptions() end	
+	if self.MakeNewIndicatorOptions then self:MakeNewIndicatorOptions() end
 	-- make indicators options
     local indicators = Grid2.db.profile.indicators
- 	for baseKey,dbx in pairs(indicators) do
+	for baseKey,dbx in pairs(indicators) do
 		if self.typeMakeOptions[dbx.type] then -- filter bar-color&text-color indicators
 			local indicator = Grid2.indicators[baseKey]
 			if indicator then
 				self:MakeIndicatorOptions(indicator)
 			end
-		end	
+		end
 	end
 end

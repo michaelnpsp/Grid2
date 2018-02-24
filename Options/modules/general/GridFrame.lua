@@ -31,7 +31,7 @@ Grid2Options:AddGeneralOptions("General", "Frames", { orientation = {
 			Grid2Frame.db.profile.frameTexture = v
 			Grid2Frame:LayoutFrames()
 		end,
-		values = AceGUIWidgetLSMlists.statusbar,			
+		values = AceGUIWidgetLSMlists.statusbar,
 }, font = {
 		type = "select", dialogControl = "LSM30_Font",
 		order = 30,
@@ -83,7 +83,7 @@ Grid2Options:AddGeneralOptions("General", "Frames", { orientation = {
 		name = L["Frame Height"],
 		desc = L["Adjust the height of each unit's frame."],
 		min = 10,
-		softMax = 100,		
+		softMax = 100,
 		step = 1,
 		get = function ()
 			return Grid2Frame.db.profile.frameHeight
@@ -122,7 +122,7 @@ Grid2Options:AddGeneralOptions("General", "Frames", { orientation = {
 			local c= Grid2Frame.db.profile.frameColor
 			c.r, c.g, c.b, c.a = r, g, b, a
 			Grid2Frame:LayoutFrames()
-		 end, 
+		 end,
 		hasAlpha = true,
 }, colorContent = {
 		type = "color",
@@ -138,7 +138,7 @@ Grid2Options:AddGeneralOptions("General", "Frames", { orientation = {
 			c.r, c.g, c.b, c.a = r, g, b, a
 			Grid2Frame:LayoutFrames()
 			Grid2Frame:UpdateIndicators()
-		 end, 
+		 end,
 		hasAlpha = true,
 }, mouseoverHighlight = {
 		type = "toggle",

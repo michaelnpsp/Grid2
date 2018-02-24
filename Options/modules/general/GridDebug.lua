@@ -6,7 +6,7 @@ local L = Grid2Options.L
 
 function Grid2Options:AddModuleDebugMenu(name, module)
 	local option= {}
-   	option[name]= {
+	option[name]= {
 		type = "toggle",
 		order = 3,
 		name = name,

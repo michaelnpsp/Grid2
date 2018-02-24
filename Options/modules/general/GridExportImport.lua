@@ -8,7 +8,7 @@ local Grid2 = Grid2
 
 local includeCustomLayouts
 
--- Plain hexadecimal encoding/decoding functions 
+-- Plain hexadecimal encoding/decoding functions
 local function HexEncode(s,title)
 	local hex= { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F" }
 	local b_rshift = bit.rshift
@@ -19,7 +19,7 @@ local function HexEncode(s,title)
 	for i=1,#s do
 		if j<=0 then
 			t[#t+1], j = "\n", 32
-		end		
+		end
 		j = j - 1
 		--
 		local b= byte(s,i)
@@ -46,7 +46,7 @@ local function HexDecode(s)
 		bl = byte(s,i)
 		bl = bl>=65 and bl-55 or bl-48
 		i = i + 1
-		bh = byte(s,i)  
+		bh = byte(s,i)
 		bh = bh>=65 and bh-55 or bh-48
 		i = i + 1
 		t[#t+1] = char( b_lshift(bh,4) + bl )
@@ -60,17 +60,17 @@ local function MoveTableKeys(src,dst)
 		for k,v in pairs(src) do
 			dst[k] = v
 		end
-	end	
+	end
 end
 
--- Serialize current profile table into a string variable  
+-- Serialize current profile table into a string variable
 -- Hex:  true/Encode in plain hexadecimal   false/Encode to be transmited by addon comm channel
 local function SerializeCurrentProfile(Hex, exportCustomLayouts )
 	local config= { ["Grid2"] = Grid2.db.profile }
 	for name, module in Grid2:IterateModules() do
 		if module.db.profile then
 			config[name]= module.db.profile
-		end 
+		end
 	end
 	config["@Grid2Options"] = Grid2Options.db.profile
 	if exportCustomLayouts then -- Special ugly case for Custom Layouts
@@ -78,16 +78,16 @@ local function SerializeCurrentProfile(Hex, exportCustomLayouts )
 	end
 	local Serializer = LibStub:GetLibrary("AceSerializer-3.0")
 	local Compresor = LibStub:GetLibrary("LibCompress")
-	result= Compresor:CompressHuffman(Serializer:Serialize(config)) 
+	local result = Compresor:CompressHuffman(Serializer:Serialize(config))
 	if Hex then
 		result= HexEncode(result, Grid2.db:GetCurrentProfile())
-	else	
+	else
 		result= Compresor:GetAddonEncodeTable():Encode(result)
-	end	
+	end
 	return result
 end
 
--- Deserialize a profile string into a table:  
+-- Deserialize a profile string into a table:
 -- Hex:  true/String is encoded in plain hexadecimal   false/String is encoded to be transmited through chat channels
 local function UnserializeProfile(data,Hex)
 	local Compresor = LibStub:GetLibrary("LibCompress")
@@ -95,21 +95,21 @@ local function UnserializeProfile(data,Hex)
 	if Hex then
 		data,err = HexDecode(data)
 	else
-		data,err = Compresor:GetAddonEncodeTable():Decode(data), "Error decoding profile" 
+		data,err = Compresor:GetAddonEncodeTable():Decode(data), "Error decoding profile"
 	end
 	if data	then
 		data,err = Compresor:DecompressHuffman(data)
-		if data then 
+		if data then
 			return LibStub:GetLibrary("AceSerializer-3.0"):Deserialize( data )
 		end
 	end
-	return false,err	
+	return false,err
 end
 
--- Generates a new profile name 
+-- Generates a new profile name
 local function ExtractProfileName(data)
 	local header= strsub(data,1,64)
-	local name= (header:match("%[(.-)%]") or header):gsub("=",""):gsub("profile",""):trim() 
+	local name= (header:match("%[(.-)%]") or header):gsub("=",""):gsub("profile",""):trim()
 	if name~="" then
 		return name
 	end
@@ -129,11 +129,11 @@ local function ValidateProfileName(profileName)
 	while ProfileExists(profileName) do
 		i = i + 1
 		profileName= name .. i
-	end	
+	end
 	return profileName
 end
 
--- Unserialize a profile string into a new AceDB profile  
+-- Unserialize a profile string into a new AceDB profile
 local function ImportProfile(sender, data, Hex, importCustomLayouts)
 	if type(data)~="string" then
 		print("Grid2 Import profile failed, data supplied must be a string")
@@ -143,11 +143,11 @@ local function ImportProfile(sender, data, Hex, importCustomLayouts)
 		sender= ExtractProfileName(data)
 	end
 	local profileName= ValidateProfileName(sender)
-	local Success 
+	local Success
 	Success,data= UnserializeProfile(data,Hex)
-	if not Success then	
+	if not Success then
 		print("Grid2 Import profile failed: ",data)
-		return false 
+		return false
 	end
 	if importCustomLayouts and data["@Grid2Layout"] then -- Special ugly case for Custom Layouts
 		local db = Grid2.db:GetNamespace("Grid2Layout",true)
@@ -157,47 +157,47 @@ local function ImportProfile(sender, data, Hex, importCustomLayouts)
 				if not db.global.customLayouts then	db.global.customLayouts = {} end
 				MoveTableKeys( customLayouts, db.global.customLayouts)
 				Grid2Layout:AddCustomLayouts()
-			end	
-		end	
+			end
+		end
 	end
 	local prev_Hook= Grid2.ProfileChanged
 	Grid2.ProfileChanged= function(self)
 		self.ProfileChanged= prev_Hook
 		for key,section in pairs(data) do
-			local db	
+			local db
 			if key=="Grid2" then
 				db= self.db
 			elseif key=="@Grid2Options" then
 				db= Grid2Options.db
 			else
 				db= self:GetModule(key,true) and self.db:GetNamespace(key,true)
-			end	
+			end
 			if db then
 				MoveTableKeys(section, db.profile)
 			end
 		end
 		self:ProfileChanged()
 		LibStub("AceConfigRegistry-3.0"):NotifyChange("Grid2")
-	end		
+	end
 	Grid2.db:SetProfile(profileName)
 	if importCustomLayouts then
 		Grid2Options:RefreshCustomLayoutsOptions()
-	end	
+	end
 	return true
 end
 
--- Show a Editbox where the user can copy or paste serialized profiles 
+-- Show a Editbox where the user can copy or paste serialized profiles
 local function ShowSerializeFrame(title,subtitle,data)
 	local AceGUI = LibStub("AceGUI-3.0")
 	local frame = AceGUI:Create("Frame")
 	frame:SetTitle(L["Profile import/export"])
 	frame:SetStatusText(subtitle)
 	frame:SetLayout("Flow")
-	frame:SetCallback("OnClose", 
-						function(widget) 
-							AceGUI:Release(widget) 
-							collectgarbage() 
-						 end)
+	frame:SetCallback("OnClose",
+		function(widget)
+			AceGUI:Release(widget)
+			collectgarbage()
+		end)
 	frame:SetWidth(525)
 	frame:SetHeight(375)
 	local editbox = AceGUI:Create("MultiLineEditBox")
@@ -215,16 +215,16 @@ local function ShowSerializeFrame(title,subtitle,data)
 		editbox:SetCallback("OnEnter", function(widget)	widget.editBox:HighlightText() widget:SetFocus() end)
 	else
 		editbox:DisableButton(false)
-		editbox.button:SetScript("OnClick", 
-								function(widget) 
-									ImportProfile(nil,editbox:GetText(),true, includeCustomLayouts) 
+		editbox.button:SetScript("OnClick",
+								function(widget)
+									ImportProfile(nil,editbox:GetText(),true, includeCustomLayouts)
 									AceGUI:Release(frame)
-									collectgarbage()									
+									collectgarbage()
 								end)
 	end
 end
 
--- Network Communication management 
+-- Network Communication management
 local Comm = {}
 
 function Comm:Enable(receive)
@@ -238,7 +238,7 @@ function Comm:Enable(receive)
 		self.listening= true
 		self:RegisterComm("Grid2","OnCommReceived")
 	else
-		self.listening= false	
+		self.listening= false
 		self:UnregisterAllComm()
 	end
 end
@@ -247,7 +247,7 @@ function Comm:SendMessage(message, target)
 	if not self.RegisterComm then self:Enable() end
 	self:SendCommMessage("Grid2", message, "WHISPER", target, "NORMAL", Comm.ShowProgress, self)
 end
- 
+
 function Comm:ShowProgress(sent,total)
 	local label= self.label
 	if not label then
@@ -266,19 +266,19 @@ function Comm:ShowProgress(sent,total)
 		label:SetFullHeight(true)
 		self.textFmt= "\n" .. L["Transmision progress: %d%%"]
 		self.label= label
-	end	
+	end
 	if sent<total then
 		label:SetText( string.format(self.textFmt,sent/total*100) )
 	else
 		label:SetText( "\n"..L["Transmission completed"] )
 	end
 end
- 
+
 function Comm:OnCommReceived(prefix, message, distribution, sender)
-	Grid2Options:ConfirmDialog( 
+	Grid2Options:ConfirmDialog(
 		string.format(L["\"%s\" has sent you a profile configuration. Do you want to activate received profile ?"],sender or "unknow"),
-		function() 
-			ImportProfile(sender, message) 
+		function()
+			ImportProfile(sender, message)
 			collectgarbage()
 		end
 	)
@@ -313,7 +313,7 @@ local function CleanStatusMap(setup)
 end
 
 -- {{ Create profile advanced options
-Grid2Options.AdvancedProfileOptions = { type = "group", order= 200, name = L["Advanced"], desc = L["Options for %s."]:format(L["Advanced"]), args = {	
+Grid2Options.AdvancedProfileOptions = { type = "group", order= 200, name = L["Advanced"], desc = L["Options for %s."]:format(L["Advanced"]), args = {
 	header1 ={
 		type = "header",
 		order = 60,
@@ -331,7 +331,7 @@ Grid2Options.AdvancedProfileOptions = { type = "group", order= 200, name = L["Ad
 		type = "execute",
 		order = 70,
 		name = L["Import profile"],
-		func = function ()  
+		func = function ()
 			ShowSerializeFrame(	L["Paste here a profile in text format"],
 								L["Press CTRL-V to paste a Grid2 configuration text"] )
 		end,
@@ -376,7 +376,7 @@ Grid2Options.AdvancedProfileOptions = { type = "group", order= 200, name = L["Ad
 				local message = SerializeCurrentProfile()
 				Comm:SendMessage(message, Comm.target)
 			end
-		end,	
+		end,
 	},
 	header3 ={
 		type = "header",

@@ -574,7 +574,7 @@ function Grid2Layout:SavePosition()
 				  (f:GetTop()-f:GetHeight()/2)*s-UIParent:GetHeight()/2*t
 		self.db.profile.PosX = x
 		self.db.profile.PosY = y
-		self:Debug("Saved Position", anchor, x, y)
+		self:Debug("Saved Position", a, x, y)
 	end
 end
 

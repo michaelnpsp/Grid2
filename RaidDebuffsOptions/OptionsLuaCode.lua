@@ -32,7 +32,7 @@ function RDO:GenerateModuleLuaCode(moduleName)
 			lines = lines .. "\t\t},\n"
 			return lines, bossdata.order or 100
 		end
-		local bosses, order = {}, {}
+		local bosses = {}
 		for bossName,bossdata in pairs(RDDB[moduleName][zoneName]) do
 			local code, index = GenerateBossCode(bossName,bossdata)
 			bosses[#bosses+1], order[code] = code, index
@@ -44,12 +44,12 @@ function RDO:GenerateModuleLuaCode(moduleName)
 					if not RDDB[moduleName][zoneName][bossName] then
 						local code, index = GenerateBossCode(bossName,bossdata)
 						bosses[#bosses+1], order[code] = code, index
-					end	
+					end
 				end
-			end	
+			end
 		end
 		table.sort(bosses, function(a,b) return order[a]<order[b] end)
-		local lines = string.format("\t[%d] = { -- %s \n", zoneName, GetMapNameByID(zoneName) or "" )	
+		local lines = string.format("\t[%d] = { -- %s \n", zoneName, GetMapNameByID(zoneName) or "" )
 		lines = lines .. table.concat(bosses)
 		lines = lines .. "\t},\n"
 		return lines
@@ -61,6 +61,6 @@ function RDO:GenerateModuleLuaCode(moduleName)
 	end
 	lines = lines ..  "}\n"
 	return lines
-	
-end	
-	
+
+end
+

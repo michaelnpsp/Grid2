@@ -15,7 +15,7 @@ do
 	local statusColor = {
 		type = "color",
 		width = "full",
-		name = function(info) 
+		name = function(info)
 			return RDO.statusesNames[info.arg]
 		end,
 		hasAlpha = true,
@@ -26,7 +26,7 @@ do
 		set = function(info, r,g,b,a)
 			local c = RDO.statuses[info.arg].dbx.color1
 			c.r, c.g, c.b, c.a = r, g, b, a
-		 end, 
+		 end,
 		hidden = function(info)
 			return info.arg>#RDO.statuses
 		end
@@ -45,7 +45,7 @@ options.newStatus = {
 	width = "half",
 	name = L["New"],
 	desc = L["New Status"],
-	func = function(info) 
+	func = function(info)
 		local name = string.format("raid-debuffs%d", #RDO.statuses+1)
 		Grid2:DbSetValue( "statuses", name, {type = "raid-debuffs", debuffs={}, color1 = {r=1,g=.5,b=1,a=1}} )
 		Grid2.setupFunc["raid-debuffs"]( name, Grid2:DbGetValue("statuses", name) )
@@ -60,7 +60,7 @@ options.deleteStatus = {
 	width = "half",
 	name = L["Delete"],
 	desc = L["Delete last status"],
-	func = function(info) 
+	func = function(info)
 		local status = RDO.statuses[#RDO.statuses]
 		options[status.name] = nil
 		Grid2:DbSetValue( "statuses", status.name, nil)
@@ -72,9 +72,9 @@ options.deleteStatus = {
 	end,
 	disabled = function()
 		local status = RDO.statuses[#RDO.statuses]
-		return status.enabled or next(status.dbx.debuffs) or RDO.auto_enabled 
+		return status.enabled or next(status.dbx.debuffs) or RDO.auto_enabled
 	end,
-	hidden = function() 
+	hidden = function()
 		return #RDO.statuses<=1
 	end,
 }
@@ -82,7 +82,7 @@ options.deleteStatus = {
 -- debuffs autodetection
 
 do
-	function AddToTooltip(tooltip)
+	local function AddToTooltip(tooltip)
 		tooltip:AddDoubleLine( L["RaidDebuffs Autodetection"], L["Enabled"], 255,255,255, 255,255,0)
 	end
 
@@ -92,26 +92,26 @@ do
 			order = 1,
 			name = L["Enable Autodetection"],
 			desc = L["Enable Zones and Debuffs autodetection"],
-			get = function() 
-				return RDO.auto_enabled 
+			get = function()
+				return RDO.auto_enabled
 			end,
-			set = function(_, v) 
-				RDO:SetAutodetect(v) 
+			set = function(_, v)
+				RDO:SetAutodetect(v)
 				if (not v) and RDO:RegisterAutodetectedDebuffs() then
 					RDO:RefreshAdvancedOptions()
-				end	
+				end
 				Grid2.tooltipFunc["Grid2RaidDebuffs"] = v and AddToTooltip or nil
 			end,
 		},
-		autostatus = {	
+		autostatus = {
 			type = "select",
 			order = 2,
 			name = L["Assigned to"],
 			desc = L["Assign autodetected raid debuffs to the specified status"],
-			get = function () 
+			get = function ()
 				return RDO.db.profile.autodetect.status or 1
 			end,
-			set = function (_, v) 
+			set = function (_, v)
 				local status = RDO.statuses[v]
 				if status then
 					RDO.db.profile.autodetect.status = v>1 and v or nil
@@ -141,7 +141,7 @@ do
 					RDO:EnableInstanceAllDebuffs(module,instance)
 				else
 					RDO:DisableInstanceAllDebuffs(instance)
-				end	
+				end
 			end
 			RDO:UpdateZoneSpells()
 			RDO:RefreshAdvancedOptions()
@@ -151,7 +151,7 @@ do
 			for name in pairs(RDO.RDDB) do
 				if name ~= "[Custom Debuffs]" then
 					modules[name] = L[name]
-				end	
+				end
 			end
 			return modules
 		end,
@@ -167,10 +167,10 @@ options.difficulty = {
 	order = 200,
 	name = L["Encounter Journal difficulty"],
 	desc = L["Default difficulty for Encounter Journal links"],
-	get = function () 
-		return RDO.db.profile.defaultEJ_difficulty or 14 
+	get = function ()
+		return RDO.db.profile.defaultEJ_difficulty or 14
 	end,
-	set = function (_, v) 
+	set = function (_, v)
 		RDO.db.profile.defaultEJ_difficulty = v
 	end,
 	values = {

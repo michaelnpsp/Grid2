@@ -9,15 +9,15 @@ Grid2Options:RegisterIndicatorOptions("multibar", true, function(self, indicator
 	self:MakeIndicatorMultiBarAppearanceOptions(indicator,layout)
 	self:MakeIndicatorMultiBarMiscOptions(indicator,layout)
 	self:MakeIndicatorDeleteOptions(indicator, layout)
-	self:MakeIndicatorMultiBarTexturesOptions(indicator,bars)	
-	local options = Grid2Options.indicatorOptions[indicator.name].args;	wipe(options)	
+	self:MakeIndicatorMultiBarTexturesOptions(indicator,bars)
+	local options = Grid2Options.indicatorOptions[indicator.name].args;	wipe(options)
 	options["bars"]   = { type = "group", order = 10, name = L["Bars"], args = bars }
 	options["layout"] = { type = "group", order = 30, name = L["Layout"], args = layout }
 	if indicator.dbx.textureColor==nil then
 		local colors = {}
 		self:MakeIndicatorStatusOptions(indicator.sideKick, colors)
 		options["colors"] = { type = "group", order = 20, name = L["Main Bar Color"], args = colors  }
-	end	
+	end
 end)
 
 -- Grid2Options:MakeIndicatorBarDisplayOptions()
@@ -53,7 +53,7 @@ function Grid2Options:MakeIndicatorMultiBarAppearanceOptions(indicator,options)
 			if v==0 then v= nil end
 			indicator.dbx.width = v
 			self:RefreshIndicator(indicator, "Layout", "Update")
-		end,	
+		end,
 	}
 	options.barHeight= {
 		type = "range",
@@ -70,7 +70,7 @@ function Grid2Options:MakeIndicatorMultiBarAppearanceOptions(indicator,options)
 			if v==0 then v= nil end
 			indicator.dbx.height = v
 			self:RefreshIndicator(indicator, "Layout", "Update")
-		end,	
+		end,
 	}
 	options.reverseFill= {
 		type = "toggle",
@@ -136,24 +136,24 @@ do
 			if not next(bar) then
 				indicator.dbx["bar"..index] = nil
 			end
-		end	
+		end
 	end
 	local function RegisterIndicatorStatus(indicator, status, index)
 		if status then
 			Grid2:DbSetMap(indicator.name, status.name, index)
 			indicator:RegisterStatus(status, index)
-		end	
+		end
 	end
 	local function UnregisterIndicatorStatus(indicator, status)
 		if status then
 			Grid2:DbSetMap(indicator.name, status.name, nil)
 			indicator:UnregisterStatus(status)
-		end	
+		end
 	end
 	local function SetIndicatorStatusPriority(indicator, status, priority)
 		Grid2:DbSetMap( indicator.name, status.name, priority)
 		indicator:SetStatusPriority(status, priority)
-	end	
+	end
 	local function UnregisterAllStatuses(indicator)
 		local statuses = indicator.statuses
 		while #statuses>0 do
@@ -180,7 +180,7 @@ do
 		local index     = info.arg.index
 		local list      = {}
 		for statusKey, status in Grid2:IterateStatuses() do
-			if Grid2Options:IsCompatiblePair(indicator, status) and status.name~="test" and 
+			if Grid2Options:IsCompatiblePair(indicator, status) and status.name~="test" and
 			  ( (not indicator.priorities[status]) or indicator.statuses[index] ) then
 				list[statusKey] = Grid2Options.LocalizeStatus(status)
 			end
@@ -194,11 +194,11 @@ do
 			order = 50.5,
 			name = L["Status"],
 			desc = function()
-				local status = indicator.statuses[1] 
+				local status = indicator.statuses[1]
 				return status and self.LocalizeStatus(status)
 			end,
-			get = function () 
-				local status = indicator.statuses[1] 
+			get = function ()
+				local status = indicator.statuses[1]
 				return status and status.name or nil
 			end,
 			set = SetIndicatorStatus,
@@ -226,20 +226,20 @@ do
 			name = L["Color"],
 			desc = L["Bar Color"],
 			hasAlpha = true,
-			get = function() 
+			get = function()
 				local c = indicator.dbx.textureColor
 				if c then
 					return c.r, c.g, c.b, c.a
 				else
 					return 0,0,0,1
-				end	
+				end
 			end,
-			set = function(info,r,g,b,a) 
+			set = function(info,r,g,b,a)
 				local c = indicator.dbx.textureColor
 				if not c then c = {}; indicator.dbx.textureColor = c end
 				c.r, c.g, c.b, c.a = r, g, b, a
 				self:RefreshIndicator(indicator, "Layout")
-			end,		
+			end,
 			hasAlpha = true,
 			hidden = function() return (indicator.dbx.textureColor == nil) or indicator.dbx.reverseMainBar end
 		}
@@ -251,12 +251,12 @@ do
 			order = 53,
 			tristate = false,
 			get = function () return indicator.dbx.reverseMainBar end,
-			set = function (_, v) 
+			set = function (_, v)
 				indicator.dbx.reverseMainBar = v or nil
 				self:RefreshIndicator(indicator, "Layout", "Update" )
 			end,
 			hidden = function() return indicator.dbx.textureColor == nil end,
-		}		
+		}
 		options.barStatusesColorize = {
 			type = "toggle",
 			name = L["Status Color"],
@@ -285,17 +285,17 @@ do
 				order = 50+i*5+0.5,
 				name = L["Status"],
 				desc = function()
-					local status = indicator.statuses[i+1] 
+					local status = indicator.statuses[i+1]
 					return status and self.LocalizeStatus(status)
 				end,
-				get = function () 
-					local status = indicator.statuses[i+1] 
+				get = function ()
+					local status = indicator.statuses[i+1]
 					return status and status.name or nil
 				end,
 				set = SetIndicatorStatus,
 				values = GetAvailableStatusValues,
 				disabled = function() return not indicator.statuses[i] end,
-				arg = { indicator = indicator, index = i+1},				
+				arg = { indicator = indicator, index = i+1},
 			}
 			options["barTexture"..i] = {
 				type = "select", dialogControl = "LSM30_Statusbar",
@@ -323,14 +323,14 @@ do
 				set = function( info, r,g,b,a )
 					local c = GetBarValue(indicator, i, "color")
 					if c then
-						c.r, c.g, c.b, c.a = r, g, b, a	
-					else	
+						c.r, c.g, c.b, c.a = r, g, b, a
+					else
 						SetBarValue(indicator, i, "color", {r=r, g=g, b=b, a=a} )
 					end
 					self:RefreshIndicator(indicator, "Layout")
-				 end, 
+				 end,
 				hasAlpha = true,
-			}			
+			}
 			options["barReverseFill"..i] = {
 				type = "toggle",
 				name = L["Reverse"],
@@ -357,8 +357,8 @@ do
 				end,
 				hidden = function() return GetBarValue(indicator,i, "reverse") end
 			}
-		end	
-		
+		end
+
 		if indicator.dbx.backColor then
 			options.barSepBack = { type = "header", order = 100,  name = L["Background"] }
 			options.backTexture = {
@@ -382,15 +382,15 @@ do
 				name = L["Color"],
 				desc = L["Background Color"],
 				hasAlpha = true,
-				get = function() 
+				get = function()
 					local c = indicator.dbx.backColor
 					if c then
 						return c.r, c.g, c.b, c.a
 					else
 						return 0,0,0,1
-					end	
+					end
 				end,
-				set = function(info,r,g,b,a) 
+				set = function(info,r,g,b,a)
 					local c = indicator.dbx.backColor
 					if not c then c = {}; indicator.dbx.backColor = c end
 					c.r, c.g, c.b, c.a = r, g, b, a
@@ -411,8 +411,8 @@ do
 					self:RefreshIndicator(indicator, "Layout")
 				end,
 			}
-		end	
-		
+		end
+
 		options.changeBarSep = { type = "header", order = 150, name = "" }
 		options.addBar = {
 			type = "execute",
@@ -421,12 +421,12 @@ do
 			width = "half",
 			desc = L["Add a new bar"],
 			func = function(info)
-				indicator.dbx.barCount = (indicator.dbx.barCount or 0) + 1 
+				indicator.dbx.barCount = (indicator.dbx.barCount or 0) + 1
 				self:RefreshIndicator(indicator, "Layout")
 				self:MakeIndicatorOptions(indicator)
 			end,
 			disabled = function() return (indicator.dbx.barCount or 0)>=5 end
-		}		
+		}
 		options.delBar = {
 			type = "execute",
 			order = 152,
@@ -439,7 +439,7 @@ do
 				if index>0 then
 					indicator.dbx["bar"..index] = nil
 					indicator.dbx.barCount = index>1 and index - 1 or nil
-				end	
+				end
 				self:RefreshIndicator(indicator, "Layout")
 				self:MakeIndicatorOptions(indicator)
 			end,
@@ -460,7 +460,7 @@ do
 				self:RefreshIndicator(indicator, "Layout")
 				self:MakeIndicatorOptions(indicator)
 			end,
-		}		
+		}
 	end
-	
+
 end

@@ -13,7 +13,7 @@ local function MakeClassColorOption(status, options, type, translation)
 		end,
 		set = function (_, r, g, b, a)
 			local colorKey = status.dbx.colors[type] and type or translation
-			local c = status.dbx.colors[colorKey] 
+			local c = status.dbx.colors[colorKey]
 			c.r, c.g, c.b, c.a = r, g, b, a
 			status:UpdateAllIndicators()
 		end,
@@ -65,7 +65,7 @@ end, {
 	width = "full",
 })
 
-Grid2Options:RegisterStatusOptions("color", "color", function(self, status, options, optionPararms)
+Grid2Options:RegisterStatusOptions("color", "color", function(self, status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
 	self:MakeStatusDeleteOptions(status, options, optionParams)
 end)

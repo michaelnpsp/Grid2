@@ -10,8 +10,8 @@ Grid2Options:RegisterStatusOptions("threat", "combat", function(self, status, op
 		width = "full",
 		order = 35,
 		get = function () return status.dbx.disableBlink end,
-		set = function (_, v) 
-			status.dbx.disableBlink = v or nil 
+		set = function (_, v)
+			status.dbx.disableBlink = v or nil
 			status:UpdateDB()
 		end,
 	}

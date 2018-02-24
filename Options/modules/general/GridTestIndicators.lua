@@ -43,13 +43,13 @@ function Grid2Options:IndicatorsTestMode()
 		for _, indicator in Grid2:IterateIndicators() do
 			if not Exclude[indicator.dbx.type] then
 				indicator:RegisterStatus(Test,1)
-			end	
+			end
 		end
 	else
 		for _, indicator in Grid2:IterateIndicators() do
 			if not Exclude[indicator.dbx.type] then
 				indicator:UnregisterStatus(Test)
-			end	
+			end
 		end
 	end
 	Grid2Frame:UpdateIndicators()

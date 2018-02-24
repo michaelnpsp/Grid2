@@ -137,7 +137,7 @@ end
 function Grid2:GetStatusByName(name)
 	for key, status in Grid2:IterateStatuses() do
 		if key == name then return status end
-	end	
+	end
 end
 
 function Grid2:IterateStatuses(type)

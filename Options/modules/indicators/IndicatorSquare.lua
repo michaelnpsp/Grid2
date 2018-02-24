@@ -8,7 +8,7 @@ Grid2Options:RegisterIndicatorOptions("square", true, function(self, indicator)
 	self:MakeIndicatorLocationOptions(indicator, layout)
 	self:MakeIndicatorBorderOptions(indicator, layout)
 	self:MakeIndicatorDeleteOptions(indicator, layout)
-	self:MakeIndicatorStatusOptions(indicator, statuses)	
+	self:MakeIndicatorStatusOptions(indicator, statuses)
 	self:AddIndicatorOptions(indicator, statuses, layout )
 end)
 
@@ -35,7 +35,7 @@ function Grid2Options:MakeIndicatorSquareSizeOptions(indicator, options)
 		name = L["Width"],
 		desc = L["Adjust the width of the indicator."],
 		min = 0,
-		softMax = 50,		
+		softMax = 50,
 		step = 1,
 		get = function () return indicator.dbx.width end,
 		set = function (_, v)

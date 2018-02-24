@@ -23,5 +23,5 @@ Grid2Options:AddGeneralOptions("Profiles", nil, {
 	args = {
 		general  = profileOptions or {},
 		advanced = Grid2Options.AdvancedProfileOptions or {},
-	},	
+	},
 } )

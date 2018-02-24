@@ -13,20 +13,20 @@ Grid2Options.indicatorDefaultValues = {
 do
 	local function DeleteIndicator(info)
 		local indicator = info.arg
-		Grid2Options.LI[indicator.name] = nil		
+		Grid2Options.LI[indicator.name] = nil
 		Grid2Frame:WithAllFrames(indicator, "Disable")
 		Grid2:DbSetIndicator(indicator.name,nil)
 		if indicator.dbx.sideKick then
 			Grid2:DbSetIndicator(indicator.dbx.sideKick.name, nil)
 		end
-		Grid2:UnregisterIndicator(indicator) 
+		Grid2:UnregisterIndicator(indicator)
 		Grid2Frame:UpdateIndicators()
 		Grid2Options:DeleteIndicatorOptions(indicator)
 	end
 	local function Disabled(info)
 		local indicator = info.arg
 		return #indicator.statuses>0 or (indicator.sideKick and #indicator.sideKick.statuses>0) or indicator.barParent or indicator.barChild
-	end	
+	end
 	function Grid2Options:MakeIndicatorDeleteOptions(indicator, options)
 		self:MakeHeaderOptions( options, "Delete" )
 		options.delete = {
@@ -47,7 +47,7 @@ do
 			desc = L["Type new name for the indicator"],
 			usage = L["<CharacterOnlyString>"],
 			get = function() return end,
-			set = function(_,v)	
+			set = function(_,v)
 				if strlen(v)>3 then
 					self.LI[indicator.name] = v
 					Grid2Options:MakeIndicatorOptions(indicator)
@@ -126,7 +126,7 @@ end
 do
 	local function GetIndicatorColor(info)
 		local indicator = info.arg.indicator
-		local colorKey  = "color" .. info.arg.colorIndex 
+		local colorKey  = "color" .. info.arg.colorIndex
 		local c = indicator.dbx[ colorKey ]
 		if c then return c.r, c.g, c.b, c.a end
 		return 0, 0, 0, 0
@@ -172,7 +172,7 @@ do
 		end
 	end
 end
-	
+
 -- Grid2Options:MakeIndicatorLocationOptions()
 do
 	local levelValues = { 1,2,3,4,5,6,7,8,9 }
@@ -200,7 +200,7 @@ do
 			values = self.pointValueList,
 			get = function() return self.pointMap[location.point] end,
 			set = function(_, v)
-				location.point = self.pointMap[v] 
+				location.point = self.pointMap[v]
 				self:RefreshIndicator(indicator, "Layout", "Update" )
 			end,
 		}
@@ -212,7 +212,7 @@ do
 			min = -50, max = 50, step = 1, bigStep = 1,
 			get = function() return location.x end,
 			set = function(_, v)
-				location.x = v 
+				location.x = v
 				self:RefreshIndicator(indicator, "Layout", "Update" )
 			end,
 		}

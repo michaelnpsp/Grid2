@@ -6,7 +6,7 @@ local GetSpellInfo = GetSpellInfo
 
 -- translated&colorized players class names table
 local classNames
- 
+
 -- AuraPredictor class
 local AuraPredictor = {}
 AuraPredictor.__index = AuraPredictor
@@ -22,13 +22,13 @@ function AuraPredictor:Initialize()
 	classNames = { [""] = "" }
 	for class,translation in pairs(LOCALIZED_CLASS_NAMES_MALE) do
 		local c = RAID_CLASS_COLORS[class]
-		classNames[class] = string.format(", |cff%.2x%.2x%.2x%s|r ", c.r*255, c.g*255, c.b*255, translation) 
+		classNames[class] = string.format(", |cff%.2x%.2x%.2x%s|r ", c.r*255, c.g*255, c.b*255, translation)
 	end
 	AuraPredictor.OnInitialize = nil -- Only one initialization for all instances
 end
 
-function AuraPredictor:GetValues( text, values, max )
-	-- The user can optionally type a prefix, for example: "Druid>Rejuvenation", 
+function AuraPredictor:GetValues(text, values, max)
+	-- The user can optionally type a prefix, for example: "Druid>Rejuvenation",
 	-- so we have to remove the prefix if exists, valid prefix separators: "@#>"
 	local _, suffix = strmatch(text, "^(.-[@#>])(.*)$")
 	text = suffix or text
@@ -73,13 +73,13 @@ function AuraPredictor:GetValue( text, key )
 			return prefix .. ( type(key)=="string" and strmatch(key, "^.->(.*)$") or key )
 		else
 			return key
-		end	
+		end
 	else
 		key = suffix and tonumber(suffix) or tonumber(text)
 		if not key or GetSpellInfo(key) then
 			return text
-		end	
-	end	
+		end
+	end
 end
 
 function AuraPredictor:GetHyperlink( key )
@@ -105,7 +105,7 @@ function AuraPredictor:GetSpellKey(spellID, category)
 		return key and key~="" and key..">"..spellID or spellID
 	else
 		return spellID
-	end	
+	end
 end
 
 function AuraPredictor:GetSpellDescription(spellID, spellName, spellIcon, className, isBoss)

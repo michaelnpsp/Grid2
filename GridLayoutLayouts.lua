@@ -43,7 +43,7 @@ Grid2Layout:AddLayout("Solo w/Pet", {
 		groupingOrder = DEFAULT_GROUP_ORDER,
 		showPlayer = true,
 		showSolo = true,
-		allowVehicleTarget = true,	
+		allowVehicleTarget = true,
 	},
 	[1] = {	type = "party"    },
 	[2] = { type = "partypet" }
@@ -91,7 +91,7 @@ Grid2Layout:AddLayout("By Group w/Pets", {
 		arena = true,
 	},
 	defaults = {
-		showRaid = true,	
+		showRaid = true,
 		groupingOrder = DEFAULT_GROUP_ORDER,
         allowVehicleTarget = true,
 	},
@@ -119,14 +119,14 @@ Grid2Layout:AddLayout("By Class", {
 		groupBy = "CLASS",
 		groupingOrder = DEFAULT_GROUP_ORDER,
 		unitsPerColumn = 5,
-		maxColumns = 8,	
+		maxColumns = 8,
 	}
 })
 
 Grid2Layout:AddLayout("By Class w/Pets", {
 	meta = {
 		raid = true,
-		arena = true,		
+		arena = true,
 	},
 	defaults = {
         allowVehicleTarget = true,
@@ -205,9 +205,9 @@ Grid2Layout:AddLayout("By Group & Role", {
 		showRaid = true,
 		unitsPerColumn = 5,
         allowVehicleTarget = true,
-		toggleForVehicle = true,		
+		toggleForVehicle = true,
 		groupBy = "ASSIGNEDROLE",
-		groupingOrder = "TANK,HEALER,DAMAGER,NONE",	
+		groupingOrder = "TANK,HEALER,DAMAGER,NONE",
 	},
 })
 
@@ -232,9 +232,9 @@ Grid2Layout:AddLayout("By Role w/Pets", {
 	},
 	[2] = {
 		type = "raidpet",
-	},	
+	},
 })
-		
+
 
 Grid2Layout:AddLayout("By Class | 1x25", {
 	meta = {
@@ -326,7 +326,7 @@ Grid2Layout:AddLayout("By Group | 4x10", {
     meta = {
 		raid = true,
     },
- 	defaults = {
+	defaults = {
 		showRaid = true,
 		groupingOrder = DEFAULT_GROUP_ORDER,
         allowVehicleTarget = true,
@@ -341,25 +341,25 @@ Grid2Layout:AddLayout("By Group | 4x10", {
 })
 
 Grid2Layout:AddLayout("By Group | 4x10 w/Pets", {
-    meta = {
+	meta = {
 		raid = true,
-    },
- 	defaults = {
+	},
+	defaults = {
 		showRaid = true,
 		groupingOrder = DEFAULT_GROUP_ORDER,
-        allowVehicleTarget = true,
-        groupBy = "GROUP",
-        unitsPerColumn = 10,
-        maxColumns = 1,
+		allowVehicleTarget = true,
+		groupBy = "GROUP",
+		unitsPerColumn = 10,
+		maxColumns = 1,
 	},
-    [1] = { groupFilter = "1,2" },
-    [2] = { groupFilter = "3,4" },
-    [3] = { groupFilter = "5,6" },
-    [4] = { groupFilter = "7,8" },
-    [5] = {
-        type = "raidpet",
+	[1] = { groupFilter = "1,2" },
+	[2] = { groupFilter = "3,4" },
+	[3] = { groupFilter = "5,6" },
+	[4] = { groupFilter = "7,8" },
+	[5] = {
+		type = "raidpet",
 		groupingOrder = DEFAULT_PET_ORDER,
-    },
+	},
 })
 
 Grid2Layout:AddLayout("By Role 10x", {

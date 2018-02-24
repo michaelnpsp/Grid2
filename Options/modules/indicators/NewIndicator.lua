@@ -57,7 +57,7 @@ local function NewIndicator()
 			dbx.level = 8
 		end
 		Grid2:DbSetIndicator(newIndicatorName,dbx)
-		-- Create runtime indicator 
+		-- Create runtime indicator
 		local setupFunc = Grid2.setupFunc[dbx.type]
 		local indicator = setupFunc(newIndicatorName, dbx)
 		Grid2Frame:WithAllFrames(function (f)
@@ -89,7 +89,7 @@ local indicator_name_blacklist = {
 local function NewIndicatorDisabled()
 	local name = Grid2Options:GetValidatedName(newIndicatorValues.name)
 	if name and name ~= "" then
-		if not Grid2.indicators[name] then 
+		if not Grid2.indicators[name] then
 			local _,frame= next(Grid2Frame.registeredFrames)
 			if frame then
 				-- Check if the name is in use by any unit frame child object
@@ -101,7 +101,7 @@ local function NewIndicatorDisabled()
 				return false
 			else
 				return indicator_name_blacklist[name] == true
-			end	
+			end
 		end
 	end
 	return true
@@ -127,8 +127,8 @@ function Grid2Options:MakeNewIndicatorOptions()
 		desc = L["Type of indicator to create"],
 		values = Grid2Options.indicatorTypes,
 		get = function() return newIndicatorValues.type end,
-		set = function(_,v)	
-			newIndicatorValues.type= v  
+		set = function(_,v)
+			newIndicatorValues.type= v
 			if v=="icon" or v=="text" then
 				newIndicatorValues.relPoint= "CENTER"
 			elseif v=="bar" or v=="multibar" then

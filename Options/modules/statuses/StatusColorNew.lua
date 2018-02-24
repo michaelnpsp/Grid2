@@ -11,7 +11,7 @@ Grid2Options:RegisterStatusCategoryOptions( "color", {
 		get = function()
 			return name
 		end,
-		set = function(info,value) 
+		set = function(info,value)
 			name = value:gsub("[ %.\"]", "")
 		end
 	},
@@ -22,11 +22,11 @@ Grid2Options:RegisterStatusCategoryOptions( "color", {
 		name = L["Color"],
 		desc = L["Color"],
 		hasAlpha = true,
-		get = function() 
-			return color.r, color.g, color.b, color.a 
+		get = function()
+			return color.r, color.g, color.b, color.a
 		end,
-		set = function(info,r,g,b,a) 
-			color.r, color.g, color.b, color.a = r, g, b, a 
+		set = function(info,r,g,b,a)
+			color.r, color.g, color.b, color.a = r, g, b, a
 		end
 	},
 	colorExecute= {
@@ -42,8 +42,8 @@ Grid2Options:RegisterStatusCategoryOptions( "color", {
 			Grid2Options:MakeStatusOptions(status)
 			name = ""
 		end,
-		disabled= function() 
-			return (not name) or Grid2.statuses["color-"..name] 
+		disabled= function()
+			return (not name) or Grid2.statuses["color-"..name]
 		end
 	},
 } )

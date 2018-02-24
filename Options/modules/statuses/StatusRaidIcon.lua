@@ -25,7 +25,7 @@ local function MakeOptions(self, status, options, optionParams)
 		max = 1,
 		step = 0.01,
 		get = function(info) return status.dbx.opacity or false end,
-		set = function(info, v) 
+		set = function(info, v)
 			status.dbx.opacity = v
 			status:SetGlobalOpacity(v)
 			status:UpdateAllIndicators()

@@ -13,8 +13,8 @@ if Grid2Layout.minimapIcon then
 			width = "full",
 			order = 119,
 			get = function () return not Grid2Layout.db.profile.minimapIcon.hide end,
-			set = function (_, v) 
-				Grid2Layout.db.profile.minimapIcon.hide = not v 
+			set = function (_, v)
+				Grid2Layout.db.profile.minimapIcon.hide = not v
 				if v then
 					Grid2Layout.minimapIcon:Show("Grid2")
 				else
