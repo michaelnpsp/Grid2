@@ -31,7 +31,7 @@ function Grid2:SetupIndicators(setup)
 				Grid2:Debug("SetupIndicators setupFunc not found for indicator: ", dbx.type)
 			end
 		else
-			Grid2:Debug("SetupIndicators child indicator not loaded due to failed dependencies: ", parent, dbx.type)
+			Grid2:Debug("SetupIndicators child indicator not loaded due to failed dependencies: ", baseKey, dbx.type)
 		end
 	end
 	-- add new indicator types
