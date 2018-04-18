@@ -238,7 +238,7 @@ L["Disable OmniCC"] = "OmniCC deaktivieren"
 -- L["Sets the duration in seconds."] = ""
 L["Scale"] = "Größe"
 -- L["Sets the zoom factor."] = ""
- 
+
 L["Type"] = "Art"
 L["Type of indicator"] = "Art des Indikators"
 L["Type of indicator to create"] = "Art des Indikators der erstellt werden soll"
@@ -570,7 +570,7 @@ L["Show dead as having Full Health"] = "Zeige Tote, als hätten sie volle Gesund
 L["Frequent Updates"] = "Häufigere Aktualisierungen"
 -- L["Instant Updates"] = ""
 
--- range status 
+-- range status
 L["Range"] = "Reichweite"
 L["%d yards"] = "%d Reichweite"
 L["Range in yards beyond which the status will be lost."] = "Ausserhalb der Reichweite in Yards, mit welchem der Status aufgehoben wird"
@@ -591,7 +591,7 @@ L["Color for Not Ready."] = "Farbe für nicht Bereit"
 L["AFK color"] = "AFK Farbe"
 L["Color for AFK."] = "Farbe für AFK"
 
--- heals-incoming status 
+-- heals-incoming status
 L["Include player heals"] = "Beinhaltet Spieler Heilung"
 L["Display status for the player's heals."] = "Anzeige Status für Spieler Heilung"
 -- L["Minimum value"] = ""
@@ -643,7 +643,7 @@ L["Display status only for dead units"] = "Zeige Status nur für tote Einheiten"
 -- L["A resurrection spell is being casted on the unit"] = ""
 L["Resurrected"] = "Wiederbelebt"
 -- L["A resurrection spell has been casted on the unit"] = ""
-		
+
 -- power
 -- L["Mana"] = ""
 -- L["Rage"] = ""
