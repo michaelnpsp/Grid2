@@ -65,8 +65,8 @@ function modulePrototype:OnInitialize()
 	end
 	self.debugFrame = Grid2.debugFrame
 	self.debugging = self.db.profile.debug
-	if self.OnModuleInitialize then
-		self:OnModuleInitialize()
+	if self.OnModuleInitialize then 
+		self:OnModuleInitialize() 
 		self.OnModuleInitialize = nil
 	end
 	self:Debug("OnInitialize")
@@ -113,7 +113,7 @@ function Grid2:OnInitialize()
 
 	self.debugging = self.db.profile.debug
 
-	local LibDualSpec = LibStub('LibDualSpec-1.0')
+ 	local LibDualSpec = LibStub('LibDualSpec-1.0')
 	if LibDualSpec then
 		LibDualSpec:EnhanceDatabase(self.db, "Grid2")
 	end
@@ -122,19 +122,18 @@ function Grid2:OnInitialize()
 	media:Register("statusbar", "Gradient", "Interface\\Addons\\Grid2\\media\\gradient32x32")
 	media:Register("statusbar", "Grid2 Flat", "Interface\\Addons\\Grid2\\media\\white16x16")
 	media:Register("border", "Grid2 Flat", "Interface\\Addons\\Grid2\\media\\white16x16")
-
+	
 	self:InitializeOptions()
 
 	self.OnInitialize = nil
 end
 
 function Grid2:OnEnable()
-	self:RegisterEvent("PARTY_MEMBERS_CHANGED", "GroupChanged")
 	self:RegisterEvent("GROUP_ROSTER_UPDATE", "GroupChanged")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("UNIT_PET")
 	self:RegisterEvent("UNIT_NAME_UPDATE")
-
+	
 	self.db.RegisterCallback(self, "OnProfileShutdown", "ProfileShutdown")
     self.db.RegisterCallback(self, "OnProfileChanged", "ProfileChanged")
 	self.db.RegisterCallback(self, "OnProfileCopied", "ProfileChanged")
@@ -151,7 +150,7 @@ end
 
 function Grid2:LoadConfig()
 	self:UpdateDefaults()
-	self:Setup()
+	self:Setup()	
 end
 
 function Grid2:ProfileShutdown()
@@ -167,7 +166,7 @@ function Grid2:ProfileChanged()
 	self:EnableModules()
 	if Grid2Options then
 		Grid2Options:MakeOptions()
-	end
+	end	
 end
 
 -- Options
@@ -180,9 +179,9 @@ function Grid2:InitializeOptions()
 	button:SetText("Open Grid2 Options")
 	button:SetSize(200,32)
 	button:SetPoint('TOPLEFT', optionsFrame, 'TOPLEFT', 20, -20)
-	button:SetScript("OnClick", function(self)
-		HideUIPanel(InterfaceOptionsFrame)
-		HideUIPanel(GameMenuFrame)
+	button:SetScript("OnClick", function(self) 
+		HideUIPanel(InterfaceOptionsFrame) 
+		HideUIPanel(GameMenuFrame) 
 		Grid2:OnChatCommand()
 	end)
 	InterfaceOptions_AddCategory(optionsFrame)
@@ -209,11 +208,11 @@ end
 function Grid2:OnChatCommand(input)
 	if Grid2:LoadGrid2Options() then
 		Grid2Options:OnChatCommand(input)
-	end
+	end	
 end
 
 -- Hook this to load any options addon (see RaidDebuffs & AoeHeals modules)
-function Grid2:LoadOptions()
+function Grid2:LoadOptions() 
 	Grid2Options:Initialize()
 	Grid2.LoadOptions = nil
 end

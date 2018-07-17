@@ -114,14 +114,16 @@ end
 -- banzai status
 local bsrc, buni, bgid, bdur, bexp, bico = {}, {}, {}, {}, {}, {}
 
-do 
+do
+	local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo
 	local e = {}
 	e.SPELL_CAST_START       = function(g) bsrc[g]= UnitCastingInfo end
 	e.SPELL_CAST_SUCCESS     = function(g) bsrc[g]= UnitChannelInfo end
 	e.SPELL_CAST_INTERRUPTED = function(g) bsrc[g]= nil; local unit = bgid[g]; if unit then bexp[unit]= 0 end end
 	e.SPELL_MISSED           = e.SPELL_CAST_INTERRUPTED
 	e.UNIT_DIED              = e.SPELL_CAST_INTERRUPTED
-	function Banzai.CombatLogEvent(_, event,_,sourceGUID)
+	function Banzai.CombatLogEvent()
+		local _, event,_,sourceGUID = CombatLogGetCurrentEventInfo()
 		local action = e[event]
 		if action then 
 			local unit = Grid2:GetUnitidByGUID(sourceGUID)

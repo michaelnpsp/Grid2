@@ -22,7 +22,7 @@ function Grid2:MediaFetch(mediatype, key, def)
 end
 
 -- UTF8 string truncate
-do
+do 
 	local strbyte = string.byte
 	function Grid2.strcututf8(s, c)
 		local l, i = #s, 1
@@ -64,8 +64,8 @@ end
 
 -- Common methods repository for statuses
 Grid2.statusLibrary = {
-	IsActive = function()
-		return true
+	IsActive = function() 
+		return true 
 	end,
 	GetBorder = function()
 		return 1
@@ -86,14 +86,14 @@ Grid2.statusLibrary = {
 
 --  Used by bar indicators
 Grid2.AlignPoints= {
-	HORIZONTAL = {
+	HORIZONTAL = { 
 		[true]  = { "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT" },    -- normal Fill
 		[false] = { "BOTTOMRIGHT",  "BOTTOMLEFT", "TOPRIGHT", "TOPLEFT"  },  -- reverse Fill
-	},
+	},	
 	VERTICAL   = {
 		[true]  = { "BOTTOMLEFT","TOPLEFT","BOTTOMRIGHT","TOPRIGHT" }, -- normal Fill
 		[false] = { "TOPRIGHT", "BOTTOMRIGHT","TOPLEFT","BOTTOMLEFT" }, -- reverse Fill
-	}
+	}	
 }
 
 -- Cheap method to hook/change on the fly some globals
@@ -101,7 +101,7 @@ Grid2.AlignPoints= {
 -- Needed to change the behavior of UnitHealthMax function in HFC Velhari encounter.
 do
 	local _g = {}
-	Grid2.Globals = setmetatable( {}, {
+	Grid2.Globals = setmetatable( {}, { 
 		__index    = function (t,k) return _g[k] or _G[k] end,
 		__newindex = function (t,k,v) _g[k] = v; Grid2:SendMessage("Grid2_Update_"..k, v or _G[k]) end,
 	} )
@@ -110,7 +110,6 @@ end
 -- Hellfire Citadel Velhari Encounter Health Fix
 -- Grid2Utils:FixVelhariEncounterHealth(true | false)
 do
-	local CONTEMPT_AURA = GetSpellInfo(179986)
 	local velhari_fix = false
 	local velhari_percent = -1
 	local floor = math.floor
@@ -122,14 +121,14 @@ do
 	end
 	local function VelhariUpdate()
 		if velhari_percent~=-1 then
-			local p = select(15, UnitAura("boss1", CONTEMPT_AURA))
+			local p = select(14, UnitAura("boss1", 179986)) -- CONTEMPT_AURA
 			p = p and p/100 or 1
 			if velhari_percent ~= p then
 				velhari_percent = p
 				Grid2.Globals.UnitHealthMax = VelhariHealthMax
 			end
 			C_Timer.After(1, VelhariUpdate)
-		end
+		end	
 	end
 	function Grid2Utils:FixVelhariEncounterHealth(v)
 		if v ~= velhari_fix then
@@ -140,8 +139,8 @@ do
 			else
 				self:UnregisterEvent( "ENCOUNTER_START" )
 				self:UnregisterEvent( "ENCOUNTER_END" )
-				self:Debug("HFC Tyrant Velhari Encounter Max Health Fix: DISABLED")
-			end
+				self:Debug("HFC Tyrant Velhari Encounter Max Health Fix: DISABLED")				
+			end 	
 			velhari_fix = v
 		end
 	end

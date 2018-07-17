@@ -382,13 +382,13 @@ function DungeonRole:OnEnable()
 	self:SetHideInCombat(self.dbx.hideInCombat)
 	self:UpdateDB()
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED", "UpdateAllUnits")
-	self:RegisterEvent("PARTY_MEMBERS_CHANGED", "UpdateAllUnits")
+	self:RegisterEvent("GROUP_ROSTER_UPDATE", "UpdateAllUnits")
 end
 
 function DungeonRole:OnDisable()
 	self:SetHideInCombat()
 	self:UnregisterEvent("PLAYER_ROLES_ASSIGNED")
-	self:UnregisterEvent("PARTY_MEMBERS_CHANGED")
+	self:UnregisterEvent("GROUP_ROSTER_UPDATE")
 end
 
 function DungeonRole:IsActive(unit)

@@ -27,7 +27,7 @@ do
 		local i = 1
 		while true do
 			local name, texture, count, debuffType, duration, expiration, caster, spellId, isBossDebuff, _
-			name, _, texture, count, debuffType, duration, expiration, caster, _, _, spellId, _, isBossDebuff, _, values[1], values[2], values[3] = UnitDebuff(unit, i)
+			name, texture, count, debuffType, duration, expiration, caster, _, _, spellId, _, isBossDebuff, _, values[1], values[2], values[3] = UnitDebuff(unit, i)
 			if not name then break end
 			local statuses = DebuffHandlers[name] or DebuffHandlers[spellId]
 			if statuses then
@@ -53,7 +53,7 @@ do
 		i = 1
 		while true do
 			local name, texture, count, duration, expiration, caster, spellId, _
-			name, _, texture, count, _, duration, expiration, caster, _, _, spellId, _, _, _, values[1], values[2], values[3] = UnitBuff(unit, i)
+			name, texture, count, _, duration, expiration, caster, _, _, spellId, _, _, _, values[1], values[2], values[3] = UnitBuff(unit, i)
 			if not name then break end
 			local statuses = BuffHandlers[name] or BuffHandlers[spellId]
 			if statuses then
