@@ -7,6 +7,7 @@ local next = next
 local pairs = pairs
 local select = select
 local GetTime = GetTime
+local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo
 
 local playerGUID
 local timer
@@ -38,7 +39,7 @@ local function TimerEvent()
 	end
 end
 
-local function CombatLogEvent(...)
+local function CombatLogEventReal(...)
 	local spellName = select(14,...)
 	local statuses = spells[spellName]
 	if statuses then
@@ -63,6 +64,10 @@ local function CombatLogEvent(...)
 			end	
 		end	
 	end
+end
+
+local function CombatLogEvent()
+	CombatLogEventReal(CombatLogGetCurrentEventInfo())
 end
 
 local function OnEnable(self)

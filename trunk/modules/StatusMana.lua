@@ -9,8 +9,8 @@ local max = math.max
 local fmt = string.format
 local next = next
 local tostring = tostring
-local UnitMana = UnitMana
-local UnitManaMax = UnitManaMax
+local UnitMana = UnitPower
+local UnitManaMax = UnitPowerMax
 local UnitPowerType = UnitPowerType
 local UnitPower = UnitPower
 local UnitPowerMax = UnitPowerMax
@@ -32,7 +32,7 @@ do
 		if not next(statuses) then
 			if not frame then frame = CreateFrame("Frame", nil, Grid2LayoutFrame) end
 			frame:SetScript("OnEvent", Frame_OnEvent)
-			frame:RegisterEvent("UNIT_POWER")
+			frame:RegisterEvent("UNIT_POWER_UPDATE")
 			frame:RegisterEvent("UNIT_MAXPOWER")
 			frame:RegisterEvent("UNIT_DISPLAYPOWER")
 		end
@@ -42,7 +42,7 @@ do
 		statuses[status] = nil
 		if (not next(statuses)) and frame then
 			frame:SetScript("OnEvent", nil)
-			frame:UnregisterEvent("UNIT_POWER")
+			frame:UnregisterEvent("UNIT_POWER_UPDATE")
 			frame:UnregisterEvent("UNIT_MAXPOWER")
 			frame:UnregisterEvent("UNIT_DISPLAYPOWER")
 		end

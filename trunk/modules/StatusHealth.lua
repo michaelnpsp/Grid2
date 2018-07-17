@@ -67,6 +67,7 @@ local EnableQuickHealth, DisableQuickHealth
 do
 	local roster_units = Grid2.roster_units
 	local UnitHealthOriginal = UnitHealth
+	local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo
 	local min = math.min
 	local max = math.max
 	local strlen = strlen
@@ -88,7 +89,7 @@ do
 			UpdateIndicators(unit)
 		end	
 	end 
-	local function CombatLogEvent(...)
+	local function CombatLogEventReal(...)
 		local sign = HealthEvents[select(2,...)] 
 		if sign then
 			local unit = roster_units[select(8,...)]
@@ -106,11 +107,13 @@ do
 			end	
 		end	
 	end
+	local function CombatLogEvent()
+		CombatLogEventReal(CombatLogGetCurrentEventInfo())
+	end	
 	function EnableQuickHealth()
 		if HealthCurrent.dbx.quickHealth then
 			RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", CombatLogEvent)
 			RegisterEvent("GROUP_ROSTER_UPDATE", RosterUpdateEvent)
-			RegisterEvent("PARTY_MEMBER_CHANGED", RosterUpdateEvent)
 			RegisterEvent("UNIT_HEALTH_FREQUENT", HealthChangedEvent)
 			RegisterEvent("UNIT_HEALTH", HealthChangedEvent)						
 			RegisterEvent("UNIT_MAXHEALTH", HealthChangedEvent)
@@ -119,7 +122,7 @@ do
 	end
 	function DisableQuickHealth()
 		UnitHealth = UnitHealthOriginal
-		UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "GROUP_ROSTER_UPDATE", "PARTY_MEMBER_CHANGED", "UNIT_HEALTH","UNIT_HEALTH_FREQUENT", "UNIT_MAXHEALTH")
+		UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "GROUP_ROSTER_UPDATE", "UNIT_HEALTH","UNIT_HEALTH_FREQUENT", "UNIT_MAXHEALTH")
 	end
 end
 

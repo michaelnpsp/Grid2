@@ -58,9 +58,9 @@ do
 	local colors = {}
 	status_GetIconsWhiteList = function(self, unit)
 		local i, j, spells, typeColors = 1, 1, self.auraNames, self.typeColors
-		local name, debuffType, _
+		local name, debuffType
 		while true do
-			name, _, textures[j], counts[j], debuffType, durations[j], expirations[j] = UnitDebuff(unit, i)
+			name, textures[j], counts[j], debuffType, durations[j], expirations[j] = UnitDebuff(unit, i)
 			if not name then return j-1, textures, counts, expirations, durations, colors end
 			colors[j] = debuffType and typeColors[debuffType] or self.color
 			if spells[name] then j = j + 1 end
@@ -72,7 +72,7 @@ do
 		local filterLong, filterBoss, filterCaster, spells = self.filterLong, self.filterBoss, self.filterCaster, self.auraNames
 		local name, debuffType, caster, isBossDebuff, _
 		while true do
-			name, _, textures[j], counts[j], debuffType, durations[j], expirations[j], caster, _, _, _, _, isBossDebuff = UnitDebuff(unit, i)
+			name, textures[j], counts[j], debuffType, durations[j], expirations[j], caster, _, _, _, _, isBossDebuff = UnitDebuff(unit, i)
 			if not name then return j-1, textures, counts, expirations, durations, colors end
 			colors[j] = debuffType and typeColors[debuffType] or self.color
 			local filtered = spells[name] or (filterLong and (durations[j]>=300)==filterLong) or (filterBoss~=nil and filterBoss==isBossDebuff) or (filterCaster and (caster==unit or myUnits[caster]))
@@ -81,9 +81,9 @@ do
 		end
 	end
 	status_GetIconsDispel = function(self, unit)
-		local i, typeColors, name, debuffType, _ = 1, self.typeColors
+		local i, typeColors, name, debuffType = 1, self.typeColors
 		while true do
-			name, _, textures[i], counts[i], debuffType, durations[i], expirations[i] = UnitDebuff(unit, i, "RAID")
+			name, textures[i], counts[i], debuffType, durations[i], expirations[i] = UnitDebuff(unit, i, "RAID")
 			if not name then return i-1, textures, counts, expirations, durations, colors end
 			colors[i] = debuffType and typeColors[debuffType] or self.color
 			i = i + 1			

@@ -28,7 +28,6 @@
 <Script file="modules\statuses\StatusDirection.lua"/>
 <Script file="modules\statuses\StatusHealth.lua"/>
 <Script file="modules\statuses\StatusMana.lua"/>
-<Script file="modules\statuses\StatusName.lua"/>
 <Script file="modules\statuses\StatusRaidIcon.lua"/>
 <Script file="modules\statuses\StatusRange.lua"/>
 <Script file="modules\statuses\StatusReadyCheck.lua"/>

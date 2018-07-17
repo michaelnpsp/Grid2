@@ -59,7 +59,7 @@ do
 		color.r, color.g, color.b, color.a = self:GetColor(unit)
 		local i, j, spells, filter, name, caster = 1, 1, self.auraNames, self.filterMine
 		while true do
-			name, _, textures[j], counts[j], _, durations[j], expirations[j], caster = UnitBuff(unit, i)
+			name, textures[j], counts[j], _, durations[j], expirations[j], caster = UnitBuff(unit, i)
 			if not name then return j-1, textures, counts, expirations, durations, colors end
 			if spells[name] and (filter==false or filter==myUnits[caster]) then 
 				colors[j] = color
