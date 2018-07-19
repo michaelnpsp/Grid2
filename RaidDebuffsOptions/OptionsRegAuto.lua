@@ -144,6 +144,7 @@ do
 		-- Register new debuffs
 		local new_debuffs = GSRD.db.profile.autodetect.debuffs
 		if next(new_debuffs) then
+			local debuffs = GSRD.db.profile.debuffs
 			GenerateBossesLocalizationTable()
 			for spellId,zoneboss in pairs(new_debuffs) do
 				local zoneName, instanceID, bossName = strsplit("@", zoneboss)
@@ -152,12 +153,15 @@ do
 				if zoneName>0 then
 					local encounterID, encounterName, encounterIndex = GetJournalEncounterInfo(instanceID, bossName)
 					local bossKey = (encounterID and bosses_encounters[encounterID]) or (bossName and bosses_localized[bossName]) or encounterName or bossName or "Unknown"
-					DbAddTableValue( spellId, GSRD.db.profile.debuffs, zoneName, bossKey)
-					if not DbGetValue(GSRD.db.profile.debuffs, zoneName, bossKey, "order") then
-						DbSetValue( encounterIndex or (bossKey ~= "Unknown" and 50 or 100), GSRD.db.profile.debuffs, zoneName, bossKey, "order" )
+					DbAddTableValue( spellId, debuffs, zoneName, bossKey)
+					if not DbGetValue(debuffs, zoneName, bossKey, "order") then
+						DbSetValue( encounterIndex or (bossKey ~= "Unknown" and 50 or 100), debuffs, zoneName, bossKey, "order" )
 					end
-					if encounterID and (not DbGetValue(GSRD.db.profile.debuffs, zoneName, bossKey, "ejid")) then
-						DbSetValue( encounterID, GSRD.db.profile.debuffs, zoneName, bossKey, "ejid" )
+					if encounterID and (not DbGetValue(debuffs, zoneName, bossKey, "ejid")) then
+						DbSetValue( encounterID, debuffs, zoneName, bossKey, "ejid" )
+					end
+					if not debuffs[zoneName][1] then
+						debuffs[zoneName][1] = { id = instanceID, name = EJ_GetInstanceInfo(instanceID) }
 					end
 				end
 			end

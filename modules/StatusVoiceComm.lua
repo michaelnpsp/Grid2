@@ -9,14 +9,15 @@ function Voice:Grid_UnitLeft(_, unit)
 end
 
 function Voice:OnEnable()
-	self:RegisterEvent("VOICE_START")
-	self:RegisterEvent("VOICE_STOP")
+	-- events removed, this status does not work anymore, maybe delete the status
+	--self:RegisterEvent("VOICE_START")
+	--self:RegisterEvent("VOICE_STOP")
 	self:RegisterMessage("Grid_UnitLeft")
 end
 
 function Voice:OnDisable()
-	self:UnregisterEvent("VOICE_START")
-	self:UnregisterEvent("VOICE_STOP")
+	--self:UnregisterEvent("VOICE_START")
+	--self:UnregisterEvent("VOICE_STOP")
 	self:UnregisterMessage("Grid_UnitLeft")
 	while true do
 		local k = next(cache)

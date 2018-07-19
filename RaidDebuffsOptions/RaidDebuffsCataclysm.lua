@@ -1,7 +1,8 @@
 local RDDB= Grid2Options:GetRaidDebuffsTable()
 
 RDDB["Cataclysm"] = {
-	[754] = {
+	[669] = {
+		{ id = 73, name = "Blackwing Descent" },
 		["Magmaw"]= {
 		order = 2, ejid = 170,
 		89773, -- Mangle
@@ -48,7 +49,8 @@ RDDB["Cataclysm"] = {
         79318, -- Dominion
 		},
 	},
-	[758] = {
+	[671] = {
+		{ id = 72, name = "The Bastion of Twilight" },
 		["Halfus Wyrmbreaker"]= {
 		order = 1, ejid = 156,
 		83710, -- Furious Roar
@@ -87,7 +89,8 @@ RDDB["Cataclysm"] = {
 		89299, -- Twilight Spit
 		},
 	},
-	[773] = {
+	[754] = {
+		{ id = 74, name = "Throne of the Four Winds" },
 		["Conclave of Wind"]= {
 		order = 1, ejid = 154,
 		84645, -- Wind Chill
@@ -108,7 +111,8 @@ RDDB["Cataclysm"] = {
         87856, -- Squall Line
 		},
 	},
-    [752] = {
+    [757] = {
+        { id = 75, name = "Baradin Hold" },
         ["Argaloth"]= {
 		order = 1, ejid = 139,
         88942, -- Meteor Slash
@@ -124,7 +128,8 @@ RDDB["Cataclysm"] = {
 		105067, -- Seething Hate
 		},
     },
-	[800] = {
+	[720] = {
+		{ id = 78, name = "Firelands" },
 		["Beth'tilac"]= {
 		order = 1, ejid = 192,
 		49026, -- Fixate
@@ -183,7 +188,8 @@ RDDB["Cataclysm"] = {
 		100767, -- Melt Armor
 		},
 	},
-	[824] = {
+	[967] = {
+		{ id = 187, name = "Dragon Soul" },
 		["Morchok"] = {
 		order = 1, ejid = 311,
 		103687, -- Crush Armor

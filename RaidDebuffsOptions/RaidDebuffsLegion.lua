@@ -1,6 +1,7 @@
 local RDDB = Grid2Options:GetRaidDebuffsTable()
 RDDB["Legion"] = {
-	[1066] = { -- Assault on Violet Hold (5man)
+	[1544] = { -- Assault on Violet Hold (5man)
+		{ id = 777, name = "Assault on Violet Hold" },
 		["Festerface"] = {
 		order = 1, ejid = 1693,
 		202266, -- icky-goo
@@ -43,7 +44,8 @@ RDDB["Legion"] = {
 		202361, -- execution
 		},
 	},
-	[1081] = { -- Black Rook Hold (5man)
+	[1501] = { -- Black Rook Hold (5man)
+		{ id = 740, name = "Black Rook Hold" },
 		["The Amalgam of Souls"] = {
 		order = 1, ejid = 1518,
 		194956, -- reap-soul
@@ -71,7 +73,8 @@ RDDB["Legion"] = {
 		199143, -- cloud-of-hypnosis
 		},
 	},
-	[1087] = { -- Court of Stars (5man)
+	[1571] = { -- Court of Stars (5man)
+		{ id = 800, name = "Court of Stars" },
 		["Patrol Captain Gerdo"] = {
 		order = 1, ejid = 1718,
 		207261, -- resonant-slash
@@ -91,7 +94,8 @@ RDDB["Legion"] = {
 		209628, -- piercing-gale
 		},
 	},
-	[1067] = { -- Darkheart Thicket (5man)
+	[1466] = { -- Darkheart Thicket (5man)
+		{ id = 762, name = "Darkheart Thicket" },
 		["Archdruid Glaidalis"] = {
 		order = 1, ejid = 1654,
 		196376, -- grievous-tear
@@ -119,7 +123,8 @@ RDDB["Legion"] = {
 		200111, -- apocalyptic-fire
 		},
 	},
-	[1046] = { -- Eye of Azshara (5man)
+	[1456] = { -- Eye of Azshara (5man)
+		{ id = 716, name = "Eye of Azshara" },
 		["Warlord Parjesh"] = {
 		order = 1, ejid = 1480,
 		192094, -- Impaling spear
@@ -151,7 +156,8 @@ RDDB["Legion"] = {
 		192794, -- lightning-strike
 		},
 	},
-	[1041] = { -- Halls of Valor (5man)
+	[1477] = { -- Halls of Valor (5man)
+		{ id = 721, name = "Halls of Valor" },
 		["Hymdall"] = {
 		order = 1, ejid = 1485,
 		193092, -- bloodletting-sweep
@@ -183,7 +189,8 @@ RDDB["Legion"] = {
 		197961, -- runic-brand
 		},
 	},
-	[1042] = { -- Maw of Souls (5man)
+	[1492] = { -- Maw of Souls (5man)
+		{ id = 727, name = "Maw of Souls" },
 		["Ymiron, the Fallen King"] = {
 		order = 1, ejid = 1502,
 		193211, -- dark-slash
@@ -203,7 +210,8 @@ RDDB["Legion"] = {
 		197858, -- turbulent-waters
 		},
 	},
-	[1065] = { -- Neltharion's Lair (5man)
+	[1458] = { -- Neltharion's Lair (5man)
+		{ id = 767, name = "Neltharion's Lair" },
 		["Rokmora"] = {
 		order = 1, ejid = 1662,
 		192799, -- choking-dust
@@ -226,7 +234,8 @@ RDDB["Legion"] = {
 		201953, -- crystal-spike
 		},
 	},
-	[1079] = { -- The Arcway (5man)
+	[1516] = { -- The Arcway (5man)
+		{ id = 726, name = "The Arcway" },
 		["Ivanyr"] = {
 		order = 1, ejid = 1497,
 		196562, -- volatile-magic
@@ -257,7 +266,8 @@ RDDB["Legion"] = {
 		220871, -- unstable-mana
 		},
 	},
-	[1045] = { -- Vault of the Wardens (5man)
+	[1493] = { -- Vault of the Wardens (5man)
+		{ id = 707, name = "Vault of the Wardens" },
 		["Tirathon Saltheril"] = {
 		order = 1, ejid = 1467,
 		202913, -- fel-mortar
@@ -292,7 +302,8 @@ RDDB["Legion"] = {
 		197941, -- elunes-light
 		},
 	},
-	[1115] = { -- Karazhan (5man)
+	[1651] = { -- Karazhan (5man)
+		{ id = 860, name = "Return to Karazhan" },
 		["Sala de la Opera: Makaku"] = {
 		order = 1, ejid = 1820,
 		227405, -- defy-gravity
@@ -370,7 +381,8 @@ RDDB["Legion"] = {
 		229705, -- Telara�a
 		},
 	},
-	[1178] = { -- Trono del Triunvirato (5man)
+	[1753] = { -- Trono del Triunvirato (5man)
+		{ id = 945, name = "Seat of the Triumvirate" },
 		["Zuraal el Ascendido"] = {
 		order = 1, ejid = 1979,
 		244653, -- Fijar
@@ -408,7 +420,8 @@ RDDB["Legion"] = {
 		246900, -- Contagio oscuro
 		},
 	},
-	[1146] = { -- Catedral de la Noche Eterna (5man)
+	[1677] = { -- Catedral de la Noche Eterna (5man)
+		{ id = 900, name = "Cathedral of Eternal Night" },
 		["Agronox"] = {
 		order = 1, ejid = 1905,
 		243613, -- Fijar
@@ -443,71 +456,78 @@ RDDB["Legion"] = {
 		239217, -- Mirada cegadora
 		},
 	},
-	[1017] = { -- Stormhein (World Bosses)
+	[1220] = { -- World Bosses
+		{ id = 822, name = "Broken Isles" },
+		-- Stormhein (World Bosses) 
 		["Ana-Mouz"] = {
 		order = 1, ejid = 1790,
 		219045, -- abrazo-de-la-madre
 		218888, -- llamas-traviesas
 		},
-		["Nithogg"] = {
-		order = 2, ejid = 1749,
-		212867, -- Electrical Storm (non-dispellable) Ground AoE
-		212852, -- Storm Breath (non-dispellable) DMG + DMG Increase Debuff
+		["Apocron"] = {
+		order = 2, ejid = 1956,
 		},
-		["The Soultakers"] = {
-		order = 3, ejid = 1756,
-		213665, -- Marauding Mists (non-dispellable) DMG + Disorient
+		["Brutallus"] = {
+		order = 3, ejid = 1883,
 		},
-	},
-	[1015] = { -- Azsura (World Bosses)
 		["Calamir"] = {
-		order = 1, ejid = 1774,
+		order = 4, ejid = 1774,
 		218888, -- Impish Flames (non-dispellable)
 		217925, -- Icy Comet (non-dispellable) AoE Slow
 		217966, -- Howling Gale (non-dispellable)
 		218012, -- Arcanopulse (non-dispellable) DMG + Stun
 		},
-		["Levantus"] = {
-		order = 2, ejid = 1769,
-		170196, -- Rending Whirl (non-dispellable) Rend
-		217362, -- Turbulent Vortex (dispellable)
-		217362, -- Rampaging Torrent (non-dispellable) DMG + DMG Increase Debuff Stacks
-		},
-		["Withered J'im"] = {
-		order = 3, ejid = 1796,
-		},
-	},
-	[1024] = { -- Highmountain (World Bosses)
 		["Drugon the Frostblood"] = {
-		order = 1, ejid = 1789,
+		order = 5, ejid = 1789,
 		219602, -- Snow Plow (non-dispellable) Fixate
 		},
 		["Flotsam"] = {
-		order = 2, ejid = 1795,
+		order = 6, ejid = 1795,
 		223373, -- Yaksam (non-dispellable) Cone AoE
 		223355, -- Oozing Bile (non-dispellable)
 		},
-	},
-	[1018] = { -- Val'shrah (World Bosses)
 		["Humongris"] = {
-		order = 1, ejid = 1770,
+		order = 7, ejid = 1770,
 		216430, -- Earthshake Stomp (non-dispellable) DMG + Stun
 		216467, -- Make the Snow (non-dispellable) AoE Frost DMG + Slow
 		216822, -- You Go Bang! (non-dispellable) Fire Bomb + DMG Increase Debuff
 		},
+		["Levantus"] = {
+		order = 8, ejid = 1769,
+		170196, -- Rending Whirl (non-dispellable) Rend
+		217362, -- Turbulent Vortex (dispellable)
+		217362, -- Rampaging Torrent (non-dispellable) DMG + DMG Increase Debuff Stacks
+		},
+		["Malificus"] = {
+		order = 9, ejid = 1884,
+		},
+		["Na'zak the Fiend"] = {
+		order = 10, ejid = 1783,
+		219349, -- Corroding Spray (non-dispellable) Cone AoE Stacks
+		},
+		["Nithogg"] = {
+		order = 11, ejid = 1749,
+		212867, -- Electrical Storm (non-dispellable) Ground AoE
+		212852, -- Storm Breath (non-dispellable) DMG + DMG Increase Debuff
+		},
 		["Shar'thos"] = {
-		order = 2, ejid = 1763,
+		order = 12, ejid = 1763,
 		215876, -- Burning Earth (non-dispellable) Ground AoE
 		216044, -- Cry of the Tormented (non-dispellable) AoE Fear
 		},
-	},
-	[1018] = { -- Suramar (World Bosses)
-		["Na'zak the Fiend"] = {
-		order = 1, ejid = 1783,
-		219349, -- Corroding Spray (non-dispellable) Cone AoE Stacks
+		["Si'vash"] = {
+		order = 13, ejid = 1885,
+		},
+		["The Soultakers"] = {
+		order = 14, ejid = 1756,
+		213665, -- Marauding Mists (non-dispellable) DMG + Disorient
+		},
+		["Withered J'im"] = {
+		order = 15, ejid = 1796,
 		},
 	},
-	[1094] = { -- The Emerald Nightmare (RAID)
+	[1520] = { -- The Emerald Nightmare (RAID)
+		{ id = 768, name = "The Emerald Nightmare" },
 		["Nythendra"] = {
 		order = 1, ejid = 1703,
 		204504, -- Infested
@@ -590,7 +610,8 @@ RDDB["Legion"] = {
 		211634, -- The Infinite Dark (standing in?)
 		},
 	},
-	[1114] = { -- Trial of Valor (RAID)
+	[1648] = { -- Trial of Valor (RAID)
+		{ id = 861, name = "Trial of Valor" },
 		["Odyn"] = {
         order = 1, ejid = 1819,
         192044, -- Expel Light
@@ -622,7 +643,8 @@ RDDB["Legion"] = {
 		232450, -- Corrupted Axion
 		},
 	},
-	[1088] = { -- The Nighthold (RAID)
+	[1530] = { -- The Nighthold (RAID)
+		{ id = 786, name = "The Nighthold" },
         ["Skorpyron"] = {
         order = 1, ejid = 1706,
         204766, -- Energy Surge (non-dispellable, stacks) (DMG + Debuff)
@@ -711,7 +733,8 @@ RDDB["Legion"] = {
         206896, -- Torn Soul (non-dispellable) (Tank debuff, DMG increase)
         },
     },
-    [1147] = { -- Tomb of Sargeras (RAID)
+    [1676] = { -- Tomb of Sargeras (RAID)
+        { id = 875, name = "Tomb of Sargeras" },
 		["Goroth"] = {
 		order = 1, ejid = 1862,
 		231363, -- Burning Armor (non-dispellable) (DMG + Debuff)
@@ -776,7 +799,7 @@ RDDB["Legion"] = {
 		236604, -- Shadowy Blades (going to boom and poop goop, keep away from people)
 		239739, -- Dark Mark (will knock back, must share or use immunity)
 		},
-		["Kil�Jaeden"] = {
+		["Kil'Jaeden"] = {
 		order = 9, ejid = 1898,
 		239932, -- Felclaws (tank thingy)
 		234295, -- Armageddon Rain (small, must be soaked by 1 person, leaves dot)
@@ -790,7 +813,8 @@ RDDB["Legion"] = {
 		236555, -- Deceiver's Veil (intermission debuff)
 		},
 	},
-    [1188] = { -- Antorus the burning trone (RAID)	InstanceID = 946
+    [1712] = { -- Antorus the burning trone (RAID)
+        { id = 946, name = "Antorus, the Burning Throne" },
 		["Rompemundos garothi"] = {
 			order = 1, ejid = 1992,
 			244761, -- annihilation
@@ -932,7 +956,7 @@ RDDB["Legion"] = {
 			258646, -- Gift of the Sky
 			255199, -- Avatar of Aggramar
 			250669, -- Soulburst
-			255200, -- Aggramar�s Boon
+			255200, -- Aggramar Boon
 			251570, -- Soulbomb
 			257299, -- Ember of Rage
 			252729, -- Cosmic Ray

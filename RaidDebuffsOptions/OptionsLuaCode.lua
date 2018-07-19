@@ -9,7 +9,7 @@ function RDO:GenerateModuleLuaCode(moduleName)
 	local function GenerateZoneLuaCode(moduleName, zoneName)
 		local spells, order = {}, {}
 		local function CollectBossSpells(bossdata)
-			if not bossdata then return end
+			if not bossdata or bossdata.id then return end
 			for index,spellId in ipairs(bossdata) do
 				if not order[spellId] and (GetSpellInfo(spellId)) then
 					local status = self.debuffsStatuses[spellId]
@@ -32,16 +32,19 @@ function RDO:GenerateModuleLuaCode(moduleName)
 			lines = lines .. "\t\t},\n"
 			return lines, bossdata.order or 100
 		end
-		local bosses = {}
-		for bossName,bossdata in pairs(RDDB[moduleName][zoneName]) do
-			local code, index = GenerateBossCode(bossName,bossdata)
-			bosses[#bosses+1], order[code] = code, index
+		local zonedata = RDDB[moduleName][zoneName]
+		local bosses, order = {}, {}
+		for bossName,bossdata in pairs(zonedata) do
+			if not tonumber(bossName) then
+				local code, index = GenerateBossCode(bossName,bossdata)
+				bosses[#bosses+1], order[code] = code, index
+			end	
 		end
 		if moduleName ~= "[Custom Debuffs]" then
 			local zone = self.db.profile.debuffs[zoneName]
 			if zone then
 				for bossName,bossdata in pairs(zone) do
-					if not RDDB[moduleName][zoneName][bossName] then
+					if not zonedata[bossName] then
 						local code, index = GenerateBossCode(bossName,bossdata)
 						bosses[#bosses+1], order[code] = code, index
 					end
@@ -49,7 +52,10 @@ function RDO:GenerateModuleLuaCode(moduleName)
 			end
 		end
 		table.sort(bosses, function(a,b) return order[a]<order[b] end)
-		local lines = string.format("\t[%d] = { -- %s \n", zoneName, GetMapNameByID(zoneName) or "" )
+		local info = zonedata[1]
+		local name = (info and info.id and EJ_GetInstanceInfo(info.id)) or info.name or tostring(zoneName)
+		local lines = string.format("\t[%d] = {\n", zoneName )
+		lines = lines .. string.format( '\t\t{ id = %s, name = "%s" },\n', info and tostring(info.id) or "nil", name )
 		lines = lines .. table.concat(bosses)
 		lines = lines .. "\t},\n"
 		return lines

@@ -37,7 +37,7 @@ local function status_UpdateStateFilter(self, unit, name, texture, count, durati
 end
 
 local function status_UpdateStateDispel(self, unit, name, texture, count, duration, expiration, caster, isBossDebuff, debuffType)
-	if (not self.seen) and UnitDebuff(unit, name, nil, "RAID") then
+	if (not self.seen) and UnitDebuff(unit, 1, "RAID") then
 		self.states[unit] = true
 		self.textures[unit] = texture
 		self.durations[unit] = duration
