@@ -27,7 +27,7 @@ local spells_order = {}
 local spells_status = {}
 
 -- old map ids table
-local WorldMapAreaID
+local MapIDToInstID
 
 -- autdetect debuffs variables
 local status_auto
@@ -74,9 +74,9 @@ function GSRD:OnModuleDisable()
 end
 
 function GSRD:UpdateZoneSpells(event)
-	local zone = self:GetCurrentZone()
+	local zone, type = self:GetCurrentZone()
 	if zone==curzone and event then return end
-	curzonetype = select(2,GetInstanceInfo())
+	curzonetype = type
 	self:ResetZoneSpells(zone)
 	for status in next,statuses do
 		status:LoadZoneSpells()
@@ -89,7 +89,8 @@ function GSRD:UpdateZoneSpells(event)
 end
 
 function GSRD:GetCurrentZone()
-	return UnitMap("player")
+	local _,type,_,_,_,_,_,zone = GetInstanceInfo()
+	return zone, type
 end
 
 function GSRD:ClearAllIndicators()
@@ -252,6 +253,20 @@ function GSRD:PLAYER_REGEN_ENABLED()
 	end	
 end
 
+-- Old databases fix
+function GSRD:FixOldDatabase(db, key)
+	if db[key] then
+		local fixed = {}
+		for mapID, data in pairs(db[key]) do
+			local instID = MapIDToInstID[mapID]
+			if instID then
+				fixed[instID] = data	
+			end
+		end
+		db[key] = fixed
+	end	
+end
+
 -- statuses
 local class = {
 	GetColor          = Grid2.statusLibrary.GetColor,
@@ -273,7 +288,7 @@ end
 function class:LoadZoneSpells()
 	if curzone then
 		local count = 0
-		local db = self.dbx.debuffs[ WorldMapAreaID[curzone] ]
+		local db = self.dbx.debuffs[ curzone ]
 		if db then
 			for index, spell in ipairs(db) do
 				local name = spell<0 and -spell or GetSpellInfo(spell)
@@ -385,78 +400,144 @@ end
 local prev_UpdateDefaults = Grid2.UpdateDefaults
 function Grid2:UpdateDefaults()
 	prev_UpdateDefaults(self)
-	if not Grid2:DbGetValue("versions", "Grid2RaidDebuffs") then 
+	local version = Grid2:DbGetValue("versions", "Grid2RaidDebuffs")
+	if version >= 3 then return end
+	if not version then 
 		Grid2:DbSetMap( "icon-center", "raid-debuffs", 155)
-		Grid2:DbSetValue("versions","Grid2RaidDebuffs",1)
-	end	
+	else 
+		-- Upgrade statuses debuffs databases: convert mapIDs to InstanceIDs
+		for name,db in pairs(Grid2.db.profile.statuses) do
+			if db.type == "raid-debuffs" then
+				GSRD:FixOldDatabase( db, "debuffs" )
+			end
+		end
+		-- Upgrade custom debuffs
+		GSRD:FixOldDatabase( GSRD.db.profile, "debuffs" )
+	end
+	Grid2:DbSetValue("versions","Grid2RaidDebuffs",3)
 end
 
--- Battle for Azeroth compatibility stuff: WorldMapAreaID[ UiMapID ] = old_map_Id
--- see https://wow.gamepedia.com/Patch_8.0.1/API_changes
-WorldMapAreaID = {
-4,4,4,4,4,4,9,9,9,11,11,13,14,16,17,17,
-19,20,20,20,21,22,23,23,24,26,27,27,27,27,27,28,
-28,28,28,29,30,30,30,30,30,32,32,32,32,32,34,35,
-36,37,38,39,39,39,39,40,41,41,41,41,41,42,43,61,
-81,101,101,101,121,141,161,161,161,161,161,181,182,201,201,241,
-261,261,281,301,321,321,341,362,381,382,401,443,461,462,463,463,
-464,464,464,465,466,467,471,473,475,476,477,478,479,480,481,482,
-485,486,488,490,491,492,493,495,496,499,501,502,504,504,510,512,
-520,521,521,522,523,523,523,524,524,525,525,526,527,528,528,528,
-528,528,529,529,529,529,529,529,530,530,531,532,533,533,533,534,
-534,535,535,535,535,535,535,536,540,541,542,543,543,544,544,544,
-544,544,545,545,545,545,601,602,603,604,604,604,604,604,604,604,
-604,605,605,605,605,606,607,609,610,611,613,614,615,626,640,640,
-640,673,0,0,680,0,0,0,684,685,686,687,688,688,688,689,
-690,691,691,691,691,692,692,696,697,699,699,699,699,699,699,699,
-700,704,704,708,709,710,717,718,720,721,721,721,721,721,721,722,
-722,723,723,724,725,726,727,727,728,729,730,730,731,731,731,732,
-733,734,736,737,747,0,749,750,750,752,753,753,754,754,755,755,
-755,755,756,756,757,758,758,758,759,759,759,760,761,762,762,762,
-762,763,763,763,763,764,764,764,764,764,764,764,765,765,766,766,
-766,767,767,768,769,0,772,773,775,776,779,780,781,782,789,789,
-793,795,796,796,796,796,796,796,796,796,797,798,798,799,799,799,
-799,799,799,799,799,799,799,799,799,799,799,799,799,799,800,800,
-800,803,806,806,806,806,806,807,807,808,809,809,809,809,809,809,
-809,809,809,810,810,811,811,811,811,811,811,811,813,816,819,819,
-820,820,820,820,820,820,823,823,824,824,824,824,824,824,824,851,
-856,857,857,857,857,858,860,862,864,864,866,866,867,867,871,871,
-873,873,874,874,875,875,876,876,876,876,877,877,877,877,878,880,
-881,882,883,884,885,885,885,886,887,887,887,888,889,890,891,891,
-892,892,893,894,895,895,896,896,896,897,897,898,898,898,898,899,
-900,900,906,0,0,911,912,914,914,919,919,919,919,919,919,919,
-919,920,922,922,924,924,925,928,928,928,929,930,930,930,930,930,
-930,930,930,933,933,934,935,937,937,938,939,940,941,941,941,941,
-941,941,941,941,941,945,946,946,946,946,947,947,947,948,949,949,
-949,949,949,949,949,950,950,950,950,951,951,953,953,953,953,953,
-953,953,953,953,953,953,953,953,953,953,955,962,964,969,969,969,
-970,970,971,971,971,973,0,0,976,976,976,978,978,980,0,983,
-984,986,987,988,988,988,988,988,989,989,0,0,0,993,993,993,
-993,994,994,994,994,994,994,995,995,995,1007,1008,1008,1009,1010,1011,
-1014,1014,1014,1014,1014,1015,1015,1015,1015,1017,1017,1017,1017,1017,1017,1017,
-1018,1018,1018,1018,1020,1021,1021,1021,1022,1024,1024,1024,1024,1024,1024,1024,
-1024,1024,1024,1024,1026,1026,1026,1026,1026,1026,1026,1026,1026,1026,1027,1028,
-1028,1028,1028,1031,1032,1032,1032,1033,1033,1033,1033,1033,1033,1033,1033,1033,
-1033,1033,1033,1033,1033,1034,1035,1037,1038,1039,1039,1039,1039,1040,1041,1041,
-1041,1042,1042,1042,1044,1045,1045,1045,1046,1047,1048,1049,1050,1051,1052,1052,
-1052,0,1054,0,1056,1057,0,1059,1060,0,1065,1066,1067,1068,1068,1069,
-1070,1071,1072,1073,1073,1075,1075,1076,1076,1076,1077,1078,1079,1080,1081,1081,
-1081,1081,1081,1081,1082,1084,1085,1086,1087,1087,1087,1088,1088,1088,1088,1088,
-1088,1088,1088,1088,1090,1090,1091,1092,1094,1094,1094,1094,1094,1094,1094,1094,
-1094,1094,1094,1094,1094,1096,1097,1097,1099,1100,1100,1100,1100,1102,1104,1104,
-1104,1104,1104,1105,1105,1114,1114,1114,1115,1115,1115,1115,1115,1115,1115,1115,
-1115,1115,1115,1115,1115,1115,1116,1126,1127,1129,1130,1131,1132,1135,1135,1135,
-1135,1136,1137,1137,1139,1140,1142,1143,1143,1143,1144,1145,1146,1146,1146,1146,
-1146,1147,1147,1147,1147,1147,1147,1147,1148,1149,1150,1151,1152,1153,1154,1155,
-1156,1156,1157,1158,1159,1159,1160,1161,1161,1161,1162,1163,1164,1165,1165,1165,
-1166,1170,1170,1170,1171,1171,1171,1172,1173,1173,1174,1174,1174,1174,1175,1176,
-1177,1177,1177,1177,1177,1177,1178,1183,1184,1185,1186,1187,1188,1188,1188,1188,
-1188,1188,1188,1188,1188,1188,1188,1188,1190,1191,1192,1193,1194,1195,1196,1197,
-1198,1199,1200,1201,1202,1204,1204,1205,0,1210,1211,1212,1212,1213,1214,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,1215,1216,1217,1219,1219,1219,
-1219,1219,1219,1219,1220,0,0,0,0,0,0,0,0,0,0,0,
-0,1184,0,0,0,382,}
-setmetatable( WorldMapAreaID, { __index = function(t,k) return k end } )
--- publish the table, used by Grid2RaidDebuffsOptions
-GSRD.WorldMapAreaID = WorldMapAreaID
+-- Battle for Azeroth upgrade stuff: mapID_to_InstID[ mapID ] = InstanceID
+-- InstanceID = select(8,GetInstanceInfo())
+-- mapID      = GetCurrentMapAreaID() // this function was removed from api, we must convert mapID to InstanceID
+MapIDToInstID = {
+-- Burning Crusade Dungeons
+[733] = 269, -- Opening of the Dark Portal
+[710] = 540, -- Hellfire Citadel: The Shattered Halls
+[725] = 542, -- Hellfire Citadel: The Blood Furnace
+[797] = 543, -- Hellfire Citadel: Ramparts
+[727] = 545, -- Coilfang: The Steamvault
+[726] = 546, -- Coilfang: The Underbog
+[728] = 547, -- Coilfang: The Slave Pens
+[731] = 552, -- Tempest Keep: The Arcatraz
+[729] = 553, -- Tempest Keep: The Botanica
+[730] = 554, -- Tempest Keep: The Mechanar
+[724] = 555, -- Auchindoun: Shadow Labyrinth
+[723] = 556, -- Auchindoun: Sethekk Halls
+[732] = 557, -- Auchindoun: Mana-Tombs
+[722] = 558, -- Auchindoun: Auchenai Crypts
+[734] = 560, -- The Escape from Durnholde
+[798] = 585, -- Magister's Terrace
+-- Burning Crusade Raids
+[799] = 532, -- Karazhan
+[775] = 534, -- The Battle for Mount Hyjal
+[779] = 544, -- Magtheridon's Lair
+[780] = 548, -- Coilfang: Serpentshrine Cavern
+[782] = 550, -- Tempest Keep
+[796] = 564, -- Black Temple
+[776] = 565, -- Gruul's Lair
+[789] = 580, -- The Sunwell
+-- WotLK Dungeons
+[523] = 574, -- Utgarde Keep
+[524] = 575, -- Utgarde Pinnacle
+[520] = 576, -- The Nexus
+[528] = 578, -- The Oculus
+[521] = 595, -- The Culling of Stratholme
+[526] = 599, -- Halls of Stone
+[534] = 600, -- Drak'Tharon Keep
+[533] = 601, -- Azjol-Nerub
+[525] = 602, -- Halls of Lightning
+[530] = 604, -- Gundrak
+[536] = 608, -- Violet Hold
+[522] = 619, -- Ahn'kahet: The Old Kingdom
+[601] = 632, -- The Forge of Souls
+[542] = 650, -- Trial of the Champion
+[602] = 658, -- Pit of Saron
+[603] = 668, -- Halls of Reflection
+-- WotLK Raids
+[535] = 533, -- Naxxramas
+[529] = 603, -- Ulduar
+[531] = 615, -- The Obsidian Sanctum
+[527] = 616, -- The Eye of Eternity
+[532] = 624, -- Vault of Archavon
+[604] = 631, -- Icecrown Citadel
+[543] = 649, -- Trial of the Crusader
+[609] = 724, -- The Ruby Sanctum
+-- Cataclysm Dungeons
+[781] = 568, -- Zul'Aman
+[767] = 643, -- Throne of the Tides
+[759] = 644, -- Halls of Origination
+[753] = 645, -- Blackrock Caverns
+[769] = 657, -- The Vortex Pinnacle
+[757] = 670, -- Grim Batol
+[768] = 725, -- The Stonecore
+[747] = 755, -- Lost City of the Tol'vir
+[793] = 859, -- Zul'Gurub
+[820] = 938, -- End Time
+[816] = 939, -- Well of Eternity
+[819] = 940, -- Hour of Twilight
+[803] = 951, -- Nexus Legendary
+-- Cataclysm Raids
+[754] = 669, -- Blackwing Descent
+[758] = 671, -- The Bastion of Twilight
+[800] = 720, -- Firelands
+[773] = 754, -- Throne of the Four Winds
+[752] = 757, -- Baradin Hold
+[824] = 967, -- Dragon Soul
+-- Pandaria Dungeons
+[877] = 959, -- Shado-Pan Monastery
+[867] = 960, -- Temple of the Jade Serpent
+[876] = 961, -- Stormstout Brewery
+[875] = 962, -- Gate of the Setting Sun
+[885] = 994, -- Mogu'shan Palace
+[887] = 1011, -- Siege of Niuzao Temple
+-- Pandaria Raids
+[886] = 996, -- Terrace of Endless Spring
+[896] = 1008, -- Mogu'shan Vaults
+[897] = 1009, -- Heart of Fear
+[930] = 1098, -- Throne of Thunder
+[953] = 1136, -- Siege of Orgrimmar
+-- Warlords Dungeons
+[964] = 1175, -- Bloodmaul Slag Mines
+[969] = 1176, -- Shadowmoon Burial Grounds
+[984] = 1182, -- Auchindoun
+[987] = 1195, -- Iron Docks
+[993] = 1208, -- Grimrail Depot
+[989] = 1209, -- Skyreach
+[1008] = 1279, -- The Everbloom
+[995] = 1358, -- Upper Blackrock Spire
+-- Warlords Raids
+[988] = 1205, -- Blackrock Foundry
+[994] = 1228, -- Highmaul
+[1026] = 1448, -- Hellfire Citadel
+-- Legion Dungeons
+[1046] = 1456, -- Eye of Azshara
+[1065] = 1458, -- Neltharion's Lair
+[1067] = 1466, -- Darkheart Thicket
+[1041] = 1477, -- Halls of Valor
+[1042] = 1492, -- Maw of Souls
+[1045] = 1493, -- Vault of the Wardens
+[1081] = 1501, -- Black Rook Hold
+[1079] = 1516, -- The Arcway
+[1066] = 1544, -- Assault on Violet Hold
+[1087] = 1571, -- Court of Stars
+[1115] = 1651, -- Return to Karazhan
+[1146] = 1677, -- Cathedral of Eternal Night
+[1178] = 1753, -- Seat of the Triumvirate
+-- Legion Raids
+[1094] = 1520, -- The Emerald Nightmare
+[1088] = 1530, -- The Nighthold
+[1114] = 1648, -- Trial of Valor
+[1147] = 1676, -- Tomb of Sargeras
+[1188] = 1712, -- Antorus, the Burning Throne
+}

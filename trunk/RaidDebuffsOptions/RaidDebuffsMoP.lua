@@ -1,6 +1,7 @@
 local RDDB = Grid2Options:GetRaidDebuffsTable()
 RDDB["Mists of Pandaria"] = {
-	[897] = { --Heart of Fear
+	[1009] = { --Heart of Fear
+		{ id = 330, name = "Heart of Fear" },
 		["Trash"] = {
 		},
 		["Imperial Vizier Zor'lok"] = {
@@ -54,7 +55,8 @@ RDDB["Mists of Pandaria"] = {
 		123846, --Heart of Fear: Lure
 		},
 	},
-	[896] = { --Mogu'shan Vaults
+	[1008] = { --Mogu'shan Vaults
+		{ id = 317, name = "Mogu'shan Vaults" },
 		["Trash"] = {
 		118562, --Petrified
 		116596, --Smoke Bomb
@@ -113,16 +115,8 @@ RDDB["Mists of Pandaria"] = {
 		116829, --Focused Energy
 		},
 	},
-	[809] = { --Kun-Lai Summit
-		["Sha of Anger"] = {
-		ejid = 691,
-		119626, --Aggressive Behavior [NOTE: this is the MC]
-		119488, --Unleashed Wrath [NOTE: Must heal these people. Lots of shadow dmg]
-		119610, --Bitter Thoughts (Silence)
-		119601, --Bitter Thoughts (Silence)
-		},
-	},
-	[886] = { --Terrace of Endless Spring
+	[996] = { --Terrace of Endless Spring
+		{ id = 320, name = "Terrace of Endless Spring" },
 		["Trash"] = {
 		},
 		["Protector Kaolan"] = {
@@ -163,7 +157,8 @@ RDDB["Mists of Pandaria"] = {
 		119775, --Reaching Attack
 		},
 	},
-	[930] = { --Throne of Thunder
+	[1098] = { --Throne of Thunder
+		{ id = 362, name = "Throne of Thunder" },
 		["Trash"] = {
 		},
 		["Jin'rokh the Breaker"] = {
@@ -273,13 +268,8 @@ RDDB["Mists of Pandaria"] = {
 		138372, --Vita Sensitivity
 		}
 	},
-	[929] = { --Isle of Giants
-		["Oondasta"] = {
-		ejid = 826,
-		137504, --Crush
-		},
-	},
-	[953] = { --Siege of Orgrimmar
+	[1136] = { --Siege of Orgrimmar
+		{ id = 369, name = "Siege of Orgrimmar" },
 		["Immerseus"] = {
 		order = 1, ejid = 852,
 		143436, --Corrosive Blast
@@ -448,7 +438,22 @@ RDDB["Mists of Pandaria"] = {
 		147200, --Fracture
 		},
 	},
-	[951] = { --Timeless Isle
+	[870] = { -- World Bosses
+		{ id = 322, name = "Pandaria" },
+		--Isle of Giants
+		["Oondasta"] = {
+		ejid = 826,
+		137504, --Crush
+		},
+		-- Kun lai summit
+		["Sha of Anger"] = {
+		ejid = 691,
+		119626, --Aggressive Behavior [NOTE: this is the MC]
+		119488, --Unleashed Wrath [NOTE: Must heal these people. Lots of shadow dmg]
+		119610, --Bitter Thoughts (Silence)
+		119601, --Bitter Thoughts (Silence)
+		},
+		--Timeless Isle
 		["Ordos, Fire-God of the Yaungol"] = {
 		ejid = 861,
 		144689, --Burning Soul
