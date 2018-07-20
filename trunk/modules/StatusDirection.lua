@@ -49,7 +49,7 @@ local function PlateRemoved(_, unit )
 end
 
 local function CombatLogEvent()
-	local _, timestamp, event,_,srcGUID, _,_,_, dstGUID = CombatLogGetCurrentEventInfo()
+	local timestamp, event,_,srcGUID, _,_,_, dstGUID = CombatLogGetCurrentEventInfo()
 	if event=='SWING_DAMAGE' then
 		local unit = roster_units[srcGUID]
 		if unit then

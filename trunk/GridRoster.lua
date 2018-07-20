@@ -160,7 +160,7 @@ do
 		if maxPlayers == nil or maxPlayers == 0 then
 			maxPlayers = 40
 		end
-		self:Debug("GroupChanged", groupType, instType, "=>", newGroupType, newInstType, maxPlayers)
+		self:Debug("GroupChanged", groupType, instType, instMaxPlayers, "=>", newGroupType, newInstType, maxPlayers)
 		if groupType ~= newGroupType or instType ~= newInstType or instMaxPlayers ~= maxPlayers then
 			groupType, instType, instMaxPlayers = newGroupType, newInstType, maxPlayers
 			self:SendMessage("Grid_GroupTypeChanged", groupType, instType, maxPlayers)
