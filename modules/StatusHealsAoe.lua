@@ -40,15 +40,15 @@ local function TimerEvent()
 end
 
 local function CombatLogEventReal(...)
-	local spellName = select(14,...)
+	local spellName = select(13,...)
 	local statuses = spells[spellName]
 	if statuses then
-		local subEvent = select(3,...)
+		local subEvent = select(2,...)
 		if subEvent=="SPELL_HEAL" or subEvent=="SPELL_PERIODIC_HEAL" then
 			for status in pairs(statuses) do
 				local mine = status.mine
-				if mine == nil or status.mine == (select(5,...)==playerGUID) then
-					local unit = Grid2:GetUnitidByGUID( select(9,...) )
+				if mine == nil or status.mine == (select(4,...)==playerGUID) then
+					local unit = Grid2:GetUnitidByGUID( select(8,...) )
 					if unit then
 						local prev = status.heal_cache[unit]
 						status.heal_cache[unit] = spellName

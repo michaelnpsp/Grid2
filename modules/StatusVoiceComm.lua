@@ -2,23 +2,25 @@ local Voice = Grid2.statusPrototype:new("voice")
 
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
+local Grid2 = Grid2
+local C_VoiceChat_GetMemberGUID = C_VoiceChat.GetMemberGUID
+
 local cache = {}
 
-function Voice:Grid_UnitLeft(_, unit)
+function Voice:Grid_UnitUpdated(_, unit)
 	cache[unit] = nil
 end
 
 function Voice:OnEnable()
-	-- events removed, this status does not work anymore, maybe delete the status
-	--self:RegisterEvent("VOICE_START")
-	--self:RegisterEvent("VOICE_STOP")
-	self:RegisterMessage("Grid_UnitLeft")
+	self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_SPEAKING_STATE_CHANGED")
+	self:RegisterMessage("Grid_UnitLeft", "Grid_UnitUpdated")
+	self:RegisterMessage("Grid_UnitUpdated")
 end
-
+	
 function Voice:OnDisable()
-	--self:UnregisterEvent("VOICE_START")
-	--self:UnregisterEvent("VOICE_STOP")
+	self:UnregisterEvent("VOICE_CHAT_CHANNEL_MEMBER_SPEAKING_STATE_CHANGED")
 	self:UnregisterMessage("Grid_UnitLeft")
+	self:UnregisterMessage("Grid_UnitUpdated")
 	while true do
 		local k = next(cache)
 		if not k then break end
@@ -26,14 +28,15 @@ function Voice:OnDisable()
 	end
 end
 
-function Voice:VOICE_START(_, unit)
-	cache[unit] = true
-	return self:UpdateIndicators(unit)
-end
-
-function Voice:VOICE_STOP(_, unit)
-	cache[unit] = nil
-	return self:UpdateIndicators(unit)
+function Voice:VOICE_CHAT_CHANNEL_MEMBER_SPEAKING_STATE_CHANGED(_, memberID, channelID, isSpeaking)
+	local guid = C_VoiceChat_GetMemberGUID( memberID, channelID )
+	if guid then
+		local unit = Grid2:GetUnitidByGUID(guid) 
+		if unit then
+			cache[unit] = isSpeaking or nil
+			self:UpdateIndicators(unit)
+		end	
+	end
 end
 
 function Voice:IsActive(unit)
@@ -45,10 +48,14 @@ function Voice:GetText(unitid)
 	return text
 end
 
+function Voice:GetIcon(unitid)
+	return "Interface\\COMMON\\VOICECHAT-SPEAKER"
+end
+
 Voice.GetColor = Grid2.statusLibrary.GetColor
 
 local function Create(baseKey, dbx)
-	Grid2:RegisterStatus(Voice, {"color", "text"}, baseKey, dbx)
+	Grid2:RegisterStatus(Voice, {"color", "text", "icon"}, baseKey, dbx)
 
 	return Voice
 end
