@@ -69,7 +69,7 @@ local function UpdateDirections()
 	local x1,y1, _, map1 = UnitPosition("player")
 	local facing = GetPlayerFacing()
 	for unit,guid in Grid2:IterateRosterUnits() do
-		local direction, distance
+		local direction, distance, update
 		if not UnitIsUnit(unit, "player") and UnitCheck(unit, mouseover) then
 			local x2,y2, _, map2 = UnitPosition(unit)
 			if map1 == map2 then
@@ -90,10 +90,14 @@ local function UpdateDirections()
 					return
 				end
 			end
+		end
+		if distances and distances[unit]~=distance then
+			distances[unit], update  = distance, true
+		end
+		if direction~=directions[unit] then
+			directions[unit], update = direction, true
 		end	
-		if (distances and distances[unit]~=distance) or (direction~=directions[unit]) then
-			distances[unit]  = distance
-			directions[unit] = direction
+		if update then
 			Direction:UpdateIndicators(unit)
 		end
 	end
