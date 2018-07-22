@@ -400,9 +400,9 @@ end
 local prev_UpdateDefaults = Grid2.UpdateDefaults
 function Grid2:UpdateDefaults()
 	prev_UpdateDefaults(self)
-	local version = Grid2:DbGetValue("versions", "Grid2RaidDebuffs")
+	local version = Grid2:DbGetValue("versions", "Grid2RaidDebuffs") or 0
 	if version >= 3 then return end
-	if not version then 
+	if version == 0 then 
 		Grid2:DbSetMap( "icon-center", "raid-debuffs", 155)
 	else 
 		-- Upgrade statuses debuffs databases: convert mapIDs to InstanceIDs
