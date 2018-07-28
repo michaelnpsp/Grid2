@@ -30,18 +30,6 @@ Grid2Options:AddGeneralOptions( "General" , "Layout Settings", { horizontal = {
 		set = function()
 			Grid2Layout:FrameLock()
 		end,
-}, clickthrough = {
-		type = "toggle",
-		name = L["Click through the Grid Frame"],
-		desc = L["Allows mouse click through the Grid Frame."],
-		order = order_layout + 7,
-		get = function() return Grid2Layout.db.profile.ClickThrough end,
-		set = function()
-			local v = not Grid2Layout.db.profile.ClickThrough
-			Grid2Layout.db.profile.ClickThrough = v
-			Grid2Layout.frame:EnableMouse(not v)
-		end,
-		disabled = function () return not Grid2Layout.db.profile.FrameLock end,
 }, rightClickMenu = {
 		type = "toggle",
 		name = L["Right Click Menu"],

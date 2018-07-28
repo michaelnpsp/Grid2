@@ -97,7 +97,7 @@ do
 			end,
 			set = function(_, v)
 				RDO:SetAutodetect(v)
-				if (not v) and RDO:RegisterAutodetectedDebuffs() then
+				if not v then
 					RDO:RefreshAdvancedOptions()
 				end
 				Grid2.tooltipFunc["Grid2RaidDebuffs"] = v and AddToTooltip or nil
@@ -109,12 +109,12 @@ do
 			name = L["Assigned to"],
 			desc = L["Assign autodetected raid debuffs to the specified status"],
 			get = function ()
-				return RDO.db.profile.autodetect.status or 1
+				return RDO.db.profile.auto_status or 1
 			end,
 			set = function (_, v)
 				local status = RDO.statuses[v]
 				if status then
-					RDO.db.profile.autodetect.status = v>1 and v or nil
+					RDO.db.profile.auto_status = v>1 and v or nil
 					RDO:RefreshAutodetect()
 				end
 			end,

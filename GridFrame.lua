@@ -111,6 +111,7 @@ local function GridFrame_Init(frame, width, height)
 		frame:SetAttribute("initial-width", width)
 		frame:SetAttribute("initial-height", height)
 	end
+	frame:RegisterForClicks("AnyUp")
 	frame.menu = Grid2Frame.RightClickUnitMenu
 	frame.container = frame:CreateTexture()
 	frame:CreateIndicators()
