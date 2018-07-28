@@ -1,6 +1,6 @@
 local RDDB = Grid2Options:GetRaidDebuffsTable()
 RDDB["Legion"] = {
-	[1544] = { -- Assault on Violet Hold (5man)
+	[101544] = { -- Assault on Violet Hold (5man)
 		{ id = 777, name = "Assault on Violet Hold" },
 		["Festerface"] = {
 		order = 1, ejid = 1693,
@@ -44,7 +44,7 @@ RDDB["Legion"] = {
 		202361, -- execution
 		},
 	},
-	[1501] = { -- Black Rook Hold (5man)
+	[101501] = { -- Black Rook Hold (5man)
 		{ id = 740, name = "Black Rook Hold" },
 		["The Amalgam of Souls"] = {
 		order = 1, ejid = 1518,
@@ -73,7 +73,7 @@ RDDB["Legion"] = {
 		199143, -- cloud-of-hypnosis
 		},
 	},
-	[1571] = { -- Court of Stars (5man)
+	[101571] = { -- Court of Stars (5man)
 		{ id = 800, name = "Court of Stars" },
 		["Patrol Captain Gerdo"] = {
 		order = 1, ejid = 1718,
@@ -94,7 +94,7 @@ RDDB["Legion"] = {
 		209628, -- piercing-gale
 		},
 	},
-	[1466] = { -- Darkheart Thicket (5man)
+	[101466] = { -- Darkheart Thicket (5man)
 		{ id = 762, name = "Darkheart Thicket" },
 		["Archdruid Glaidalis"] = {
 		order = 1, ejid = 1654,
@@ -123,7 +123,7 @@ RDDB["Legion"] = {
 		200111, -- apocalyptic-fire
 		},
 	},
-	[1456] = { -- Eye of Azshara (5man)
+	[101456] = { -- Eye of Azshara (5man)
 		{ id = 716, name = "Eye of Azshara" },
 		["Warlord Parjesh"] = {
 		order = 1, ejid = 1480,
@@ -156,7 +156,7 @@ RDDB["Legion"] = {
 		192794, -- lightning-strike
 		},
 	},
-	[1477] = { -- Halls of Valor (5man)
+	[101477] = { -- Halls of Valor (5man)
 		{ id = 721, name = "Halls of Valor" },
 		["Hymdall"] = {
 		order = 1, ejid = 1485,
@@ -189,7 +189,7 @@ RDDB["Legion"] = {
 		197961, -- runic-brand
 		},
 	},
-	[1492] = { -- Maw of Souls (5man)
+	[101492] = { -- Maw of Souls (5man)
 		{ id = 727, name = "Maw of Souls" },
 		["Ymiron, the Fallen King"] = {
 		order = 1, ejid = 1502,
@@ -210,7 +210,7 @@ RDDB["Legion"] = {
 		197858, -- turbulent-waters
 		},
 	},
-	[1458] = { -- Neltharion's Lair (5man)
+	[101458] = { -- Neltharion's Lair (5man)
 		{ id = 767, name = "Neltharion's Lair" },
 		["Rokmora"] = {
 		order = 1, ejid = 1662,
@@ -234,7 +234,7 @@ RDDB["Legion"] = {
 		201953, -- crystal-spike
 		},
 	},
-	[1516] = { -- The Arcway (5man)
+	[101516] = { -- The Arcway (5man)
 		{ id = 726, name = "The Arcway" },
 		["Ivanyr"] = {
 		order = 1, ejid = 1497,
@@ -266,7 +266,7 @@ RDDB["Legion"] = {
 		220871, -- unstable-mana
 		},
 	},
-	[1493] = { -- Vault of the Wardens (5man)
+	[101493] = { -- Vault of the Wardens (5man)
 		{ id = 707, name = "Vault of the Wardens" },
 		["Tirathon Saltheril"] = {
 		order = 1, ejid = 1467,
@@ -302,7 +302,7 @@ RDDB["Legion"] = {
 		197941, -- elunes-light
 		},
 	},
-	[1651] = { -- Karazhan (5man)
+	[101651] = { -- Karazhan (5man)
 		{ id = 860, name = "Return to Karazhan" },
 		["Sala de la Opera: Makaku"] = {
 		order = 1, ejid = 1820,
@@ -381,7 +381,7 @@ RDDB["Legion"] = {
 		229705, -- Telara�a
 		},
 	},
-	[1753] = { -- Trono del Triunvirato (5man)
+	[101753] = { -- Trono del Triunvirato (5man)
 		{ id = 945, name = "Seat of the Triumvirate" },
 		["Zuraal el Ascendido"] = {
 		order = 1, ejid = 1979,
@@ -420,7 +420,7 @@ RDDB["Legion"] = {
 		246900, -- Contagio oscuro
 		},
 	},
-	[1677] = { -- Catedral de la Noche Eterna (5man)
+	[101677] = { -- Catedral de la Noche Eterna (5man)
 		{ id = 900, name = "Cathedral of Eternal Night" },
 		["Agronox"] = {
 		order = 1, ejid = 1905,
@@ -456,8 +456,8 @@ RDDB["Legion"] = {
 		239217, -- Mirada cegadora
 		},
 	},
-	[1220] = { -- World Bosses
-		{ id = 822, name = "Broken Isles" },
+	[101220] = { -- World Bosses
+		{ id = 822, name = "Broken Isles", raid = true },
 		-- Stormhein (World Bosses) 
 		["Ana-Mouz"] = {
 		order = 1, ejid = 1790,
@@ -526,8 +526,8 @@ RDDB["Legion"] = {
 		order = 15, ejid = 1796,
 		},
 	},
-	[1520] = { -- The Emerald Nightmare (RAID)
-		{ id = 768, name = "The Emerald Nightmare" },
+	[101520] = { -- The Emerald Nightmare (RAID)
+		{ id = 768, name = "The Emerald Nightmare", raid = true },
 		["Nythendra"] = {
 		order = 1, ejid = 1703,
 		204504, -- Infested
@@ -610,8 +610,8 @@ RDDB["Legion"] = {
 		211634, -- The Infinite Dark (standing in?)
 		},
 	},
-	[1648] = { -- Trial of Valor (RAID)
-		{ id = 861, name = "Trial of Valor" },
+	[101648] = { -- Trial of Valor (RAID)
+		{ id = 861, name = "Trial of Valor", raid = true },
 		["Odyn"] = {
         order = 1, ejid = 1819,
         192044, -- Expel Light
@@ -643,8 +643,8 @@ RDDB["Legion"] = {
 		232450, -- Corrupted Axion
 		},
 	},
-	[1530] = { -- The Nighthold (RAID)
-		{ id = 786, name = "The Nighthold" },
+	[101530] = { -- The Nighthold (RAID)
+		{ id = 786, name = "The Nighthold", raid = true },
         ["Skorpyron"] = {
         order = 1, ejid = 1706,
         204766, -- Energy Surge (non-dispellable, stacks) (DMG + Debuff)
@@ -733,8 +733,8 @@ RDDB["Legion"] = {
         206896, -- Torn Soul (non-dispellable) (Tank debuff, DMG increase)
         },
     },
-    [1676] = { -- Tomb of Sargeras (RAID)
-        { id = 875, name = "Tomb of Sargeras" },
+    [101676] = { -- Tomb of Sargeras (RAID)
+        { id = 875, name = "Tomb of Sargeras", raid = true },
 		["Goroth"] = {
 		order = 1, ejid = 1862,
 		231363, -- Burning Armor (non-dispellable) (DMG + Debuff)
@@ -813,8 +813,8 @@ RDDB["Legion"] = {
 		236555, -- Deceiver's Veil (intermission debuff)
 		},
 	},
-    [1712] = { -- Antorus the burning trone (RAID)
-        { id = 946, name = "Antorus, the Burning Throne" },
+    [101712] = { -- Antorus the burning trone (RAID)
+        { id = 946, name = "Antorus, the Burning Throne", raid = true },
 		["Rompemundos garothi"] = {
 			order = 1, ejid = 1992,
 			244761, -- annihilation

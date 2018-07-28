@@ -46,12 +46,10 @@ end
 
 local function GetInstanceName(module, instance)
 	if module and instance then
-		local name
 		local info = RDDB[module][instance][1]
-		if info then
-			name = info.id and EJ_GetInstanceInfo(info.id) or info.name
-		end
-		return name or string.format( "unknown(%d)", instance )		
+		local name = info and (info.id and EJ_GetInstanceInfo(info.id) or info.name) or string.format( "unknown(%d)", instance )
+		local key  = string.format( '%s%s<<%d>>', info and info.raid and "R" or "G", name, instance )
+		return name, key
 	end
 	return ""
 end
@@ -275,7 +273,6 @@ end
 
 function RDO:InitAdvancedOptions()
 	RDDB["[Custom Debuffs]"] = RDO.db.profile.debuffs
-	self:RegisterAutodetectedDebuffs()
 	self:RefreshAdvancedOptions()
 end
 
@@ -284,21 +281,30 @@ end
 --=================================================================
 
 local function OpenJournal(info)
-	local EJ_ID = info.handler.ejid
 	if not IsAddOnLoaded("Blizzard_EncounterJournal") then LoadAddOn("Blizzard_EncounterJournal") end
-	local instanceID, encounterID, sectionID = EJ_HandleLinkPath(1, EJ_ID)
-	local _,_,difficulty = GetInstanceInfo()
-	if instanceID ~=  EJ_GetInstanceForMap( C_Map.GetBestMapForUnit("player") ) then
+	local difficulty
+	local instanceID = EJ_HandleLinkPath(1, info.handler.ejid)
+	if instanceID ==  EJ_GetInstanceForMap( C_Map.GetBestMapForUnit("player") ) then
+		difficulty = select(3,GetInstanceInfo())
+	else
 		difficulty = RDO.db.profile.defaultEJ_difficulty or 14
 	end
 	if InterfaceOptionsFrame:IsShown() then
 		InterfaceOptionsFrameOkay:Click()
 		GameMenuButtonContinue:Click()
 	end
-	EncounterJournal_OpenJournal(difficulty, instanceID, encounterID, sectionID)
-	if not EJ_InstanceIsRaid() then -- Fix for 5 man instances: 1=normal party/2=heroic party/8=challenge mode		
-		EJ_SetDifficulty( (difficulty == 15 and 2) or (difficulty==16 and 8) or 1 )
+	ShowUIPanel(EncounterJournal)
+	EJ_ContentTab_Select(EncounterJournal.instanceSelect.dungeonsTab.id)
+	EncounterJournal_DisplayInstance(instanceID)
+	EncounterJournal.lastInstance = instanceID
+	if not EJ_IsValidInstanceDifficulty(difficulty) then
+		difficulty = (difficulty==14 and 1) or (difficulty==15 and 2) or (difficulty==16 and 23) or (difficulty==17 and 7) or 0
+		if not EJ_IsValidInstanceDifficulty(difficulty) then 
+			return
+		end
 	end
+	EJ_SetDifficulty(difficulty)
+	EncounterJournal.lastDifficulty = difficulty
 end
 
 local function StatusEnableDebuff(status, spellId)
@@ -353,7 +359,9 @@ do
 				wipe(list)
 				local enabledModules = RDO.db.profile.enabledModules or {}
 				for name in pairs(enabledModules) do
-					list[name] = L[name]
+					if RDDB[name] then 
+						list[name] = L[name]
+					end	
 				end
 				list["[Custom Debuffs]"] = L["[Custom Debuffs]"]
 				return list
@@ -369,10 +377,10 @@ do
 			name = L["Select instance"],
 			desc = "",
 			get = function()
-				return RDO.db.profile.lastSelectedInstance 
+				return select(2,GetInstanceName(RDO.db.profile.lastSelectedModule, RDO.db.profile.lastSelectedInstance))
 			end,
-			set = function(_,instance) 
-				RDO.db.profile.lastSelectedInstance = instance 
+			set = function(_,instance)
+				RDO.db.profile.lastSelectedInstance = tonumber( strmatch(instance, "<<(.+)>>$") or instance ) 
 				MakeRaidDebuffsOptions()
 			end,
 			values = function()
@@ -380,7 +388,8 @@ do
 				local module = RDO.db.profile.lastSelectedModule
 				if module and RDDB[module] then
 					for instance in pairs(RDDB[module]) do
-						list[instance] = GetInstanceName(module, instance)
+						local name, key = GetInstanceName(module, instance)
+						list[key] = name 
 					end
 				end
 				return list
@@ -394,9 +403,7 @@ do
 		name = L["Refresh"],
 		width = "half",
 		func = function() 
-			 if RDO:RegisterAutodetectedDebuffs() then
-				MakeRaidDebuffsOptions(true)
-			 end
+			MakeRaidDebuffsOptions(true)
 		end,
 		hidden = function() return not RDO.auto_enabled	end,
 	}
@@ -575,7 +582,6 @@ do
 						SetBossTag( bossKey, "ejid",  GetBossTag(bossKey,"ejid") )
 						SetBossTag( bossKey, "order", GetBossTag(bossKey,"order") )
 					end
-					RDO:AutodetectAddDebuff(newSpellId)
 				end
 				newSpellId = nil
 			end,
@@ -832,7 +838,6 @@ do
 		func = function(info) 
 			local spellId = info.handler.spellId
 			local bossKey = info.handler.bossKey
-			RDO:AutodetectDelDebuff(spellId)
 			StatusDisableDebuff(spellId) 
 			DbDelTableValue( spellId, RDO.db.profile.debuffs, visibleInstance, bossKey )
 			RDO.OPTIONS_ITEMS[tostring(spellId)]= nil			

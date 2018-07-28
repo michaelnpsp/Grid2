@@ -54,9 +54,25 @@ end
 function RDO:Init()
 	self:FixWrongInstances()
 	self:LoadStatuses()
-	self:InitAutodetect()
 	self:InitAdvancedOptions()
 	self:InitGeneralOptions()
+end
+
+-- Enable/Disable Raid Debuffs Autodetect
+function RDO:SetAutodetect(v)
+	if v then
+		GSRD:EnableAutodetect( self.statuses[GSRD.db.profile.auto_status or 1] or statuses[1] )
+	else
+		GSRD:DisableAutodetect()
+	end
+	self.auto_enabled = v
+end
+
+function RDO:RefreshAutodetect()
+	if self.auto_enabled then
+		self:SetAutodetect(false)
+		self:SetAutodetect(true)
+	end
 end
 
 -- Trying to fix or delete instances in old database formats, now the
@@ -120,7 +136,8 @@ function RDO:DisableInstanceAllDebuffs(curInstance)
 end
 
 function RDO:UpdateZoneSpells(instance)
-	if (not instance) or instance == GSRD:GetCurrentZone() then
+	local zone1, zone2 = GSRD:GetCurrentZone()
+	if (not instance) or instance == zone1 or instance == zone2 then
 		GSRD:UpdateZoneSpells()
 	end
 end

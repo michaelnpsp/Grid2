@@ -238,23 +238,20 @@ end
 -- nil:toggle, false:disable movement, true:enable movement
 function Grid2Layout:FrameLock(locked)
 	local p = self.db.profile
-	if (locked == nil) then
+	if locked == nil then
 		p.FrameLock = not p.FrameLock
-	else
+	else	
 		p.FrameLock = locked
-	end
-	if (not p.FrameLock and p.ClickThrough) then
-		p.ClickThrough = false
-		self.frame:EnableMouse(true)
-	end
+	end	
+	self.frame:EnableMouse(not p.FrameLock)
 end
 
 --{{{ ConfigMode support
 CONFIGMODE_CALLBACKS = CONFIGMODE_CALLBACKS or {}
 CONFIGMODE_CALLBACKS["Grid2"] = function(action)
-	if (action == "ON") then
+	if action == "ON" then
 		Grid2Layout:FrameLock(false)
-	elseif (action == "OFF") then
+	elseif action == "OFF" then
 		Grid2Layout:FrameLock(true)
 	end
 end
@@ -273,6 +270,7 @@ function Grid2Layout:CreateFrame()
 	f:SetScript("OnMouseDown", function (_, button) self:StartMoveFrame(button) end)
 	f:SetFrameStrata( p.FrameStrata or "MEDIUM")
 	f:SetFrameLevel(1)
+	f:EnableMouse(not p.FrameLock)
 	-- Extra frame for background and border textures, to be able to resize in combat
 	f = CreateFrame("Frame", "Grid2LayoutFrameBack", self.frame)
 	self.frameBack = f
@@ -280,7 +278,6 @@ function Grid2Layout:CreateFrame()
 	f:SetFrameLevel(0)
 	--
 	self:UpdateTextures()
-	self:SetFrameLock(p.FrameLock, p.ClickThrough)
 	self.CreateFrame = nil
 end
 
@@ -613,16 +610,6 @@ function Grid2Layout:Scale()
 	local scale = settings.ScaleSize * (settings.layoutScales[self.layoutName or "solo"] or 1)
 	self.frame:SetScale(  scale )
 	self:RestorePosition()
-end
-
-function Grid2Layout:SetFrameLock(FrameLock, ClickThrough)
-	local p = self.db.profile
-	p.FrameLock = FrameLock
-	if not FrameLock then
-		ClickThrough = false
-	end
-	p.ClickThrough = ClickThrough
-	self.frame:EnableMouse(not ClickThrough)
 end
 
 function Grid2Layout:AddCustomLayouts()
