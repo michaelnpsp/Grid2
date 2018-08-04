@@ -325,7 +325,7 @@ function Grid2Layout:ReloadLayout(force)
 	local p          = self.db.profile
 	local partyType  = self.partyType or "solo"
 	local instType   = self.instType or ""
-	local layoutName = p.layoutBySize[self.instMaxGroups] or p.layouts[partyType.."@"..instType] or p.layouts[partyType]
+	local layoutName = p.layoutBySize[self.instMaxPlayers] or p.layouts[partyType.."@"..instType] or p.layouts[partyType]
 	if self.layoutName ~= layoutName or force then
 		if InCombatLockdown() then
 			reloadLayoutQueued = true
