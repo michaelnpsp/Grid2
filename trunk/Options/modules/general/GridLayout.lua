@@ -7,11 +7,7 @@ local L = Grid2Options.L
 local order_layout  = 20
 local order_display = 30
 local order_anchor  = 40
-
-local screen_res_x, screen_res_y = ({GetScreenResolutions()})[GetCurrentResolution()]:match("^(%d+)x(%d+)$")
-screen_res_x = tonumber(screen_res_x) or 1024
-screen_res_y = tonumber(screen_res_y) or 768
-
+local screen_w, screen_h = Grid2Options:GetScreenResolution()
 
 Grid2Options:AddGeneralOptions( "General" , "Layout Settings", { horizontal = {
 		type = "toggle",
@@ -197,10 +193,10 @@ Grid2Options:AddGeneralOptions( "General" , "Layout Settings", { horizontal = {
 		softMax = 2048,
 		step = 1,
 		get = function ()
-			return math.floor( Grid2Layout.db.profile.PosX * screen_res_x / (UIParent:GetWidth()*UIParent:GetEffectiveScale()) + 0.5 )
+			return math.floor( Grid2Layout.db.profile.PosX * screen_w / (UIParent:GetWidth()*UIParent:GetEffectiveScale()) + 0.5 )
 		end,
 		set = function (_, v)
-			Grid2Layout.db.profile.PosX = v / (screen_res_x / (UIParent:GetWidth()*UIParent:GetEffectiveScale()))
+			Grid2Layout.db.profile.PosX = v / (screen_w / (UIParent:GetWidth()*UIParent:GetEffectiveScale()))
 			Grid2Layout:RestorePosition()
 			Grid2Layout:SavePosition()
 		end,
@@ -213,10 +209,10 @@ Grid2Options:AddGeneralOptions( "General" , "Layout Settings", { horizontal = {
 		softMax = 2048,
 		step = 1,
 		get = function ()
-			return math.floor( Grid2Layout.db.profile.PosY * screen_res_y / (UIParent:GetHeight()*UIParent:GetEffectiveScale()) + 0.5 )
+			return math.floor( Grid2Layout.db.profile.PosY * screen_h / (UIParent:GetHeight()*UIParent:GetEffectiveScale()) + 0.5 )
 		end,
 		set = function (_, v)
-			Grid2Layout.db.profile.PosY = v / ( screen_res_y / (UIParent:GetHeight()*UIParent:GetEffectiveScale()) )
+			Grid2Layout.db.profile.PosY = v / (screen_h / (UIParent:GetHeight()*UIParent:GetEffectiveScale()))
 			Grid2Layout:RestorePosition()
 			Grid2Layout:SavePosition()
 		end,

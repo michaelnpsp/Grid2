@@ -268,6 +268,12 @@ function Grid2Frame:GetFrameSize()
 	return p.frameWidths[l] or p.frameWidths[m] or p.frameWidth, p.frameHeights[l] or p.frameHeights[m] or p.frameHeight
 end
 
+function Grid2Frame:SetFrameSize(w, h)
+	self.db.profile.frameWidth  = w or self.db.profile.frameWidth
+	self.db.profile.frameHeight = h or self.db.profile.frameHeight
+	Grid2Layout:UpdateDisplay()
+end
+
 -- Grid2Frame:WithAllFrames()
 do
 	local type, with = type, {}
