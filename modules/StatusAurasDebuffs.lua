@@ -38,19 +38,22 @@ local function status_UpdateStateFilter(self, unit, name, texture, count, durati
 end
 
 local function status_UpdateStateDispel(self, unit, name, texture, count, duration, expiration, caster, isBossDebuff, debuffType)
-	if not self.seen then
-		name, texture, count, debuffType, duration, expiration = UnitDebuff(unit, 1, "RAID")
-		if name and dispelTypes[debuffType] then
-			self.states[unit] = true
-			self.textures[unit] = texture
-			self.durations[unit] = duration
-			self.expirations[unit] = expiration
-			self.counts[unit] = count
-			self.types[unit] = debuffType
-			self.tracker[unit] = 1
-			self.seen = 1
-		end	
-	end
+	name, texture, count, debuffType, duration, expiration = UnitDebuff(unit, 1, "RAID")
+	if name and dispelTypes[debuffType] then
+		self.states[unit] = true
+		self.textures[unit] = texture
+		self.durations[unit] = duration
+		self.expirations[unit] = expiration
+		self.counts[unit] = count
+		self.types[unit] = debuffType
+		self.tracker[unit] = 1
+		self.seen = 1
+	elseif self.states[unit] then
+		self:Reset(unit)
+		self.seen = 1  -- force indicators update to clear the status
+	else
+		self.seen = -1 -- avoid indicators update, status was not active
+	end	
 end
 
 local status_GetIconsWhiteList, status_GetIconsFilter, status_GetIconsDispel
