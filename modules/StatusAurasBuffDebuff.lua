@@ -9,7 +9,7 @@ local function status_UpdateState(self, unit, texture, count, duration, expirati
 	if self.states[unit]==nil or self.counts[unit] ~= count or expiration~=self.expirations[unit] or value~=self.values[unit] then 
 		self.states[unit] = true
 		self.textures[unit] = texture
-		self.counts[unit] = count~=0 and count or 1
+		self.counts[unit] = count
 		self.durations[unit] = duration
 		self.expirations[unit] = expiration
 		self.values[unit] = value
