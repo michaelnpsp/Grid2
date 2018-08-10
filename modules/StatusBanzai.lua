@@ -143,7 +143,7 @@ function Banzai:Update()
 	for g,func in next, bsrc do	-- Search new banzais
 		local unit = tguids[g]
 		if unit then
-			local name, _,_, ico,_,et = func(sguids[g])
+			local name, _, ico,_,et = func(sguids[g])
 			if name then
 				et         = et and et/1000 or ct+0.25 
 				bgid[g]    = unit
