@@ -15,6 +15,18 @@ end)
 
 function Grid2Options:MakeIndicatorIconCustomOptions(indicator, options)
 	self:MakeHeaderOptions( options, "Appearance"  )
+	options.disableIcon = {
+		type = "toggle",
+		name = L["Display Square"],
+		desc = L["Display a flat square texture instead of the icon provided by the status."],
+		order = 15,
+		tristate = false,
+		get = function () return indicator.dbx.disableIcon end,
+		set = function (_, v)
+			indicator.dbx.disableIcon = v or nil
+			self:RefreshIndicator(indicator, "Update")
+		end,
+	}
 	options.useStatusColor = {
 		type = "toggle",
 		name = L["Use Status Color"],

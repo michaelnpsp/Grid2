@@ -80,12 +80,16 @@ local function Icon_OnUpdate(self, parent, unit, status)
 	if not status then Frame:Hide()	return end
 	
 	local Icon = Frame.Icon
-	
-	Icon:SetTexture(status:GetIcon(unit))
+	local r,g,b,a = status:GetColor(unit)
+
+	if self.disableIcon then
+		Icon:SetColorTexture(r,g,b)
+	else
+		Icon:SetTexture(status:GetIcon(unit))
+	end
 	Icon:SetTexCoord(status:GetTexCoord(unit))
 	Icon:SetVertexColor(status:GetVertexColor(unit))
-
-	local r,g,b,a = status:GetColor(unit)
+	
 	if self.useStatusColor or status:GetBorder(unit) then
 		Frame:SetBackdropBorderColor(r,g,b,a) 
 	elseif self.borderSize then
@@ -196,7 +200,9 @@ local function Icon_UpdateDB(self, dbx)
 	if dbx.animEnabled then
 		self.animScale    = ((dbx.animScale or 1.5)-1) * 2
 		self.animDuration = dbx.animDuration or 0.7
-	end	
+	end
+	-- ignore icon and use a solid square texture
+	self.disableIcon  = dbx.disableIcon
 	-- backdrop
 	local backdrop    = self.backdrop   or {}
 	backdrop.insets   = backdrop.insets or {}
