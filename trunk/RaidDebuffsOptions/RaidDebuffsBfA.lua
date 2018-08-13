@@ -270,87 +270,95 @@ RDDB["Battle for Azeroth"] = {
 		{ id = 1031, name = "Uldir", raid = true },
 		["Taloc"] = {
 		order = 1, ejid = 2168,
+		271222, -- Plasma Discharge
 		270290, -- Blood Storm
-		271224, -- Plasma Discharge
-		271225, -- Plasma Discharge
-		275189, -- Hardened Arteries
-		275205, -- Enlarged Heart
 		275270, -- Fixate
-		},
+        275189, -- Hardened Arteries
+        275205, -- Enlarged Heart
+ 		},
 		["MOTHER"] = {
 		order = 2, ejid = 2167,
-		267787, -- Sanitizing Strike
 		267821, -- Defense Grid
+		267787, -- Sanitizing Strike
 		268095, -- Cleansing Purge
-		268198, -- Clinging Corruption
-		268253, -- Uldir Defensive Beam
+		268198, -- Clinging Corruption		
+		268253, -- Surgical Beam
 		268277, -- Purifying Flame
-		},
+        268253, -- Uldir Defensive Beam
+  	},
 		["Fetid Devourer"] = {
 		order = 3, ejid = 2146,
-		262292, -- Rotting Regurgitation
 		262313, -- Malodorous Miasma
 		262314, -- Putrid Paroxysm
+		262292, -- Rotting Regurgitation
 		},
 		["Zek'voz, Herald of N'zoth"] = {
 		order = 4, ejid = 2169,
-		264210, -- Jagged Mandible
+		265360, -- Roiling Deceit
+		265662, -- Corruptor's Pact
 		265237, -- Shatter
 		265264, -- Void Lash
-		265360, -- Roiling Deceit
 		265646, -- Will of the Corruptor
-		265662, -- Corruptor's Pact
-		270589, -- Void Wail
-		270620, -- Psionic Blast
+        264210, -- Jagged Mandible
+        265360, -- Roiling Deceit
+        270589, -- Void Wail
+        270620, -- Psionic Blast  		
 		},
 		["Vectis"] = {
 		order = 5, ejid = 2166,
-		265127, -- Lingering Infection
 		265129, -- Omega Vector
 		265178, -- Evolving Affliction
-		265206, -- Immunosuppression
 		265212, -- Gestate
-		267160, -- Omega Vector
+		265127, -- Lingering Infection
+		265206, -- Immunosuppression
+        265127, -- Lingering Infection
 		},
 		["Zul, Reborn"] = {
 		order = 6, ejid = 2195,
-		272018, -- Absorbed in Darkness
 		273365, -- Dark Revelation
+		274358, -- Rupturing Blood
 		273434, -- Pit of Despair
 		274195, -- Corrupted Blood
 		274271, -- Deathwish
-		274358, -- Rupturing Blood
-		276020, -- Fixate
-		276299, -- Engorged Burst
+        272018, -- Absorbed in Darkness
+        276020, -- Fixate
+        276299, -- Engorged Burst
 		},
 		["Mythrax the Unraveler"] = {
 		order = 7, ejid = 2194,
-		272146, -- Annihilation
-		272407, -- Oblivion Sphere
+		272336, -- Annihilation
 		272536, -- Imminent Ruin
-		274019, -- Mind Flay
-		274113, -- Obliteration Beam
 		274693, -- Essence Shear
-		274761, -- Oblivion Veil
-		279013, -- Essence Shatter
+		272407, -- Oblivion Sphere
+        272146, -- Annihilation
+        272407, -- Oblivion Sphere
+        272536, -- Imminent Ruin
+        274019, -- Mind Flay
+        274113, -- Obliteration Beam
+        274761, -- Oblivion Veil
+        279013, -- Essence Shatter 		
 		},
 		["G'huun"] = {
 		order = 8, ejid = 2147,
-		263227, -- Putrid Blood
-		263235, -- Blood Feast
-		263321, -- Undulating Mass
+		263334, -- Putrid Blood
 		263372, -- Power Matrix
 		263436, -- Imperfect Physiology
-		267409, -- Dark Bargain
-		267427, -- Torment
-		267659, -- Unclean Contagion
-		267700, -- Gaze of G'huun
-		267813, -- Blood Host
-		269691, -- Mind Thrall
-		270287, -- Blighted Ground
 		272506, -- Explosive Corruption
-		277007, -- Bursting Boil
-		279575, -- Choking Miasma
+		267409, -- Dark Bargain
+		267430, -- Torment
+		263235, -- Blood Feast
+		270287, -- Blighted Ground
+        263235, -- Blood Feast
+        263321, -- Undulating Mass
+        263372, -- Power Matrix
+        263436, -- Imperfect Physiology
+        267659, -- Unclean Contagion
+        267700, -- Gaze of G'huun
+        267813, -- Blood Host
+        269691, -- Mind Thrall
+        270287, -- Blighted Ground
+        277007, -- Bursting Boil
+        279575, -- Choking Miasma  
 		},
 	},
 }
