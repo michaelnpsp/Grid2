@@ -392,7 +392,9 @@ end
 
 -- Return current screen resolution in pixels
 function Grid2Options:GetScreenResolution()
-	local w, h = select(GetCurrentResolution(),GetScreenResolutions()):match("^(%d+)x(%d+)$")
+	local i = GetCurrentResolution()
+	local r = (i>0 and select(i,GetScreenResolutions())) or GetCVar("gxWindowedResolution") or GetCVar("gxFullscreenResolution") or ""
+	local w, h = r:match("^(%d+)x(%d+)$")
 	return tonumber(w) or 1024, tonumber(h) or 768
 end
 
