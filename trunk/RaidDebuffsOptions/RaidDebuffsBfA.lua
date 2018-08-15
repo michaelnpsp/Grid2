@@ -285,7 +285,7 @@ RDDB["Battle for Azeroth"] = {
 		268253, -- Surgical Beam
 		268277, -- Purifying Flame
         268253, -- Uldir Defensive Beam
-  	},
+		},
 		["Fetid Devourer"] = {
 		order = 3, ejid = 2146,
 		262313, -- Malodorous Miasma
