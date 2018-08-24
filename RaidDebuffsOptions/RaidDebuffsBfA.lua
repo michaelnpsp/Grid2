@@ -17,21 +17,40 @@ RDDB["Battle for Azeroth"] = {
 		order = 1, ejid = 2142,
 		263371, -- Conduction
 		263234, -- Arcing Blade
+		268993, -- Golpe bajo
+		263778, -- Fuerza de vendaval
+		225080, -- Reencarnación		
 		},
 		["Merektha"] = {
 		order = 2, ejid = 2143,
 		267027, -- Cytotoxin
 		263958, -- A Knot of Snakes
 		261732, -- Blinding Sand
+		263927, -- Charco tóxico	
 		},
 		["Galvazzt"] = {
 		order = 3, ejid = 2144,
 		266512, -- Consume Charge
+		266923, -- Galvanizar		
 		},
 		["Avatar of Sethraliss"] = {
 		order = 4, ejid = 2145,
 		269686, -- Plague
+		269670, -- Potenciación		
+		268024, -- Pulso
 		},
+		["Trash"] = {
+		order = 5, ejid = nil,
+		273563, -- Neurotoxina
+		272657, -- Aliento nocivo
+		267027, -- Citotoxina
+		272655, -- Arena asoladora
+		272696, -- Relámpagos embotellados
+		272699, -- Flema venenosa
+		268013, -- Choque de llamas
+		268007, -- Ataque al corazón
+		268008, -- Amuleto de serpiente
+		},		
 	},
 	[1001] = {
 		{ id = 1001, name = "Freehold" },
@@ -42,15 +61,24 @@ RDDB["Battle for Azeroth"] = {
 		["Council o' Captains"] = {
 		order = 2, ejid = 2093,
 		258874, -- Blackout Barrel
+		267523, -- Oleada cortante
+		1604,   -- Atontado		
 		},
 		["Ring of Booty"] = {
 		order = 3, ejid = 2094,
 		256553, -- Flailing Shark
+		256363, -- Puñetazo desgarrador		
 		},
 		["Harlan Sweete"] = {
 		order = 4, ejid = 2095,
 		281591, -- Cannon Barrage
+		257460, -- Escombros igneos
+		257314, -- Bomba de polvora negra
 		},
+		["Trash"] = {
+		257908, -- Hoja aceitada
+		257478, -- Mordedura entorpecedora
+		}
 	},
 	[1022] = {
 		{ id = 1022, name = "The Underrot" },
@@ -61,15 +89,33 @@ RDDB["Battle for Azeroth"] = {
 		["Cragmaw the Infested"] = {
 		order = 2, ejid = 2131,
 		260333, -- Tantrum
+		260455, -- Colmillos serrados		
 		},
 		["Sporecaller Zancha"] = {
 		order = 3, ejid = 2130,
 		259714, -- Decaying Spores
+		259718, -- Agitación
+		273226, -- Esporas putrefactas		
 		},
 		["Unbound Abomination"] = {
 		order = 4, ejid = 2158,
 		269301, -- Putrid Blood
 		},
+		["Trash"] = {
+		order = 5, ejid = nil,
+		265533, -- Fauce sangrienta
+		265019, -- Tajo salvaje
+		265377, -- Trampa con gancho
+		265568, -- Presagio oscuro
+		266107, -- Sed de sangre
+		266265, -- Asalto malvado
+		272180, -- Descarga mortal
+		265468, -- Maldición fulminante
+		272609, -- Mirada enloquecedora
+		265511, -- Drenaje de espíritu
+		278961, -- Mente putrefacta
+		273599, -- Aliento podrido
+		},		
 	},
 	[968] = {
 		{ id = 968, name = "Atal'Dazar" },
@@ -78,11 +124,14 @@ RDDB["Battle for Azeroth"] = {
 		274195, -- Corrupted Blood
 		277072, -- Corrupted Gold
 		265914, -- Molten Gold
+		255835, -- Transfusión
+		255836, -- Transfusión		
 		},
 		["Vol'kaal"] = {
 		order = 2, ejid = 2036,
 		263927, -- Toxic Pool
 		250372, -- Lingering Nausea
+		255620, -- Erupción purulenta		
 		},
 		["Rezan"] = {
 		order = 3, ejid = 2083,
@@ -93,9 +142,22 @@ RDDB["Battle for Azeroth"] = {
 		},
 		["Yazma"] = {
 		order = 4, ejid = 2030,
+		250096, -- Dolor atroz		
 		259145, -- Soulrend
 		249919, -- Skewer
 		},
+		["Trash"] = {
+		order = 5, ejid = nil,
+		253562, -- Fuego salvaje
+		254959, -- Quemar alma
+		260668, -- Transfusión
+		255567, -- Carga frenética
+		279118, -- Maleficio inestable
+		252692, -- Golpe embotador
+		252687, -- Golpe de Venolmillo
+		255041, -- Chirrido aterrorizador
+		255814, -- Acometida desgarradora		
+		},		
 	},
 	[1036] = {
 		{ id = 1036, name = "Shrine of the Storm" },
@@ -106,35 +168,72 @@ RDDB["Battle for Azeroth"] = {
 		["Tidesage Council"] = {
 		order = 2, ejid = 2154,
 		267899, -- Hindering Cleave
+		267818, -- Viento cortante
 		},
 		["Lord Stormsong"] = {
 		order = 3, ejid = 2155,
 		268896, -- Mind Rend
+		269104, -- Vacío explosivo
+		269131, -- Dominamentes ancestral		
 		},
 		["Vol'zith the Whisperer"] = {
 		order = 4, ejid = 2156,
 		267034, -- Whispers of Power
 		},
+		["Trash"] = {
+		order = 5, ejid = nil,
+		268233, -- Choque electrizante
+		274633, -- Arremetida hendiente
+		268309, -- Oscuridad infinita
+		268315, -- Latigazo
+		268317, -- Desgarrar mente
+		268322, -- Toque de los ahogados
+		268391, -- Ataque mental
+		274720, -- Golpe abisal
+		276268, -- Golpe tumultuoso
+		268059, -- Ancla de vinculación
+		268027, -- Mareas crecientes		
+		},		
 	},
 	[1002] = {
 		{ id = 1002, name = "Tol Dagor" },
 		["The Sand Queen"] = {
 		order = 1, ejid = 2097,
 		257092, -- Sand Trap
+		260016, -- Mordedura irritante		
 		},
 		["Jes Howlis"] = {
 		order = 2, ejid = 2098,
 		257791, -- Howling Fear
+		257777, -- Chafarote entorpecedor
+		257793, -- Polvo de humo
+		260067, -- Vapuleo sañoso		
 		},
 		["Knight Captain Valyri"] = {
 		order = 3, ejid = 2099,
 		257028, -- Fuselighter
+		259711, -- A cal y canto		
 		},
 		["Overseer Korgus"] = {
 		order = 4, ejid = 2096,
 		256198, -- Azerite Rounds: Incendiary
 		256038, -- Deadeye
+		256044, -- Deadeye
+		256200, -- Veneno Muerte Diestra
+		256105, -- Ráfaga explosiva
+		256201, -- Cartuchos incendiarios
 		},
+		["Trash"] = {
+		order = 5, ejid = nil,
+		258864, -- Fuego de supresión
+		258313, -- Esposar
+		258079, -- Dentellada enorme
+		258075, -- Mordedura irritante
+		258058, -- Exprimir
+		265889, -- Golpe de antorcha
+		258128, -- Grito debilitante
+		225080, -- Reencarnación		
+		},		
 	},
 	[1021] = {
 		{ id = 1021, name = "Waycrest Manor" },
@@ -155,11 +254,89 @@ RDDB["Battle for Azeroth"] = {
 		["Lord and Lady Waycrest"] = {
 		order = 4, ejid = 2128,
 		261439, -- Virulent Pathogen
+		261438, -- Golpe extenuante		
+		261440, -- Patogeno virulento
 		},
 		["Gorak Tul"] = {
 		order = 5, ejid = 2129,
 		268203, -- Death Lens
 		},
+		["Trash"] = {
+		order = 6, ejid = nil,
+		263905, -- Tajo marcador
+		265352, -- Añublo de sapo
+		266036, -- Drenar esencia
+		264105, -- Señal rúnica
+		264390, -- Hechizo de vinculación
+		265346, -- Mirada pálida
+		264050, -- Espina infectada
+		265761, -- Tromba espinosa
+		264153, -- Flema
+		265407, -- Campanilla para la cena
+		271178, -- Salto devastador
+		263943, -- Grabar
+		264520, -- Serpiente mutiladora
+		265881, -- Toque putrefacto
+		264378, -- Fragmentar alma
+		264407, -- Rostro horripilante
+		265880, -- Marca pérfida
+		265882, -- Pavor persistente
+		266035, -- Astilla de hueso
+		263891, -- Espinas enredadoras
+		264556, -- Golpe desgarrador
+		278456, -- Infestar		
+		},		
+	},
+	[1012] = {
+		{ id = 1012, name = "The MOTHERLODE!!" },
+		["Coin-Operated Crowd Pummeler"] = {
+		order = 1, ejid = 2109,
+		256137, -- Timed Detonation
+		257333, -- Shocking Claw
+		262347, -- Pulso estático
+		270882, -- Azerita llameante
+		},
+		["Azerokk"] = {
+		order = 2, ejid = 2114,
+		257582, -- Raging Gaze
+		258627, -- Resonant Quake
+		257544, -- Corte dentado
+		275907, -- Machaque tectónico		
+		},
+		["Rixxa Fluxflame"] = {
+		order = 3, ejid = 2115,
+		258971, -- Azerite Catalyst
+		259940, -- Propellant Blast
+		259853, -- Quemadura química		
+		},
+		["Mogul Razdunk"] = {
+		order = 4, ejid = 2116,
+		260811, -- Homing Missile
+		260829, -- Misil buscador
+		260838, -- Misil buscador
+		270277, -- Cohete rojo grande		
+		},
+		["Trash"] = {
+		order = 5, ejid = nil,
+		280604, -- Chorro helado
+		280605, -- Congelación cerebral
+		263637, -- Tendedero
+		269298, -- Toxina de creaviudas
+		263202, -- Lanza de roca
+		268704, -- Temblor furioso
+		268846, -- Hoja de eco
+		263074, -- Mordedura degenerativa
+		262270, -- Compuesto cáustico
+		262794, -- Latigazo de energía
+		262811, -- Glóbulo parasitario
+		268797, -- Transmutar: enemigo en baba
+		269429, -- Disparo cargado
+		262377, -- Buscar y destruir
+		262348, -- Deflagración de mina
+		269092, -- Tromba de artillería
+		262515, -- Buscacorazones de azerita
+		262513, -- Buscacorazones de azerita
+		},		
 	},
 	[1023] = {
 		{ id = 1023, name = "Siege of Boralus" },
@@ -208,29 +385,7 @@ RDDB["Battle for Azeroth"] = {
 		268932, -- Quaking Leap
 		268586, -- Blade Combo
 		},
-	},
-	[1012] = {
-		{ id = 1012, name = "The MOTHERLODE!!" },
-		["Coin-Operated Crowd Pummeler"] = {
-		order = 1, ejid = 2109,
-		256137, -- Timed Detonation
-		257333, -- Shocking Claw
-		},
-		["Azerokk"] = {
-		order = 2, ejid = 2114,
-		257582, -- Raging Gaze
-		258627, -- Resonant Quake
-		},
-		["Rixxa Fluxflame"] = {
-		order = 3, ejid = 2115,
-		258971, -- Azerite Catalyst
-		259940, -- Propellant Blast
-		},
-		["Mogul Razdunk"] = {
-		order = 4, ejid = 2116,
-		260811, -- Homing Missile
-		},
-	},
+	},	
 	[0] = { -- EJ_GetInstanceForMap() returns 0 for azeroth world maps, not 1028.
 		{ id = 1028, name = "Azeroth", raid = true },
 		["T'zane"] = {
