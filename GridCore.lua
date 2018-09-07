@@ -122,6 +122,7 @@ function Grid2:OnInitialize()
 	media:Register("statusbar", "Gradient", "Interface\\Addons\\Grid2\\media\\gradient32x32")
 	media:Register("statusbar", "Grid2 Flat", "Interface\\Addons\\Grid2\\media\\white16x16")
 	media:Register("border", "Grid2 Flat", "Interface\\Addons\\Grid2\\media\\white16x16")
+	media:Register("border", "Blizzard Quest Title Highlight", "Interface\\QuestFrame\\UI-QuestTitleHighlight")
 	
 	self:InitializeOptions()
 

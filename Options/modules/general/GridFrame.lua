@@ -152,6 +152,34 @@ Grid2Options:AddGeneralOptions("General", "Frames", { orientation = {
 			Grid2Frame.db.profile.mouseoverHighlight = v
 			Grid2Frame:LayoutFrames()
 		end,
+}, mouseoverColor = {
+		type = "color",
+		order = 110,
+		name = L["Highlight Color"],
+		desc = L["Sets the hightlight color of each unit frame"],
+		get = function()
+			local c = Grid2Frame.db.profile.mouseoverColor
+			return c.r, c.g, c.b, c.a
+		end,
+		set = function( info, r,g,b,a )
+			local c = Grid2Frame.db.profile.mouseoverColor
+			c.r, c.g, c.b, c.a = r, g, b, a
+			Grid2Frame:LayoutFrames()
+		 end,
+		hasAlpha = true,
+		hidden = function() return not Grid2Frame.db.profile.mouseoverHighlight end, 
+}, mouseoverTexture = {
+		type = "select", dialogControl = "LSM30_Border",
+		order = 120,
+		name = L["Highlight Texture"],
+		desc = L["Sets the highlight border texture of each unit frame"],
+		get = function (info) return Grid2Frame.db.profile.mouseoverTexture or "Blizzard Quest Title Highlight" end,
+		set = function (info, v)
+			Grid2Frame.db.profile.mouseoverTexture = v
+			Grid2Frame:LayoutFrames()
+		end,
+		values = AceGUIWidgetLSMlists.border,
+		hidden = function() return not Grid2Frame.db.profile.mouseoverHighlight end, 
 },} )
 
 

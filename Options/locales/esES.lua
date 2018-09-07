@@ -24,6 +24,10 @@ L["Sets the background color of each unit frame"] = "Elige el color de fondo de 
 
 L["Mouseover Highlight"] = "Resaltar celda del ratón"
 L["Toggle mouseover highlight."] = "Activa esta opción para que la celda bajo el ratón sea resaltada."
+L["Highlight Color"] = "Color Resaltado"
+L["Sets the hightlight color of each unit frame"] = "Ajusta el color de resaltado de la celda cuando el raton esta sobre ella"
+L["Highlight Texture"] = "Textura Resaltado"
+L["Sets the highlight border texture of each unit frame"] = "Ajusta la textura del borde de la celda cuando el raton esta sobre ella"
 
 L["Right Click Menu"] = "Menu en Click Derecho"
 L["Display the standard unit menu when right clicking on a frame."] = "Mostrar el menu estandard cuando se hace click sobre una celda."
