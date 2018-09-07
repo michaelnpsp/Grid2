@@ -145,7 +145,13 @@ function GridFramePrototype:Layout()
 	-- set size
 	if not InCombatLockdown() then self:SetSize(w,h) end
 	-- highlight texture
-	self:SetHighlightTexture(dbx.mouseoverHighlight and "Interface\\QuestFrame\\UI-QuestTitleHighlight" or nil)
+	if dbx.mouseoverHighlight then
+		self:SetHighlightTexture( Grid2:MediaFetch("border", dbx.mouseoverTexture, "Blizzard Quest Title Highlight") )
+		local color = dbx.mouseoverColor
+		self:GetHighlightTexture():SetVertexColor(color.r, color.g, color.b, color.a)
+	else
+		self:SetHighlightTexture(nil)
+	end
 	-- Adjust indicators position to the new size
 	local indicators = Grid2:GetIndicatorsSorted()
 	for i=1,#indicators do
@@ -186,6 +192,8 @@ Grid2Frame.defaultDB = {
 		frameColor = { r=0, g=0, b=0, a=1 },
 		frameContentColor= { r=0, g=0, b=0, a=1 },
 		mouseoverHighlight = false,
+		mouseoverColor = { r=1, g=1, b=1, a=1 },
+		mouseoverTexture = "Blizzard Quest Title Highlight",
 		showTooltip = "OOC",
 		orientation = "VERTICAL",
 		textOrientation = "VERTICAL",

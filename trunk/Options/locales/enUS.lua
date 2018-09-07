@@ -24,6 +24,10 @@ L["Sets the background color of each unit frame"] = true
 
 L["Mouseover Highlight"] = true
 L["Toggle mouseover highlight."] = true
+L["Highlight Color"] = true
+L["Sets the hightlight color of each unit frame"] = true
+L["Highlight Texture"] = true
+L["Sets the highlight border texture of each unit frame"] = true
 
 L["Show Tooltip"] = true
 L["Show unit tooltip.  Choose 'Always', 'Never', or 'OOC'."] = true
