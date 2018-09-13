@@ -756,7 +756,43 @@ L["You can type spell IDs or spell names."] = true
 L["Display all solutions"] = true
 L["Display all solutions instead of only one solution per group."] = true
 
+-- profiles management
+L["You can change the active database profile, so you can have different settings for every character.\n"] = true
+L["Current Profile"] = true
+L["Select one of your currently available profiles."] = true
+L["Reset"] = true
+L["Reset the current profile back to its default values."] = true
+L["Create a new empty profile by entering a name in the editbox."] = true
+L["New Profile"] = true
+L["Copy the settings from one existing profile into the currently active profile."] = true
+L['Copy From'] = true
+L["Copy the settings from one existing profile into the currently active profile."] = true
+L["Are you sure you want to overwrite current profile values?"] = true
+L["Delete existing and unused profiles from the database."] = true
+L['Delete a Profile'] = true
+L["Delete existing and unused profiles from the database."] = true
+L["Are you sure you want to delete the selected profile?"] = true
+L["Enable profiles by Specialization"] = true
+L["When enabled, your profile will be set according to the character specialization."] = true
+L["By Specialization"] = true
+L["By Type of Group"] = true
+L["Enable profiles by Type of Group"] = true
+L["When enabled, your profile will be set according to the type of group."] = true
+L["Also by Specialization"] = true
+L["When enabled, your profile will be set according to character specialization and type of group."] = true
+L["Select which profile to use for: "] = true
+L["Solo"] = true
+L["Party"] = true
+L["Arena"] = true
+L["Raid (PvP)"] = true
+L["Raid (LFR)"] = true
+L["Raid (Normal&Heroic)"] = true
+L["Raid (Mythic)"] = true
+L["Raid (World)"] = true
+L["Raid (Other)"] = true
+
 -- Import/export profiles module
+L["Import&Export"] = true
 L["Import/export options"]= true
 L["Import profile"]= true
 L["Export profile"]= true

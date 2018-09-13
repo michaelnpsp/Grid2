@@ -111,12 +111,9 @@ end
 function Grid2:OnInitialize()
 	self.db = LibStub("AceDB-3.0"):New("Grid2DB", self.defaults)
 
+	self.profiles = self.db:RegisterNamespace('LibDualSpec-1.0') -- Using "LibDualSpec-1.0" namespace for backward compatibility
+	
 	self.debugging = self.db.profile.debug
-
- 	local LibDualSpec = LibStub('LibDualSpec-1.0')
-	if LibDualSpec then
-		LibDualSpec:EnhanceDatabase(self.db, "Grid2")
-	end
 
 	local media = LibStub("LibSharedMedia-3.0", true)
 	media:Register("statusbar", "Gradient", "Interface\\Addons\\Grid2\\media\\gradient32x32")

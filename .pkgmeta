@@ -2,9 +2,6 @@ package-as: Grid2
 
 externals:
 	Libs/LibStub: svn://svn.wowace.com/wow/libstub/mainline/tags/1.0
-	Libs/LibDualSpec-1.0:
-		url: git://git.wowace.com/wow/libdualspec-1-0/mainline.git
-		tag: latest
 	Libs/CallbackHandler-1.0:
 		url: svn://svn.wowace.com/wow/callbackhandler/mainline/trunk/CallbackHandler-1.0
 		tag: latest
@@ -28,9 +25,6 @@ externals:
 		tag: latest
 	Libs/LibSharedMedia-3.0:
 		url: svn://svn.wowace.com/wow/libsharedmedia-3-0/mainline/trunk/LibSharedMedia-3.0
-		tag: latest
-	Options/Libs/AceDBOptions-3.0:
-		url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDBOptions-3.0
 		tag: latest
 	Options/Libs/AceGUI-3.0:
 		url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceGUI-3.0
