@@ -38,6 +38,12 @@ local GROUPBY_VALUES ={
 	["ASSIGNEDROLE"]  = L["Role"],
 	["NONE"]  = L["None"],
 }
+local ROLEORDER_VALUES ={
+	["TANK,HEALER,DAMAGER,NONE"] = L["T,H,D"],
+	["TANK,DAMAGER,HEALER,NONE"] = L["T,D,H"],
+	["HEALER,TANK,DAMAGER,NONE"] = L["H,T,D"],
+	["HEALER,DAMAGER,TANK,NONE"] = L["H,D,T"],
+}
 local SORTBY_VALUES= {
 	["NAME"]  = L["Name"],
 	["INDEX"] = L["Index"],
@@ -208,9 +214,23 @@ local function LoadLayoutHeader( layoutName, layout, index, header )
 		values = GROUPBY_VALUES,
 		disabled = disabled,
 	}
+	args["roleOrder"..index] =  {
+		type   = 'select',
+		order  = order + 10.5,
+		width  = "half",
+		name   = L["Role Order"],
+		desc   = L["(T)ank (H)ealer (D)ps Order"],
+		get    = function() return GetHeaderOption(layout,header,"groupingOrder","NONE") end,
+		set    = function(_,v)
+			header.groupingOrder = v
+		end,
+		values = ROLEORDER_VALUES,
+		disabled = disabled,
+		hidden = function() return header.groupBy ~= "ASSIGNEDROLE" end
+	}
 	args["sortby"..index] =  {
 		type   = 'select',
-		order  = order + 10,
+		order  = order + 11,
 		width  = "half",
 		name   = L["Sort by"],
 		desc   = L["Sort by"],
@@ -219,16 +239,6 @@ local function LoadLayoutHeader( layoutName, layout, index, header )
 		values = SORTBY_VALUES,
 		disabled = disabled,
 	}
-	-- args["sortdir"..index] =  {
-		-- type   = 'select',
-		-- order  = order + 11,
-		-- width  = "half",
-		-- name   = L["Sort Dir"],
-		-- desc   = L["Sort Direction"],
-		-- get    = function() return header.sortDir or "ASC" end,
-		-- set    = function(_,v) header.sortDir = v end,
-		-- values = SORTDIR_VALUES,
-	-- }
 	if not disabled then
 		args["action"..index] =  {
 			type   = 'select',

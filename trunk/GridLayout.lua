@@ -189,12 +189,14 @@ function Grid2Layout:OnModuleEnable()
 	self:RegisterMessage("Grid_GroupTypeChanged")
 	self:RegisterMessage("Grid_UpdateLayoutSize", "UpdateSize")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
+	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 end
 
 function Grid2Layout:OnModuleDisable()
 	self:UnregisterMessage("Grid_GroupTypeChanged")
 	self:UnregisterMessage("Grid_UpdateLayoutSize", "UpdateSize")
 	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	self:UnregisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	self.frame:Hide()
 end
 
@@ -202,6 +204,7 @@ end
 
 local reloadLayoutQueued, updateSizeQueued, restorePositionQueued
 function Grid2Layout:PLAYER_REGEN_ENABLED()
+	if reloadProfileQueued then return self:ReloadProfile() end
 	if reloadLayoutQueued then return self:ReloadLayout(true) end
 	if restorePositionQueued then return self:RestorePosition() end
 	if updateSizeQueued then return self:UpdateSizeQueued() end
@@ -214,7 +217,15 @@ function Grid2Layout:Grid_GroupTypeChanged(_, groupType, instType, maxPlayers)
 	self.instType = instType
 	self.instMaxPlayers = maxPlayers
 	self.instMaxGroups = math.floor( (maxPlayers + 4) / 5 )
-	self:ReloadLayout(force)
+	if not self:ReloadProfile() then
+		self:ReloadLayout(force)
+	end	
+end
+
+function Grid2Layout:PLAYER_SPECIALIZATION_CHANGED(_,unit)
+	if unit=='player' then
+		self:ReloadProfile()
+	end	
 end
 
 --}}}
@@ -319,6 +330,25 @@ end
 function Grid2Layout:SetClamp()
 	self.frame:SetClampedToScreen(self.db.profile.clamp)
 end
+
+function Grid2Layout:ReloadProfile()
+	reloadProfileQueued = false
+	local db = Grid2.profiles.char
+	if db.enabled then
+		local pro = db[GetSpecialization() or 0] or db
+		if type(pro)=='table' then
+			pro = pro[ (self.partyType or "solo").."@"..(self.instType or "other") ] 
+		end
+		if type(pro)=="string" and pro~=Grid2.db:GetCurrentProfile() then
+			if InCombatLockdown() then
+				reloadProfileQueued = true
+			else
+				Grid2.db:SetProfile(pro)
+			end	
+			return true
+		end
+	end	
+end	
 
 function Grid2Layout:ReloadLayout(force)
 	reloadLayoutQueued = false

@@ -313,7 +313,7 @@ local function CleanStatusMap(setup)
 end
 
 -- {{ Create profile advanced options
-Grid2Options.AdvancedProfileOptions = { type = "group", order= 200, name = L["Advanced"], desc = L["Options for %s."]:format(L["Advanced"]), args = {
+Grid2Options.AdvancedProfileOptions = { type = "group", order= 200, name = L["Import&Export"], desc = L["Options for %s."]:format(L["Import&Export"]), args = {
 	header1 ={
 		type = "header",
 		order = 60,

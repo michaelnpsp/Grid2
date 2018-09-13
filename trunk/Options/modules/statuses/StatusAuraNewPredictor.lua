@@ -47,14 +47,16 @@ function AuraPredictor:GetValues(text, values, max)
 		end
 		-- search raid-debuffs if module is available
 		if self.type=="debuff" and Grid2Options.GetRaidDebuffsTable then
-			local module = (Grid2Options:GetRaidDebuffsTable())["Warlords of Draenor"]
-			for _,instance in pairs(module) do
-				for bossName,boss in pairs(instance) do
-					bossName = string.gsub(bossName, "%[.-%]", "")
-					max = self:GetTableValues(boss, values, text, max, bossName, true)
-					if max==0 then return end
+			local module = (Grid2Options:GetRaidDebuffsTable())["Battle for Azeroth"]
+			if module then
+				for _,instance in pairs(module) do
+					for bossName,boss in pairs(instance) do
+						bossName = string.gsub(bossName, "%[.-%]", "")
+						max = self:GetTableValues(boss, values, text, max, bossName, true)
+						if max==0 then return end
+					end
 				end
-			end
+			end	
 		end
 	end
 end

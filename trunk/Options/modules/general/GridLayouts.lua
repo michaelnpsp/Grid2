@@ -25,8 +25,7 @@ do
 	end
 	local function TestMode(info)
 		if Grid2Options.LayoutTestEnable then
-			Grid2Options:LayoutTestEnable( Grid2Layout.db.profile.layouts[info.arg] or
-										   Grid2Layout.db.profile.layouts["raid"] )
+			Grid2Options:LayoutTestEnable( Grid2Layout.db.profile.layouts[info.arg] or Grid2Layout.db.profile.layouts["raid"] )
 		end
 	end
 	function MakeLayoutsOptions(advanced)

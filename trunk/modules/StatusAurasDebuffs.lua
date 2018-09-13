@@ -25,7 +25,7 @@ local function status_UpdateState(self, unit, texture, count, duration, expirati
 end
 
 local function status_UpdateStateFilter(self, unit, name, texture, count, duration, expiration, caster, isBossDebuff, debuffType)
-	local filtered = self.auraNames[name] or (self.filterLong~=nil and (duration>300)==self.filterLong) or (self.filterBoss~=nil and self.filterBoss == isBossDebuff) or (self.filterCaster and (caster==unit or myUnits[caster]) )
+	local filtered = self.auraNames[name] or (self.filterLong~=nil and (duration>300)==self.filterLong) or (self.filterBoss~=nil and self.filterBoss == isBossDebuff) or (self.filterCaster~=nil and self.filterCaster==(caster==unit or myUnits[caster]) )
 	if filtered then return end
 	self.states[unit] = true
 	self.textures[unit] = texture
@@ -83,7 +83,7 @@ do
 		while true do
 			name, textures[j], counts[j], debuffType, durations[j], expirations[j], caster, _, _, _, _, isBossDebuff = UnitDebuff(unit, i)
 			if not name then return j-1, textures, counts, expirations, durations, colors end
-			local filtered = spells[name] or (filterLong and (durations[j]>=300)==filterLong) or (filterBoss~=nil and filterBoss==isBossDebuff) or (filterCaster and (caster==unit or myUnits[caster]))
+			local filtered = spells[name] or (filterLong and (durations[j]>=300)==filterLong) or (filterBoss~=nil and filterBoss==isBossDebuff) or (filterCaster~=nil and filterCaster==(caster==unit or myUnits[caster]))
 			if not filtered then 
 				colors[j] = typeColors[debuffType] or self.color
 				j = j + 1 

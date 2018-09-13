@@ -71,7 +71,7 @@ function GSRD:UpdateZoneSpells(event)
 	self:ResetZoneSpells()
 	instance_map_id   = map_id
 	instance_map_name = map_name
-	instance_id = EJ_GetInstanceForMap(C_Map.GetBestMapForUnit("player"))
+	instance_id = EJ_GetInstanceForMap(C_Map.GetBestMapForUnit("player") or 0)
 	for status in next,statuses do
 		status:LoadZoneSpells()
 	end
