@@ -25,30 +25,42 @@ do
 	GetUnusedProfiles = function() return GetProfiles(false) end
 end
 
-local function SetDefaults(spec,typ)	
+local function GroupValueExists(key)
+	local db  = Grid2.profiles.char
+	if type(db[1])=='table' then
+		return db[1][key] and db.enabled
+	else
+		return db[key] and db.enabled
+	end
+end
+
+local function SetDefaults(spec, typ, adv, nowipe)	
+	local db  = Grid2.profiles.char
 	local pro = Grid2.db:GetCurrentProfile()
 	local function GetTypesDefaults(t)
+		local val = adv and pro or nil
 		t = type(t)=='table' and t or {}
-		t['solo@other']  = pro 
-		t['party@other'] = pro 
-		t['arena@arena'] = pro 
-		t['raid@pvp']    = pro  
-		t['raid@lfr']    = pro
-		t['raid@flex']   = pro
-		t['raid@mythic'] = pro 
-		t['raid@none']   = pro  
-		t['raid@other']  = pro 
+		t['solo']  = t['solo']  or pro 
+		t['party'] = t['party'] or pro 
+		t['arena'] = t['arena'] or pro
+		t['raid']  = t['raid']  or pro
+		t['raid@pvp']    = val 
+		t['raid@lfr']    = val
+		t['raid@flex']   = val
+		t['raid@mythic'] = val 
 		return t
 	end
-	wipe(Grid2.profiles.char)
+	if not nowipe then
+		wipe(db)
+	end	
 	if spec then
 		for i=1,GetNumSpecializations() or 0 do
-			Grid2.profiles.char[i] = typ and GetTypesDefaults(Grid2.profiles.char[i]) or pro
+			db[i] = typ and GetTypesDefaults(db[i]) or pro
 		end
 	elseif typ then
-		GetTypesDefaults(Grid2.profiles.char)
+		GetTypesDefaults(db)
 	end
-	Grid2.profiles.char.enabled = (spec or typ) and true or nil
+	db.enabled = (spec or typ) and true or nil
 end	
 
 local MakeOptionsTypes
@@ -65,7 +77,7 @@ do
 	end
 
 	local function IsHidden(info)
-		return not Grid2.profiles.char['solo@other']
+		return not GetValue(info)
 	end
 
 	local function GetValueSpec(info)
@@ -82,7 +94,7 @@ do
 	end
 
 	local function IsHiddenSpec(info)
-		return type(Grid2.profiles.char[1])~='table'
+		return not GetValueSpec(info)
 	end
 	
 	local function MakeOptionType(spec, name, order)
@@ -100,15 +112,14 @@ do
 	
 	MakeOptionsTypes = function(spec, options)
 		options = options or {}
-		options['solo@other']  = MakeOptionType(spec,'Solo',1) 
-		options['party@other'] = MakeOptionType(spec,'Party',2)
-		options['arena@arena'] = MakeOptionType(spec,'Arena',3) 
-		options['raid@pvp']    = MakeOptionType(spec,'Raid (PvP)',4)
-		options['raid@lfr']    = MakeOptionType(spec,'Raid (LFR)',5)
-		options['raid@flex']   = MakeOptionType(spec,'Raid (Normal&Heroic)',6)
-		options['raid@mythic'] = MakeOptionType(spec,'Raid (Mythic)',7)
-		options['raid@none']   = MakeOptionType(spec,'Raid (World)',8)
-		options['raid@other']  = MakeOptionType(spec,'Raid (Other)',9)
+		options['solo']  = MakeOptionType(spec,'Solo',1) 
+		options['party'] = MakeOptionType(spec,'Party',2)
+		options['arena'] = MakeOptionType(spec,'Arena',3)
+		options['raid']  = MakeOptionType(spec,'Raid',4)
+		options['raid@pvp']    = MakeOptionType(spec,'Raid (PvP)',5)
+		options['raid@lfr']    = MakeOptionType(spec,'Raid (LFR)',6)
+		options['raid@flex']   = MakeOptionType(spec,'Raid (Normal&Heroic)',7)
+		options['raid@mythic'] = MakeOptionType(spec,'Raid (Mythic)',8)
 		return options
 	end
 end
@@ -211,12 +222,12 @@ enabled1 = {
 	type = "toggle",
 	name = "|cffffd200".. L["Enable profiles by Specialization"] .."|r",
 	desc = L["When enabled, your profile will be set according to the character specialization."],
-	descStyle = "inline",	
-	order = 2,
+	-- descStyle = "inline",	
+	order = 1,
 	width = "full",
 	get = function(info) return Grid2.profiles.char[1] and Grid2.profiles.char.enabled end,
 	set = function(info, value)
-		SetDefaults(value, Grid2.profiles.char['solo@other'] or type(Grid2.profiles.char[1])=="table")
+		SetDefaults( value, GroupValueExists('solo'), GroupValueExists('raid@lfr') )
 		Grid2Layout:ReloadProfile()
 	end,
 },
@@ -225,14 +236,29 @@ enabled2 = {
 	type = "toggle",
 	name = "|cffffd200".. L["Enable profiles by Type of Group"] .."|r",
 	desc = L["When enabled, your profile will be set according to the type of group."],
-	descStyle = "inline",
-	order = 3,
+	-- descStyle = "inline",
+	order = 2,
 	width = "full",
-	get = function(info) return (Grid2.profiles.char['solo@other'] or type(Grid2.profiles.char[1])=="table") and Grid2.profiles.char.enabled end,
+	get = function(info) return GroupValueExists('solo') end,
 	set = function(info, value)
 		SetDefaults(Grid2.profiles.char[1], value)
 		Grid2Layout:ReloadProfile()
 	end,
+}, 
+
+enabled3 = {
+	type = "toggle",
+	name = L["Enable profiles by Raid Type"],
+	desc = L["When enabled, profiles by raid type can be configured."],
+	-- descStyle = "inline",
+	order = 3,
+	width = "full",
+	get = function(info) return GroupValueExists('raid@lfr') end,
+	set = function(info, value)
+		SetDefaults(Grid2.profiles.char[1], GroupValueExists('solo'), value, true)
+		Grid2Layout:ReloadProfile()
+	end,
+	hidden = function() return not GroupValueExists('solo') end,
 }, 
 
 }

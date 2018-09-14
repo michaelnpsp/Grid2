@@ -337,7 +337,7 @@ function Grid2Layout:ReloadProfile()
 	if db.enabled then
 		local pro = db[GetSpecialization() or 0] or db
 		if type(pro)=='table' then
-			pro = pro[ (self.partyType or "solo").."@"..(self.instType or "other") ] 
+			pro = pro[ (self.partyType or "solo").."@"..(self.instType or "other") ] or pro[self.partyType]
 		end
 		if type(pro)=="string" and pro~=Grid2.db:GetCurrentProfile() then
 			if InCombatLockdown() then
