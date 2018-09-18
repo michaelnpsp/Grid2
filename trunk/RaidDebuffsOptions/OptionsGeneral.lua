@@ -100,7 +100,7 @@ do
 				if not v then
 					RDO:RefreshAdvancedOptions()
 				end
-				Grid2.tooltipFunc["Grid2RaidDebuffs"] = v and AddToTooltip or nil
+				Grid2.tooltipFunc["RaidDebuffsAuto"] = v and AddToTooltip or nil
 			end,
 		},
 		autostatus = {

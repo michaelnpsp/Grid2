@@ -772,6 +772,7 @@ L["Delete existing and unused profiles from the database."] = true
 L['Delete a Profile'] = true
 L["Delete existing and unused profiles from the database."] = true
 L["Are you sure you want to delete the selected profile?"] = true
+L["You can assign a different database profile for each specialization, type of group or raid type."] = true
 L["Enable profiles by Specialization"] = true
 L["When enabled, your profile will be set according to the character specialization."] = true
 L["Enable profiles by Type of Group"] = true

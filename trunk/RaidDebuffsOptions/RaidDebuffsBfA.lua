@@ -164,6 +164,7 @@ RDDB["Battle for Azeroth"] = {
 		["Aqu'sirr"] = {
 		order = 1, ejid = 2153,
 		264560, -- Choking Brine
+		264477, -- Grasp from the Depths
 		},
 		["Tidesage Council"] = {
 		order = 2, ejid = 2154,
@@ -193,6 +194,7 @@ RDDB["Battle for Azeroth"] = {
 		276268, -- Golpe tumultuoso
 		268059, -- Ancla de vinculación
 		268027, -- Mareas crecientes		
+		268214, -- Grabar carne
 		},		
 	},
 	[1002] = {

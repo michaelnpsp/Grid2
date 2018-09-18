@@ -87,8 +87,8 @@ do
 			if h==health_cache[unit] then return end
 			health_cache[unit] = h
 			UpdateIndicators(unit)
-		end	
-	end 
+		end
+	end
 	local function CombatLogEventReal(...)
 		local sign = HealthEvents[select(2,...)] 
 		if sign then
