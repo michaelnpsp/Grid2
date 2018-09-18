@@ -218,12 +218,17 @@ delete = {
 
 local optionsAdvanced = {
 
+title = {
+	order = 1,
+	type = "description",
+	name = L["You can assign a different database profile for each specialization, type of group or raid type."],
+},
+
 enabled1 = {
 	type = "toggle",
 	name = "|cffffd200".. L["Enable profiles by Specialization"] .."|r",
 	desc = L["When enabled, your profile will be set according to the character specialization."],
-	-- descStyle = "inline",	
-	order = 1,
+	order = 2,
 	width = "full",
 	get = function(info) return Grid2.profiles.char[1] and Grid2.profiles.char.enabled end,
 	set = function(info, value)
@@ -236,8 +241,7 @@ enabled2 = {
 	type = "toggle",
 	name = "|cffffd200".. L["Enable profiles by Type of Group"] .."|r",
 	desc = L["When enabled, your profile will be set according to the type of group."],
-	-- descStyle = "inline",
-	order = 2,
+	order = 3,
 	width = "full",
 	get = function(info) return GroupValueExists('solo') end,
 	set = function(info, value)
@@ -250,8 +254,7 @@ enabled3 = {
 	type = "toggle",
 	name = L["Enable profiles by Raid Type"],
 	desc = L["When enabled, profiles by raid type can be configured."],
-	-- descStyle = "inline",
-	order = 3,
+	order = 4,
 	width = "full",
 	get = function(info) return GroupValueExists('raid@lfr') end,
 	set = function(info, value)

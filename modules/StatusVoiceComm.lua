@@ -21,11 +21,7 @@ function Voice:OnDisable()
 	self:UnregisterEvent("VOICE_CHAT_CHANNEL_MEMBER_SPEAKING_STATE_CHANGED")
 	self:UnregisterMessage("Grid_UnitLeft")
 	self:UnregisterMessage("Grid_UnitUpdated")
-	while true do
-		local k = next(cache)
-		if not k then break end
-		cache[k] = nil
-	end
+	wipe(cache)
 end
 
 function Voice:VOICE_CHAT_CHANNEL_MEMBER_SPEAKING_STATE_CHANGED(_, memberID, channelID, isSpeaking)

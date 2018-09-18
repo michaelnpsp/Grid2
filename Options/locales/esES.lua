@@ -865,6 +865,7 @@ L["Are you sure you want to overwrite current profile values?"] = "Seguro que qu
 L["Delete existing and unused profiles from the database."] = "Elimina un perfil de la base de datos."
 L['Delete a Profile'] = "Borrar Perfil"
 L["Are you sure you want to delete the selected profile?"] = "Seguro que quieres eliminar el perfil elegido?"
+L["You can assign a different database profile for each specialization, type of group or raid type."] = "Puedes asignar un perfil diferente para cada especialización, tipo de grupo o tipo de raid."
 L["Enable profiles by Specialization"] = "Activar perfiles por Especialización"
 L["When enabled, your profile will be set according to the character specialization."] = "Activa esta opcion para elegir perfiles distintos para cada especializacion."
 L["Enable profiles by Type of Group"] = "Activar perfiles por Tipo de Grupo"

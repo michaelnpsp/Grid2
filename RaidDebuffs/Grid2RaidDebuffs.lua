@@ -1,5 +1,6 @@
 -- Raid Debuffs module, implements raid-debuffs statuses
 
+local L = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 local GSRD = Grid2:NewModule("Grid2RaidDebuffs")
 local frame = CreateFrame("Frame")
 
@@ -21,6 +22,7 @@ local instance_map_name
 local statuses = {}
 local spells_order = {}
 local spells_status = {}
+local spells_count = 0
 
 -- autdetect debuffs variables
 local auto_status
@@ -29,6 +31,13 @@ local auto_boss
 local auto_instance
 local auto_debuffs
 local auto_blacklist = { [160029] = true, [36032] = true, [6788] = true, [80354] = true, [95223] = true, [114216] = true }
+
+-- LDB Tooltip
+Grid2.tooltipFunc['RaidDebuffsCount'] = function(tooltip)
+	if instance_map_name then
+		tooltip:AddDoubleLine( instance_map_name, string.format("|cffff0000%d|r %s",spells_count,L['debuffs']), 255,255,255, 255,255,0)
+	end
+end
 
 -- GSRD 
 frame:SetScript("OnEvent", function (self, event, unit)
@@ -216,7 +225,7 @@ end
 
 function class:LoadZoneSpells()
 	if instance_id then
-		local count = 0
+		spells_count = 0
 		local db = self.dbx.debuffs[ instance_map_id ] or self.dbx.debuffs[ instance_id ]
 		if db then
 			for index, spell in ipairs(db) do
@@ -224,12 +233,12 @@ function class:LoadZoneSpells()
 				if name and (not spells_order[name]) then
 					spells_order[name]  = index
 					spells_status[name] = self
-					count = count + 1
+					spells_count = spells_count + 1
 				end
 			end
 		end
 		if GSRD.debugging then
-			GSRD:Debug("Zone [%s][%d/%d] Status [%s]: %d raid debuffs loaded", instance_map_name, instance_id, instance_map_id, self.name, count)
+			GSRD:Debug("Zone [%s][%d/%d] Status [%s]: %d raid debuffs loaded", instance_map_name, instance_id, instance_map_id, self.name, spells_count)
 		end
 	end
 end

@@ -8,6 +8,8 @@ local BuffSubTypes= {
 			31850, --Ardent Defender
 			498,   --Divine Protection
 			86657, --Ancient Guardian (It the buff channeled by the Guardian of the Ancient Kings)
+			86659, -- Guardian of Ancient Kings
+			204018, -- Blessing of Spellwarding
 			-- War
 			2565,  --Shield Block
 			871,   --Shield Wall
@@ -24,6 +26,12 @@ local BuffSubTypes= {
 			--Priest
 			33206, --Pain Suppression
 			47788, --Guardian Spirit
+			-- Monk
+			115203, -- Fortifying Brew BrM
+			122278, -- Dampen Harm
+			-- DH
+			187827, -- Metamorphosis
+			
 	},
 }
 

@@ -131,11 +131,11 @@ do
 		end)
 		local timer = timetracker:CreateAnimation()
 		timer:SetOrder(1); timer:SetDuration(0.10) 
-		Grid2.AddTimeTracker = function (self, status, elapsed)
+		Grid2.RegisterTimeTrackerStatus = function (self, status, elapsed)
 			if not next(tracked) then timetracker:Play() end
 			tracked[status] = elapsed or false
 		end
-		return Grid2:AddTimeTracker(status, elapsed)
+		return Grid2:RegisterTimeTrackerStatus(status, elapsed)
 	end
 	function Grid2:UnregisterTimeTrackerStatus(status)
 		tracked[status] = nil
