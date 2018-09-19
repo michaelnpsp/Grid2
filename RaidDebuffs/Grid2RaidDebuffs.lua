@@ -74,18 +74,22 @@ function GSRD:OnModuleDisable()
 end
 
 function GSRD:UpdateZoneSpells(event)
-	local map_name,_,_,_,_,_,_,map_id = GetInstanceInfo() 
-	map_id = map_id + 100000 -- +100000 to avoid collisions with instance_id
-	if map_id==instance_map_id and event then return end
-	self:ResetZoneSpells()
-	instance_map_id   = map_id
-	instance_map_name = map_name
-	instance_id = EJ_GetInstanceForMap(C_Map.GetBestMapForUnit("player") or 0)
-	for status in next,statuses do
-		status:LoadZoneSpells()
+	local bm = C_Map.GetBestMapForUnit("player")
+	if bm then
+		local map_id = select(8,GetInstanceInfo()) + 100000 -- +100000 to avoid collisions with instance_id
+		if event and map_id==instance_map_id then return end
+		self:ResetZoneSpells()
+		instance_id = EJ_GetInstanceForMap(bm)
+		instance_map_id = map_id
+		instance_map_name = GetInstanceInfo()
+		for status in next,statuses do
+			status:LoadZoneSpells()
+		end
+		self:UpdateEvents()
+		self:ClearAllIndicators()
+	else
+		C_Timer.After(3, function() self:UpdateZoneSpells(true) end )
 	end
-	self:UpdateEvents()
-	self:ClearAllIndicators()
 end
 
 function GSRD:GetCurrentZone()
@@ -152,7 +156,7 @@ function GSRD:RegisterEncounter(encounterName)
 	end
 	auto_debuffs = debuffs[encounterName]
 	if not auto_debuffs then
-		local instance = instance_id>0 and instance_id or 1028 -- 0=>asuming Azeroth worldmap (1028)
+		local instance = (instance_id or 0)>0 and instance_id or 1028 -- 0=>asuming Azeroth worldmap (1028)
 		local encOrder, encName, encID, _ = 0
 		EJ_SelectInstance(instance)
 		repeat
@@ -224,7 +228,7 @@ function class:ClearAllIndicators()
 end
 
 function class:LoadZoneSpells()
-	if instance_id then
+	if instance_map_id then
 		spells_count = 0
 		local db = self.dbx.debuffs[ instance_map_id ] or self.dbx.debuffs[ instance_id ]
 		if db then
@@ -240,7 +244,7 @@ function class:LoadZoneSpells()
 		if GSRD.debugging then
 			GSRD:Debug("Zone [%s][%d/%d] Status [%s]: %d raid debuffs loaded", instance_map_name, instance_id, instance_map_id, self.name, spells_count)
 		end
-	end
+	end	
 end
 
 function class:OnEnable()
