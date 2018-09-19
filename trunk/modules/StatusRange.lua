@@ -83,7 +83,6 @@ local Ranges38 = {
 }
 function Range:Grid_GroupTypeChanged(_, groupType)
 	if self.range == "38" then
-		Ranges["38"] = Ranges38[groupType] or UnitInRange 
 		self:UpdateDB()
 	end
 end
@@ -107,6 +106,7 @@ function Range:CreateTimer()
 end
 
 function Range:UpdateDB()
+	Ranges["38"] = Ranges38[ Grid2:GetGroupType() ] or UnitInRange
 	self.defaultAlpha = self.dbx.default or 0.25
 	self.range = tostring(self.dbx.range)
 	UnitRangeCheck = Ranges[self.range]

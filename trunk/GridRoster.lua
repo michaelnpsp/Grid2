@@ -108,6 +108,9 @@ end
 -- Events to track raid type changes
 do
 	local groupType, instType, instMaxPlayers
+	function Grid2:GetGroupType()
+		return groupType, instType, instMaxPlayers
+	end
 	function Grid2:PLAYER_ENTERING_WORLD()
 		-- this is needed to trigger an update when switching from one BG directly to another
 		groupType = nil
