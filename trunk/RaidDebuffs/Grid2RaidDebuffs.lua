@@ -79,7 +79,7 @@ function GSRD:UpdateZoneSpells(event)
 		local map_id = select(8,GetInstanceInfo()) + 100000 -- +100000 to avoid collisions with instance_id
 		if event and map_id==instance_map_id then return end
 		self:ResetZoneSpells()
-		instance_id = EJ_GetInstanceForMap(bm)
+		instance_id = EJ_GetInstanceForMap(bm~=1150 and bm or 1148) -- Fix for Uldir map 1150 (ticket #588)
 		instance_map_id = map_id
 		instance_map_name = GetInstanceInfo()
 		for status in next,statuses do
