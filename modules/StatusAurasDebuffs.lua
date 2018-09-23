@@ -5,13 +5,28 @@ local UnitDebuff = UnitDebuff
 local emptyTable = {}
 local myUnits = { player = true, pet = true, vehicle = true }
 local dispelTypes = { Magic = true, Curse = true, Disease = true, Poison = true }
-local statusTypes = { "color", "icon", "icons", "percent", "text" }
+local statusTypes = { "color", "icon", "icons", "percent", "text", "tooltip" }
 
 -- Called from StatusAuras.lua
-local function status_UpdateState(self, unit, texture, count, duration, expiration, _, _, debuffType)
+
+-- All debuffs + optional black list
+local function status_UpdateStateAll(self, unit, name, texture, count, duration, expiration, caster, isBossDebuff, debuffType, index)
+	if self.auraNames[name] then return end
+	self.states[unit] = index
+	self.textures[unit] = texture
+	self.durations[unit] = duration
+	self.expirations[unit] = expiration
+	self.counts[unit] = count
+	self.types[unit] = debuffType
+	self.tracker[unit] = 1
+	self.seen = 1
+end
+
+-- White list only
+local function status_UpdateState(self, unit, texture, count, duration, expiration, _, _, debuffType, index)
 	if count==0 then count = 1 end
-	if self.states[unit]==nil or self.counts[unit] ~= count or expiration~=self.expirations[unit] then 
-		self.states[unit] = true
+	if self.states[unit]==nil or self.counts[unit] ~= count or expiration~=self.expirations[unit] then
+		self.states[unit] = index
 		self.textures[unit] = texture
 		self.durations[unit] = duration
 		self.expirations[unit] = expiration
@@ -24,10 +39,11 @@ local function status_UpdateState(self, unit, texture, count, duration, expirati
 	end	
 end
 
-local function status_UpdateStateFilter(self, unit, name, texture, count, duration, expiration, caster, isBossDebuff, debuffType)
+-- Filter + black list
+local function status_UpdateStateFilter(self, unit, name, texture, count, duration, expiration, caster, isBossDebuff, debuffType, index)
 	local filtered = self.auraNames[name] or (self.filterLong~=nil and (duration>300)==self.filterLong) or (self.filterBoss~=nil and self.filterBoss == isBossDebuff) or (self.filterCaster~=nil and self.filterCaster==(caster==unit or myUnits[caster]) )
 	if filtered then return end
-	self.states[unit] = true
+	self.states[unit] = index
 	self.textures[unit] = texture
 	self.durations[unit] = duration
 	self.expirations[unit] = expiration
@@ -37,10 +53,11 @@ local function status_UpdateStateFilter(self, unit, name, texture, count, durati
 	self.seen = 1
 end
 
-local function status_UpdateStateDispel(self, unit, name, texture, count, duration, expiration, caster, isBossDebuff, debuffType)
+-- Dispeleable debuffs
+local function status_UpdateStateDispel(self, unit, name, texture, count, duration, expiration, caster, isBossDebuff, debuffType, index)
 	name, texture, count, debuffType, duration, expiration = UnitDebuff(unit, 1, "RAID")
 	if name and dispelTypes[debuffType] then
-		self.states[unit] = true
+		self.states[unit] = index
 		self.textures[unit] = texture
 		self.durations[unit] = duration
 		self.expirations[unit] = expiration
@@ -123,6 +140,13 @@ local function status_OnDisable(self)
 	Grid2:UnregisterTimeTrackerStatus(self)
 end
 
+local function status_GetTooltip(self, unit, tip)
+	local index = self.states[unit]
+	if index then
+		tip:SetUnitDebuff(unit, index)
+	end
+end
+
 local function status_GetDebuffTypeColor(self, unit)
 	local type = self.types[unit]
 	local color = type and self.typeColors[type] or self.color
@@ -151,7 +175,11 @@ local function status_UpdateDB(self)
 		self.filterBoss   = self.dbx.filterBossDebuffs
 		self.filterCaster = self.dbx.filterCaster
 		self.GetIcons     = status_GetIconsFilter
-		self.UpdateState  = status_UpdateStateFilter		
+		if self.filterLong == nil and self.filterBoss == nil and self.filterCaster == nil then
+			self.UpdateState  = status_UpdateStateAll
+		else
+			self.UpdateState  = status_UpdateStateFilter
+		end	
 	end
 	self.color = self.dbx.color1	
 	if self.dbx.debuffTypeColorize then
@@ -165,9 +193,10 @@ end
 
 local function CreateAura(baseKey, dbx)
 	local status = Grid2.statusPrototype:new(baseKey, false)
-	status.OnEnable  = status_OnEnable
-	status.OnDisable = status_OnDisable
-	status.UpdateDB  = status_UpdateDB
+	status.OnEnable   = status_OnEnable
+	status.OnDisable  = status_OnDisable
+	status.UpdateDB   = status_UpdateDB
+	status.GetTooltip = status_GetTooltip
 	Grid2:RegisterStatus(status, statusTypes, baseKey, dbx)	
 	status:UpdateDB()
 	return status

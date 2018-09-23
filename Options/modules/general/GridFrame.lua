@@ -48,18 +48,6 @@ Grid2Options:AddGeneralOptions("General", "Frames", { orientation = {
 
 		end,
 		values = AceGUIWidgetLSMlists.font,
-}, tooltip = {
-		type = "select",
-		order = 40,
-		name = L["Show Tooltip"],
-		desc = L["Show unit tooltip.  Choose 'Always', 'Never', or 'OOC'."],
-		get = function ()
-			return Grid2Frame.db.profile.showTooltip
-		end,
-		set = function (_, v)
-			Grid2Frame.db.profile.showTooltip = v
-		end,
-		values={["Always"] = L["Always"], ["Never"] = L["Never"], ["OOC"] = L["OOC"]},
 }, framewidth = {
 		type = "range",
 		order = 50,

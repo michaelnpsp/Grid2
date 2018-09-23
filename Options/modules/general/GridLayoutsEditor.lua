@@ -12,7 +12,7 @@ local DEFAULT_GROUP_ORDER = "WARRIOR,DEATHKNIGHT,ROGUE,MONK,PALADIN,DRUID,SHAMAN
 local DEFAULT_PET_ORDER = "HUNTER,WARLOCK,DEATHKNIGHT,PRIEST,MAGE,DRUID,SHAMAN,WARRIOR,ROGUE,PALADIN"
 
 local TYPE_VALUES = {
-	party = L["party"], raid = L["raid"], partypet = L["partypet"], raidpet  = L["raidpet"],
+	player = L["players"], pet = L["pets"],
 }
 local COLUMN_VALUES = {
 	["1"]="1", ["2"]="2", ["3"]="3", ["4"]="4", ["5"]="5", ["6"]="6", ["7"]="7", ["8"]="8"
@@ -97,7 +97,7 @@ local function CreateNewGroupHeader(copyFrom)
 		end
 		return header
 	else
-		return { type="raid", sortMethod="INDEX", unitsPerColumn = 5, maxColumns = 1 }
+		return { type="player", sortMethod="INDEX", unitsPerColumn = 5, maxColumns = 1 }
 	end
 end
 
@@ -117,7 +117,7 @@ local function LoadLayoutHeader( layoutName, layout, index, header )
 		width = "half",
 		name   = L["Type"],
 		desc   = L["Type of units to display"],
-		get    = function()  return header.type or "raid" end,
+		get    = function()  return  header.type and strmatch(header.type,'pet') or "player" end,
 		set    = function(_,v)	header.type = v end,
 		values = TYPE_VALUES,
 		disabled = disabled,

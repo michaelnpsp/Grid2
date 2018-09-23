@@ -2,8 +2,6 @@
 
 local Grid2 = Grid2
 local SecureButton_GetModifiedUnit = SecureButton_GetModifiedUnit
-local UnitFrame_OnEnter = UnitFrame_OnEnter
-local UnitFrame_OnLeave = UnitFrame_OnLeave
 local next = next
 local Grid2Frame
 
@@ -86,14 +84,6 @@ function GridFrameEvents:OnAttributeChanged(name, value)
 			Grid2:SetFrameUnit(self, nil)
 		end
 	end
-end
-
-function GridFrameEvents:OnEnter()
-	Grid2Frame:OnFrameEnter(self)
-end
-
-function GridFrameEvents:OnLeave()
-	Grid2Frame:OnFrameLeave(self)
 end
 --}}}
 
@@ -194,7 +184,6 @@ Grid2Frame.defaultDB = {
 		mouseoverHighlight = false,
 		mouseoverColor = { r=1, g=1, b=1, a=1 },
 		mouseoverTexture = "Blizzard Quest Title Highlight",
-		showTooltip = "OOC",
 		orientation = "VERTICAL",
 		textOrientation = "VERTICAL",
 		intensity = 0.5,
@@ -298,25 +287,6 @@ do
 	end
 	function Grid2Frame:WithAllFrames( param , ... )
 		with[type(param)](self, param, ...)
-	end
-end
-
--- shows the default unit tooltip
-do
-	local TooltipCheck= {
-		Always = function() return false end,
-		Never  = function() return true end,
-		OOC    = InCombatLockdown,
-	}
-	function Grid2Frame:OnFrameEnter(frame)
-		if TooltipCheck[self.db.profile.showTooltip]() then
-			UnitFrame_OnLeave(frame)
-		else
-			UnitFrame_OnEnter(frame)
-		end
-	end
-	function Grid2Frame:OnFrameLeave(frame)
-		UnitFrame_OnLeave(frame)
 	end
 end
 

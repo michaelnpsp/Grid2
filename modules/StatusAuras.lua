@@ -44,7 +44,7 @@ do
 			end
 			for status in next, DebuffsHandlers do
 				if not status.seen then	
-					status:UpdateState(unit, name, texture, count, duration, expiration, caster, isBossDebuff, debuffType)
+					status:UpdateState(unit, name, texture, count, duration, expiration, caster, isBossDebuff, debuffType, i)
 				end	
 			end
 			i = i + 1
@@ -231,7 +231,7 @@ do
 		return true
 	end
 	local function IsActive(self, unit) 
-		return self.states[unit] 
+		if self.states[unit] then return true end 
 	end
 	local function IsActiveBlink(self, unit) 
 		if not self.states[unit] then return end

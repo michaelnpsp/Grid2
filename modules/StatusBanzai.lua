@@ -143,11 +143,11 @@ function Banzai:Update()
 	for g,func in next, bsrc do	-- Search new banzais
 		local unit = tguids[g]
 		if unit then
-			local name, _, ico,_,et = func(sguids[g])
+			local name, text, ico,_,et, _,_,spellId2,spellId1 = func(sguids[g]) -- Casting spellId1=9th, Channeling spellId2=8th
 			if name then
 				et         = et and et/1000 or ct+0.25 
 				bgid[g]    = unit
-				buni[unit] = g
+				buni[unit] = spellId1 or spellId2 or name
 				bdur[unit] = et - ct
 				bexp[unit] = et
 				bico[unit] = ico or "Interface\\ICONS\\Ability_Creature_Cursed_02"
@@ -156,6 +156,13 @@ function Banzai:Update()
 		end
 	end	
 	wipe(bsrc)
+end
+
+function Banzai:GetTooltip(unit, tip)
+	local spellID = buni[unit]
+	if type(spellID) == 'number' then
+		tip:SetSpellByID(spellID)
+	end
 end
 
 function Banzai:ClearIndicators()
@@ -197,7 +204,7 @@ Banzai.SetUpdateRate = status_SetUpdateRate
 Banzai.GetColor      = Grid2.statusLibrary.GetColor
 
 Grid2.setupFunc["banzai"] = function(baseKey, dbx)
-	Grid2:RegisterStatus(Banzai, {"color", "percent", "icon" }, baseKey, dbx)
+	Grid2:RegisterStatus(Banzai, {"color", "percent", "icon", "tooltip" }, baseKey, dbx)
 	return Banzai
 end
 

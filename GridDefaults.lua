@@ -54,6 +54,8 @@ end
 -- Default configurations
 
 local function MakeDefaultsCommon()
+	Grid2:DbSetValue( "indicators",  "tooltip", {type = "tooltip", displayUnitOOC = true} )
+
 	Grid2:DbSetValue( "indicators",  "alpha", {type = "alpha", color1 = {r=0,g=0,b=0,a=1}})
 	Grid2:DbSetMap( "alpha", "range", 99)
 	Grid2:DbSetMap( "alpha", "death", 98)
@@ -256,7 +258,7 @@ end
 function Grid2:UpdateDefaults()
 
 	local version= Grid2:DbGetValue("versions","Grid2") or 0
-	if version>=5 then return end
+	if version>=6 then return end
 	if version==0 then
 		MakeDefaultsCommon()
 		MakeDefaultsClass()
@@ -288,8 +290,11 @@ function Grid2:UpdateDefaults()
 				end
 			end
 		end
+		if version<6 then
+			Grid2:DbSetValue( "indicators", "tooltip", {type = "tooltip", displayUnitOOC = true} )
+		end
 	end
 	-- Set database version
-	Grid2:DbSetValue("versions","Grid2",5)
+	Grid2:DbSetValue("versions","Grid2",6)
 
 end
