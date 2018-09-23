@@ -20,7 +20,6 @@ local tooltipFrame
 local tooltipDisplayed
 
 local function OnFrameEnter(frame)
-
 	local unit = frame.unit
 	if unit then
 		if tooltipOOC and not InCombatLockdown() then
@@ -95,4 +94,3 @@ local function Create(indicatorKey, dbx)
 end
 
 Grid2.setupFunc["tooltip"] = Create
-

@@ -172,10 +172,7 @@ function Grid2Layout:OnModuleEnable()
 	self:RegisterMessage("Grid_UpdateLayoutSize", "UpdateSize")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
-end
-
-function Grid2Layout:OnModuleUpdate()
-	self:ReloadLayout(true)
+	self:RefreshModule()
 end
 
 function Grid2Layout:OnModuleDisable()
@@ -184,6 +181,12 @@ function Grid2Layout:OnModuleDisable()
 	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 	self:UnregisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	self.frame:Hide()
+end
+
+function Grid2Layout:RefreshModule()
+	self.RefreshModule = function(self) 
+		self:ReloadLayout(true) 
+	end
 end
 
 --{{{ Event handlers

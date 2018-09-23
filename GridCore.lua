@@ -80,30 +80,20 @@ function modulePrototype:OnDisable()
 	if self.OnModuleDisable then self:OnModuleDisable() end
 end
 
-function modulePrototype:OnUpdate()
-	if self.OnModuleUpdate then self:OnModuleUpdate() end
-end
-
 Grid2:SetDefaultModulePrototype(modulePrototype)
 Grid2:SetDefaultModuleLibraries("AceEvent-3.0")
 --}}}
 
 --{{{  Modules management
 function Grid2:EnableModules()
-	for _,module in self:IterateModules() do
+	for _,module in ipairs(self.orderedModules) do
 		module:OnEnable()
 	end
 end
 
 function Grid2:DisableModules()
-	for _,module in self:IterateModules() do
+	for _,module in ipairs(self.orderedModules) do
 		module:OnDisable()
-	end
-end
-
-function Grid2:UpdateModules()
-	for _,module in self:IterateModules() do
-		module:OnUpdate()
 	end
 end
 --}}}
@@ -160,7 +150,6 @@ function Grid2:ProfileChanged()
 	self:Debug("Loaded profile (", self.db:GetCurrentProfile(),")")
 	self:DisableModules()
 	self:LoadConfig()
-	self:UpdateModules()
 	self:EnableModules()
 	if Grid2Options then
 		Grid2Options:MakeOptions()
