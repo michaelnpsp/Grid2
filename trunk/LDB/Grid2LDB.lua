@@ -22,7 +22,7 @@ local Grid2LDB = DataBroker:NewDataObject("Grid2", {
 	end,
 	OnTooltipShow = function(tooltip)
 		tooltip:AddLine("Grid2")
-		tooltip:AddDoubleLine( L["Layout"], L[Grid2Layout.layoutName] or "", 255,255,255, 255,255,0)
+		tooltip:AddDoubleLine( L["Layout"], L[Grid2Layout.layoutName or ""], 255,255,255, 255,255,0)
 		for _,func in pairs(Grid2.tooltipFunc) do
 			func(tooltip)
 		end

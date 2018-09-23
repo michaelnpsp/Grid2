@@ -29,12 +29,6 @@ L["Sets the hightlight color of each unit frame"] = true
 L["Highlight Texture"] = true
 L["Sets the highlight border texture of each unit frame"] = true
 
-L["Show Tooltip"] = true
-L["Show unit tooltip.  Choose 'Always', 'Never', or 'OOC'."] = true
-L["Always"] = true
-L["Never"] = true
-L["OOC"] = true
-
 L["Background Texture"] = true
 L["Select the frame background texture."] = true
 
@@ -301,6 +295,20 @@ L["Anchor to"] = true
 L["Anchor the indicator to the selected bar."] = true
 L["Reverse Fill"] = true
 L["Fill the bar in reverse."] = true
+L["Bars"] = true
+L["Extra Bar"] = true
+L["Main Bar Color"] = true
+L["Anchor to MainBar"] = true
+L["Anchor the background bar to the Main Bar instead of the last bar."] = true
+L["Reverse"] = true
+L["Overlap"] = true
+L["Texture"] = true
+L["Sublevel"] = true
+L["Add"] = true
+L["Status Color"] = true
+L["Main Bar"] = true
+L["Fill bar in reverse"] = true
+L["Allow overlapping of non reverse bars"] = true
 
 L["Border Size"] = true
 L["Adjust the border of each unit's frame."] = true
@@ -308,6 +316,17 @@ L["Border Background Color"] = true
 L["Adjust border background color and alpha."] = true
 L["Border separation"] = true
 L["Adjust the distance between the border and the frame content."] = true
+
+L["Show statuses in Tooltip"] = true
+L["Show selected statuses information in tooltip when mouseover a unit."] = true
+L["Tooltip Anchor"] = true
+L["Sets where Tooltip is anchored relative to Grid2 window or select the game default anchor."] = true		
+L["Always display unit tooltip information when Out of Combat"] = true
+L["This option takes priority over any other tooltip configuration."] = true
+L["Never"] = true
+L["Always"] = true
+L["In Combat"] = true
+L["Out of Combat"] = true
 
 L["Select statuses to display with the indicator"] = true
 L["Available Statuses"] = true

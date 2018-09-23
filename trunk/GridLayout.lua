@@ -15,21 +15,14 @@ end
 --{{{ Class for group headers
 
 local NUM_HEADERS = 0
-local SecureHeaderTemplates = {
-	party = "SecurePartyHeaderTemplate",
-	partypet = "SecurePartyPetHeaderTemplate",
-	raid = "SecureRaidGroupHeaderTemplate",
-	raidpet = "SecureRaidPetHeaderTemplate",
-}
 
 local GridLayoutHeaderClass = {
 	prototype = {},
 	new = function (self, type)
 		NUM_HEADERS = NUM_HEADERS + 1
 		local frame
-		frame = CreateFrame("Frame", "Grid2LayoutHeader"..NUM_HEADERS, Grid2Layout.frame, assert(SecureHeaderTemplates[type]))
-		frame:SetAttribute("template",
-			ClickCastHeader and "ClickCastUnitTemplate,SecureUnitButtonTemplate" or "SecureUnitButtonTemplate")
+		frame = CreateFrame("Frame", "Grid2LayoutHeader"..NUM_HEADERS, Grid2Layout.frame, type=='pet' and "SecureGroupPetHeaderTemplate" or "SecureGroupHeaderTemplate" )
+		frame:SetAttribute("template", ClickCastHeader and "ClickCastUnitTemplate,SecureUnitButtonTemplate" or "SecureUnitButtonTemplate")
 		frame.initialConfigFunction = GridHeader_InitialConfigFunction
 		frame:SetAttribute("initialConfigFunction", [[
 			RegisterUnitWatch(self)
@@ -51,7 +44,7 @@ local GridLayoutHeaderClass = {
 }
 
 local HeaderAttributes = {
-	"showPlayer", "showSolo", "nameList", "groupFilter", "strictFiltering",
+	"nameList", "groupFilter", "strictFiltering",
 	"sortDir", "groupBy", "groupingOrder", "maxColumns", "unitsPerColumn",
 	"startingIndex", "columnSpacing", "columnAnchorPoint",
 	"useOwnerUnit", "filterOnPet", "unitsuffix",
@@ -64,6 +57,10 @@ function GridLayoutHeaderClass.prototype:Reset()
 			self:SetLayoutAttribute(attr, nil)
 		end
 	end
+	self:SetAttribute("showSolo", true)
+	self:SetAttribute("showPlayer", true)
+	self:SetAttribute("showParty", true)
+	self:SetAttribute("showRaid", true)	
 	self:Hide()
 end
 
@@ -162,34 +159,23 @@ Grid2Layout.layoutSettings = {}
 Grid2Layout.layoutHeaderClass = GridLayoutHeaderClass
 
 function Grid2Layout:OnModuleInitialize()
-	self.groups = {
-		raid = {},
-		raidpet = {},
-		party = {},
-		partypet = {},
-	}
-	self.indexes = {
-		raid = 0,
-		raidpet = 0,
-		party = 0,
-		partypet = 0,
-	}
+	self.groups = { player = {}, pet = {} }
+	self.indexes = { player = 0,  pet = 0  }
 	self.groupsUsed = {}
 	self:AddCustomLayouts()
 end
 
 function Grid2Layout:OnModuleEnable()
-	if not self.frame then
-		self:CreateFrame()
-	end
+	self:CreateFrame()
 	self:RestorePosition()
-	if self.layoutName then
-		self:ReloadLayout(true)
-	end
 	self:RegisterMessage("Grid_GroupTypeChanged")
 	self:RegisterMessage("Grid_UpdateLayoutSize", "UpdateSize")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+end
+
+function Grid2Layout:OnModuleUpdate()
+	self:ReloadLayout(true)
 end
 
 function Grid2Layout:OnModuleDisable()
@@ -202,7 +188,7 @@ end
 
 --{{{ Event handlers
 
-local reloadLayoutQueued, updateSizeQueued, restorePositionQueued
+local reloadLayoutQueued, updateSizeQueued, restorePositionQueued, reloadProfileQueued, initProfileFlag
 function Grid2Layout:PLAYER_REGEN_ENABLED()
 	if reloadProfileQueued then return self:ReloadProfile() end
 	if reloadLayoutQueued then return self:ReloadLayout(true) end
@@ -289,7 +275,7 @@ function Grid2Layout:CreateFrame()
 	f:SetFrameLevel(0)
 	--
 	self:UpdateTextures()
-	self.CreateFrame = nil
+	self.CreateFrame = Grid2.Dummy
 end
 
 local relativePoints = {
@@ -342,9 +328,13 @@ function Grid2Layout:ReloadProfile()
 		if type(pro)=="string" and pro~=Grid2.db:GetCurrentProfile() then
 			if InCombatLockdown() then
 				reloadProfileQueued = true
+			elseif not initProfileFlag and self.partyType=='solo' then
+				reloadProfileQueued = true -- Trick to avoid loading two profiles on startup (We wait a couple of seconds for the final Group Type)
+				C_Timer.After(3, function() if reloadProfileQueued then self:ReloadProfile() end end )
 			else
 				Grid2.db:SetProfile(pro)
-			end	
+			end
+			initProfileFlag = true
 			return true
 		end
 	end	
@@ -412,8 +402,9 @@ local function ForceFramesCreation(header)
 	end
 end
 
+
 local function AddLayoutHeader(self, profile, defaults, header, visualIndex)
-	local type = header.type or (defaults and defaults.type) or "raid"
+	local type = header.type and strmatch(header.type,'pet') or 'player'
 	local headers = assert(self.groups[type], "Bad " .. type)
 	local index = self.indexes[type] + 1
 	local group = headers[index]

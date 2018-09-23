@@ -20,8 +20,12 @@ function Name:GetText(unit)
 	return UnitName(unit)
 end
 
+function Name:GetTooltip(unit,tip)
+	tip:SetUnit(unit)
+end
+
 local function Create(baseKey, dbx)
-	Grid2:RegisterStatus(Name, {"text"}, baseKey, dbx)
+	Grid2:RegisterStatus(Name, {"text","tooltip"}, baseKey, dbx)
 
 	return Name
 end

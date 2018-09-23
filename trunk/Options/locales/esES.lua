@@ -32,12 +32,6 @@ L["Sets the highlight border texture of each unit frame"] = "Ajusta la textura d
 L["Right Click Menu"] = "Menu en Click Derecho"
 L["Display the standard unit menu when right clicking on a frame."] = "Mostrar el menu estandard cuando se hace click sobre una celda."
 
-L["Show Tooltip"] = "Mostrar Tooltips"
-L["Show unit tooltip.  Choose 'Always', 'Never', or 'OOC'."] = "Cuando mostrar los Tooltips de las unidades.  Elige 'Siempre', 'Nunca', o 'Fuera de combate'."
-L["Always"] = "Siempre"
-L["Never"] = "Nunca"
-L["OOC"] = "Fuera de combate"
-
 L["Background Texture"] = "Textura del Fondo"
 L["Select the frame background texture."] = "Elige la textura del fondo de las celdas"
 
@@ -331,13 +325,23 @@ L["Main Bar"] = "Barra principal"
 L["Fill bar in reverse"] = "Invertir la direccion de la barra"
 L["Allow overlapping of non reverse bars"] = "Permitir que las barras no inversas se puedan solapar"
 
-
 L["Border Size"] = "Grosor del borde"
 L["Adjust the border of each unit's frame."] = "Ajusta el grosor del borde de cada celda"
 L["Border Background Color"] = "Color fondo del borde"
 L["Adjust border background color and alpha."] = "Ajusta el color y la transparecia del fondo del borde"
 L["Border separation"] = "Separacion del borde"
 L["Adjust the distance between the border and the frame content."] = "Ajusta la distancia entre el borde y el contenido."
+
+L["Show statuses in Tooltip"] = "Muestra estados en el Tooltip"
+L["Show selected statuses information in tooltip when mouseover a unit."] = "Mostrar la informacion de los estados seleccionados en el Tooltip."
+L["Tooltip Anchor"] = "Anclaje del Tooltip"
+L["Sets where Tooltip is anchored relative to Grid2 window or select the game default anchor."] = "Elige el punto de anclaje del tooltip con respecto a la ventana del Grid2 o selecciona el anclaje predeterminado del juego."	
+L["Always display unit tooltip information when Out of Combat"] = "Muestra siempre el tooltip de la unidad estando Fuera de Combate."
+L["This option takes priority over any other tooltip configuration."] = "Esta opción tiene prioridad sobre cualquier otra configuracion del indicador."
+L["Never"] = "Nunca"
+L["Always"] = "Siempre"
+L["In Combat"] = "En Combate"
+L["Out of Combat"] = "Fuera de Combate"
 
 L["Select statuses to display with the indicator"] = "Elige los estados a mostrar en este indicador"
 L["Available Statuses"] = "Estados disponibles"
