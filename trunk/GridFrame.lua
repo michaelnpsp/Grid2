@@ -199,6 +199,7 @@ function Grid2Frame:OnModuleInitialize()
 end
 
 function Grid2Frame:OnModuleEnable()
+	self:RefreshModule()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateFrameUnits")
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE")
@@ -217,9 +218,11 @@ function Grid2Frame:OnModuleDisable()
 	self:UnregisterMessage("Grid_UnitUpdate")
 end
 
-function Grid2Frame:OnModuleUpdate()
-	self:CreateIndicators()
-	self:LayoutFrames()
+function Grid2Frame:RefreshModule()
+	self.RefreshModule = function(self)
+		self:CreateIndicators()
+		self:LayoutFrames()
+	end
 end
 
 function Grid2Frame:RegisterFrame(frame)

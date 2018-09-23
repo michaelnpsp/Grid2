@@ -36,9 +36,9 @@ locales.xml
 GridCore.lua
 GridUtils.lua
 GridRoster.lua
+GridFrame.lua
 GridLayout.lua
 GridLayoutLayouts.lua
-GridFrame.lua
 GridIndicator.lua
 GridStatus.lua
 GridSetup.lua
