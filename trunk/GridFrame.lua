@@ -218,6 +218,7 @@ function Grid2Frame:OnModuleDisable()
 	self:UnregisterMessage("Grid_UnitUpdate")
 end
 
+-- Executed only if profile changes (not first run), must be executed before Grid2Layout:OnModuleEnable()
 function Grid2Frame:RefreshModule()
 	self.RefreshModule = function(self)
 		self:CreateIndicators()

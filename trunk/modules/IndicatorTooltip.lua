@@ -24,7 +24,7 @@ local function OnFrameEnter(frame)
 	if unit then
 		if tooltipOOC and not InCombatLockdown() then
 			Tooltip:Display(unit, Tooltip)
-		elseif #Tooltip.statuses>0 and tooltipCheck() then
+		elseif tooltipCheck() then
 			local status = Tooltip:GetCurrentStatus(unit)
 			if status then
 				Tooltip:Display(unit, status)

@@ -4,7 +4,7 @@ Created by Grid2 original authors, modified by Michael
 
 local Grid2Layout = Grid2:NewModule("Grid2Layout")
 
-local pairs, ipairs, next = pairs, ipairs, next
+local pairs, ipairs, next, strmatch = pairs, ipairs, next, strmatch
 
 --{{{ Frame config function for secure headers
 local function GridHeader_InitialConfigFunction(self, name)
@@ -89,21 +89,15 @@ end
 -- including those which not affect anchors, the only exception: calls from GridLayoutHeaderClass.new)
 function GridLayoutHeaderClass.prototype:SetLayoutAttribute(name, value)
 	if name == "point" or name == "columnAnchorPoint" or name == "unitsPerColumn" then
-	  self:ClearChildrenPoints()
-  end
+		local count, uframe = 1, self:GetAttribute("child1")
+		while uframe do
+			uframe:ClearAllPoints()
+			count = count + 1
+			uframe = self:GetAttribute("child" .. count)
+		end
+	end
    self:SetAttribute(name, value)
 end
-
-function GridLayoutHeaderClass.prototype:ClearChildrenPoints()
-      local count = 1
-      local uframe = self:GetAttribute("child1")
-      while uframe do
-         uframe:ClearAllPoints()
-         count = count + 1
-         uframe = self:GetAttribute("child" .. count)
-      end
-end
-
 --{{{ Grid2Layout
 
 -- AceDB defaults
@@ -183,6 +177,7 @@ function Grid2Layout:OnModuleDisable()
 	self.frame:Hide()
 end
 
+-- Executed only if profile changes (not first run)
 function Grid2Layout:RefreshModule()
 	self.RefreshModule = function(self) 
 		self:ReloadLayout(true) 
@@ -361,7 +356,6 @@ end
 local groupFilters = { "1", "1,2", "1,2,3", "1,2,3,4", "1,2,3,4,5", "1,2,3,4,5,6", "1,2,3,4,5,6,7", "1,2,3,4,5,6,7,8" }
 
 local function SetAllAttributes(header, p, list, fix)
-	local petgroup = false
 	for attr, value in next, list do
 		if attr=="groupFilter" and value=="auto" then
 			value = groupFilters[Grid2Layout.instMaxGroups] or "1"
@@ -372,12 +366,10 @@ local function SetAllAttributes(header, p, list, fix)
 			header:SetLayoutAttribute("columnAnchorPoint", anchorPoints[not p.horizontal][p.groupAnchor] or p.groupAnchor )
 		elseif attr ~= "type" then
 			header:SetLayoutAttribute(attr, value)
-		else
-			petgroup = (value == "partypet" or value == "raidpet")
 		end
 	end
 	if fix then
-		if petgroup then
+		if strmatch(list.type or '','pet') then
 			-- force these so that the bug in SecureGroupPetHeader_Update doesn't trigger
 			header:SetLayoutAttribute("filterOnPet", true)
 			header:SetLayoutAttribute("useOwnerUnit", false)
@@ -405,10 +397,9 @@ local function ForceFramesCreation(header)
 	end
 end
 
-
 local function AddLayoutHeader(self, profile, defaults, header, visualIndex)
 	local type = header.type and strmatch(header.type,'pet') or 'player'
-	local headers = assert(self.groups[type], "Bad " .. type)
+	local headers = self.groups[type]
 	local index = self.indexes[type] + 1
 	local group = headers[index]
 	if not group then
