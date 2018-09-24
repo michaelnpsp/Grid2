@@ -9,23 +9,10 @@ local statusTypes = { "color", "icon", "icons", "percent", "text", "tooltip" }
 
 -- Called from StatusAuras.lua
 
--- All debuffs + optional black list
-local function status_UpdateStateAll(self, unit, name, texture, count, duration, expiration, caster, isBossDebuff, debuffType, index)
-	if self.auraNames[name] then return end
-	self.states[unit] = index
-	self.textures[unit] = texture
-	self.durations[unit] = duration
-	self.expirations[unit] = expiration
-	self.counts[unit] = count
-	self.types[unit] = debuffType
-	self.tracker[unit] = 1
-	self.seen = 1
-end
-
 -- White list only
 local function status_UpdateState(self, unit, texture, count, duration, expiration, _, _, debuffType, index)
 	if count==0 then count = 1 end
-	if self.states[unit]==nil or self.counts[unit] ~= count or expiration~=self.expirations[unit] then
+	if self.states[unit]==nil or self.counts[unit]~=count or expiration~=self.expirations[unit] then
 		self.states[unit] = index
 		self.textures[unit] = texture
 		self.durations[unit] = duration
@@ -37,6 +24,19 @@ local function status_UpdateState(self, unit, texture, count, duration, expirati
 	else	
 		self.seen = -1
 	end	
+end
+
+-- All debuffs + optional black list
+local function status_UpdateStateAll(self, unit, name, texture, count, duration, expiration, caster, isBossDebuff, debuffType, index)
+	if self.auraNames[name] then return end
+	self.states[unit] = index
+	self.textures[unit] = texture
+	self.durations[unit] = duration
+	self.expirations[unit] = expiration
+	self.counts[unit] = count
+	self.types[unit] = debuffType
+	self.tracker[unit] = 1
+	self.seen = 1
 end
 
 -- Filter + black list

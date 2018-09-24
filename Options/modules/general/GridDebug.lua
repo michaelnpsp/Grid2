@@ -11,10 +11,10 @@ function Grid2Options:AddModuleDebugMenu(name, module)
 		order = 3,
 		name = name,
 		desc = L["Toggle debugging for %s."]:format(name),
-		get = function () return module.db.profile.debug end,
+		get = function () return module.db.global.debug end,
 		set = function ()
-			local v = not module.db.profile.debug
-			module.db.profile.debug = v or nil
+			local v = not module.db.global.debug
+			module.db.global.debug = v or nil
 			module.debugging = v
 		end,
 	}

@@ -24,7 +24,6 @@ Grid2.tooltipFunc = {}
 --{{{ AceDB defaults
 Grid2.defaults = {
 	profile = {
-		debug = false,
 	    versions = {},
 		indicators = {},
 		statuses = {},
@@ -64,7 +63,7 @@ function modulePrototype:OnInitialize()
 		self.db = self.core.db:RegisterNamespace(self.moduleName or self.name, self.defaultDB or {} )
 	end
 	self.debugFrame = Grid2.debugFrame
-	self.debugging = self.db.profile.debug
+	self.debugging = self.db.global.debug
 	if self.OnModuleInitialize then 
 		self:OnModuleInitialize() 
 		self.OnModuleInitialize = nil
@@ -103,7 +102,7 @@ function Grid2:OnInitialize()
 
 	self.profiles = self.db:RegisterNamespace('LibDualSpec-1.0') -- Using "LibDualSpec-1.0" namespace for backward compatibility
 	
-	self.debugging = self.db.profile.debug
+	self.debugging = self.db.global.debug
 
 	local media = LibStub("LibSharedMedia-3.0", true)
 	media:Register("statusbar", "Gradient", "Interface\\Addons\\Grid2\\media\\gradient32x32")

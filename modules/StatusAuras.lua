@@ -4,6 +4,8 @@ local Grid2 = Grid2
 local type = type
 local next = next
 local GetTime = GetTime
+local UnitBuff = UnitBuff
+local UnitDebuff = UnitDebuff
 
 -- Local variables
 local StatusList = {}
@@ -33,7 +35,7 @@ do
 			if statuses then
 				local isMine = myUnits[caster]
 				for status in next, statuses do
-					status:UpdateState(unit, texture, count, duration, expiration, values[status.valueIndex], isMine )
+					status:UpdateState(unit, texture, count, duration, expiration, values[status.valueIndex], isMine, debuffType, i )
 				end
 			end
 			if debuffType then
