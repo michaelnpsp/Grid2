@@ -14,6 +14,10 @@ function Border:OnUpdate(parent, unit, status)
 	end
 end
 
+function Border:Disable(parent)
+	parent:SetBackdropBorderColor(0,0,0,0)
+end
+
 local function Create(indicatorKey, dbx)
 	Border.dbx = dbx
 	Grid2:RegisterIndicator(Border, { "color" })

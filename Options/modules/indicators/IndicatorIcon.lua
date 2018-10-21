@@ -3,18 +3,17 @@ local L = Grid2Options.L
 
 Grid2Options:RegisterIndicatorOptions("icon", true, function(self, indicator)
 	local statuses, options =  {}, {}
-	self:MakeIndicatorTypeOptions(indicator, options)
+	self:MakeIndicatorTypeLevelOptions(indicator, options)
 	self:MakeIndicatorLocationOptions(indicator, options)
-	self:MakeIndicatorSizeOptions(indicator, options)
+	self:MakeIndicatorIconSizeOptions(indicator, options)
 	self:MakeIndicatorBorderOptions(indicator, options)
 	self:MakeIndicatorIconCustomOptions(indicator, options)
-	self:MakeIndicatorDeleteOptions(indicator, options)
 	self:MakeIndicatorStatusOptions(indicator, statuses)
 	self:AddIndicatorOptions(indicator, statuses, options )
 end)
 
 function Grid2Options:MakeIndicatorIconCustomOptions(indicator, options)
-	self:MakeHeaderOptions( options, "Appearance"  )
+	self:MakeHeaderOptions( options, "Icon"  )
 	options.disableIcon = {
 		type = "toggle",
 		name = L["Display Square"],
@@ -73,12 +72,12 @@ function Grid2Options:MakeIndicatorIconCustomOptions(indicator, options)
 		order = 105,
 		name = L["Font"],
 		desc = L["Adjust the font settings"],
-		get = function (info) return indicator.dbx.font end,
+		get = function (info) return indicator.dbx.font or Grid2Options.MEDIA_VALUE_DEFAULT end,
 		set = function (info, v)
-			indicator.dbx.font = v
+			indicator.dbx.font = Grid2Options.MEDIA_VALUE_DEFAULT~=v and v or nil
 			self:RefreshIndicator(indicator, "Create")
 		end,
-		values = AceGUIWidgetLSMlists.font,
+		values = Grid2Options.GetFontValues,
 		hidden= function() return indicator.dbx.disableStack end,
 	}
 	options.fontFlags = {

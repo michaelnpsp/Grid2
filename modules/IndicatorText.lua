@@ -28,18 +28,12 @@ local TimerStart, TimerStop
 do 
 	local timer
 	function TimerStart(text, func)
-		timer = CreateFrame("Frame", nil, Grid2LayoutFrame):CreateAnimationGroup()
-		local anim = timer:CreateAnimation()
-		timer:SetScript("OnFinished", function (self)
-			self:Play()
+		timer = Grid2:CreateAnimationTimer( 0.1, function (self)
 			curTime = GetTime()
 			for text, func in next, timers do
 				func(text)
 			end
-		end)
-		anim:SetOrder(1)
-		anim:SetDuration(0.10)
-		timer:Play()
+		end, true )
 		timers[text] = func 
 		TimerStart = function(text, func) 
 			if not next(timers) then timer:Play() end
@@ -106,27 +100,32 @@ local function Text_Create(self, parent)
 	local f = self:CreateFrame("Frame", parent)
 	f:SetAllPoints()
 	f:SetBackdrop(nil)
-	f:Show()
 	local Text = f.Text or f:CreateFontString(nil, "OVERLAY")
-	f.Text = Text
 	Text:SetFontObject(GameFontHighlightSmall)
-	Text:SetFont(self.textfont, self.dbx.fontSize, self.dbx.fontFlags)
-	Text:Show()	
-end
-
-local function Text_GetBlinkFrame(self, parent)
-	return parent[self.name]
+	f.Text = Text
+	Text:Show()
 end
 
 local function Text_Layout(self, parent)
-	local Text = parent[self.name].Text
+	local Frame = parent[self.name]
+	local Text  = Frame.Text
+	Frame:SetParent(parent)
+	Frame:ClearAllPoints()
+	Frame:SetAllPoints()
+	Frame:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
+	Text:SetFont(self.textfont, self.textsize, self.fontFlags)
 	Text:ClearAllPoints()
-	Text:GetParent():SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
 	Text:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
 	Text:SetJustifyH(justifyH[self.anchorRel])
 	Text:SetJustifyV(justifyV[self.anchorRel])
 	Text:SetWidth(parent:GetWidth())
+	Text:SetShadowOffset(1,-1)
 	Text:SetShadowColor(0,0,0, self.shadowAlpha)
+	Frame:Show()
+end
+
+local function Text_GetBlinkFrame(self, parent)
+	return parent[self.name]
 end
 
 local function Text_OnUpdateDE(self, parent, unit, status)
@@ -211,13 +210,11 @@ end
 local function Text_Disable(self, parent)
 	local f = parent[self.name]
 	f:Hide()
-	f.Text:Hide()
-	self.GetBlinkFrame = nil
-	self.Layout = nil
-	self.OnUpdate = Grid2.Dummy
+	f:SetParent(nil)
+	f:ClearAllPoints()	
 end
 
-local function Text_UpdateDB(self, dbx)
+local function Text_UpdateDB(self)
 	-- text fmt
 	local fmt = Grid2.db.profile.formatting
 	FmtDE[true] = fmt.longDecimalFormat
@@ -227,7 +224,8 @@ local function Text_UpdateDB(self, dbx)
 	UpdateES = fmt.invertDurationStack and _UpdateSE or _UpdateES
 	UpdateDS = fmt.invertDurationStack and _UpdateSD or _UpdateDS
 	-- indicator dbx
-	dbx = dbx or self.dbx
+	local dbx = self.dbx
+	local theme = Grid2Frame.db.profile
 	local l = dbx.location
 	self.anchor = l.point
 	self.anchorRel = l.relPoint
@@ -235,13 +233,15 @@ local function Text_UpdateDB(self, dbx)
 	self.offsety = l.y
 	self.frameLevel = dbx.level
 	self.textlength = dbx.textlength or 16
-	self.shadowAlpha = dbx.shadowDisabled and 0 or 1
-	self.textfont  = Grid2:MediaFetch("font", dbx.font or Grid2Frame.db.profile.font) or STANDARD_TEXT_FONT
-	self.Create = Text_Create
-	self.GetBlinkFrame = Text_GetBlinkFrame
-	self.Layout = Text_Layout
-	self.Disable = Text_Disable
-	self.UpdateDB = Text_UpdateDB
+	self.textfont = Grid2:MediaFetch("font", dbx.font or theme.font) or STANDARD_TEXT_FONT
+	self.textsize = dbx.fontSize or theme.fontSize or 11
+	if dbx.fontFlags then
+		self.shadowAlpha = dbx.shadowDisabled and 0 or 1
+		self.fontFlags   = dbx.fontFlags
+	else
+		self.shadowAlpha = theme.shadowDisabled and 0 or 1
+		self.fontFlags   = theme.fontFlags
+	end
 	if dbx.duration or dbx.elapsed then
 		self.stack = dbx.stack
 		self.elapsed = dbx.elapsed
@@ -258,11 +258,10 @@ local function Text_UpdateDB(self, dbx)
 	else
 		self.OnUpdate = Text_OnUpdate
 	end
-	self.dbx = dbx
 end
 
 local function TextColor_OnUpdate(self, parent, unit, status)
-	local Text = parent[self.textname].Text
+	local Text = parent[self.parentName].Text
 	if status then
 		Text:SetTextColor(status:GetColor(unit))
 	else
@@ -270,22 +269,25 @@ local function TextColor_OnUpdate(self, parent, unit, status)
 	end
 end
 
-local function TextColor_UpdateDB(self, dbx)
-	self.dbx = dbx
-	self.Create = Grid2.Dummy
-	self.Layout = Grid2.Dummy
-	self.OnUpdate = TextColor_OnUpdate
-end
-
 local function Create(indicatorKey, dbx)
 	local indicator = Grid2.indicators[indicatorKey] or Grid2.indicatorPrototype:new(indicatorKey)
+	indicator.dbx = dbx
+	indicator.Create = Text_Create
+	indicator.GetBlinkFrame = Text_GetBlinkFrame
+	indicator.Layout = Text_Layout
+	indicator.Disable = Text_Disable
+	indicator.UpdateDB = Text_UpdateDB
 	Text_UpdateDB(indicator, dbx)
 	Grid2:RegisterIndicator(indicator, { "text" })
 
 	local colorKey = indicatorKey .. "-color"
 	local TextColor = Grid2.indicators[colorKey] or Grid2.indicatorPrototype:new(colorKey)
-	TextColor_UpdateDB(TextColor, dbx)
-	TextColor.textname = indicatorKey
+	TextColor.dbx = dbx
+	TextColor.parentName = indicatorKey
+	TextColor.Create = Grid2.Dummy
+	TextColor.Layout = Grid2.Dummy
+	TextColor.UpdateDB = Grid2.Dummy
+	TextColor.OnUpdate = TextColor_OnUpdate
 	Grid2:RegisterIndicator(TextColor, { "color" })
 
 	indicator.sideKick = TextColor

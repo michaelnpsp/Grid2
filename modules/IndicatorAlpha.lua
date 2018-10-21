@@ -7,6 +7,10 @@ function Alpha:OnUpdate(parent, unit, status)
 	parent:SetAlpha(status and status:GetPercent(unit) or Alpha.dbx.color1.a)
 end
 
+function Alpha:Disable(parent)
+	parent:SetAlpha(1)
+end
+
 local function Create(indicatorKey, dbx)
 	Alpha.dbx = dbx
 	Grid2:RegisterIndicator(Alpha, { "percent" })

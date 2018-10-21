@@ -34,7 +34,7 @@ local function OnFrameEnter(frame)
 	tooltipFrame = frame
 end
 
-local function OnFrameLeave(frame, keep)
+local function OnFrameLeave()
 	Tooltip:Hide()
 	tooltipFrame = nil 
 end
@@ -73,22 +73,23 @@ function Tooltip:OnUpdate(parent, unit, status)
 	end	
 end
 
-function Tooltip:UpdateDB(dbx)
-	dbx = dbx or self.dbx
+function Tooltip:OnSuspend()
+	Grid2Frame:SetEventHook( 'OnEnter', OnFrameEnter, false )
+	Grid2Frame:SetEventHook( 'OnLeave', OnFrameLeave, false )
+end
+
+function Tooltip:UpdateDB()
+	local dbx  = self.dbx
 	local show = dbx.showTooltip or 1
 	tooltipOOC = dbx.displayUnitOOC
 	tooltipCheck = TooltipCheck[show]
-	Grid2Frame.Events.OnEnter = ( show~=1 or tooltipOOC ) and OnFrameEnter or nil
-	Grid2Frame.Events.OnLeave = ( show~=1 or tooltipOOC ) and OnFrameLeave or nil
-	Grid2Frame:WithAllFrames(function (f)
-		f:SetScript('OnEnter', Grid2Frame.Events.OnEnter)
-		f:SetScript('OnLeave', Grid2Frame.Events.OnLeave)
-	end)
+	Grid2Frame:SetEventHook( 'OnEnter', OnFrameEnter, show~=1 or tooltipOOC )
+	Grid2Frame:SetEventHook( 'OnLeave', OnFrameLeave, show~=1 or tooltipOOC )
 end
 
 local function Create(indicatorKey, dbx)
 	Tooltip.dbx = dbx
-	Tooltip:UpdateDB(dbx)
+	Tooltip:UpdateDB()
 	Grid2:RegisterIndicator(Tooltip, { "tooltip" })
 	return Tooltip
 end

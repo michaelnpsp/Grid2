@@ -21,9 +21,10 @@ locales.xml
 
 # Grid2Options
 GridCore.lua
+GridUtils.lua
 GridGeneral.lua
 GridIndicators.lua
 GridStatuses.lua
-GridUtils.lua
+GridThemes.lua
 
 modules.xml

@@ -1,6 +1,5 @@
 --[[
 	Layouts Editor
-	General > Layouts Tab > Advanced Tab
 --]]
 
 local L  = Grid2Options.L
@@ -67,22 +66,14 @@ local ACTION2_VALUES= {
 local options
 local layoutName
 local LoadLayout
+local staticTable = {}
 
 local function GetAvailableLayouts(info)
-	local result  = {}
-	local layouts = Grid2Layout.layoutSettings
-	local custom  = Grid2Layout.db.global.customLayouts or {}
-	for name in pairs(layouts) do
-		result[ name ] = custom[name] and LG[name].." *"  or LG[name]
+	wipe(staticTable)
+	for name in pairs(Grid2Layout.db.global.customLayouts or {}) do
+		staticTable[ name ] = LG[name]
 	end
-	return result
-end
-
-local function GetCustomLayout(name)
-	if name then
-		local layouts= Grid2Layout.db.global.customLayouts
-		return layouts and layouts[name]
-	end
+	return staticTable
 end
 
 local function GetHeaderOption(layout, header, option, default)
@@ -104,7 +95,7 @@ end
 local function LoadLayoutHeader( layoutName, layout, index, header )
 	local order    = index*20
 	local args     = options.groups.args
-	local disabled = not GetCustomLayout(layoutName)
+	local disabled = false
 
 	args["header"..index] = {
 		type = "header",
@@ -265,78 +256,22 @@ end
 local function LoadLayoutGeneralOptions(name)
 	local args = options.groups.args
 	local layout = Grid2Layout.layoutSettings[name]
-	local isCustom = GetCustomLayout(name)
 	args.separator1 = {
 		type = "header",
 		order = 1,
 		name = L["General"],
 	}
-	args.scale = {
-		type = "range",
-		name = L["Scale"],
-		desc = L["Adjust Grid scale."],
-		order = 2.2,
-		softMin = 0.5,
-		softMax = 2.0,
-		step = 0.05,
-		isPercent = true,
-		get = function ()
-				  return Grid2Layout.db.profile.layoutScales[name] or 1
-			  end,
-		set = function (_, v)
-				Grid2Layout.db.profile.layoutScales[name]= (v~=1) and v or nil
-			    Grid2Layout:Scale()
-			  end,
+	args.vehicle = {
+		type = "toggle",
+		name = L["Toggle for vehicle"],
+		desc = L["When the player is in a vehicle replace the player frame with the vehicle frame."],
+		order = 3,
+		get = function() return layout.defaults.toggleForVehicle end,
+		set = function() layout.defaults.toggleForVehicle= not layout.defaults.toggleForVehicle end,
 	}
-	args.frameWidth = {
-		type = "range",
-		name = L["Frame Width"],
-		desc = L["Select zero to use default Frame Width"],
-		order = 2,
-		softMin = 0,
-		softMax = 100,
-		step = 1,
-		get = function ()
-				  return Grid2Frame.db.profile.frameWidths[name] or 0
-			  end,
-		set = function (_, v)
-				Grid2Frame.db.profile.frameWidths[name]= (v~=0) and v or nil
-				if name==Grid2Layout.layoutName then
-					Grid2Layout:UpdateDisplay()
-				end
-			  end,
-	}
-	args.frameHeight = {
-		type = "range",
-		name = L["Frame Height"],
-		desc = L["Select zero to use default Frame Height"],
-		order = 2.1,
-		softMin = 0,
-		softMax = 100,
-		step = 1,
-		get = function ()
-				  return Grid2Frame.db.profile.frameHeights[name] or 0
-			  end,
-		set = function (_, v)
-				Grid2Frame.db.profile.frameHeights[name]= (v~=0) and v or nil
-				if name==Grid2Layout.layoutName then
-					Grid2Layout:UpdateDisplay()
-				end
-			  end,
-	}
-	if isCustom then
-		args.vehicle = {
-			type = "toggle",
-			name = L["Toggle for vehicle"],
-			desc = L["When the player is in a vehicle replace the player frame with the vehicle frame."],
-			order = 3,
-			get = function() return layout.defaults.toggleForVehicle end,
-			set = function() layout.defaults.toggleForVehicle= not layout.defaults.toggleForVehicle end,
-		}
-		-- Upgrade old format custom layouts
-		if not layout.meta["raid"] then
-			layout.meta["raid"] = true
-		end
+	-- Upgrade old format custom layouts
+	if not layout.meta["raid"] then
+		layout.meta["raid"] = true
 	end
 end
 
@@ -375,7 +310,7 @@ function Grid2Options:RefreshCustomLayoutsOptions()
 	LoadLayout(nil)
 end
 
-function Grid2Options:MakeLayoutsEditorOptions()
+local function MakeLayoutsEditorOptions()
 	layoutName = nil
 	options= {
 		selectLayout = {
@@ -385,7 +320,8 @@ function Grid2Options:MakeLayoutsEditorOptions()
 			desc = L["Select Layout"],
 			values = GetAvailableLayouts,
 			get = function() return layoutName end,
-			set = function(_,v)	layoutName= LoadLayout(v) end,
+			set = function(_,v)	layoutName = LoadLayout(v) end,
+			hidden = function() local l=Grid2Layout.db.global.customLayouts; return not (l and next(l)) end
 		},
 		newLayout = {
 			type = "input",
@@ -394,7 +330,7 @@ function Grid2Options:MakeLayoutsEditorOptions()
 			desc = L["New Layout Name"],
 			get = function()  end,
 			set = function(_,v)
-				layoutName= CreateLayout(v)
+				layoutName = CreateLayout(v)
 			end,
 		},
 		delete = {
@@ -408,9 +344,10 @@ function Grid2Options:MakeLayoutsEditorOptions()
 				Grid2Layout.layoutSettings[layoutName] = nil
 				LoadLayout(nil)
 				options.selectLayout.values = GetAvailableLayouts()
+				layoutName = nil
 			end,
-			hidden= function() return not GetCustomLayout(layoutName) end,
 			confirm = function() return L["Are you sure?"] end,
+			hidden = function() return not layoutName end,
 		},
 		refresh = {
 			type = "execute",
@@ -437,3 +374,5 @@ function Grid2Options:MakeLayoutsEditorOptions()
 	}
 	return options
 end
+
+Grid2Options:AddGeneralOptions( "Layout Editor", nil,  MakeLayoutsEditorOptions() )

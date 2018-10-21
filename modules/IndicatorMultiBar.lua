@@ -18,7 +18,6 @@ local function Bar_CreateHH(self, parent)
 	bar:SetStatusBarColor(0,0,0,0)
 	bar:SetMinMaxValues(0, 1)
 	bar:SetValue(0)
-	bar:Show()
 end
 
 local function Bar_OnFrameUpdate(bar)
@@ -131,6 +130,7 @@ local function Bar_Layout(self, parent)
 	local height = self.height or parent.container:GetHeight()	
 	local color  = self.textureColor
 	-- main bar
+	bar:SetParent(parent)
 	bar:ClearAllPoints()
 	bar:SetOrientation(orient)
 	bar:SetReverseFill(self.reverseFill)
@@ -163,6 +163,7 @@ local function Bar_Layout(self, parent)
 	end
 	bar.myTextures = textures
 	bar.myMaxIndex = #self.statuses
+	bar:Show()
 end
 
 local function Bar_GetBlinkFrame(self, parent)
@@ -181,14 +182,13 @@ local function Bar_Disable(self, parent)
 			texture:Hide()
 		end	
 	end
-	bar:Hide()	
-	self.Layout = nil
-	self.Update = nil
+	bar:Hide()
+	bar:SetParent(nil)
+	bar:ClearAllPoints()	
 end
 
-local function Bar_UpdateDB(self, dbx)
-	dbx = dbx or self.dbx
-	self.dbx = dbx
+local function Bar_UpdateDB(self)
+	local dbx = self.dbx
 	self.orientation    = dbx.orientation
 	local orient = self.orientation or Grid2Frame.db.profile.orientation
 	self.SetSizeMethod  = SetSizeMethods[orient]
@@ -210,8 +210,8 @@ local function Bar_UpdateDB(self, dbx)
 	self.backMainAnchor = dbx.backMainAnchor
 	self.opacity        = dbx.opacity or 1
 	self.reverse        = dbx.reverseMainBar
-	self.backTexture    = Grid2:MediaFetch("statusbar", dbx.backTexture, "Gradient") 
-	self.texture        = Grid2:MediaFetch("statusbar", dbx.texture, "Gradient")
+	self.backTexture    = Grid2:MediaFetch("statusbar", dbx.backTexture or Grid2Frame.db.profile.barTexture, "Gradient")
+	self.texture        = Grid2:MediaFetch("statusbar", dbx.texture or Grid2Frame.db.profile.barTexture, "Gradient")
 	self.textureSublayer= 0
 	self.bars           = {}
 	self.barCount       = dbx.barCount or 0
@@ -219,7 +219,7 @@ local function Bar_UpdateDB(self, dbx)
 		local bar = self.bars[i] or {}	
 		local setup = dbx["bar"..i]
 		if setup then
-			bar.texture   = Grid2:MediaFetch("statusbar", setup.texture or dbx.texture, "Gradient")
+			bar.texture   = Grid2:MediaFetch("statusbar", setup.texture or dbx.texture or Grid2Frame.db.profile.barTexture, "Gradient")
 			bar.reverse   = setup.reverse
 			bar.noOverlap = setup.noOverlap
 			bar.color     = setup.color
@@ -244,20 +244,19 @@ local function BarColor_OnUpdate(self, parent, unit, status)
 end
 
 local function BarColor_SetBarColor(self, parent, r, g, b, a)
-	parent[self.BarName]:SetStatusBarColor(r, g, b, min(self.opacity,a or 1) )
+	parent[self.parentName]:SetStatusBarColor(r, g, b, min(self.opacity,a or 1) )
 end
 
 local function BarColor_SetBarColorInverted(self, parent, r, g, b, a)
-	parent[self.BarName]:SetStatusBarColor(0, 0, 0, min(self.opacity, 0.8) )
+	parent[self.parentName]:SetStatusBarColor(0, 0, 0, min(self.opacity, 0.8) )
 	parent.container:SetVertexColor(r, g, b, a)
 end
 
-local function BarColor_UpdateDB(self, dbx)
-	dbx = dbx or self.dbx
+local function BarColor_UpdateDB(self)
+	local dbx = self.dbx
 	self.SetBarColor = dbx.invertColor and BarColor_SetBarColorInverted or BarColor_SetBarColor
 	self.OnUpdate = dbx.textureColor and Grid2.Dummy or BarColor_OnUpdate
 	self.opacity = dbx.opacity or 1
-	self.dbx = dbx	
 end
 
 --- }}}
@@ -265,6 +264,7 @@ end
 local function Create(indicatorKey, dbx)
 
 	local Bar = Grid2.indicators[indicatorKey] or Grid2.indicatorPrototype:new(indicatorKey)
+	Bar.dbx 		   = dbx
 	-- Hack to caculate status index fast: statuses[priorities[status]] == status
 	Bar.sortStatuses   = function (a,b) return Bar.priorities[a] < Bar.priorities[b] end
 	Bar.Create         = Bar_CreateHH
@@ -274,17 +274,18 @@ local function Create(indicatorKey, dbx)
 	Bar.Layout         = Bar_Layout
 	Bar.Update         = Bar_Update
 	Bar.UpdateDB       = Bar_UpdateDB	
-	Bar_UpdateDB(Bar,dbx)
-	Grid2:RegisterIndicator(Bar, { "percent" }, true)
+	Bar_UpdateDB(Bar)
+	Grid2:RegisterIndicator(Bar, { "percent" })
 	EnableDelayedUpdates()
 	
-	local colorKey    = indicatorKey .. "-color"
-	local BarColor    = Grid2.indicators[colorKey] or Grid2.indicatorPrototype:new(colorKey)
-	BarColor.BarName  = indicatorKey
-	BarColor.Create   = Grid2.Dummy
-	BarColor.Layout   = Grid2.Dummy
-	BarColor.UpdateDB = BarColor_UpdateDB
-	BarColor_UpdateDB(BarColor, dbx)
+	local colorKey      = indicatorKey .. "-color"
+	local BarColor      = Grid2.indicators[colorKey] or Grid2.indicatorPrototype:new(colorKey)
+	BarColor.dbx        = dbx
+	BarColor.parentName = indicatorKey
+	BarColor.Create     = Grid2.Dummy
+	BarColor.Layout     = Grid2.Dummy
+	BarColor.UpdateDB   = BarColor_UpdateDB
+	BarColor_UpdateDB(BarColor)
 	Grid2:RegisterIndicator(BarColor, { "color" })
 	Bar.sideKick = BarColor
 	

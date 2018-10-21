@@ -8,8 +8,6 @@ local L = Grid2Options.L
 local pairs = pairs
 local fmt = string.format
 
--- Direct link to AceConfigTable statuses list
-Grid2Options.statusOptions = Grid2Options.options.args.statuses.args
 -- status types indicators icons
 Grid2Options.statusTypesIcons = {
 	generic = Grid2Options.indicatorIconPath .. "color",
@@ -37,6 +35,7 @@ Grid2Options.debuffTypeIcons = {
 	Poison  = "Interface\\Icons\\Spell_nature_nullifydisease",
 	Disease = "Interface\\Icons\\Spell_nature_removedisease",
 	Curse   = "Interface\\Icons\\Spell_nature_removedisease",
+	Default = "Interface\\Icons\\Spell_holy_harmundeadaura.png", 
 }
 -- status.dbx.type -> categoryKey
 Grid2Options.typeCategories = {}
@@ -69,7 +68,7 @@ function Grid2Options:AddStatusCategoryOptions(catKey, category)
 		if category.title then
 			self:MakeTitleOptions(options, category.title, category.desc or group.desc, nil, category.icon )
 		end
-		self.statusOptions[catKey] = group
+		self.statusesOptions[catKey] = group
 	end
 end
 
@@ -92,7 +91,7 @@ end
 -- returns AceConfigTable status group option
 function Grid2Options:GetStatusGroup(status)
 	local key = self:GetStatusCategory(status)
-	return self.statusOptions[key].args[status.name]
+	return self.statusesOptions[key].args[status.name]
 end
 
 -- returns the AceConfigTable status options (the args field in group option)
@@ -109,7 +108,7 @@ do
 		local params = self.optionParams[status.dbx.type]
 		if not ( params and params.masterStatus and  params.masterStatus ~= status.name ) then
 			local catKey   = self:GetStatusCategory(status)
-			local catGroup = self.statusOptions[catKey]
+			local catGroup = self.statusesOptions[catKey]
 			if catGroup then
 				local name, desc, icon, coords, _
 				local category = self.categories[catKey]
@@ -122,7 +121,7 @@ do
 				elseif dbx.type == "debuffs" then
 					desc = L["Debuffs Group"]
 				elseif dbx.type=="debuffType" then
-					icon = self.debuffTypeIcons[dbx.subType]
+					icon = self.debuffTypeIcons[dbx.subType or 'Default']
 					desc = L[dbx.type]
 				end
 				name   = self.LocalizeStatus(status, true)
@@ -187,10 +186,11 @@ function Grid2Options:MakeStatusChildOptions(status, options)
 		end
 		setupFunc(self, status, options, optionParams)
 	end
-
 end
 
--- {{ Published methods
+--============================================================================================================
+-- Public methods
+--============================================================================================================
 
 -- Register options for a status
 -- Variables to control title appearance in optionParams:
@@ -223,9 +223,10 @@ function Grid2Options:MakeStatusOptions(status)
 	if catGroup then
 		local group = catGroup.args[status.name]
 		if not group then
+			local order = params and params.groupOrder
 			group = {
 				type  = "group",
-				order = (params and params.groupOrder) or (status.name~=status.dbx.type and 200) or nil,
+				order = (type(order)=='function' and order(status) or order) or (status.name~=status.dbx.type and 200) or nil,
 				name  = name,
 				desc  = desc,
 				icon  = icon,
@@ -243,14 +244,14 @@ end
 
 -- Remove status options from AceConfigTable
 function Grid2Options:DeleteStatusOptions(catKey, status)
-	self.statusOptions[catKey].args[status.name] = nil
+	self.statusesOptions[catKey].args[status.name] = nil
 end
 
--- Create options for all statuses
--- Don't remove options param is used by LoadOnDemand code that hooks this function
+-- Create options for all statuses (Don't remove options param is used by LoadOnDemand code that hooks this function)
 function Grid2Options:MakeStatusesOptions(options)
 	-- remove old options
-	options = options or self.statusOptions; wipe(options)
+	options = options or self.statusesOptions
+	wipe(options)
 	-- title for statuses section
 	self:MakeTitleOptions(options, L["statuses"], L["available statuses"], nil, "Interface\\Addons\\Grid2\\media\\icon")
 	-- statuses general options
@@ -268,5 +269,3 @@ function Grid2Options:MakeStatusesOptions(options)
 		end
 	end
 end
-
--- }}

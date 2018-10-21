@@ -63,7 +63,7 @@ do
 			elseif colorCount > 1 then
 				desc = name
 			end
-			options[colorKey] = {
+			options[optionParams and optionParams.optionKey or colorKey] = {
 				type = "color",
 				order = (10 + i),
 				width = width,

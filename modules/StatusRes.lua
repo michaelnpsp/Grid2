@@ -76,8 +76,6 @@ function Resurrection:GetText(unit)
 	return res_cache[unit]==1 and resText1 or resText2
 end
 
-Resurrection.GetBorder = Grid2.statusLibrary.GetBorder
-
 local function Create(baseKey, dbx)
 	Grid2:RegisterStatus(Resurrection, {"text","icon","color"}, baseKey, dbx)
 	return Resurrection

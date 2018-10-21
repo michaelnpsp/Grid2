@@ -1,206 +1,172 @@
--- debuffs status
-
+-- Group of Debuffs status
 local Grid2 = Grid2
 local UnitDebuff = UnitDebuff
+local myUnits = Grid2.roster_my_units
+local typeColors  = Grid2.debuffTypeColors
+local dispelTypes = Grid2.debuffDispelTypes
+
 local emptyTable = {}
-local myUnits = { player = true, pet = true, vehicle = true }
-local dispelTypes = { Magic = true, Curse = true, Disease = true, Poison = true }
-local statusTypes = { "color", "icon", "icons", "percent", "text", "tooltip" }
+local textures = {}
+local counts = {}
+local expirations = {}
+local durations = {}
+local colors = {}
 
--- Called from StatusAuras.lua
-
--- White list only
-local function status_UpdateState(self, unit, texture, count, duration, expiration, _, _, debuffType, index)
-	if count==0 then count = 1 end
-	if self.states[unit]==nil or self.counts[unit]~=count or expiration~=self.expirations[unit] then
-		self.states[unit] = index
-		self.textures[unit] = texture
-		self.durations[unit] = duration
-		self.expirations[unit] = expiration
-		self.counts[unit] = count
-		self.types[unit] = debuffType
-		self.tracker[unit] = 1
-		self.seen = 1
-	else	
-		self.seen = -1
-	end	
+-- Called by StatusAura.lua to filter auras
+local function status_UpdateStateBlackList(self, unit, name) 
+	-- All debuffs + black list
+	return not self.spells[name]
 end
 
--- All debuffs + optional black list
-local function status_UpdateStateAll(self, unit, name, texture, count, duration, expiration, caster, isBossDebuff, debuffType, index)
-	if self.auraNames[name] then return end
-	self.states[unit] = index
-	self.textures[unit] = texture
-	self.durations[unit] = duration
-	self.expirations[unit] = expiration
-	self.counts[unit] = count
-	self.types[unit] = debuffType
-	self.tracker[unit] = 1
-	self.seen = 1
+local function status_UpdateStateBoss(self, _, name, _, _, boss) 
+	-- Boss Debuffs filter + black list
+	return boss and (not self.spells[name]) 
 end
 
--- Filter + black list
-local function status_UpdateStateFilter(self, unit, name, texture, count, duration, expiration, caster, isBossDebuff, debuffType, index)
-	local filtered = self.auraNames[name] or (self.filterLong~=nil and (duration>300)==self.filterLong) or (self.filterBoss~=nil and self.filterBoss == isBossDebuff) or (self.filterCaster~=nil and self.filterCaster==(caster==unit or myUnits[caster]) )
-	if filtered then return end
-	self.states[unit] = index
-	self.textures[unit] = texture
-	self.durations[unit] = duration
-	self.expirations[unit] = expiration
-	self.counts[unit] = count
-	self.types[unit] = debuffType
-	self.tracker[unit] = 1
-	self.seen = 1
+local function status_UpdateStateFilter(self, unit, name, duration, caster, boss) 
+	-- Filter + black list
+	return ( not self.spells[name] ) and 
+		   ( self.filterLong  ==nil  or self.filterLong  ~= (duration>=300) ) and 
+		   ( self.filterBoss  ==nil  or self.filterBoss  ~= boss ) and 
+		   ( self.filterCaster==nil  or self.filterCaster~= (myUnits[caster]==true) )  
 end
 
--- Dispeleable debuffs
-local function status_UpdateStateDispel(self, unit, name, texture, count, duration, expiration, caster, isBossDebuff, debuffType, index)
-	name, texture, count, debuffType, duration, expiration = UnitDebuff(unit, 1, "RAID")
+local function status_UpdateStateDispel(self, unit) 
+	-- Dispeleable debuffs
+	local name, texture, count, debuffType, duration, expiration = UnitDebuff(unit, 1, "RAID")
 	if name and dispelTypes[debuffType] then
-		self.states[unit] = index
-		self.textures[unit] = texture
-		self.durations[unit] = duration
-		self.expirations[unit] = expiration
-		self.counts[unit] = count
-		self.types[unit] = debuffType
-		self.tracker[unit] = 1
-		self.seen = 1
-	elseif self.states[unit] then
+		self.idx[unit] = 1
+		self.tex[unit] = texture
+		self.dur[unit] = duration
+		self.exp[unit] = expiration
+		self.cnt[unit] = count
+		self.typ[unit] = debuffType
+		self.tkr[unit] = 1
+		self.seen = 1	
+	elseif self.idx[unit] then
 		self:Reset(unit)
-		self.seen = 1  -- force indicators update to clear the status
+		self.seen = 1  -- using 1 we force indicators update to clear the status, but avoiding more StatusAuras calls to this function to check next unit auras.
 	else
-		self.seen = -1 -- avoid indicators update, status was not active
+		self.seen = -1 -- avoid indicators update, status was inactive and must continue inactive
 	end	
 end
 
-local status_GetIconsWhiteList, status_GetIconsFilter, status_GetIconsDispel
-do
-	local textures = {}
-	local counts = {}
-	local expirations = {}
-	local durations = {}
-	local colors = {}
-	status_GetIconsWhiteList = function(self, unit)
-		local i, j, spells, typeColors = 1, 1, self.auraNames, self.typeColors
-		local name, debuffType
-		while true do
-			name, textures[j], counts[j], debuffType, durations[j], expirations[j] = UnitDebuff(unit, i)
-			if not name then return j-1, textures, counts, expirations, durations, colors end
-			if spells[name] then 
-				colors[j] = typeColors[debuffType] or self.color
-				j = j + 1 
-			end
-			i = i + 1
+-- Called by "icons" indicator
+local function status_GetIconsWhiteList(self, unit)
+	local i, j, spells = 1, 1, self.spells
+	local name, debuffType
+	while true do
+		name, textures[j], counts[j], debuffType, durations[j], expirations[j] = UnitDebuff(unit, i)
+		if not name then return j-1, textures, counts, expirations, durations, colors end
+		if spells[name] then 
+			colors[j] = typeColors[debuffType] or self.color
+			j = j + 1 
 		end
+		i = i + 1
 	end
-	status_GetIconsFilter = function(self, unit)
-		local i, j, typeColors = 1, 1, self.typeColors
-		local filterLong, filterBoss, filterCaster, spells = self.filterLong, self.filterBoss, self.filterCaster, self.auraNames
-		local name, debuffType, caster, isBossDebuff, _
-		while true do
-			name, textures[j], counts[j], debuffType, durations[j], expirations[j], caster, _, _, _, _, isBossDebuff = UnitDebuff(unit, i)
-			if not name then return j-1, textures, counts, expirations, durations, colors end
-			local filtered = spells[name] or (filterLong and (durations[j]>=300)==filterLong) or (filterBoss~=nil and filterBoss==isBossDebuff) or (filterCaster~=nil and filterCaster==(caster==unit or myUnits[caster]))
-			if not filtered then 
-				colors[j] = typeColors[debuffType] or self.color
-				j = j + 1 
-			end	
-			i = i + 1			
-		end
-	end
-	status_GetIconsDispel = function(self, unit)
-		local i, j, typeColors, name, debuffType = 1, 1, self.typeColors
-		while true do
-			name, textures[j], counts[j], debuffType, durations[j], expirations[j] = UnitDebuff(unit, i, "RAID")
-			if not name then return j-1, textures, counts, expirations, durations, colors end
-			if dispelTypes[debuffType] then
-				colors[j] = typeColors[debuffType] or self.color
-				j = j + 1
-			end
-			i = i + 1
-		end
-	end	
 end
 
-local function status_OnEnable(self)
-	if self.dbx.useWhiteList then
-		for spell in pairs(self.auraNames) do
-			Grid2:RegisterStatusAura( self, "debuff", spell )
+local function status_GetIconsBlackList(self, unit)
+	local i, j, spells = 1, 1, self.spells
+	local name, debuffType
+	while true do
+		name, textures[j], counts[j], debuffType, durations[j], expirations[j] = UnitDebuff(unit, i)
+		if not name then return j-1, textures, counts, expirations, durations, colors end
+		if not spells[name] then 
+			colors[j] = typeColors[debuffType] or self.color
+			j = j + 1 
+		end
+		i = i + 1
+	end
+end
+
+local function status_GetIconsFilter(self, unit)
+	local i, j = 1, 1
+	local filterLong, filterBoss, filterCaster, spells = self.filterLong, self.filterBoss, self.filterCaster, self.spells
+	local name, debuffType, caster, isBossDebuff, _
+	while true do
+		name, textures[j], counts[j], debuffType, durations[j], expirations[j], caster, _, _, _, _, isBossDebuff = UnitDebuff(unit, i)
+		if not name then return j-1, textures, counts, expirations, durations, colors end
+		local filtered = spells[name] or (filterLong and (durations[j]>=300)==filterLong) or (filterBoss~=nil and filterBoss==isBossDebuff) or (filterCaster~=nil and filterCaster==(caster==unit or myUnits[caster]==true))
+		if not filtered then 
+			colors[j] = typeColors[debuffType] or self.color
+			j = j + 1 
 		end	
-	else
-		Grid2:RegisterStatusAura( self, "debuff" )
-	end	
-	if self.thresholds then
-		Grid2:RegisterTimeTrackerStatus(self, self.dbx.colorThresholdElapsed)
+		i = i + 1			
 	end
 end
 
-local function status_OnDisable(self)
-	Grid2:UnregisterStatusAura(self, "debuff")
-	Grid2:UnregisterTimeTrackerStatus(self)
-end
-
-local function status_GetTooltip(self, unit, tip)
-	local index = self.states[unit]
-	if index then
-		tip:SetUnitDebuff(unit, index)
-	end
-end
-
-local function status_GetDebuffTypeColor(self, unit)
-	local type = self.types[unit]
-	local color = type and self.typeColors[type] or self.color
-	return color.r, color.g, color.b, color.a
-end
-
-local function status_UpdateDB(self)
-	if self.enabled then self:OnDisable() end
-	Grid2:SetupStatusAura(self)
-	self.types = self.types or {}
-	self.auraNames = self.auraNames or {}
-	wipe(self.auraNames)
-	if self.dbx.auras then
-		for _,spell in ipairs(self.dbx.auras) do
-			self.auraNames[spell] = true
+local function status_GetIconsDispel(self, unit)
+	local i, j, name, debuffType = 1, 1
+	while true do
+		name, textures[j], counts[j], debuffType, durations[j], expirations[j] = UnitDebuff(unit, i, "RAID")
+		if not name then return j-1, textures, counts, expirations, durations, colors end
+		if dispelTypes[debuffType] then
+			colors[j] = typeColors[debuffType]
+			j = j + 1
 		end
-	end	
-	if self.dbx.filterDispelDebuffs then
+		i = i + 1
+	end
+end	
+
+-- Called by "tooltip" indicator
+local function status_GetTooltipDispel(self, unit, tip)
+	local index = self.idx[unit]
+	if index then
+		tip:SetUnitDebuff(unit, index, "RAID")
+	end
+end
+
+-- Called by status:UpdateDB()
+local function status_Update(self, dbx)
+	if dbx.filterDispelDebuffs then
 		self.GetIcons     = status_GetIconsDispel
+		self.GetTooltip   = status_GetTooltipDispel		
 		self.UpdateState  = status_UpdateStateDispel
-	elseif self.dbx.useWhiteList then	
-		self.GetIcons = status_GetIconsWhiteList
-		self.UpdateState  = status_UpdateState
+	elseif dbx.useWhiteList then	
+		self.GetIcons 	  = status_GetIconsWhiteList
 	else
-		self.filterLong   = self.dbx.filterLongDebuffs
-		self.filterBoss   = self.dbx.filterBossDebuffs
-		self.filterCaster = self.dbx.filterCaster
-		self.GetIcons     = status_GetIconsFilter
+		self.filterLong   = dbx.filterLongDebuffs
+		self.filterBoss   = dbx.filterBossDebuffs
+		self.filterCaster = dbx.filterCaster
 		if self.filterLong == nil and self.filterBoss == nil and self.filterCaster == nil then
-			self.UpdateState  = status_UpdateStateAll
+			self.UpdateState  = status_UpdateStateBlackList
+			self.GetIcons     = status_GetIconsBlackList
+		elseif self.filterBoss==false then
+			self.UpdateState  = status_UpdateStateBoss
+			self.GetIcons     = status_GetIconsFilter
 		else
 			self.UpdateState  = status_UpdateStateFilter
+			self.GetIcons     = status_GetIconsFilter
 		end	
 	end
-	self.color = self.dbx.color1	
-	if self.dbx.debuffTypeColorize then
-		self.GetColor   = status_GetDebuffTypeColor
-		self.typeColors = Grid2:GetStatusAuraDebuffTypeColors()
-	else
-		self.typeColors = emptyTable
-	end
-	if self.enabled then self:OnEnable() end
-end
-
-local function CreateAura(baseKey, dbx)
-	local status = Grid2.statusPrototype:new(baseKey, false)
-	status.OnEnable   = status_OnEnable
-	status.OnDisable  = status_OnDisable
-	status.UpdateDB   = status_UpdateDB
-	status.GetTooltip = status_GetTooltip
-	Grid2:RegisterStatus(status, statusTypes, baseKey, dbx)	
-	status:UpdateDB()
-	return status
+	self.spells = self.spells or emptyTable
+	self.color  = dbx.color1
 end
 
 -- Registration
-Grid2.setupFunc["debuffs"] = CreateAura
+do
+	local statusTypes = { "color", "icon", "icons", "percent", "text", "tooltip" }
+	Grid2.setupFunc["debuffs"] = function(baseKey, dbx)
+		local status = Grid2.statusPrototype:new(baseKey, false)
+		status.OnUpdate = status_Update
+		return Grid2.CreateStatusAura( status, basekey, dbx, 'debuff', statusTypes)	
+	end
+end
+
+--[[ status database configuration
+	type = "debuffs"
+	auras = { "Riptide", 12323, "Earth Shield", ... }
+	useWhiteList = true | nil  				-- auras is a whitelist or blacklist 
+	-- nil=no filter; true=apply filter; false=apply inverted filter
+	filterLong   = nil | true | false       -- long debuffs (>5min)
+	filterBoss   = nil | true | false       -- boss debuffs
+	filterCaster = nil | true | false       -- self casted or casted by me
+	-- colors
+	debuffTypeColorize = true | nil		-- return the color of the debuffType
+	colorThresholdElapsed = true | nil 	-- true = color by elapsed time; nil= color by remaining time
+	colorThreshold = { 10, 4, 2 } 	    -- thresholds in seconds to change the color
+	colorCount = number
+	color1 = { r=1,g=1,b=1,a=1 }
+	color2 = { r=1,g=1,b=0,a=1 }
+--]]

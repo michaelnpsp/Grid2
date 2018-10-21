@@ -6,22 +6,15 @@ local Grid2 = Grid2
 local min   = math.min
 local fmt   = string.format
 local UnitGetTotalAbsorbs = UnitGetTotalAbsorbs
-local UnitHealthMax = Grid2.Globals.UnitHealthMax
-
-function Shields:UpdateHealthMax(_, func)
-	UnitHealthMax = func
-	self:UpdateAllIndicators()
-end
+local UnitHealthMax = UnitHealthMax
 
 function Shields:OnEnable()
 	self:UpdateDB()
 	self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
-	self:RegisterMessage("Grid2_Update_UnitHealthMax", "UpdateHealthMax")
 end
 
 function Shields:OnDisable()
 	self:UnregisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
-	self:UnregisterMessage("Grid2_Update_UnitHealthMax")
 end
 
 function Shields:UNIT_ABSORB_AMOUNT_CHANGED(_,unit)

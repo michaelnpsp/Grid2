@@ -11,6 +11,9 @@ local pairs, next = pairs, next
 -- realm name
 local my_realm = GetRealmName()
 
+-- myUnits, used by other modules
+local roster_my_units = { player = true, pet = true, vehicle = true }
+
 -- indexed by unit ID
 local roster_names = {}
 local roster_realms = {}
@@ -109,7 +112,7 @@ end
 do
 	local groupType, instType, instMaxPlayers
 	function Grid2:GetGroupType()
-		return groupType, instType, instMaxPlayers
+		return groupType or "solo", instType or "other", instMaxPlayers or 1
 	end
 	function Grid2:PLAYER_ENTERING_WORLD()
 		-- this is needed to trigger an update when switching from one BG directly to another
@@ -344,4 +347,5 @@ end
 Grid2.party_units = party_units
 Grid2.raid_units  = raid_units
 Grid2.roster_units = roster_units
+Grid2.roster_my_units = roster_my_units
 --}}

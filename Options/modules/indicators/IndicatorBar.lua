@@ -8,71 +8,75 @@ Grid2Options:RegisterIndicatorOptions("bar", true, function(self, indicator)
 	self:MakeIndicatorBarLocationOptions(indicator,options)
 	self:MakeIndicatorBarAppearanceOptions(indicator,options)
 	self:MakeIndicatorBarMiscOptions(indicator,options)
-	self:MakeIndicatorDeleteOptions(indicator, options)
 	self:MakeIndicatorStatusOptions(indicator, statuses)
 	self:MakeIndicatorStatusOptions(indicator.sideKick, colors)
 	self:AddIndicatorOptions( indicator, statuses, options, colors )
 end)
 
+local list = {}
+local function GetValues(info)
+	local empty = true
+	local exclude = info.arg
+	wipe(list)
+	if not info.arg.childName then
+		for name, ind in Grid2:IterateIndicators() do
+			if ind.dbx.type=="bar" and ind.sideKick and ind~=exclude and ( ((not ind.parentName) and (not ind.childName)) or ind.childName==exclude.name ) then
+				list[name] = L[name]
+			end
+		end
+	end	
+	local empty = not next(list)
+	list["NONE"] = L["None"]
+	return list, empty
+end
+
+local function anchorToDisabled(info)
+	local _, empty = GetValues(info)
+	return empty
+end
+
+local function SetParent(info,v)
+	local child = info.arg
+	local oldParent = Grid2.indicators[ child.parentName ]
+	local newParent = v and Grid2.indicators[v]
+	if oldParent then
+		oldParent.childName = nil
+		oldParent:UpdateDB() -- really not necessary in current implementation
+	end
+	child.dbx.anchorTo = newParent and newParent.name or nil
+	child:UpdateDB()
+	if oldParent then Grid2Frame:WithAllFrames(oldParent, "Layout") end
+	if newParent then Grid2Frame:WithAllFrames(newParent, "Layout") end
+	Grid2Frame:WithAllFrames(child, "Layout")
+	Grid2Frame:UpdateIndicators()
+	for _, indicator in Grid2:IterateIndicators() do
+		if indicator.dbx.type=="bar" and indicator.sideKick then
+			Grid2Options:MakeIndicatorOptions(indicator)
+		end
+	end
+end
+
+function Grid2Options:MakeIndicatorBarAnchorOptions(indicator,options)
+	options.parentBar = {
+		type   = "select",
+		order  = 1.91,
+		name   = L["Anchor to"],
+		desc   = L["Anchor the indicator to the selected bar."],
+		get    = function () return indicator.dbx.anchorTo or "NONE" end,
+		set    = SetParent,
+		values = GetValues,
+		disabled = anchorToDisabled,
+		arg    = indicator,
+	}
+end
 -- Grid2Options:MakeIndicatorBarParentOptions()
-do
-	local function GetValues(exclude)
-		-- local excludeIndicator = info.arg or info
-		local list = {}
-		for _, ind in Grid2:IterateIndicators() do
-			if ind.dbx.type=="bar" and ind.sideKick and ind~=exclude and
-			   ( ((not ind.barParent) and (not ind.barChild)) or ind.barChild==exclude )
-			then
-				list[ind.name] = L[ind.name]
-			end
-		end
-		if next(list) then
-			list["NONE"] = L["None"]
-			return list
-		end
+function Grid2Options:MakeIndicatorBarLocationOptions(indicator,options)
+	self:MakeHeaderOptions( options, "General" )
+	if not indicator.parentName then
+		self:MakeIndicatorLevelOptions(indicator,options)
+		self:MakeIndicatorLocationOptions(indicator,options)
 	end
-	local function SetParent(info,v)
-		local child = info.arg
-		local oldParent = child.barParent
-		local newParent = v and Grid2.indicators[v]
-		if oldParent then
-			oldParent.barChild = nil
-			oldParent:UpdateDB() -- really not necessary in current implementation
-		end
-		child.dbx.anchorTo = newParent and newParent.name or nil
-		child:UpdateDB()
-		if oldParent then Grid2Frame:WithAllFrames(oldParent, "Layout") end
-		if newParent then Grid2Frame:WithAllFrames(newParent, "Layout") end
-		Grid2Frame:WithAllFrames(child, "Layout")
-		Grid2Frame:UpdateIndicators()
-		for _, indicator in Grid2:IterateIndicators() do
-			if indicator.dbx.type=="bar" and indicator.sideKick then
-				Grid2Options:MakeIndicatorOptions(indicator)
-			end
-		end
-	end
-	function Grid2Options:MakeIndicatorBarLocationOptions(indicator,options)
-		if indicator.barParent then
-			self:MakeHeaderOptions( options, "Location" )
-		else
-			self:MakeIndicatorLocationOptions(indicator, options)
-		end
-		if not indicator.barChild then
-			local values = GetValues(indicator)
-			if values then
-				options.parentBar = {
-					type   = "select",
-					order  = 3,
-					name   = L["Anchor to"],
-					desc   = L["Anchor the indicator to the selected bar."],
-					get    = function () return indicator.dbx.anchorTo or "NONE" end,
-					set    = SetParent,
-					values = values,
-					arg    = indicator,
-				}
-			end
-		end
-	end
+	self:MakeIndicatorBarAnchorOptions(indicator,options)
 end
 
 -- Grid2Options:MakeIndicatorBarDisplayOptions()
@@ -91,8 +95,8 @@ function Grid2Options:MakeIndicatorBarAppearanceOptions(indicator,options)
 			if v=="DEFAULT" then v= nil	end
 			indicator:SetOrientation(v)
 			Grid2Frame:WithAllFrames(indicator, "Layout")
-			if indicator.barChild then
-				self:RefreshIndicator(indicator.barChild, "Layout")
+			if indicator.childName then
+				self:RefreshIndicator( Grid2.indicators[indicator.childName], "Layout" )
 			end
 		end,
 		values={ ["DEFAULT"]= L["DEFAULT"], ["VERTICAL"] = L["VERTICAL"], ["HORIZONTAL"] = L["HORIZONTAL"]}
@@ -178,8 +182,8 @@ function Grid2Options:MakeIndicatorBarAppearanceOptions(indicator,options)
 		set = function (_, v)
 			indicator.dbx.reverseFill = v or nil
 			self:RefreshIndicator(indicator, "Layout")
-			if indicator.barChild then
-				self:RefreshIndicator(indicator.barChild, "Layout")
+			if indicator.childName then
+				self:RefreshIndicator( Grid2.indicators[indicator.childName], "Layout" )
 			end
 		end,
 	}
@@ -192,12 +196,12 @@ function Grid2Options:MakeIndicatorBarMiscOptions(indicator, options)
 		order = 20,
 		name = L["Frame Texture"],
 		desc = L["Adjust the frame texture."],
-		get = function (info) return indicator.dbx.texture or "Gradient" end,
+		get = function (info) return indicator.dbx.texture or self.MEDIA_VALUE_DEFAULT end,
 		set = function (info, v)
-			indicator.dbx.texture = v
+			indicator.dbx.texture = v~=self.MEDIA_VALUE_DEFAULT and v or nil
 			self:RefreshIndicator(indicator, "Layout")
 		end,
-		values = AceGUIWidgetLSMlists.statusbar,
+		values = self.GetStatusBarValues,
 	}
 	options.barOpacity = {
 		type = "range",

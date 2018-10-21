@@ -2,12 +2,11 @@ local L = Grid2Options.L
 
 Grid2Options:RegisterIndicatorOptions("square", true, function(self, indicator)
 	local layout, statuses = {}, {}
+	self:MakeIndicatorTypeLevelOptions(indicator, layout)
+	self:MakeIndicatorLocationOptions(indicator, layout)
 	self:MakeIndicatorTextureOptions(indicator, layout)
 	self:MakeIndicatorSquareSizeOptions(indicator, layout)
-	self:MakeIndicatorTypeOptions(indicator, layout)
-	self:MakeIndicatorLocationOptions(indicator, layout)
 	self:MakeIndicatorBorderOptions(indicator, layout)
-	self:MakeIndicatorDeleteOptions(indicator, layout)
 	self:MakeIndicatorStatusOptions(indicator, statuses)
 	self:AddIndicatorOptions(indicator, statuses, layout )
 end)

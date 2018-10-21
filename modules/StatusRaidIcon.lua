@@ -70,6 +70,10 @@ function RaidIcon:GetColor(unit)
 	return c.r, c.g, c.b, c.a --self.dbx.opacity or 1
 end
 
+function RaidIcon:GetTexCoord()
+	return 0, 1, 0, 1
+end
+
 function RaidIcon:GetIcon(unit)
 	return iconTexture[ self.cache[unit] ]
 end

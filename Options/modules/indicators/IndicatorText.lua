@@ -2,10 +2,9 @@ local L = Grid2Options.L
 
 Grid2Options:RegisterIndicatorOptions("text",   true, function(self, indicator)
 	local colors, statuses, options = {}, {}, {}
-	self:MakeIndicatorTypeOptions(indicator, options)
+	self:MakeIndicatorTypeLevelOptions(indicator, options)
 	self:MakeIndicatorLocationOptions(indicator, options)
 	self:MakeIndicatorTextCustomOptions(indicator, options)
-	self:MakeIndicatorDeleteOptions(indicator, options)
 	self:MakeIndicatorStatusOptions(indicator, statuses)
 	self:MakeIndicatorStatusOptions(indicator.sideKick, colors)
 	self:AddIndicatorOptions(indicator, statuses, options, colors)
@@ -31,14 +30,14 @@ function Grid2Options:MakeIndicatorTextCustomOptions(indicator, options)
 		type = "range",
 		order = 20,
 		name = L["Font Size"],
-		desc = L["Adjust the font size."],
-		min = 6,
+		desc = L["Adjust the font size, select zero to use the theme default font size."],
+		min = 0,
 		max = 24,
 		step = 1,
-		get = function () return indicator.dbx.fontSize	end,
+		get = function () return indicator.dbx.fontSize end,
 		set = function (_, v)
-			indicator.dbx.fontSize = v
-			self:RefreshIndicator(indicator, "Create")
+			indicator.dbx.fontSize = v>0 and v or nil
+			self:RefreshIndicator(indicator, "Layout")
 		end,
 	}
 	options.fontFlags = {
@@ -46,36 +45,35 @@ function Grid2Options:MakeIndicatorTextCustomOptions(indicator, options)
 		order = 75,
 		name = L["Font Border"],
 		desc = L["Set the font border type."],
-		get = function () return indicator.dbx.fontFlags or "NONE" end,
-		set = function (_, v)
-			indicator.dbx.fontFlags =  v ~= "NONE" and v or nil
-			self:RefreshIndicator(indicator, "Create")
+		get = function () 
+			if indicator.dbx.fontFlags then
+				return (indicator.dbx.shadowDisabled and '0;' or '1;') .. indicator.dbx.fontFlags 
+			else
+				return self.FONT_FLAGS_DEFAULT 
+			end
 		end,
-		values = Grid2Options.fontFlagsValues,
+		set = function (_, v)
+			local shadow, flags
+			if v ~= self.FONT_FLAGS_DEFAULT then
+				shadow, flags = strsplit(";",v)
+			end
+			indicator.dbx.fontFlags =  flags
+			indicator.dbx.shadowDisabled = (shadow=='0') or nil
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		values = self.fontFlagsShadowDefValues,
 	}
 	options.font = {
 		type = "select", dialogControl = "LSM30_Font",
 		order = 70,
 		name = L["Font"],
 		desc = L["Adjust the font settings"],
-		get = function(info) return indicator.dbx.font end,
+		get = function(info) return indicator.dbx.font or self.MEDIA_VALUE_DEFAULT end,
 		set = function(info,v)
-			indicator.dbx.font = v
-			self:RefreshIndicator(indicator, "Create")
-		end,
-		values = AceGUIWidgetLSMlists.font,
-	}
-	options.shadowDisabled = {
-		type = "toggle",
-		name = L["Disable shadow"],
-		desc = L["Disable shadow"],
-		order = 76,
-		tristate = false,
-		get = function () return indicator.dbx.shadowDisabled end,
-		set = function (_, v)
-			indicator.dbx.shadowDisabled = v or nil
+			indicator.dbx.font = self.MEDIA_VALUE_DEFAULT~=v and v or nil
 			self:RefreshIndicator(indicator, "Layout")
 		end,
+		values = self.GetFontValues,
 	}
 	self:MakeHeaderOptions( options, "Display" )
 	options.duration = {
