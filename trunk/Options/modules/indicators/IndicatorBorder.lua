@@ -24,7 +24,7 @@ function Grid2Options:MakeIndicatorBorderCustomOptions(indicator,options)
 		get = function () return Grid2Frame.db.profile.frameBorder end,
 		set = function (_, frameBorder)
 			Grid2Frame.db.profile.frameBorder = frameBorder
-			Grid2Frame:LayoutFrames()
+			Grid2Frame:LayoutFrames(true)
 		end,
 		disabled = InCombatLockdown,
 	}
@@ -39,7 +39,7 @@ function Grid2Options:MakeIndicatorBorderCustomOptions(indicator,options)
 		get = function () return Grid2Frame.db.profile.frameBorderDistance end,
 		set = function (_, v)
 			Grid2Frame.db.profile.frameBorderDistance = v
-			Grid2Frame:LayoutFrames()
+			Grid2Frame:LayoutFrames(true)
 		end,
 	}
 	options.borderTexture = {
@@ -50,7 +50,7 @@ function Grid2Options:MakeIndicatorBorderCustomOptions(indicator,options)
 		get = function (info) return Grid2Frame.db.profile.frameBorderTexture or "Grid2 Flat" end,
 		set = function (info, v)
 			Grid2Frame.db.profile.frameBorderTexture = v
-			Grid2Frame:LayoutFrames()
+			Grid2Frame:LayoutFrames(true)
 		end,
 		values = AceGUIWidgetLSMlists.border,
 	}

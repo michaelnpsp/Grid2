@@ -199,6 +199,10 @@ function Grid2Options:MakeStatusAuraColorThresholdOptions(status, options, optio
 	end
 end
 
+function Grid2Options:MakeStatusDebuffTypeColorsOptions(status, options, optionParams)
+	self:MakeStatusColorOptions(status, options, optionParams)
+end	
+
 function Grid2Options:MakeStatusDebuffTypeFilterOptions(status, options, optionParams)
 	self:MakeHeaderOptions( options, "DebuffFilter" )
 	options.debuffFilter = {
@@ -340,6 +344,10 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 		get = function () return status.dbx.filterDispelDebuffs end,
 		set = function (_, v)
 			status.dbx.filterDispelDebuffs = v or nil
+			if v and status.dbx.auras then
+				status.dbx.aurasBak = status.dbx.auras
+				status.dbx.auras = nil
+			end
 			status:UpdateDB()
 			Grid2:RefreshAuras()
 		end,
@@ -512,7 +520,7 @@ end,{
 })
 
 Grid2Options:RegisterStatusOptions("debuffType", "debuff", function(self, status, options, optionParams)
-	self:MakeStatusColorOptions(status, options, optionParams)
+	self:MakeStatusDebuffTypeColorsOptions(status, options, optionParams)
 	self:MakeStatusDebuffTypeFilterOptions(status, options, optionParams)
 end,{
 	groupOrder = 10

@@ -20,9 +20,17 @@ local GridLayoutHeaderClass = {
 	prototype = {},
 	new = function (self, type)
 		NUM_HEADERS = NUM_HEADERS + 1
-		local frame
-		frame = CreateFrame("Frame", "Grid2LayoutHeader"..NUM_HEADERS, Grid2Layout.frame, type=='pet' and "SecureGroupPetHeaderTemplate" or "SecureGroupHeaderTemplate" )
-		frame:SetAttribute("template", ClickCastHeader and "ClickCastUnitTemplate,SecureUnitButtonTemplate" or "SecureUnitButtonTemplate")
+		local frame = CreateFrame("Frame", "Grid2LayoutHeader"..NUM_HEADERS, Grid2Layout.frame, type=='pet' and "SecureGroupPetHeaderTemplate" or "SecureGroupHeaderTemplate" )
+		for name, func in pairs(self.prototype) do
+			frame[name] = func
+		end
+		if ClickCastHeader then
+			frame:SetAttribute("template", "ClickCastUnitTemplate,SecureUnitButtonTemplate")
+			SecureHandler_OnLoad(frame)
+			frame:SetFrameRef("clickcast_header", Clique.header)
+		else
+			frame:SetAttribute("template", "SecureUnitButtonTemplate")
+		end
 		frame.initialConfigFunction = GridHeader_InitialConfigFunction
 		frame:SetAttribute("initialConfigFunction", [[
 			RegisterUnitWatch(self)
@@ -32,11 +40,13 @@ local GridLayoutHeaderClass = {
 			self:SetAttribute("useparent-allowVehicleTarget", true)
 			self:SetAttribute("useparent-unitsuffix", true)
 			local header = self:GetParent()
+			local clickcast = header:GetFrameRef("clickcast_header")
+			if clickcast then
+				clickcast:SetAttribute("clickcast_button", self)
+				clickcast:RunAttribute("clickcast_register")			
+			end
 			header:CallMethod("initialConfigFunction", self:GetName())
 		]])
-		for name, func in pairs(self.prototype) do
-			frame[name] = func
-		end
 		frame:Reset()
 		frame:SetOrientation()
 		return frame
@@ -84,7 +94,7 @@ function GridLayoutHeaderClass.prototype:SetOrientation(horizontal)
 	self:SetLayoutAttribute( "point", point )
 end
 
--- MSaint fix see: http://forums.wowace.com/showpost.php?p=315982&postcount=215
+-- MSaint fix see: https://authors.curseforge.com/forums/world-of-warcraft/official-addon-threads/unit-frames/grid-grid2/222108-grid-compact-party-raid-unit-frames?page=11#c219
 -- To maintain the code consistent all calls to SetAttribute were replaced with SetLayoutAttribute
 -- including those which not affect anchors, the only exception: calls from GridLayoutHeaderClass.new)
 function GridLayoutHeaderClass.prototype:SetLayoutAttribute(name, value)
@@ -98,29 +108,23 @@ function GridLayoutHeaderClass.prototype:SetLayoutAttribute(name, value)
 	end
    self:SetAttribute(name, value)
 end
+
 --{{{ Grid2Layout
 
 -- AceDB defaults
 Grid2Layout.defaultDB = {
 	profile = {
-		debug = false,
+		--theme options ( active theme options in: self.db.profile, first theme options in: self.dba.profile, extra themes in: self.dba.profile.extraThemes[] )
+		layouts = { solo = "Solo w/Pet", party = "Party w/Pets", arena = "By Group w/Pets", raid  = "By Group w/Pets" },
 		FrameDisplay = "Always",
-		layouts = {
-					solo  = "Solo w/Pet",
-					party = "Party w/Pets",
-					arena = "By Group w/Pets",
-					raid  = "By Group w/Pets",
-		},
-		layoutScales = {},
-		layoutBySize = {},
 		horizontal = true,
 		clamp = true,
 		FrameLock = false,
-		ClickThrough = false,
 		Padding = 0,
 		Spacing = 10,
 		ScaleSize = 1,
 		BorderTexture = "Blizzard Tooltip",
+		BackgroundTexture = "Blizzard ChatFrame Background",
 		BorderR = .5,
 		BorderG = .5,
 		BorderB = .5,
@@ -133,6 +137,7 @@ Grid2Layout.defaultDB = {
 		groupAnchor = "TOPLEFT",
 		PosX = 500,
 		PosY = -200,
+		-- profile options shared by all themes, but stored on default/first theme
 		minimapIcon = { hide = false },
 	},
 }
@@ -144,7 +149,7 @@ Grid2Layout.groupFilters =  {
 
 Grid2Layout.frameBackdrop = {
 	 bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
-	 tile = true, tileSize = 16, edgeSize = 16,
+	 tile = false, tileSize = 16, edgeSize = 16,
 	 insets = {left = 4, right = 4, top = 4, bottom = 4},
 }
 
@@ -153,6 +158,8 @@ Grid2Layout.layoutSettings = {}
 Grid2Layout.layoutHeaderClass = GridLayoutHeaderClass
 
 function Grid2Layout:OnModuleInitialize()
+	self.dba = self.db
+	self.db = { global = self.dba.global, profile = self.dba.profile, shared = self.dba.profile } 
 	self.groups = { player = {}, pet = {} }
 	self.indexes = { player = 0,  pet = 0  }
 	self.groupsUsed = {}
@@ -163,55 +170,38 @@ function Grid2Layout:OnModuleEnable()
 	self:CreateFrame()
 	self:RestorePosition()
 	self:RegisterMessage("Grid_GroupTypeChanged")
-	self:RegisterMessage("Grid_UpdateLayoutSize", "UpdateSize")
-	self:RegisterEvent("PLAYER_REGEN_ENABLED")
-	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
-	self:RefreshModule()
+	self:RegisterMessage("Grid_UpdateLayoutSize", "UpdateSizeThrottled")
 end
 
 function Grid2Layout:OnModuleDisable()
 	self:UnregisterMessage("Grid_GroupTypeChanged")
-	self:UnregisterMessage("Grid_UpdateLayoutSize", "UpdateSize")
-	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
-	self:UnregisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+	self:UnregisterMessage("Grid_UpdateLayoutSize")
 	self.frame:Hide()
 end
 
--- Executed only if profile changes (not first run)
-function Grid2Layout:RefreshModule()
-	self.RefreshModule = function(self) 
-		self:ReloadLayout(true) 
-	end
+function Grid2Layout:OnModuleUpdate()
+	self:RefreshTheme()
+end
+
+function Grid2Layout:UpdateTheme()
+	local themes = self.dba.profile.extraThemes
+	self.db.profile = themes and themes[Grid2.currentTheme] or self.dba.profile
+	self.db.shared = self.dba.profile
+end
+
+function Grid2Layout:RefreshTheme()
+	self:RestorePosition()
+	self:UpdateFrame()
+	self:RefreshLayout()
 end
 
 --{{{ Event handlers
-
-local reloadLayoutQueued, updateSizeQueued, restorePositionQueued, reloadProfileQueued, initProfileFlag
-function Grid2Layout:PLAYER_REGEN_ENABLED()
-	if reloadProfileQueued then return self:ReloadProfile() end
-	if reloadLayoutQueued then return self:ReloadLayout(true) end
-	if restorePositionQueued then return self:RestorePosition() end
-	if updateSizeQueued then return self:UpdateSizeQueued() end
-end
-
 function Grid2Layout:Grid_GroupTypeChanged(_, groupType, instType, maxPlayers)
 	Grid2Layout:Debug("GroupTypeChanged", groupType, instType, maxPlayers)
-	local force = (maxPlayers ~= self.instMaxPlayers)
-	self.partyType = groupType
-	self.instType = instType
-	self.instMaxPlayers = maxPlayers
-	self.instMaxGroups = math.floor( (maxPlayers + 4) / 5 )
-	if not self:ReloadProfile() then
-		self:ReloadLayout(force)
+	if not Grid2:ReloadTheme() then
+		self:ReloadLayout()
 	end	
 end
-
-function Grid2Layout:PLAYER_SPECIALIZATION_CHANGED(_,unit)
-	if unit=='player' then
-		self:ReloadProfile()
-	end	
-end
-
 --}}}
 
 function Grid2Layout:StartMoveFrame(button)
@@ -258,22 +248,32 @@ function Grid2Layout:CreateFrame()
 	local f = CreateFrame("Frame", "Grid2LayoutFrame", UIParent)
 	self.frame = f
 	f:SetMovable(true)
-	f:SetClampedToScreen(p.clamp)
 	f:SetPoint("CENTER", UIParent, "CENTER")
 	f:SetScript("OnMouseUp", function () self:StopMoveFrame() end)
 	f:SetScript("OnHide", function () self:StopMoveFrame() end)
 	f:SetScript("OnMouseDown", function (_, button) self:StartMoveFrame(button) end)
-	f:SetFrameStrata( p.FrameStrata or "MEDIUM")
-	f:SetFrameLevel(1)
-	f:EnableMouse(not p.FrameLock)
 	-- Extra frame for background and border textures, to be able to resize in combat
-	f = CreateFrame("Frame", "Grid2LayoutFrameBack", self.frame)
-	self.frameBack = f
-	f:SetFrameStrata( p.FrameStrata or "MEDIUM")
-	f:SetFrameLevel(0)
+	self.frameBack = CreateFrame("Frame", "Grid2LayoutFrameBack", self.frame)
 	--
+	self:UpdateFrame()
 	self:UpdateTextures()
 	self.CreateFrame = Grid2.Dummy
+end
+
+function Grid2Layout:UpdateFrame()
+	local p = self.db.profile
+	local f = self.frame
+	f:SetClampedToScreen(p.clamp)
+	f:SetFrameStrata( p.FrameStrata or "MEDIUM")
+	f:SetFrameLevel(1)
+	f:EnableMouse(not p.FrameLock)	
+	local f = self.frameBack 
+	f:SetFrameStrata( p.FrameStrata or "MEDIUM")
+	f:SetFrameLevel(0)	
+end
+
+function Grid2Layout:SetClamp()
+	self.frame:SetClampedToScreen(self.db.profile.clamp)
 end
 
 local relativePoints = {
@@ -283,8 +283,7 @@ local relativePoints = {
 	yMult   = { TOPLEFT = -1, TOPRIGHT = -1, BOTTOMLEFT = 1, BOTTOMRIGHT =  1 },
 }
 
-local previousFrame
-function Grid2Layout:PlaceGroup(frame, groupNumber)
+function Grid2Layout:UpdateHeaders()
 	local settings   = self.db.profile
 	local horizontal = settings.horizontal
 	local vertical   = not horizontal
@@ -292,62 +291,41 @@ function Grid2Layout:PlaceGroup(frame, groupNumber)
 	local spacing    = settings.Spacing
 	local anchor     = settings.groupAnchor
 	local relPoint   = relativePoints[vertical][anchor]
-	local xMult      = relativePoints.xMult[anchor]
-	local yMult      = relativePoints.yMult[anchor]
-	frame:ClearAllPoints()
-	frame:SetParent(self.frame)
-	if groupNumber == 1 then
-		frame:SetPoint(anchor, self.frame, anchor, spacing * xMult, spacing * yMult)
-	else
-		xMult = vertical   and xMult*padding or 0
-		yMult = horizontal and yMult*padding or 0
-		frame:SetPoint(anchor, previousFrame, relPoint, xMult, yMult )
-	end
-	self:Debug("Placing group", groupNumber, frame:GetName(), anchor, previousFrame and previousFrame:GetName(), relPoint)
-	previousFrame = frame
-end
-
-function Grid2Layout:AddLayout(layoutName, layout)
-	self.layoutSettings[layoutName] = layout
-end
-
-function Grid2Layout:SetClamp()
-	self.frame:SetClampedToScreen(self.db.profile.clamp)
-end
-
-function Grid2Layout:ReloadProfile()
-	reloadProfileQueued = false
-	local db = Grid2.profiles.char
-	if db.enabled then
-		local pro = db[GetSpecialization() or 0] or db
-		if type(pro)=='table' then
-			pro = pro[ (self.partyType or "solo").."@"..(self.instType or "other") ] or pro[self.partyType]
-		end
-		if type(pro)=="string" and pro~=Grid2.db:GetCurrentProfile() then
-			if InCombatLockdown() then
-				reloadProfileQueued = true
-			elseif not initProfileFlag and self.partyType=='solo' then
-				reloadProfileQueued = true -- Trick to avoid loading two profiles on startup (We wait a couple of seconds for the final Group Type)
-				C_Timer.After(3, function() if reloadProfileQueued then self:ReloadProfile() end end )
-			else
-				Grid2.db:SetProfile(pro)
-			end
-			initProfileFlag = true
-			return true
-		end
-	end	
-end	
-
-function Grid2Layout:ReloadLayout(force)
-	reloadLayoutQueued = false
-	local p          = self.db.profile
-	local partyType  = self.partyType or "solo"
-	local instType   = self.instType or ""
-	local layoutName = p.layoutBySize[self.instMaxPlayers] or p.layouts[partyType.."@"..instType] or p.layouts[partyType]
-	if self.layoutName ~= layoutName or force then
-		if InCombatLockdown() then
-			reloadLayoutQueued = true
+	local xMult1     = relativePoints.xMult[anchor]
+	local yMult1     = relativePoints.yMult[anchor]
+	local xMult2 	 = vertical   and xMult1*padding or 0
+	local yMult2 	 = horizontal and yMult1*padding or 0
+	local prevFrame 
+	for i, frame in ipairs(self.groupsUsed) do
+		frame:SetOrientation(horizontal)
+		frame:ClearAllPoints()
+		frame:SetParent(self.frame)
+		if i == 1 then
+			frame:SetPoint(anchor, self.frame, anchor, spacing * xMult1, spacing * yMult1)
 		else
+			frame:SetPoint(anchor, prevFrame, relPoint, xMult2, yMult2 )
+		end
+		frame:Show()
+		prevFrame = frame
+		self:Debug("Placing group", groupNumber, frame:GetName(), anchor, prevFrame and prevFrame:GetName(), relPoint)
+	end	
+end
+
+function Grid2Layout:RefreshLayout()
+	self.instMaxPlayers = nil -- force layout reload
+	self:ReloadLayout()
+end
+
+function Grid2Layout:ReloadLayout()
+	local p = self.db.profile
+	local partyType, instType, maxPlayers = Grid2:GetGroupType()
+	local layoutName = p.layouts[maxPlayers] or p.layouts[partyType.."@"..instType] or p.layouts[partyType]
+	if layoutName ~= self.layoutName or maxPlayers ~= self.instMaxPlayers then
+		if not Grid2:RunSecure(3, self, "ReloadLayout") then
+			self.partyType      = partyType
+			self.instType       = instType
+			self.instMaxPlayers = maxPlayers
+			self.instMaxGroups  = math.floor( (maxPlayers + 4) / 5 )
 			self:LoadLayout( layoutName )
 		end
 	end
@@ -382,7 +360,7 @@ local function SetAllAttributes(header, p, list, fix)
 end
 
 -- Precreate frames to avoid a blizzard bug that prevents initializing unit frames in combat
--- http://forums.wowace.com/showpost.php?p=307503&postcount=3163
+-- https://authors.curseforge.com/forums/world-of-warcraft/official-addon-threads/unit-frames/grid-grid2/222076-grid?page=159#c3169
 local function ForceFramesCreation(header)
 	local startingIndex = header:GetAttribute("startingIndex")
 	local maxColumns = header:GetAttribute("maxColumns") or 1
@@ -397,7 +375,7 @@ local function ForceFramesCreation(header)
 	end
 end
 
-local function AddLayoutHeader(self, profile, defaults, header, visualIndex)
+local function AddLayoutHeader(self, profile, defaults, header)
 	local type = header.type and strmatch(header.type,'pet') or 'player'
 	local headers = self.groups[type]
 	local index = self.indexes[type] + 1
@@ -412,21 +390,15 @@ local function AddLayoutHeader(self, profile, defaults, header, visualIndex)
 	end
 	SetAllAttributes(group, profile, header, true)
 	ForceFramesCreation(group)
-	group:SetOrientation(profile.horizontal)
 	self.groupsUsed[#self.groupsUsed+1] = group
-	self:PlaceGroup(group, visualIndex)
-	group:Show()
 	self.layoutMaxColumns = self.layoutMaxColumns + (group:GetAttribute("maxColumns") or 1)
 	self.layoutMaxRows    = max( self.layoutMaxRows, group:GetAttribute("unitsPerColumn") or 40 )
-	return visualIndex+1
 end
 
-local function GenerateLayoutHeaders(self, profile, defaults, index)
+local function GenerateLayoutHeaders(self, profile, defaults)
 	for i=1,self.instMaxGroups do
-		AddLayoutHeader( self, profile, defaults, self.groupFilters[i], index )
-		index = index + 1
+		AddLayoutHeader( self, profile, defaults, self.groupFilters[i] )
 	end
-	return index
 end
 
 function Grid2Layout:LoadLayout(layoutName)
@@ -436,6 +408,7 @@ function Grid2Layout:LoadLayout(layoutName)
 	self:Debug("LoadLayout", layoutName)
 
 	self.layoutName = layoutName
+
 	self:Scale()
 
 	self.layoutMaxColumns = 0
@@ -452,18 +425,18 @@ function Grid2Layout:LoadLayout(layoutName)
 	local defaults = layout.defaults
 
 	if layout[1] then
-		local i = 1
 		for _, header in ipairs(layout) do
 			if header=="auto" then
-				i = GenerateLayoutHeaders(self, profile, defaults, i)
+				GenerateLayoutHeaders(self, profile, defaults)
 			else
-				i = AddLayoutHeader(self, profile, defaults, header, i)
+				AddLayoutHeader(self, profile, defaults, header)
 			end
 		end
 	elseif not layout.empty then
-		GenerateLayoutHeaders(self, profile, defaults, 1)
+		GenerateLayoutHeaders(self, profile, defaults)
 	end
 
+	self:UpdateHeaders()
 	self:UpdateDisplay()
 end
 
@@ -489,6 +462,12 @@ function Grid2Layout:UpdateFramesSize()
 	self.layoutFrameHeight = nh
 end
 
+-- We delay UpdateSize() call to avoid calculating the wrong window size, because when "Grid_UpdateLayoutSize" 
+-- message is triggered the blizzard code has not yet updated the size of the secure group headers.
+function Grid2Layout:UpdateSizeThrottled()
+	Grid2:RunThrottled(self, "UpdateSize")
+end
+
 function Grid2Layout:UpdateSize()
 	local p = self.db.profile
 	local mcol,mrow,curCol,maxRow,remSize = "GetWidth","GetHeight",0,0,0
@@ -504,50 +483,27 @@ function Grid2Layout:UpdateSize()
 	local col = curCol - remSize + p.Spacing*2 - p.Padding
 	local row = maxRow + p.Spacing*2
 	if p.horizontal then col,row = row,col end
-	self:SetSize(col,row)
-end
-
-function Grid2Layout:SetSize(w,h)
-	self.frameBack:SetSize(w,h)
-	if InCombatLockdown() then
-		updateSizeQueued = true
-	else
-		self.frame:SetSize(w,h)
-	end
-end
-
-function Grid2Layout:UpdateSizeQueued()
-	self.frame:SetSize( self.frameBack:GetSize() )
-	updateSizeQueued = false
+	self.frameBack:SetSize(col,row)
+	updateSizeQueued = InCombatLockdown()
+	if not Grid2:RunSecure(4, self, "UpdateSize") then
+		self.frame:SetSize(col,row)
+	end	
 end
 
 function Grid2Layout:UpdateTextures()
 	local f = self.frameBack
 	local p = self.db.profile
-	-- update backdrop data
+	self.frameBackdrop.bgFile   = Grid2:MediaFetch("background", p.BackgroundTexture)
 	self.frameBackdrop.edgeFile = Grid2:MediaFetch("border", p.BorderTexture)
 	f:SetBackdrop( self.frameBackdrop )
-	-- create bg texture
-	f.texture = f.texture or f:CreateTexture(nil, "BORDER")
-	f.texture:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
-	f.texture:SetPoint("TOPLEFT", f, "TOPLEFT", 4, -4)
-	f.texture:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -4, 4)
-	f.texture:SetBlendMode("ADD")
-	f.texture:SetGradientAlpha("VERTICAL", .1, .1, .1, 0, .2, .2, .2, 0.5)
 end
 
 function Grid2Layout:UpdateColor()
 	local settings = self.db.profile
 	local frame    = self.frameBack
-	local visible  = settings.BorderA~=0 or settings.BackgroundA~=0
 	frame:SetBackdropBorderColor(settings.BorderR, settings.BorderG, settings.BorderB, settings.BorderA)
 	frame:SetBackdropColor(settings.BackgroundR, settings.BackgroundG, settings.BackgroundB, settings.BackgroundA)
-	frame.texture:SetGradientAlpha("VERTICAL", .1, .1, .1, 0, .2, .2, .2, settings.BackgroundA/2 )
-	if visible then
-		frame:Show()
-	else
-		frame:Hide()
-	end
+	frame:SetShown( settings.BorderA~=0 or settings.BackgroundA~=0 )
 end
 
 -- Force GridLayoutHeaders size refresh, without this g:GetWidth/g:GetHeight in UpdateSize() return old values.
@@ -600,11 +556,6 @@ function Grid2Layout:ResetPosition()
 end
 
 function Grid2Layout:RestorePosition()
-	if InCombatLockdown() then
-		restorePositionQueued = true
-		return
-	end
-	restorePositionQueued = false
 	local f = self.frame
 	local b = self.frameBack
 	local s = f:GetEffectiveScale()
@@ -620,11 +571,13 @@ function Grid2Layout:RestorePosition()
 end
 
 function Grid2Layout:Scale()
-	local settings = self.db.profile
 	self:SavePosition()
-	local scale = settings.ScaleSize * (settings.layoutScales[self.layoutName or "solo"] or 1)
-	self.frame:SetScale(  scale )
+	self.frame:SetScale(self.db.profile.ScaleSize)
 	self:RestorePosition()
+end
+
+function Grid2Layout:AddLayout(layoutName, layout)
+	self.layoutSettings[layoutName] = layout
 end
 
 function Grid2Layout:AddCustomLayouts()

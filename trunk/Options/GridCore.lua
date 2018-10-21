@@ -11,24 +11,31 @@ local Grid2Options = {
 		type = "group",
 		handler = Grid2,
 		args = {
-			["general"] = {
+			general = {
 				order = 10,
 				type = "group",
-				name = L["General Settings"],
-				desc = L["General Settings"],
+				name = L["General"],
+				desc = L["General"],
 				childGroups = "tab",
 				args = {},
 			},
-			["indicators"] = {
-				order = 20,
+			themes = {
+				order = 30,
+				type = "group",
+				name = L["Themes"],
+				desc = L["Themes"],
+				args = {},
+			},
+			indicators = {
+				order = 40,
 				type = "group",
 				name = L["indicators"],
 				desc = L["indicators"],
 				args = {},
 
 			},
-			["statuses"] = {
-				order = 30,
+			statuses = {
+				order = 50,
 				type = "group",
 				name = L["statuses"],
 				desc = L["statuses"],
@@ -43,33 +50,35 @@ local Grid2Options = {
 	SpellEditDialogControl = type(LibStub("AceGUI-3.0").WidgetVersions["Aura_EditBox"]) == "number" and "Aura_EditBox" or nil,
 }
 
+-- Declare some variables for fast access to main sections options.
+for k,o in pairs(Grid2Options.options.args) do
+	Grid2Options[k..'Options'] = o.args
+end
+
 -- Initialize
 function Grid2Options:Initialize()
-
 	self.db = Grid2.db:RegisterNamespace("Grid2Options",  { profile = { L = { indicators = {} } } } )
-
 	self:EnableLoadOnDemand(not Grid2.db.global.LoadOnDemandDisabled)
-
 	self:MakeOptions()
-
 	LibStub("AceConfig-3.0"):RegisterOptionsTable("Grid2", self.options)
-
 	self.Initialize = nil
 end
 
 -- Called from Grid2 core if profile changes
 function Grid2Options:MakeOptions()
 	self.LI = self.db.profile.L.indicators
-	self:MakeStatusesOptions(self.statusOptions)
-	self:MakeIndicatorsOptions(self.indicatorOptions)
+	self:MakeThemesOptions(self.themesOptions)
+	self:MakeStatusesOptions(self.statusesOptions)
+	self:MakeIndicatorsOptions(self.indicatorsOptions)
 	collectgarbage("collect")
 end
 
 function Grid2Options:OnChatCommand(input)
-	if (LibStub("AceConfigDialog-3.0").OpenFrames["Grid2"]) then
-		LibStub("AceConfigDialog-3.0"):Close("Grid2")
+	local dialog = LibStub("AceConfigDialog-3.0")
+	if dialog.OpenFrames["Grid2"] then
+		dialog:Close("Grid2")
 	else
-		LibStub("AceConfigDialog-3.0"):Open("Grid2")
+		dialog:Open("Grid2")
 	end
 end
 

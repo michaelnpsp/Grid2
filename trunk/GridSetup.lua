@@ -3,6 +3,26 @@ Created by Grid2 original authors, modified by Michael
 --]]
 
 local Grid2 = Grid2
+local pairs = pairs
+local ipairs = ipairs
+
+function Grid2:RefreshIndicators(updateDB)
+	-- wakeup/suspend indicators according to the current theme
+	local _, _, suspended = self:GetCurrentTheme()
+	for _,indicator in ipairs(self.indicatorSorted) do
+		if not indicator.parentName then
+			local s1 = indicator.suspended
+			local s2 = suspended[indicator.name]
+			if s1~=s2 then
+				if s2 then
+					self:SuspendIndicator(indicator)
+				else
+					self:WakeUpIndicator(indicator)
+				end
+			end
+		end	
+	end
+end
 
 function Grid2:SetupShutdown()
 	-- remove indicators
@@ -38,6 +58,8 @@ function Grid2:SetupIndicators(setup)
 	for baseKey, dbx in pairs(setup) do
 		SetupIndicator(baseKey, dbx)
 	end
+	-- suspend indicators according to the selected theme
+	self:RefreshIndicators()
 end
 
 function Grid2:SetupStatuses(setup)

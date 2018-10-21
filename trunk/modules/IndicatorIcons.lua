@@ -108,6 +108,7 @@ local function Icon_Layout(self, parent)
 		local i,j  = parent:GetName():match("Grid2LayoutHeader(%d+)UnitButton(%d+)")
 		frameName  = format( "Grid2Icons%s%02d%02d", self.name:gsub("%-","") , i, j ) 
 	end
+	f:SetParent(parent)
 	f:ClearAllPoints()
 	f:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
 	f:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
@@ -176,16 +177,16 @@ local function Icon_Layout(self, parent)
 end
 
 local function Icon_Disable(self, parent)
-	parent[self.name]:Hide()
-	self.Layout = nil
-	self.Update = nil
+	local f = parent[self.name]
+	f:Hide()
+	f:SetParent(nil)
+	f:ClearAllPoints()
 end
 
 local pointsX = { TOPLEFT =  1,	TOPRIGHT = -1, BOTTOMLEFT = 1, BOTTOMRIGHT = -1 }
 local pointsY = { TOPLEFT = -1, TOPRIGHT = -1, BOTTOMLEFT = 1, BOTTOMRIGHT =  1 }
-local function Icon_UpdateDB(self, dbx)
-	dbx = dbx or self.dbx
-	self.dbx = dbx
+local function Icon_UpdateDB(self)
+	local dbx = self.dbx
 	-- location
 	local l = dbx.location
 	self.anchor     = l.point
@@ -197,7 +198,7 @@ local function Icon_UpdateDB(self, dbx)
 	self.borderSize     = dbx.borderSize or 0
 	self.orientation    = dbx.orientation or "HORIZONTAL"
 	self.frameLevel     = dbx.level or 1
-	self.iconSize       = dbx.iconSize or 12
+	self.iconSize       = dbx.iconSize or Grid2Frame.db.profile.iconSize or 14
 	self.iconSpacing    = dbx.iconSpacing or 1
 	self.maxIcons       = dbx.maxIcons or 6
 	self.maxIconsPerRow = dbx.maxIconsPerRow or 3
@@ -235,18 +236,18 @@ local function Icon_UpdateDB(self, dbx)
 		backdrop.insets.bottom = self.borderSize
 		self.backdrop          = backdrop
 	end
-	-- methods
-	self.Create        = Icon_Create
-	self.Layout        = Icon_Layout
-	self.OnUpdate      = Icon_OnUpdate
-	self.Disable       = Icon_Disable
-	self.Update        = Icon_Update
-	self.UpdateDB      = Icon_UpdateDB
 end
 
 Grid2.setupFunc["icons"] = function(indicatorKey, dbx)
 	local indicator = Grid2.indicators[indicatorKey] or Grid2.indicatorPrototype:new(indicatorKey)
-	Icon_UpdateDB(indicator, dbx)
+	indicator.dbx      = dbx
+	indicator.Create   = Icon_Create
+	indicator.Layout   = Icon_Layout
+	indicator.OnUpdate = Icon_OnUpdate
+	indicator.Disable  = Icon_Disable
+	indicator.Update   = Icon_Update
+	indicator.UpdateDB = Icon_UpdateDB
+	Icon_UpdateDB(indicator)
 	EnableDelayedUpdates()
 	Grid2:RegisterIndicator(indicator, { "icon", "icons" })
 	return indicator

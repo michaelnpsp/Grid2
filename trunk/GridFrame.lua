@@ -3,6 +3,7 @@
 local Grid2 = Grid2
 local SecureButton_GetModifiedUnit = SecureButton_GetModifiedUnit
 local next = next
+local pairs = pairs
 local Grid2Frame
 
 --{{{ Registered unit frames tracking
@@ -60,6 +61,7 @@ local frameBackdrop = {
 
 --{{{ Grid2Frame script handlers
 local GridFrameEvents = {}
+
 function GridFrameEvents:OnShow()
 	Grid2Frame:SendMessage("Grid_UpdateLayoutSize")
 end
@@ -85,17 +87,31 @@ function GridFrameEvents:OnAttributeChanged(name, value)
 		end
 	end
 end
+
+-- Dispatch OnEnter,OnLeave events to other modules
+local eventHooks = { OnEnter = {}, OnLeave = {} }
+
+function GridFrameEvents:OnEnter()
+	for func in pairs(eventHooks.OnEnter) do
+		func(self)
+	end
+end
+
+function GridFrameEvents:OnLeave()
+	for func in pairs(eventHooks.OnLeave) do
+		func(self)
+	end
+end
 --}}}
 
 --{{{ GridFramePrototype
-local pairs = pairs
 local GridFramePrototype = {}
 local function GridFrame_Init(frame, width, height)
 	for name, value in pairs(GridFramePrototype) do
 		frame[name] = value
 	end
 	for event, handler in pairs(GridFrameEvents) do
-		frame:SetScript(event, handler)
+		frame:HookScript(event, handler)
 	end
 	if frame:CanChangeAttribute() then
 		frame:SetAttribute("initial-width", width)
@@ -106,8 +122,6 @@ local function GridFrame_Init(frame, width, height)
 	frame.container = frame:CreateTexture()
 	frame:CreateIndicators()
 	frame:Layout()
-	ClickCastFrames = ClickCastFrames or {}
-	ClickCastFrames[frame] = true
 end
 
 function GridFramePrototype:Layout()
@@ -143,9 +157,19 @@ function GridFramePrototype:Layout()
 		self:SetHighlightTexture(nil)
 	end
 	-- Adjust indicators position to the new size
-	local indicators = Grid2:GetIndicatorsSorted()
+	local indicators = Grid2:GetIndicatorsEnabled()
 	for i=1,#indicators do
 		indicators[i]:Layout(self)
+	end
+end
+
+function GridFramePrototype:UpdateIndicators()
+	local unit = self.unit
+	if unit then
+		local indicators = Grid2:GetIndicatorsEnabled()
+		for i=1,#indicators do
+			indicators[i]:Update(self, unit)
+		end
 	end
 end
 
@@ -156,15 +180,6 @@ function GridFramePrototype:CreateIndicators()
 	end
 end
 
-function GridFramePrototype:UpdateIndicators()
-	local unit = self.unit
-	if unit then
-		local indicators = Grid2:GetIndicatorsSorted()
-		for i=1,#indicators do
-			indicators[i]:Update(self, unit)
-		end
-	end
-end
 --}}}
 
 --{{{ Grid2Frame
@@ -172,7 +187,7 @@ Grid2Frame = Grid2:NewModule("Grid2Frame")
 
 Grid2Frame.defaultDB = {
 	profile = {
-		debug = false,
+		-- theme options ( active theme options in: self.db.profile, first theme options in: self.dba.profile, extra themes in: self.dba.profile.extraThemes[] )
 		frameHeight = 48,
 		frameWidth  = 48,
 		frameBorder = 2,
@@ -184,29 +199,35 @@ Grid2Frame.defaultDB = {
 		mouseoverHighlight = false,
 		mouseoverColor = { r=1, g=1, b=1, a=1 },
 		mouseoverTexture = "Blizzard Quest Title Highlight",
-		orientation = "VERTICAL",
-		textOrientation = "VERTICAL",
-		intensity = 0.5,
-		blinkType = "Flash",
-		blinkFrequency = 2,
 		frameWidths  = {},
 		frameHeights = {},
+		-- default values for indicators
+		orientation = "VERTICAL",
+		barTexture = "Gradient",
+		font =  nil,
+		fontSize = 11,
+		iconSize = 14,
+		-- profile options shared by all themes, but stored on default/first theme
+		blinkType = "Flash",
+		blinkFrequency = 2,
 	}
 }
 
 function Grid2Frame:OnModuleInitialize()
+	self.dba = self.db
+	self.db = { global = self.dba.global, profile = self.dba.profile, shared = self.dba.profile } 
 	self.registeredFrames = {}
 end
 
 function Grid2Frame:OnModuleEnable()
-	self:RefreshModule()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateFrameUnits")
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE")
 	self:RegisterMessage("Grid_UnitUpdate")
 	self:UpdateMenu()
 	self:UpdateBlink()
-	self:UpdateBackdrop()
+	self:CreateIndicators()
+	self:LayoutFrames()
 	self:UpdateFrameUnits()
 	self:UpdateIndicators()
 end
@@ -218,12 +239,22 @@ function Grid2Frame:OnModuleDisable()
 	self:UnregisterMessage("Grid_UnitUpdate")
 end
 
--- Executed only if profile changes (not first run), must be executed before Grid2Layout:OnModuleEnable()
-function Grid2Frame:RefreshModule()
-	self.RefreshModule = function(self)
-		self:CreateIndicators()
-		self:LayoutFrames()
-	end
+function Grid2Frame:OnModuleUpdate()
+	self:UpdateMenu()
+	self:UpdateBlink()
+	self:CreateIndicators()
+	self:RefreshTheme()
+end
+
+function Grid2Frame:UpdateTheme()
+	local themes = self.dba.profile.extraThemes
+	self.db.profile = themes and themes[Grid2.currentTheme] or self.dba.profile
+	self.db.shared = self.dba.profile
+end
+
+function Grid2Frame:RefreshTheme()
+	self:LayoutFrames()
+	self:UpdateIndicators()
 end
 
 function Grid2Frame:RegisterFrame(frame)
@@ -254,19 +285,18 @@ function Grid2Frame:UpdateBackdrop()
 	frameBackdrop.insets.bottom = frameBorder
 end
 
-function Grid2Frame:LayoutFrames()
+function Grid2Frame:LayoutFrames(notify)
 	self:UpdateBackdrop()
 	for name, frame in next, self.registeredFrames do
 		frame:Layout()
 	end
-	self:SendMessage("Grid_UpdateLayoutSize")
+	if notify then self:SendMessage("Grid_UpdateLayoutSize") end
 end
 
 function Grid2Frame:GetFrameSize()
 	local p = self.db.profile
-	local l = Grid2Layout.layoutName or "NoLayout"
 	local m = Grid2Layout.instMaxPlayers or 0
-	return p.frameWidths[l] or p.frameWidths[m] or p.frameWidth, p.frameHeights[l] or p.frameHeights[m] or p.frameHeight
+	return p.frameWidths[m] or p.frameWidth, p.frameHeights[m] or p.frameHeight
 end
 
 function Grid2Frame:SetFrameSize(w, h)
@@ -320,14 +350,23 @@ do
 	end
 	function Grid2Frame:UpdateBlink()
 		local indicator = Grid2.indicatorPrototype
-		indicator.Update = self.db.profile.blinkType~="None" and indicator.UpdateBlink or indicator.UpdateNoBlink
-		blinkDuration = 1/self.db.profile.blinkFrequency
+		indicator.Update = self.db.shared.blinkType~="None" and indicator.UpdateBlink or indicator.UpdateNoBlink
+		blinkDuration = 1/self.db.shared.blinkFrequency
 	end
 end
 
 -- Right Click Menu
 function Grid2Frame:UpdateMenu()
-	self.RightClickUnitMenu = not self.db.profile.menuDisabled and ToggleUnitMenu or nil
+	local menu = not self.db.profile.menuDisabled and ToggleUnitMenu or nil
+	if menu~=self.RightClickUnitMenu then 
+		self.RightClickUnitMenu = menu
+		self:WithAllFrames( function(f) f.menu = menu end )
+	end	
+end
+
+-- Alow other modules to hook unit frames OnEnter, OnExit events
+function Grid2Frame:SetEventHook( event, func, enabled )
+	eventHooks[event][func] = enabled or nil
 end
 
 -- Event handlers
@@ -381,5 +420,4 @@ end
 _G.Grid2Frame = Grid2Frame
 
 -- Allow other modules/addons to easily modify the grid unit frames
-Grid2Frame.Events = GridFrameEvents
 Grid2Frame.Prototype = GridFramePrototype

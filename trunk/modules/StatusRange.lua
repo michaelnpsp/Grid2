@@ -53,7 +53,6 @@ local function Update(self)
 			Range:UpdateIndicators(unit)
 		end
 	end
-	self:Play()
 end
 
 -- Range status 
@@ -97,11 +96,7 @@ function Range:Grid_UnitLeft(_, unit)
 end
 
 function Range:CreateTimer()
-	local timer = CreateFrame("Frame", nil, Grid2LayoutFrame):CreateAnimationGroup()
-	timer.animation = timer:CreateAnimation()
-	timer.animation:SetOrder(1)
-	timer:SetScript("OnFinished", Update)
-	self.timer  = timer
+	self.timer = Grid2:CreateAnimationTimer( 0.25, Update )
 	self.CreateTimer = Grid2.Dummy
 end
 

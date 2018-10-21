@@ -55,11 +55,6 @@ local DebuffSubTypes= {
 	},
 }
 
-local ColorCountValues = {1,2,3,4,5,6,7,8,9}
-
-local ColorizeByValues= { L["Number of stacks"] , L["Remaining time"] }
-
-
 local NewAuraUsageDescription= L["You can include a descriptive prefix using separators \"@#>\""]
 							   .. " "..
 							   L["examples: Druid@Regrowth Chimaeron>Low Health"]
@@ -235,18 +230,18 @@ NewBuffHandler.options = {
 	},
 	newStatusBuffSpacer = {
 		type = "header",
-		order = 5.5,
+		order = 5.4,
 		name = "",
 	},
 	newStatusBuff = {
 		type = "execute",
-		order = 5.6,
-		name = L["Create Buff"],
-		desc = L["Create a new status."],
+		order = 5.5,
+		name = L["Create"],
+		desc = L["Create a new Buff."],
 		func = "Create",
 		disabled = "IsDisabled",
 		handler = NewBuffHandler,
-	},
+	},	
 }
 NewBuffHandler:Init()
 
@@ -278,19 +273,19 @@ NewDebuffHandler.options = {
 		set = "SetName",
 		handler = NewDebuffHandler,
 	},
-	newStatusDebuffSpacer = {
-		type = "header",
-		order = 5.4,
-		name = ""
-	},
 	newStatusDebuff = {
 		type = "execute",
 		order = 5.5,
-		name = L["Create Debuff"],
+		name = L["Create"],
 		desc = L["Create a new status."],
 		func = "Create",
 		disabled = "IsDisabled",
 		handler = NewDebuffHandler,
+	},
+	newStatusDebuffSpacer = {
+		type = "header",
+		order = 5.4,
+		name = ""
 	},
 }
 NewDebuffHandler:Init()

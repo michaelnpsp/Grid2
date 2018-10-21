@@ -1,3 +1,9 @@
+local L = Grid2Options.L
+
+--==========================================================================
+-- Text formatting
+--==========================================================================
+
 --[[
 	Text formatting options for indicators durations&stacks
 	General -> Misc Tab -> Text Formatting section
@@ -18,8 +24,6 @@
 		"%d" = represents duration, becomes translated to/from: "%.0f" or "%.1f" (floating point number)
 		"%s" = represents stacks,   becomes translated to/from: "%d" (integer number)
 --]]
-
-local L = Grid2Options.L
 
 -- Posible values for "Display tenths of a second" options
 local tenthsValues = { L["Never"], L["Always"] , L["When duration<1sec"] }
@@ -81,8 +85,7 @@ do
 	end
 end
 
--- Generate the options for AceConfigTable
-Grid2Options:AddGeneralOptions( "Misc", "Text Formatting", {
+Grid2Options:AddGeneralOptions( "General", "Text Formatting", {
 	dFormat = {
 		type = "input",
 		order = 1,
@@ -117,5 +120,119 @@ Grid2Options:AddGeneralOptions( "Misc", "Text Formatting", {
 		get = function ()  return GetTenths("DurationStackFormat") end,
 		set = function (_, v) SetFormat("DurationStackFormat", nil, v) end,
 		values = tenthsValues
+	},
+})
+
+--==========================================================================
+-- Blink
+--==========================================================================
+
+Grid2Options:AddGeneralOptions( "General", "blink", {
+	effect = {
+		type = "select",
+		name = L["Blink effect"],
+		desc = L["Select the type of Blink effect used by Grid2."],
+		order = 10,
+		get = function () return Grid2Frame.db.shared.blinkType end,
+		set = function (_, v)
+			Grid2Frame.db.shared.blinkType = v
+			Grid2Frame:UpdateBlink()
+			if v == 'None' then
+				for _,indicator in ipairs(Grid2:GetIndicatorsSorted()) do
+					if indicator.GetBlinkFrame then
+						Grid2Frame:WithAllFrames(function (f) Grid2Frame:SetBlinkEffect(indicator:GetBlinkFrame(f),false) end)
+					end
+				end
+			end
+			Grid2Options:MakeStatusesOptions(Grid2Options.statusesOptions)
+		end,
+		values= { None = L["None"], Flash = L["Flash"] },
+	},
+	frequency = {
+		type = "range",
+		name = L["Blink Frequency"],
+		desc = L["Adjust the frequency of the Blink effect."],
+		disabled = function () return Grid2Frame.db.shared.blinkType == "None" end,
+		min = 1,
+		max = 10,
+		step = .5,
+		get = function ()
+			return Grid2Frame.db.shared.blinkFrequency
+		end,
+		set = function (_, v)
+			Grid2Frame.db.shared.blinkFrequency = v
+			Grid2Frame:UpdateBlink()
+		end,
+	},
+})
+
+--==========================================================================
+-- Minimap
+--==========================================================================
+
+if Grid2Layout.minimapIcon then
+	Grid2Options:AddGeneralOptions( "General", "Minimap Icon", {
+		showMinimapIcon = {
+			type = "toggle",
+			name = L["Show Minimap Icon"],
+			desc = L["Show Minimap Icon"],
+			width = "full",
+			order = 119,
+			get = function () return not Grid2Layout.db.shared.minimapIcon.hide end,
+			set = function (_, v)
+				Grid2Layout.db.shared.minimapIcon.hide = not v
+				if v then
+					Grid2Layout.minimapIcon:Show("Grid2")
+				else
+					Grid2Layout.minimapIcon:Hide("Grid2")
+				end
+			end,
+		},
+	})
+end
+
+
+--==========================================================================
+-- Hide blizzard raid frames
+--==========================================================================
+
+do
+	local addons = { "Blizzard_CompactRaidFrames", "Blizzard_CUFProfiles" }
+
+	Grid2Options:AddGeneralOptions( "General", "Blizzard Raid Frames", {
+		hideBlizzardRaidFrames = {
+			type = "toggle",
+			name = L["Hide Blizzard Raid Frames."],
+			desc = L["Hide Blizzard Raid Frames."],
+			width = "full",
+			order = 120,
+			get = function () return not IsAddOnLoaded( addons[1] ) end,
+			set = function (_, v)
+				local func = v and DisableAddOn or EnableAddOn
+				for _, v in pairs(addons) do
+					func(v)
+				end
+				ReloadUI()
+			end,
+			confirm = function() return "UI will be reloaded. Are your sure ?" end,
+		},
+	})
+end
+
+--==========================================================================
+-- Load on demand
+--==========================================================================
+
+Grid2Options:AddGeneralOptions( "General", "Options management", {
+	loadOnDemand = {
+		type = "toggle",
+		name = L["Load options on demand (requires UI reload)"],
+		desc = L["OPTIONS_ONDEMAND_DESC"],
+		width = "full",
+		order = 150,
+		get = function () return not Grid2.db.global.LoadOnDemandDisabled end,
+		set = function (_, v)
+			Grid2.db.global.LoadOnDemandDisabled = (not v) or nil
+		end,
 	},
 })

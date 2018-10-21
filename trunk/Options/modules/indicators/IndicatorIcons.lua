@@ -3,11 +3,11 @@ local L = Grid2Options.L
 
 Grid2Options:RegisterIndicatorOptions("icons", true, function(self, indicator)
 	local statuses, options =  {}, {}
+	self:MakeIndicatorTypeLevelOptions(indicator,options)
 	self:MakeIndicatorAuraIconsLocationOptions(indicator, options)
 	self:MakeIndicatorAuraIconsSizeOptions(indicator, options)
 	self:MakeIndicatorAuraIconsBorderOptions(indicator, options)
 	self:MakeIndicatorAuraIconsCustomOptions(indicator, options)
-	self:MakeIndicatorDeleteOptions(indicator, options)
 	self:MakeIndicatorStatusOptions(indicator, statuses)
 	self:AddIndicatorOptions(indicator, statuses, options )
 end)
@@ -91,13 +91,13 @@ function Grid2Options:MakeIndicatorAuraIconsSizeOptions(indicator, options, opti
 		type = "range",
 		order = 13,
 		name = L["Icon Size"],
-		desc = L["Adjust the size of the icons."],
-		min = 5,
+		desc = L["Adjust the size of the icons, select Zero to use the theme default icon size."],
+		min = 0,
 		max = 50,
 		step = 1,
-		get = function () return indicator.dbx.iconSize	or 12 end,
+		get = function () return indicator.dbx.iconSize	end,
 		set = function (_, v)
-			indicator.dbx.iconSize = v
+			indicator.dbx.iconSize = v>0 and v or nil
 			self:RefreshIndicator(indicator, "Layout", "Update")
 		end,
 	}
@@ -157,12 +157,12 @@ function Grid2Options:MakeIndicatorAuraIconsCustomOptions(indicator, options)
 		order = 105,
 		name = L["Font"],
 		desc = L["Adjust the font settings"],
-		get = function (info) return indicator.dbx.font end,
+		get = function (info) return indicator.dbx.font or self.MEDIA_VALUE_DEFAULT end,
 		set = function (info, v)
-			indicator.dbx.font = v
+			indicator.dbx.font = Grid2Options.MEDIA_VALUE_DEFAULT~=v and v or nil
 			self:RefreshIndicator(indicator, "Layout", "Update")
 		end,
-		values = AceGUIWidgetLSMlists.font,
+		values = self.GetStatusBarValues,
 		hidden= function() return indicator.dbx.disableStack end,
 	}
 	options.fontFlags = {

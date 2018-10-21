@@ -22,6 +22,8 @@ local Grid2LDB = DataBroker:NewDataObject("Grid2", {
 	end,
 	OnTooltipShow = function(tooltip)
 		tooltip:AddLine("Grid2")
+		tooltip:AddDoubleLine( L["Profile"], Grid2.db:GetCurrentProfile(), 255,255,255, 255,255,0)
+		tooltip:AddDoubleLine( L["Theme"],   select(2,Grid2:GetCurrentTheme()) , 255,255,255, 255,255,0)
 		tooltip:AddDoubleLine( L["Layout"], L[Grid2Layout.layoutName or ""], 255,255,255, 255,255,0)
 		for _,func in pairs(Grid2.tooltipFunc) do
 			func(tooltip)
@@ -32,7 +34,7 @@ local Grid2LDB = DataBroker:NewDataObject("Grid2", {
 
 local icon = LibStub("LibDBIcon-1.0")
 if icon then
-	icon:Register("Grid2", Grid2LDB, Grid2Layout.db.profile.minimapIcon)
+	icon:Register("Grid2", Grid2LDB, Grid2Layout.db.shared.minimapIcon)
 	Grid2Layout.minimapIcon = icon
 end
 
@@ -49,9 +51,8 @@ do
 		if not InCombatLockdown() then
 			layoutName    = self.value
 			local key     = Grid2Layout.instMaxPlayers
-			local layouts = Grid2Layout.db.profile.layoutBySize
+			local layouts = Grid2Layout.db.profile.layouts
 			if not layouts[key] then
-				layouts = Grid2Layout.db.profile.layouts
 				key = partyType.."@"..instType
 				if not layouts[key] then key = partyType end
 			end

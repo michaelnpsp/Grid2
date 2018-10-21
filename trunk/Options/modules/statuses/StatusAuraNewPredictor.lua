@@ -112,7 +112,7 @@ end
 
 function AuraPredictor:GetSpellDescription(spellID, spellName, spellIcon, className, isBoss)
 	className = isBoss and string.format( ", |TInterface\\TargetingFrame\\UI-TargetingFrame-Skull:0|t|cFFff0000%s|r ", className) or classNames[className]
-	return string.format( "|T%s:0|t%s %s, %s%d|r", spellIcon, spellName, className, GRAY_FONT_COLOR_CODE, spellID )
+	return string.format( "|T%s:0|t%s %s, %s%d|r", spellIcon or "", spellName or "Unknown", className or "", GRAY_FONT_COLOR_CODE, spellID )
 end
 
 -- Registering EditBoxGrid2Buffs and EditBoxGrid2Debuffs to use with AceConfigTable dialogControl

@@ -44,8 +44,8 @@ L["Adjust the width of each unit's frame."] = true
 L["Frame Height"] = true
 L["Adjust the height of each unit's frame."] = true
 
-L["Orientation of Frame"] = true
-L["Set frame orientation."] = true
+L["Default Orientation"] = true
+L["Set default bars orientation."] = true
 L["VERTICAL"] = true
 L["HORIZONTAL"] = true
 
@@ -308,7 +308,11 @@ L["Add"] = true
 L["Status Color"] = true
 L["Main Bar"] = true
 L["Fill bar in reverse"] = true
-L["Allow overlapping of non reverse bars"] = true
+L["Anchor & Direction"] = true
+L["Select where to anchor the bar and optional you can reverse the grow direction."] = true
+L["Previous Bar"] = true
+L["Topmost Bar"] = true
+L["Previous Bar & Reverse"] = true 
 
 L["Border Size"] = true
 L["Adjust the border of each unit's frame."] = true

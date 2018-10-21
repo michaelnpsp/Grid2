@@ -132,31 +132,18 @@ end
 
 local SetMouseoverHooks -- UnitIsUnit(unit, "mouseover") does not work for units that are not Visible
 do
-	local prev_OnEnter
-	local function OnMouseEnter(self, frame)
+	local function OnMouseEnter(frame)
 		mouseover = frame.unit
-		prev_OnEnter(self, frame)
 	end
 
-	local prev_OnLeave
-	local function OnMouseLeave(self, frame)
+	local function OnMouseLeave()
 		mouseover = ""
-		prev_OnLeave(self, frame)
 	end
 
 	SetMouseoverHooks = function(enable)
-		if not prev_OnEnter and enable then
-			prev_OnEnter = Grid2Frame.OnFrameEnter
-			prev_OnLeave = Grid2Frame.OnFrameLeave
-			Grid2Frame.OnFrameEnter = OnMouseEnter
-			Grid2Frame.OnFrameLeave = OnMouseLeave
-		elseif prev_OnEnter and not enable then
-			Grid2Frame.OnFrameEnter = prev_OnEnter
-			Grid2Frame.OnFrameLeave = prev_OnLeave
-			prev_OnEnter = nil
-			prev_OnLeave = nil
-			mouseover = ""
-		end
+		Grid2Frame:SetEventHook( 'OnEnter', OnMouseEnter, enable )
+		Grid2Frame:SetEventHook( 'OnLeave', OnMouseLeave, enable )
+		if not enable then mouseover = "" end
 	end
 end
 

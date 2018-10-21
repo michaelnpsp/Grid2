@@ -2,8 +2,13 @@
 Created by Grid2 original authors, modified by Michael
 --]]
 
---{{{ Initialization
+local type = type
+local next = next
+local ipairs = ipairs
+local tostring = tostring
+local fmt = string.format
 
+-- Initialization
 Grid2 = LibStub("AceAddon-3.0"):NewAddon("Grid2", "AceEvent-3.0", "AceConsole-3.0")
 
 Grid2.versionstring = "Grid2 v"..GetAddOnMetadata("Grid2", "Version")
@@ -21,22 +26,21 @@ end
 
 Grid2.tooltipFunc = {}
 
---{{{ AceDB defaults
+-- AceDB defaults
 Grid2.defaults = {
 	profile = {
 	    versions = {},
 		indicators = {},
 		statuses = {},
 		statusMap =  {},
+		themes = { names = {}, indicators = {}, enabled = {} },
 	}
 }
---}}}
 
---{{{
-Grid2.setupFunc = {} -- type setup functions for non-unique objects: "buff" statuses / "icon" indicators / etc.
---}}}
+-- Type setup functions for non-unique objects: "buff" statuses / "icon" indicators / etc.
+Grid2.setupFunc = {} 
 
---{{{ AceTimer-3.0, embedded upon use
+-- AceTimer-3.0, embedded upon use
 function Grid2:ScheduleRepeatingTimer(...)
 	LibStub("AceTimer-3.0"):Embed(Grid2)
 	return self:ScheduleRepeatingTimer(...)
@@ -51,9 +55,8 @@ function Grid2:CancelTimer(...)
 	LibStub("AceTimer-3.0"):Embed(Grid2)
 	return self:CancelTimer(...)
 end
---}}}
 
---{{{  Module prototype
+-- Module prototype
 local modulePrototype = {}
 modulePrototype.core = Grid2
 modulePrototype.Debug = Grid2.Debug
@@ -79,11 +82,14 @@ function modulePrototype:OnDisable()
 	if self.OnModuleDisable then self:OnModuleDisable() end
 end
 
+function modulePrototype:OnUpdate()
+	if self.OnModuleUpdate then self:OnModuleUpdate() end
+end
+
 Grid2:SetDefaultModulePrototype(modulePrototype)
 Grid2:SetDefaultModuleLibraries("AceEvent-3.0")
---}}}
 
---{{{  Modules management
+--  Modules management
 function Grid2:EnableModules()
 	for _,module in ipairs(self.orderedModules) do
 		module:OnEnable()
@@ -95,20 +101,27 @@ function Grid2:DisableModules()
 		module:OnDisable()
 	end
 end
---}}}
 
+function Grid2:UpdateModules()
+	for _,module in ipairs(self.orderedModules) do
+		module:OnUpdate()
+	end
+end
+
+-- Start code
 function Grid2:OnInitialize()
 	self.db = LibStub("AceDB-3.0"):New("Grid2DB", self.defaults)
 
 	self.profiles = self.db:RegisterNamespace('LibDualSpec-1.0') -- Using "LibDualSpec-1.0" namespace for backward compatibility
-	
-	self.debugging = self.db.global.debug
 
+	self.debugging = self.db.global.debug
+	
 	local media = LibStub("LibSharedMedia-3.0", true)
 	media:Register("statusbar", "Gradient", "Interface\\Addons\\Grid2\\media\\gradient32x32")
 	media:Register("statusbar", "Grid2 Flat", "Interface\\Addons\\Grid2\\media\\white16x16")
 	media:Register("border", "Grid2 Flat", "Interface\\Addons\\Grid2\\media\\white16x16")
 	media:Register("border", "Blizzard Quest Title Highlight", "Interface\\QuestFrame\\UI-QuestTitleHighlight")
+	media:Register("background", "Blizzard ChatFrame Background", "Interface\\ChatFrame\\ChatFrameBackground")
 	
 	self:InitializeOptions()
 
@@ -117,6 +130,8 @@ end
 
 function Grid2:OnEnable()
 	self:RegisterEvent("GROUP_ROSTER_UPDATE", "GroupChanged")
+	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("UNIT_PET")
 	self:RegisterEvent("UNIT_NAME_UPDATE")
@@ -137,9 +152,11 @@ end
 
 function Grid2:LoadConfig()
 	self:UpdateDefaults()
-	self:Setup()	
+	self:SetupTheme()
+	self:Setup()
 end
 
+-- Profiles
 function Grid2:ProfileShutdown()
 	self:Debug("Shutdown profile (", self.db:GetCurrentProfile(),")")
 	self:SetupShutdown()
@@ -147,13 +164,84 @@ end
 
 function Grid2:ProfileChanged()
 	self:Debug("Loaded profile (", self.db:GetCurrentProfile(),")")
-	self:DisableModules()
 	self:LoadConfig()
-	self:EnableModules()
-	if Grid2Options then
-		Grid2Options:MakeOptions()
+	self:UpdateModules()
+	self:RefreshOptions()
+end
+
+function Grid2:ReloadProfile()
+	local db = Grid2.profiles.char
+	if db.enabled then
+		local pro = db[GetSpecialization() or 0] or db
+		if type(pro)=="string" and pro~=Grid2.db:GetCurrentProfile() then
+			if not self:RunSecure(1, self, "ReloadProfile") then
+				Grid2.db:SetProfile(pro)
+			end	
+			return true
+		end
 	end	
 end
+
+function Grid2:PLAYER_SPECIALIZATION_CHANGED(_,unit)
+	if unit=='player' then
+		if not Grid2:ReloadProfile() then
+			Grid2:ReloadTheme()
+		end
+	end	
+end
+
+-- Themes
+function Grid2:GetCurrentTheme()
+	local index  = self.currentTheme or 0
+	local themes = self.db.profile.themes
+	return index, themes.names[index] or 'Default', themes.indicators[index] or {}
+end
+
+function Grid2:SetupTheme()
+	self.currentTheme = self:CheckTheme()
+	self:UpdateTheme()
+end
+
+function Grid2:CheckTheme()
+	local themes  = self.db.profile.themes
+	local enabled = themes.enabled
+	local theme   = enabled.default or 0
+	local spec    = GetSpecialization() or 0
+	local groupType, instType, maxPlayers = self:GetGroupType()
+	local kSGI = fmt("%d@%s@%s", spec, groupType, instType)
+	local kSG  = fmt("%d@%s",    spec, groupType)
+	local kSM  = fmt("%d@%d",    spec, maxPlayers)
+	local kGI  = fmt("%s@%s",    groupType, instType)
+	theme = enabled[kSM] or enabled[kSGI] or enabled[kSG] or enabled[spec] or enabled[tostring(maxPlayers)] or enabled[kGI] or enabled[groupType] or theme
+	return themes.names[theme] and theme or 0
+end
+
+function Grid2:UpdateTheme()
+	for _,module in ipairs(self.orderedModules) do
+		if module.UpdateTheme then module:UpdateTheme()	end
+	end
+end
+
+function Grid2:RefreshTheme()
+	self:RefreshIndicators(true)
+	for _,module in ipairs(self.orderedModules) do
+		if module.RefreshTheme then module:RefreshTheme() end
+	end
+end
+
+function Grid2:ReloadTheme(force)
+	local theme = self:CheckTheme()
+	if theme ~= self.currentTheme or force then
+		if not self:RunSecure(2, self, "ReloadTheme") then
+			self.currentTheme = theme
+			self:UpdateTheme()
+			self:RefreshTheme()			
+			self:SendMessage("Grid_ThemeChanged", theme)
+			self:Debug("ReloadTheme", theme)
+		end
+		return true
+	end
+end	
 
 -- Options
 function Grid2:InitializeOptions()
@@ -191,6 +279,12 @@ function Grid2:LoadGrid2Options()
 	Grid2:Print("You need Grid2Options addon enabled to be able to configure Grid2.")
 end
 
+function Grid2:RefreshOptions()
+	if Grid2Options then
+		Grid2Options:MakeOptions()
+	end	
+end
+
 function Grid2:OnChatCommand(input)
 	if Grid2:LoadGrid2Options() then
 		Grid2Options:OnChatCommand(input)
@@ -202,4 +296,3 @@ function Grid2:LoadOptions()
 	Grid2Options:Initialize()
 	Grid2.LoadOptions = nil
 end
-

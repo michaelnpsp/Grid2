@@ -194,6 +194,10 @@ function Banzai:GetPercent(unit)
 	return ((bexp[unit] or t) - t) / (bdur[unit] or 1)
 end
 
+function Banzai:GetBorder()
+	return 0
+end
+
 function Banzai:GetIcon(unit)
 	return bico[unit]
 end

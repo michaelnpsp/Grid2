@@ -4,8 +4,6 @@ local Grid2 = Grid2
 
 local function Square_Create(self, parent)
 	local Square = self:CreateFrame("Frame", parent)
-	Square:SetBackdropBorderColor(0,0,0,1)
-	Square:SetBackdropColor(1,1,1,1)
 end
 
 local function Square_GetBlinkFrame(self, parent)
@@ -20,14 +18,15 @@ local function Square_OnUpdate(self, parent, unit, status)
 			local c = self.color
 			Square:SetBackdropBorderColor( c.r, c.g, c.b, c.a )
 		end
-		Square:Show()
+		Square:SetAlpha(1)
 	else
-		Square:Hide()
+		Square:SetAlpha(0)
 	end
 end
 
 local function Square_Layout(self, parent)
 	local Square, container = parent[self.name], parent.container
+	Square:SetParent(parent)
 	Square:ClearAllPoints()
 	Square:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
 	Square:SetPoint(self.anchor, container, self.anchorRel, self.offsetx, self.offsety)
@@ -38,17 +37,18 @@ local function Square_Layout(self, parent)
 	Square:SetBackdrop(self.backdrop)
 	Square:SetBackdropColor(r1,g1,b1,a1)
 	Square:SetBackdropBorderColor(r2,g2,b2,a2)
+	Square:Show()
 end
 
 local function Square_Disable(self, parent)
-	parent[self.name]:Hide()
-	self.GetBlinkFrame = nil
-	self.Layout = nil
-	self.OnUpdate = nil
+	local f = parent[self.name]
+	f:Hide()
+	f:SetParent(nil)
+	f:ClearAllPoints()	
 end
 
-local function Square_UpdateDB(self, dbx)
-	dbx = dbx or self.dbx
+local function Square_UpdateDB(self)
+	local dbx = self.dbx
 	-- variables
 	local l = dbx.location
 	self.anchor = l.point
@@ -77,21 +77,20 @@ local function Square_UpdateDB(self, dbx)
 	insets.top        = borderSize
 	insets.bottom     = borderSize
 	self.backdrop     = backdrop
-	-- Methods
-	self.Create = Square_Create
-	self.GetBlinkFrame = Square_GetBlinkFrame
-	self.Layout = Square_Layout
-	self.OnUpdate = Square_OnUpdate
-	self.Disable = Square_Disable
-	self.UpdateDB = Square_UpdateDB
-	self.dbx = dbx
 end
 
 
 local function Create(indicatorKey, dbx)
 	local existingIndicator = Grid2.indicators[indicatorKey]
 	local indicator = existingIndicator or Grid2.indicatorPrototype:new(indicatorKey)
-	Square_UpdateDB(indicator, dbx)
+	indicator.dbx = dbx
+	indicator.Create = Square_Create
+	indicator.GetBlinkFrame = Square_GetBlinkFrame
+	indicator.Layout = Square_Layout
+	indicator.OnUpdate = Square_OnUpdate
+	indicator.Disable = Square_Disable
+	indicator.UpdateDB = Square_UpdateDB
+	Square_UpdateDB(indicator)
 	Grid2:RegisterIndicator(indicator, { "square" })
 	return indicator
 end

@@ -30,7 +30,7 @@ local auto_time
 local auto_boss
 local auto_instance
 local auto_debuffs
-local auto_blacklist = { [160029] = true, [36032] = true, [6788] = true, [80354] = true, [95223] = true, [114216] = true }
+local auto_blacklist = { [160029] = true, [36032] = true, [6788] = true, [80354] = true, [95223] = true, [114216] = true, [57723] = true }
 
 -- LDB Tooltip
 Grid2.tooltipFunc['RaidDebuffsCount'] = function(tooltip)
