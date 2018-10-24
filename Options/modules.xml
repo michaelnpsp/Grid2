@@ -33,6 +33,7 @@
 <Script file="modules\statuses\StatusHealAbsorbs.lua"/>
 <Script file="modules\statuses\StatusHealsAoe.lua"/>
 <Script file="modules\statuses\StatusThreat.lua"/>
+<Script file="modules\statuses\StatusCombat.lua"/>
 <Script file="modules\statuses\StatusMisc.lua"/>
 
 <Script file="modules\indicators\Indicator.lua"/>

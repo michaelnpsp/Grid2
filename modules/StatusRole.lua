@@ -239,12 +239,14 @@ function Leader:UpdateActiveUnits()
 end
 
 function Leader:UpdateLeader()
-	local prevLeader = raidLeader
-	self:CalculateLeader()
-	if raidLeader ~= prevLeader then
-		if prevLeader  then self:UpdateIndicators(prevLeader) end
-		if raidLeader  then self:UpdateIndicators(raidLeader) end
-	end
+	if not (raidLeader and UnitIsGroupLeader(raidLeader)) then
+		local prevLeader = raidLeader
+		self:CalculateLeader()
+		if raidLeader ~= prevLeader then
+			if prevLeader then self:UpdateIndicators(prevLeader) end
+			if raidLeader then self:UpdateIndicators(raidLeader) end
+		end
+	end	
 end
 
 function Leader:CalculateLeader()

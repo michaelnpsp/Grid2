@@ -68,6 +68,10 @@ L["Revived"] = "Revivido"
 L["Me"] = "Yo"
 ---}}}
 
+--{{{ Combat
+L["combat"] = "Combate"
+--}}
+
 --Layouts
 L["None"] = "Ninguno"
 L["Solo"] = "Solo"
