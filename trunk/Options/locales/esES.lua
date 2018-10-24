@@ -751,6 +751,9 @@ L["Disable Blink"] = "Desactivar efecto de parpadeo"
 -- voice status
 L["Voice Chat"] = "Chat de voz"
 
+-- combat status
+L["combat"] = "combate"
+
 -- raid debuffs
 L["General"] = "General"
 L["Advanced"] = "Avanzado"
