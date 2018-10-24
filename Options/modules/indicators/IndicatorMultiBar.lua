@@ -119,7 +119,8 @@ end
 
 -- Grid2Options:MakeIndicatorMultiBarTextures()
 do
-	local ANCHOR_VALUES = { L["Previous Bar"], L["Topmost Bar"], L["Previous Bar & Reverse"] } 
+	local ANCHOR_VALUES = { L["Previous Bar"], L["Topmost Bar"], L["Previous Bar & Reverse"] }
+	local DIRECTION_VALUES = { L['Normal'], L['Reverse'] }
 	local function GetBarValue(indicator, index, key)
 		local bar = indicator.dbx["bar"..index]
 		if bar then return bar[key] end
@@ -244,6 +245,22 @@ do
 			hasAlpha = true,
 			hidden = function() return (indicator.dbx.textureColor == nil) or indicator.dbx.reverseMainBar end
 		}
+		options.barMainDirection = {
+			type = "select",
+			name = L["Direction"],
+			desc = L["Select the direction of the main bar."],
+			order = 50.7,
+			get = function () 
+				return indicator.dbx.reverseMainBar and 2 or 1
+			end,
+			set = function (_, v)
+				indicator.dbx.reverseMainBar = (v==2) or nil
+				self:RefreshIndicator(indicator, "Layout", "Update" )
+			end,
+			values = DIRECTION_VALUES,
+			hidden = function() return indicator.dbx.textureColor == nil end,
+		}		
+		--[[
 		options.barMainReverse = {
 			type = "toggle",
 			name = L["Reverse"],
@@ -257,7 +274,7 @@ do
 				self:RefreshIndicator(indicator, "Layout", "Update" )
 			end,
 			hidden = function() return indicator.dbx.textureColor == nil end,
-		}
+		}--]]
 		options.barStatusesColorize = {
 			type = "toggle",
 			name = L["Status Color"],

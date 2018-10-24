@@ -226,8 +226,9 @@ local CreateStatusAura
 do
 	local fmt = string.format
 	local UnitHealthMax = UnitHealthMax
-	local function Reset(self, unit)
-		self.idx[unit], self.exp[unit] = nil, nil
+	local function Reset(self, unit) 
+		-- multibar indicator needs val[unit]=nil because due to a speed optimization it does not check if status is active before calling GetPercent()
+		self.idx[unit], self.exp[unit], self.val[unit] = nil, nil, nil
 		return true
 	end
 	local function IsActive(self, unit) 
