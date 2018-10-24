@@ -390,7 +390,13 @@ local frameOptions = { framewidth = {
 
 --===============================================================================================
 
-Grid2Options:AddThemeOptions( "general", "General", {
+local options = {
 	layout = { type = "group", inline = true, order = 1, name = L["Layout"], desc = L["Layout"], args = layoutOptions },
 	frame  = { type = "group", inline = true, order = 2, name = L["Frames"], desc = L["Frames"], args = frameOptions  },
-} )
+}
+Grid2Options:AddThemeOptions( "general", "General", options )
+
+-- Refresh theme general options the first time they are displayed, it's a workaround to a weird bug in AceConfig/AceGUI: 
+-- sometimes all editboxes of sliders do not display any value, this only happens when we have 3 nested groups like in: 
+-- "Themes>Default>General Tab>options width sliders", and clicking very fast to open general theme options.
+options.bugfix = { type = "header", order = 500, name = "", hidden = function()	options.bugfix = nil; LibStub("AceConfigRegistry-3.0"):NotifyChange("Grid2"); return true end }

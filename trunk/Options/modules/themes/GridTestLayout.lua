@@ -230,6 +230,7 @@ function Grid2Options:LayoutTestEnable(name, width, height, size)
 		layoutName= nil
 		layoutFrame:Hide()
 		Grid2Layout.frame:Show()
+		Grid2Layout:RestorePosition()
 		Grid2Layout:UpdateSize()
 	end
 end
