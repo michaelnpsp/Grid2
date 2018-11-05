@@ -118,6 +118,7 @@ local function LayoutLoad(name, maxPlayers)
 			else
 				unitPerColumn = l.unitsPerColumn or defaults.unitsPerColumn or 5
 				maxColumns    = l.maxColumns or defaults.maxColumns or 1
+				maxColumns    = maxColumns=="auto" and math.ceil((maxPlayers or 40)/5) or maxColumns
 			end
 			colCount = colCount + maxColumns
 			rowCount = max(rowCount,unitPerColumn)
@@ -223,9 +224,9 @@ function Grid2Options:LayoutTestRefresh(name, width, height, maxPlayers)
 	layoutFrame:SetSize(layWidth,layHeight)
 end
 
-function Grid2Options:LayoutTestEnable(name, width, height, size)
+function Grid2Options:LayoutTestEnable(name, width, height, maxPlayers)
 	if name and name ~= layoutName then
-		self:LayoutTestRefresh(name, width, height, size)
+		self:LayoutTestRefresh(name, width, height, maxPlayers)
 	elseif layoutName then
 		layoutName= nil
 		layoutFrame:Hide()

@@ -6,7 +6,7 @@ local options = Grid2Options.themesOptions
 
 local themeModules = { layout = Grid2Layout, frame  = Grid2Frame }
 
-local editedTheme = { db = Grid2.db.profile.themes, layout = nil, frame = nil }
+local editedTheme = { db = Grid2.db.profile.themes, layout = Grid2Layout.db.profile, frame = Grid2Frame.db.profile, index = Grid2.currentTheme }
 
 -- Themes Management
 do

@@ -3,9 +3,13 @@
 -- Local variables to speedup things
 local UnitName = UnitName
 local UnitGUID = UnitGUID
+local UnitClass = UnitClass
 local UnitExists = UnitExists
 local IsInRaid = IsInRaid
 local GetNumGroupMembers = GetNumGroupMembers
+local GetPartyAssignment = GetPartyAssignment
+local UnitGroupRolesAssigned = UnitGroupRolesAssigned
+local GetRaidRosterInfo = GetRaidRosterInfo
 local pairs, next = pairs, next
 
 -- realm name
@@ -13,6 +17,9 @@ local my_realm = GetRealmName()
 
 -- myUnits, used by other modules
 local roster_my_units = { player = true, pet = true, vehicle = true }
+
+-- is raid roster ?
+local inRaid
 
 -- indexed by unit ID
 local roster_names = {}
@@ -52,6 +59,28 @@ function Grid2:GetUnitByFullName(fullName)
 	for unit, unit_name in pairs(roster_names) do
 		if name == unit_name and roster_realms[unit] == realm then
 			return unit
+		end
+	end
+end
+
+function Grid2:GetRosterCount()
+	local count = GetNumGroupMembers()
+	return count>0 and count or 1
+end
+
+function Grid2:GetRosterInfoByIndex(index)
+	local name, group, role1, role2, _
+	if inRaid then
+		name, _, group, _, _, class, _, _, _, role1, _, role2 = GetRaidRosterInfo(index)
+		return name, class, group, role1, role2
+	else
+		local unit = Grid2.party_units[index]
+		local name = UnitName(unit)
+		if name then
+			_, class = UnitClass(unit)
+			role1 = (GetPartyAssignment("MAINTANK",unit) and "MAINTANK") or (GetPartyAssignment("MAINASSIST",unit) and "MAINASSIST")
+			role2 = UnitGroupRolesAssigned(unit)
+			return name, class, 1, role1, role2
 		end
 	end
 end
@@ -125,43 +154,39 @@ do
 		local newGroupType
 		local InInstance, newInstType = IsInInstance()
 		local _, _, difficultyID, _, maxPlayers = GetInstanceInfo()
-
+		inRaid = IsInRaid()
 		if newInstType == "arena" then
-			-- arena@arena instances
-			newGroupType = newInstType
-			maxPlayers = 5
-		else
-			if IsInRaid() then
-				newGroupType = "raid"
-				if InInstance then
-					if newInstType == "pvp" then
-						-- raid@pvp / PvP battleground instance
-					elseif newInstType == "none" then
-						-- raid@none / Not in Instance, in theory its not posible to reach this point
-						maxPlayers = 40
-					elseif difficultyID == 17 then
-						-- raid@lfr / Looking for Raid instances (but not LFR especial events instances)
-						newInstType = "lfr"
-					elseif difficultyID == 16 then
-						-- raid@mythic / Mythic instance
-						newInstType = "mythic"
-					elseif maxPlayers == 30 then
-						-- raid@flex / Flexible instances normal/heroic (but no LFR)
-						newInstType = "flex"
-					else
-						-- raid@other / Other instances: 5man/garrison/unknow instances
-						newInstType = "other"
-					end
-				else
-					-- raid@none / In World Map or Garrison
-					newInstType = "none"
+			newGroupType = newInstType	-- arena@arena instances
+		elseif inRaid then
+			newGroupType = "raid"
+			if InInstance then
+				if newInstType == "pvp" then
+					-- raid@pvp / PvP battleground instance
+				elseif newInstType == "none" then
+					-- raid@none / Not in Instance, in theory its not posible to reach this point
 					maxPlayers = 40
+				elseif difficultyID == 17 then
+					-- raid@lfr / Looking for Raid instances (but not LFR especial events instances)
+					newInstType = "lfr"
+				elseif difficultyID == 16 then
+					-- raid@mythic / Mythic instance
+					newInstType = "mythic"
+				elseif maxPlayers == 30 then
+					-- raid@flex / Flexible instances normal/heroic (but no LFR)
+					newInstType = "flex"
+				else
+					-- raid@other / Other instances: 5man/garrison/unknow instances
+					newInstType = "other"
 				end
-			elseif GetNumGroupMembers()>0 then
-				newGroupType, newInstType, maxPlayers = "party", "other", 5
 			else
-				newGroupType, newInstType, maxPlayers = "solo", "other", 1
+				-- raid@none / In World Map or Garrison
+				newInstType = "none"
+				maxPlayers = 40
 			end
+		elseif GetNumGroupMembers()>0 then
+			newGroupType, newInstType, maxPlayers = "party", "other", 5
+		else
+			newGroupType, newInstType, maxPlayers = "solo", "other", 1
 		end
 		if maxPlayers == nil or maxPlayers == 0 then
 			maxPlayers = 40
@@ -199,6 +224,7 @@ do
 			self:SendMessage("Grid_UnitUpdated", unit, guid)
 			self:SendMessage("Grid_UnitUpdate", unit, guid)
 			self:SendMessage("Grid_RosterUpdated")
+			self:SendMessage("Grid_RosterUpdate")
 		end
 	end
 
@@ -340,6 +366,8 @@ do
 		if updated then
 			self:SendMessage("Grid_RosterUpdated")
 		end
+
+		self:SendMessage("Grid_RosterUpdate") -- Fired even when no changes on grid2 roster list, but another atributes like roles or subgroups could be modified
 	end
 end
 

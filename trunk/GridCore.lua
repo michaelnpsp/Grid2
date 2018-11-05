@@ -241,7 +241,7 @@ function Grid2:ReloadTheme(force)
 		end
 		return true
 	end
-end	
+end
 
 -- Options
 function Grid2:InitializeOptions()

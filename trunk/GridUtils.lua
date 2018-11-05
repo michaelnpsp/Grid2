@@ -1,6 +1,13 @@
 -- Misc functions
 
+local media = LibStub("LibSharedMedia-3.0", true)
 local Grid2 = Grid2
+local select = select
+local strtrim  = strtrim
+local type = type
+local pairs = pairs
+local tonumber = tonumber
+local tremove = table.remove
 
 function Grid2.Dummy()
 end
@@ -14,7 +21,6 @@ function Grid2:MakeColor(color, default)
 	return color or defaultColors[default or "TRANSPARENT"]
 end
 
-local media = LibStub("LibSharedMedia-3.0", true)
 function Grid2:MediaFetch(mediatype, key, def)
 	return (key and media:Fetch(mediatype, key)) or (def and media:Fetch(mediatype, def))
 end
@@ -65,12 +71,44 @@ end
 function Grid2.TableRemoveByValue(t,v)
 	for i=#t,1,-1 do
 		if t[i]==v then
-			table.remove(t, i)
+			tremove(t, i)
 			return
 		end
 	end	
 end
 
+-- Fill tokens table
+function Grid2.FillTokenTable(tbl,...)
+	tbl = tbl or {}
+	local m = select("#",...) 
+	for i = 1, m  do
+		local key = select(i,...)
+		tbl[ tonumber(key) or strtrim(key) ] = i
+	end
+	return tbl
+end
+
+-- Double fill table
+function Grid2.DoubleFillTable(tbl,...)
+	tbl = tbl or {}
+	local m = select("#", ...)
+	for i = 1, m do
+		local k = strtrim( (select(i, ...)) )
+		tbl[i] = k
+		tbl[k] = i
+	end
+	return tbl
+end
+
+-- Fill ipairs table
+function Grid2.FillTable(tbl,...)
+	tbl = tbl or {}
+	local m = select("#",...) 
+	for i = 1, m  do
+		tbl[i] = select(i,...)
+	end
+	return tbl
+end
 
 -- Creates a location table, used by GridDefaults.lua
 function Grid2.CreateLocation(a,b,c,d)
@@ -116,7 +154,7 @@ Grid2.AlignPoints= {
 -- Grid2:RunSecure(priority, object, method, arg) 
 -- Queue some methods to be executed when out of combat, if we are not in combat do nothing.
 -- Methods with lower priority value override the execution of methods with higher priority value.
--- Methods executed (in order of priority): ReloadProfile(1), ReloadTheme(2), ReloadLayout(3), UpdateSize(4)
+-- Methods executed (in order of priority): ReloadProfile(1), ReloadTheme(2), ReloadLayout(3), ReloadFilter(4), UpdateSize(5)
 do
 	local sec_priority, sec_object, sec_method, sec_arg 
 	function Grid2:PLAYER_REGEN_ENABLED()

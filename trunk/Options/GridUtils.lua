@@ -474,14 +474,14 @@ end
 do
 	StaticPopupDialogs["GRID2OPTIONS_GENERAL_DIALOG"] = { timeout = 0, whileDead = 1, hideOnEscape = 1, button1 = ACCEPT, button2 = CANCEL }
 	
-	local function ShowDialog(message, textDefault, funcAccept, funcCancel)
+	local function ShowDialog(message, textDefault, funcAccept, funcCancel, textAccept, textCancel)
 		local t = StaticPopupDialogs["GRID2OPTIONS_GENERAL_DIALOG"]
 		t.OnShow = function (self)	if textDefault then self.editBox:SetText(textDefault) end; self:SetFrameStrata("TOOLTIP") end
 		t.OnHide = function(self) self:SetFrameStrata("DIALOG")	end
 		t.hasEditBox = textDefault and true or nil
 		t.text = message
-		t.button1 = funcAccept and ACCEPT or nil
-		t.button2 = funcCancel and CANCEL or nil
+		t.button1 = funcAccept and (textAccept or ACCEPT) or nil
+		t.button2 = funcCancel and (textCancel or CANCEL) or nil
 		t.OnCancel = funcCancel
 		t.OnAccept = funcAccept and function (self)	funcAccept( textDefault and self.editBox:GetText() ) end or nil
 		StaticPopup_Show ("GRID2OPTIONS_GENERAL_DIALOG")
@@ -491,8 +491,8 @@ do
 		ShowDialog(message, nil, funcAccept or Grid2.Dummy)
 	end
 	
-	function Grid2Options:ConfirmDialog(message, funcAccept, funcCancel)
-		ShowDialog(message, nil, funcAccept, funcCancel or Grid2.Dummy )
+	function Grid2Options:ConfirmDialog(message, funcAccept, funcCancel, textAccept, textCancel)
+		ShowDialog(message, nil, funcAccept, funcCancel or Grid2.Dummy, textAccept, textCancel )
 	end
 
 	function Grid2Options:ShowEditDialog(message, text, funcAccept, funcCancel)
