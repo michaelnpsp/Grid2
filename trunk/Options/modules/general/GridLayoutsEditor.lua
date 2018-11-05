@@ -50,7 +50,8 @@ end
 
 local function GetLayoutsSorted()
 	local sorted  = {}
-	for name in pairs(Grid2Layout.customLayouts) do
+	for name,layout in pairs(Grid2Layout.customLayouts) do
+		layout.type = strmatch(layout.type or '', 'pet') or 'player'
 		sorted[#sorted+1] = name
 	end
 	table.sort(sorted)
