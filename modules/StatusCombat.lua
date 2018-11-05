@@ -2,7 +2,7 @@ local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 local Grid2 = Grid2
 
---==================================================================
+-- shared methods
 
 local function GetTexCoordEmpty()
 	return 0,0.05,0,0.05
@@ -25,7 +25,7 @@ local function GetIcon()
 	return [[Interface\CharacterFrame\UI-StateIcon]]
 end
 
---==================================================================
+-- combat status
 
 local Combat = Grid2.statusPrototype:new("combat")
 
@@ -89,7 +89,7 @@ Grid2.setupFunc["combat"] = Create
 
 Grid2:DbSetStatusDefaultValue( "combat", {type = "combat", color1 = {r=1,g=0,b=0,a=1}} )
 
---==================================================================
+-- combat-mine status
 
 local MyCombat = Grid2.statusPrototype:new("combat-mine")
 
@@ -134,5 +134,3 @@ end
 Grid2.setupFunc["combat-mine"] = Create
 
 Grid2:DbSetStatusDefaultValue( "combat-mine", {type = "combat-mine", color1 = {r=1,g=0,b=0,a=1}} )
-
---==================================================================

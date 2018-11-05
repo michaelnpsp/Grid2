@@ -77,6 +77,7 @@ RDDB["Battle for Azeroth"] = {
 		["Trash"] = {
 		257908, -- Hoja aceitada
 		257478, -- Mordedura entorpecedora
+		274384, -- Trampas para ratas
 		}
 	},
 	[1022] = {

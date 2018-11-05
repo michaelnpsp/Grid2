@@ -26,7 +26,8 @@ do
 		Grid2Layout:ReloadLayout()
 	end
 	local function TestMode(info)
-		Grid2Options:LayoutTestEnable( theme.layout.layouts[info.arg] or theme.layout.layouts["raid"] )
+		local maxPlayers = (info.arg=="solo" and 1) or (info.arg=="party" and 5) or (info.arg=="arena" and 5) or 40
+		Grid2Options:LayoutTestEnable( theme.layout.layouts[info.arg] or theme.layout.layouts["raid"], nil,nil, maxPlayers )
 	end
 	function MakeLayoutsOptions(advanced)
 		local options = {}

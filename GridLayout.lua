@@ -4,7 +4,8 @@ Created by Grid2 original authors, modified by Michael
 
 local Grid2Layout = Grid2:NewModule("Grid2Layout")
 
-local pairs, ipairs, next, strmatch = pairs, ipairs, next, strmatch
+local Grid2 = Grid2
+local pairs, ipairs, next, strmatch, strsplit = pairs, ipairs, next, strmatch, strsplit
 
 --{{{ Frame config function for secure headers
 local function GridHeader_InitialConfigFunction(self, name)
@@ -54,23 +55,20 @@ local GridLayoutHeaderClass = {
 }
 
 local HeaderAttributes = {
-	"nameList", "groupFilter", "strictFiltering",
+	"nameList", "groupFilter", "roleFilter", "strictFiltering",
 	"sortDir", "groupBy", "groupingOrder", "maxColumns", "unitsPerColumn",
 	"startingIndex", "columnSpacing", "columnAnchorPoint",
-	"useOwnerUnit", "filterOnPet", "unitsuffix",
-	"allowVehicleTarget", "toggleForVehicle"
+	"useOwnerUnit", "filterOnPet", "unitsuffix", "sortMethod", 
+	"toggleForVehicle", "showSolo", "showPlayer", "showParty", "showRaid"
 }
+
 function GridLayoutHeaderClass.prototype:Reset()
-	if self.initialConfigFunction then
-		self:SetLayoutAttribute("sortMethod", "NAME")
-		for _, attr in ipairs(HeaderAttributes) do
-			self:SetLayoutAttribute(attr, nil)
-		end
+	self.tokenNames  = nil
+	self.tokenFilter = nil
+	local defaults = Grid2Layout.customDefaults
+	for _, attr in ipairs(HeaderAttributes) do
+		self:SetAttribute(attr, defaults[attr] or nil  )
 	end
-	self:SetAttribute("showSolo", true)
-	self:SetAttribute("showPlayer", true)
-	self:SetAttribute("showParty", true)
-	self:SetAttribute("showRaid", true)	
 	self:Hide()
 end
 
@@ -89,24 +87,23 @@ function GridLayoutHeaderClass.prototype:SetOrientation(horizontal)
 	local direction = anchorPoints[point]
 	local xOffset   = horizontal and settings.Padding*direction or 0
 	local yOffset   = vertical   and settings.Padding*direction or 0
-	self:SetLayoutAttribute( "xOffset", xOffset )
-	self:SetLayoutAttribute( "yOffset", yOffset )
-	self:SetLayoutAttribute( "point", point )
+	self:SetAttribute( "xOffset", xOffset )
+	self:SetAttribute( "yOffset", yOffset )
+	self:ClearChildPoints()
+	self:SetAttribute( "point", point )
 end
 
 -- MSaint fix see: https://authors.curseforge.com/forums/world-of-warcraft/official-addon-threads/unit-frames/grid-grid2/222108-grid-compact-party-raid-unit-frames?page=11#c219
--- To maintain the code consistent all calls to SetAttribute were replaced with SetLayoutAttribute
--- including those which not affect anchors, the only exception: calls from GridLayoutHeaderClass.new)
-function GridLayoutHeaderClass.prototype:SetLayoutAttribute(name, value)
-	if name == "point" or name == "columnAnchorPoint" or name == "unitsPerColumn" then
-		local count, uframe = 1, self:GetAttribute("child1")
-		while uframe do
-			uframe:ClearAllPoints()
-			count = count + 1
-			uframe = self:GetAttribute("child" .. count)
-		end
+-- Must be called just before assigning the attributes: "point", "columnAnchorPoint" or "unitsPerColumn". But for optimization purposes we are calling the funcion only before 
+-- assigning "point" attribute inside SetOrientation() method, because this is the last attribute assigned when a layout is loaded. 
+-- Be carefull when changing the order in which these attributes are assigned in future changes.
+function GridLayoutHeaderClass.prototype:ClearChildPoints()
+	local count, uframe = 1, self:GetAttribute("child1")
+	while uframe do
+		uframe:ClearAllPoints()
+		count = count + 1
+		uframe = self:GetAttribute("child" .. count)
 	end
-   self:SetAttribute(name, value)
 end
 
 --{{{ Grid2Layout
@@ -115,7 +112,7 @@ end
 Grid2Layout.defaultDB = {
 	profile = {
 		--theme options ( active theme options in: self.db.profile, first theme options in: self.dba.profile, extra themes in: self.dba.profile.extraThemes[] )
-		layouts = { solo = "Solo w/Pet", party = "Party w/Pets", arena = "By Group w/Pets", raid  = "By Group w/Pets" },
+		layouts = { solo = "By Group", party = "By Group", arena = "By Group", raid  = "By Group" },
 		FrameDisplay = "Always",
 		horizontal = true,
 		clamp = true,
@@ -140,6 +137,10 @@ Grid2Layout.defaultDB = {
 		-- profile options shared by all themes, but stored on default/first theme
 		minimapIcon = { hide = false },
 	},
+	global = {
+		customLayouts  = {},
+		customDefaults = { toggleForVehicle = true, showSolo = true, showPlayer = true, showParty = true, showRaid = true },
+	},
 }
 
 Grid2Layout.groupFilters =  {
@@ -147,10 +148,19 @@ Grid2Layout.groupFilters =  {
 	{ groupFilter = "5" }, { groupFilter = "6" }, {	groupFilter = "7" }, {	groupFilter = "8" },
 }
 
+Grid2Layout.groupsFilters = { "1", "1,2", "1,2,3", "1,2,3,4", "1,2,3,4,5", "1,2,3,4,5,6", "1,2,3,4,5,6,7", "1,2,3,4,5,6,7,8" }
+
 Grid2Layout.frameBackdrop = {
 	 bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
 	 tile = false, tileSize = 16, edgeSize = 16,
 	 insets = {left = 4, right = 4, top = 4, bottom = 4},
+}
+
+Grid2Layout.relativePoints = {
+	[false] = { TOPLEFT = "BOTTOMLEFT", TOPRIGHT = "BOTTOMRIGHT", BOTTOMLEFT = "TOPLEFT",     BOTTOMRIGHT = "TOPRIGHT"   },
+	[true]  = { TOPLEFT = "TOPRIGHT",   TOPRIGHT = "TOPLEFT",     BOTTOMLEFT = "BOTTOMRIGHT", BOTTOMRIGHT = "BOTTOMLEFT" },
+	xMult   = { TOPLEFT =  1, TOPRIGHT = -1, BOTTOMLEFT = 1, BOTTOMRIGHT = -1 },
+	yMult   = { TOPLEFT = -1, TOPRIGHT = -1, BOTTOMLEFT = 1, BOTTOMRIGHT =  1 },
 }
 
 Grid2Layout.layoutSettings = {}
@@ -167,6 +177,7 @@ function Grid2Layout:OnModuleInitialize()
 end
 
 function Grid2Layout:OnModuleEnable()
+	self:FixLayouts()
 	self:CreateFrame()
 	self:RestorePosition()
 	self:RegisterMessage("Grid_GroupTypeChanged")
@@ -176,10 +187,12 @@ end
 function Grid2Layout:OnModuleDisable()
 	self:UnregisterMessage("Grid_GroupTypeChanged")
 	self:UnregisterMessage("Grid_UpdateLayoutSize")
+	self:UnregisterMessage("Grid_RosterUpdate")
 	self.frame:Hide()
 end
 
 function Grid2Layout:OnModuleUpdate()
+	self:FixLayouts()
 	self:RefreshTheme()
 end
 
@@ -252,9 +265,9 @@ function Grid2Layout:CreateFrame()
 	f:SetScript("OnMouseUp", function () self:StopMoveFrame() end)
 	f:SetScript("OnHide", function () self:StopMoveFrame() end)
 	f:SetScript("OnMouseDown", function (_, button) self:StartMoveFrame(button) end)
-	-- Extra frame for background and border textures, to be able to resize in combat
+	-- extra frame for background and border textures, to be able to resize in combat
 	self.frameBack = CreateFrame("Frame", "Grid2LayoutFrameBack", self.frame)
-	--
+	-- more stuff
 	self:UpdateFrame()
 	self:UpdateTextures()
 	self.CreateFrame = Grid2.Dummy
@@ -276,23 +289,28 @@ function Grid2Layout:SetClamp()
 	self.frame:SetClampedToScreen(self.db.profile.clamp)
 end
 
-local relativePoints = {
-	[false] = { TOPLEFT = "BOTTOMLEFT", TOPRIGHT = "BOTTOMRIGHT", BOTTOMLEFT = "TOPLEFT",     BOTTOMRIGHT = "TOPRIGHT"   },
-	[true]  = { TOPLEFT = "TOPRIGHT",   TOPRIGHT = "TOPLEFT",     BOTTOMLEFT = "BOTTOMRIGHT", BOTTOMRIGHT = "BOTTOMLEFT" },
-	xMult   = { TOPLEFT =  1, TOPRIGHT = -1, BOTTOMLEFT = 1, BOTTOMRIGHT = -1 },
-	yMult   = { TOPLEFT = -1, TOPRIGHT = -1, BOTTOMLEFT = 1, BOTTOMRIGHT =  1 },
-}
+function Grid2Layout:ResetHeaders()
+	self.layoutHasFilter = nil
+	self.layoutHasAuto   = nil
+	wipe(self.groupsUsed)
+	for type, headers in pairs(self.groups) do
+		self.indexes[type] = 0
+		for _, header in ipairs(headers) do
+			header:Reset()
+		end
+	end
+end
 
-function Grid2Layout:UpdateHeaders()
+function Grid2Layout:PlaceHeaders()
 	local settings   = self.db.profile
 	local horizontal = settings.horizontal
 	local vertical   = not horizontal
 	local padding    = settings.Padding
 	local spacing    = settings.Spacing
 	local anchor     = settings.groupAnchor
-	local relPoint   = relativePoints[vertical][anchor]
-	local xMult1     = relativePoints.xMult[anchor]
-	local yMult1     = relativePoints.yMult[anchor]
+	local relPoint   = self.relativePoints[vertical][anchor]
+	local xMult1     = self.relativePoints.xMult[anchor]
+	local yMult1     = self.relativePoints.yMult[anchor]
 	local xMult2 	 = vertical   and xMult1*padding or 0
 	local yMult2 	 = horizontal and yMult1*padding or 0
 	local prevFrame 
@@ -312,7 +330,7 @@ function Grid2Layout:UpdateHeaders()
 end
 
 function Grid2Layout:RefreshLayout()
-	self.instMaxPlayers = nil -- force layout reload
+	self.forceReload = true
 	self:ReloadLayout()
 end
 
@@ -320,48 +338,201 @@ function Grid2Layout:ReloadLayout()
 	local p = self.db.profile
 	local partyType, instType, maxPlayers = Grid2:GetGroupType()
 	local layoutName = p.layouts[maxPlayers] or p.layouts[partyType.."@"..instType] or p.layouts[partyType]
-	if layoutName ~= self.layoutName or maxPlayers ~= self.instMaxPlayers then
+	if layoutName ~= self.layoutName or (self.layoutHasAuto and maxPlayers ~= self.instMaxPlayers) or self.forceReload then
 		if not Grid2:RunSecure(3, self, "ReloadLayout") then
+			self.forceReload    = nil
 			self.partyType      = partyType
 			self.instType       = instType
 			self.instMaxPlayers = maxPlayers
-			self.instMaxGroups  = math.floor( (maxPlayers + 4) / 5 )
+			self.instMaxGroups  = math.ceil( maxPlayers/5 )
 			self:LoadLayout( layoutName )
 		end
+		return true
 	end
 end
 
-local groupFilters = { "1", "1,2", "1,2,3", "1,2,3,4", "1,2,3,4,5", "1,2,3,4,5,6", "1,2,3,4,5,6,7", "1,2,3,4,5,6,7,8" }
-
-local function SetAllAttributes(header, p, list, fix)
-	for attr, value in next, list do
-		if attr=="groupFilter" and value=="auto" then
-			value = groupFilters[Grid2Layout.instMaxGroups] or "1"
+function Grid2Layout:LoadLayout(layoutName)
+	local layout = self.layoutSettings[layoutName]
+	if layout then 
+		self:Debug("LoadLayout", layoutName)
+		self.layoutName = layoutName
+		self:Scale()
+		self:ResetHeaders()
+		if layout[1] then
+			for _, layoutHeader in ipairs(layout) do
+				if layoutHeader=="auto" then
+					self:GenerateHeaders(layout.defaults)
+				else
+					self:AddHeader(layoutHeader, layout.defaults)
+				end
+			end
+		elseif not layout.empty then
+			self:GenerateHeaders(layout.defaults)
 		end
-		if attr == "unitsPerColumn" then
-			header:SetLayoutAttribute("columnSpacing", p.Padding)
-			header:SetLayoutAttribute("unitsPerColumn", value)
-			header:SetLayoutAttribute("columnAnchorPoint", anchorPoints[not p.horizontal][p.groupAnchor] or p.groupAnchor )
-		elseif attr ~= "type" then
-			header:SetLayoutAttribute(attr, value)
+		self:UpdateFilterEvents()
+		self:PlaceHeaders()
+		self:UpdateDisplay()
+	end	
+end
+
+--{{ Header management
+function Grid2Layout:AddHeader(layoutHeader, defaults)
+	local type    = layoutHeader.type or 'player'
+	local index   = self.indexes[type] + 1
+	local headers = self.groups[type]
+	local header  = headers[index]
+	if not header then
+		header = self.layoutHeaderClass:new(type)
+		headers[index] = header
+	end
+	self.indexes[type] = index
+	self.groupsUsed[#self.groupsUsed+1] = header
+	self:SetHeaderAttributes(header, defaults)
+	self:SetHeaderAttributes(header, layoutHeader)
+	self:FixHeaderAttributes(header)
+end
+
+function Grid2Layout:GenerateHeaders(defaults)
+	self.layoutHasAuto = not self.db.global.displayAllGroups or nil
+	local m = self.layoutHasAuto and self.instMaxGroups or 8
+	for i=1,m do
+		self:AddHeader(self.groupFilters[i], defaults)
+	end
+end
+
+function Grid2Layout:SetHeaderAttributes(header, layoutHeader)
+	if layoutHeader then
+		for attr, value in next, layoutHeader do
+			if attr ~= 'type' then
+				header:SetAttribute(attr, value)
+			else
+				header.headerType = value
+			end
+		end
+	end	
+end
+
+-- Apply defaults and some special cases for each header and apply workarounds to some blizzard bugs 
+function Grid2Layout:FixHeaderAttributes(header)
+	local p = self.db.profile
+	-- fix unitsPerColumn
+	local unitsPerColumn = header:GetAttribute("unitsPerColumn")
+	if not unitsPerColumn then
+		header:SetAttribute("unitsPerColumn", 5) 
+		unitsPerColumn = 5
+	end	
+	header:SetAttribute("columnSpacing", p.Padding)
+	header:SetAttribute("columnAnchorPoint", anchorPoints[not p.horizontal][p.groupAnchor] or p.groupAnchor )
+	-- fix maxColumns
+	local autoEnabled = not self.db.global.displayAllGroups or nil
+	if header:GetAttribute("maxColumns") == "auto" then
+		self.layoutHasAuto = autoEnabled
+		header:SetAttribute( "maxColumns", math.ceil((autoEnabled and self.instMaxPlayers or 40)/unitsPerColumn) )
+	end
+	-- fix groupFilter
+	local groupFilter = header:GetAttribute("groupFilter")
+	if groupFilter then
+		if groupFilter == "auto" then
+			self.layoutHasAuto = autoEnabled
+			groupFilter = self.groupsFilters[autoEnabled and self.instMaxGroups or 8] or "1"
+			header:SetAttribute("groupFilter", groupFilter)
+		end
+		if header:GetAttribute("strictFiltering") then
+			groupFilter = groupFilter .. ",DEATHKNIGHT,DEMONHUNTER,DRUID,HUNTER,MAGE,MONK,PALADIN,PRIEST,ROGUE,SHAMAN,WARLOCK,WARRIOR"
+			header:SetAttribute("groupFilter", groupFilter)	
 		end
 	end
-	if fix then
-		if strmatch(list.type or '','pet') then
-			-- force these so that the bug in SecureGroupPetHeader_Update doesn't trigger
-			header:SetLayoutAttribute("filterOnPet", true)
-			header:SetLayoutAttribute("useOwnerUnit", false)
-			header:SetLayoutAttribute("unitsuffix", nil)
+	-- manual nameList + group/role filter
+	local nameList   = header:GetAttribute("nameList")
+	local roleFilter = header:GetAttribute("roleFilter")
+	if nameList and (groupFilter or roleFilter) then
+		self.layoutHasFilter = true
+		if groupFilter then
+			header.tokenFilter = Grid2.FillTokenTable( header.tokenFilter, strsplit(",", groupFilter) )
+			header:SetAttribute("groupFilter", nil)
 		end
-		if not header:GetAttribute("unitsPerColumn") then
-			header:SetLayoutAttribute("unitsPerColumn", 5)
+		if roleFilter then
+			header.tokenFilter = Grid2.FillTokenTable( header.tokenFilter, strsplit(",", roleFilter) )
+			header:SetAttribute("roleFilter", nil)
+		end
+		header.tokenNames = Grid2.DoubleFillTable( {}, strsplit(",", nameList) )
+	end
+	-- workaround to blizzard pet bug
+	if header.headerType == 'pet' then -- force these so that the bug in SecureGroupPetHeader_Update doesn't trigger
+		header:SetAttribute("filterOnPet", true)
+		header:SetAttribute("useOwnerUnit", false)
+		header:SetAttribute("unitsuffix", nil)
+	end
+	-- apply custom filter if necessary
+	self:LoadHeaderFilter(header)
+	-- workaround to blizzard bug
+	self:ForceFramesCreation(header)
+end
+--}}
+
+-- {{ Manual filter header by nameList + groupFilter/roleFilter because SecureGroupHeaders does not support this double filter
+-- Warning this custom filter cannot be applied in combat, any refresh is delayed if the player is in combat.
+local nameListTable = {}
+function Grid2Layout:LoadHeaderFilter(header)
+	local nameList = header.tokenNames
+	if nameList then
+		wipe(nameListTable)
+		local filter = header.tokenFilter
+		local strict = header:GetAttribute("strictFiltering") 
+		local count  = Grid2:GetRosterCount()
+		for index=1,count do
+			local name, class, group, role1, role2 = Grid2:GetRosterInfoByIndex(index)
+			if nameList[name] and (
+				(     strict  and  filter[group] and (filter[role1] or filter[role2]) ) or
+				( not strict  and (filter[group] or   filter[role1] or filter[role2]) ) 
+			) then
+				nameListTable[#nameListTable+1] = name
+			end
+		end
+		if header:GetAttribute("sortMethod")=="NAMELIST" then
+			table.sort(nameListTable, function(a,b) return nameList[a]<nameList[b] end)
+		end
+		local newList = table.concat( nameListTable, "," )
+		if newList ~= header:GetAttribute("nameList") then
+			header:SetAttribute( "nameList", newList )
+			return true
 		end
 	end
 end
+
+function Grid2Layout:ReloadFilter()
+	if not Grid2:RunSecure(4, self, "ReloadFilter") then
+		local update
+		for _,header in ipairs(self.groupsUsed) do
+			update = self:LoadHeaderFilter(header) or update
+		end
+		if update then
+			self:UpdateSizeThrottled()
+		end	
+	end
+	return true
+end
+
+function Grid2Layout:ReloadFilterThrottled()
+	Grid2:RunThrottled(self, "ReloadFilter", .25)
+end
+
+function Grid2Layout:UpdateFilterEvents()
+	if self.layoutHasFilter ~= self.layoutFilterRegistered then
+		if self.layoutHasFilter then
+			self.layoutFilterRegistered = true
+			self:RegisterMessage("Grid_RosterUpdate", "ReloadFilterThrottled")
+		else
+			self.layoutFilterRegistered = nil
+			self:UnregisterMessage("Grid_RosterUpdate")
+		end	
+	end	
+end
+--}}
 
 -- Precreate frames to avoid a blizzard bug that prevents initializing unit frames in combat
 -- https://authors.curseforge.com/forums/world-of-warcraft/official-addon-threads/unit-frames/grid-grid2/222076-grid?page=159#c3169
-local function ForceFramesCreation(header)
+function Grid2Layout:ForceFramesCreation(header)
 	local startingIndex = header:GetAttribute("startingIndex")
 	local maxColumns = header:GetAttribute("maxColumns") or 1
 	local unitsPerColumn = header:GetAttribute("unitsPerColumn") or 5
@@ -373,71 +544,6 @@ local function ForceFramesCreation(header)
 		header:SetAttribute("startingIndex", startingIndex)
 		header.FrameCount= maxFrames
 	end
-end
-
-local function AddLayoutHeader(self, profile, defaults, header)
-	local type = header.type and strmatch(header.type,'pet') or 'player'
-	local headers = self.groups[type]
-	local index = self.indexes[type] + 1
-	local group = headers[index]
-	if not group then
-		group = self.layoutHeaderClass:new(type)
-		headers[index] = group
-	end
-	self.indexes[type] = index
-	if defaults then
-		SetAllAttributes(group, profile, defaults)
-	end
-	SetAllAttributes(group, profile, header, true)
-	ForceFramesCreation(group)
-	self.groupsUsed[#self.groupsUsed+1] = group
-	self.layoutMaxColumns = self.layoutMaxColumns + (group:GetAttribute("maxColumns") or 1)
-	self.layoutMaxRows    = max( self.layoutMaxRows, group:GetAttribute("unitsPerColumn") or 40 )
-end
-
-local function GenerateLayoutHeaders(self, profile, defaults)
-	for i=1,self.instMaxGroups do
-		AddLayoutHeader( self, profile, defaults, self.groupFilters[i] )
-	end
-end
-
-function Grid2Layout:LoadLayout(layoutName)
-	local layout = self.layoutSettings[layoutName]
-	if not layout then return end
-
-	self:Debug("LoadLayout", layoutName)
-
-	self.layoutName = layoutName
-
-	self:Scale()
-
-	self.layoutMaxColumns = 0
-	self.layoutMaxRows = 0
-	wipe(self.groupsUsed)
-	for type, headers in pairs(self.groups) do
-		self.indexes[type] = 0
-		for _, g in ipairs(headers) do
-			g:Reset()
-		end
-	end
-
-	local profile = self.db.profile
-	local defaults = layout.defaults
-
-	if layout[1] then
-		for _, header in ipairs(layout) do
-			if header=="auto" then
-				GenerateLayoutHeaders(self, profile, defaults)
-			else
-				AddLayoutHeader(self, profile, defaults, header)
-			end
-		end
-	elseif not layout.empty then
-		GenerateLayoutHeaders(self, profile, defaults)
-	end
-
-	self:UpdateHeaders()
-	self:UpdateDisplay()
 end
 
 function Grid2Layout:UpdateDisplay()
@@ -485,7 +591,7 @@ function Grid2Layout:UpdateSize()
 	if p.horizontal then col,row = row,col end
 	self.frameBack:SetSize(col,row)
 	updateSizeQueued = InCombatLockdown()
-	if not Grid2:RunSecure(4, self, "UpdateSize") then
+	if not Grid2:RunSecure(5, self, "UpdateSize") then
 		self.frame:SetSize(col,row)
 	end	
 end
@@ -581,11 +687,27 @@ function Grid2Layout:AddLayout(layoutName, layout)
 end
 
 function Grid2Layout:AddCustomLayouts()
-	local customLayouts = self.db.global.customLayouts
-	if customLayouts then
-		for n,l in pairs(customLayouts) do
-			Grid2Layout:AddLayout(n,l)
+	self.customSettings = self.db.global.customSettings
+	self.customDefaults = self.db.global.customDefaults
+	self.customLayouts  = self.db.global.customLayouts 
+	for n,l in pairs(self.customLayouts) do
+		Grid2Layout:AddLayout(n,l)
+	end
+end
+
+function Grid2Layout:FixLayoutsTable(db)
+	local defaults = self.defaultDB.profile.layouts
+	for groupType,layoutName in pairs(db) do
+		if not self.layoutSettings[layoutName] then
+			db[groupType] = defaults[groupType] or defaults['raid'] or "By Group"
 		end
+	end
+end
+
+function Grid2Layout:FixLayouts()
+	self:FixLayoutsTable(self.dba.profile.layouts)
+	for _,theme in ipairs(self.dba.profile.extraThemes or {}) do
+		self:FixLayoutsTable(theme.layouts)
 	end
 end
 
