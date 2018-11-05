@@ -387,6 +387,7 @@ function Grid2Layout:AddHeader(layoutHeader, defaults)
 	end
 	self.indexes[type] = index
 	self.groupsUsed[#self.groupsUsed+1] = header
+	self.headerType = type
 	self:SetHeaderAttributes(header, defaults)
 	self:SetHeaderAttributes(header, layoutHeader)
 	self:FixHeaderAttributes(header)
@@ -405,8 +406,6 @@ function Grid2Layout:SetHeaderAttributes(header, layoutHeader)
 		for attr, value in next, layoutHeader do
 			if attr ~= 'type' then
 				header:SetAttribute(attr, value)
-			else
-				header.headerType = value
 			end
 		end
 	end	
@@ -691,6 +690,7 @@ function Grid2Layout:AddCustomLayouts()
 	self.customDefaults = self.db.global.customDefaults
 	self.customLayouts  = self.db.global.customLayouts 
 	for n,l in pairs(self.customLayouts) do
+		l.type = strmatch(l.type or '', 'pet') or 'player' -- conversion of old format
 		Grid2Layout:AddLayout(n,l)
 	end
 end
