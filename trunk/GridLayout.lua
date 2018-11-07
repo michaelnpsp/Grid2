@@ -690,7 +690,10 @@ function Grid2Layout:AddCustomLayouts()
 	self.customDefaults = self.db.global.customDefaults
 	self.customLayouts  = self.db.global.customLayouts 
 	for n,l in pairs(self.customLayouts) do
-		l.type = strmatch(l.type or '', 'pet') or 'player' -- conversion of old format
+		for _,h in ipairs(l) do
+			h.type = strmatch(h.type or '', 'pet') -- conversion of old format
+		end
+		l.type = nil -- (fix previous bug) remove this line in a few releases
 		Grid2Layout:AddLayout(n,l)
 	end
 end

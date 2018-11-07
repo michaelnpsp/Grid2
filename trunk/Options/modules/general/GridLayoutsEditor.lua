@@ -51,7 +51,6 @@ end
 local function GetLayoutsSorted()
 	local sorted  = {}
 	for name,layout in pairs(Grid2Layout.customLayouts) do
-		layout.type = strmatch(layout.type or '', 'pet') or 'player'
 		sorted[#sorted+1] = name
 	end
 	table.sort(sorted)
@@ -92,18 +91,16 @@ local function IsHeaderHidden(info)
 	return not (editedLayout and editedLayout[tonumber(info[#info])])
 end
 
-local function CreateHeader(info)
-	local newIndex 
-	if type(info)=='number' then
-		newIndex = info+1
-		table.insert( editedLayout, newIndex, Grid2.CopyTable(editedLayout[info]) )
+local function CreateHeader(index)
+	if type(index)=='number' then
+		table.insert( editedLayout, index+1, Grid2.CopyTable(editedLayout[index]) )
+		index = index + 1
 	else
-		local typ = type(info)=="string" and info or "player"
-		table.insert( editedLayout, { type=typ, unitsPerColumn = 5, maxColumns = 1 } )
-		newIndex= #editedLayout
+		table.insert( editedLayout, { type = (index=="pet" and "pet" or nil), unitsPerColumn = 5, maxColumns = 1 } )
+		index= #editedLayout
 	end	
 	RefreshLayout()
-	SelectGroup( editedLayoutName, newIndex )
+	SelectGroup( editedLayoutName, index )
 	return true
 end
 
