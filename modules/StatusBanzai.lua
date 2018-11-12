@@ -13,13 +13,14 @@ local UnitCastingInfo = UnitCastingInfo
 local UnitChannelInfo = UnitChannelInfo
 local next = next
 
+local timer
 local statuses = {}
 local sguids   = {}
 local tguids   = {}
 local target   = setmetatable({}, {__index = function(t,k) local v=k.."target" t[k]=v return v end})
 
 -- events management
-local RegisterEvent, UnregisterEvent, EnableTimer, DisableTimer
+local RegisterEvent, UnregisterEvent
 do
 	local Events = {}
 	local frame
@@ -34,13 +35,6 @@ do
 	function UnregisterEvent(event)
 		frame:UnregisterEvent( event )
 		Events[event] = nil
-	end
-	function EnableTimer(func, delay)
-		local t = delay
-		frame:SetScript( "OnUpdate", function(_,e) t = t - e; if t<=0 then t = delay; func() end end )
-	end
-	function DisableTimer()
-		frame:SetScript( "OnUpdate", nil)
 	end
 end
 
@@ -78,13 +72,13 @@ local function TimerEvent()
 end
 
 local function CombatEnterEvent()
-	if Banzai.enabled then RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Banzai.CombatLogEvent) end	
-	EnableTimer( TimerEvent, Banzai.dbx.updateRate or 0.2 )
+	if Banzai.enabled then RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Banzai.CombatLogEvent) end
+	timer = timer or Grid2:CreateTimer( TimerEvent, Banzai.dbx.updateRate or 0.2 )
 end
 
 local function CombatExitEvent()
 	if Banzai.enabled then UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED") end	
-	DisableTimer()
+	timer = Grid2:CancelTimer(timer)
 	for status in next,statuses do
 		status:ClearIndicators()
 	end	

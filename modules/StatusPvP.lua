@@ -14,7 +14,6 @@ local pvpTexture = UnitFactionGroup("player") == "Horde" and
 				   [[Interface\PVPFrame\PVP-Currency-Alliance]]
 
 PvP.GetColor = Grid2.statusLibrary.GetColor
-PvP.UpdateAllUnits = Grid2.statusLibrary.UpdateAllUnits
 
 function PvP:UNIT_FACTION(_, unit)
 	self:UpdateIndicators(unit)

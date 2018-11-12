@@ -14,16 +14,15 @@ local next = next
 local timer
 local res_cache= {}
 
-function Resurrection:Timer()
+local function Timer()
 	for unit in next, res_cache do
 		if not (UnitExists(unit) and UnitIsDeadOrGhost(unit)) then
 			res_cache[unit]= nil
-			self:UpdateIndicators(unit)
+			Resurrection:UpdateIndicators(unit)
 		end
 	end
 	if not next(res_cache) then
-		Grid2:CancelTimer(timer)
-		timer = nil
+		timer = Grid2:CancelTimer(timer)
 	end
 end
 
@@ -33,9 +32,7 @@ function Resurrection:INCOMING_RESURRECT_CHANGED(_, unit)
 			if res_cache[unit] ~= 1 then
 				res_cache[unit]= 1
 				self:UpdateIndicators(unit)
-				if not timer then
-					timer = Grid2:ScheduleRepeatingTimer(Resurrection.Timer, 0.25, self)
-				end
+				timer = timer or Grid2:CreateTimer( Timer, .25 )
 			end
 		else
 			if res_cache[unit] == 1 then

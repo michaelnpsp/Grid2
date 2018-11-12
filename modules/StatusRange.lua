@@ -5,12 +5,14 @@ Created by Grid2 original authors, modified by Michael
 local Range = Grid2.statusPrototype:new("range")
 
 local Grid2 = Grid2
+local tostring = tostring
 local UnitIsUnit = UnitIsUnit
 local UnitInRange = UnitInRange
 local IsSpellInRange = IsSpellInRange
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local CheckInteractDistance = CheckInteractDistance
-local tostring = tostring
+
+local timer
 
 local cache = {}
 
@@ -45,7 +47,7 @@ end
 
 -- Roster ranges update function
 
-local function Update(self)
+local function Update()
 	for unit in Grid2:IterateRosterUnits() do
 		local value = UnitIsInRange(unit) and 1 or false
 		if value ~= cache[unit] then
@@ -58,20 +60,19 @@ end
 -- Range status 
 
 function Range:OnEnable()
-	self:CreateTimer()
 	self:UpdateDB()
 	self:RegisterMessage("Grid_UnitUpdated")
 	self:RegisterMessage("Grid_UnitLeft")
 	self:RegisterMessage("Grid_GroupTypeChanged")
-	self.timer:Play()
-	Update(self.timer)
+	timer:Play()
+	Update()
 end
 
 function Range:OnDisable()
 	self:UnregisterMessage("Grid_UnitUpdated")
 	self:UnregisterMessage("Grid_UnitLeft")
 	self:UnregisterMessage("Grid_GroupTypeChanged")
-	self.timer:Stop()
+	timer:Stop()
 	wipe(cache)
 end
 
@@ -94,12 +95,6 @@ end
 function Range:Grid_UnitLeft(_, unit)
 	cache[unit] = nil
 end
-
-function Range:CreateTimer()
-	self.timer = Grid2:CreateAnimationTimer( 0.25, Update )
-	self.CreateTimer = Grid2.Dummy
-end
-
 function Range:UpdateDB()
 	Ranges["38"] = Ranges38[ Grid2:GetGroupType() ] or UnitInRange
 	self.defaultAlpha = self.dbx.default or 0.25
@@ -112,9 +107,8 @@ function Range:UpdateDB()
 	if not rezSpell then 
 		UnitIsInRange = UnitRangeCheck 
 	end
-	if self.timer then 
-		self.timer.animation:SetDuration(self.dbx.elapsed or 0.25) 
-	end
+	timer = timer or Grid2:CreateTimer( Update )
+	timer:SetDuration(self.dbx.elapsed or 0.25) 
 end
 
 function Range:GetPercent(unit)

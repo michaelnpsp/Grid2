@@ -161,7 +161,7 @@ local layoutOptions =  { mainheader = {
 		desc = L["Adjust frame padding."],
 		order = order_display + 5,
 		max = 20,
-		min = 0,
+		softMin = 0,
 		step = 1,
 		get = function ()
 				  return theme.layout.Padding

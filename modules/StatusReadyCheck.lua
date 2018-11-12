@@ -4,16 +4,43 @@ local ReadyCheck = Grid2.statusPrototype:new("ready-check")
 
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
-local readyChecking, timerClearStatus
+local Grid2 = Grid2
+local GetReadyCheckStatus = GetReadyCheckStatus
+
+local readyChecking
 local readyStatuses = {}
 
-function ReadyCheck:READY_CHECK(event, originator)
-	if timerClearStatus then
-		Grid2:CancelTimer(timerClearStatus, true)
-		timerClearStatus = nil
-	end
-	readyChecking = true
 
+local readyCount    = 0
+function ReadyCheck:ClearStatusDelayed()
+	readyCount = readyCount + 1
+	local timerIndex = readyCount
+	C_Timer.After( self.dbx.threshold or 0.01, function() if timerIndex==readyCount then self:ClearStatus() end end ) -- check to cancel a previous timer if a new timer is launched
+end
+
+function ReadyCheck:CheckClearStatus()
+	if readyChecking and GetReadyCheckTimeLeft() <= 0 then
+		self:ClearStatus()
+	end
+end
+
+function ReadyCheck:ClearStatus()
+	if readyChecking then
+		readyChecking = nil
+		self:UpdateAllUnits()
+	end
+end
+
+function ReadyCheck:UpdateNonPetUnits()
+	for unit in Grid2:IterateRosterUnits() do
+		if not Grid2:UnitIsPet(unit) then
+			self:UpdateIndicators(unit)
+		end
+	end
+end
+
+function ReadyCheck:READY_CHECK()
+	readyChecking = true
 	for unit in Grid2:IterateRosterUnits() do
 		readyStatuses[unit] = GetReadyCheckStatus(unit)
 		if not Grid2:UnitIsPet(unit) then
@@ -29,38 +56,14 @@ function ReadyCheck:READY_CHECK_CONFIRM(event, unit)
 end
 
 function ReadyCheck:READY_CHECK_FINISHED()
-	for unit in Grid2:IterateRosterUnits() do
-		if not Grid2:UnitIsPet(unit) then
-			self:UpdateIndicators(unit)
-		end
-	end
-	timerClearStatus = Grid2:ScheduleTimer(self.ClearStatus, ReadyCheck.dbx.threshold or 0, self)
+	readyChecking = true
+	self:UpdateNonPetUnits()
+	self:ClearStatusDelayed()
 end
 
 function ReadyCheck:GROUP_ROSTER_UPDATE()
-  if readyChecking then
-		for unit in Grid2:IterateRosterUnits() do
-			if not Grid2:UnitIsPet(unit) then
-				self:UpdateIndicators(unit)
-			end
-		end
-  end
-end
-
-function ReadyCheck:CheckClearStatus()
-	-- Unfortunately, GetReadyCheckTimeLeft() only returns integral values.
-	if readyChecking and GetReadyCheckTimeLeft() <= 0 then
-		self:ClearStatus()
-	end
-end
-
-function ReadyCheck:ClearStatus()
 	if readyChecking then
-		readyChecking = nil
-		for unit in Grid2:IterateRosterUnits() do
-			self:UpdateIndicators(unit)
-		end
-		timerClearStatus = nil
+		self:UpdateNonPetUnits()
 	end
 end
 
@@ -86,26 +89,19 @@ function ReadyCheck:IsActive(unit)
 end
 
 function ReadyCheck:GetReadyCheckStatus(unit)
-	if not readyChecking then return nil end
-	local state = GetReadyCheckStatus(unit)
-	if not state then
-		--we're in the window where we need to persist the readystate
-		state = readyStatuses[unit]
-		--with the blizz UI, if a player is AFK then they will display blank
-		-- while everyone else is tick / cross. Emulate that here
-		if state == "waiting" then state = "afk" end
-	else
-		readyStatuses[unit] = state
-	end
-	return state
+	if readyChecking then
+		local state = GetReadyCheckStatus(unit)
+		if state then
+			readyStatuses[unit] = state
+		else
+			state = readyStatuses[unit] -- we're in the window where we need to persist the readystate
+			if state == "waiting" then state = "afk" end -- if a player is AFK then they will display blank while everyone else is tick / cross
+		end
+		return state
+	end	
 end
 
-local colors = {
-	waiting =  "color1",
-	ready = "color2",
-	notready = "color3",
-	afk = "color4",
-}
+local colors = { waiting = "color1", ready = "color2", notready = "color3", afk = "color4" }
 function ReadyCheck:GetColor(unitid)
 	local state = self:GetReadyCheckStatus(unitid)
 	if state then
@@ -114,12 +110,7 @@ function ReadyCheck:GetColor(unitid)
 	end
 end
 
-local icons = {
-	waiting =  READY_CHECK_WAITING_TEXTURE,
-	ready = READY_CHECK_READY_TEXTURE,
-	notready = READY_CHECK_NOT_READY_TEXTURE,
-	afk = READY_CHECK_AFK_TEXTURE,
-}
+local icons = { waiting = READY_CHECK_WAITING_TEXTURE, ready = READY_CHECK_READY_TEXTURE, notready = READY_CHECK_NOT_READY_TEXTURE, afk = READY_CHECK_AFK_TEXTURE }
 function ReadyCheck:GetIcon(unitid)
 	local state = self:GetReadyCheckStatus(unitid)
 	if state then
@@ -127,12 +118,7 @@ function ReadyCheck:GetIcon(unitid)
 	end
 end
 
-local texts = {
-	waiting =  L["?"],
-	ready = L["R"],
-	notready = L["X"],
-	afk = L["AFK"],
-}
+local texts = { waiting = L["?"], ready = L["R"], notready = L["X"], afk = L["AFK"] }
 function ReadyCheck:GetText(unitid)
 	local state = self:GetReadyCheckStatus(unitid)
 	if state then

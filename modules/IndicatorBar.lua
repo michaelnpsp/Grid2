@@ -10,6 +10,7 @@ local defaultBackColor = { r=0, g=0, b=0, a=1 }
 
 local function Bar_CreateHH(self, parent)
 	local bar = self:CreateFrame("StatusBar", parent)
+	bar.indicator = self
 	bar:SetStatusBarColor(0,0,0,0)
 	bar:SetMinMaxValues(0, 1)
 	bar:SetValue(0)
@@ -88,23 +89,37 @@ local function Bar_SetValueChild(self, parent, value)
 end
 
 --{{{ Bar OnUpdate
-local durationTimers = {}
-local expirations = {}
-local durations= {}
-local function tcancel(bar)
-	if durationTimers[bar] then
-		Grid2:CancelTimer(durationTimers[bar])
-		durationTimers[bar], expirations[bar], durations[bar] = nil, nil, nil
+local timers = {}
+local function tdestroy(bar)
+	local timer = timers[bar]
+	if timer then
+		timers[bar], timer._bar = nil, nil
+		Grid2:CancelTimer(timer)
 	end
 end
-local function tevent(self, parent, bar)
-	local timeLeft = expirations[bar] - GetTime()
+local function tevent(timer)
+	local bar = timer._bar
+	local timeLeft = bar._expiration - GetTime()
 	if timeLeft>0 then
-		timeLeft = timeLeft/durations[bar]
+		timeLeft = timeLeft / bar._duration
 	else
-		timeLeft = 0; tcancel(bar)
+		timeLeft = 0; tdestroy(bar)
 	end
-	self:SetValue( parent, timeLeft ) 
+	bar.indicator:SetValue( bar:GetParent(), timeLeft ) 
+end
+local function tcreate(bar, duration, expiration)
+	local delay = duration>3 and 0.2 or 0.1
+	local timer = timers[bar] 
+	if not timer then
+		timer = Grid2:CreateTimer(tevent, delay)
+		timer._bar = bar
+		timers[bar] = timer
+	elseif duration<=3 then	
+		timer:SetDuration(delay)
+	end
+	bar._duration   = duration
+	bar._expiration = expiration
+	return timer
 end
 
 local function Bar_OnUpdateD(self, parent, unit, status)
@@ -112,22 +127,17 @@ local function Bar_OnUpdateD(self, parent, unit, status)
 	if status then
 		local expiration = status:GetExpirationTime(unit)
 		if expiration then
-			local now = GetTime()
-			local timeLeft = expiration - now
+			local timeLeft = expiration - GetTime()
 			if timeLeft>0 then
-				local duration= status:GetDuration(unit) or timeLeft
-				expirations[bar]= expiration
-				durations[bar]= duration
-				if not durationTimers[bar] then
-					durationTimers[bar] = Grid2:ScheduleRepeatingTimer(tevent, (duration>3 and 0.2 or 0.1), self, parent, bar)
-				end	
-				value= timeLeft / duration
+				local duration = status:GetDuration(unit) or timeLeft
+				value = timeLeft / duration
+				tcreate(bar, duration, expiration)
 			else
-				tcancel(bar)
+				tdestroy(bar)
 			end
 		end	
 	else
-		tcancel(bar)
+		tdestroy(bar)
 	end
 	self:SetValue(parent,value)
 end
@@ -139,7 +149,6 @@ end
 local function Bar_OnUpdate(self, parent, unit, status)
 	self:SetValue(parent, status and status:GetPercent(unit) or 0)
 end
-
 --}}}
 
 local function Bar_SetOrientation(self, orientation)

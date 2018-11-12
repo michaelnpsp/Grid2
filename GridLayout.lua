@@ -168,17 +168,37 @@ Grid2Layout.layoutSettings = {}
 Grid2Layout.layoutHeaderClass = GridLayoutHeaderClass
 
 function Grid2Layout:OnModuleInitialize()
+	-- useful variables
 	self.dba = self.db
 	self.db = { global = self.dba.global, profile = self.dba.profile, shared = self.dba.profile } 
 	self.groups = { player = {}, pet = {} }
 	self.indexes = { player = 0,  pet = 0  }
 	self.groupsUsed = {}
-	self:AddCustomLayouts()
+	-- create main frame
+	self.frame = CreateFrame("Frame", "Grid2LayoutFrame", UIParent)
+	self.frame:SetMovable(true)
+	self.frame:SetPoint("CENTER", UIParent, "CENTER")
+	self.frame:SetScript("OnMouseUp", function () self:StopMoveFrame() end)
+	self.frame:SetScript("OnHide", function () self:StopMoveFrame() end)
+	self.frame:SetScript("OnMouseDown", function (_, button) self:StartMoveFrame(button) end)
+	-- extra frame for background and border textures, to be able to resize in combat
+	self.frameBack = CreateFrame("Frame", "Grid2LayoutFrameBack", self.frame)
+	-- add custom layouts
+	self.customDefaults = self.db.global.customDefaults
+	self.customLayouts  = self.db.global.customLayouts 
+	for n,l in pairs(self.customLayouts) do
+		for _,h in ipairs(l) do
+			h.type = strmatch(h.type or '', 'pet') -- conversion of old format
+		end
+		l.type = nil -- (fix previous bug) remove this line in a few releases
+		self:AddLayout(n,l)
+	end
 end
 
 function Grid2Layout:OnModuleEnable()
 	self:FixLayouts()
-	self:CreateFrame()
+	self:UpdateFrame()
+	self:UpdateTextures()
 	self:RestorePosition()
 	self:RegisterMessage("Grid_GroupTypeChanged")
 	self:RegisterMessage("Grid_UpdateLayoutSize", "UpdateSizeThrottled")
@@ -254,24 +274,6 @@ CONFIGMODE_CALLBACKS["Grid2"] = function(action)
 	end
 end
 --}}}
-
-function Grid2Layout:CreateFrame()
-	local p = self.db.profile
-	-- create main frame to hold all our gui elements
-	local f = CreateFrame("Frame", "Grid2LayoutFrame", UIParent)
-	self.frame = f
-	f:SetMovable(true)
-	f:SetPoint("CENTER", UIParent, "CENTER")
-	f:SetScript("OnMouseUp", function () self:StopMoveFrame() end)
-	f:SetScript("OnHide", function () self:StopMoveFrame() end)
-	f:SetScript("OnMouseDown", function (_, button) self:StartMoveFrame(button) end)
-	-- extra frame for background and border textures, to be able to resize in combat
-	self.frameBack = CreateFrame("Frame", "Grid2LayoutFrameBack", self.frame)
-	-- more stuff
-	self:UpdateFrame()
-	self:UpdateTextures()
-	self.CreateFrame = Grid2.Dummy
-end
 
 function Grid2Layout:UpdateFrame()
 	local p = self.db.profile
@@ -683,19 +685,6 @@ end
 
 function Grid2Layout:AddLayout(layoutName, layout)
 	self.layoutSettings[layoutName] = layout
-end
-
-function Grid2Layout:AddCustomLayouts()
-	self.customSettings = self.db.global.customSettings
-	self.customDefaults = self.db.global.customDefaults
-	self.customLayouts  = self.db.global.customLayouts 
-	for n,l in pairs(self.customLayouts) do
-		for _,h in ipairs(l) do
-			h.type = strmatch(h.type or '', 'pet') -- conversion of old format
-		end
-		l.type = nil -- (fix previous bug) remove this line in a few releases
-		Grid2Layout:AddLayout(n,l)
-	end
 end
 
 function Grid2Layout:FixLayoutsTable(db)

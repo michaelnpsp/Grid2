@@ -43,7 +43,7 @@ do
 		local c = status.dbx["color"..(info.arg.colorIndex)]
 		c.r, c.g, c.b, c.a = r, g, b, a
 		status:UpdateDB()
-		status:UpdateAllIndicators()
+		status:UpdateAllUnits()
 	end
 	function Grid2Options:MakeStatusColorOptions(status, options, optionParams)
 		local colorCount = status.dbx.colorCount or 1
@@ -104,7 +104,7 @@ function Grid2Options:MakeStatusThresholdOptions(status, options, optionParams, 
 		end,
 		set = function (_, v)
 			status.dbx.threshold = v
-			status:UpdateAllIndicators()
+			status:UpdateAllUnits()
 		end,
 	}
 end
@@ -121,7 +121,7 @@ function Grid2Options:MakeStatusMissingOptions(status, options, optionParams)
 		set = function (_, v)
 			status.dbx.missing = v or nil
 			status:UpdateDB()
-			status:UpdateAllIndicators()
+			status:UpdateAllUnits()
 		end,
 	}
 end
@@ -138,7 +138,7 @@ function Grid2Options:MakeStatusToggleOptions(status, options, optionParams, tog
 		set = function (_, v)
 			status.dbx[toggleKey] = v or nil
 			status:UpdateDB()
-			status:UpdateAllIndicators()
+			status:UpdateAllUnits()
 		end,
 	}
 end

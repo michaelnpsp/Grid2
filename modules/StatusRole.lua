@@ -376,7 +376,6 @@ local isValidRole = { TANK = true, HEALER = true, DAMAGER = true }
 local roleTexture = "Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES"
 local TexCoordfunc = GetTexCoordsForRoleSmallCircle
 
-DungeonRole.UpdateAllUnits = Grid2.statusLibrary.UpdateAllUnits
 DungeonRole.UpdateActiveUnits = Grid2.statusLibrary.UpdateAllUnits
 DungeonRole.SetHideInCombat = SetHideInCombat
 

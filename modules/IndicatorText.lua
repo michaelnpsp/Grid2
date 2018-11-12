@@ -28,13 +28,13 @@ local TimerStart, TimerStop
 do 
 	local timer
 	function TimerStart(text, func)
-		timer = Grid2:CreateAnimationTimer( 0.1, function (self)
+		timer = Grid2:CreateTimer( function()
 			curTime = GetTime()
 			for text, func in next, timers do
 				func(text)
 			end
-		end, true )
-		timers[text] = func 
+		end, 0.1 )
+		timers[text] = func
 		TimerStart = function(text, func) 
 			if not next(timers) then timer:Play() end
 			timers[text] = func

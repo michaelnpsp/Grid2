@@ -16,7 +16,7 @@ Grid2Options:RegisterStatusOptions("mana","mana",  function(self, status, option
 		set = function (_, v)
 			status.dbx.showOnlyHealers = v or nil
 			status:UpdateDB()
-			status:UpdateAllIndicators()
+			status:UpdateAllUnits()
 		end,
 	}
 end, {

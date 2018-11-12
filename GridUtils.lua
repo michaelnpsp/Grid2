@@ -25,15 +25,40 @@ function Grid2:MediaFetch(mediatype, key, def)
 	return (key and media:Fetch(mediatype, key)) or (def and media:Fetch(mediatype, def))
 end
 
--- Create timer (stops if Grid2 window become invisible)
-function Grid2:CreateAnimationTimer( duration, func, play )
-	local timer = CreateFrame("Frame", nil, Grid2LayoutFrame):CreateAnimationGroup()
-	timer:SetLooping("REPEAT")
-	timer:SetScript("OnLoop", func)
-	timer.animation = timer:CreateAnimation()
-	timer.animation:SetDuration(duration)
-	if play then timer:Play() end
-	return timer
+-- Repeating Timer Management
+do
+	local timers = {}
+	local function SetDuration(self, duration)
+		self.animation:SetDuration(duration)
+	end
+	-- Grid2:CreateTimer(func, duration, play)
+	-- play=true|nil => timer running; play=false => timer paused
+	-- timer methods: timer:Play() timer:Stop() timer:SetDuration()
+	function Grid2:CreateTimer( func, duration, play )
+		local timer = tremove(timers)
+		if not timer then
+			timer = Grid2LayoutFrame:CreateAnimationGroup()
+			timer.animation = timer:CreateAnimation()
+			timer.SetDuration = SetDuration
+			timer:SetLooping("REPEAT")
+		end
+		timer:SetScript("OnLoop", func)
+		if duration then 
+			timer:SetDuration(duration) 
+			if play~=false then timer:Play() end
+		end
+		return timer
+	end
+	-- Grid2:CancelTimer(timer)
+	function Grid2:CancelTimer( timer )
+		if timer then
+			timer:Stop()
+			timers[#timers+1] = timer
+		end	
+	end
+	function DISPLAY_TIMERS() -- DEBUG REMOVE
+		print("Display Timer Count:", #timers)
+	end
 end
 
 -- UTF8 string truncate
