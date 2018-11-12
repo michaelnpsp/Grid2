@@ -560,7 +560,6 @@ generalOptions = {
 		order = 11,
 		name = L["Create New Layout"],
 		desc = L["Create a new user defined layout by entering a name in the editbox."],
-		descStyle = "inline",
 		get = function() end,
 		set = function(_, name)
 			if Grid2Layout.layoutSettings[name] then return end

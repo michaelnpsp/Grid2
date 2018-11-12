@@ -40,22 +40,6 @@ Grid2.defaults = {
 -- Type setup functions for non-unique objects: "buff" statuses / "icon" indicators / etc.
 Grid2.setupFunc = {} 
 
--- AceTimer-3.0, embedded upon use
-function Grid2:ScheduleRepeatingTimer(...)
-	LibStub("AceTimer-3.0"):Embed(Grid2)
-	return self:ScheduleRepeatingTimer(...)
-end
-
-function Grid2:ScheduleTimer(...)
-	LibStub("AceTimer-3.0"):Embed(Grid2)
-	return self:ScheduleTimer(...)
-end
-
-function Grid2:CancelTimer(...)
-	LibStub("AceTimer-3.0"):Embed(Grid2)
-	return self:CancelTimer(...)
-end
-
 -- Module prototype
 local modulePrototype = {}
 modulePrototype.core = Grid2

@@ -20,9 +20,6 @@ externals:
 	Libs/AceLocale-3.0:
 		url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceLocale-3.0
 		tag: latest
-	Libs/AceTimer-3.0:
-		url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceTimer-3.0
-		tag: latest
 	Libs/LibSharedMedia-3.0:
 		url: svn://svn.wowace.com/wow/libsharedmedia-3-0/mainline/trunk/LibSharedMedia-3.0
 		tag: latest

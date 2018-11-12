@@ -130,7 +130,7 @@ do
 	local timetracker
 	local tracked = {}
 	RegisterTimeTrackerStatus = function(status, elapsed)
-		timetracker = Grid2:CreateAnimationTimer( 0.1, function (self)
+		timetracker = Grid2:CreateTimer( function(self)
 			local time = GetTime()
 			for status,elapsed in next, tracked do
 				local tracker    = status.tkr
@@ -143,7 +143,7 @@ do
 					end
 				end
 			end
-		end )
+		end, 0.1, false )
 		RegisterTimeTrackerStatus = function(status, elapsed)
 			if not next(tracked) then timetracker:Play() end
 			tracked[status] = elapsed or false
@@ -338,7 +338,7 @@ do
 		self.valMax = dbx.valueMax
 		self.GetPercent = dbx.valueMax and GetPercentMax or GetPercentHealth
 		if dbx.spellName then -- single spell
-			self.spell = type(dbx.spellName)=="number" and not self.dbx.useSpellID and GetSpellInfo(dbx.spellName) or dbx.spellName or "UNDEFINED"
+			self.spell = type(dbx.spellName)=="number" and not self.dbx.useSpellId and GetSpellInfo(dbx.spellName) or dbx.spellName or "UNDEFINED"
 		elseif dbx.auras then -- multiple spells
 			self.spells = self.spells or {}
 			for _,spell in ipairs(dbx.auras) do

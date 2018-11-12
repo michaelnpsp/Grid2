@@ -33,7 +33,6 @@ local UnitAffectingCombat = UnitAffectingCombat
 local timer
 local cache = {}
 
-Combat.UpdateAllUnits = Grid2.statusLibrary.UpdateAllUnits
 Combat.GetColor = Grid2.statusLibrary.GetColor
 Combat.GetPercent = GetPercent
 Combat.GetText = GetText
@@ -77,7 +76,7 @@ end
 
 function Combat:UpdateDB()
 	self.GetTexCoord = self.dbx.useEmptyIcon and GetTexCoordEmpty or GetTexCoordIcon
-	timer = timer or Grid2:CreateAnimationTimer( 1, UpdateUnits)
+	timer = timer or Grid2:CreateTimer( UpdateUnits, 1, false)
 end
 
 local function Create(baseKey, dbx)
@@ -95,7 +94,6 @@ local MyCombat = Grid2.statusPrototype:new("combat-mine")
 
 local inCombat
 
-MyCombat.UpdateAllUnits = Grid2.statusLibrary.UpdateAllUnits
 MyCombat.GetColor = Grid2.statusLibrary.GetColor
 MyCombat.GetPercent = GetPercent
 MyCombat.GetText = GetText

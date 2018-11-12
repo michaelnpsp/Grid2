@@ -30,13 +30,12 @@ local function TimerEvent()
 				status:UpdateIndicators(unit)
 			end
 		end
-		if next(status.time_cache) then
+		if next(time_cache) then
 			count = count + 1
 		end
 	end	
 	if count == 0 then
-		Grid2:CancelTimer(timer)
-		timer = nil
+		timer = Grid2:CancelTimer(timer)
 	end
 end
 
@@ -56,9 +55,7 @@ local function CombatLogEventReal(...)
 						status.time_cache[unit] = GetTime() + status.activeTime
 						if prev~=spellName then
 							status:UpdateIndicators(unit)
-							if not timer then
-								timer = Grid2:ScheduleRepeatingTimer(TimerEvent, timerDelay)
-							end	
+							timer = timer or Grid2:CreateTimer(TimerEvent, timerDelay)
 						end	
 					end
 				end

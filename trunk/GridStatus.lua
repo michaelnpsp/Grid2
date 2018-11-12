@@ -56,7 +56,7 @@ status.OnEnable = Grid2.Dummy
 -- all indicators
 status.OnDisable = Grid2.Dummy
 -- all indicators
-status.UpdateAllIndicators = Grid2.statusLibrary.UpdateAllUnits
+status.UpdateAllUnits = Grid2.statusLibrary.UpdateAllUnits
 
 function status:UpdateDB(dbx)
 	if dbx then	self.dbx = dbx end

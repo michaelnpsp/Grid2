@@ -1,21 +1,21 @@
 -- Direction status, shows arrows pointing to the players, created by Michael
 local Direction = Grid2.statusPrototype:new("direction")
 
-local Grid2= Grid2
-local PI= math.pi
+local Grid2 = Grid2
+local PI = math.pi
 local PI2 = PI*2
+local sqrt = math.sqrt
 local floor = math.floor
 local atan2 = math.atan2
-local sqrt  = math.sqrt
 local GetPlayerFacing = GetPlayerFacing
 local UnitPosition = UnitPosition
-local UnitIsUnit= UnitIsUnit
+local UnitIsUnit = UnitIsUnit
 local UnitGUID = UnitGUID
 local C_GetNamePlateForUnit = C_NamePlate.GetNamePlateForUnit
 local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo
 
 local f_env = {
-	UnitIsUnit= UnitIsUnit,
+	UnitIsUnit = UnitIsUnit,
 	UnitGroupRolesAssigned = UnitGroupRolesAssigned,
 	UnitInRange = UnitInRange,
 	UnitIsVisible = UnitIsVisible,
@@ -59,74 +59,68 @@ local function CombatLogEvent()
 	end
 	curtime = timestamp
 end
+
+local function GetPlate(guid)
+	local dguid = guid2guid[guid]
+	return dguid and curtime-guid2time[guid]<3 and plates[dguid]
+end
 --
 
 local function UpdateDirections()
-	local function GetPlate(guid)
-		local dguid = guid2guid[guid]
-		return dguid and curtime-guid2time[guid]<3 and plates[dguid]
-	end
 	local x1,y1, _, map1 = UnitPosition("player")
-	local facing = GetPlayerFacing()
-	for unit,guid in Grid2:IterateRosterUnits() do
-		local direction, distance, update
-		if not UnitIsUnit(unit, "player") and UnitCheck(unit, mouseover) then
-			local x2,y2, _, map2 = UnitPosition(unit)
-			if map1 == map2 then
-				if x2 then
-					local dx, dy = x2 - x1, y2 - y1
-					direction = floor((atan2(dy,dx)-facing) / PI2 * 32 + 0.5) % 32
-					if distances then distance = floor( ((dx*dx+dy*dy)^0.5)/10 ) + 1 end
-				elseif guessDirections then
-					local frame = plates[guid] or GetPlate(guid) 					
-					if frame then
-						local s = frame:GetEffectiveScale()
-						local x, y = frame:GetCenter()
-						local dx, dy = x*s - playerx, y*s - playery
-						direction = floor( (atan2(dy,dx)/PI2+0.75) * 32 ) % 32 
+	if x1 or guessDirections then
+		local facing = GetPlayerFacing()
+		for unit,guid in Grid2:IterateRosterUnits() do
+			local direction, distance, update
+			if not UnitIsUnit(unit, "player") and UnitCheck(unit, mouseover) then
+				local x2,y2, _, map2 = UnitPosition(unit)
+				if map1 == map2 then
+					if x2 then
+						local dx, dy = x2 - x1, y2 - y1
+						direction = floor((atan2(dy,dx)-facing) / PI2 * 32 + 0.5) % 32
+						if distances then distance = floor( ((dx*dx+dy*dy)^0.5)/10 ) + 1 end
+					elseif guessDirections then
+						local frame = plates[guid] or GetPlate(guid) 					
+						if frame then
+							local s = frame:GetEffectiveScale()
+							local x, y = frame:GetCenter()
+							local dx, dy = x*s - playerx, y*s - playery
+							direction = floor( (atan2(dy,dx)/PI2+0.75) * 32 ) % 32 
+						end
 					end
-				else
-					Direction:ClearDirections()
-					return
 				end
 			end
+			if distances and distances[unit]~=distance then
+				distances[unit], update  = distance, true
+			end
+			if direction~=directions[unit] then
+				directions[unit], update = direction, true
+			end	
+			if update then
+				Direction:UpdateIndicators(unit)
+			end
 		end
-		if distances and distances[unit]~=distance then
-			distances[unit], update  = distance, true
+	else
+		for unit,_ in pairs(directions) do
+			directions[unit]= nil
+			self:UpdateIndicators(unit)
 		end
-		if direction~=directions[unit] then
-			directions[unit], update = direction, true
-		end	
-		if update then
-			Direction:UpdateIndicators(unit)
-		end
-	end
+	end	
 end
 
 function Direction:SetTimer(enable)
 	if enable then
-		if not timer then
-			timer= Grid2:ScheduleRepeatingTimer(UpdateDirections, self.dbx.updateRate or 0.2)
-		end
-	else
-		if timer then
-			Grid2:CancelTimer(timer)
-			timer= nil
-		end
+		timer = timer or Grid2:CreateTimer(UpdateDirections)
+		timer:SetDuration(self.dbx.updateRate or 0.2) 
+		timer:Play()
+	elseif timer then 
+		timer:Stop()
 	end
 end
 
 function Direction:RestartTimer()
-	if timer then
-		self:SetTimer(false)
+	if timer and timer:IsPlaying() then
 		self:SetTimer(true)
-	end
-end
-
-function Direction:ClearDirections()
-	for unit,_ in pairs(directions) do
-		directions[unit]= nil
-		self:UpdateIndicators(unit)
 	end
 end
 
@@ -150,24 +144,19 @@ end
 function Direction:UpdateDB()
 	local isRestr
 	t= {}
-	t[1] = "return function(unit) return "
+	t[1] = "return function(unit, mouseover) return "
 	if not self.dbx.showOnlyStickyUnits then
 		if self.dbx.ShowOutOfRange 	then t[#t+1]= "and (not UnitInRange(unit)) "; isRestr=true 	end
 		if self.dbx.ShowVisible 	then t[#t+1]= "and UnitIsVisible(unit) "; isRestr=true		end
 		if self.dbx.ShowDead 		then t[#t+1]= "and UnitIsDead(unit) "; isRestr=true			end
 	end
 	if isRestr or self.dbx.showOnlyStickyUnits then
-		if self.dbx.StickyTarget	then t[#t+1]= "or  UnitIsUnit(unit, 'target') "		end
-		if self.dbx.StickyMouseover	then t[#t+1]= "or  UnitIsUnit(unit, mouseover) "
-										 t[1]	= "return function(unit, mouseover) return " end
-		if self.dbx.StickyFocus		then t[#t+1]= "or  UnitIsUnit(unit, 'focus') "	end
+		if self.dbx.StickyTarget	then t[#t+1]= "or  UnitIsUnit(unit, 'target') "		     end
+		if self.dbx.StickyMouseover	then t[#t+1]= "or  UnitIsUnit(unit, mouseover) "          end
+		if self.dbx.StickyFocus		then t[#t+1]= "or  UnitIsUnit(unit, 'focus') "	         end
 		if self.dbx.StickyTanks		then t[#t+1]= "or  UnitGroupRolesAssigned(unit)=='TANK' " end
 	end
-	if t[2] then
-		t[2] = t[2]:sub(5)
-	else
-		t[2] = "true " 
-	end
+	t[2] = t[2] and t[2]:sub(5) or "true " 
 	t[#t+1]= "end"
 	SetMouseoverHooks((isRestr or self.dbx.showOnlyStickyUnits) and self.dbx.StickyMouseover)
 	UnitCheck = assert(loadstring(table.concat(t)))()

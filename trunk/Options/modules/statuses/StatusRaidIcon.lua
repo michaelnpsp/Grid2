@@ -28,7 +28,7 @@ local function MakeOptions(self, status, options, optionParams)
 		set = function(info, v)
 			status.dbx.opacity = v
 			status:SetGlobalOpacity(v)
-			status:UpdateAllIndicators()
+			status:UpdateAllUnits()
 		end,
 	}
 end

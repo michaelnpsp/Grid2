@@ -17,7 +17,7 @@ Grid2Options:RegisterStatusOptions("health-current", "health", function(self, st
 			status.dbx.frequentHealth = (v=="p") or nil
 			status.dbx.quickHealth = (v=="q") or nil
 			status:UpdateDB()
-			status:UpdateAllIndicators()
+			status:UpdateAllUnits()
 		end,
 		values= { n = L["Normal"],  p = L["Fast"], q = L["Instant"] },
 	}
