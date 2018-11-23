@@ -81,7 +81,7 @@ local function CombatExitEvent()
 	timer = Grid2:CancelTimer(timer)
 	for status in next,statuses do
 		status:ClearIndicators()
-	end	
+	end
 end
 
 local function status_OnEnable(self)

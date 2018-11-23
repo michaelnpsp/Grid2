@@ -7,7 +7,6 @@ local theme = Grid2Options.editedTheme
 local order_layout  = 40
 local order_display = 30
 local order_anchor  = 20
-local screen_w, screen_h = Grid2Options:GetScreenResolution()
 
 local layoutOptions =  { mainheader = {
 		type = "header",
@@ -225,9 +224,11 @@ local layoutOptions =  { mainheader = {
 		softMax = 2048,
 		step = 1,
 		get = function ()
+			local screen_w, screen_h = GetPhysicalScreenSize()
 			return math.floor( theme.layout.PosX * screen_w / (UIParent:GetWidth()*UIParent:GetEffectiveScale()) + 0.5 )
 		end,
 		set = function (_, v)
+			local screen_w, screen_h = GetPhysicalScreenSize()
 			theme.layout.PosX = v / (screen_w / (UIParent:GetWidth()*UIParent:GetEffectiveScale()))
 			Grid2Layout:RestorePosition()
 			Grid2Layout:SavePosition()
@@ -242,9 +243,11 @@ local layoutOptions =  { mainheader = {
 		softMax = 2048,
 		step = 1,
 		get = function ()
+			local screen_w, screen_h = GetPhysicalScreenSize()
 			return math.floor( theme.layout.PosY * screen_h / (UIParent:GetHeight()*UIParent:GetEffectiveScale()) + 0.5 )
 		end,
 		set = function (_, v)
+			local screen_w, screen_h = GetPhysicalScreenSize()
 			theme.layout.PosY = v / (screen_h / (UIParent:GetHeight()*UIParent:GetEffectiveScale()))
 			Grid2Layout:RestorePosition()
 			Grid2Layout:SavePosition()

@@ -462,14 +462,6 @@ do
 	end
 end
 
--- Return current screen resolution in pixels
-function Grid2Options:GetScreenResolution()
-	local i = GetCurrentResolution()
-	local r = (i>0 and select(i,GetScreenResolutions())) or GetCVar("gxWindowedResolution") or GetCVar("gxFullscreenResolution") or ""
-	local w, h = r:match("^(%d+)x(%d+)$")
-	return tonumber(w) or 1024, tonumber(h) or 768
-end
-
 -- Grid2Options:ConfirmDialog(), Grid2Options:ShowEditDialog()
 do
 	StaticPopupDialogs["GRID2OPTIONS_GENERAL_DIALOG"] = { timeout = 0, whileDead = 1, hideOnEscape = 1, button1 = ACCEPT, button2 = CANCEL }

@@ -56,9 +56,6 @@ do
 			timers[#timers+1] = timer
 		end	
 	end
-	function DISPLAY_TIMERS() -- DEBUG REMOVE
-		print("Display Timer Count:", #timers)
-	end
 end
 
 -- UTF8 string truncate
@@ -85,7 +82,7 @@ function Grid2.CopyTable(src, dst)
 	for k,v in pairs(src) do
 		if type(v)=="table" then
 			dst[k] = Grid2.CopyTable(v,dst[k])
-		elseif not dst[k] then
+		elseif dst[k]==nil then
 			dst[k] = v
 		end
 	end
