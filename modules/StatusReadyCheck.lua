@@ -10,7 +10,6 @@ local GetReadyCheckStatus = GetReadyCheckStatus
 local readyChecking
 local readyStatuses = {}
 
-
 local readyCount    = 0
 function ReadyCheck:ClearStatusDelayed()
 	readyCount = readyCount + 1
@@ -18,34 +17,28 @@ function ReadyCheck:ClearStatusDelayed()
 	C_Timer.After( self.dbx.threshold or 0.01, function() if timerIndex==readyCount then self:ClearStatus() end end ) -- check to cancel a previous timer if a new timer is launched
 end
 
-function ReadyCheck:CheckClearStatus()
-	if readyChecking and GetReadyCheckTimeLeft() <= 0 then
-		self:ClearStatus()
-	end
-end
-
 function ReadyCheck:ClearStatus()
 	if readyChecking then
 		readyChecking = nil
+		wipe(readyStatuses)
 		self:UpdateAllUnits()
 	end
 end
 
 function ReadyCheck:UpdateNonPetUnits()
-	for unit in Grid2:IterateRosterUnits() do
-		if not Grid2:UnitIsPet(unit) then
-			self:UpdateIndicators(unit)
-		end
+	local units, count = Grid2:GetNonPetUnits()
+	for i=1,count do
+		self:UpdateIndicators(units[i])
 	end
 end
 
 function ReadyCheck:READY_CHECK()
 	readyChecking = true
-	for unit in Grid2:IterateRosterUnits() do
+	local units, count = Grid2:GetNonPetUnits()
+	for i=1,count do
+		local unit = units[i]
 		readyStatuses[unit] = GetReadyCheckStatus(unit)
-		if not Grid2:UnitIsPet(unit) then
-			self:UpdateIndicators(unit)
-		end
+		self:UpdateIndicators(unit)
 	end
 end
 
@@ -61,18 +54,17 @@ function ReadyCheck:READY_CHECK_FINISHED()
 	self:ClearStatusDelayed()
 end
 
-function ReadyCheck:GROUP_ROSTER_UPDATE()
+function ReadyCheck:Grid_UnitUpdated(_, unit)
 	if readyChecking then
-		self:UpdateNonPetUnits()
-	end
+		readyStatuses[unit] = nil
+	end	
 end
 
 function ReadyCheck:OnEnable()
 	self:RegisterEvent("READY_CHECK")
 	self:RegisterEvent("READY_CHECK_CONFIRM")
 	self:RegisterEvent("READY_CHECK_FINISHED")
-	self:RegisterEvent("GROUP_ROSTER_UPDATE")
-	self:RegisterMessage("Grid_GroupTypeChanged", "CheckClearStatus")
+	self:RegisterMessage("Grid_UnitUpdated")
 end
 
 function ReadyCheck:OnDisable()
@@ -80,8 +72,7 @@ function ReadyCheck:OnDisable()
 	self:UnregisterEvent("READY_CHECK")
 	self:UnregisterEvent("READY_CHECK_CONFIRM")
 	self:UnregisterEvent("READY_CHECK_FINISHED")
-	self:UnregisterEvent("GROUP_ROSTER_UPDATE")
-	self:UnregisterMessage("Grid_GroupTypeChanged")
+	self:UnregisterMessage("Grid_UnitUpdated")
 end
 
 function ReadyCheck:IsActive(unit)

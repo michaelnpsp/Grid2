@@ -10,7 +10,7 @@ local GetNumGroupMembers = GetNumGroupMembers
 local GetPartyAssignment = GetPartyAssignment
 local UnitGroupRolesAssigned = UnitGroupRolesAssigned
 local GetRaidRosterInfo = GetRaidRosterInfo
-local pairs, next = pairs, next
+local ipairs, pairs, next = ipairs, pairs, next
 
 -- realm name
 local my_realm = GetRealmName()
@@ -21,7 +21,7 @@ local roster_my_units = { player = true, pet = true, vehicle = true }
 -- is raid roster ?
 local inRaid
 
--- indexed by unit ID
+-- indexed by unit
 local roster_names = {}
 local roster_realms = {}
 local roster_guids = {}
@@ -34,6 +34,10 @@ local party_units = {}
 local raid_units = {}
 local pet_of_unit = {}
 local owner_of_unit = {}
+
+-- indexed by index, only nonpet units
+local roster_count = 0
+local roster_indexed
 
 -- populate unit tables
 do
@@ -63,24 +67,23 @@ function Grid2:GetUnitByFullName(fullName)
 	end
 end
 
-function Grid2:GetRosterCount()
-	local count = GetNumGroupMembers()
-	return count>0 and count or 1
+function Grid2:GetNonPetUnits()
+	return roster_indexed, roster_count
 end
 
 function Grid2:GetRosterInfoByIndex(index)
 	local name, group, role1, role2, _
 	if inRaid then
 		name, _, group, _, _, class, _, _, _, role1, _, role2 = GetRaidRosterInfo(index)
-		return name, class, group, role1, role2
+		return roster_indexed[index], name, class, group, role1, role2
 	else
-		local unit = Grid2.party_units[index]
+		local unit = party_units[index]
 		local name = UnitName(unit)
 		if name then
 			_, class = UnitClass(unit)
 			role1 = (GetPartyAssignment("MAINTANK",unit) and "MAINTANK") or (GetPartyAssignment("MAINASSIST",unit) and "MAINASSIST")
 			role2 = UnitGroupRolesAssigned(unit)
-			return name, class, 1, role1, role2
+			return unit, name, class, 1, role1, role2
 		end
 	end
 end
@@ -315,10 +318,10 @@ do
 	function Grid2:UpdateRoster()
 		roster_guids, units_to_remove = units_to_remove, roster_guids
 
-		local units = IsInRaid() and raid_units or party_units
-
-		for i= 1,#units do
-			local unit = units[i]
+		roster_count = 0
+		roster_indexed = IsInRaid() and raid_units or party_units
+		for i=1,#roster_indexed do
+			local unit = roster_indexed[i]
 			if not UnitExists(unit) then break end
 			UpdateUnit(unit)
 
@@ -326,8 +329,9 @@ do
 			if UnitExists(unitpet) then
 				UpdateUnit(unitpet)
 			end
+			roster_count = roster_count + 1
 		end
-
+		
 		local updated = false
 
 		for unit, guid in pairs(units_to_remove) do
@@ -367,13 +371,11 @@ do
 			self:SendMessage("Grid_RosterUpdated")
 		end
 
-		self:SendMessage("Grid_RosterUpdate") -- Fired even when no changes on grid2 roster list, but another atributes like roles or subgroups could be modified
+		self:SendMessage("Grid_RosterUpdate") -- Fired even when no changes on grid2 roster list, but other atributes like roles or subgroups could be modified
 	end
 end
 
 --{{ Publish tables used by some statuses
-Grid2.party_units = party_units
-Grid2.raid_units  = raid_units
-Grid2.roster_units = roster_units
+Grid2.roster_units    = roster_units
 Grid2.roster_my_units = roster_my_units
 --}}
