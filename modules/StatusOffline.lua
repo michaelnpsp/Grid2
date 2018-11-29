@@ -25,6 +25,7 @@ local function TimerEvent()
 	end
 end
 
+
 function Offline:UNIT_CONNECTION(_, unit, hasConnected)
 	if Grid2:IsUnitNoPetInRaid(unit) then
 		self:SetConnected(unit, hasConnected)
@@ -65,7 +66,7 @@ function Offline:OnDisable()
 end
 
 function Offline:IsActive(unit)
-	if offline[unit] then return true end
+	return offline[unit]~=nil
 end
 
 local text = L["Offline"]

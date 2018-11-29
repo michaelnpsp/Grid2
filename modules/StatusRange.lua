@@ -104,11 +104,11 @@ function Range:UpdateDB()
 		self.range = "38"
 		UnitRangeCheck = Ranges["38"]
 	end
-	if not rezSpell then 
-		UnitIsInRange = UnitRangeCheck 
+	if not rezSpell then
+		UnitIsInRange = UnitRangeCheck
 	end
 	timer = timer or Grid2:CreateTimer( Update )
-	timer:SetDuration(self.dbx.elapsed or 0.25) 
+	timer:SetDuration(self.dbx.elapsed or 0.25)
 end
 
 function Range:GetPercent(unit)

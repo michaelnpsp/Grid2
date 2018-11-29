@@ -27,6 +27,7 @@ end
 
 -- Repeating Timer Management
 do
+	local frame = CreateFrame("Frame")
 	local timers = {}
 	local function SetDuration(self, duration)
 		self.animation:SetDuration(duration)
@@ -37,7 +38,7 @@ do
 	function Grid2:CreateTimer( func, duration, play )
 		local timer = tremove(timers)
 		if not timer then
-			timer = Grid2LayoutFrame:CreateAnimationGroup()
+			timer = frame:CreateAnimationGroup()
 			timer.animation = timer:CreateAnimation()
 			timer.SetDuration = SetDuration
 			timer:SetLooping("REPEAT")

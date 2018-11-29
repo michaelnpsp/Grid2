@@ -33,7 +33,7 @@ local function GetSpellID(name, defaultSpells)
 	end
 	local id = 0
 	local texture = select(3, GetSpellInfo(name))
-	for i=150000, 1, -1  do
+	for i=300000, 1, -1  do
 		if GetSpellInfo(i) == name then
 			id = i
 			local _,_,tex = GetSpellInfo(i)
