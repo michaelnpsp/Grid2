@@ -72,13 +72,13 @@ function Grid2:GetNonPetUnits()
 end
 
 function Grid2:GetRosterInfoByIndex(index)
-	local name, group, role1, role2, _
+	local unit, name, group, class, role1, role2, _
 	if inRaid then
 		name, _, group, _, _, class, _, _, _, role1, _, role2 = GetRaidRosterInfo(index)
 		return roster_indexed[index], name, class, group, role1, role2
 	else
-		local unit = party_units[index]
-		local name = UnitName(unit)
+		unit = party_units[index]
+		name = UnitName(unit)
 		if name then
 			_, class = UnitClass(unit)
 			role1 = (GetPartyAssignment("MAINTANK",unit) and "MAINTANK") or (GetPartyAssignment("MAINASSIST",unit) and "MAINASSIST")
