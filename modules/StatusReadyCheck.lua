@@ -37,6 +37,9 @@ function ReadyCheck:READY_CHECK()
 end
 
 function ReadyCheck:READY_CHECK_CONFIRM(_, unit)
+	-- warning do not remove the line below (without this line Icons indicator fails for the last player because it delays the update 
+	-- to the next frame OnUpdate() when ReadyCheck has already finished and GetReadyCheckStatus() inside GetIcon() or GetText() returns nil 
+	readyStatuses[unit] = GetReadyCheckStatus(unit) 
 	self:UpdateIndicators(unit)
 end
 
@@ -48,7 +51,7 @@ end
 function ReadyCheck:Grid_UnitUpdated(_, unit)
 	if readyChecking then
 		readyStatuses[unit] = nil
-	end	
+	end
 end
 
 function ReadyCheck:OnEnable()
@@ -77,8 +80,8 @@ function ReadyCheck:GetReadyCheckStatus(unit)
 	if state then
 		readyStatuses[unit] = state
 	else
-		state = readyStatuses[unit] -- we're in the window where we need to persist the readystate
-		if state == "waiting" then state = "afk" end -- if a player is AFK then they will display blank while everyone else is tick / cross
+		state = readyStatuses[unit] 
+		if state == "waiting" then state = "afk" end
 	end
 	return state
 end
