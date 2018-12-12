@@ -150,7 +150,7 @@ function GridFramePrototype:Layout()
 	if not InCombatLockdown() then self:SetSize(w,h) end
 	-- highlight texture
 	if dbx.mouseoverHighlight then
-		self:SetHighlightTexture( Grid2:MediaFetch("border", dbx.mouseoverTexture, "Blizzard Quest Title Highlight") )
+		self:SetHighlightTexture( Grid2:MediaFetch("background", dbx.mouseoverTexture, "Blizzard Quest Title Highlight") )
 		local color = dbx.mouseoverColor
 		self:GetHighlightTexture():SetVertexColor(color.r, color.g, color.b, color.a)
 	else

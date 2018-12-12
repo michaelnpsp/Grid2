@@ -43,3 +43,15 @@ Grid2Options:RegisterStatusOptions("resurrection", "combat", nil, {
 	width = "full",
 	titleIcon = "Interface\\RaidFrame\\Raid-Icon-Rez",
 })
+
+Grid2Options:RegisterStatusOptions("summon", "misc", nil, {
+	color1 = L["Player Summoned"],
+	colorDesc1 = L["Player has been summoned, waiting for a response."],
+	color2 = L["Summon Accepted"],
+	colorDesc2 = L["Player accepted the summon."],
+	color3 = L["Summon Declined"],
+	colorDesc3 = L["Player declined the summon."],
+	width = "full",
+	titleIcon = "2470702",
+	titleIconCoords = {0.5890625, 0.7390625, 0.115625,  0.415625},
+})

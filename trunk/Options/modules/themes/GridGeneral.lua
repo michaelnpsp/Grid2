@@ -378,7 +378,7 @@ local frameOptions = { framewidth = {
 		hasAlpha = true,
 		hidden = function() return not theme.frame.mouseoverHighlight end, 
 }, mouseoverTexture = {
-		type = "select", dialogControl = "LSM30_Border",
+		type = "select", dialogControl = "LSM30_Background",
 		order = 80,
 		name = L["Highlight Texture"],
 		desc = L["Sets the highlight border texture of each unit frame"],
@@ -387,7 +387,7 @@ local frameOptions = { framewidth = {
 			theme.frame.mouseoverTexture = v
 			Grid2Frame:LayoutFrames(true)
 		end,
-		values = AceGUIWidgetLSMlists.border,
+		values = AceGUIWidgetLSMlists.background,
 		hidden = function() return not theme.frame.mouseoverHighlight end, 
 }, }
 
