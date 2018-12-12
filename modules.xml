@@ -33,6 +33,7 @@
 <Script file="modules\StatusSelf.lua"/>
 <Script file="modules\StatusDirection.lua"/>
 <Script file="modules\StatusCombat.lua"/>
+<Script file="modules\StatusSummon.lua"/>
 <Script file="modules\StatusAuras.lua"/>
 <Script file="modules\StatusAurasBuffs.lua"/>
 <Script file="modules\StatusAurasDebuffs.lua"/>

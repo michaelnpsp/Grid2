@@ -784,6 +784,15 @@ L["Voice Chat"] = "Chat de voz"
 -- combat status
 L["combat"] = "combate"
 
+-- summon status
+L["summon"] = "invocacion"
+L["Player Summoned"] = "Jugador Invocado"
+L["Player has been summoned, waiting for a response."] = "El jugador ha sido invocado, esperando respuesta."
+L["Summon Accepted"] = "Invocacion Aceptada"
+L["Player accepted the summon."] = "El jugador ha aceptado la invocacion."
+L["Summon Declined"] = "Invocacion Cancelada"
+L["Player declined the summon."] = "El jugador no ha aceptado la invocacion."
+
 -- raid debuffs
 L["General"] = "General"
 L["Advanced"] = "Avanzado"
