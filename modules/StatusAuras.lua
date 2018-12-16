@@ -34,11 +34,14 @@ do
 			local statuses = Debuffs[nam] or Debuffs[sid]
 			if statuses then
 				for s in next, statuses do
-					if exp~=s.exp[u] or cnt~=s.cnt[u] or val[s.vId]~=s.val[u] then 
-						s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.typ[u], s.val[u], s.tkr[u] = 1, i, tex, cnt, dur, exp, typ, val[s.vId], 1
-					else
-						s.seen, s.idx[u] = -1, i
-					end
+					local mine = s.isMine
+					if mine==false or mine==myUnits[cas] then
+						if exp~=s.exp[u] or cnt~=s.cnt[u] or val[s.vId]~=s.val[u] then 
+							s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.typ[u], s.val[u], s.tkr[u] = 1, i, tex, cnt, dur, exp, typ, val[s.vId], 1
+						else
+							s.seen, s.idx[u] = -1, i
+						end
+					end	
 				end
 			end
 			if typ then

@@ -63,27 +63,15 @@ local NewAuraUsageDescription= L["You can include a descriptive prefix using sep
 local NewAuraHandlerMT = {
 	Init = function (self)
 		self.name = ""
-		self.mine = 1
+		self.mine = self.subType == "Buff" and 1 or nil
 		self.spellName = nil
 	end,
 	GetKey = function (self)
-		local result
 		local name = self.name:gsub("[ %.\"]", "")
-		if name == "" then return end
-		if self.type == "debuff" then
-			result = self.realType.."-"..name
-		else
-			local mine = self.mine
-			if mine == 2 then
-				mine = "-not-mine"
-			elseif mine then
-				mine = "-mine"
-			else
-				mine = ""
-			end
-			result = self.realType.."-"..name..mine
-		end
-		return result
+		if name ~= "" then
+			local mine = (self.mine==2 and "-not-mine") or (self.mine and "-mine") or ""
+			return string.format("%s-%s%s", self.realType, name, mine )
+		end	
 	end,
 	GetName = function (self)
 		return self.name
@@ -116,6 +104,9 @@ local NewAuraHandlerMT = {
 	SetNotMine = function (self, info, value)
 		self.mine = value and 2
 	end,
+	IsNotDebuff = function(self)
+		return self.subType ~= "Debuff"
+	end,
 	GetAvailableSubTypes = function(self)
 		local result= {}
 		for k in pairs(self.subTypes) do
@@ -137,21 +128,16 @@ local NewAuraHandlerMT = {
 			self.mine = nil
 		else
 			self.name = ""
-			self.mine = 1
+			self.mine = self.subType == "Buff" and 1 or nil
 		end
 	end,
 	Create = function (self)
 		local baseKey = self:GetKey()
 		if baseKey then
 			--Add to options and runtime db
-			local dbx
 			local spellName = (not self.isGroup) and self.spellName or nil
 			local color = { r = self.color.r , g = self.color.g, b = self.color.b , a = self.color.a }
-			if self.type == "debuff" then
-				dbx = {type = self.realType, spellName = spellName, color1 = color }
-			else
-				dbx = {type = self.realType, spellName = spellName, mine = self.mine, color1 = color }
-			end
+			local dbx = { type = self.realType, spellName = spellName, mine = self.mine, color1 = color }
 			if self.isGroup then -- Buffs or Debuffs Group
 				local auras = self.subTypes[self.subType]
 				if #auras>0 or self.type == "buff" then
@@ -215,7 +201,6 @@ NewBuffHandler.options = {
 		desc = L["Display status only if the buff was cast by you."],
 		get = "GetMine",
 		set = "SetMine",
-		disabled = "GetNotMine",
 		handler = NewBuffHandler,
 	},
 	newStatusBuffNotMine = {
@@ -225,7 +210,6 @@ NewBuffHandler.options = {
 		desc = L["Display status only if the buff was not cast by you."],
 		get = "GetNotMine",
 		set = "SetNotMine",
-		disabled = "GetMine",
 		handler = NewBuffHandler,
 	},
 	newStatusBuffSpacer = {
@@ -273,6 +257,31 @@ NewDebuffHandler.options = {
 		set = "SetName",
 		handler = NewDebuffHandler,
 	},
+	newStatusDebuffMine = {
+		type = "toggle",
+		order = 5.25,
+		name = L["Show if mine"],
+		desc = L["Display status only if the debuff was cast by you."],
+		get = "GetMine",
+		set = "SetMine",
+		hidden = "IsNotDebuff",
+		handler = NewDebuffHandler,
+	},
+	newStatusDebuffNotMine = {
+		type = "toggle",
+		order = 5.3,
+		name = L["Show if not mine"],
+		desc = L["Display status only if the debuff was not cast by you."],
+		get = "GetNotMine",
+		set = "SetNotMine",
+		hidden = "IsNotDebuff",
+		handler = NewDebuffHandler,
+	},
+	newStatusDebuffSpacer = {
+		type = "header",
+		order = 5.4,
+		name = ""
+	},	
 	newStatusDebuff = {
 		type = "execute",
 		order = 5.5,
@@ -281,11 +290,6 @@ NewDebuffHandler.options = {
 		func = "Create",
 		disabled = "IsDisabled",
 		handler = NewDebuffHandler,
-	},
-	newStatusDebuffSpacer = {
-		type = "header",
-		order = 5.4,
-		name = ""
 	},
 }
 NewDebuffHandler:Init()
