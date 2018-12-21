@@ -41,9 +41,8 @@ local function Icon_Create(self, parent)
 			TextFrame:Show()
 			f.TextFrame = TextFrame	
 		end
-		local CooldownText = f.CooldownText or f:CreateFontString(nil, "OVERLAY")	
+		local CooldownText = f.CooldownText or f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")	
 		CooldownText:SetParent(TextFrame)
-		CooldownText:SetFontObject(GameFontHighlightSmall)
 		CooldownText:SetFont(self.textfont, self.dbx.fontSize, self.dbx.fontFlags or "OUTLINE" )
 		local c = self.dbx.stackColor
 		if c then CooldownText:SetTextColor(c.r, c.g, c.b, c.a) end	
@@ -129,7 +128,6 @@ end
 
 local function Icon_Layout(self, parent)
 	local f = parent[self.name]
-
 	local level = parent:GetFrameLevel() + self.frameLevel
 	f:SetParent(parent)
 	f:ClearAllPoints()
@@ -151,7 +149,7 @@ local function Icon_Layout(self, parent)
 	f:SetSize(size,size)
 	
 	if not self.disableStack then
-		if f.TextFrame then	f.TextFrame:SetFrameLevel(level+1) end
+		if f.TextFrame then	f.TextFrame:SetFrameLevel(level+2) end
 		local CooldownText = f.CooldownText
 		local justifyH = self.dbx.fontJustifyH or "CENTER"
 		local justifyV = self.dbx.fontJustifyV or "MIDDLE"

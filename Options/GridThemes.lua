@@ -8,6 +8,8 @@ local themeModules = { layout = Grid2Layout, frame  = Grid2Frame }
 
 local editedTheme = { db = Grid2.db.profile.themes, layout = Grid2Layout.db.profile, frame = Grid2Frame.db.profile, index = Grid2.currentTheme }
 
+local themeCondCount = 0
+
 -- Themes Management
 do
 	local ignoreKeys = { blinkType = true, blinkFrequency = true, minimapIcon = true, extraThemes = true }
@@ -78,12 +80,25 @@ do
 		else
 			editedTheme.db.enabled[info.arg] = nil
 			options['k'..info.arg] = nil
+			themeCondCount = themeCondCount - 1
 		end
 		Grid2:ReloadTheme()	
 	end
 
 	local function ConfirmCondDelete(info,value)
 		return value==999 and L["Are you sure do you want to delete this condition ?"] or false
+	end
+
+	local function ThemeCheckConditions(theme, fix)
+		for k,index in pairs(editedTheme.db.enabled) do
+			if index == theme then
+				if fix then
+					editedTheme.db.enabled[k] = 0
+				else
+					return true
+				end	
+			end
+		end
 	end
 
 	--=============================================================================
@@ -95,13 +110,14 @@ do
 		local CONDITIONS = { 'solo', 'party', 'arena', 'raid', 'raid@pvp' ,'raid@lfr', 'raid@flex', 'raid@mythic', '10', '20', '25', '30', '40' } 
 		local CONDITIONS_DESC = { L['Solo'], L['Party'], L['Arena'], L['Raid'], L['Raid (PvP)'], L['Raid (LFR)'], L['Raid (N&H)'], L['Raid (Mythic)'], L['10 man'], L['20 man'], L['25 man'], L['30 man'], L['40 man'] }
 		for o,k in ipairs(CONDITIONS) do
-			local key = string.format( "%03X;%s", o, k )
-			CONDITIONS_VALUES[key] = CONDITIONS_DESC[o]
-			CONDITIONS_NAMES[key]  = CONDITIONS_DESC[o]
+			local key = string.format( "%03d;%s", o, k )
+			CONDITIONS_VALUES[key] = CONDITIONS_DESC[o] -- Descriptions used in "Enable Theme for" dropdown list values
+			CONDITIONS_NAMES[key]  = CONDITIONS_DESC[o] -- Description used as title in themes dropdown lists
 		end
+		local class = select(2, UnitClass("player"))
 		local count = GetNumSpecializations()
 		for i=1,count do
-			local key = string.format("%d00;%d",i,i)
+			local key = string.format("%d00;%s@%d",i, class, i)
 			local _, name, _, icon = GetSpecializationInfo(i)
 			if strlen(name)<12 then
 				name = string.format("|T%s:0|t%s(%s)",icon, name, L['Spec'] )
@@ -111,44 +127,35 @@ do
 			CONDITIONS_VALUES[ key ] = name
 			CONDITIONS_NAMES[ key ]  = name
 			for o,k in ipairs(CONDITIONS) do
-				local key = string.format( "%d%02X;%d@%s", i,o,i,k )
+				local key = string.format( "%d%02d;%s@%d@%s", i,o,class,i,k )
 				CONDITIONS_VALUES[ key ] = string.format( '|T%s:0|t%s', icon, CONDITIONS_DESC[o] )
 				CONDITIONS_NAMES[ key ]  = string.format( '%s & %s', name, CONDITIONS_DESC[o] )
 			end
 		end
 	end
-
-	-- key<10 => specID(integer); key>=10 => maxPlayers(string); key=not number => another key(string)
-	local function GetDbKey(key)
-		local dbkey = tonumber(key)
-		if not dbkey or dbkey>=10 then
-			return tostring(key)
-		else
-			return dbkey
-		end
-	end
 	
 	local function RefreshConditionsOptions()
+		themeCondCount = 0
 		for k in pairs(CONDITIONS_VALUES) do
-			local order, key = strsplit(";",k)
-			local dbkey = GetDbKey(key)
-			local opkey = 'k' .. key
+			local order, dbkey = strsplit(";",k)
+			local opkey = 'k' .. dbkey
 			local new = not not editedTheme.db.enabled[ dbkey ]
 			local old = not not options[opkey]
 			if new~=old then
 				options[opkey] = new and {
-					type   = "select",
-					name   = CONDITIONS_NAMES[k],
-					width = "double",
-					desc   = L["Select one of your currently available themes."],
-					order  = 100+tonumber(order,16),
-					get    = GetCondTheme,
-					set    = SetCondTheme,
-					values = GetCondThemes,
+					type    = "select",
+					name    = CONDITIONS_NAMES[k],
+					width   = "double",
+					desc    = L["Select one of your currently available themes."],
+					order   = 100+tonumber(order),
+					get     = GetCondTheme,
+					set     = SetCondTheme,
+					values  = GetCondThemes,
 					confirm = ConfirmCondDelete,
-					arg    = dbkey,
+					arg     = dbkey,
 				} or nil
-			end	
+			end
+			if new then themeCondCount = themeCondCount + 1 end
 		end
 	end
 
@@ -183,15 +190,14 @@ do
 		desc   = L["Select the condition that must be met to display a new theme."],
 		order  = 10.05,
 		get    = false,
-		set    = function(info,value) 
-			local _, key = strsplit(";",value)
-			editedTheme.db.enabled[ GetDbKey(key) ] = Grid2.currentTheme
+		set    = function(info,value)
+			editedTheme.db.enabled[ select(2, strsplit(";",value) ) ] = Grid2.currentTheme
 			RefreshConditionsOptions()
 		end,
 		values = CONDITIONS_VALUES,
 	}
 
-	_options.separator1 = { type = "header", order = 10.5, name = L["Additional Themes"], hidden = function() local t = editedTheme.db.enabled; return not next(t,next(t)); end }
+	_options.separator1 = { type = "header", order = 10.5, name = L["Additional Themes"], hidden = function() return themeCondCount<=0 end }
 
 	--=============================================================================
 
@@ -266,6 +272,7 @@ do
 		set    = function(_, index)
 			table.remove(editedTheme.db.names,index)
 			table.remove(editedTheme.db.indicators,index)
+			ThemeCheckConditions(index, true)
 			for key,module in pairs(themeModules) do
 				local db = module.dba.profile.extraThemes
 				if db and db[index] then
@@ -277,8 +284,11 @@ do
 			Grid2:ReloadTheme()
 		end,
 		values = function() return GetThemes(Grid2.currentTheme) end,
-		confirm = true,
-		confirmText = L["Are you sure you want to delete the selected theme?"],
+		confirm = function(info, value)
+			return ThemeCheckConditions(value) and 
+			L["There are conditions referencing this theme. Are you sure you want to delete the selected theme ?"] or 
+			L["Are you sure you want to delete the selected theme?"] 
+		end,
 		disabled = function() return not next(GetThemes(Grid2.currentTheme)) end,
 	}
 
@@ -288,7 +298,7 @@ do
 	end	
 	
 end
-	
+
 --===========================================================================================
 
 local themeOptions = {
