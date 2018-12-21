@@ -99,6 +99,8 @@ function Grid2:OnInitialize()
 	self.profiles = self.db:RegisterNamespace('LibDualSpec-1.0') -- Using "LibDualSpec-1.0" namespace for backward compatibility
 
 	self.debugging = self.db.global.debug
+
+	self.playerClass = select(2, UnitClass("player"))
 	
 	local media = LibStub("LibSharedMedia-3.0", true)
 	media:Register("statusbar", "Gradient", "Interface\\Addons\\Grid2\\media\\gradient32x32")
@@ -192,11 +194,13 @@ function Grid2:CheckTheme()
 	local theme   = enabled.default or 0
 	local spec    = GetSpecialization() or 0
 	local groupType, instType, maxPlayers = self:GetGroupType()
-	local kSGI = fmt("%d@%s@%s", spec, groupType, instType)
-	local kSG  = fmt("%d@%s",    spec, groupType)
-	local kSM  = fmt("%d@%d",    spec, maxPlayers)
+	local kM   = tostring(maxPlayers)
+	local kS   = fmt("%s@%d",    self.playerClass, spec)   
+	local kSM  = fmt("%s@%d",    kS, maxPlayers)
+	local kSGI = fmt("%s@%s@%s", kS, groupType, instType)
+	local kSG  = fmt("%s@%s",    kS, groupType)
 	local kGI  = fmt("%s@%s",    groupType, instType)
-	theme = enabled[kSM] or enabled[kSGI] or enabled[kSG] or enabled[spec] or enabled[tostring(maxPlayers)] or enabled[kGI] or enabled[groupType] or theme
+	theme = enabled[kSM] or enabled[kSGI] or enabled[kSG] or enabled[kS] or enabled[kM] or enabled[kGI] or enabled[groupType] or theme
 	return themes.names[theme] and theme or 0
 end
 

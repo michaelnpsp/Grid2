@@ -129,9 +129,7 @@ end
 local function Health_RegisterEvents()
 	RegisterEvent("UNIT_HEALTH", UpdateIndicators )	
 	RegisterEvent("UNIT_MAXHEALTH", UpdateIndicators )
-	if HealthCurrent.dbx.frequentHealth then
-		RegisterEvent("UNIT_HEALTH_FREQUENT", UpdateIndicators )
-	end	
+	RegisterEvent("UNIT_HEALTH_FREQUENT", UpdateIndicators )
 	EnableQuickHealth()
 end
 
