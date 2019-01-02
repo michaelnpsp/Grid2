@@ -93,6 +93,14 @@ function GridLayoutHeaderClass.prototype:SetOrientation(horizontal)
 	self:SetAttribute( "point", point )
 end
 
+-- Force a header Update, frame units and header size are updated
+function GridLayoutHeaderClass.prototype:Update()
+	if self:IsVisible() then
+		self:Hide()
+		self:Show()
+	end	
+end
+
 -- MSaint fix see: https://authors.curseforge.com/forums/world-of-warcraft/official-addon-threads/unit-frames/grid-grid2/222108-grid-compact-party-raid-unit-frames?page=11#c219
 -- Must be called just before assigning the attributes: "point", "columnAnchorPoint" or "unitsPerColumn". But for optimization purposes we are calling the funcion only before 
 -- assigning "point" attribute inside SetOrientation() method, because this is the last attribute assigned when a layout is loaded. 
@@ -190,7 +198,6 @@ function Grid2Layout:OnModuleInitialize()
 		for _,h in ipairs(l) do
 			h.type = strmatch(h.type or '', 'pet') -- conversion of old format
 		end
-		l.type = nil -- (fix previous bug) remove this line in a few releases
 		self:AddLayout(n,l)
 	end
 end
@@ -200,14 +207,15 @@ function Grid2Layout:OnModuleEnable()
 	self:UpdateFrame()
 	self:UpdateTextures()
 	self:RestorePosition()
+	self:RegisterMessage("Grid_RosterUpdate")
 	self:RegisterMessage("Grid_GroupTypeChanged")
-	self:RegisterMessage("Grid_UpdateLayoutSize", "UpdateSizeThrottled")
+	self:RegisterMessage("Grid_UpdateLayoutSize")
 end
 
 function Grid2Layout:OnModuleDisable()
+	self:UnregisterMessage("Grid_RosterUpdate")
 	self:UnregisterMessage("Grid_GroupTypeChanged")
 	self:UnregisterMessage("Grid_UpdateLayoutSize")
-	self:UnregisterMessage("Grid_RosterUpdate")
 	self.frame:Hide()
 end
 
@@ -235,7 +243,33 @@ function Grid2Layout:Grid_GroupTypeChanged(_, groupType, instType, maxPlayers)
 		self:ReloadLayout()
 	end	
 end
+
+function Grid2Layout:Grid_RosterUpdate(_, unknowns)
+	if self.layoutHasFilter then
+		Grid2:RunThrottled(self, "ReloadFilter", .25)
+	elseif unknowns then
+		Grid2:RunThrottled(self, "FixRoster", .25)
+	end	
+end
+
+-- We delay UpdateSize() call to avoid calculating the wrong window size, because when "Grid_UpdateLayoutSize" 
+-- message is triggered the blizzard code has not yet updated the size of the secure group headers.
+function Grid2Layout:Grid_UpdateLayoutSize()
+	Grid2:RunThrottled(self, "UpdateSize")
+end
 --}}}
+
+-- Workaround to a blizzard bug in SecureGroupHeaders.lua (see: https://www.wowace.com/projects/grid2/issues/628 )
+-- In patch 8.1 SecureTemplates code do not display "unknown entities" because GetRaidRosterInfo() returns nil for these units:
+-- If unknown entities are detected in roster, we update the headers every 1/4 seconds until all unknown entities are gone.
+function Grid2Layout:FixRoster()
+	if Grid2:RosterHasUnknowns() then
+		if not Grid2:RunSecure(5, self, "FixRoster") then
+			self:UpdateHeaders()
+			Grid2:UpdateRoster()
+		end
+	end
+end
 
 function Grid2Layout:StartMoveFrame(button)
 	if not self.db.profile.FrameLock and button == "LeftButton" then
@@ -294,13 +328,13 @@ end
 function Grid2Layout:ResetHeaders()
 	self.layoutHasFilter = nil
 	self.layoutHasAuto   = nil
-	wipe(self.groupsUsed)
 	for type, headers in pairs(self.groups) do
+		for i=self.indexes[type],1,-1 do
+			headers[i]:Reset()
+		end	
 		self.indexes[type] = 0
-		for _, header in ipairs(headers) do
-			header:Reset()
-		end
 	end
+	wipe(self.groupsUsed)
 end
 
 function Grid2Layout:PlaceHeaders()
@@ -329,6 +363,12 @@ function Grid2Layout:PlaceHeaders()
 		prevFrame = frame
 		self:Debug("Placing group", groupNumber, frame:GetName(), anchor, prevFrame and prevFrame:GetName(), relPoint)
 	end	
+end
+
+function Grid2Layout:UpdateHeaders()
+	for _, header in ipairs(self.groupsUsed) do
+		header:Update()
+	end
 end
 
 function Grid2Layout:RefreshLayout()
@@ -371,7 +411,6 @@ function Grid2Layout:LoadLayout(layoutName)
 		elseif not layout.empty then
 			self:GenerateHeaders(layout.defaults)
 		end
-		self:UpdateFilterEvents()
 		self:PlaceHeaders()
 		self:UpdateDisplay()
 	end	
@@ -503,31 +542,11 @@ end
 
 function Grid2Layout:ReloadFilter()
 	if not Grid2:RunSecure(4, self, "ReloadFilter") then
-		local update
 		for _,header in ipairs(self.groupsUsed) do
-			update = self:LoadHeaderFilter(header) or update
+			self:LoadHeaderFilter(header)
 		end
-		if update then
-			self:UpdateSizeThrottled()
-		end	
 	end
 	return true
-end
-
-function Grid2Layout:ReloadFilterThrottled()
-	Grid2:RunThrottled(self, "ReloadFilter", .25)
-end
-
-function Grid2Layout:UpdateFilterEvents()
-	if self.layoutHasFilter ~= self.layoutFilterRegistered then
-		if self.layoutHasFilter then
-			self.layoutFilterRegistered = true
-			self:RegisterMessage("Grid_RosterUpdate", "ReloadFilterThrottled")
-		else
-			self.layoutFilterRegistered = nil
-			self:UnregisterMessage("Grid_RosterUpdate")
-		end	
-	end	
 end
 --}}
 
@@ -552,34 +571,25 @@ function Grid2Layout:UpdateDisplay()
 	self:UpdateColor()
 	self:CheckVisibility()
 	self:UpdateFramesSize()
-	self:UpdateSize()
 end
 
 function Grid2Layout:UpdateFramesSize()
 	local nw,nh = Grid2Frame:GetFrameSize()
 	local ow = self.layoutFrameWidth  or nw
 	local oh = self.layoutFrameHeight or nh
-	if nw~=ow or nh~=oh then
-		self.layoutFrameWidth  = nw
-		self.layoutFrameHeight = nh
-		Grid2Frame:LayoutFrames()
-		self:UpdateHeadersSize()
-	end
 	self.layoutFrameWidth  = nw
 	self.layoutFrameHeight = nh
-end
-
--- We delay UpdateSize() call to avoid calculating the wrong window size, because when "Grid_UpdateLayoutSize" 
--- message is triggered the blizzard code has not yet updated the size of the secure group headers.
-function Grid2Layout:UpdateSizeThrottled()
-	Grid2:RunThrottled(self, "UpdateSize")
+	if nw~=ow or nh~=oh then
+		Grid2Frame:LayoutFrames()
+		self:UpdateHeaders() -- Force headers size update because this triggers a "Grid_UpdateLayoutSize" message.
+	end
 end
 
 function Grid2Layout:UpdateSize()
 	local p = self.db.profile
 	local mcol,mrow,curCol,maxRow,remSize = "GetWidth","GetHeight",0,0,0
 	if p.horizontal then mcol,mrow = mrow,mcol end
-	for i,g in ipairs(self.groupsUsed) do
+	for _,g in ipairs(self.groupsUsed) do
 		local row = g[mrow](g)
 		if maxRow<row then maxRow = row end
 		local col = g[mcol](g) + p.Padding
@@ -591,8 +601,7 @@ function Grid2Layout:UpdateSize()
 	local row = maxRow + p.Spacing*2
 	if p.horizontal then col,row = row,col end
 	self.frameBack:SetSize(col,row)
-	updateSizeQueued = InCombatLockdown()
-	if not Grid2:RunSecure(5, self, "UpdateSize") then
+	if not Grid2:RunSecure(6, self, "UpdateSize") then
 		self.frame:SetSize(col,row)
 	end	
 end
@@ -611,17 +620,6 @@ function Grid2Layout:UpdateColor()
 	frame:SetBackdropBorderColor(settings.BorderR, settings.BorderG, settings.BorderB, settings.BorderA)
 	frame:SetBackdropColor(settings.BackgroundR, settings.BackgroundG, settings.BackgroundB, settings.BackgroundA)
 	frame:SetShown( settings.BorderA~=0 or settings.BackgroundA~=0 )
-end
-
--- Force GridLayoutHeaders size refresh, without this g:GetWidth/g:GetHeight in UpdateSize() return old values.
-function Grid2Layout:UpdateHeadersSize()
-	for type, headers in pairs(self.groups) do
-		for i = 1, self.indexes[type] do
-			local g = headers[i]
-			g:Hide()
-			g:Show()
-		end
-	end
 end
 
 function Grid2Layout:CheckVisibility()
