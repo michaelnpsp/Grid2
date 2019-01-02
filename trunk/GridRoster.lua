@@ -11,6 +11,7 @@ local GetPartyAssignment = GetPartyAssignment
 local UnitGroupRolesAssigned = UnitGroupRolesAssigned
 local GetRaidRosterInfo = GetRaidRosterInfo
 local ipairs, pairs, next = ipairs, pairs, next
+local UNKNOWNOBJECT = UNKNOWNOBJECT
 
 -- realm name
 local my_realm = GetRealmName()
@@ -39,6 +40,9 @@ local owner_of_unit = {}
 local roster_count = 0
 local roster_indexed
 
+-- flag to track if roster contains unknown units, workaround to blizard bug (see ticket #628)
+local roster_unknowns
+
 -- populate unit tables
 do
 	local function register_unit(tbl, unit, pet)
@@ -55,22 +59,12 @@ do
 	end
 end
 
+-- Used as workaround to blizard bug (see ticket #628)
+function Grid2:RosterHasUnknowns()
+	return roster_unknowns
+end
+
 -- roster query functions
-function Grid2:GetUnitByFullName(fullName)
-	local name, realm = fullName:match("^([^%-]+)%-(.*)$")
-	name = name or fullName
-	if realm == my_realm or realm == "" then realm = nil end
-	for unit, unit_name in pairs(roster_names) do
-		if name == unit_name and roster_realms[unit] == realm then
-			return unit
-		end
-	end
-end
-
-function Grid2:GetNonPetUnits()
-	return roster_indexed, roster_count
-end
-
 function Grid2:GetRosterInfoByIndex(index)
 	local unit, name, group, class, role1, role2, _
 	if inRaid then
@@ -86,6 +80,10 @@ function Grid2:GetRosterInfoByIndex(index)
 			return unit, name, class, 1, role1, role2
 		end
 	end
+end
+
+function Grid2:GetNonPetUnits()
+	return roster_indexed, roster_count
 end
 
 function Grid2:GetUnitidByGUID(guid)
@@ -218,7 +216,7 @@ do
 
 		local old_name = roster_names[unit]
 		local old_realm = roster_realms[unit]
-
+		
 		roster_names[unit] = name
 		roster_realms[unit] = realm
 
@@ -313,11 +311,16 @@ do
 				roster_units[oldGuid] = nil
 			end
 		end
+		
+		if name == UNKNOWNOBJECT then
+			roster_unknowns = true
+		end	
 	end
 
 	function Grid2:UpdateRoster()
 		roster_guids, units_to_remove = units_to_remove, roster_guids
 
+		roster_unknowns = false
 		roster_count = 0
 		roster_indexed = IsInRaid() and raid_units or party_units
 		for i=1,#roster_indexed do
@@ -368,10 +371,10 @@ do
 		end
 
 		if updated then
-			self:SendMessage("Grid_RosterUpdated")
+			self:SendMessage("Grid_RosterUpdated", roster_unknowns)
 		end
 
-		self:SendMessage("Grid_RosterUpdate") -- Fired even when no changes on grid2 roster list, but other atributes like roles or subgroups could be modified
+		self:SendMessage("Grid_RosterUpdate", roster_unknowns) -- Fired even when no changes in grid2 roster, but other atributes like roles or subgroups could be modified
 	end
 end
 

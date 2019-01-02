@@ -177,7 +177,7 @@ Grid2.AlignPoints= {
 -- Grid2:RunSecure(priority, object, method, arg) 
 -- Queue some methods to be executed when out of combat, if we are not in combat do nothing.
 -- Methods with lower priority value override the execution of methods with higher priority value.
--- Methods executed (in order of priority): ReloadProfile(1), ReloadTheme(2), ReloadLayout(3), ReloadFilter(4), UpdateSize(5)
+-- Methods executed (in order of priority): ReloadProfile(1), ReloadTheme(2), ReloadLayout(3), ReloadFilter(4), FixRoster(5), UpdateSize(6)
 do
 	local sec_priority, sec_object, sec_method, sec_arg 
 	function Grid2:PLAYER_REGEN_ENABLED()
