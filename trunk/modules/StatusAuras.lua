@@ -237,8 +237,15 @@ do
 	local function IsActive(self, unit) 
 		if self.idx[unit] then return true end 
 	end
+	local function IsActiveStacks(self, unit) 
+		if self.idx[unit] and self.cnt[unit]>=self.stacks then return true end 
+	end
 	local function IsActiveBlink(self, unit) 
 		if not self.idx[unit] then return end
+		return self.tkr[unit]==1 or "blink" 
+	end
+	local function IsActiveStacksBlink(self, unit) 
+		if not (self.idx[unit] and self.cnt[unit]>=self.stacks) then return end
 		return self.tkr[unit]==1 or "blink" 
 	end
 	local function IsInactive(self, unit)
@@ -362,15 +369,16 @@ do
 			self.IsActive = dbx.blinkThreshold and IsInactiveBlink or IsInactive
 			self.thresholds = nil
 		else
+			self.stacks = dbx.enableStacks
 			self.GetIcon  = GetIcon
 			self.GetCount = GetCount
 			self.GetExpirationTime = GetExpirationTime
 			if dbx.blinkThreshold then
 				self.thresholds = { dbx.blinkThreshold }
-				self.IsActive = IsActiveBlink
+				self.IsActive = self.stacks and IsActiveStacksBlink or IsActiveBlink
 			else
 				self.thresholds = dbx.colorThreshold
-				self.IsActive = IsActive
+				self.IsActive = self.stacks and IsActiveStacks or IsActive
 			end
 		end
 		local colorCount = dbx.colorCount or 1
@@ -453,6 +461,7 @@ Grid2.debuffDispelTypes = debuffDispelTypes
 
 --[[ statuses database configurations 
 	type = "buff" 
+	enableStacks = integer              -- minimum stacks to activate the status
 	spellName = string|integer
 	useSpellID = true|nil			    -- track by spellID instead of aura name
 	mine = 2 | 1 | true | false | nil   -- 2=not mine; 1|true=mine; false|nil=all spells
@@ -466,6 +475,7 @@ Grid2.debuffDispelTypes = debuffDispelTypes
 	color2 = { r=1,g=1,b=0,a=1 }
 --
 	type = "debuff"
+	enableStacks = integer              -- minimum stacks to activate the status
 	spellName = string|integer
 	useSpellID = true|nil
 	blinkThreshold = number	            -- seconds remaining to enable indicator blinking

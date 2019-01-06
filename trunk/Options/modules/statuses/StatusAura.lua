@@ -34,6 +34,26 @@ local function StatusAuraGenerateColorThreshold(status)
 	end
 end
 
+function Grid2Options:MakeStatusAuraEnableStacksOptions(status, options, optionParams)
+	if not status.dbx.missing then
+		options.enableStacks = {
+			type = "range",
+			order = 5,
+			name = L["Activation Stacks"],
+			desc = L["Select the minimum number of aura stacks to activate the status."],
+			min = 1, softMax = 30, step = 1,
+			get = function ()
+				return status.dbx.enableStacks or 1
+			end,
+			set = function (_, v)
+				status.dbx.enableStacks = v~=1 and v or nil
+				status:UpdateDB()
+				Grid2:RefreshAuras()
+			end,
+		}
+	end	
+end
+
 function Grid2Options:MakeStatusAuraMissingOptions(status, options, optionParams)
 	options.threshold = {
 		type = "toggle",
@@ -47,6 +67,7 @@ function Grid2Options:MakeStatusAuraMissingOptions(status, options, optionParams
 				StatusAuraGenerateColors(status,1)
 				status.dbx.colorThreshold = nil
 				status.dbx.valueIndex = nil
+				status.dbx.enableStacks = nil
 			end
 			status:UpdateDB()
 			Grid2:RefreshAuras()
@@ -101,7 +122,7 @@ function Grid2Options:MakeStatusAuraCommonOptions(status, options, optionParams)
 	if not status.dbx.missing then
 		options.colorCount = {
 			type = "select",
-			order = 5,
+			order = 10.1,
 			width ="half",
 			name = L["Color count"],
 			desc = L["Select how many colors the status must provide."],
@@ -120,7 +141,7 @@ function Grid2Options:MakeStatusAuraCommonOptions(status, options, optionParams)
 		if status.dbx.colorCount then
 			options.colorizeBy = {
 				type = "select",
-				order = 6,
+				order = 10.2,
 				width ="normal",
 				name = L["Coloring based on"],
 				desc = L["Coloring based on"],
@@ -142,12 +163,13 @@ function Grid2Options:MakeStatusAuraCommonOptions(status, options, optionParams)
 				end,
 				values = status.dbx.valueIndex and ColorizeByValues2 or ColorizeByValues1,
 			}
+			options.colorsSep = {  type = "description", order = 10.3, name = '' }
 		elseif status.dbx.type == "debuffs" then
 			options.debuffTypeColor = {
 				type = "toggle",
 				name = L["Use debuff Type color"],
 				desc = L["Use the debuff Type color first. The specified color will be applied only if the debuff has no type."],
-				order = 6,
+				order = 10.1,
 				get = function () return status.dbx.debuffTypeColorize end,
 				set = function (_, v)
 					status.dbx.debuffTypeColorize = v or nil
@@ -495,6 +517,7 @@ end
 Grid2Options:RegisterStatusOptions("buff", "buff", function(self, status, options, optionParams)
 	self:MakeStatusAuraDescriptionOptions(status, options)
 	self:MakeStatusAuraCommonOptions(status, options, optionParams)
+	self:MakeStatusAuraEnableStacksOptions(status, options, optionParams)
 	self:MakeStatusAuraMissingOptions(status, options, optionParams)
 	self:MakeStatusAuraUseSpellIdOptions(status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
@@ -540,6 +563,7 @@ end,{
 })
 
 Grid2Options:RegisterStatusOptions("debuff", "debuff", function(self, status, options, optionParams)
+	self:MakeStatusAuraEnableStacksOptions(status, options, optionParams)
 	self:MakeStatusAuraDescriptionOptions(status, options, optionParams)
 	self:MakeStatusAuraCommonOptions(status, options, optionParams)
 	self:MakeStatusAuraUseSpellIdOptions(status, options, optionParams)
