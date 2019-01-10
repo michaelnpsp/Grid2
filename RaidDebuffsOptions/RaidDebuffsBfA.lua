@@ -509,4 +509,45 @@ RDDB["Battle for Azeroth"] = {
         279575, -- Choking Miasma  
 		},
 	},
+--[[ incoming raids
+	[1176] = {
+		{ id = 1176, name = "Battle of Dazar'alor", raid = true },
+		["Champion of the Light"] = {
+		order = 1, ejid = 2344,
+		},
+		["Jadefire Masters"] = {
+		order = 2, ejid = 2323,
+		},
+		["Grong, the Revenant"] = {
+		order = 3, ejid = 2340,
+		},
+		["Opulence"] = {
+		order = 4, ejid = 2342,
+		},
+		["Conclave of the Chosen"] = {
+		order = 5, ejid = 2330,
+		},
+		["King Rastakhan"] = {
+		order = 6, ejid = 2335,
+		},
+		["High Tinker Mekkatorque"] = {
+		order = 7, ejid = 2334,
+		},
+		["Stormwall Blockade"] = {
+		order = 8, ejid = 2337,
+		},
+		["Lady Jaina Proudmoore"] = {
+		order = 9, ejid = 2343,
+		},
+	},
+	[1177] = {
+		{ id = 1177, name = "Crucible of Storms", raid = true },
+		["The Restless Cabal"] = {
+		order = 1, ejid = 2328,
+		},
+		["Uu'nat, Harbinger of the Void"] = {
+		order = 2, ejid = 2332,
+		},
+	},
+--]]
 }
