@@ -172,8 +172,9 @@ function Grid2:PLAYER_SPECIALIZATION_CHANGED(_,unit)
 	if unit=='player' then
 		if not Grid2:ReloadProfile() then
 			Grid2:ReloadTheme()
+			self:SendMessage("Grid_PlayerSpecChanged") -- Send message only if profile has not changed
 		end
-	end	
+	end
 end
 
 -- Themes

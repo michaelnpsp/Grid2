@@ -408,15 +408,25 @@ do
 		hidden = function() return not RDO.auto_enabled	end,
 	}
 
-	options.luacode = {
-		type = "execute",
+	options.develop = {
+		type = "select",
 		order = 23,
 		width = "half",
-		name = L["Gen Lua"],
-		desc = L["Generate LUA Code for the current Module"],
-		func = function()
-			RDO:ExportData(RDO:GenerateModuleLuaCode(visibleModule))
+		name = L["Develop"],
+		desc = "Develop&Debug options:\ngen lua: Generate LUA Code for the current Module\n5man: Extract Encounter Journal 5man instances/bosses\nraids: Extract Encounter Journal raids/bosses",
+		get = function() end,
+		set = function(_,v)
+			local lines
+			if v==1 then
+				lines = RDO:GenerateModuleLuaCode(visibleModule)
+			elseif v==2 then
+				lines = RDO:GenerateEncounterJournalData(false)
+			elseif v==3 then
+				lines = RDO:GenerateEncounterJournalData(true)
+			end
+			RDO:ExportData(lines)
 		end,
+		values = { "gen lua", "5man", "raids" },
 		hidden = function() return not GSRD.debugging end,
 	}
 

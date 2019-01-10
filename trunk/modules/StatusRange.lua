@@ -5,6 +5,7 @@ Created by Grid2 original authors, modified by Michael
 local Range = Grid2.statusPrototype:new("range")
 
 local Grid2 = Grid2
+local tonumber = tonumber
 local tostring = tostring
 local UnitIsUnit = UnitIsUnit
 local UnitInRange = UnitInRange
@@ -27,9 +28,10 @@ local UnitIsInRange
 
 local playerClass = select(2, UnitClass("player"))
  
-local rangeSpell = ({PALADIN=19750,SHAMAN=77472,DRUID=774,PRIEST=73325,MONK=115450})[playerClass]
-if rangeSpell then
-	rangeSpell = GetSpellInfo(rangeSpell)
+local rangeSpell
+local rangeSpellID = ({PALADIN=19750,SHAMAN=77472,DRUID=774,PRIEST=73325,MONK=115450})[playerClass]
+if rangeSpellID then
+	rangeSpell = GetSpellInfo(rangeSpellID)
 	Ranges[ rangeSpell ] = function(unit) return IsSpellInRange(rangeSpell, unit) == 1 end
 end
 
@@ -64,6 +66,7 @@ function Range:OnEnable()
 	self:RegisterMessage("Grid_UnitUpdated")
 	self:RegisterMessage("Grid_UnitLeft")
 	self:RegisterMessage("Grid_GroupTypeChanged")
+	self:RegisterMessage("Grid_PlayerSpecChanged")
 	timer:Play()
 	Update()
 end
@@ -72,6 +75,7 @@ function Range:OnDisable()
 	self:UnregisterMessage("Grid_UnitUpdated")
 	self:UnregisterMessage("Grid_UnitLeft")
 	self:UnregisterMessage("Grid_GroupTypeChanged")
+	self:UnregisterMessage("Grid_PlayerSpecChanged")
 	timer:Stop()
 	wipe(cache)
 end
@@ -88,6 +92,14 @@ function Range:Grid_GroupTypeChanged(_, groupType)
 end
 -- }}
 
+-- If the range configured is a Heal Spell, when changing spec the heal spell could not be available
+-- in this case we fall back to the standard 38 yards range.
+function Range:Grid_PlayerSpecChanged()
+	if not tonumber(self.dbx.range) then -- If is not a number -> Using RangeSpell for the player class if available
+		self:UpdateDB()
+	end	
+end
+
 function Range:Grid_UnitUpdated(_, unit)
 	cache[unit] = UnitIsInRange(unit) and 1 or false
 end
@@ -95,10 +107,15 @@ end
 function Range:Grid_UnitLeft(_, unit)
 	cache[unit] = nil
 end
+
+-- Due to ancient code, configuration can store a heal spell name in status.dbx.range (Rejuv, Healing wave, etc), but this prevents 
+-- to use the same profile for different healer classes, because the heal spell is different for each class:
+-- So we check if status.dbx.range stores a heal spell name (the value is not a number), and in this case the code loads the correct 
+-- heal spell for the class (precalculated in rangeSpell variable) instead of the heal spell stored in config.
 function Range:UpdateDB()
 	Ranges["38"] = Ranges38[ Grid2:GetGroupType() ] or UnitInRange
 	self.defaultAlpha = self.dbx.default or 0.25
-	self.range = tostring(self.dbx.range)
+	self.range = tonumber(self.dbx.range) and tostring(self.dbx.range) or (rangeSpellID and IsSpellKnown(rangeSpellID) and rangeSpell) 
 	UnitRangeCheck = Ranges[self.range]
 	if not UnitRangeCheck then
 		self.range = "38"
@@ -116,7 +133,7 @@ function Range:GetPercent(unit)
 end
 
 function Range:GetRanges()
-	return Ranges
+	return Ranges, rangeSpell
 end
 
 function Range:IsActive(unit)
