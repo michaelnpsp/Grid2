@@ -29,7 +29,7 @@ local function MakeCharmedToggleOption(status, options)
 		order = 105,
 		tristate = false,
 		get = function () return status.dbx.colorHostile end,
-		set = function (_, v) status.dbx.colorHostile = v or nil end,
+		set = function (_, v) status.dbx.colorHostile = v end,
 	}
 end
 
