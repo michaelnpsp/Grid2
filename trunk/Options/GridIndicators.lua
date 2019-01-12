@@ -327,7 +327,7 @@ end
 
 -- Insert options of a indicator in AceConfigTable
 function Grid2Options:AddIndicatorOptions(indicator, statusOptions, layoutOptions, colorOptions)
-	local options = self.indicatorsOptions[indicator.name].args;	wipe(options)
+	local options = self.indicatorsOptions[indicator.name].args; wipe(options)
 	if statusOptions then options["statuses"] = { type = "group", order = 10, name = L["statuses"], args = statusOptions } end
 	if colorOptions  then options["colors"]   = { type = "group", order = 20, name = L["Colors"],	args = colorOptions  } end
 	if layoutOptions then options["layout"]   = { type = "group", order = 30, name = L["Layout"],	args = layoutOptions } end
