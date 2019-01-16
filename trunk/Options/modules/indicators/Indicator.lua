@@ -171,7 +171,7 @@ do
 				local indicator = Grid2.indicators[key]
 				if indicator.dbx.type ~= 'multibar' then
 					RegisterIndicatorStatus(indicator, status, value)
-					self:MakeIndicatorOptions(indicator)
+					self:MakeIndicatorOptions( Grid2.indicatorTypes.color[indicator.name] and Grid2.indicators[indicator.parentName] or indicator )
 				end
 			end,
 			confirm = function(info,key)
