@@ -266,7 +266,9 @@ frameSizes = {
 	order= 202,
 	name = L["By Raid Size"],
 	args = MakeFrameSizesOptions(),
-}
+},
+
+layoutEditor = Grid2Options:GetLayoutsEditorOptions(),
 
 } )
 

@@ -122,7 +122,7 @@ indicators = {
 		return indicators
 	end,
 	get = function(info, key)
-		return not theme.indicators[key]
+		return not (theme.indicators and theme.indicators[key])
 	end,
 	set = function(info, key,value)
 		theme.indicators[key] = (not value) and true or nil

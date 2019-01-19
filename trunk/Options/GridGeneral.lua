@@ -7,12 +7,12 @@ local L = Grid2Options.L
 local tabs_order = 10
 local sect_order = 10
 
-function Grid2Options:AddGeneralOptions(TabName, SectionName, extraOptions)
-	local Tabs   = Grid2Options.options.args["general"]
+function Grid2Options:AddGeneralOptions(TabName, SectionName, extraOptions, order)
+	local Tabs   = Grid2Options.options.args.general
 	local CurTab = Tabs.args[TabName]
 	if (not CurTab) and (SectionName or (not extraOptions.args)) then
-		CurTab = { type = "group", order = tabs_order,	name = L[TabName], args = {} }
-		tabs_order = tabs_order + 1
+		CurTab = { type = "group", order = order or tabs_order,	name = L[TabName], args = {}, childGroups = "tab" }
+		if not order then tabs_order = tabs_order + 1 end
 		Tabs.args[TabName]= CurTab
 	end
 	if SectionName then
@@ -34,8 +34,8 @@ function Grid2Options:AddGeneralOptions(TabName, SectionName, extraOptions)
 		end
 	else
 		if extraOptions.args then
-			extraOptions.order = tabs_order
-			tabs_order = tabs_order + 1
+			extraOptions.order = order or tabs_order
+			if not order then tabs_order = tabs_order + 1 end
 			Tabs.args[TabName] = extraOptions
 		else
 			for key,value in pairs(extraOptions) do
@@ -43,4 +43,13 @@ function Grid2Options:AddGeneralOptions(TabName, SectionName, extraOptions)
 			end
 		end
 	end
+	return Tabs.args[TabName]
+end
+
+function Grid2Options:DelGeneralOptions(TabName)
+	self.options.args[TabName] = nil
+end
+
+function Grid2Options:GetGeneralOptions(TabName)
+	return self.options.args[TabName]
 end

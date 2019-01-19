@@ -5,9 +5,7 @@
 <Script file="modules\general\GridLayoutsEditor.lua"/>
 <Script file="modules\general\GridExportImport.lua"/>
 <Script file="modules\general\GridProfile.lua"/>
-<Script file="modules\general\GridDebug.lua"/>
 <Script file="modules\general\GridAbout.lua"/>
-
 
 <Script file="modules\themes\GridGeneral.lua"/>
 <Script file="modules\themes\GridIndicators.lua"/>

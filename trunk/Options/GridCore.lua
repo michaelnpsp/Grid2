@@ -25,6 +25,7 @@ local Grid2Options = {
 				name = L["Themes"],
 				desc = L["Themes"],
 				args = {},
+				hidden = function() return not Grid2Frame.dba.profile.extraThemes end,
 			},
 			indicators = {
 				order = 40,
@@ -51,6 +52,7 @@ local Grid2Options = {
 }
 
 -- Declare some variables for fast access to main sections options.
+-- generalOptions, themesOptions, indicatorsOptions, statusesOptions 
 for k,o in pairs(Grid2Options.options.args) do
 	Grid2Options[k..'Options'] = o.args
 end
@@ -61,12 +63,14 @@ function Grid2Options:Initialize()
 	self:EnableLoadOnDemand(not Grid2.db.global.LoadOnDemandDisabled)
 	self:MakeOptions()
 	LibStub("AceConfig-3.0"):RegisterOptionsTable("Grid2", self.options)
+	LibStub("AceConfigDialog-3.0"):SetDefaultSize("Grid2", 735, 550)
 	self.Initialize = nil
 end
 
 -- Called from Grid2 core if profile changes
 function Grid2Options:MakeOptions()
 	self.LI = self.db.profile.L.indicators
+	self:SetEditedTheme()
 	self:MakeThemesOptions(self.themesOptions)
 	self:MakeStatusesOptions(self.statusesOptions)
 	self:MakeIndicatorsOptions(self.indicatorsOptions)

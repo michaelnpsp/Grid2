@@ -301,22 +301,18 @@ end
 
 --===========================================================================================
 
-local themeOptions = {
-	header_hook = { type = "header", order=0, name="", hidden = function(info)
-		local index = tonumber(info[#info-1]) or 0
-		editedTheme.index = index
-		for key,module in pairs(themeModules) do
-			local db = module.dba.profile
-			editedTheme[key] = db.extraThemes and db.extraThemes[index] or db
-		end
-		local indicators = editedTheme.db.indicators[index] 
-		if not indicators then
-			indicators = {}; editedTheme.db.indicators[index] = indicators	
-		end
-		editedTheme.indicators = indicators
-		return true
-	end },
-}
+local function ThemesEnabled()
+	return Grid2Frame.dba.profile.extraThemes ~= nil
+end
+
+local function GetThemeIndicators(index)
+	local indicators = editedTheme.db.indicators[index] 
+	if not indicators then
+		indicators = {}
+		editedTheme.db.indicators[index] = indicators	
+	end
+	return indicators
+end
 
 local function GetThemeName(info)
 	local index = info.arg or 0
@@ -328,6 +324,13 @@ local function GetThemeName(info)
 	end	
 end
 
+local themeOptions = {
+	header_hook = { type = "header", order=0, name="", hidden = function(info)
+		Grid2Options:SetEditedTheme( tonumber(info[#info-1]) or 0 )
+		return true
+	end },
+}
+
 function Grid2Options:MakeThemeOptions( index )
 	options[tostring(index)] = { type = "group", childGroups = "tab", order = index+300, name = GetThemeName, desc = "", arg = index, args = themeOptions }
 end
@@ -336,22 +339,36 @@ Grid2:RegisterMessage("Grid_ThemeChanged", function() LibStub("AceConfigRegistry
 
 --===========================================================================================
 
+function Grid2Options:SetEditedTheme(index)
+	index = index or Grid2.currentTheme or 0
+	editedTheme.db = Grid2.db.profile.themes
+	editedTheme.index = index 
+	for key,module in pairs(themeModules) do
+		local db = module.dba.profile
+		editedTheme[key] = db.extraThemes and db.extraThemes[index] or db
+	end
+	editedTheme.indicators = GetThemeIndicators(index)
+end
+
+
 local order = 0
 function Grid2Options:AddThemeOptions( key, name, options )
 	order = order + 1
 	themeOptions[key] = { type = "group", childGroups = "tab", order = order, name = L[name], desc = L[name], args = options }
+	local group = self:AddGeneralOptions( name, nil, options )
+	group.hidden = ThemesEnabled
 end
 
 function Grid2Options:MakeThemesOptions(options)
-	-- reload themes db
-	editedTheme.db = Grid2.db.profile.themes
 	-- remove old options
 	options = options or self.themesOptions
 	wipe(options)
-	-- make new options
-	self:MakeThemesManagementOptions()
-	for index=0,#editedTheme.db.names do
-		self:MakeThemeOptions(index)
+	-- make new options for themes
+	if ThemesEnabled() then
+		self:MakeThemesManagementOptions()
+		for index=0,#editedTheme.db.names do
+			self:MakeThemeOptions(index)
+		end
 	end
 end
 
