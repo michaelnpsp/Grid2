@@ -339,6 +339,16 @@ Grid2:RegisterMessage("Grid_ThemeChanged", function() LibStub("AceConfigRegistry
 
 --===========================================================================================
 
+local order = 0
+function Grid2Options:AddThemeOptions( key, name, options )
+	order = order + 1
+	-- add the options to Themes Section
+	themeOptions[key] = { type = "group", childGroups = "tab", order = order, name = L[name], desc = L[name], args = options }
+	-- add the options to General section too
+	local group = self:AddGeneralOptions( name, nil, options )
+	group.hidden = ThemesEnabled
+end
+
 function Grid2Options:SetEditedTheme(index)
 	index = index or Grid2.currentTheme or 0
 	editedTheme.db = Grid2.db.profile.themes
@@ -348,15 +358,6 @@ function Grid2Options:SetEditedTheme(index)
 		editedTheme[key] = db.extraThemes and db.extraThemes[index] or db
 	end
 	editedTheme.indicators = GetThemeIndicators(index)
-end
-
-
-local order = 0
-function Grid2Options:AddThemeOptions( key, name, options )
-	order = order + 1
-	themeOptions[key] = { type = "group", childGroups = "tab", order = order, name = L[name], desc = L[name], args = options }
-	local group = self:AddGeneralOptions( name, nil, options )
-	group.hidden = ThemesEnabled
 end
 
 function Grid2Options:MakeThemesOptions(options)
