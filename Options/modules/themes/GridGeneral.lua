@@ -397,7 +397,7 @@ local options = {
 	layout = { type = "group", inline = true, order = 1, name = L["Layout"], desc = L["Layout"], args = layoutOptions },
 	frame  = { type = "group", inline = true, order = 2, name = L["Frames"], desc = L["Frames"], args = frameOptions  },
 }
-Grid2Options:AddThemeOptions( "general", "General", options )
+Grid2Options:AddThemeOptions( "appearance", "Appearance", options )
 
 -- Refresh theme general options the first time they are displayed, it's a workaround to a weird bug in AceConfig/AceGUI: 
 -- sometimes all editboxes of sliders do not display any value, this only happens when we have 3 nested groups like in: 

@@ -179,4 +179,4 @@ Grid2Options:AddGeneralOptions("Profiles", nil, {
 		general  = { type = "group", order= 100, name = L["General"],  desc = "", args = options  },
 		import   = Grid2Options.AdvancedProfileOptions or {},
 	},
-} )
+}, 490 )

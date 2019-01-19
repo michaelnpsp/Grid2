@@ -9,7 +9,7 @@ local Grid2Layout = Grid2:GetModule("Grid2Layout")
 
 --=====================================================================================
 
-local TITLE = "Layouts"
+local EDITOR_IDENTIFIER = "LayoutEditor"
 
 local CHARACTER_PLUS_TEXTURE = "Interface\\PaperDollInfoFrame\\Character-Plus"
 
@@ -41,11 +41,20 @@ local editedLayoutName
 
 --=====================================================================================
 
-local function SelectGroup( layoutName, headerIndex )
+local tmpTable = {}
+local function SelectGroup( info, layoutName, headerIndex )
 	if not layoutName then
 		editedLayout, editedLayoutName = nil, nil
 	end
-	LibStub("AceConfigDialog-3.0"):SelectGroup( "Grid2", "general", TITLE, layoutName, tostring(headerIndex) )
+	wipe(tmpTable)
+	local options = Grid2Options.options
+	repeat
+		tmpTable[#tmpTable+1] = info[#tmpTable+1]
+		options = options.args[ info[#tmpTable] ]
+	until #tmpTable>=#info or options.arg==EDITOR_IDENTIFIER 
+	tmpTable[#tmpTable+1] = layoutName
+	tmpTable[#tmpTable+1] = tostring(headerIndex)
+	LibStub("AceConfigDialog-3.0"):SelectGroup( "Grid2", unpack(tmpTable) )
 end
 
 local function GetLayoutsSorted()
@@ -91,7 +100,7 @@ local function IsHeaderHidden(info)
 	return not (editedLayout and editedLayout[tonumber(info[#info])])
 end
 
-local function CreateHeader(index)
+local function CreateHeader(info, index)  
 	if type(index)=='number' then
 		table.insert( editedLayout, index+1, Grid2.CopyTable(editedLayout[index]) )
 		index = index + 1
@@ -100,17 +109,17 @@ local function CreateHeader(index)
 		index= #editedLayout
 	end	
 	RefreshLayout()
-	SelectGroup( editedLayoutName, index )
+	SelectGroup( info, editedLayoutName, index )
 	return true
 end
 
 local function RemoveLayoutOptions(name)
-	editorOptions.args[name] = nil
+	editorOptions[name] = nil
 end
 
 local layoutMaxOrder = 1
 local function CreateLayoutOptions(name)
-	editorOptions.args[name] = {
+	editorOptions[name] = {
 		type = "group",
 		childGroups = "tab",
 		order = layoutMaxOrder,
@@ -127,17 +136,17 @@ local function RemoveLayout(info, name)
 	Grid2Layout:FixLayouts()
 	RemoveLayoutOptions(name)
 	RefreshLayout()
-	SelectGroup()
+	SelectGroup(info)
 end
 
-local function RemoveHeader(index)
+local function RemoveHeader(info, index)
 	if #editedLayout>1 then
 		index = index or editedHeaderIndex
 		table.remove( editedLayout, index )
-		SelectGroup( editedLayoutName, index>#editedLayout and #editedLayout or index )
+		SelectGroup( info, editedLayoutName, index>#editedLayout and #editedLayout or index )
 		RefreshLayout()
 	else
-		RemoveLayout()
+		RemoveLayout(info)
 	end
 end
 
@@ -302,7 +311,7 @@ headerOptions = {
 		width  = 0.6,
 		name   = string.format( "|T%s:0|t%s", CHARACTER_PLUS_TEXTURE, L["Clone"] ),
 		desc   = L["Clone this header"],
-		func   = function()	CreateHeader(editedHeaderIndex) end,
+		func   = function(info)	CreateHeader(info, editedHeaderIndex) end,
 		hidden = false,
 	},	
 	
@@ -312,7 +321,7 @@ headerOptions = {
 		width  = 0.6,
 		name   = string.format( "|T%s:0|t%s", READY_CHECK_NOT_READY_TEXTURE, L["Delete"] ),
 		desc   = L["Delete this header"],
-		func   = function()	RemoveHeader(editedHeaderIndex)	end,
+		func   = function(info)	RemoveHeader(info, editedHeaderIndex) end,
 		confirm = function() 
 			if #editedLayout>1 then
 				return L["Are you sure you want to remove this header?"] 
@@ -469,8 +478,8 @@ layoutOptions = {
 				width  = 0.6,
 				name   = string.format( "|T%s:0|t%s", CHARACTER_PLUS_TEXTURE, L["Create"] ),
 				desc   = L["Create New Header"],
-				func   = function()	
-					CreateHeader( layoutOptions.new.args.type.arg )
+				func   = function(info)	
+					CreateHeader( info, layoutOptions.new.args.type.arg )
 					layoutOptions.new.args.type.arg = "player"
 				end,
 				hidden = false,
@@ -510,7 +519,7 @@ generalOptions = {
 		name = "|cffffd200".. L["Display all groups"] .."|r",
 		desc = L["Display all raid groups, if unchecked the groups will by filtered according to the instance size. Not all layouts will obey this setting."],
 		width = "full",
-		get = function() 
+		get = function(info)
 			return Grid2Layout.db.global.displayAllGroups
 		end,
 		set = function(info,v) 
@@ -561,7 +570,7 @@ generalOptions = {
 		name = L["Create New Layout"],
 		desc = L["Create a new user defined layout by entering a name in the editbox."],
 		get = function() end,
-		set = function(_, name)
+		set = function(info, name)
 			if Grid2Layout.layoutSettings[name] then return end
 			Grid2Layout.customLayouts[name]= {
 				meta = { raid = true, party = true, arena = true, solo = true },
@@ -569,7 +578,7 @@ generalOptions = {
 			}
 			Grid2Layout:AddLayout(name, Grid2Layout.customLayouts[name])
 			CreateLayoutOptions(name)
-			SelectGroup( name )
+			SelectGroup(info, name )
 		end,
 	},
 
@@ -597,31 +606,49 @@ generalOptions = {
 
 --=====================================================================================
 
-editorOptions = {
-	type   = "group",
-	name   = L[TITLE],
-	childGroups = "select",
-	order  = 10,
-	args = {
-	
-		__load = { type = "header",	order = 0, name = "", hidden = function()
-			for _, name in pairs(GetLayoutsSorted()) do
-				CreateLayoutOptions(name)
-			end
-			editorOptions.args.__load = nil
-			return true
-		end	},
+editorOptions = {}
 
-		__general = {
-			type  = "group",
-			name  = string.format( "|cFFffee00[%s]|r", L["General Options"] ),
-			order = 0.1,
-			args  = generalOptions,
-		},
-	
-	}	
+editorOptions.__load = { type = "header",	order = 0, name = "", hidden = function()
+	for _, name in pairs(GetLayoutsSorted()) do
+		CreateLayoutOptions(name)
+	end
+	editorOptions.__load = nil
+	return true
+end	}
+
+editorOptions.__general = {
+	type  = "group",
+	name  = string.format( "|cFFffee00[%s]|r", L["General Options"] ),
+	order = 0.1,
+	args  = generalOptions,
 }
 
 --=====================================================================================
 
-Grid2Options:AddGeneralOptions( TITLE, nil,  editorOptions )
+-- Editor is displayed in two different places, option when Themes are enabled: General -> LayoutEditor	
+Grid2Options:AddGeneralOptions( "LayoutEditor", nil, {
+	type   = "group",
+	name   = L["Layouts"],
+	childGroups = "select",
+	args = editorOptions,
+	arg  = EDITOR_IDENTIFIER, -- To locate the editor options in SelectGroup()
+	hidden = function() return Grid2Frame.dba.profile.extraThemes == nil end,
+} )
+
+-- Editor is displayed in two different places, option when Themes are disabled: General -> Layouts -> Editor
+local editorLayouts = {
+	order = 500,
+	type   = "group",
+	name   = L["Editor"],
+	childGroups = "select",
+	args = editorOptions,
+	arg  = EDITOR_IDENTIFIER, -- To locate the editor options in SelectGroup()
+	hidden = function() return Grid2Frame.dba.profile.extraThemes ~= nil end,
+}
+function Grid2Options:GetLayoutsEditorOptions()
+	return editorLayouts
+end
+
+--=====================================================================================
+
+

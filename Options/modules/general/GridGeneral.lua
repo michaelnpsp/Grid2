@@ -1,6 +1,34 @@
 local L = Grid2Options.L
 
 --==========================================================================
+-- Multiple Themes Support
+--==========================================================================
+
+Grid2Options:AddGeneralOptions( "General", "Themes", {
+	themes = {
+		type = "toggle",
+		name = L["Enable Themes"],
+		desc = L["Enable support for multiple themes, allowing to define different visual styles for the Grid2 frames. General options will change and a new Themes section will be displayed."],
+		width = "full",
+		order = 5,
+		get = function () 
+			 return Grid2Frame.dba.profile.extraThemes ~= nil
+		end,
+		set = function (_, v)
+			if v then
+				Grid2Layout.dba.profile.extraThemes = {}
+				Grid2Frame.dba.profile.extraThemes  = {}
+			elseif #Grid2Frame.dba.profile.extraThemes==0 then
+				Grid2Layout.dba.profile.extraThemes = nil
+				Grid2Frame.dba.profile.extraThemes  = nil
+			else
+				Grid2Options:MessageDialog(L["Error: this option cannot be disabled because extra themes have been created. Remove the extra themes first."])
+			end			
+		end,
+	},
+}, nil)
+
+--==========================================================================
 -- Text formatting
 --==========================================================================
 
@@ -202,8 +230,8 @@ do
 	Grid2Options:AddGeneralOptions( "General", "Blizzard Raid Frames", {
 		hideBlizzardRaidFrames = {
 			type = "toggle",
-			name = L["Hide Blizzard Raid Frames."],
-			desc = L["Hide Blizzard Raid Frames."],
+			name = L["Hide Blizzard Raid Frames"],
+			desc = L["Hide Blizzard Raid Frames"],
 			width = "full",
 			order = 120,
 			get = function () return not IsAddOnLoaded( addons[1] ) end,

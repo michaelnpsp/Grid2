@@ -5,8 +5,6 @@ if not L then return end
 L["GRID2_WELCOME"] = "Bienvenido al Grid2"
 L["GRID2_DESC"] = "Grid2 es un addon de marcos de unidades. Grid2 muestra la vida y toda la informacion importante de los miembros del grupo o raid de una manera mas comprensible."
 
-L["General Settings"] = "General"
-
 L["statuses"] = "Estados"
 L["indicators"] = "Indicadores"
 L["Assigned indicators"] = "Indicadores asignados"
@@ -119,7 +117,11 @@ L["When duration<1sec"] = "Si duracion < 1 segundo"
 
 -- misc
 L["Blizzard Raid Frames"] = "Marcos de banda de Blizzard"
-L["Hide Blizzard Raid Frames on Startup"] = "Ocultar marcos de banda de Blizzard al inicio"
+L["Hide Blizzard Raid Frames"] = "Ocultar marcos de banda de Blizzard"
+
+-- minimap icon
+L["Minimap Icon"] = "Minimapa Icono"
+L["Show Minimap Icon"] = "Mostrar Icono en el Minimap"
 
 -- debugging & maintenance
 L["debugging"] = "debugging"
@@ -136,6 +138,7 @@ L["Reset locations to the default list."] = "Resetea las posiciones a los valore
 L["Reset to defaults."] = "Reseta a los valores prededeterminados"
 L["Reset Statuses"] = "Resetea Estados"
 L["Reset statuses to defaults."] = "Reseta los estados a los valores predeterminados"
+L["Reset Position"] = "Reiniciar Posicion"
 
 L["Warning! This option will delete all settings and profiles, are you sure ?"] = "Atención ! Esta opción borrará toda la configuración y los perfiles definidos. Está seguro ?"
 
@@ -959,6 +962,7 @@ L["Raid (World)"] = "Raid (Mundo)"
 L["Raid (Other)"] = "Raid (Otras)"
 
 -- themes
+L["Enable Themes"] = "Activar Temas"
 L["Themes"] = "Temas"
 L["themes management"] = "gestion de temas"
 L["Default Theme"] = "Tema por Defecto"
