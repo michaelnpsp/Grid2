@@ -148,6 +148,7 @@ end
 do
 	local statusTypes = { "color", "icon", "icons", "percent", "text", "tooltip" }
 	Grid2.setupFunc["debuffs"] = function(baseKey, dbx)
+		if dbx.spellName then dbx.spellName = nil end -- fix possible wrong data in old database
 		local status = Grid2.statusPrototype:new(baseKey, false)
 		status.OnUpdate = status_Update
 		return Grid2.CreateStatusAura( status, basekey, dbx, 'debuff', statusTypes)	
