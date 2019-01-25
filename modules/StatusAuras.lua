@@ -347,13 +347,13 @@ do
 		self.vId = dbx.valueIndex or 0
 		self.valMax = dbx.valueMax
 		self.GetPercent = dbx.valueMax and GetPercentMax or GetPercentHealth
-		if dbx.spellName then -- single spell
-			self.spell = type(dbx.spellName)=="number" and not self.dbx.useSpellId and GetSpellInfo(dbx.spellName) or dbx.spellName or "UNDEFINED"
-		elseif dbx.auras then -- multiple spells
+		if dbx.auras then -- multiple spells
 			self.spells = self.spells or {}
 			for _,spell in ipairs(dbx.auras) do
 				self.spells[spell] = true
 			end
+		elseif dbx.spellName then -- single spell
+			self.spell = type(dbx.spellName)=="number" and not self.dbx.useSpellId and GetSpellInfo(dbx.spellName) or dbx.spellName or "UNDEFINED"
 		end			
 		if dbx.mine==2 then  -- 2>nil = not mine;  1|true>true = mine;  false|nil>false = mine&not-mine
 			self.isMine = nil

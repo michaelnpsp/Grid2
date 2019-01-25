@@ -28,6 +28,7 @@ end
 do
 	local statusTypes = { "color", "icon", "icons", "percent", "text" }
 	Grid2.setupFunc["buffs"] = function(baseKey, dbx)
+		if dbx.spellName then dbx.spellName = nil end -- fix possible wrong data in old database
 		local status = Grid2.statusPrototype:new(baseKey, false)
 		status.GetIcons = status_GetIcons
 		return Grid2.CreateStatusAura( status, basekey, dbx, 'buff', statusTypes )
