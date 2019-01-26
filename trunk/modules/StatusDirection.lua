@@ -103,7 +103,7 @@ local function UpdateDirections()
 	else
 		for unit,_ in pairs(directions) do
 			directions[unit]= nil
-			self:UpdateIndicators(unit)
+			Direction:UpdateIndicators(unit)
 		end
 	end	
 end
