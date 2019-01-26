@@ -103,6 +103,7 @@ local function Icon_Layout(self, parent)
 	local ux,uy = self.ux,self.uy
 	local vx,vy = self.vx,self.vy
 	local size  = self.iconTotSize
+	local borderSize = self.borderSize
 	local frameName
 	if not self.dbx.disableOmniCC then
 		local i,j  = parent:GetName():match("Grid2LayoutHeader(%d+)UnitButton(%d+)")
@@ -126,11 +127,15 @@ local function Icon_Layout(self, parent)
 		end
 		frame:SetSize( self.iconSize, self.iconSize )
 		-- frame container
-		if self.borderSize>0 then
+		if borderSize>0 then
+			if borderSize~=frame.borderSize then -- SetBackdrop() is awful slow, so avoid to call it if not necessary
+				frame:SetBackdrop(self.backdrop)
+				frame.borderSize = borderSize
+			end	
 			local c = self.colorBorder
-			frame:SetBackdrop(self.backdrop)
 			frame:SetBackdropBorderColor(c.r,c.g,c.b,c.a)
 		else
+			frame.borderSize = nil
 			frame:SetBackdrop(nil)
 		end
 		frame:ClearAllPoints()
@@ -166,11 +171,11 @@ local function Icon_Layout(self, parent)
 			frame.cooldown:Hide()
 		end
 		-- icon texture
-		frame.icon:SetPoint("TOPLEFT",     frame ,"TOPLEFT",  self.borderSize, -self.borderSize)
-		frame.icon:SetPoint("BOTTOMRIGHT", frame ,"BOTTOMRIGHT", -self.borderSize, self.borderSize)
+		frame.icon:SetPoint("TOPLEFT",     frame ,"TOPLEFT",  borderSize, -borderSize)
+		frame.icon:SetPoint("BOTTOMRIGHT", frame ,"BOTTOMRIGHT", -borderSize, borderSize)
 		frame.icon:SetTexCoord(0.05, 0.95, 0.05, 0.95)
 		--
-		frame:Hide()
+		frame:Hide()		
 		x = x + 1
 		if x>=self.maxIconsPerRow then x = 0; y = y + 1 end
 	end
