@@ -224,7 +224,7 @@ function Grid2:ReloadTheme(force)
 		if not self:RunSecure(2, self, "ReloadTheme") then
 			self.currentTheme = theme
 			self:UpdateTheme()
-			self:RefreshTheme()			
+			self:RefreshTheme()
 			self:SendMessage("Grid_ThemeChanged", theme)
 			self:Debug("ReloadTheme", theme)
 		end
