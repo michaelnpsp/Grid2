@@ -174,6 +174,38 @@ Grid2.AlignPoints= {
 	}	
 }
 
+-- Create/Manage/Sets frame backdrops
+do
+	local format = string.format
+	local tostring = tostring
+	local backdrops = {}
+	-- Generates a backdrop table, reuses tables avoiding to create duplicates
+	function Grid2:GetBackdropTable(edgeFile, edgeSize, bgFile, tile, tileSize, inset)
+		inset = inset or edgeSize
+		local key = format("%s;%s;%d;%s;%d;%d", bgFile or "", edgeFile or "", edgeSize or -1, tostring(tile), tileSize or -1, inset or -1)
+		local backdrop = backdrops[key]
+		if not backdrop then
+			backdrop = { 
+				bgFile = bgFile,
+				tile = tile,
+				tileSize = tileSize,
+				edgeFile = edgeFile,
+				edgeSize = edgeSize,
+				insets = { left = inset, right = inset, top = inset, bottom = inset },  
+			}
+			backdrops[key] = backdrop
+		end
+		return backdrop
+	end
+	-- Sets a backdrop only if necessary to alleviate game freezes, see ticket #640
+	function Grid2:SetFrameBackdrop(frame, backdrop)
+		if backdrop~=frame.currentBackdrop then
+			frame:SetBackdrop(backdrop)
+			frame.currentBackdrop = backdrop
+		end
+	end
+end
+
 -- Grid2:RunSecure(priority, object, method, arg) 
 -- Queue some methods to be executed when out of combat, if we are not in combat do nothing.
 -- Methods with lower priority value override the execution of methods with higher priority value.

@@ -68,13 +68,17 @@ end
 local function SerializeCurrentProfile(Hex, exportCustomLayouts )
 	local config= { ["Grid2"] = Grid2.db.profile }
 	for name, module in Grid2:IterateModules() do
-		if module.db.profile then
-			config[name]= module.db.profile
+		local data = Grid2.db:GetNamespace(name,true)
+		if data then
+			config[name] = data.profile 
 		end
 	end
 	config["@Grid2Options"] = Grid2Options.db.profile
 	if exportCustomLayouts then -- Special ugly case for Custom Layouts
-		config["@Grid2Layout"] = Grid2:GetModule("Grid2Layout").db.global
+		local data = Grid2.db:GetNamespace('Grid2Layout',true)
+		if data then
+			config["@Grid2Layout"] = data.global
+		end	
 	end
 	local Serializer = LibStub:GetLibrary("AceSerializer-3.0")
 	local Compresor = LibStub:GetLibrary("LibCompress")

@@ -34,7 +34,7 @@ local function Square_Layout(self, parent)
 	Square:SetHeight( self.height or container:GetHeight() )
 	local r1,g1,b1,a1 = Square:GetBackdropColor()
 	local r2,g2,b2,a2 = Square:GetBackdropBorderColor()
-	Square:SetBackdrop(self.backdrop)
+	Grid2:SetFrameBackdrop(Square, self.backdrop)
 	Square:SetBackdropColor(r1,g1,b1,a1)
 	Square:SetBackdropBorderColor(r2,g2,b2,a2)
 	Square:Show()
@@ -63,20 +63,8 @@ local function Square_UpdateDB(self)
 	self.height= dbx.size or dbx.height
 	if self.height==0 then self.height= nil end
 	-- backdrop
-	local backdrop    = self.backdrop   or {}
-	backdrop.insets   = backdrop.insets or {}
-	local borderSize  = self.borderSize or 0
-	backdrop.tile     = false
-	backdrop.tileSize = 0
-	backdrop.bgFile   = Grid2:MediaFetch("statusbar", dbx.texture, "Grid2 Flat")
-	backdrop.edgeFile = borderSize>0 and "Interface\\Addons\\Grid2\\media\\white16x16" or nil
-	backdrop.edgeSize = borderSize>0 and borderSize or nil
-	local insets      = backdrop.insets
-	insets.left       = borderSize
-	insets.right      = borderSize
-	insets.top        = borderSize
-	insets.bottom     = borderSize
-	self.backdrop     = backdrop
+	local borderSize = self.borderSize or 0
+	self.backdrop = Grid2:GetBackdropTable( borderSize>0 and "Interface\\Addons\\Grid2\\media\\white16x16" or nil, borderSize>0 and borderSize or nil, Grid2:MediaFetch("statusbar", dbx.texture, "Grid2 Flat"), false, 0, borderSize )
 end
 
 
