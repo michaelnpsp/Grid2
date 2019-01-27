@@ -158,12 +158,6 @@ Grid2Layout.groupFilters =  {
 
 Grid2Layout.groupsFilters = { "1", "1,2", "1,2,3", "1,2,3,4", "1,2,3,4,5", "1,2,3,4,5,6", "1,2,3,4,5,6,7", "1,2,3,4,5,6,7,8" }
 
-Grid2Layout.frameBackdrop = {
-	 bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
-	 tile = false, tileSize = 16, edgeSize = 16,
-	 insets = {left = 4, right = 4, top = 4, bottom = 4},
-}
-
 Grid2Layout.relativePoints = {
 	[false] = { TOPLEFT = "BOTTOMLEFT", TOPRIGHT = "BOTTOMRIGHT", BOTTOMLEFT = "TOPLEFT",     BOTTOMRIGHT = "TOPRIGHT"   },
 	[true]  = { TOPLEFT = "TOPRIGHT",   TOPRIGHT = "TOPLEFT",     BOTTOMLEFT = "BOTTOMRIGHT", BOTTOMRIGHT = "BOTTOMLEFT" },
@@ -607,11 +601,8 @@ function Grid2Layout:UpdateSize()
 end
 
 function Grid2Layout:UpdateTextures()
-	local f = self.frameBack
 	local p = self.db.profile
-	self.frameBackdrop.bgFile   = Grid2:MediaFetch("background", p.BackgroundTexture)
-	self.frameBackdrop.edgeFile = Grid2:MediaFetch("border", p.BorderTexture)
-	f:SetBackdrop( self.frameBackdrop )
+	Grid2:SetFrameBackdrop(	self.frameBack, Grid2:GetBackdropTable( Grid2:MediaFetch("border", p.BorderTexture), 16, Grid2:MediaFetch("background", p.BackgroundTexture), false, nil, 4  ) )
 end
 
 function Grid2Layout:UpdateColor()

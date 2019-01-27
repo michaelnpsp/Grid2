@@ -127,16 +127,10 @@ local function Icon_Layout(self, parent)
 		end
 		frame:SetSize( self.iconSize, self.iconSize )
 		-- frame container
+		Grid2:SetFrameBackdrop(frame, self.backdrop)
 		if borderSize>0 then
-			if borderSize~=frame.borderSize then -- SetBackdrop() is awful slow, so avoid to call it if not necessary
-				frame:SetBackdrop(self.backdrop)
-				frame.borderSize = borderSize
-			end	
 			local c = self.colorBorder
 			frame:SetBackdropBorderColor(c.r,c.g,c.b,c.a)
-		else
-			frame.borderSize = nil
-			frame:SetBackdrop(nil)
 		end
 		frame:ClearAllPoints()
 		frame:SetPoint( self.anchorIcon, f, self.anchorIcon, (x*ux+y*vx)*size, (x*uy+y*vy)*size )
@@ -230,17 +224,7 @@ local function Icon_UpdateDB(self)
 	self.fontSize        = dbx.fontSize or 9
 	self.font            = Grid2:MediaFetch("font", dbx.font or Grid2Frame.db.profile.font) or STANDARD_TEXT_FONT
 	-- backdrop
-	if self.borderSize>0 then
-		local backdrop         = self.backdrop   or {}
-		backdrop.insets        = backdrop.insets or {}
-		backdrop.edgeFile      = "Interface\\Addons\\Grid2\\media\\white16x16"
-		backdrop.edgeSize      = self.borderSize
-		backdrop.insets.left   = self.borderSize
-		backdrop.insets.right  = self.borderSize
-		backdrop.insets.top    = self.borderSize
-		backdrop.insets.bottom = self.borderSize
-		self.backdrop          = backdrop
-	end
+	self.backdrop = self.borderSize>0 and Grid2:GetBackdropTable("Interface\\Addons\\Grid2\\media\\white16x16", self.borderSize) or nil
 end
 
 Grid2.setupFunc["icons"] = function(indicatorKey, dbx)

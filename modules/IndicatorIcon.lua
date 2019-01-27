@@ -143,7 +143,7 @@ local function Icon_Layout(self, parent)
 	else
 		Icon:SetAllPoints(f)
 	end
-	f:SetBackdrop(self.backdrop)
+	Grid2:SetFrameBackdrop(f, self.backdrop)
 	f:SetBackdropBorderColor(r, g, b, a)
 	local size = self.iconSize
 	f:SetSize(size,size)
@@ -196,17 +196,7 @@ local function Icon_UpdateDB(self)
 	-- ignore icon and use a solid square texture
 	self.disableIcon  = dbx.disableIcon
 	-- backdrop
-	local backdrop    = self.backdrop   or {}
-	backdrop.insets   = backdrop.insets or {}
-	local borderSize  = self.borderSize or 1
-	backdrop.edgeFile = "Interface\\Addons\\Grid2\\media\\white16x16"
-	backdrop.edgeSize = borderSize
-	local insets      = backdrop.insets
-	insets.left       = borderSize
-	insets.right      = borderSize
-	insets.top        = borderSize
-	insets.bottom     = borderSize
-	self.backdrop     = backdrop
+	self.backdrop = Grid2:GetBackdropTable("Interface\\Addons\\Grid2\\media\\white16x16", self.borderSize or 1)
 end
 
 
