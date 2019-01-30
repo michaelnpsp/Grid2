@@ -419,6 +419,7 @@ L["square"] = "cuadrado"
 L["text"] = "texto"
 L["bar"] = "barra"
 L["multibar"] = "barras"
+L["portrait"] = "retrato"
 
 -- indicators
 L["corner-top-left"] = "esquina superior izquierda"
