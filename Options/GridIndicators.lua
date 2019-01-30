@@ -12,7 +12,7 @@ Grid2Options.indicatorIconPath = "Interface\\Addons\\Grid2Options\\media\\indica
 Grid2Options.indicatorTypes = {}
 
 -- Indicators sort order
-Grid2Options.indicatorTypesOrder= { tooltip = 1, alpha = 2, border = 3, multibar = 4, bar = 5, text = 6, square = 7, icon = 8, icons = 9 }
+Grid2Options.indicatorTypesOrder= { tooltip = 1, alpha = 2, border = 3, multibar = 4, bar = 5, text = 6, square = 7, icon = 8, icons = 9, portrait = 10 }
 
 do
 	-- ban these indicator names
@@ -84,6 +84,8 @@ do
 				Grid2:DbSetIndicator( newIndicatorName.."-color" , { type="multibar-color" })
 			elseif (newIndicatorValues.type == "icons") then
 				dbx.level = 8
+			elseif (newIndicatorValues.type == "portrait") then
+				dbx.level = 4
 			end
 			Grid2:DbSetIndicator(newIndicatorName,dbx)
 			-- Create runtime indicator
@@ -125,7 +127,7 @@ do
 		wipe(workTable)
 		local indicators = Grid2.db.profile.indicators
 		for name,option in pairs(Grid2Options.indicatorsOptions) do
-			if option.order and option.order<10 then
+			if option.order and option.order<25 then
 				local indicator = Grid2.indicators[name]
 				if indicator and Grid2Options.indicatorTypes[indicator.dbx.type] then
 					workTable[name] = string.format("|T%s:0|t%s", option.icon, option.name)

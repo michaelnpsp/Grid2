@@ -201,8 +201,7 @@ end
 
 
 local function CreateIcon(indicatorKey, dbx)
-	local existingIndicator = Grid2.indicators[indicatorKey]
-	local indicator = existingIndicator or Grid2.indicatorPrototype:new(indicatorKey)
+	local indicator = Grid2.indicators[indicatorKey] or Grid2.indicatorPrototype:new(indicatorKey)
 	indicator.dbx 			= dbx
 	indicator.Create        = Icon_Create
 	indicator.GetBlinkFrame = Icon_GetBlinkFrame

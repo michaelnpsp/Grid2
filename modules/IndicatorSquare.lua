@@ -3,7 +3,7 @@
 local Grid2 = Grid2
 
 local function Square_Create(self, parent)
-	local Square = self:CreateFrame("Frame", parent)
+	self:CreateFrame("Frame", parent)
 end
 
 local function Square_GetBlinkFrame(self, parent)
@@ -69,8 +69,7 @@ end
 
 
 local function Create(indicatorKey, dbx)
-	local existingIndicator = Grid2.indicators[indicatorKey]
-	local indicator = existingIndicator or Grid2.indicatorPrototype:new(indicatorKey)
+	local indicator = Grid2.indicators[indicatorKey] or Grid2.indicatorPrototype:new(indicatorKey)
 	indicator.dbx = dbx
 	indicator.Create = Square_Create
 	indicator.GetBlinkFrame = Square_GetBlinkFrame

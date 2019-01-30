@@ -10,6 +10,7 @@
 <Script file="modules\IndicatorIcons.lua"/>
 <Script file="modules\IndicatorSquare.lua"/>
 <Script file="modules\IndicatorTooltip.lua"/>
+<Script file="modules\IndicatorPortrait.lua"/>
 <Script file="modules\StatusHealth.lua"/>
 <Script file="modules\StatusMana.lua"/>
 <Script file="modules\StatusColor.lua"/>
