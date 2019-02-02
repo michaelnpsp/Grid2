@@ -225,6 +225,7 @@ function Grid2Frame:OnModuleEnable()
 	self:UpdateMenu()
 	self:UpdateBlink()
 	self:CreateIndicators()
+	self:RefreshIndicators()
 	self:LayoutFrames()
 	self:UpdateFrameUnits()
 	self:UpdateIndicators()
@@ -251,8 +252,27 @@ function Grid2Frame:UpdateTheme()
 end
 
 function Grid2Frame:RefreshTheme()
+	self:RefreshIndicators()
 	self:LayoutFrames()
 	self:UpdateIndicators()
+end
+
+-- wakeup/suspend indicators according to the current theme
+function Grid2Frame:RefreshIndicators()
+	local _, _, suspended = Grid2:GetCurrentTheme()
+	for _,indicator in ipairs(Grid2.indicatorSorted) do
+		if not indicator.parentName then
+			local s1 = indicator.suspended
+			local s2 = suspended[indicator.name]
+			if s1~=s2 then
+				if s2 then
+					Grid2:SuspendIndicator(indicator)
+				else
+					Grid2:WakeUpIndicator(indicator)
+				end
+			end
+		end	
+	end
 end
 
 function Grid2Frame:RegisterFrame(frame)

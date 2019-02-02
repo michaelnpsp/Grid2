@@ -2,6 +2,7 @@
 Created by Grid2 original authors, modified by Michael
 --]]
 
+local Grid2 = Grid2
 local Grid2Frame = Grid2Frame
 local next = next
 local tinsert = table.insert
@@ -41,7 +42,7 @@ function indicator:RegisterStatus(status, priority)
 	if self.priorities[status] then return end
 	self.statuses[#self.statuses + 1] = status
 	self:SetStatusPriority(status, priority)
-	if not self.suspended then
+	if not Grid2.suspendedIndicators[self.name] then
 		status:RegisterIndicator(self)
 	end	
 end
