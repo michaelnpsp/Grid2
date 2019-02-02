@@ -185,7 +185,7 @@ function Grid2:GetCurrentTheme()
 end
 
 function Grid2:SetupTheme()
-	self.currentTheme = self:CheckTheme()
+	self.currentTheme, self.suspendedIndicators = self:CheckTheme()
 	self:UpdateTheme()
 end
 
@@ -202,7 +202,8 @@ function Grid2:CheckTheme()
 	local kSG  = fmt("%s@%s",    kS, groupType)
 	local kGI  = fmt("%s@%s",    groupType, instType)
 	theme = enabled[kSM] or enabled[kSGI] or enabled[kSG] or enabled[kS] or enabled[kM] or enabled[kGI] or enabled[groupType] or theme
-	return themes.names[theme] and theme or 0
+	theme = themes.names[theme] and theme or 0
+	return theme, themes.indicators[theme] or {}
 end
 
 function Grid2:UpdateTheme()
@@ -212,7 +213,6 @@ function Grid2:UpdateTheme()
 end
 
 function Grid2:RefreshTheme()
-	self:RefreshIndicators(true)
 	for _,module in ipairs(self.orderedModules) do
 		if module.RefreshTheme then module:RefreshTheme() end
 	end
