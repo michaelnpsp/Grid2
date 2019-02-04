@@ -1,6 +1,6 @@
 -- mana, lowmana, power, poweralt
 
-local Mana = Grid2.statusPrototype:new("mana",false)
+local Mana = Grid2.statusPrototype:new("mana")
 local LowMana = Grid2.statusPrototype:new("lowmana",false)
 local Power = Grid2.statusPrototype:new("power",false)
 local PowerAlt = Grid2.statusPrototype:new("poweralt",false)
@@ -51,8 +51,22 @@ end
 
 -- Mana status
 Mana.GetColor = Grid2.statusLibrary.GetColor
-Mana.OnEnable = status_OnEnable
-Mana.OnDisable= status_OnDisable
+
+function Mana:OnEnable()
+	status_OnEnable(self)
+	if self.dbx.showOnlyHealers then
+		self:RegisterEvent("PLAYER_ROLES_ASSIGNED", "UpdateAllUnits")
+		self.rolesEvent = true
+	end	
+end
+
+function Mana:OnDisable()
+	status_OnDisable(self)
+	if self.rolesEvent then
+		self:UnregisterEvent("PLAYER_ROLES_ASSIGNED")
+		self.rolesEvent = nil
+	end	
+end
 
 function Mana:UpdateUnitPowerStandard(unit, powerType)
 	if powerType=="MANA" then
@@ -71,7 +85,7 @@ function Mana:IsActiveStandard(unit)
 end
 
 function Mana:IsActiveHealer(unit)
-	return UnitPowerType(unit) == 0  and (unit=="player" or UnitGroupRolesAssigned(unit) == "HEALER")
+	return UnitPowerType(unit) == 0 and (unit=="player" or UnitGroupRolesAssigned(unit) == "HEALER")
 end
 
 function Mana:GetPercent(unit)
