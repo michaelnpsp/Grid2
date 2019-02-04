@@ -115,12 +115,14 @@ function Grid2:OnInitialize()
 end
 
 function Grid2:OnEnable()
+	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+	self:RegisterEvent("UPDATE_INSTANCE_INFO")
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "GroupChanged")
 	self:RegisterEvent("GROUP_ROSTER_UPDATE", "GroupChanged")
 	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
-	self:RegisterEvent("PLAYER_ENTERING_WORLD")
-	self:RegisterEvent("UNIT_PET")
 	self:RegisterEvent("UNIT_NAME_UPDATE")
+	self:RegisterEvent("UNIT_PET")
 	
 	self.db.RegisterCallback(self, "OnProfileShutdown", "ProfileShutdown")
     self.db.RegisterCallback(self, "OnProfileChanged", "ProfileChanged")

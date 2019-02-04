@@ -107,8 +107,8 @@ do
 	local CONDITIONS_NAMES  = {}
 
 	do
-		local CONDITIONS = { 'solo', 'party', 'arena', 'raid', 'raid@pvp' ,'raid@lfr', 'raid@flex', 'raid@mythic', '10', '20', '25', '30', '40' } 
-		local CONDITIONS_DESC = { L['Solo'], L['Party'], L['Arena'], L['Raid'], L['Raid (PvP)'], L['Raid (LFR)'], L['Raid (N&H)'], L['Raid (Mythic)'], L['10 man'], L['20 man'], L['25 man'], L['30 man'], L['40 man'] }
+		local CONDITIONS = { 'solo', 'party', 'arena', 'raid', 'raid@pvp' ,'raid@lfr', 'raid@flex', 'raid@mythic', '10', '15', '20', '25', '30', '40' } 
+		local CONDITIONS_DESC = { L['Solo'], L['Party'], L['Arena'], L['Raid'], L['Raid (PvP)'], L['Raid (LFR)'], L['Raid (N&H)'], L['Raid (Mythic)'], L['10 man'], L['15 man'], L['20 man'], L['25 man'], L['30 man'], L['40 man'] }
 		for o,k in ipairs(CONDITIONS) do
 			local key = string.format( "%03d;%s", o, k )
 			CONDITIONS_VALUES[key] = CONDITIONS_DESC[o] -- Descriptions used in "Enable Theme for" dropdown list values

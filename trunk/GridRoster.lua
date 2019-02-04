@@ -144,13 +144,17 @@ do
 	function Grid2:GetGroupType()
 		return groupType or "solo", instType or "other", instMaxPlayers or 1
 	end
+	-- needed to trigger an update when switching from one BG directly to another
 	function Grid2:PLAYER_ENTERING_WORLD()
-		-- this is needed to trigger an update when switching from one BG directly to another
 		groupType = nil
-		self:GroupChanged("PLAYER_ENTERING_WORLD")
+		self:GroupChanged('PLAYER_ENTERING_WORLD')
 	end
-	-- partyTypes = solo party arena raid
-	-- instTypes  = none pvp lfr flex mythic other
+	-- needed to fix maxPlayers in BGs when UI is reloaded, see ticket #641
+	function Grid2:UPDATE_INSTANCE_INFO()
+		self:UnregisterEvent('UPDATE_INSTANCE_INFO')
+		self:GroupChanged('UPDATE_INSTANCE_INFO')
+	end
+	-- partyTypes = solo party arena raid / instTypes  = none pvp lfr flex mythic other
 	function Grid2:GroupChanged(event)
 		local newGroupType
 		local InInstance, newInstType = IsInInstance()
@@ -192,8 +196,8 @@ do
 		if maxPlayers == nil or maxPlayers == 0 then
 			maxPlayers = 40
 		end
-		self:Debug("GroupChanged", groupType, instType, instMaxPlayers, "=>", newGroupType, newInstType, maxPlayers)
 		if groupType ~= newGroupType or instType ~= newInstType or instMaxPlayers ~= maxPlayers then
+			self:Debug("GroupChanged", event, groupType, instType, instMaxPlayers, "=>", newGroupType, newInstType, maxPlayers)
 			groupType, instType, instMaxPlayers = newGroupType, newInstType, maxPlayers
 			self:SendMessage("Grid_GroupTypeChanged", groupType, instType, maxPlayers)
 		end

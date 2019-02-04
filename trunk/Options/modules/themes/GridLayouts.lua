@@ -95,7 +95,7 @@ local MakeFrameSizesOptions
 do
 	local layout
 	local new_sizes = {}
-	local size_values = {1,5,10,20,25,30,40}
+	local size_values = {1,5,10,15,20,25,30,40}
 
 	local options_item = {
 		layoutName = {
