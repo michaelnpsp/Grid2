@@ -4,7 +4,7 @@ if not L then return end
 --{{{ Actually used
 L["Border"] = "Borde"
 L["Charmed"] = "Controlado"
-L["Default"] = "Default"
+L["Default"] = "Predeterminado"
 L["Grid2"] = "Grid2"
 L["Beast"] = "Bestia"
 L["Demon"] = "Demonio"
