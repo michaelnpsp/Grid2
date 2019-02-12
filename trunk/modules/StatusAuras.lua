@@ -73,7 +73,7 @@ do
 				for s in next, statuses do
 					local mine = s.isMine
 					if mine==false or mine==myUnits[cas] then
-						if exp~=s.exp[u] or s.cnt[u]~=cnt or val[s.vId]~=s.val[u] then 
+						if exp~=s.exp[u] or s.cnt[u]~=cnt or val[s.vId]~=s.val[u] or s.spells then 
 							s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.val[u], s.tkr[u] = 1, i, tex, cnt, dur, exp, val[s.vId], 1
 						else
 							s.seen, s.idx[u] = -1, i 
@@ -349,6 +349,7 @@ do
 		self.GetPercent = dbx.valueMax and GetPercentMax or GetPercentHealth
 		if dbx.auras then -- multiple spells
 			self.spells = self.spells or {}
+			wipe(self.spells)
 			for _,spell in ipairs(dbx.auras) do
 				self.spells[spell] = true
 			end
