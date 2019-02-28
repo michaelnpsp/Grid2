@@ -235,8 +235,8 @@ function Comm:Enable(receive)
 	if not self.RegisterComm then
 		LibStub("AceComm-3.0"):Embed(self)
 	end
-	if not IsAddonMessagePrefixRegistered("Grid2") then
-		RegisterAddonMessagePrefix("Grid2")
+	if not C_ChatInfo.IsAddonMessagePrefixRegistered("Grid2") then
+		C_ChatInfo.RegisterAddonMessagePrefix("Grid2")
 	end
 	if receive then
 		self.listening= true
