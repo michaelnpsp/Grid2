@@ -140,7 +140,7 @@ end
 
 -- Events to track raid type changes
 do
-	local groupType, instType, instMaxPlayers
+	local groupType, instType, instMaxPlayers, instUpdateQueued
 	function Grid2:GetGroupType()
 		return groupType or "solo", instType or "other", instMaxPlayers or 1
 	end
@@ -149,8 +149,9 @@ do
 		groupType = nil
 		self:GroupChanged('PLAYER_ENTERING_WORLD')
 	end
-	-- needed to fix maxPlayers in BGs when UI is reloaded, see ticket #641
+	-- needed to fix maxPlayers in pvp when UI is reloaded, see ticket #641
 	function Grid2:UPDATE_INSTANCE_INFO()
+		instUpdateQueued = nil
 		self:UnregisterEvent('UPDATE_INSTANCE_INFO')
 		self:GroupChanged('UPDATE_INSTANCE_INFO')
 	end
@@ -195,6 +196,12 @@ do
 		end
 		if maxPlayers == nil or maxPlayers == 0 then
 			maxPlayers = 40
+			-- Workaround to fix maxPlayers in pvp when UI is reloaded, see ticket #641
+			if event ~= 'UPDATE_INSTANCE_INFO' and (not instUpdateQueued) and (newInstType == 'pvp' or newInstType == 'arena') then
+				instUpdateQueued = true
+				self:RegisterEvent('UPDATE_INSTANCE_INFO')
+				RequestRaidInfo()
+			end
 		end
 		if groupType ~= newGroupType or instType ~= newInstType or instMaxPlayers ~= maxPlayers then
 			self:Debug("GroupChanged", event, groupType, instType, instMaxPlayers, "=>", newGroupType, newInstType, maxPlayers)

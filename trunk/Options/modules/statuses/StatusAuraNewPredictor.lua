@@ -5,7 +5,7 @@ local strmatch = string.match
 local GetSpellInfo = GetSpellInfo
 
 -- translated&colorized players class names table
-local classNames
+local classNames, classNamesLoc
 
 -- AuraPredictor class
 local AuraPredictor = {}
@@ -19,10 +19,12 @@ function AuraPredictor:new( type, spells )
 end
 
 function AuraPredictor:Initialize()
-	classNames = { [""] = "" }
+	classNames    = { [""] = "", ["MYTHIC+"] =  string.format(", |cfffe0000%s+|r ", PLAYER_DIFFICULTY6 or "Mythic") }
+	classNamesLoc = { [""] = "", ["MYTHIC+"] =  strupper(PLAYER_DIFFICULTY6) or "MYTHIC" }
 	for class,translation in pairs(LOCALIZED_CLASS_NAMES_MALE) do
 		local c = RAID_CLASS_COLORS[class]
 		classNames[class] = string.format(", |cff%.2x%.2x%.2x%s|r ", c.r*255, c.g*255, c.b*255, translation)
+		classNamesLoc[class] = strupper(translation)
 	end
 	AuraPredictor.OnInitialize = nil -- Only one initialization for all instances
 end
@@ -58,6 +60,16 @@ function AuraPredictor:GetValues(text, values, max)
 				end
 			end	
 		end
+		-- If no results, look for className/category
+		if max==12 then
+			local str = strupper(text)
+			for key,spells in pairs(self.spells) do
+				if strfind(classNamesLoc[key] or '', str) then
+					self:GetTableValues(spells, values, '', max, key)
+					return
+				end
+			end
+		end
 	end
 end
 
@@ -89,21 +101,21 @@ function AuraPredictor:GetHyperlink( key )
 	return "spell:"..key
 end
 
-function AuraPredictor:GetTableValues(spells, values, text, max, category, isBoss)
+function AuraPredictor:GetTableValues(spells, values, text, max, className, isBoss)
 	for _, spellID in ipairs(spells) do
 		local spellName,_,spellIcon = GetSpellInfo(spellID)
-		if spellName and strfind(strlower(spellName), text, 1, true)==1 then
-			local key = self:GetSpellKey(spellID, category, isBoss)
-			values[key] = self:GetSpellDescription(spellID, spellName, spellIcon, category, isBoss)
+		if spellName and (text=='' or strfind(strlower(spellName), text, 1, true)==1) then
+			local key = self:GetSpellKey(spellID, className, isBoss)
+			values[key] = self:GetSpellDescription(spellID, spellName, spellIcon, className, isBoss)
 			max = max - 1; if max == 0 then break end
 		end
 	end
 	return max
 end
 
-function AuraPredictor:GetSpellKey(spellID, category)
+function AuraPredictor:GetSpellKey(spellID, className)
 	if self.type=="debuff" then
-		local key = LOCALIZED_CLASS_NAMES_MALE[category] or category
+		local key = LOCALIZED_CLASS_NAMES_MALE[className] or className
 		return key and key~="" and key..">"..spellID or spellID
 	else
 		return spellID
