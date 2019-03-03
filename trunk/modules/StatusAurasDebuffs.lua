@@ -151,7 +151,7 @@ do
 		if dbx.spellName then dbx.spellName = nil end -- fix possible wrong data in old database
 		local status = Grid2.statusPrototype:new(baseKey, false)
 		status.OnUpdate = status_Update
-		return Grid2.CreateStatusAura( status, basekey, dbx, 'debuff', statusTypes)	
+		return Grid2.CreateStatusAura(status, basekey, dbx, 'debuff', statusTypes)	
 	end
 end
 
