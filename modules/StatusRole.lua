@@ -170,7 +170,6 @@ function Assistant:OnEnable()
 	self:SetHideInCombat(self.dbx.hideInCombat)
 	self:RegisterMessage("Grid_RosterUpdate")
 	self:RegisterMessage("Grid_UnitLeft")
-	self:UpdateAllUnits()
 end
 
 function Assistant:OnDisable()

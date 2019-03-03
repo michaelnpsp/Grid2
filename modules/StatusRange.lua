@@ -68,7 +68,6 @@ function Range:OnEnable()
 	self:RegisterMessage("Grid_GroupTypeChanged")
 	self:RegisterMessage("Grid_PlayerSpecChanged")
 	timer:Play()
-	Update()
 end
 
 function Range:OnDisable()
@@ -77,7 +76,6 @@ function Range:OnDisable()
 	self:UnregisterMessage("Grid_GroupTypeChanged")
 	self:UnregisterMessage("Grid_PlayerSpecChanged")
 	timer:Stop()
-	wipe(cache)
 end
 
 -- {{ Workaround for WoW 5.0.4 UnitInRange() bug (returns false for player&pet while solo or in arena)

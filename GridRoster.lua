@@ -140,22 +140,29 @@ end
 
 -- Events to track raid type changes
 do
-	local groupType, instType, instMaxPlayers, instUpdateQueued
+	local updateCount, groupType, instType, instMaxPlayers = 0
+	-- Used by another modules
 	function Grid2:GetGroupType()
 		return groupType or "solo", instType or "other", instMaxPlayers or 1
 	end
+	-- Workaround to fix maxPlayers in pvp when UI is reloaded (retry every .5 seconds for 2-3 seconds), see ticket #641
+	function Grid2:FixGroupMaxPlayers(newInstType)
+		if updateCount<=5 and (newInstType == 'pvp' or newInstType == 'arena') then
+			updateCount = updateCount + 1001 -- +1000, trick to avoid launching the timer if already launched (updateCount<=5 will fail) 
+			C_Timer.After( .5, function()
+				if instMaxPlayers==40 and (instType=='pvp' or instType=='arena') then
+					updateCount = updateCount - 1000
+					Grid2:GroupChanged('GRID2_TIMER')
+				end
+			end)
+		end
+	end
 	-- needed to trigger an update when switching from one BG directly to another
 	function Grid2:PLAYER_ENTERING_WORLD()
-		groupType = nil
+		groupType, updateCount = nil, 0
 		self:GroupChanged('PLAYER_ENTERING_WORLD')
 	end
-	-- needed to fix maxPlayers in pvp when UI is reloaded, see ticket #641
-	function Grid2:UPDATE_INSTANCE_INFO()
-		instUpdateQueued = nil
-		self:UnregisterEvent('UPDATE_INSTANCE_INFO')
-		self:GroupChanged('UPDATE_INSTANCE_INFO')
-	end
-	-- partyTypes = solo party arena raid / instTypes  = none pvp lfr flex mythic other
+	-- partyTypes = solo party arena raid / instTypes = none pvp lfr flex mythic other
 	function Grid2:GroupChanged(event)
 		local newGroupType
 		local InInstance, newInstType = IsInInstance()
@@ -196,12 +203,7 @@ do
 		end
 		if maxPlayers == nil or maxPlayers == 0 then
 			maxPlayers = 40
-			-- Workaround to fix maxPlayers in pvp when UI is reloaded, see ticket #641
-			if event ~= 'UPDATE_INSTANCE_INFO' and (not instUpdateQueued) and (newInstType == 'pvp' or newInstType == 'arena') then
-				instUpdateQueued = true
-				self:RegisterEvent('UPDATE_INSTANCE_INFO')
-				RequestRaidInfo()
-			end
+			self:FixGroupMaxPlayers(newInstType)
 		end
 		if groupType ~= newGroupType or instType ~= newInstType or instMaxPlayers ~= maxPlayers then
 			self:Debug("GroupChanged", event, groupType, instType, instMaxPlayers, "=>", newGroupType, newInstType, maxPlayers)
