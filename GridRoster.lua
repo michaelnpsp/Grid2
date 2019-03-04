@@ -140,6 +140,24 @@ end
 
 -- Events to track raid type changes
 do
+	-- BGs instMapID>RaidSize lookup, fix for ticket #652 (Random BGs return an incorrect raidsize)
+	local pvp_instances = {
+		[489]  = 10, -- Warsong Gulch
+		[726]  = 10, -- Twin Peaks
+		[727]  = 10, -- Silvershard Mines
+		[761]  = 10, -- The Battle for Gilneas
+		[998]  = 10, -- Temple of Kotmogu
+		[1803] = 10, -- Seething Shore
+		[968]  = 10, -- Rated Eye of the Storm
+		[529]  = 15, -- Arathi Basin
+		[566]  = 15, -- Eye of the Storm
+		[1105] = 15, -- Deepwind Gorge
+		[1681] = 15, -- Arathi Blizzard
+		[30]   = 40, -- Alterac Valley
+		[628]  = 40, -- Isle of Conquest
+		[1280] = 40, -- Tarren Mill vs Southshore
+	}
+	-- Local variables
 	local updateCount, groupType, instType, instMaxPlayers = 0
 	-- Used by another modules
 	function Grid2:GetGroupType()
@@ -166,7 +184,7 @@ do
 	function Grid2:GroupChanged(event)
 		local newGroupType
 		local InInstance, newInstType = IsInInstance()
-		local _, _, difficultyID, _, maxPlayers = GetInstanceInfo()
+		local instName, _, difficultyID, _, maxPlayers, _, _, instMapID = GetInstanceInfo()
 		inRaid = IsInRaid()
 		if newInstType == "arena" then
 			newGroupType = newInstType	-- arena@arena instances
@@ -175,6 +193,7 @@ do
 			if InInstance then
 				if newInstType == "pvp" then
 					-- raid@pvp / PvP battleground instance
+					maxPlayers = pvp_instances[instMapID] or maxPlayers
 				elseif newInstType == "none" then
 					-- raid@none / Not in Instance, in theory its not posible to reach this point
 					maxPlayers = 40
@@ -206,7 +225,7 @@ do
 			self:FixGroupMaxPlayers(newInstType)
 		end
 		if groupType ~= newGroupType or instType ~= newInstType or instMaxPlayers ~= maxPlayers then
-			self:Debug("GroupChanged", event, groupType, instType, instMaxPlayers, "=>", newGroupType, newInstType, maxPlayers)
+			self:Debug("GroupChanged", event, instName, instMapID, groupType, instType, instMaxPlayers, "=>", newGroupType, newInstType, maxPlayers)
 			groupType, instType, instMaxPlayers = newGroupType, newInstType, maxPlayers
 			self:SendMessage("Grid_GroupTypeChanged", groupType, instType, maxPlayers)
 		end
