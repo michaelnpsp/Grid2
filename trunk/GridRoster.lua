@@ -142,14 +142,14 @@ end
 do
 	-- BGs instMapID>RaidSize lookup, fix for ticket #652 (Random BGs return an incorrect raidsize)
 	local pvp_instances = {
-		[489]  = 10, -- Warsong Gulch
+		[2106] = 10, -- Warsong Gulch (patch 8.1.5)
 		[726]  = 10, -- Twin Peaks
 		[727]  = 10, -- Silvershard Mines
 		[761]  = 10, -- The Battle for Gilneas
 		[998]  = 10, -- Temple of Kotmogu
 		[1803] = 10, -- Seething Shore
 		[968]  = 10, -- Rated Eye of the Storm
-		[529]  = 15, -- Arathi Basin
+		[2107] = 15, -- Arathi Basin (patch 8.1.5)
 		[566]  = 15, -- Eye of the Storm
 		[1105] = 15, -- Deepwind Gorge
 		[1681] = 15, -- Arathi Blizzard
