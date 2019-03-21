@@ -34,7 +34,7 @@ function Grid2Options:MakeIndicatorTooltipOptions(indicator, options)
 				local refresh = (v==1 or indicator.dbx.showTooltip==1) and AdvancedTooltipsEnabled(indicator)
 				indicator.dbx.displayUnitOOC = nil
 				indicator.dbx.showTooltip = v
-				indicator:UpdateDB()
+				if not indicator.suspended then	indicator:UpdateDB() end
 				if refresh then	Grid2Options:MakeIndicatorOptions(indicator) end
 			end,
 			values= DISPLAY_VALUES,
@@ -47,7 +47,7 @@ function Grid2Options:MakeIndicatorTooltipOptions(indicator, options)
 		get = function () return indicator.dbx.tooltipAnchor or "@" end,
 		set = function (_, v)
 				indicator.dbx.tooltipAnchor = v ~= '@' and v or nil
-				indicator:UpdateDB()
+				if not indicator.suspended then	indicator:UpdateDB() end
 			  end,
 		values = ANCHOR_VALUES,
 		hidden = function() return indicator.dbx.showTooltip==1 end,
@@ -71,7 +71,7 @@ function Grid2Options:MakeIndicatorTooltipOptions(indicator, options)
 				Grid2:DbSetMap(indicator.name, "name", 50) -- register "name" status
 				indicator:RegisterStatus(Grid2:GetStatusByName("name"), 50)	
 			end
-			indicator:UpdateDB()
+			if not indicator.suspended then	indicator:UpdateDB() end
 			Grid2Options:MakeIndicatorOptions(indicator)
 		end,
 		confirm = function() return AdvancedTooltipsEnabled(indicator) and L["Are you sure you want to disable the advanced tooltips?"] end,
@@ -86,7 +86,7 @@ function Grid2Options:MakeIndicatorTooltipOptions(indicator, options)
 		get = function() return indicator.dbx.displayUnitOOC end,
 		set = function(_,v)
 			indicator.dbx.displayUnitOOC = v or nil
-			indicator:UpdateDB()
+			if not indicator.suspended then	indicator:UpdateDB() end
 		end,
 		hidden = function() return not AdvancedTooltipsEnabled(indicator) or indicator.dbx.showTooltip ~= 3 end,
 	}

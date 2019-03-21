@@ -482,7 +482,7 @@ function Grid2Options:MakeIndicatorLocationOptions(indicator, options)
 		order = 7,
 		name = L["X Offset"],
 		desc = L["X - Horizontal Offset"],
-		min = -50, max = 50, step = 1, bigStep = 1,
+		softMin = -50, softMax = 50, step = 1, bigStep = 1,
 		get = function() return location.x end,
 		set = function(_, v)
 			location.x = v
@@ -494,7 +494,7 @@ function Grid2Options:MakeIndicatorLocationOptions(indicator, options)
 		order = 8,
 		name = L["Y Offset"],
 		desc = L["Y - Vertical Offset"],
-		min = -50, max = 50, step = 1, bigStep = 1,
+		softMin = -50, softMax = 50, step = 1, bigStep = 1,
 		get = function() return location.y end,
 		set = function(_, v)
 			location.y = v
