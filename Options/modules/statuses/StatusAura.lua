@@ -530,14 +530,19 @@ end,{
 })
 
 Grid2Options:RegisterStatusOptions("buffs", "buff", function(self, status, options, optionParams)
-	self:MakeStatusAuraDescriptionOptions(status, options)
-	self:MakeStatusAuraListOptions(status, options, optionParams)
-	self:MakeStatusAuraCommonOptions(status, options, optionParams)
-	self:MakeStatusAuraMissingOptions(status, options, optionParams)
-	self:MakeStatusColorOptions(status, options, optionParams)
-	self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
-	self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
-	self:MakeStatusDeleteOptions(status, options, optionParams)
+	if status.dbx.subType == 'blizzard' then
+		self:MakeStatusColorOptions(status, options, optionParams)
+		self:MakeStatusDeleteOptions(status, options, optionParams)
+	else
+		self:MakeStatusAuraDescriptionOptions(status, options)
+		self:MakeStatusAuraListOptions(status, options, optionParams)
+		self:MakeStatusAuraCommonOptions(status, options, optionParams)
+		self:MakeStatusAuraMissingOptions(status, options, optionParams)
+		self:MakeStatusColorOptions(status, options, optionParams)
+		self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
+		self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
+		self:MakeStatusDeleteOptions(status, options, optionParams)
+	end
 end,{
 	groupOrder = 20
 })

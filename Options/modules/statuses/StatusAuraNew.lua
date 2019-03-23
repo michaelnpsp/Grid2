@@ -3,6 +3,7 @@ local L = Grid2Options.L
 local BuffSubTypes= {
 	["Buff"] =  1,
 	["Buffs"] =  {},
+	["Buffs: Blizzard"] =  {},
 	["Buffs: Defensive Cooldowns"] = {
 			6940,  --Hand of Sacrifice
 			31850, --Ardent Defender
@@ -59,6 +60,15 @@ local NewAuraUsageDescription= L["You can include a descriptive prefix using sep
 							   .. " "..
 							   L["examples: Druid@Regrowth Chimaeron>Low Health"]
 
+local function ExistsBlizzardBuffsStatus()
+	for _,status in pairs(Grid2.statuses) do
+		local dbx = status.dbx
+		if dbx and dbx.type=="buffs" and dbx.subType == 'blizzard' then
+			return true
+		end
+	end
+end
+				
 -- {{ Shared code
 local NewAuraHandlerMT = {
 	Init = function (self)
@@ -104,13 +114,18 @@ local NewAuraHandlerMT = {
 	SetNotMine = function (self, info, value)
 		self.mine = value and 2
 	end,
+	IsBlizzard = function(self)
+		return self.subType == "Buffs: Blizzard"
+	end,
 	IsNotDebuff = function(self)
 		return self.subType ~= "Debuff"
 	end,
 	GetAvailableSubTypes = function(self)
 		local result= {}
 		for k in pairs(self.subTypes) do
-			result[k]= L[k]
+			if k ~= 'Buffs: Blizzard' or not ExistsBlizzardBuffsStatus() then
+				result[k]= L[k]
+			end	
 		end
 	    return result
 	end,
@@ -139,14 +154,18 @@ local NewAuraHandlerMT = {
 			local color = { r = self.color.r , g = self.color.g, b = self.color.b , a = self.color.a }
 			local dbx = { type = self.realType, spellName = spellName, mine = self.mine, color1 = color }
 			if self.isGroup then -- Buffs or Debuffs Group
-				local auras = self.subTypes[self.subType]
-				if #auras>0 or self.type == "buff" then
-					dbx.auras= {}
-					for i,v in pairs(auras) do
-						dbx.auras[i]= v
-					end
-					if self.type == "debuff" then
-						dbx.useWhiteList = true
+				if self.subType == 'Buffs: Blizzard' then
+					dbx.subType = 'blizzard'
+				else
+					local auras = self.subTypes[self.subType]
+					if #auras>0 or self.type == "buff" then
+						dbx.auras= {}
+						for i,v in pairs(auras) do
+							dbx.auras[i]= v
+						end
+						if self.type == "debuff" then
+							dbx.useWhiteList = true
+						end
 					end
 				end
 			end
@@ -156,6 +175,8 @@ local NewAuraHandlerMT = {
 			--Create the status options
 			Grid2Options:MakeStatusOptions(status)
 			self:Init()
+			--
+			self.realType, self.subType, self.isGroup = "buff", "Buff", nil
 		end
 	end,
 	IsDisabled = function (self)
@@ -201,6 +222,7 @@ NewBuffHandler.options = {
 		desc = L["Display status only if the buff was cast by you."],
 		get = "GetMine",
 		set = "SetMine",
+		hidden = "IsBlizzard",
 		handler = NewBuffHandler,
 	},
 	newStatusBuffNotMine = {
@@ -210,6 +232,7 @@ NewBuffHandler.options = {
 		desc = L["Display status only if the buff was not cast by you."],
 		get = "GetNotMine",
 		set = "SetNotMine",
+		hidden = "IsBlizzard",
 		handler = NewBuffHandler,
 	},
 	newStatusBuffSpacer = {

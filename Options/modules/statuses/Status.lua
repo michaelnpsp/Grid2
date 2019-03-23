@@ -11,6 +11,7 @@ do
 		Grid2:UnregisterStatus(status)
 		Grid2Frame:UpdateIndicators()
 		Grid2Options:DeleteStatusOptions(category, status)
+		Grid2Options:SelectGroup('statuses', category)
 	end
 	function Grid2Options:MakeStatusDeleteOptions(status, options, optionParams)
 		self:MakeHeaderOptions( options, "Delete")

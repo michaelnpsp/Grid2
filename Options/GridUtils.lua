@@ -433,6 +433,11 @@ function Grid2Options:CopyOptionsTable(src, dst)
 	return dst
 end
 
+-- Goto the specified options section.
+function Grid2Options:SelectGroup( ... )
+	LibStub("AceConfigDialog-3.0"):SelectGroup( "Grid2", ... )
+end
+
 -- Grid2Options.MEDIA_FONT_DEFAULT
 -- Grid2Options.MEDIA_VALUE_DEFAULT
 -- Grid2Options.GetFontsValues()
