@@ -85,6 +85,8 @@ function Grid2Options:GetStatusDescription(status)
 				return tip[count]:GetText()
 			end
 		end
+	elseif dbx.type == 'buffs' and dbx.subType == "blizzard" then
+		return L["Show relevant buffs for each unit frame (the same buffs displayed by the Blizzard raid frames)."]
 	end
 end
 
@@ -136,19 +138,20 @@ end
 
 -- Generates a text with the status compatible indicators icons
 function Grid2Options:GetStatusCompIndicatorsText(status)
-	local icons, text = self.statusTypesIcons, ""
+	local icons, text, flag = self.statusTypesIcons, ""
 	for type,statuses in pairs(Grid2.statusTypes) do
 		local icon = icons[type]
 		if icon then
 			for i=1,#statuses do
 				if status==statuses[i] then
 					text = fmt( "%s|T%s:0|t", text, icon )
+					flag = flag or type=='color'
 					break
 				end
 			end
 		end
 	end
-	return fmt( "%s|T%s:0|t", text, icons.generic )
+	return flag and fmt( "%s|T%s:0|t", text, icons.generic ) or text
 end
 
 -- Add a title option to the status options

@@ -78,7 +78,7 @@ local function Create(indicatorKey, dbx)
 	indicator.Disable = Square_Disable
 	indicator.UpdateDB = Square_UpdateDB
 	Square_UpdateDB(indicator)
-	Grid2:RegisterIndicator(indicator, { "square" })
+	Grid2:RegisterIndicator(indicator, { "color" })
 	return indicator
 end
 
