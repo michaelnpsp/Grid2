@@ -604,15 +604,22 @@ RDDB["Battle for Azeroth"] = {
 		{ id = 1177, name = "Crucible of Storms", raid = true },
 		["The Restless Cabal"] = {
 		order = 1, ejid = 2328,
+		282540, -- Agent of demise
+		282432, -- Crushing Doubt
 		282384, -- Shear Mind
 		283524, -- Aphotic Blast
 		282517, -- Terrifying Echo
 		282562, -- Promises of Power
 		282738, -- Embrace of the void
+		293300, -- Storm essence
+		293488, -- Oceanic Essence
 		},
 		["Uu'nat, Harbinger of the Void"] = {
 		order = 2, ejid = 2332,
+		285345, -- Maddening eyes of N'zoth
+		285652, -- Insatiable torment
 		284733, -- Embrace of the void
+		285367  -- Piercing gaze
 		},
 	},
 }

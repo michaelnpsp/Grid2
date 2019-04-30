@@ -1,5 +1,5 @@
 --=====================================================================================
--- Layouts Editor 
+-- Layouts Editor
 --=====================================================================================
 
 local L  = Grid2Options.L
@@ -170,6 +170,15 @@ local function FilterSet(info,value)
 	editedHeader[field] =  (filter ~= allkeys) and filter or nil
 	editedHeader.strictFiltering = (editedHeader.roleFilter~=nil and editedHeader.groupFilter~=nil) or nil
 	RefreshLayout()
+end
+
+-- Used by Profile Export/Import module
+function Grid2Options:AddNewCustomLayoutsOptions()
+	for name in pairs(Grid2Layout.customLayouts) do
+		if not editorOptions[name] then
+			CreateLayoutOptions(name)
+		end	
+	end
 end
 
 --=====================================================================================
