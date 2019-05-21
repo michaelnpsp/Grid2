@@ -117,7 +117,7 @@ local function Icon_OnUpdate(self, parent, unit, status)
 		end
 	end	
 
-	if self.animEnabled and (not Frame.animElapsed) then
+	if self.animEnabled and (not Frame.animElapsed) and (self.animOnUpdate or not Frame:IsVisible()) then
 		Frame.status = self
 		Frame.animElapsed = 0
 		Frame:SetScript("OnUpdate", Icon_AnimationOnUpdate )
@@ -192,6 +192,7 @@ local function Icon_UpdateDB(self)
 	if dbx.animEnabled then
 		self.animScale    = ((dbx.animScale or 1.5)-1) * 2
 		self.animDuration = dbx.animDuration or 0.7
+		self.animOnUpdate = not dbx.animOnEnabled
 	end
 	-- ignore icon and use a solid square texture
 	self.disableIcon  = dbx.disableIcon
