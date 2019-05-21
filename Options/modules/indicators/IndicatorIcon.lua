@@ -189,6 +189,19 @@ function Grid2Options:MakeIndicatorIconCustomOptions(indicator, options)
 			indicator:UpdateDB()
 		end,
 	}
+	options.animOnEnabled = {
+		type = "toggle",
+		order = 157,
+		name = L["Only on Activation"],
+		desc = L["Start the animation only when the indicator is activated, not on updates."],
+		tristate = false,
+		get = function () return indicator.dbx.animOnEnabled end,
+		set = function (_, v)
+			indicator.dbx.animOnEnabled = v or nil
+			indicator:UpdateDB()
+		end,
+		hidden= function() return not indicator.dbx.animEnabled end,
+	}
 	options.animDuration = {
 		type = "range",
 		order = 160,
