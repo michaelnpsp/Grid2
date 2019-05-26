@@ -175,8 +175,6 @@ local NewAuraHandlerMT = {
 			--Create the status options
 			Grid2Options:MakeStatusOptions(status)
 			self:Init()
-			--
-			self.realType, self.subType, self.isGroup = "buff", "Buff", nil
 		end
 	end,
 	IsDisabled = function (self)

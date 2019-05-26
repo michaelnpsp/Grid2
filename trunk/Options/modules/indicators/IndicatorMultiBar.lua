@@ -44,7 +44,7 @@ function Grid2Options:MakeIndicatorMultiBarAppearanceOptions(indicator,options)
 		name = L["Bar Width"],
 		desc = L["Choose zero to set the bar to the same width as parent frame"],
 		min = 0,
-		max = 75,
+		softMax = 75,
 		step = 1,
 		get = function ()
 			return indicator.dbx.width
@@ -61,7 +61,7 @@ function Grid2Options:MakeIndicatorMultiBarAppearanceOptions(indicator,options)
 		name = L["Bar Height"],
 		desc = L["Choose zero to set the bar to the same height as parent frame"],
 		min = 0,
-		max = 75,
+		softMax = 75,
 		step = 1,
 		get = function ()
 			return indicator.dbx.height

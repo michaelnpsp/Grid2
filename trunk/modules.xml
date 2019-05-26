@@ -17,6 +17,7 @@
 <Script file="modules\StatusName.lua"/>
 <Script file="modules\StatusOffline.lua"/>
 <Script file="modules\StatusPvP.lua"/>
+<Script file="modules\StatusPhased.lua"/>
 <Script file="modules\StatusRange.lua"/>
 <Script file="modules\StatusReadyCheck.lua"/>
 <Script file="modules\StatusRole.lua"/>

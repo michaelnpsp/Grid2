@@ -50,6 +50,7 @@ local MakeStatusOutgoingOptions
 do
 	-- local prev_spells = {}
 	function MakeStatusOutgoingOptions(self, status, options)
+		self:MakeStatusEnabledOptions(status, options)
 		self:MakeStatusColorOptions(status, options)
 		options.showIfMine = {
 			type = "toggle",

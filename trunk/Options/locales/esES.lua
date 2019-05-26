@@ -506,6 +506,9 @@ L["Targeting&Distances"] = "Objetivos&Distancias"
 L["Raid&Party Roles"] = "Raid&Grupo"
 L["Miscellaneous"] = "Miscelaneo"
 
+
+L["Enabled for"] = "Habilitado para"
+L["All Classes"] = "Todas las clases"
 L["Activation Stacks"] = "Acumulaciones"
 L["Select the minimum number of aura stacks to activate the status."] = "Selecciona el minimo numero de acumulaciones del aura para activar el estado."
 L["Show if mine"] = "Mostrar si es mío"
