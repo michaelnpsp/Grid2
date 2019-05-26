@@ -181,8 +181,8 @@ local function UnregisterStatusAura(status, auraType, subType)
 	local handler = (auraType=="buff" and Buffs) or (auraType=="debuff" and Debuffs)
 	if handler then
 		for key,statuses in pairs(handler) do
-			if statuses[self] then
-				statuses[self] = nil
+			if statuses[status] then
+				statuses[status] = nil
 				if not next(statuses) then handler[key] = nil end
 			end
 		end
@@ -193,12 +193,6 @@ local function UnregisterStatusAura(status, auraType, subType)
 	Statuses[status] = nil
 	DisableAuraEvents()
 end
-
-local function RefreshAuras() 
-	for unit in Grid2:IterateRosterUnits() do
-		AuraFrame_OnEvent(nil,nil,unit) 
-	end
-end	
 
 -- MakeStatusColorHandler()
 local MakeStatusColorHandler
@@ -229,6 +223,11 @@ local CreateStatusAura
 do
 	local fmt = string.format
 	local UnitHealthMax = UnitHealthMax
+	local function Refresh() 
+		for unit in Grid2:IterateRosterUnits() do
+			AuraFrame_OnEvent(nil,nil,unit) 
+		end
+	end	
 	local function Reset(self, unit) 
 		-- multibar indicator needs val[unit]=nil because due to a speed optimization it does not check if status is active before calling GetPercent()
 		self.idx[unit], self.exp[unit], self.val[unit] = nil, nil, nil
@@ -340,6 +339,7 @@ do
 	local function OnDisable(self)
 		UnregisterStatusAura(self, self.handlerType, self.dbx.subType)
 		UnregisterTimeTrackerStatus(self)
+		wipe(self.idx);	wipe(self.exp); wipe(self.val)
 	end
 	local function UpdateDB(self,dbx)
 		if self.enabled then self:OnDisable() end
@@ -417,6 +417,7 @@ do
 		status.typ = {}
 		status.val = {}
 		status.tkr = {}
+		status.Refresh     = Refresh
 		status.Reset       = Reset
 		status.GetText     = GetText
 		status.GetDuration = GetDuration
@@ -455,7 +456,6 @@ Grid2:DbSetStatusDefaultValue( "debuff-Disease", {type = "debuffType", subType =
 -- Publish some functions & tables
 --===============================================================================
 
-Grid2.RefreshAuras      = RefreshAuras
 Grid2.CreateStatusAura  = CreateStatusAura
 Grid2.debuffTypeColors  = debuffTypeColors
 Grid2.debuffDispelTypes = debuffDispelTypes

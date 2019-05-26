@@ -7,16 +7,26 @@ local L = Grid2Options.L
 -- Grid2Options:MakeIndicatorStatusOptions()
 -- Grid2Options:MakeStatusIndicatorOptions()
 do
+	local function GetIndicatorNewPriority(indicator)
+		local priority = 50
+		local map = Grid2:DbGetValue('statusMap', indicator.name)
+		if map then
+			for _,p in pairs(map) do
+				p = tonumber(p)
+				if p and p>=priority then
+					priority = p+1
+				end
+			end
+		end
+		return priority
+	end
+
 	local function RegisterIndicatorStatus(indicator, status, value)
 		if value then
-			local priority = #indicator.statuses>0 and indicator.priorities[indicator.statuses[1]] + 1 or 50
+			local priority = GetIndicatorNewPriority(indicator)
 			Grid2:DbSetMap(indicator.name, status.name, priority)
 			indicator:RegisterStatus(status, priority)
-			-- special case for auras
-			local type = status.dbx.type
-			if type=="buff" or type=="debuff" or type=="debuffType" then
-				Grid2:RefreshAuras()
-			end
+			status:Refresh()
 		else
 			Grid2:DbSetMap(indicator.name, status.name, nil)
 			indicator:UnregisterStatus(status)
@@ -171,12 +181,13 @@ do
 				local indicator = Grid2.indicators[key]
 				if indicator.dbx.type ~= 'multibar' then
 					RegisterIndicatorStatus(indicator, status, value)
-					self:MakeIndicatorOptions( Grid2.indicatorTypes.color[indicator.name] and Grid2.indicators[indicator.parentName] or indicator )
+					self:RefreshIndicatorOptions(indicator) 
 				end
 			end,
 			confirm = function(info,key)
 				return Grid2.indicators[key].dbx.type == 'multibar' and L['This indicator cannot be changed from here: go to "indicators" section to assign/unassign statuses to this indicator.']
 			end,
+			disabled = function() return status:IsSuspended() end,
 		}
 	end
 end

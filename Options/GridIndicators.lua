@@ -363,6 +363,18 @@ function Grid2Options:DeleteIndicatorOptions(indicator)
 	self.indicatorsOptions[indicator.name] = nil
 end
 
+--Refresh indicator options
+function Grid2Options:RefreshIndicatorOptions(indicator)
+	local options = self.indicatorsOptions[indicator.name] 
+	if not options and indicator.parentName then
+		options   = self.indicatorsOptions[indicator.parentName]
+		indicator = Grid2.indicators[indicator.parentName]
+	end
+	if indicator and options and not options.args._openmanager_ then
+		self:MakeIndicatorOptions( indicator )
+	end	
+end
+
 -- Create all indicators options (dont remove options param, is used by openmanager)
 function Grid2Options:MakeIndicatorsOptions(options)
 	-- remove old options

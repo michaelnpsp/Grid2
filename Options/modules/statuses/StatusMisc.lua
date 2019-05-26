@@ -35,6 +35,11 @@ Grid2Options:RegisterStatusOptions("self", "target", nil, {
 	titleIcon = "Interface\\Icons\\Inv_wand_12",
 })
 
+Grid2Options:RegisterStatusOptions("phased", "misc", nil, {
+	titleIcon = "Interface\\TARGETINGFRAME\\UI-PhasingIcon",
+	titleIconCoords = { 0.15625, 0.84375, 0.15625, 0.84375 },
+})
+
 Grid2Options:RegisterStatusOptions("resurrection", "combat", nil, {
 	color1 = L["Casting resurrection"],
 	colorDesc1 = L["A resurrection spell is being casted on the unit"],

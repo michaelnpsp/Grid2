@@ -48,7 +48,7 @@ function Grid2Options:MakeStatusAuraEnableStacksOptions(status, options, optionP
 			set = function (_, v)
 				status.dbx.enableStacks = v~=1 and v or nil
 				status:UpdateDB()
-				Grid2:RefreshAuras()
+				status:Refresh()
 			end,
 		}
 	end	
@@ -70,7 +70,7 @@ function Grid2Options:MakeStatusAuraMissingOptions(status, options, optionParams
 				status.dbx.enableStacks = nil
 			end
 			status:UpdateDB()
-			Grid2:RefreshAuras()
+			status:Refresh()
 			self:MakeStatusOptions(status)
 		end,
 	}
@@ -119,6 +119,7 @@ function Grid2Options:MakeStatusAuraUseSpellIdOptions(status, options, optionPar
 end
 
 function Grid2Options:MakeStatusAuraCommonOptions(status, options, optionParams)
+	self:MakeHeaderOptions(options, "Colors")
 	if not status.dbx.missing then
 		options.colorCount = {
 			type = "select",
@@ -179,7 +180,6 @@ function Grid2Options:MakeStatusAuraCommonOptions(status, options, optionParams)
 			}
 		end
 	end
-	self:MakeHeaderOptions(options, "Colors")
 end
 
 function Grid2Options:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
@@ -350,7 +350,7 @@ function Grid2Options:MakeStatusAuraListOptions(status, options, optionParams)
 				end
 			end
 			status:UpdateDB()
-			Grid2:RefreshAuras()
+			status:Refresh()
 		end,
 		hidden = function() return status.dbx.auras==nil end
 	}
@@ -371,7 +371,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 				status.dbx.auras = nil
 			end
 			status:UpdateDB()
-			Grid2:RefreshAuras()
+			status:Refresh()
 		end,
 		hidden = function() return status.dbx.useWhiteList end
 	}
@@ -384,7 +384,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 		set = function (_, v)
 			status.dbx.filterBossDebuffs = (not v) and true or nil
 			status:UpdateDB()
-			Grid2:RefreshAuras()
+			status:Refresh()
 		end,
 		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs end
 	}
@@ -401,7 +401,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 				status.dbx.filterBossDebuffs = false
 			end
 			status:UpdateDB()
-			Grid2:RefreshAuras()
+			status:Refresh()
 		end,
 		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs end
 	}
@@ -415,7 +415,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 		set = function (_, v)
 			status.dbx.filterLongDebuffs = (not v) and true or nil
 			status:UpdateDB()
-			Grid2:RefreshAuras()
+			status:Refresh()
 		end,
 		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs or status.dbx.filterBossDebuffs==false end
 	}
@@ -432,7 +432,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 				status.dbx.filterLongDebuffs = false
 			end
 			status:UpdateDB()
-			Grid2:RefreshAuras()
+			status:Refresh()
 		end,
 		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs or status.dbx.filterBossDebuffs==false end
 	}
@@ -446,7 +446,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 		set = function (_, v)
 			status.dbx.filterCaster = (not v) and true or nil
 			status:UpdateDB()
-			Grid2:RefreshAuras()
+			status:Refresh()
 		end,
 		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs or status.dbx.filterBossDebuffs==false end
 	}
@@ -463,7 +463,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 				status.dbx.filterCaster = false
 			end
 			status:UpdateDB()
-			Grid2:RefreshAuras()
+			status:Refresh()
 		end,
 		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs or status.dbx.filterBossDebuffs==false end
 	}
@@ -485,7 +485,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 				status.dbx.useWhiteList = nil
 			end
 			status:UpdateDB()
-			Grid2:RefreshAuras()
+			status:Refresh()
 			status:UpdateAllUnits()
 		end,
 		hidden = function() return status.dbx.filterDispelDebuffs end,
@@ -506,7 +506,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			end
 			status.dbx.useWhiteList = nil
 			status:UpdateDB()
-			Grid2:RefreshAuras()
+			status:Refresh()
 			status:UpdateAllUnits()
 		end,
 		hidden = function() return status.dbx.filterDispelDebuffs end,
@@ -515,6 +515,7 @@ end
 
 -- {{ Register
 Grid2Options:RegisterStatusOptions("buff", "buff", function(self, status, options, optionParams)
+	self:MakeStatusEnabledOptions(status, options, optionParams)
 	self:MakeStatusAuraDescriptionOptions(status, options)
 	self:MakeStatusAuraCommonOptions(status, options, optionParams)
 	self:MakeStatusAuraEnableStacksOptions(status, options, optionParams)
@@ -530,6 +531,7 @@ end,{
 })
 
 Grid2Options:RegisterStatusOptions("buffs", "buff", function(self, status, options, optionParams)
+	self:MakeStatusEnabledOptions(status, options, optionParams)
 	if status.dbx.subType == 'blizzard' then
 		self:MakeStatusColorOptions(status, options, optionParams)
 		self:MakeStatusDeleteOptions(status, options, optionParams)
@@ -548,6 +550,7 @@ end,{
 })
 
 Grid2Options:RegisterStatusOptions("debuffType", "debuff", function(self, status, options, optionParams)
+	self:MakeStatusEnabledOptions(status, options, optionParams)
 	self:MakeStatusDebuffTypeColorsOptions(status, options, optionParams)
 	self:MakeStatusDebuffTypeFilterOptions(status, options, optionParams)
 end,{
@@ -555,6 +558,7 @@ end,{
 } )
 
 Grid2Options:RegisterStatusOptions("debuffs", "debuff", function(self, status, options, optionParams)
+	self:MakeStatusEnabledOptions(status, options, optionParams, false)
 	self:MakeStatusAuraDescriptionOptions(status, options, optionParams)
 	self:MakeStatusDebuffsFilterOptions(status, options, optionParams)
 	self:MakeStatusAuraListOptions(status, options, optionParams)
@@ -568,6 +572,7 @@ end,{
 })
 
 Grid2Options:RegisterStatusOptions("debuff", "debuff", function(self, status, options, optionParams)
+	self:MakeStatusEnabledOptions(status, options, optionParams)
 	self:MakeStatusAuraEnableStacksOptions(status, options, optionParams)
 	self:MakeStatusAuraDescriptionOptions(status, options, optionParams)
 	self:MakeStatusAuraCommonOptions(status, options, optionParams)

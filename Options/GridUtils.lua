@@ -326,7 +326,7 @@ function Grid2Options:GetAvailableStatusValues(indicator, statusAvailable, statu
 	statusAvailable = statusAvailable or {}
 	wipe(statusAvailable)
 	for statusKey, status in Grid2:IterateStatuses() do
-		if (self:IsCompatiblePair(indicator, status) and status.name~="test") then
+		if self:IsCompatiblePair(indicator, status) and status.name~="test" and not status:IsSuspended() then
 			statusAvailable[statusKey] = self.LocalizeStatus(status)
 		end
 	end

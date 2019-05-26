@@ -226,10 +226,8 @@ function Grid2Options:MakeStatusOptions(status)
 	if catGroup then
 		local group = catGroup.args[status.name]
 		if not group then
-			local order = params and params.groupOrder
 			group = {
 				type  = "group",
-				order = (type(order)=='function' and order(status) or order) or (status.name~=status.dbx.type and 200) or nil,
 				name  = name,
 				desc  = desc,
 				icon  = icon,
@@ -240,6 +238,12 @@ function Grid2Options:MakeStatusOptions(status)
 			catGroup.args[status.name] = group
 		else
 			wipe(group.args)
+		end
+		local order = params and params.groupOrder
+		group.order = (type(order)=='function' and order(status) or order) or (status.name==status.dbx.type and 100 or 200)
+		if status:IsSuspended() then
+			group.order = group.order+500
+			group.name  = string.format('|cFF808080%s|r',group.name)	
 		end
 		self:MakeStatusChildOptions(status, group.args)
 	end
