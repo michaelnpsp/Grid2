@@ -186,6 +186,7 @@ local pointsX = { TOPLEFT =  1,	TOPRIGHT = -1, BOTTOMLEFT = 1, BOTTOMRIGHT = -1 
 local pointsY = { TOPLEFT = -1, TOPRIGHT = -1, BOTTOMLEFT = 1, BOTTOMRIGHT =  1 }
 local function Icon_UpdateDB(self)
 	local dbx = self.dbx
+	local theme = Grid2Frame.db.profile
 	-- location
 	local l = dbx.location
 	self.anchor     = l.point
@@ -197,7 +198,7 @@ local function Icon_UpdateDB(self)
 	self.borderSize     = dbx.borderSize or 0
 	self.orientation    = dbx.orientation or "HORIZONTAL"
 	self.frameLevel     = dbx.level or 1
-	self.iconSize       = dbx.iconSize or Grid2Frame.db.profile.iconSize or 14
+	self.iconSize       = dbx.iconSize or theme.iconSize or 14
 	self.iconSpacing    = dbx.iconSpacing or 1
 	self.maxIcons       = dbx.maxIcons or 6
 	self.maxIconsPerRow = dbx.maxIconsPerRow or 3
@@ -222,7 +223,7 @@ local function Icon_UpdateDB(self)
 	self.colorStack      = Grid2:MakeColor(dbx.colorStack, "WHITE")
 	self.fontFlags       = dbx.fontFlags or "OUTLINE"
 	self.fontSize        = dbx.fontSize or 9
-	self.font            = Grid2:MediaFetch("font", dbx.font or Grid2Frame.db.profile.font) or STANDARD_TEXT_FONT
+	self.font            = Grid2:MediaFetch("font", dbx.font or theme.font) or STANDARD_TEXT_FONT
 	-- backdrop
 	self.backdrop = self.borderSize>0 and Grid2:GetBackdropTable("Interface\\Addons\\Grid2\\media\\white16x16", self.borderSize) or nil
 end

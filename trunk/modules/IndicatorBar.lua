@@ -22,7 +22,7 @@ end
 local function Bar_Layout(self, parent)
 	local Bar    = parent[self.name]
 	local bgTex  = Bar.bgTex
-	local orient = self.orientation or Grid2Frame.db.profile.orientation
+	local orient = self.orientation
 	local points = AlignPoints[orient][not self.reverseFill]
 	local level  = parent:GetFrameLevel() + self.frameLevel
 	Bar:SetParent(parent)
@@ -165,8 +165,10 @@ end
 
 local function Bar_UpdateDB(self)
 	local dbx = self.dbx
+	local theme = Grid2Frame.db.profile
 	local l = dbx.location
-	self.texture     = Grid2:MediaFetch("statusbar", dbx.texture or Grid2Frame.db.profile.barTexture, "Gradient")
+	self.texture     = Grid2:MediaFetch("statusbar", dbx.texture or theme.barTexture, "Gradient")
+	self.orientation = dbx.orientation or theme.orientation
 	self.frameLevel  = dbx.level or 1
 	self.anchor      = l.point
 	self.anchorRel   = l.relPoint
@@ -174,7 +176,6 @@ local function Bar_UpdateDB(self)
 	self.offsety     = l.y
 	self.width       = dbx.width
 	self.height      = dbx.height
-	self.orientation = dbx.orientation
 	self.reverseFill = dbx.reverseFill	
 	self.backColor   = dbx.backColor or (dbx.invertColor and defaultBackColor) or nil
 	self.OnUpdate    = (dbx.duration and Bar_OnUpdateD) or (dbx.stack and Bar_OnUpdateS) or Bar_OnUpdate
