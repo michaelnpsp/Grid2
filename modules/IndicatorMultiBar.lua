@@ -124,7 +124,7 @@ end
 
 local function Bar_Layout(self, parent)
 	local bar    = parent[self.name]
-	local orient = self.orientation or Grid2Frame.db.profile.orientation
+	local orient = self.orientation
 	local level  = parent:GetFrameLevel() + self.frameLevel
 	local width  = self.width  or parent.container:GetWidth()
 	local height = self.height or parent.container:GetHeight()	
@@ -189,8 +189,9 @@ end
 
 local function Bar_UpdateDB(self)
 	local dbx = self.dbx
-	self.orientation    = dbx.orientation
-	local orient = self.orientation or Grid2Frame.db.profile.orientation
+	local theme = Grid2Frame.db.profile
+	local orient = dbx.orientation or theme.orientation 
+	self.orientation    = orient
 	self.SetSizeMethod  = SetSizeMethods[orient]
 	self.GetSizeMethod  = GetSizeMethods[orient]	
 	self.alignPoints    = AlignPoints[orient][not dbx.reverseFill]
@@ -210,8 +211,8 @@ local function Bar_UpdateDB(self)
 	self.backMainAnchor = dbx.backMainAnchor
 	self.opacity        = dbx.opacity or 1
 	self.reverse        = dbx.reverseMainBar
-	self.backTexture    = Grid2:MediaFetch("statusbar", dbx.backTexture or Grid2Frame.db.profile.barTexture, "Gradient")
-	self.texture        = Grid2:MediaFetch("statusbar", dbx.texture or Grid2Frame.db.profile.barTexture, "Gradient")
+	self.backTexture    = Grid2:MediaFetch("statusbar", dbx.backTexture or theme.barTexture, "Gradient")
+	self.texture        = Grid2:MediaFetch("statusbar", dbx.texture or theme.barTexture, "Gradient")
 	self.textureSublayer= 0
 	self.bars           = {}
 	self.barCount       = dbx.barCount or 0
@@ -219,7 +220,7 @@ local function Bar_UpdateDB(self)
 		local bar = self.bars[i] or {}	
 		local setup = dbx["bar"..i]
 		if setup then
-			bar.texture   = Grid2:MediaFetch("statusbar", setup.texture or dbx.texture or Grid2Frame.db.profile.barTexture, "Gradient")
+			bar.texture   = Grid2:MediaFetch("statusbar", setup.texture or dbx.texture or theme.barTexture, "Gradient")
 			bar.reverse   = setup.reverse
 			bar.noOverlap = setup.noOverlap
 			bar.color     = setup.color
