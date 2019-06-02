@@ -154,7 +154,7 @@ local function Icon_Layout(self, parent)
 		local justifyH = self.dbx.fontJustifyH or "CENTER"
 		local justifyV = self.dbx.fontJustifyV or "MIDDLE"
 		CooldownText:SetJustifyH( justifyH )
-		CooldownText:SetJustifyV( justifyV  )
+		CooldownText:SetJustifyV( justifyV )
 		CooldownText:ClearAllPoints()
 		CooldownText:SetPoint("TOP")
 		CooldownText:SetPoint("BOTTOM")

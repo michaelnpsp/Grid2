@@ -346,7 +346,7 @@ do
 		local dbx = dbx or self.dbx
 		self.vId = dbx.valueIndex or 0
 		self.valMax = dbx.valueMax
-		self.GetPercent = dbx.valueMax and GetPercentMax or GetPercentHealth
+		self.GetPercent = dbx.valueIndex and (dbx.valueMax and GetPercentMax or GetPercentHealth) or Grid2.statusLibrary.GetPercent
 		if dbx.auras then -- multiple spells
 			self.spells = self.spells or {}
 			wipe(self.spells)
