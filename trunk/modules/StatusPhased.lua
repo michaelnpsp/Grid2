@@ -1,6 +1,7 @@
 local Phased = Grid2.statusPrototype:new("phased")
 
 local Grid2 = Grid2
+local IsInInstance = IsInInstance
 local UnitInPhase = UnitInPhase
 local UnitIsWarModePhased = UnitIsWarModePhased
 local UnitDistanceSquared = UnitDistanceSquared
@@ -32,6 +33,13 @@ local function UpdateUnits()
 			UpdateUnit(nil, unit)
 		end	
 	end
+	if IsInInstance() then timer:Stop() end
+end
+
+local function UpdateTimer()
+	if not (IsInInstance() or timer:IsPlaying()) then
+		timer:Play()
+	end
 end
 
 function Phased:OnEnable()
@@ -39,7 +47,8 @@ function Phased:OnEnable()
 	self:RegisterEvent("UNIT_FLAGS", UpdateUnit)
 	self:RegisterMessage("Grid_UnitUpdated", ResetUnit)
 	self:RegisterMessage("Grid_UnitLeft",    ResetUnit)
-	timer = Grid2:CreateTimer( UpdateUnits, 1)
+	self:RegisterMessage("Grid_GroupTypeChanged",UpdateTimer)
+	timer = Grid2:CreateTimer( UpdateUnits, 1, not IsInInstance() )
 end
 
 function Phased:OnDisable()
@@ -47,6 +56,7 @@ function Phased:OnDisable()
 	self:UnregisterEvent("UNIT_FLAGS")
 	self:UnregisterMessage("Grid_UnitUpdated")
 	self:UnregisterMessage("Grid_UnitLeft")
+	self:UnregisterMessage("Grid_GroupTypeChanged")
 	wipe(cache)
 	wipe(range)
 	Grid2:CancelTimer(timer)

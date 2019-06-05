@@ -325,7 +325,7 @@ local function Create(baseKey, dbx)
 	status.count       = 0
 	status.order       = 10000
 	status:Inject(class)
-	Grid2:RegisterStatus(status, { "icon", "color", 'tooltip' }, baseKey, dbx)
+	Grid2:RegisterStatus(status, { 'icon', 'color', 'text', 'tooltip' }, baseKey, dbx)
 	return status
 end
 
