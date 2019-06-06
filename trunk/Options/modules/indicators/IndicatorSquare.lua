@@ -6,10 +6,49 @@ Grid2Options:RegisterIndicatorOptions("square", true, function(self, indicator)
 	self:MakeIndicatorLocationOptions(indicator, layout)
 	self:MakeIndicatorTextureOptions(indicator, layout)
 	self:MakeIndicatorSquareSizeOptions(indicator, layout)
-	self:MakeIndicatorBorderOptions(indicator, layout)
+	self:MakeIndicatorSquareBorderOptions(indicator, layout)
 	self:MakeIndicatorStatusOptions(indicator, statuses)
 	self:AddIndicatorOptions(indicator, statuses, layout )
 end)
+
+function Grid2Options:MakeIndicatorSquareBorderOptions(indicator, options, optionParams)
+	optionParams = optionParams or {}
+	optionParams.color1 = L["Border Color"]
+	optionParams.colorDesc1 = L["Adjust border color and alpha."]
+	self:MakeHeaderOptions( options, "Border" )
+	options.borderSize = {
+		type = "range",
+		order = 20,
+		name = L["Border Size"],
+		desc = L["Adjust the border size of the indicator."],
+		min = 0,
+		max = 20,
+		step = 1,
+		get = function () return indicator.dbx.borderSize or 0 end,
+		set = function (_, v)
+			if v == 0 then 
+				indicator.dbx.borderSize, indicator.dbx.borderSwap = nil, nil
+			else
+				indicator.dbx.borderSize = v
+			end
+			self:RefreshIndicator(indicator, "Layout", "Update")
+		end,
+	}
+	self:MakeIndicatorColorOptions(indicator, options, optionParams)
+	options.borderSwap = {
+		type = "toggle",
+		name = L["Swap Colors"],
+		desc = L["Swap border and square colors. Square will be filled with the border color and linked statuses colors will be applied to the border."],
+		order = 25,
+		tristate = false,
+		get = function () return indicator.dbx.borderSwap end,
+		set = function (_, v)
+			indicator.dbx.borderSwap = v or nil
+			self:RefreshIndicator(indicator, "Layout", "Update")
+		end,
+		disabled = function() return not indicator.dbx.borderSize end,
+	}
+end
 
 function Grid2Options:MakeIndicatorSquareSizeOptions(indicator, options)
 	self:MakeHeaderOptions( options, "Appearance" )
