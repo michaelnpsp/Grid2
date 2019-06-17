@@ -47,7 +47,7 @@ end
 local function GetInstanceName(module, instance)
 	if module and instance then
 		local info = RDDB[module][instance][1]
-		local name = info and (info.id and EJ_GetInstanceInfo(info.id) or info.name) or string.format( "unknown(%d)", instance )
+		local name = info and (info.id and EJ_GetInstanceInfo(info.id) or info.name) or EJ_GetInstanceInfo(instance) or string.format( "unknown(%d)", instance )
 		local key  = string.format( '%s%s<<%d>>', info and info.raid and "R" or "G", name, instance )
 		return name, key
 	end

@@ -183,6 +183,8 @@ function Grid2Layout:OnModuleInitialize()
 	self.frame:SetScript("OnMouseUp", function () self:StopMoveFrame() end)
 	self.frame:SetScript("OnHide", function () self:StopMoveFrame() end)
 	self.frame:SetScript("OnMouseDown", function (_, button) self:StartMoveFrame(button) end)
+	-- with no size, frames will not become visible if we are in combat after a UI reload
+	self.frame:SetSize(1,1)
 	-- extra frame for background and border textures, to be able to resize in combat
 	self.frameBack = CreateFrame("Frame", "Grid2LayoutFrameBack", self.frame)
 	-- custom defaults
