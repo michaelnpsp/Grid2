@@ -183,8 +183,6 @@ function Grid2Layout:OnModuleInitialize()
 	self.frame:SetScript("OnMouseUp", function () self:StopMoveFrame() end)
 	self.frame:SetScript("OnHide", function () self:StopMoveFrame() end)
 	self.frame:SetScript("OnMouseDown", function (_, button) self:StartMoveFrame(button) end)
-	-- with no size, frames will not become visible if we are in combat after a UI reload
-	self.frame:SetSize(1,1)
 	-- extra frame for background and border textures, to be able to resize in combat
 	self.frameBack = CreateFrame("Frame", "Grid2LayoutFrameBack", self.frame)
 	-- custom defaults
@@ -197,7 +195,6 @@ function Grid2Layout:OnModuleEnable()
 	self:FixLayouts()
 	self:UpdateFrame()
 	self:UpdateTextures()
-	self:RestorePosition()
 	self:RegisterMessage("Grid_RosterUpdate")
 	self:RegisterMessage("Grid_GroupTypeChanged")
 	self:RegisterMessage("Grid_UpdateLayoutSize")
@@ -573,6 +570,9 @@ function Grid2Layout:UpdateFramesSize()
 	if nw~=ow or nh~=oh then
 		Grid2Frame:LayoutFrames()
 		self:UpdateHeaders() -- Force headers size update because this triggers a "Grid_UpdateLayoutSize" message.
+	end
+	if self.frame:GetWidth()==0 then
+		self.frame:SetSize(1,1) -- assign a default size, to make frame visible if we are in combat after a UI reload
 	end
 end
 
