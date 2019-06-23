@@ -56,7 +56,7 @@ end
 local function MakeDefaultsCommon()
 	Grid2:DbSetValue( "indicators",  "tooltip", {type = "tooltip", showTooltip = 4, showDefault = true} )
 
-	Grid2:DbSetValue( "indicators",  "alpha", {type = "alpha", color1 = {r=0,g=0,b=0,a=1}})
+	Grid2:DbSetValue( "indicators",  "alpha", {type = "alpha"})
 	Grid2:DbSetMap( "alpha", "range", 99)
 	Grid2:DbSetMap( "alpha", "death", 98)
 	Grid2:DbSetMap( "alpha", "offline", 97)

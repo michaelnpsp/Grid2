@@ -159,7 +159,7 @@ function Grid2Options:MakeStatusTitleOptions(status, options, optionParams)
 	if not (options.title or (optionParams and optionParams.hideTitle) ) then
 		local name, desc, icon, iconCoords, _
 		local group = self:GetStatusGroup(status)
-		if group then
+		if group and false then
 			name, desc, icon, iconCoords = group.name, group.desc, group.icon, group.iconCoords
 		else
 			_, name, desc, icon, iconCoords = self:GetStatusInfo(status)
@@ -224,22 +224,19 @@ end
 function Grid2Options:MakeStatusOptions(status)
 	local catGroup, name, desc, icon, coords, params = self:GetStatusInfo(status)
 	if catGroup then
-		local group = catGroup.args[status.name]
-		if not group then
-			group = {
-				type  = "group",
-				name  = name,
-				desc  = desc,
-				icon  = icon,
-				iconCoords = coords,
-				childGroups = params and params.childGroups or "tab",
-				args  = {},
-			}
-			catGroup.args[status.name] = group
-		else
-			wipe(group.args)
-		end
 		local order = params and params.groupOrder
+		local group = catGroup.args[status.name]
+		if group then
+			wipe(group.args)
+		else
+			group = { type = "group", args = {} }
+			catGroup.args[status.name] = group
+		end
+		group.name = name
+		group.desc = desc
+		group.icon = icon
+		group.iconCoords = coords
+		group.childGroups = params and params.childGroups or "tab"
 		group.order = (type(order)=='function' and order(status) or order) or (status.name==status.dbx.type and 100 or 200)
 		if status:IsSuspended() then
 			group.order = group.order+500

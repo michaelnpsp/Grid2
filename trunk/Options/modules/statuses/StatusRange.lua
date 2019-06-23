@@ -15,7 +15,11 @@ Grid2Options:RegisterStatusOptions("range", "target", function(self, status, opt
 		max = 1,
 		step = 0.01,
 		get = function () return status.dbx.default	end,
-		set = function (_, v) status.dbx.default = v; status:UpdateDB()	end,
+		set = function (_, v) 
+			status.dbx.default = v
+			status:UpdateDB()
+			Grid2Frame:UpdateIndicators()
+		end,
 	}
 	options.update = {
 		type = "range",

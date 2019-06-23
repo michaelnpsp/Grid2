@@ -106,7 +106,7 @@ function Grid2Options:MakeIndicatorAuraIconsSizeOptions(indicator, options, opti
 		order = 14,
 		name = L["Icon Spacing"],
 		desc = L["Adjust the space between icons."],
-		min = 0,
+		softMin = 0,
 		max = 50,
 		step = 1,
 		get = function () return indicator.dbx.iconSpacing or 1 end,
