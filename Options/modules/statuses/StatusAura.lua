@@ -102,18 +102,36 @@ function Grid2Options:MakeStatusBlinkThresholdOptions(status, options, optionPar
 end
 
 function Grid2Options:MakeStatusAuraUseSpellIdOptions(status, options, optionParams)
-	if not tonumber(status.dbx.spellName) then return end
 	self:MakeHeaderOptions(options, "Misc")
 	options.useSpellId = {
 		type = "toggle",
 		name = L["Track by SpellId"],
-		width = "double",
+		width = "normal",
 		desc = string.format( "%s (%d) ", L["Track by spellId instead of aura name"], status.dbx.spellName ),
-		order = 110,
+		order = 115,
 		get = function () return status.dbx.useSpellId end,
 		set = function (_, v)
 			status.dbx.useSpellId = v or nil
 			status:UpdateDB()
+		end,
+		hidden = function() return not tonumber(status.dbx.spellName) end,
+	}
+	options.changeSpell = {
+		type = "input",
+		order = 110,
+		name = L["Aura Name or SpellID"],
+		desc = L["Change Buff/Debuff Name or Spell ID."],
+		width = "normal",
+		get = function() return tostring(status.dbx.spellName) end,
+		set = function(info,text)
+			text = tonumber(text) or text
+			if strlen(text)>0 and text~=status.dbx.spellName then
+				status.dbx.spellName = text
+				status.dbx.useSpellId = (type(text)=="number") or nil
+				status:UpdateDB()
+				Grid2Options:MakeStatusOptions(status)
+				LibStub("AceConfigRegistry-3.0"):NotifyChange("Grid2")
+			end	
 		end,
 	}
 end
