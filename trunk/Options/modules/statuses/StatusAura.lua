@@ -119,7 +119,7 @@ function Grid2Options:MakeStatusAuraUseSpellIdOptions(status, options, optionPar
 	options.changeSpell = {
 		type = "input",
 		order = 110,
-		name = L["Aura Name or SpellID"],
+		name = L["Aura Name or Spell ID"],
 		desc = L["Change Buff/Debuff Name or Spell ID."],
 		width = "normal",
 		get = function() return tostring(status.dbx.spellName) end,
