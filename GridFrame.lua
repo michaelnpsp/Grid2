@@ -435,3 +435,5 @@ _G.Grid2Frame = Grid2Frame
 
 -- Allow other modules/addons to easily modify the grid unit frames
 Grid2Frame.Prototype = GridFramePrototype
+-- Allow other modules to access the variable for speed optimization
+Grid2.frames_of_unit = frames_of_unit

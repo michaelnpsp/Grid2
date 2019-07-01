@@ -20,10 +20,13 @@ local AuraFrame_OnEvent
 do
 	local indicators = {}
 	local val = {0, 0, 0}
-	local myUnits = Grid2.roster_my_units
-	AuraFrame_OnEvent = function(_, _, u)
-		local frames = Grid2:GetUnitFrames(u)
-		if not next(frames) then return end
+	local myUnits  = Grid2.roster_my_units
+	local myFrames = Grid2.frames_of_unit
+	AuraFrame_OnEvent = function(_, event, u)
+		-- Usually if no frames exists for the unit this function returns and do nothing (we ignore units not displayed by Grid2 like nameplates or units filtered by the active layout)
+		-- except if "event" is nil, in this case we are in a "Grid_UnitUpdated" event and the frames maybe were not created yet, so we need to save the auras states for future use.
+		local frames = myFrames[u]
+		if event and not next(frames) then return end
 		-- Scan Debuffs, Debuff Types, Debuff Groups
 		local i = 1
 		while true do
@@ -94,11 +97,13 @@ do
 			s.seen = false
 		end
 		-- Update indicators that needs updating only once.
-		for indicator in next, indicators do
-			for frame in next, frames do
-				indicator:Update(frame, u)
+		if frames then
+			for indicator in next, indicators do
+				for frame in next, frames do
+					indicator:Update(frame, u)
+				end
 			end
-		end
+		end	
 		wipe(indicators)
 	end
 end
@@ -223,6 +228,7 @@ local CreateStatusAura
 do
 	local fmt = string.format
 	local UnitHealthMax = UnitHealthMax
+	local unit_is_pet   = Grid2.owner_of_unit
 	local function Refresh() 
 		for unit in Grid2:IterateRosterUnits() do
 			AuraFrame_OnEvent(nil,nil,unit) 
@@ -248,7 +254,7 @@ do
 		return self.tkr[unit]==1 or "blink" 
 	end
 	local function IsInactive(self, unit)
-		return not (self.idx[unit] or Grid2:UnitIsPet(unit)) 
+		return not (self.idx[unit] or unit_is_pet[unit]) 
 	end
 	local function IsInactiveBlink(self, unit) 
 		return not self.idx[unit] and "blink" 
