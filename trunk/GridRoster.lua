@@ -411,6 +411,9 @@ do
 end
 
 --{{ Publish tables used by some statuses
+Grid2.owner_of_unit   = owner_of_unit
 Grid2.roster_units    = roster_units
 Grid2.roster_my_units = roster_my_units
 --}}
+
+
