@@ -92,17 +92,24 @@ do
 		if indicator.statuses then
 			local arg  = { indicator = indicator, options = options }
 			local more = #indicator.statuses>1
+			local count, group, root = 0
+			if #indicator.statuses>15 then
+				count, group, root = 1, 0, options
+			end
 			for index, status in ipairs(indicator.statuses) do
-				local statusKey = status.name
-				local order = 5 * index
-				local passValue = {indicator = indicator, status = status}
+				count = count - 1
+				if count==0 then -- Using groups AceGUI performance is much better when a lot of statuses are displayed
+					options, count, group = {}, 15, group+1
+					root['S'..group] = { type = "group", order = group, inline = true, name = "", args = options	}
+				end
+				local statusKey, order = status.name, index*5
 				options[statusKey] = {
 					type = "toggle",
 					order = order,
-					width = 1.5,
+					width = 1.7,
 					name =  Grid2Options.LocalizeStatus(status),
 					desc = L["Select statuses to display with the indicator"],
-					get = function() return true end,
+					get = true,
 					set = SetIndicatorStatusCurrent,
 					arg = arg,
 				}
@@ -132,9 +139,9 @@ do
 						arg = arg,
 					}
 					options[statusKey .."S"] = {
-					  type = "description",
-					  name = "",
-					  order = order + 3
+						type = "description",
+						name = "",
+						order = order + 3
 					}
 				end
 			end

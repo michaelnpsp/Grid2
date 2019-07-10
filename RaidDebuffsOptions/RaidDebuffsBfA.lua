@@ -388,6 +388,61 @@ RDDB["Battle for Azeroth"] = {
 		268586, -- Blade Combo
 		},
 	},	
+	[1178] = {
+		{ id = 1178, name = "Operation: Mechagon" },
+		["King Gobbamak"] = {
+		order = 1, ejid = 2357,
+		297257, -- electrical-charge
+		},
+		["Gunker"] = {
+		order = 2, ejid = 2358,
+		298124, -- gooped
+		297913, -- toxic-goop
+		298229, -- toxic-fumes
+		},
+		["Trixie & Naeno"] = {
+		order = 3, ejid = 2360,
+		298669, -- taze
+		298718, -- mega-taze
+		},
+		["HK-8 Aerial Oppression Unit"] = {
+		order = 4, ejid = 2355,
+		295445, -- wreck
+		302274, -- fulminating-zap
+		295939, -- annihilation-ray
+		296150, -- vent-blast
+		},
+		["Tussle Tonks"] = {
+		order = 5, ejid = 2336,
+		285388, -- vent-jets
+		},
+		["K.U.-J.0."] = {
+		order = 6, ejid = 2339,
+		294929, -- blazing-chomp
+		291946, -- venting-flames
+		},
+		["Machinist's Garden"] = {
+		order = 7, ejid = 2348,
+		285443, -- hidden-flame-cannon
+		294860, -- blossom-blast
+		285460, -- discom-bomb-ulator
+		},
+		["King Mechagon"] = {
+		order = 8, ejid = 2331,
+		291939, -- giga-zap
+		},
+		["Trash"] = {
+		order = 9, ejid = nil,
+		299438, -- sledgehammer
+		300207, -- shock-coil
+		299475, -- b-o-r-k
+		301712, -- pounce
+		299502, -- nanoslicer
+		294290, -- process-waste
+		294195, -- arcing-zap
+		293986, -- sonic-pulse
+		},
+	},	
 	[0] = { -- EJ_GetInstanceForMap() returns 0 for azeroth world maps, not 1028.
 		{ id = 1028, name = "Azeroth", raid = true },
 		["T'zane"] = {
@@ -620,6 +675,72 @@ RDDB["Battle for Azeroth"] = {
 		285652, -- Insatiable torment
 		284733, -- Embrace of the void
 		285367  -- Piercing gaze
+		},
+	},
+	[1179] = {
+		{ id = 1179, name = "The Eternal Palace", raid = true },
+		["Abyssal Commander Sivara"] = {
+		order = 1, ejid = 2352,
+		300882, -- Inversion Sickness
+		295421, -- Over flowing Venom
+		295348, -- Over flowing Chill
+		294715, -- Toxic Brand
+		294711, -- Frost Mark
+		300705, -- Septic Taint
+		300701, -- Rimefrost
+		294847, -- Unstable Mixture
+		300961, -- Frozen Ground
+		300962, -- Septic Ground	
+		},
+		["Blackwater Behemoth"] = {
+		order = 2, ejid = 2347,
+		292127, -- Darkest Depths
+		292307, -- Gaze from Below
+		292167, -- Toxic Spine
+		301494, -- Piercing Barb
+		298595, -- Glowing Stinger
+		292138, -- Radiant Biomass
+		292133, -- Bioluminescence
+		},
+		["Radiance of Azshara"] = {
+		order = 3, ejid = 2353,
+		296737, -- Arcane Bomb
+		296566, -- Tide Fist
+		},
+		["Lady Ashvane"] = {
+		order = 4, ejid = 2354,
+		296693, -- Waterlogged
+		297333, -- Briny Bubble
+		296725, -- Barnacle Bash
+		296752, -- Cutting Coral
+		},
+		["Orgozoa"] = {
+		order = 5, ejid = 2351,
+		298306, -- Incubation Fluid
+		295779, -- Aqua Lance
+		298156, -- Desensitizing Sting
+		298306, -- Incubation Fluid
+		},
+		["The Queen's Court"] = {
+		order = 6, ejid = 2359,
+		297586, -- Suffering
+		299914, -- Frenetic Charge
+		296851, -- Fanatical Verdict
+		300545, -- Mighty Rupture		
+		},
+		["Za'qul, Harbinger of Ny'alotha"] = {
+		order = 7, ejid = 2349,
+		292971, -- Hysteria
+		292963, -- Dread
+		293509, -- Manifest Nightmares
+		298192, -- Dark Beyond
+		},
+		["Queen Azshara"] = {
+		order = 8, ejid = 2361,
+		303825, -- Crushing Depths
+		303657, -- Arcane Burst
+		300492, -- Static Shock
+		297907, -- Cursed Heart
 		},
 	},
 }
