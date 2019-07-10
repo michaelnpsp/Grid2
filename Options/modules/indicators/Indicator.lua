@@ -100,7 +100,7 @@ do
 				count = count - 1
 				if count==0 then -- Using groups AceGUI performance is much better when a lot of statuses are displayed
 					options, count, group = {}, 15, group+1
-					root['S'..group] = { type = "group", order = group, inline = true, name = "", args = options	}
+					root['S'..group] = { type = "group", order = group, inline = true, name = "", args = options }
 				end
 				local statusKey, order = status.name, index*5
 				options[statusKey] = {
@@ -109,7 +109,7 @@ do
 					width = 1.7,
 					name =  Grid2Options.LocalizeStatus(status),
 					desc = L["Select statuses to display with the indicator"],
-					get = true,
+					get = function() return true end,
 					set = SetIndicatorStatusCurrent,
 					arg = arg,
 				}
