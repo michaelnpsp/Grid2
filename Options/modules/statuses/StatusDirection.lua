@@ -167,6 +167,7 @@ Grid2Options:RegisterStatusOptions( "direction", "target", function(self, status
 			return not (status.dbx.StickyMouseover or status.dbx.StickyFocus or status.dbx.StickyTarget or status.dbx.StickyTanks)
 		end,
 	}
+	--[[ Disabled because new nameplates restrictions don't allow this anymore
 	options.spacer3 = {
 		type = "header",
 		order = 180,
@@ -188,6 +189,7 @@ Grid2Options:RegisterStatusOptions( "direction", "target", function(self, status
 			end
 		end,
 	}
+	--]]
 end, {
 	title = L["arrows pointing to each raid member"],
 	titleIcon = "Interface\\Vehicles\\Arrow",

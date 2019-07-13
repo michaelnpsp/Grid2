@@ -222,7 +222,7 @@ function HealthLow:UpdateDB()
 end
 
 local function CreateHealthLow(baseKey, dbx)
-	Grid2:RegisterStatus(HealthLow, {"color"}, baseKey, dbx)
+	Grid2:RegisterStatus(HealthLow, {"percent", "color"}, baseKey, dbx)
 	HealthLow:UpdateDB()
 	return HealthLow
 end

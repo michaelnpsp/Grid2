@@ -124,12 +124,12 @@ end, {
 
 
 Grid2Options:RegisterStatusOptions("health-low", "health", function(self, status, options, optionParams)
-	local min,max,step
+	local per,min,max,step = true
 	if status.dbx.threshold>10 then
-		min,max,step = 1000, 250000, 500
+		min,max,step,per = 1000, 250000, 500, nil
 	end
 	self:MakeStatusColorOptions(status, options, optionParams)
-	self:MakeStatusThresholdOptions(status, options, optionParams, min, max, step)
+	self:MakeStatusThresholdOptions(status, options, optionParams, min, max, step, per)
 	options.useAbsoluteHealth = {
 		type = "toggle",
 		order = 110,

@@ -79,8 +79,8 @@ local function UpdateDirections()
 						local dx, dy = x2 - x1, y2 - y1
 						direction = floor((atan2(dy,dx)-facing) / PI2 * 32 + 0.5) % 32
 						if distances then distance = floor( ((dx*dx+dy*dy)^0.5)/10 ) + 1 end
-					elseif guessDirections then
-						local frame = plates[guid] or GetPlate(guid) 					
+					elseif guessDirections then -- disabled guessDirections, this condition is never true
+						local frame = plates[guid] or GetPlate(guid) 
 						if frame then
 							local s = frame:GetEffectiveScale()
 							local x, y = frame:GetCenter()
@@ -174,8 +174,8 @@ function Direction:UpdateDB()
 		distances = nil
 		self.GetVertexColor = Grid2.statusLibrary.GetColor
 	end
-	--
-	guessDirections = self.dbx.guessDirections
+	-- disabled because doesn't work due to new Nameplates restrictions, GetCenter() cannot be called in combat now
+	-- guessDirections = self.dbx.guessDirections
 end
 
 function Direction:OnEnable()
