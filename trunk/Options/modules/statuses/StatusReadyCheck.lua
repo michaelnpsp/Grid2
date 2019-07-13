@@ -2,7 +2,7 @@ local L = Grid2Options.L
 
 Grid2Options:RegisterStatusOptions("ready-check", "misc", function(self, status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
-	self:MakeStatusThresholdOptions(status, options, optionParams, 1, 20, 1)
+	self:MakeStatusThresholdOptions(status, options, optionParams, 1, 20, 1, false)
 end, {
 	color1 = L["Waiting color"],
 	colorDesc1 = L["Color for Waiting."],

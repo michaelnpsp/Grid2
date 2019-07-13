@@ -136,24 +136,20 @@ end
 -- Grid2Options:MakeStatusColorThresholdOptions()
 function Grid2Options:MakeStatusColorThresholdOptions(status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
-	self:MakeStatusThresholdOptions(status, options, optionParams)
+	self:MakeStatusThresholdOptions(status, options, optionParams, nil, nil, nil, true)
 end
 
 -- Grid2Options:MakeStatusThresholdOptions()
-function Grid2Options:MakeStatusThresholdOptions(status, options, optionParams, min, max, step)
-	min = min or 0
-	max = max or 1
-	step = step or 0.01
-	local name = optionParams and optionParams.threshold or L["Threshold"]
-	local desc = optionParams and optionParams.thresholdDesc or L["Threshold at which to activate the status."]
+function Grid2Options:MakeStatusThresholdOptions(status, options, optionParams, min, max, step, percent)
 	options.threshold = {
 		type = "range",
 		order = 20,
-		name = name,
-		desc = desc,
-		min = min,
-		max = max,
-		step = step,
+		name = optionParams and optionParams.threshold or L["Threshold"],
+		desc = optionParams and optionParams.thresholdDesc or L["Threshold at which to activate the status."],
+		min = min or 0,
+		max = max or 1,
+		step = step or 0.01,
+		isPercent = percent or nil,
 		get = function ()
 			return status.dbx.threshold
 		end,
