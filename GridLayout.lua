@@ -198,12 +198,16 @@ function Grid2Layout:OnModuleEnable()
 	self:RegisterMessage("Grid_RosterUpdate")
 	self:RegisterMessage("Grid_GroupTypeChanged")
 	self:RegisterMessage("Grid_UpdateLayoutSize")
+	self:RegisterEvent("PET_BATTLE_OPENING_START", "PetBattleTransition")
+	self:RegisterEvent("PET_BATTLE_CLOSE", "PetBattleTransition")
 end
 
 function Grid2Layout:OnModuleDisable()
 	self:UnregisterMessage("Grid_RosterUpdate")
 	self:UnregisterMessage("Grid_GroupTypeChanged")
 	self:UnregisterMessage("Grid_UpdateLayoutSize")
+	self:UnegisterEvent("PET_BATTLE_OPENING_START")
+	self:UnegisterEvent("PET_BATTLE_CLOSE")
 	self.frame:Hide()
 end
 
@@ -228,8 +232,10 @@ end
 function Grid2Layout:Grid_GroupTypeChanged(_, groupType, instType, maxPlayers)
 	Grid2Layout:Debug("GroupTypeChanged", groupType, instType, maxPlayers)
 	if not Grid2:ReloadTheme() then
-		self:ReloadLayout()
-	end	
+		if not self:ReloadLayout() then
+			self:CheckVisibility()
+		end
+	end
 end
 
 function Grid2Layout:Grid_RosterUpdate(_, unknowns)
@@ -244,6 +250,16 @@ end
 -- message is triggered the blizzard code has not yet updated the size of the secure group headers.
 function Grid2Layout:Grid_UpdateLayoutSize()
 	Grid2:RunThrottled(self, "UpdateSize")
+end
+
+function Grid2Layout:PetBattleTransition(event)
+	if self.db.profile.HideInPetBattle then
+		local inBattle = (event == "PET_BATTLE_OPENING_START") or nil
+		if inBattle or self.inBattlePet then -- PET_BATTLE_CLOSE event fires twice so we check "inBattlePet" variable to ignore the second event
+			self.inBattlePet = inBattle
+			self:CheckVisibility()
+		end
+	end	
 end
 --}}}
 
@@ -611,14 +627,13 @@ function Grid2Layout:UpdateColor()
 end
 
 function Grid2Layout:CheckVisibility()
-	local frameDisplay = self.db.profile.FrameDisplay
-	if (frameDisplay == "Always") or
-       (frameDisplay == "Grouped" and self.partyType ~= "solo"    ) or
-	   (frameDisplay == "Raid"    and self.partyType == "raid" ) then
-		self.frame:Show()
-	else
-		self.frame:Hide()
-	end
+	if not Grid2:RunSecure(7, self, "CheckVisibility") then
+		local fd, pt = self.db.profile.FrameDisplay, Grid2:GetGroupType()
+		self.frame:SetShown(
+			( (fd == "Always") or (fd == "Grouped" and pt ~= "solo") or (fd == "Raid" and pt == "raid" ) ) and
+			not (self.db.profile.HideInPetBattle and self.inBattlePet)
+		)
+	end	
 end
 
 function Grid2Layout:SavePosition()

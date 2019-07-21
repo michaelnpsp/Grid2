@@ -72,6 +72,16 @@ local layoutOptions =  { mainheader = {
 			Grid2Layout:CheckVisibility()
 		end,
 		values={["Always"] = L["Always"], ["Grouped"] = L["Grouped"], ["Raid"] = L["Raid"]},
+}, petBattle = {
+		type = "toggle",
+		name = L["Hide in Pet Battles"],
+		desc = L["Toggle to hide Grid2 window in Pet Battles"],
+		order = order_display + 7,
+		get = function () return theme.layout.HideInPetBattle end,
+		set = function (_, v)
+				  theme.layout.HideInPetBattle = v or nil
+				  Grid2Layout:CheckVisibility()
+			  end,
 }, frameStrata = {
 		type = "select",
 		name = L["Frame Strata"],
