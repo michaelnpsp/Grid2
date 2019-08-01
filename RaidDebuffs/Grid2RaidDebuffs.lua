@@ -32,6 +32,14 @@ local auto_instance
 local auto_debuffs
 local auto_blacklist = { [160029] = true, [36032] = true, [6788] = true, [80354] = true, [95223] = true, [114216] = true, [57723] = true }
 
+-- Fix some bugged maps (EJ_GetInstanceInfo does not return valid instanceID for these maps)
+-- We replace bugged mapIDs with another non bugged mapIDs of the same instance.
+local bugged_maps = {
+	[1150] = 1148, -- Fix for Uldir map 1150 (ticket #588)
+	[1515] = 1512, -- Fix for Eternal Palace map 1515 (ticket #691)
+	[1516] = 1512, -- Fix for Eternal Palace map 1516 (ticket #691)
+}
+
 -- LDB Tooltip
 Grid2.tooltipFunc['RaidDebuffsCount'] = function(tooltip)
 	if instance_map_name then
@@ -79,7 +87,7 @@ function GSRD:UpdateZoneSpells(event)
 		local map_id = select(8,GetInstanceInfo()) + 100000 -- +100000 to avoid collisions with instance_id
 		if event and map_id==instance_map_id then return end
 		self:ResetZoneSpells()
-		instance_id = EJ_GetInstanceForMap(bm~=1150 and bm or 1148) -- Fix for Uldir map 1150 (ticket #588)
+		instance_id = EJ_GetInstanceForMap(bugged_maps[bm] or bm)
 		instance_map_id = map_id
 		instance_map_name = GetInstanceInfo()
 		for status in next,statuses do
