@@ -152,7 +152,7 @@ Grid2Options:RegisterStatusOptions("health-deficit", "health", Grid2Options.Make
 })
 
 Grid2Options:RegisterStatusOptions( "death", "combat", Grid2Options.MakeStatusColorOptions,{
-	titleIcon = "Interface\\ICONS\\Ability_creature_cursed_05.png",
+	titleIcon = "Interface\\ICONS\\Ability_creature_cursed_05",
 } )
 
 Grid2Options:RegisterStatusOptions( "feign-death", "combat", Grid2Options.MakeStatusColorOptions,{

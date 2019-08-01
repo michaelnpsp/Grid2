@@ -35,7 +35,7 @@ Grid2Options.debuffTypeIcons = {
 	Poison  = "Interface\\Icons\\Spell_nature_nullifydisease",
 	Disease = "Interface\\Icons\\Spell_nature_removedisease",
 	Curse   = "Interface\\Icons\\Spell_nature_removedisease",
-	Default = "Interface\\Icons\\Spell_holy_harmundeadaura.png", 
+	Default = "Interface\\Icons\\Spell_holy_harmundeadaura", 
 }
 -- status.dbx.type -> categoryKey
 Grid2Options.typeCategories = {}
