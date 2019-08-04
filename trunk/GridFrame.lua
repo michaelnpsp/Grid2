@@ -116,6 +116,7 @@ local function GridFrame_Init(frame, width, height)
 		frame:SetAttribute("initial-height", height)
 	end
 	frame:RegisterForClicks("AnyUp")
+	if Clique then Clique:UpdateRegisteredClicks(frame) end
 	frame.menu = Grid2Frame.RightClickUnitMenu
 	frame.container = frame:CreateTexture()
 	frame:CreateIndicators()
@@ -369,13 +370,13 @@ do
 	end
 end
 
--- Right Click Menu
+-- Right Click Menu & Click Options
 function Grid2Frame:UpdateMenu()
 	local menu = not self.db.profile.menuDisabled and ToggleUnitMenu or nil
 	if menu~=self.RightClickUnitMenu then 
 		self.RightClickUnitMenu = menu
 		self:WithAllFrames( function(f) f.menu = menu end )
-	end	
+	end
 end
 
 -- Alow other modules to hook unit frames OnEnter, OnExit events
