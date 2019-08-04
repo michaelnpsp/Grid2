@@ -166,9 +166,9 @@ end
 local function GetDebuffOrder(boss, spellId, isCustom, priority)
 	local status = debuffsStatuses[spellId]
 	if status then
-		return bossesIndexes[boss] * 1000 + statusesIndexes[status]*50 + debuffsIndexes[spellId]
+		return bossesIndexes[boss] * 1000 + statusesIndexes[status]*100 + debuffsIndexes[spellId]
 	else
-		return bossesIndexes[boss] * 1000 + (isCustom and 750 or 500) + (priority or 200)
+		return bossesIndexes[boss] * 1000 + (isCustom and 750 or 600) + (priority or 200)
 	end
 end
 
@@ -332,6 +332,40 @@ local function StatusDisableDebuff(spellId)
 		RDO:UpdateZoneSpells(visibleInstance)
 		RefreshDebuffItem(spellId)
 	end	
+end
+
+local function StatusMoveDebuff(spellId1, up)
+	local spellId2, order1, order2
+	local order = RDO.OPTIONS_ITEMS[tostring(spellId1)].order
+	local group = math.floor(order/100)
+	if up then
+		order1,order2 = 0,order
+	else
+		order1,order2 = order,10000	
+	end
+	for k,option in pairs(RDO.OPTIONS_ITEMS) do
+		if option.order>=1000 and option.handler.spellId and option.order>order1 and option.order<order2 and group == math.floor(option.order/100) then
+			if up then
+				order1 = option.order
+			else
+				order2 = option.order
+			end	
+			spellId2 = option.handler.spellId
+		end
+	end
+	if spellId2 and spellId1~=spellId2 then
+		local status  = debuffsStatuses[spellId1]
+		local debuffs = status.dbx.debuffs[visibleInstance]
+		local index1  = debuffsIndexes[spellId1]
+		local index2  = debuffsIndexes[spellId2]
+		debuffs[index1] = spellId2
+		debuffs[index2] = spellId1
+		debuffsIndexes[spellId1] = index2
+		debuffsIndexes[spellId2] = index1
+		RefreshDebuffItem(spellId1)
+		RefreshDebuffItem(spellId2)
+		return true
+	end
 end
 
 --============================================================
@@ -732,7 +766,6 @@ do
 		type = "select",
 		order = 144,
 		name = L["Assigned to"],
-		-- desc = "",
 		get = function (info) 
 			return statusesIndexes[ debuffsStatuses[info.handler.spellId] or statuses[1] ]
 		end,
@@ -773,7 +806,46 @@ do
 
 	options.header4={
 		type= "header",
-		order= 147,
+		order= 146,
+		name="",
+		hidden = function(info) return not debuffsStatuses[info.handler.spellId] end,
+	}
+
+	options.moveUp = {
+		type = "execute",
+		order = 147,
+		width = "full",
+		name = L["Move Up"],
+		desc = L["Move debuff higher in the priority list."],
+		func = function(info)
+			if not StatusMoveDebuff( info.handler.spellId, true) then
+				Grid2Options:MessageDialog(L["This debuff is already at the top of the list."])
+			end
+		end,
+		hidden = function(info) 
+			return not debuffsStatuses[info.handler.spellId] 
+		end,
+	}
+
+	options.moveDn = {
+		type = "execute",
+		order = 147.5,
+		width = "full",			
+		name = L["Move Down"],
+		desc = L["Move debuff lower in the priority list."],
+		func = function(info) 
+			if not StatusMoveDebuff( info.handler.spellId, false) then
+				Grid2Options:MessageDialog(L["This debuff is already at the bottom of the list."])
+			end
+		end,
+		hidden = function(info) 
+			return not debuffsStatuses[info.handler.spellId] 
+		end,
+	}
+
+	options.header5={
+		type= "header",
+		order= 148,
 		name="",
 		hidden = function(info) return not debuffsStatuses[info.handler.spellId] end,
 	}
