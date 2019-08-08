@@ -1,3 +1,5 @@
+if Grid2.isClassic then return end
+
 local status = Grid2.statusPrototype:new("summon")
 
 local HasIncomingSummon = C_IncomingSummon.HasIncomingSummon
@@ -40,9 +42,9 @@ function status:GetTexCoord(unit)
 	if state == 3 then -- declined(3)
 		return 0.3234375, 0.4734375, 0.115625, 0.415625
 	elseif state == 2 then -- accepted(2)
-		return 0.0578125, 0.2078125, 0.115625,  0.415625 
+		return 0.0578125, 0.2078125, 0.115625,  0.415625
 	else -- pending(1)
-		return 0.5890625, 0.7390625, 0.115625,  0.415625 		
+		return 0.5890625, 0.7390625, 0.115625,  0.415625
 	end
 end
 

@@ -44,7 +44,7 @@ local GridLayoutHeaderClass = {
 			local clickcast = header:GetFrameRef("clickcast_header")
 			if clickcast then
 				clickcast:SetAttribute("clickcast_button", self)
-				clickcast:RunAttribute("clickcast_register")			
+				clickcast:RunAttribute("clickcast_register")
 			end
 			header:CallMethod("initialConfigFunction", self:GetName())
 		]])
@@ -58,7 +58,7 @@ local HeaderAttributes = {
 	"nameList", "groupFilter", "roleFilter", "strictFiltering",
 	"sortDir", "groupBy", "groupingOrder", "maxColumns", "unitsPerColumn",
 	"startingIndex", "columnSpacing", "columnAnchorPoint",
-	"useOwnerUnit", "filterOnPet", "unitsuffix", "sortMethod", 
+	"useOwnerUnit", "filterOnPet", "unitsuffix", "sortMethod",
 	"toggleForVehicle", "showSolo", "showPlayer", "showParty", "showRaid"
 }
 
@@ -98,12 +98,12 @@ function GridLayoutHeaderClass.prototype:Update()
 	if self:IsVisible() then
 		self:Hide()
 		self:Show()
-	end	
+	end
 end
 
 -- MSaint fix see: https://authors.curseforge.com/forums/world-of-warcraft/official-addon-threads/unit-frames/grid-grid2/222108-grid-compact-party-raid-unit-frames?page=11#c219
--- Must be called just before assigning the attributes: "point", "columnAnchorPoint" or "unitsPerColumn". But for optimization purposes we are calling the funcion only before 
--- assigning "point" attribute inside SetOrientation() method, because this is the last attribute assigned when a layout is loaded. 
+-- Must be called just before assigning the attributes: "point", "columnAnchorPoint" or "unitsPerColumn". But for optimization purposes we are calling the funcion only before
+-- assigning "point" attribute inside SetOrientation() method, because this is the last attribute assigned when a layout is loaded.
 -- Be carefull when changing the order in which these attributes are assigned in future changes.
 function GridLayoutHeaderClass.prototype:ClearChildPoints()
 	local count, uframe = 1, self:GetAttribute("child1")
@@ -172,7 +172,7 @@ Grid2Layout.layoutHeaderClass = GridLayoutHeaderClass
 function Grid2Layout:OnModuleInitialize()
 	-- useful variables
 	self.dba = self.db
-	self.db = { global = self.dba.global, profile = self.dba.profile, shared = self.dba.profile } 
+	self.db = { global = self.dba.global, profile = self.dba.profile, shared = self.dba.profile }
 	self.groups = { player = {}, pet = {} }
 	self.indexes = { player = 0,  pet = 0  }
 	self.groupsUsed = {}
@@ -198,16 +198,20 @@ function Grid2Layout:OnModuleEnable()
 	self:RegisterMessage("Grid_RosterUpdate")
 	self:RegisterMessage("Grid_GroupTypeChanged")
 	self:RegisterMessage("Grid_UpdateLayoutSize")
-	self:RegisterEvent("PET_BATTLE_OPENING_START", "PetBattleTransition")
-	self:RegisterEvent("PET_BATTLE_CLOSE", "PetBattleTransition")
+	if not Grid2.isClassic then
+		self:RegisterEvent("PET_BATTLE_OPENING_START", "PetBattleTransition")
+		self:RegisterEvent("PET_BATTLE_CLOSE", "PetBattleTransition")
+	end
 end
 
 function Grid2Layout:OnModuleDisable()
 	self:UnregisterMessage("Grid_RosterUpdate")
 	self:UnregisterMessage("Grid_GroupTypeChanged")
 	self:UnregisterMessage("Grid_UpdateLayoutSize")
-	self:UnegisterEvent("PET_BATTLE_OPENING_START")
-	self:UnegisterEvent("PET_BATTLE_CLOSE")
+	if not Grid2.isClassic then
+		self:UnegisterEvent("PET_BATTLE_OPENING_START")
+		self:UnegisterEvent("PET_BATTLE_CLOSE")
+	end
 	self.frame:Hide()
 end
 
@@ -243,10 +247,10 @@ function Grid2Layout:Grid_RosterUpdate(_, unknowns)
 		Grid2:RunThrottled(self, "ReloadFilter", .25)
 	elseif unknowns then
 		Grid2:RunThrottled(self, "FixRoster", .25)
-	end	
+	end
 end
 
--- We delay UpdateSize() call to avoid calculating the wrong window size, because when "Grid_UpdateLayoutSize" 
+-- We delay UpdateSize() call to avoid calculating the wrong window size, because when "Grid_UpdateLayoutSize"
 -- message is triggered the blizzard code has not yet updated the size of the secure group headers.
 function Grid2Layout:Grid_UpdateLayoutSize()
 	Grid2:RunThrottled(self, "UpdateSize")
@@ -259,7 +263,7 @@ function Grid2Layout:PetBattleTransition(event)
 			self.inBattlePet = inBattle
 			self:CheckVisibility()
 		end
-	end	
+	end
 end
 --}}}
 
@@ -287,7 +291,7 @@ function Grid2Layout:StopMoveFrame()
 		self.frame:StopMovingOrSizing()
 		self:SavePosition()
 		self.frame.isMoving = false
-		 if not InCombatLockdown() then	self:RestorePosition() end	
+		 if not InCombatLockdown() then	self:RestorePosition() end
 	end
 end
 
@@ -296,9 +300,9 @@ function Grid2Layout:FrameLock(locked)
 	local p = self.db.profile
 	if locked == nil then
 		p.FrameLock = not p.FrameLock
-	else	
+	else
 		p.FrameLock = locked
-	end	
+	end
 	self.frame:EnableMouse(not p.FrameLock)
 end
 
@@ -319,10 +323,10 @@ function Grid2Layout:UpdateFrame()
 	f:SetClampedToScreen(p.clamp)
 	f:SetFrameStrata( p.FrameStrata or "MEDIUM")
 	f:SetFrameLevel(1)
-	f:EnableMouse(not p.FrameLock)	
-	local f = self.frameBack 
+	f:EnableMouse(not p.FrameLock)
+	local f = self.frameBack
 	f:SetFrameStrata( p.FrameStrata or "MEDIUM")
-	f:SetFrameLevel(0)	
+	f:SetFrameLevel(0)
 end
 
 function Grid2Layout:SetClamp()
@@ -335,7 +339,7 @@ function Grid2Layout:ResetHeaders()
 	for type, headers in pairs(self.groups) do
 		for i=self.indexes[type],1,-1 do
 			headers[i]:Reset()
-		end	
+		end
 		self.indexes[type] = 0
 	end
 	wipe(self.groupsUsed)
@@ -353,7 +357,7 @@ function Grid2Layout:PlaceHeaders()
 	local yMult1     = self.relativePoints.yMult[anchor]
 	local xMult2 	 = vertical   and xMult1*padding or 0
 	local yMult2 	 = horizontal and yMult1*padding or 0
-	local prevFrame 
+	local prevFrame
 	for i, frame in ipairs(self.groupsUsed) do
 		frame:SetOrientation(horizontal)
 		frame:ClearAllPoints()
@@ -366,7 +370,7 @@ function Grid2Layout:PlaceHeaders()
 		frame:Show()
 		prevFrame = frame
 		self:Debug("Placing group", groupNumber, frame:GetName(), anchor, prevFrame and prevFrame:GetName(), relPoint)
-	end	
+	end
 end
 
 function Grid2Layout:UpdateHeaders()
@@ -399,7 +403,7 @@ end
 
 function Grid2Layout:LoadLayout(layoutName)
 	local layout = self.layoutSettings[layoutName]
-	if layout then 
+	if layout then
 		self:Debug("LoadLayout", layoutName)
 		self.layoutName = layoutName
 		self:Scale()
@@ -417,7 +421,7 @@ function Grid2Layout:LoadLayout(layoutName)
 		end
 		self:PlaceHeaders()
 		self:UpdateDisplay()
-	end	
+	end
 end
 
 --{{ Header management
@@ -453,18 +457,18 @@ function Grid2Layout:SetHeaderAttributes(header, layoutHeader)
 				header:SetAttribute(attr, value)
 			end
 		end
-	end	
+	end
 end
 
--- Apply defaults and some special cases for each header and apply workarounds to some blizzard bugs 
+-- Apply defaults and some special cases for each header and apply workarounds to some blizzard bugs
 function Grid2Layout:FixHeaderAttributes(header)
 	local p = self.db.profile
 	-- fix unitsPerColumn
 	local unitsPerColumn = header:GetAttribute("unitsPerColumn")
 	if not unitsPerColumn then
-		header:SetAttribute("unitsPerColumn", 5) 
+		header:SetAttribute("unitsPerColumn", 5)
 		unitsPerColumn = 5
-	end	
+	end
 	header:SetAttribute("columnSpacing", p.Padding)
 	header:SetAttribute("columnAnchorPoint", anchorPoints[not p.horizontal][p.groupAnchor] or p.groupAnchor )
 	-- fix maxColumns
@@ -483,7 +487,7 @@ function Grid2Layout:FixHeaderAttributes(header)
 		end
 		if header:GetAttribute("strictFiltering") then
 			groupFilter = groupFilter .. ",DEATHKNIGHT,DEMONHUNTER,DRUID,HUNTER,MAGE,MONK,PALADIN,PRIEST,ROGUE,SHAMAN,WARLOCK,WARRIOR"
-			header:SetAttribute("groupFilter", groupFilter)	
+			header:SetAttribute("groupFilter", groupFilter)
 		end
 	end
 	-- manual nameList + group/role filter
@@ -522,13 +526,13 @@ function Grid2Layout:LoadHeaderFilter(header)
 	if nameList then
 		wipe(nameListTable)
 		local filter  = header.tokenFilter
-		local strict  = header:GetAttribute("strictFiltering") 
+		local strict  = header:GetAttribute("strictFiltering")
 		local _,count = Grid2:GetNonPetUnits()
 		for index=1,count do
 			local unit, name, class, group, role1, role2 = Grid2:GetRosterInfoByIndex(index)
 			if nameList[name] and (
 				(     strict  and  filter[group] and (filter[role1] or filter[role2]) ) or
-				( not strict  and (filter[group] or   filter[role1] or filter[role2]) ) 
+				( not strict  and (filter[group] or   filter[role1] or filter[role2]) )
 			) then
 				nameListTable[#nameListTable+1] = name
 			end
@@ -610,7 +614,7 @@ function Grid2Layout:UpdateSize()
 	self.frameBack:SetSize(col,row)
 	if not Grid2:RunSecure(6, self, "UpdateSize") then
 		self.frame:SetSize(col,row)
-	end	
+	end
 end
 
 function Grid2Layout:UpdateTextures()
@@ -633,7 +637,7 @@ function Grid2Layout:CheckVisibility()
 			( (fd == "Always") or (fd == "Grouped" and pt ~= "solo") or (fd == "Raid" and pt == "raid" ) ) and
 			not (self.db.profile.HideInPetBattle and self.inBattlePet)
 		)
-	end	
+	end
 end
 
 function Grid2Layout:SavePosition()
@@ -716,7 +720,7 @@ function Grid2Layout:AddCustomLayouts()
 			end
 			self:AddLayout(n,l)
 		end
-	end	
+	end
 end
 
 --}}}

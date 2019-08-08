@@ -1,6 +1,8 @@
 -- Roster management
 
 -- Local variables to speedup things
+local ipairs, pairs, next = ipairs, pairs, next
+local UNKNOWNOBJECT = UNKNOWNOBJECT
 local UnitName = UnitName
 local UnitGUID = UnitGUID
 local UnitClass = UnitClass
@@ -8,10 +10,8 @@ local UnitExists = UnitExists
 local IsInRaid = IsInRaid
 local GetNumGroupMembers = GetNumGroupMembers
 local GetPartyAssignment = GetPartyAssignment
-local UnitGroupRolesAssigned = UnitGroupRolesAssigned
 local GetRaidRosterInfo = GetRaidRosterInfo
-local ipairs, pairs, next = ipairs, pairs, next
-local UNKNOWNOBJECT = UNKNOWNOBJECT
+local UnitGroupRolesAssigned = UnitGroupRolesAssigned or (function() return 'NONE' end)
 
 -- realm name
 local my_realm = GetRealmName()
@@ -166,7 +166,7 @@ do
 	-- Workaround to fix maxPlayers in pvp when UI is reloaded (retry every .5 seconds for 2-3 seconds), see ticket #641
 	function Grid2:FixGroupMaxPlayers(newInstType)
 		if updateCount<=5 and (newInstType == 'pvp' or newInstType == 'arena') then
-			updateCount = updateCount + 1001 -- +1000, trick to avoid launching the timer if already launched (updateCount<=5 will fail) 
+			updateCount = updateCount + 1001 -- +1000, trick to avoid launching the timer if already launched (updateCount<=5 will fail)
 			C_Timer.After( .5, function()
 				if instMaxPlayers==40 and (instType=='pvp' or instType=='arena') then
 					updateCount = updateCount - 1000
@@ -248,7 +248,7 @@ do
 
 		local old_name = roster_names[unit]
 		local old_realm = roster_realms[unit]
-		
+
 		roster_names[unit] = name
 		roster_realms[unit] = realm
 
@@ -343,10 +343,10 @@ do
 				roster_units[oldGuid] = nil
 			end
 		end
-		
+
 		if name == UNKNOWNOBJECT then
 			roster_unknowns = true
-		end	
+		end
 	end
 
 	function Grid2:UpdateRoster()
@@ -366,7 +366,7 @@ do
 			end
 			roster_count = roster_count + 1
 		end
-		
+
 		local updated = false
 
 		for unit, guid in pairs(units_to_remove) do

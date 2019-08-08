@@ -18,7 +18,7 @@ do
 		dst = dst or {}
 		for k,v in pairs(src) do
 			if not ignoreKeys[k] then
-				dst[k] = type(v) == 'table' and CopyTheme(v) or v 
+				dst[k] = type(v) == 'table' and CopyTheme(v) or v
 			end
 		end
 		return dst
@@ -28,7 +28,7 @@ do
 		for k,v in pairs(dst) do
 			if not ignoreKeys[k] then
 				dst[k] = nil
-			end	
+			end
 		end
 		CopyTheme(src, dst)
 	end
@@ -51,11 +51,11 @@ do
 		for i,name in ipairs(editedTheme.db.names) do
 			if i~=except then
 				workTable[i] = name
-			end	
+			end
 		end
 		if not except then
 			workTable[0] = editedTheme.db.names[0] or L["Default"]
-		end	
+		end
 		return workTable
 	end
 
@@ -82,7 +82,7 @@ do
 			options['k'..info.arg] = nil
 			themeCondCount = themeCondCount - 1
 		end
-		Grid2:ReloadTheme()	
+		Grid2:ReloadTheme()
 	end
 
 	local function ConfirmCondDelete(info,value)
@@ -96,7 +96,7 @@ do
 					editedTheme.db.enabled[k] = 0
 				else
 					return true
-				end	
+				end
 			end
 		end
 	end
@@ -107,33 +107,35 @@ do
 	local CONDITIONS_NAMES  = {}
 
 	do
-		local CONDITIONS = { 'solo', 'party', 'arena', 'raid', 'raid@pvp' ,'raid@lfr', 'raid@flex', 'raid@mythic', '10', '15', '20', '25', '30', '40' } 
+		local CONDITIONS = { 'solo', 'party', 'arena', 'raid', 'raid@pvp' ,'raid@lfr', 'raid@flex', 'raid@mythic', '10', '15', '20', '25', '30', '40' }
 		local CONDITIONS_DESC = { L['Solo'], L['Party'], L['Arena'], L['Raid'], L['Raid (PvP)'], L['Raid (LFR)'], L['Raid (N&H)'], L['Raid (Mythic)'], L['10 man'], L['15 man'], L['20 man'], L['25 man'], L['30 man'], L['40 man'] }
 		for o,k in ipairs(CONDITIONS) do
 			local key = string.format( "%03d;%s", o, k )
 			CONDITIONS_VALUES[key] = CONDITIONS_DESC[o] -- Descriptions used in "Enable Theme for" dropdown list values
 			CONDITIONS_NAMES[key]  = CONDITIONS_DESC[o] -- Description used as title in themes dropdown lists
 		end
-		local class = select(2, UnitClass("player"))
-		local count = GetNumSpecializations()
-		for i=1,count do
-			local key = string.format("%d00;%s@%d",i, class, i)
-			local _, name, _, icon = GetSpecializationInfo(i)
-			if strlen(name)<12 then
-				name = string.format("|T%s:0|t%s(%s)",icon, name, L['Spec'] )
-			else
-				name = string.format("|T%s:0|t%s",icon, name )
-			end
-			CONDITIONS_VALUES[ key ] = name
-			CONDITIONS_NAMES[ key ]  = name
-			for o,k in ipairs(CONDITIONS) do
-				local key = string.format( "%d%02d;%s@%d@%s", i,o,class,i,k )
-				CONDITIONS_VALUES[ key ] = string.format( '|T%s:0|t%s', icon, CONDITIONS_DESC[o] )
-				CONDITIONS_NAMES[ key ]  = string.format( '%s & %s', name, CONDITIONS_DESC[o] )
+		if not Grid2.isClassic then
+			local class = select(2, UnitClass("player"))
+			local count = GetNumSpecializations()
+			for i=1,count do
+				local key = string.format("%d00;%s@%d",i, class, i)
+				local _, name, _, icon = GetSpecializationInfo(i)
+				if strlen(name)<12 then
+					name = string.format("|T%s:0|t%s(%s)",icon, name, L['Spec'] )
+				else
+					name = string.format("|T%s:0|t%s",icon, name )
+				end
+				CONDITIONS_VALUES[ key ] = name
+				CONDITIONS_NAMES[ key ]  = name
+				for o,k in ipairs(CONDITIONS) do
+					local key = string.format( "%d%02d;%s@%d@%s", i,o,class,i,k )
+					CONDITIONS_VALUES[ key ] = string.format( '|T%s:0|t%s', icon, CONDITIONS_DESC[o] )
+					CONDITIONS_NAMES[ key ]  = string.format( '%s & %s', name, CONDITIONS_DESC[o] )
+				end
 			end
 		end
 	end
-	
+
 	local function RefreshConditionsOptions()
 		themeCondCount = 0
 		for k in pairs(CONDITIONS_VALUES) do
@@ -162,7 +164,7 @@ do
 	--=============================================================================
 
 	local _options = {}
-	
+
 	Grid2Options:MakeTitleOptions( _options, L["Themes"], L["themes management"], nil, "Interface\\ICONS\\INV_Misc_NotePicture2c" )
 
 	_options.themeRefresh = { type = "header", order=0, name="", hidden = function() editedTheme.db = Grid2.db.profile.themes; return true end } -- Refresh profile if profile changes
@@ -171,8 +173,8 @@ do
 		order = 9,
 		type = "description",
 		name = L["You can change the active theme, you can also assign different themes for each specialization, group type, raid type or instance size."] .. "\n"
-	}	
-		
+	}
+
 	_options.themeDef = {
 		type   = "select",
 		name   = L["Default Theme"],
@@ -234,7 +236,7 @@ do
 		get    = false,
 		set    = function(_, index)
 			local name = editedTheme.db.names[index] or L['Default']
-			Grid2Options:ShowEditDialog( "Rename Theme:", name, function(text) 
+			Grid2Options:ShowEditDialog( "Rename Theme:", name, function(text)
 				editedTheme.db.names[index] = text
 				LibStub("AceConfigRegistry-3.0"):NotifyChange("Grid2")
 			end)
@@ -256,7 +258,7 @@ do
 			if Grid2:GetCurrentTheme() == index then
 				Grid2:ReloadTheme(true)
 			end
-				
+
 		end,
 		values = GetThemes,
 		confirm = true,
@@ -285,9 +287,9 @@ do
 		end,
 		values = function() return GetThemes(Grid2.currentTheme) end,
 		confirm = function(info, value)
-			return ThemeCheckConditions(value) and 
-			L["There are conditions referencing this theme. Are you sure you want to delete the selected theme ?"] or 
-			L["Are you sure you want to delete the selected theme?"] 
+			return ThemeCheckConditions(value) and
+			L["There are conditions referencing this theme. Are you sure you want to delete the selected theme ?"] or
+			L["Are you sure you want to delete the selected theme?"]
 		end,
 		disabled = function() return not next(GetThemes(Grid2.currentTheme)) end,
 	}
@@ -295,8 +297,8 @@ do
 	function Grid2Options:MakeThemesManagementOptions()
 		self:CopyOptionsTable( _options, options )
 		RefreshConditionsOptions()
-	end	
-	
+	end
+
 end
 
 --===========================================================================================
@@ -306,10 +308,10 @@ local function ThemesEnabled()
 end
 
 local function GetThemeIndicators(index)
-	local indicators = editedTheme.db.indicators[index] 
+	local indicators = editedTheme.db.indicators[index]
 	if not indicators then
 		indicators = {}
-		editedTheme.db.indicators[index] = indicators	
+		editedTheme.db.indicators[index] = indicators
 	end
 	return indicators
 end
@@ -318,10 +320,10 @@ local function GetThemeName(info)
 	local index = info.arg or 0
 	local name = editedTheme.db.names[index] or (index==0 and L["Default"])
 	if index == Grid2.currentTheme then
-		return string.format( "%s|T%s:0|t", name, READY_CHECK_READY_TEXTURE ) 
+		return string.format( "%s|T%s:0|t", name, READY_CHECK_READY_TEXTURE )
 	else
 		return name
-	end	
+	end
 end
 
 local themeOptions = {
@@ -352,7 +354,7 @@ end
 function Grid2Options:SetEditedTheme(index)
 	index = index or Grid2.currentTheme or 0
 	editedTheme.db = Grid2.db.profile.themes
-	editedTheme.index = index 
+	editedTheme.index = index
 	for key,module in pairs(themeModules) do
 		local db = module.dba.profile
 		editedTheme[key] = db.extraThemes and db.extraThemes[index] or db

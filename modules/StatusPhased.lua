@@ -1,3 +1,5 @@
+if Grid2.isClassic then return end
+
 local Phased = Grid2.statusPrototype:new("phased")
 
 local Grid2 = Grid2
@@ -15,7 +17,7 @@ local function ResetUnit(_, unit)
 end
 
 local function UpdateUnit(_, unit)
-	local phased = range[unit] and (UnitIsWarModePhased(unit) or not UnitInPhase(unit))  
+	local phased = range[unit] and (UnitIsWarModePhased(unit) or not UnitInPhase(unit))
 	if phased~=cache[unit] then
 		cache[unit] = phased
 		Phased:UpdateIndicators(unit)
@@ -31,7 +33,7 @@ local function UpdateUnits()
 		if inrange~=range[unit] then
 			range[unit] = inrange
 			UpdateUnit(nil, unit)
-		end	
+		end
 	end
 	if IsInInstance() then timer:Stop() end
 end
@@ -64,7 +66,7 @@ end
 
 function Phased:GetIcon()
 	return "Interface\\TARGETINGFRAME\\UI-PhasingIcon"
-end 
+end
 
 function Phased:GetTexCoord()
 	return 0.15625, 0.84375, 0.15625, 0.84375

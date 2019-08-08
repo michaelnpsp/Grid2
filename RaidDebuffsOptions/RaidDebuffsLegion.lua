@@ -1,3 +1,5 @@
+if Grid2.isClassic then return end
+
 local RDDB = Grid2Options:GetRaidDebuffsTable()
 RDDB["Legion"] = {
 	[101544] = { -- Assault on Violet Hold (5man)
@@ -458,7 +460,7 @@ RDDB["Legion"] = {
 	},
 	[101220] = { -- World Bosses
 		{ id = 822, name = "Broken Isles", raid = true },
-		-- Stormhein (World Bosses) 
+		-- Stormhein (World Bosses)
 		["Ana-Mouz"] = {
 		order = 1, ejid = 1790,
 		219045, -- abrazo-de-la-madre

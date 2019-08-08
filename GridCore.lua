@@ -7,11 +7,15 @@ local next = next
 local ipairs = ipairs
 local tostring = tostring
 local fmt = string.format
+local Dummy = function() end
+local GetSpecialization = GetSpecialization or Dummy
 
 -- Initialization
 Grid2 = LibStub("AceAddon-3.0"):NewAddon("Grid2", "AceEvent-3.0", "AceConsole-3.0")
 
 Grid2.versionstring = "Grid2 v"..GetAddOnMetadata("Grid2", "Version")
+
+Grid2.isClassic = select(4, GetBuildInfo())<20000
 
 Grid2.debugFrame = Grid2DebugFrame or ChatFrame1
 function Grid2:Debug(s, ...)
@@ -38,7 +42,7 @@ Grid2.defaults = {
 }
 
 -- Type setup functions for non-unique objects: "buff" statuses / "icon" indicators / etc.
-Grid2.setupFunc = {} 
+Grid2.setupFunc = {}
 
 -- Module prototype
 local modulePrototype = {}
@@ -51,8 +55,8 @@ function modulePrototype:OnInitialize()
 	end
 	self.debugFrame = Grid2.debugFrame
 	self.debugging = self.db.global.debug
-	if self.OnModuleInitialize then 
-		self:OnModuleInitialize() 
+	if self.OnModuleInitialize then
+		self:OnModuleInitialize()
 		self.OnModuleInitialize = nil
 	end
 	self:Debug("OnInitialize")
@@ -101,14 +105,16 @@ function Grid2:OnInitialize()
 	self.debugging = self.db.global.debug
 
 	self.playerClass = select(2, UnitClass("player"))
-	
+
 	local media = LibStub("LibSharedMedia-3.0", true)
 	media:Register("statusbar", "Gradient", "Interface\\Addons\\Grid2\\media\\gradient32x32")
 	media:Register("statusbar", "Grid2 Flat", "Interface\\Addons\\Grid2\\media\\white16x16")
+	media:Register("statusbar", "Grid2 GlowH", "Interface\\Addons\\Grid2\\media\\glowh")
+	media:Register("statusbar", "Grid2 GlowV", "Interface\\Addons\\Grid2\\media\\glowv")
 	media:Register("border", "Grid2 Flat", "Interface\\Addons\\Grid2\\media\\white16x16")
 	media:Register("background", "Blizzard Quest Title Highlight", "Interface\\QuestFrame\\UI-QuestTitleHighlight")
 	media:Register("background", "Blizzard ChatFrame Background", "Interface\\ChatFrame\\ChatFrameBackground")
-	
+
 	self:InitializeOptions()
 
 	self.OnInitialize = nil
@@ -118,11 +124,13 @@ function Grid2:OnEnable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "GroupChanged")
 	self:RegisterEvent("GROUP_ROSTER_UPDATE", "GroupChanged")
-	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	self:RegisterEvent("UNIT_NAME_UPDATE")
 	self:RegisterEvent("UNIT_PET")
-	
+	if not self.isClassic then
+		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+	end
+
 	self.db.RegisterCallback(self, "OnProfileShutdown", "ProfileShutdown")
     self.db.RegisterCallback(self, "OnProfileChanged", "ProfileChanged")
 	self.db.RegisterCallback(self, "OnProfileCopied", "ProfileChanged")
@@ -163,10 +171,10 @@ function Grid2:ReloadProfile()
 		if type(pro)=="string" and pro~=Grid2.db:GetCurrentProfile() then
 			if not self:RunSecure(1, self, "ReloadProfile") then
 				Grid2.db:SetProfile(pro)
-			end	
+			end
 			return true
 		end
-	end	
+	end
 end
 
 function Grid2:PLAYER_SPECIALIZATION_CHANGED(_,unit)
@@ -197,7 +205,7 @@ function Grid2:CheckTheme()
 	local spec    = GetSpecialization() or 0
 	local groupType, instType, maxPlayers = self:GetGroupType()
 	local kM   = tostring(maxPlayers)
-	local kS   = fmt("%s@%d",    self.playerClass, spec)   
+	local kS   = fmt("%s@%d",    self.playerClass, spec)
 	local kSM  = fmt("%s@%d",    kS, maxPlayers)
 	local kSGI = fmt("%s@%s@%s", kS, groupType, instType)
 	local kSG  = fmt("%s@%s",    kS, groupType)
@@ -243,9 +251,9 @@ function Grid2:InitializeOptions()
 	button:SetText("Open Grid2 Options")
 	button:SetSize(200,32)
 	button:SetPoint('TOPLEFT', optionsFrame, 'TOPLEFT', 20, -20)
-	button:SetScript("OnClick", function(self) 
-		HideUIPanel(InterfaceOptionsFrame) 
-		HideUIPanel(GameMenuFrame) 
+	button:SetScript("OnClick", function(self)
+		HideUIPanel(InterfaceOptionsFrame)
+		HideUIPanel(GameMenuFrame)
 		Grid2:OnChatCommand()
 	end)
 	InterfaceOptions_AddCategory(optionsFrame)
@@ -272,17 +280,17 @@ end
 function Grid2:RefreshOptions()
 	if Grid2Options then
 		Grid2Options:MakeOptions()
-	end	
+	end
 end
 
 function Grid2:OnChatCommand(input)
 	if Grid2:LoadGrid2Options() then
 		Grid2Options:OnChatCommand(input)
-	end	
+	end
 end
 
 -- Hook this to load any options addon (see RaidDebuffs & AoeHeals modules)
-function Grid2:LoadOptions() 
+function Grid2:LoadOptions()
 	Grid2Options:Initialize()
 	Grid2.LoadOptions = nil
 end

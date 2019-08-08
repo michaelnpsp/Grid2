@@ -34,7 +34,7 @@ options.title = {
 	type = "description",
 	name = L["You can change the active database profile, so you can have different settings for every character.\n"],
 }
-	
+
 options.current = {
 	type   = "select",
 	name   = L["Current Profile"],
@@ -50,61 +50,64 @@ options.current = {
 options.reset = {
 	order = 3,
 	type = "execute",
-	width = "half",	
+	width = "half",
 	name = L["Reset"],
 	desc = L["Reset the current profile back to its default values."],
 	confirm = true,
 	confirmText = L["Are you sure you want to reset current profile?"],
-	func = function() 
+	func = function()
 		Grid2:ProfileShutdown()
-		Grid2.db:ResetProfile()	
+		Grid2.db:ResetProfile()
 	end,
 }
 
 --==============
+if not Grid2.isClassic then
 
-options.prodesc = {
-	order = 8,
-	type = "description",
-	name = " ",
-}
+	options.prodesc = {
+		order = 8,
+		type = "description",
+		name = " ",
+	}
 
-options.proenabled = {
-	type = "toggle",
-	name = "|cffffd200".. L["Enable profiles by Specialization"] .."|r",
-	desc = L["When enabled, your profile will be set according to the character specialization."],
-	descStyle = "inline",
-	order = 9,
-	width = "full",
-	get = function(info) return Grid2.profiles.char[1] and Grid2.profiles.char.enabled end,
-	set = function(info, value)
-		local db = Grid2.profiles.char
-		wipe(db)
-		db.enabled = value or nil
-		if value then
-			local pro = Grid2.db:GetCurrentProfile()
-			for i=1,GetNumSpecializations() or 0 do
-				db[i] = pro
+	options.proenabled = {
+		type = "toggle",
+		name = "|cffffd200".. L["Enable profiles by Specialization"] .."|r",
+		desc = L["When enabled, your profile will be set according to the character specialization."],
+		descStyle = "inline",
+		order = 9,
+		width = "full",
+		get = function(info) return Grid2.profiles.char[1] and Grid2.profiles.char.enabled end,
+		set = function(info, value)
+			local db = Grid2.profiles.char
+			wipe(db)
+			db.enabled = value or nil
+			if value then
+				local pro = Grid2.db:GetCurrentProfile()
+				for i=1,GetNumSpecializations() or 0 do
+					db[i] = pro
+				end
 			end
-		end	
-		Grid2:ReloadProfile()
-	end,
-}
-
-for i=GetNumSpecializations(),1, -1 do
-	options['profile'..i] = {
-		type  = "select",
-		name  = select( 2, GetSpecializationInfo(i) ),
-		desc  = "",
-		order = 10.5+i,
-		get = function() return Grid2.profiles.char[i] end,
-		set = function(_, v) 
-			Grid2.profiles.char[i] = v
 			Grid2:ReloadProfile()
 		end,
-		values = GetAllProfiles,
-		hidden = function() return type(Grid2.profiles.char[1])~='string' end,
 	}
+
+	for i=GetNumSpecializations(),1, -1 do
+		options['profile'..i] = {
+			type  = "select",
+			name  = select( 2, GetSpecializationInfo(i) ),
+			desc  = "",
+			order = 10.5+i,
+			get = function() return Grid2.profiles.char[i] end,
+			set = function(_, v)
+				Grid2.profiles.char[i] = v
+				Grid2:ReloadProfile()
+			end,
+			values = GetAllProfiles,
+			hidden = function() return type(Grid2.profiles.char[1])~='string' end,
+		}
+	end
+
 end
 
 --==============
@@ -131,16 +134,16 @@ options.copydesc = {
 	type = "description",
 	name = "\n" .. L["Copy the settings from one existing profile into the currently active profile."],
 }
-	
+
 options.copyfrom = {
 	type   = "select",
 	name   = L['Copy From'],
 	desc   = L["Copy the settings from one existing profile into the currently active profile."],
 	order  = 30,
 	get    = false,
-	set    = function(_, v) 
+	set    = function(_, v)
 		Grid2:ProfileShutdown()
-		Grid2.db:CopyProfile(v)	
+		Grid2.db:CopyProfile(v)
 	end,
 	values = GetUnusedProfiles,
 	confirm = true,
