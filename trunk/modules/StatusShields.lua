@@ -1,12 +1,16 @@
--- Shields absorb status, created by Michael
+if Grid2.isClassic then return end
 
-local Shields = Grid2.statusPrototype:new("shields")
+-- Shields absorb status, created by Michael
 
 local Grid2 = Grid2
 local min   = math.min
 local fmt   = string.format
 local UnitGetTotalAbsorbs = UnitGetTotalAbsorbs
 local UnitHealthMax = UnitHealthMax
+
+-- Shields
+
+local Shields = Grid2.statusPrototype:new("shields")
 
 function Shields:OnEnable()
 	self:UpdateDB()
@@ -57,9 +61,9 @@ local function IsActiveBLink(self, unit)
 	if value>0 then
 		if value>self.blinkThreshold then
 			return true
-		else	
+		else
 			return "blink"
-		end	
+		end
 	end
 end
 
@@ -81,4 +85,52 @@ Grid2:DbSetStatusDefaultValue( "shields", { type = "shields", thresholdMedium = 
 	color1 = { r = 0, g = 1,   b = 0, a=1 },
 	color2 = { r = 1, g = 0.5, b = 0, a=1 },
 	color3 = { r = 1, g = 1,   b = 0, a=1 },
-} ) 
+} )
+
+-- Shields Overflow
+
+local Overflow = Grid2.statusPrototype:new("shields-overflow")
+
+local overflow_cache = {}
+
+Overflow.GetColor = Grid2.statusLibrary.GetColor
+
+function Overflow:OnEnable()
+	self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED", "UpdateUnit")
+	self:RegisterEvent("UNIT_MAXHEALTH", "UpdateUnit")
+	self:RegisterEvent("UNIT_HEALTH", "UpdateUnit")
+	self:RegisterEvent("UNIT_HEALTH_FREQUENT", "UpdateUnit")
+	self:RegisterMessage("Grid_UnitUpdated", "UpdateUnit")
+end
+
+function Overflow:OnDisable()
+	self:UnregisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
+	self:UnregisterEvent("UNIT_MAXHEALTH")
+	self:UnregisterEvent("UNIT_HEALTH")
+	self:UnregisterEvent("UNIT_HEALTH_FREQUENT")
+	self:UnregisterMessage("Grid_UnitUpdated")
+end
+
+function Overflow:UpdateUnit(event, unit)
+	local v = UnitHealth(unit) + (UnitGetTotalAbsorbs(unit) or 0)
+	local m = UnitHealthMax(unit)
+	overflow_cache[unit] = v>m and (v-m)/m or nil
+	if event~='Grid_UnitUpdated' then self:UpdateIndicators(unit) end
+end
+
+function Overflow:GetPercent(unit)
+	return overflow_cache[unit]
+end
+
+function Overflow:IsActive(unit)
+	return overflow_cache[unit]~=nil
+end
+
+local function Create(baseKey, dbx)
+	Grid2:RegisterStatus(Overflow, { "color", "percent" }, baseKey, dbx)
+	return Overflow
+end
+
+Grid2.setupFunc["shields-overflow"] = Create
+
+Grid2:DbSetStatusDefaultValue( "shields-overflow", { type = "shields-overflow", color1 = {r=1, g=1, b=1, a=1} } )

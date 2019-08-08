@@ -342,6 +342,8 @@ Grid2:DbSetStatusDefaultValue( "master-looter", { type = "master-looter", color1
 
 -- dungeon-role status
 
+if Grid2.isClassic then return end
+
 local isValidRole = { TANK = true, HEALER = true, DAMAGER = true }
 local roleTexture = "Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES"
 local TexCoordfunc = GetTexCoordsForRoleSmallCircle

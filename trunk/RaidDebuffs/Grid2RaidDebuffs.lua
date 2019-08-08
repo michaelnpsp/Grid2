@@ -1,3 +1,5 @@
+if Grid2.isClassic then return end
+
 -- Raid Debuffs module, implements raid-debuffs statuses
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2")
@@ -47,7 +49,7 @@ Grid2.tooltipFunc['RaidDebuffsCount'] = function(tooltip)
 	end
 end
 
--- GSRD 
+-- GSRD
 frame:SetScript("OnEvent", function (self, event, unit)
 	if not next(Grid2:GetUnitFrames(unit)) then return end
 	local index = 1
@@ -64,7 +66,7 @@ frame:SetScript("OnEvent", function (self, event, unit)
 			order = GSRD:RegisterNewDebuff(id, ca, te, co, ty, du, ex, isBoss)
 			if order then
 				auto_status:AddDebuff(order, te, co, ty, du, ex, index)
-			end	
+			end
 		end
 		index = index + 1
 	end
@@ -107,7 +109,7 @@ end
 function GSRD:ClearAllIndicators()
 	for status in next, statuses do
 		status:ClearAllIndicators()
-	end	
+	end
 end
 
 function GSRD:ResetZoneSpells()
@@ -123,7 +125,7 @@ function GSRD:UpdateEvents()
 	local old = not frame:IsEventRegistered("UNIT_AURA")
 	if new ~= old then
 		if new then
-			frame:UnregisterEvent("UNIT_AURA")					
+			frame:UnregisterEvent("UNIT_AURA")
 		else
 			frame:RegisterEvent("UNIT_AURA")
 		end
@@ -133,7 +135,7 @@ end
 function GSRD:Grid_UnitLeft(_, unit)
 	for status in next, statuses do
 		status:ResetState(unit)
-	end	
+	end
 end
 
 -- raid debuffs autodetection
@@ -141,7 +143,7 @@ function GSRD:RegisterNewDebuff(spellId, caster, te, co, ty, du, ex, isBoss)
 	if (not isBoss) and (caster and Grid2:IsGUIDInRaid(UnitGUID(caster))) then return end
 	if not auto_debuffs then
 		self:RegisterEncounter()
-	end	
+	end
 	local debuffs = auto_status.dbx.debuffs[auto_instance]
 	if not debuffs then
 		debuffs = {}; auto_status.dbx.debuffs[auto_instance] = debuffs
@@ -182,7 +184,7 @@ end
 
 function GSRD:ENCOUNTER_START(_,encounterID,encounterName)
 	self:RegisterEncounter(encounterName)
-end	
+end
 
 function GSRD:PLAYER_REGEN_DISABLED()
 	auto_time = GetTime()
@@ -194,7 +196,7 @@ function GSRD:PLAYER_REGEN_ENABLED()
 		auto_time = nil
 		auto_boss = nil
 		auto_debuffs = nil
-	end	
+	end
 end
 
 function GSRD:EnableAutodetect(status)
@@ -203,7 +205,7 @@ function GSRD:EnableAutodetect(status)
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	self:RegisterEvent("ENCOUNTER_START")
-	if InCombatLockdown() then self:PLAYER_REGEN_DISABLED()	end	
+	if InCombatLockdown() then self:PLAYER_REGEN_DISABLED()	end
 end
 
 function GSRD:DisableAutodetect()
@@ -214,7 +216,7 @@ function GSRD:DisableAutodetect()
 	self:UnregisterEvent("PLAYER_REGEN_DISABLED")
 	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 	self:UnregisterEvent("ENCOUNTER_START")
-	self:UpdateEvents()	
+	self:UpdateEvents()
 end
 
 -- statuses
@@ -226,7 +228,7 @@ local class = {
 	GetDuration       = function(self, unit) return self.durations[unit]   end,
 	GetExpirationTime = function(self, unit) return self.expirations[unit] end,
 	GetTooltip        = function(self, unit, tip) tip:SetUnitDebuff(unit, self.states[unit]) end,
-}	
+}
 
 function class:ClearAllIndicators()
 	local states = self.states
@@ -253,7 +255,7 @@ function class:LoadZoneSpells()
 		if GSRD.debugging then
 			GSRD:Debug("Zone [%s][%d/%d] Status [%s]: %d raid debuffs loaded", instance_map_name, instance_id, instance_map_id, self.name, spells_count)
 		end
-	end	
+	end
 end
 
 function class:OnEnable()
@@ -273,7 +275,7 @@ function class:OnDisable()
 		GSRD:UnregisterMessage("Grid_UnitLeft")
 		GSRD:ResetZoneSpells()
 		GSRD:UpdateEvents()
-	end	
+	end
 end
 
 function class:AddDebuff(order, te, co, ty, du, ex, index)
@@ -291,11 +293,11 @@ end
 function class:UpdateState(unit)
 	if self.order<10000 then
 		if self.count==0 then self.count = 1 end
-		if	false           ~= not self.states[unit] or 
-			self.count      ~= self.counts[unit]     or 
+		if	false           ~= not self.states[unit] or
+			self.count      ~= self.counts[unit]     or
 			self.type       ~= self.types[unit]      or
 			self.texture    ~= self.textures[unit]   or
-			self.duration   ~= self.durations[unit]  or	
+			self.duration   ~= self.durations[unit]  or
 			self.expiration ~= self.expirations[unit]
 		then
 			self.states[unit]      = self.index
@@ -347,7 +349,7 @@ function Grid2:UpdateDefaults()
 	prev_UpdateDefaults(self)
 	local version = Grid2:DbGetValue("versions", "Grid2RaidDebuffs") or 0
 	if version >= 4 then return end
-	if version == 0 then 
+	if version == 0 then
 		Grid2:DbSetMap( "icon-center", "raid-debuffs", 155)
 	else -- Remove all enabled debuffs
 		for _,db in pairs(Grid2.db.profile.statuses) do

@@ -15,7 +15,7 @@ local UnitPowerType = UnitPowerType
 local UnitPower = UnitPower
 local UnitPowerMax = UnitPowerMax
 local UnitIsPlayer = UnitIsPlayer
-local UnitGroupRolesAssigned = UnitGroupRolesAssigned
+local UnitGroupRolesAssigned = UnitGroupRolesAssigned or (function() return 'NONE' end)
 
 local statuses = {}  -- Enabled statuses
 
@@ -57,7 +57,7 @@ function Mana:OnEnable()
 	if self.dbx.showOnlyHealers then
 		self:RegisterEvent("PLAYER_ROLES_ASSIGNED", "UpdateAllUnits")
 		self.rolesEvent = true
-	end	
+	end
 end
 
 function Mana:OnDisable()
@@ -65,7 +65,7 @@ function Mana:OnDisable()
 	if self.rolesEvent then
 		self:UnregisterEvent("PLAYER_ROLES_ASSIGNED")
 		self.rolesEvent = nil
-	end	
+	end
 end
 
 function Mana:UpdateUnitPowerStandard(unit, powerType)
@@ -103,7 +103,7 @@ end
 
 Grid2.setupFunc["mana"] = function(baseKey, dbx)
 	Grid2:RegisterStatus(Mana, {"percent", "text", "color"}, baseKey, dbx)
-	Mana:UpdateDB()	
+	Mana:UpdateDB()
 	return Mana
 end
 
@@ -155,7 +155,7 @@ function PowerAlt:GetText(unit)
 	if power>=1000 then
 		return fmt("%.1fk", power / 1000)
 	else
-		return tostring( max(power,0) )	
+		return tostring( max(power,0) )
 	end
 end
 
@@ -192,7 +192,7 @@ function Power:GetText(unit)
 		return fmt("%.1fk", power / 1000)
 	else
 		return tostring(power)
-	end	
+	end
 end
 
 function Power:GetColor(unit)
@@ -202,8 +202,8 @@ function Power:GetColor(unit)
 end
 
 function Power:UpdateDB()
-	powerColors["MANA"] = self.dbx.color1 
-	powerColors["RAGE"] = self.dbx.color2 
+	powerColors["MANA"] = self.dbx.color1
+	powerColors["RAGE"] = self.dbx.color2
 	powerColors["FOCUS"] = self.dbx.color3
 	powerColors["ENERGY"] = self.dbx.color4
 	powerColors["RUNIC_POWER"] = self.dbx.color5
@@ -211,7 +211,7 @@ function Power:UpdateDB()
 	powerColors["MAELSTROM"] = self.dbx.color7
 	powerColors["LUNAR_POWER"] = self.dbx.color8
 	powerColors["FURY"] = self.dbx.color9
-	powerColors["PAIN"] = self.dbx.color10		
+	powerColors["PAIN"] = self.dbx.color10
 end
 
 Grid2.setupFunc["power"] = function(baseKey, dbx)
@@ -220,7 +220,7 @@ Grid2.setupFunc["power"] = function(baseKey, dbx)
 	return Power
 end
 
-Grid2:DbSetStatusDefaultValue( "power", {type = "power", colorCount = 10, 
+Grid2:DbSetStatusDefaultValue( "power", {type = "power", colorCount = 10,
 	color1 = {r=0,g=0.5,b=1  ,a=1},   -- mana
 	color2 = {r=1,g=0  ,b=0  ,a=1},   -- rage
 	color3 = {r=1,g=0.5,b=0  ,a=1},   -- focus
@@ -230,5 +230,5 @@ Grid2:DbSetStatusDefaultValue( "power", {type = "power", colorCount = 10,
 	color7 = {r=0.00, g=0.50, b=1.00, a=1}, -- maelstrom
 	color8 = {r=0.30, g=0.52, b=0.90, a=1}, -- astral power
 	color9 = {r=0.788, g=0.259, b=0.992, a=1}, -- fury
-	color10 = {r=1.00, g=0.61, b=0.00, a=1} -- pain	
-})  
+	color10 = {r=1.00, g=0.61, b=0.00, a=1} -- pain
+})

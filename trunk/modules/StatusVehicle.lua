@@ -1,3 +1,5 @@
+if Grid2.isClassic then return end
+
 local Vehicle = Grid2.statusPrototype:new("vehicle")
 
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")

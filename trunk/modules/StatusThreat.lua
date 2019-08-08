@@ -1,3 +1,5 @@
+if Grid2.isClassic then return end
+
 local Threat = Grid2.statusPrototype:new("threat")
 
 local Grid2 = Grid2

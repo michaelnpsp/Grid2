@@ -1,3 +1,5 @@
+if Grid2.isClassic then return end
+
 -- Grid2RaidDebuffsOptions, Created by Michael
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 local GSRD = Grid2:GetModule("Grid2RaidDebuffs")

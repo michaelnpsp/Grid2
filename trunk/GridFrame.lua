@@ -214,14 +214,16 @@ Grid2Frame.defaultDB = {
 
 function Grid2Frame:OnModuleInitialize()
 	self.dba = self.db
-	self.db = { global = self.dba.global, profile = self.dba.profile, shared = self.dba.profile } 
+	self.db = { global = self.dba.global, profile = self.dba.profile, shared = self.dba.profile }
 	self.registeredFrames = {}
 end
 
 function Grid2Frame:OnModuleEnable()
+	if not Grid2.isClassic then
+		self:RegisterEvent("UNIT_ENTERED_VEHICLE")
+		self:RegisterEvent("UNIT_EXITED_VEHICLE")
+	end
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateFrameUnits")
-	self:RegisterEvent("UNIT_ENTERED_VEHICLE")
-	self:RegisterEvent("UNIT_EXITED_VEHICLE")
 	self:RegisterMessage("Grid_UnitUpdate")
 	self:UpdateMenu()
 	self:UpdateBlink()
@@ -233,9 +235,11 @@ function Grid2Frame:OnModuleEnable()
 end
 
 function Grid2Frame:OnModuleDisable()
+	if not Grid2.isClassic then
+		self:UnregisterEvent("UNIT_ENTERED_VEHICLE")
+		self:UnregisterEvent("UNIT_EXITED_VEHICLE")
+	end
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-	self:UnregisterEvent("UNIT_ENTERED_VEHICLE")
-	self:UnregisterEvent("UNIT_EXITED_VEHICLE")
 	self:UnregisterMessage("Grid_UnitUpdate")
 end
 
@@ -271,10 +275,10 @@ function Grid2Frame:RefreshIndicators(update)
 				else
 					Grid2:WakeUpIndicator(indicator)
 				end
-			elseif not s1 and update and indicator.UpdateDB then 
-				indicator:UpdateDB()			
+			elseif not s1 and update and indicator.UpdateDB then
+				indicator:UpdateDB()
 			end
-		end	
+		end
 	end
 end
 
@@ -373,7 +377,7 @@ end
 -- Right Click Menu & Click Options
 function Grid2Frame:UpdateMenu()
 	local menu = not self.db.profile.menuDisabled and ToggleUnitMenu or nil
-	if menu~=self.RightClickUnitMenu then 
+	if menu~=self.RightClickUnitMenu then
 		self.RightClickUnitMenu = menu
 		self:WithAllFrames( function(f) f.menu = menu end )
 	end
