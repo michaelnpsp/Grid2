@@ -24,7 +24,7 @@ Grid2Options:RegisterStatusOptions("vehicle", "misc", nil, {
 
 Grid2Options:RegisterStatusOptions("target", "target", nil, {
 	title = L["highlights your target"],
-	titleIcon = "Interface\\Icons\\Ability_hunter_mastermarksman",
+	titleIcon = Grid2.isClassic and "Interface\\Icons\\Ability_Hunter_SniperShot" or "Interface\\Icons\\Ability_hunter_mastermarksman",
 })
 
 Grid2Options:RegisterStatusOptions("pvp", "combat", nil, {

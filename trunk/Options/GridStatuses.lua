@@ -25,7 +25,7 @@ Grid2Options.categories = {
 	health = { name = L["Health&Heals"], 		order = 40, icon = "Interface\\Icons\\INV_Potion_167", },
 	mana   = { name = L["Mana&Power"], 			order = 50, icon = "Interface\\Icons\\INV_Potion_168", },
 	combat = { name = L["Combat"], 				order = 60, icon = "Interface\\ICONS\\Inv_axe_88", },
-	target = { name = L["Targeting&Distances"],	order = 70, icon = "Interface\\ICONS\\Ability_hunter_snipershot", },
+	target = { name = L["Targeting&Distances"],	order = 70, icon = "Interface\\ICONS\\Ability_Hunter_RunningShot", },
 	role   = { name = L["Raid&Party Roles"], 	order = 80, icon = "Interface\\GroupFrame\\UI-Group-LeaderIcon", },
 	misc   = { name = L["Miscellaneous"],		order = 90, icon = "Interface\\ICONS\\Inv_misc_groupneedmore", },
 }
@@ -35,7 +35,7 @@ Grid2Options.debuffTypeIcons = {
 	Poison  = "Interface\\Icons\\Spell_nature_nullifydisease",
 	Disease = "Interface\\Icons\\Spell_nature_removedisease",
 	Curse   = "Interface\\Icons\\Spell_nature_removedisease",
-	Default = "Interface\\Icons\\Spell_holy_harmundeadaura", 
+	Default = "Interface\\Icons\\Spell_holy_harmundeadaura",
 }
 -- status.dbx.type -> categoryKey
 Grid2Options.typeCategories = {}
@@ -240,7 +240,7 @@ function Grid2Options:MakeStatusOptions(status)
 		group.order = (type(order)=='function' and order(status) or order) or (status.name==status.dbx.type and 100 or 200)
 		if status:IsSuspended() then
 			group.order = group.order+500
-			group.name  = string.format('|cFF808080%s|r',group.name)	
+			group.name  = string.format('|cFF808080%s|r',group.name)
 		end
 		self:MakeStatusChildOptions(status, group.args)
 	end
