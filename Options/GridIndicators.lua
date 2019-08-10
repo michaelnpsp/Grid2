@@ -134,7 +134,7 @@ do
 				end
 			end
 		end
-		return workTable	
+		return workTable
 	end
 
 	local function RenameIndicator(info, name)
@@ -144,14 +144,14 @@ do
 				Grid2Options.LI[name] = len>2 and text or nil
 				Grid2Options:MakeIndicatorOptions(Grid2.indicators[name])
 				LibStub("AceConfigRegistry-3.0"):NotifyChange("Grid2")
-			end	
+			end
 		end)
 	end
 
 	local function DeleteIndicator(info, name)
 		local indicator = Grid2.indicators[name]
 		if not indicator or #indicator.statuses>0 or (indicator.sideKick and #indicator.sideKick.statuses>0) or indicator.parentName or indicator.childName then
-			Grid2Options:MessageDialog( L["The selected indicator cannot be deleted because is in use. Uncheck the statuses linked to the indicator first."] ) 
+			Grid2Options:MessageDialog( L["The selected indicator cannot be deleted because is in use. Uncheck the statuses linked to the indicator first."] )
 			return
 		end
 		Grid2Options.LI[indicator.name] = nil
@@ -162,7 +162,7 @@ do
 		end
 		for _,t in pairs(Grid2.db.profile.themes.indicators) do
 			t[name] = nil
-		end	
+		end
 		Grid2:UnregisterIndicator(indicator)
 		Grid2Frame:UpdateIndicators()
 		Grid2Options:DeleteIndicatorOptions(indicator)
@@ -219,7 +219,7 @@ do
 
 	local options = {}
 
-	Grid2Options:MakeTitleOptions( options, L["indicators"], L["indicators management"], nil, "Interface\\ICONS\\INV_Misc_EngGizmos_26") 
+	Grid2Options:MakeTitleOptions( options, L["indicators"], L["indicators management"], nil, Grid2.isClassic and "Interface\\ICONS\\INV_Misc_Rune_07" or "Interface\\ICONS\\INV_Misc_EngGizmos_26")
 
 	options.newIndicatorName = {
 		type = "input",
@@ -308,7 +308,7 @@ do
 		desc = L["Toggle test mode for indicators"],
 		func = function() ToggleTestMode() end,
 	}
-	
+
 	function Grid2Options:MakeIndicatorsManagementOptions()
 		self:CopyOptionsTable(options, self.indicatorsOptions )
 	end
@@ -365,14 +365,14 @@ end
 
 --Refresh indicator options
 function Grid2Options:RefreshIndicatorOptions(indicator)
-	local options = self.indicatorsOptions[indicator.name] 
+	local options = self.indicatorsOptions[indicator.name]
 	if not options and indicator.parentName then
 		options   = self.indicatorsOptions[indicator.parentName]
 		indicator = Grid2.indicators[indicator.parentName]
 	end
 	if indicator and options and not options.args._openmanager_ then
 		self:MakeIndicatorOptions( indicator )
-	end	
+	end
 end
 
 -- Create all indicators options (dont remove options param, is used by openmanager)

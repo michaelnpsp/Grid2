@@ -144,7 +144,7 @@ Grid2Options:RegisterStatusOptions("health-low", "health", function(self, status
 		end,
 	}
 end, {
-	titleIcon = "Interface\\Icons\\Ability_rogue_bloodyeye"
+	titleIcon = Grid2.isClassic and "Interface\\Icons\\Ability_Rogue_Rupture" or "Interface\\Icons\\Ability_rogue_bloodyeye"
 })
 
 Grid2Options:RegisterStatusOptions("health-deficit", "health", Grid2Options.MakeStatusColorThresholdOptions, {

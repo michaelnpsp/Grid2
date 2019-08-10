@@ -165,7 +165,7 @@ do
 
 	local _options = {}
 
-	Grid2Options:MakeTitleOptions( _options, L["Themes"], L["themes management"], nil, "Interface\\ICONS\\INV_Misc_NotePicture2c" )
+	Grid2Options:MakeTitleOptions( _options, L["Themes"], L["themes management"], nil, Grid2.isClassic and "Interface\\ICONS\\INV_Misc_Note_06" or "Interface\\ICONS\\INV_Misc_NotePicture2c" )
 
 	_options.themeRefresh = { type = "header", order=0, name="", hidden = function() editedTheme.db = Grid2.db.profile.themes; return true end } -- Refresh profile if profile changes
 
