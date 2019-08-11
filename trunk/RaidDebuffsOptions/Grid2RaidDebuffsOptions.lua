@@ -1,5 +1,3 @@
-if Grid2.isClassic then return end
-
 -- Grid2RaidDebuffsOptions, Created by Michael
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 local GSRD = Grid2:GetModule("Grid2RaidDebuffs")
@@ -23,7 +21,7 @@ end, {
 	hideTitle    = true,
 	childGroups  = "tab",
 	groupOrder   = 5,
-	titleIcon    = "Interface\\Icons\\Spell_Shadow_Skull",
+	titleIcon    = Grid2.isClassic and "Interface\\Icons\\Ability_Creature_Cursed_05" or "Interface\\Icons\\Spell_Shadow_Skull",
 	-- To avoid creating options for raid-debuffs(2), raid-debuffs(3), etc.
 	masterStatus = "raid-debuffs",
 })

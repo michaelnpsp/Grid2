@@ -48,14 +48,14 @@ local function Bar_OnFrameUpdate(bar)
 				valueTo = valueTo - value
 			elseif texture.myNoOverlap then
 				size     = min(value, 1-valueMax)
-				offset   = valueMax	
+				offset   = valueMax
 				valueTo  = valueMax + value
 				valueMax = valueTo
 			else
 				offset   = max(valueTo,0)
 				valueTo  = valueTo + value
 				size     = min(valueTo,1) - offset
-				valueMax = max(valueMax, valueTo)				
+				valueMax = max(valueMax, valueTo)
 			end
 			if size>0 then
 				if horizontal then
@@ -67,7 +67,7 @@ local function Bar_OnFrameUpdate(bar)
 				texture:Show()
 			else
 				texture:Hide()
-			end	
+			end
 		else
 			texture:Hide()
 		end
@@ -82,7 +82,7 @@ local function Bar_OnFrameUpdate(bar)
 			texture:Show()
 		else
 			texture:Hide()
-		end	
+		end
 	end
 end
 
@@ -96,7 +96,7 @@ local EnableDelayedUpdates = function()
 		wipe(updates)
 	end)
 	EnableDelayedUpdates = Grid2.Dummy
-end	
+end
 
 -- Warning: This is an overrided indicator:Update() NOT the standard indicator:OnUpdate()
 local function Bar_Update(self, parent, unit, status)
@@ -118,7 +118,7 @@ local function Bar_Update(self, parent, unit, status)
 			bar.myMaxIndex = #self.statuses
 		end
 		updates[bar] = true
-	end	
+	end
 end
 -- }}}
 
@@ -127,7 +127,7 @@ local function Bar_Layout(self, parent)
 	local orient = self.orientation
 	local level  = parent:GetFrameLevel() + self.frameLevel
 	local width  = self.width  or parent.container:GetWidth()
-	local height = self.height or parent.container:GetHeight()	
+	local height = self.height or parent.container:GetHeight()
 	local color  = self.textureColor
 	-- main bar
 	bar:SetParent(parent)
@@ -138,7 +138,7 @@ local function Bar_Layout(self, parent)
 	bar:SetStatusBarTexture(self.texture)
 	local barTexture = bar:GetStatusBarTexture()
 	barTexture:SetDrawLayer("ARTWORK", 0)
-	if color then bar:SetStatusBarColor(color.r, color.g, color.b, min(self.opacity, color.a or 1) ) end	
+	if color then bar:SetStatusBarColor(color.r, color.g, color.b, min(self.opacity, color.a or 1) ) end
 	bar:SetSize(width, height)
 	bar:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
 	if self.reverse then bar:SetValue(0) end
@@ -147,12 +147,12 @@ local function Bar_Layout(self, parent)
 	for i=1,self.barCount do
 		local setup = self.bars[i]
 		local texture = textures[i+1] or bar:CreateTexture()
-		texture.mySetSize = texture[ self.SetSizeMethod ]		
+		texture.mySetSize = texture[ self.SetSizeMethod ]
 		texture.myReverse = setup.reverse
 		texture.myNoOverlap = setup.noOverlap
 		texture:SetTexture( setup.texture or self.texture )
 	    texture:SetDrawLayer("ARTWORK", setup.sublayer or 1)
-		local c = setup.color 
+		local c = setup.color
 		if c then texture:SetVertexColor( c.r, c.g, c.b, min(self.opacity, c.a or 1) ) end
 		texture:ClearAllPoints()
 		texture:SetSize( width, height )
@@ -180,20 +180,20 @@ local function Bar_Disable(self, parent)
 	if bar.myTextures then
 		for _,texture in ipairs(bar.myTextures) do
 			texture:Hide()
-		end	
+		end
 	end
 	bar:Hide()
 	bar:SetParent(nil)
-	bar:ClearAllPoints()	
+	bar:ClearAllPoints()
 end
 
 local function Bar_UpdateDB(self)
 	local dbx = self.dbx
 	local theme = Grid2Frame.db.profile
-	local orient = dbx.orientation or theme.orientation 
+	local orient = dbx.orientation or theme.orientation
 	self.orientation    = orient
 	self.SetSizeMethod  = SetSizeMethods[orient]
-	self.GetSizeMethod  = GetSizeMethods[orient]	
+	self.GetSizeMethod  = GetSizeMethods[orient]
 	self.alignPoints    = AlignPoints[orient][not dbx.reverseFill]
 	local l = dbx.location
 	self.frameLevel     = dbx.level or 1
@@ -217,7 +217,7 @@ local function Bar_UpdateDB(self)
 	self.bars           = {}
 	self.barCount       = dbx.barCount or 0
 	for i=1,self.barCount do
-		local bar = self.bars[i] or {}	
+		local bar = self.bars[i] or {}
 		local setup = dbx["bar"..i]
 		if setup then
 			bar.texture   = Grid2:MediaFetch("statusbar", setup.texture or dbx.texture or theme.barTexture, "Gradient")
@@ -271,14 +271,14 @@ local function Create(indicatorKey, dbx)
 	Bar.Create         = Bar_CreateHH
 	Bar.GetBlinkFrame  = Bar_GetBlinkFrame
 	Bar.SetOrientation = Bar_SetOrientation
-	Bar.Disable        = Bar_Disable	
+	Bar.Disable        = Bar_Disable
 	Bar.Layout         = Bar_Layout
 	Bar.Update         = Bar_Update
-	Bar.UpdateDB       = Bar_UpdateDB	
+	Bar.UpdateDB       = Bar_UpdateDB
 	Bar_UpdateDB(Bar)
 	Grid2:RegisterIndicator(Bar, { "percent" })
 	EnableDelayedUpdates()
-	
+
 	local colorKey      = indicatorKey .. "-color"
 	local BarColor      = Grid2.indicators[colorKey] or Grid2.indicatorPrototype:new(colorKey)
 	BarColor.dbx        = dbx
@@ -289,7 +289,7 @@ local function Create(indicatorKey, dbx)
 	BarColor_UpdateDB(BarColor)
 	Grid2:RegisterIndicator(BarColor, { "color" })
 	Bar.sideKick = BarColor
-	
+
 	return Bar, BarColor
 end
 

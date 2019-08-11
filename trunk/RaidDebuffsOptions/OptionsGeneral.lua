@@ -160,23 +160,25 @@ do
 end
 
 -- encounter journal
-options.header3 = { type = "header", order = 52, name = "" }
+if not Grid2.isClassic then
+	options.header3 = { type = "header", order = 52, name = "" }
 
-options.difficulty = {
-	type = "select",
-	order = 200,
-	name = L["Encounter Journal difficulty"],
-	desc = L["Default difficulty for Encounter Journal links"],
-	get = function ()
-		return RDO.db.profile.defaultEJ_difficulty or 14
-	end,
-	set = function (_, v)
-		RDO.db.profile.defaultEJ_difficulty = v
-	end,
-	values = {
-		[14] = PLAYER_DIFFICULTY1, -- Normal
-		[15] = PLAYER_DIFFICULTY2, -- Heroic
-		[16] = PLAYER_DIFFICULTY6, -- Mythic
-		[17] = PLAYER_DIFFICULTY3  -- LFR
-	},
-}
+	options.difficulty = {
+		type = "select",
+		order = 200,
+		name = L["Encounter Journal difficulty"],
+		desc = L["Default difficulty for Encounter Journal links"],
+		get = function ()
+			return RDO.db.profile.defaultEJ_difficulty or 14
+		end,
+		set = function (_, v)
+			RDO.db.profile.defaultEJ_difficulty = v
+		end,
+		values = {
+			[14] = PLAYER_DIFFICULTY1, -- Normal
+			[15] = PLAYER_DIFFICULTY2, -- Heroic
+			[16] = PLAYER_DIFFICULTY6, -- Mythic
+			[17] = PLAYER_DIFFICULTY3  -- LFR
+		},
+	}
+end

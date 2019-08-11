@@ -19,5 +19,6 @@ OptionsGeneral.lua
 OptionsAdvanced.lua
 OptionsLuaCode.lua
 
+RaidDebuffsClassic.lua
 RaidDebuffsLegion.lua
 RaidDebuffsBfA.lua
