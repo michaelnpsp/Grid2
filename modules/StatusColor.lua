@@ -28,9 +28,9 @@ local Shared = {}
 Shared.IsActive = Color.IsActive
 
 function Shared:UpdateUnit(_, unit)
-	if unit then 
-		self:UpdateIndicators(unit) 
-	end	
+	if unit then
+		self:UpdateIndicators(unit)
+	end
 end
 
 function Shared:OnEnable()
@@ -98,12 +98,12 @@ end
 Grid2.setupFunc["friendcolor"] = function(baseKey, dbx)
 	Grid2:RegisterStatus(FriendColor, {"color"}, baseKey, dbx)
 	return FriendColor
-end 
+end
 
-Grid2:DbSetStatusDefaultValue( "friendcolor", { type = "friendcolor",	
-	colorCount = 3,	
-	color1 = { r = 0, g = 1, b = 0, a=1 },    --player 
-	color2 = { r = 0, g = 1, b = 0, a=0.75 }, --pet 
+Grid2:DbSetStatusDefaultValue( "friendcolor", { type = "friendcolor",
+	colorCount = 3,
+	color1 = { r = 0, g = 1, b = 0, a=1 },    --player
+	color2 = { r = 0, g = 1, b = 0, a=0.75 }, --pet
 	color3 = { r = 1, g = 0, b = 0, a=1 },    --hostile
 })
 
@@ -142,7 +142,7 @@ local ClassColor = Grid2.statusPrototype:new("classcolor")
 ClassColor:Inject(Shared)
 
 function ClassColor:UnitColor(unit)
-	local p = self.dbx 
+	local p = self.dbx
 	local colors = p.colors
 	if p.colorHostile and UnitCanAttack(unit,"player") then
 		return colors.HOSTILE

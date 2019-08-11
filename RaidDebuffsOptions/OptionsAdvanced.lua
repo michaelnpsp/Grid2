@@ -11,7 +11,7 @@ local statusesNames    = RDO.statusesNames
 local bosses        = {} -- bosses[index]          = bossKey
 local bossesIndexes = {} -- bossesIndexes[bossKey] = index in bosses or bossesNames tables
 local bossesNames   = {} -- bosses[index]          = boss localized name
--- enabled debuffs in visible instance (assigned to some status) 
+-- enabled debuffs in visible instance (assigned to some status)
 local debuffsStatuses = {} -- debuffsStatuses[spellID] = status
 local debuffsIndexes  = {} -- debuffsIndexes[spellID]  = index  <=> status.dbx.debuffs[curInstance][index] == spellId
 -- selected module & instance
@@ -25,6 +25,10 @@ RDO.OPTIONS_BOSS     = {}
 RDO.OPTIONS_DEBUFF   = {}
 RDO.debuffsStatuses  = debuffsStatuses
 RDO.debuffsIndexes   = debuffsIndexes
+-- Encounter Journal functions
+local EJ_GetInstanceInfo  = EJ_GetInstanceInfo  or Grid2.Dummy
+local EJ_GetEncounterInfo = EJ_GetEncounterInfo or Grid2.Dummy
+local EJ_GetCreatureInfo  = EJ_GetCreatureInfo  or Grid2.Dummy
 
 --============================================================
 -- Misc utils functions
@@ -36,13 +40,13 @@ local DbDelTableValue = RDO.DbDelTableValue
 local DbAddTableValue = RDO.DbAddTableValue
 
 local function GetBossTag(bossKey, field)
-	return DbGetValue(RDDB, visibleModule, visibleInstance, bossKey, field) or 
+	return DbGetValue(RDDB, visibleModule, visibleInstance, bossKey, field) or
 		   DbGetValue(RDO.db.profile.debuffs, visibleInstance, bossKey, field)
 end
 
 local function SetBossTag(bossKey, field, value)
 	DbSetValue(value, RDO.db.profile.debuffs, visibleInstance, bossKey, field)
-end	
+end
 
 local function GetInstanceName(module, instance)
 	if module and instance then
@@ -69,10 +73,10 @@ local function LoadEnabledDebuffs()
 					local spellId = math.abs(value)
 					debuffsStatuses[ spellId ] = status
 					debuffsIndexes[ spellId ] = index
-				end	
-			end	
+				end
+			end
 		end
-	end	
+	end
 end
 
 local LoadModuleInstance
@@ -81,7 +85,7 @@ do
 		wipe(bosses)
 		wipe(bossesNames)
 		wipe(bossesIndexes)
-		-- fixing inconsistencies between custom debuffs bosses keys and modules bosses keys, 
+		-- fixing inconsistencies between custom debuffs bosses keys and modules bosses keys,
 		-- if the same boss has different keys, the boss key in the custom database is changed.
 		local function FixCustomBossesKeys( zone, zoneToFix )
 			local function findkey(zone,ejid)
@@ -92,7 +96,7 @@ do
 			if zoneToFix then
 				for k,v in pairs(zone) do
 					if v.ejid and v.ejid~=0 then
-						local key,data = findkey(zoneToFix,v.ejid) 
+						local key,data = findkey(zoneToFix,v.ejid)
 						if key and k ~= key then
 							zoneToFix[k] = data
 							zoneToFix[key] = nil
@@ -112,23 +116,23 @@ do
 			end
 		end
 		Load( RDDB[visibleModule][visibleInstance] )
-		if visibleModule ~= "[Custom Debuffs]" then 
+		if visibleModule ~= "[Custom Debuffs]" then
 			FixCustomBossesKeys( RDDB[visibleModule][visibleInstance], RDO.db.profile.debuffs[visibleInstance])
-			Load( RDO.db.profile.debuffs[visibleInstance] ) 
-		end	
+			Load( RDO.db.profile.debuffs[visibleInstance] )
+		end
 		table.sort( bosses, function(a,b) return bossesIndexes[a]<bossesIndexes[b] end )
 		for i,boss in ipairs(bosses) do
 			local ejid = GetBossTag(boss, "ejid") or 0
 			bossesIndexes[boss] = i
 			bossesNames[boss] = ejid>0 and EJ_GetEncounterInfo(ejid) or boss
-		end	
+		end
 	end
 	LoadModuleInstance = function(force)
-		local module = RDO.db.profile.lastSelectedModule 
+		local module = RDO.db.profile.lastSelectedModule
 		module = module and RDO.db.profile.enabledModules[module] and module or "[Custom Debuffs]"
 		local instance = RDO.db.profile.lastSelectedInstance
 		if instance and not RDDB[module][instance] then
-			instance, RDO.db.profile.lastSelectedInstance = nil, nil  
+			instance, RDO.db.profile.lastSelectedInstance = nil, nil
 		end
 		if visibleModule ~= module or visibleInstance ~= instance or force then
 			visibleModule,   RDO.db.profile.lastSelectedModule   = module, module
@@ -148,7 +152,7 @@ local function FormatBossName(  ejid, order, bossName, isCustom)
 end
 
 local ICON_CHECKED, ICON_UNCHECKED = READY_CHECK_READY_TEXTURE, READY_CHECK_NOT_READY_TEXTURE
-local function FormatDebuffName(spellId, isCustom) 
+local function FormatDebuffName(spellId, isCustom)
 	local mask, icon, suffix
 	local status = debuffsStatuses[spellId]
 	if status then
@@ -172,15 +176,15 @@ local function GetDebuffOrder(boss, spellId, isCustom, priority)
 	end
 end
 
-local function RefreshDebuffItem(spellId)	
+local function RefreshDebuffItem(spellId)
 	spellId = tonumber(spellId)
 	if spellId then
 		local option = RDO.OPTIONS_ITEMS[tostring(spellId)]
 		if option then
 			option.name  = FormatDebuffName(spellId, option.handler.isCustom)
 			option.order = GetDebuffOrder(option.handler.bossKey, spellId)
-		end	
-	end	
+		end
+	end
 end
 
 local function RefreshDebuffsItemsNames()
@@ -215,10 +219,10 @@ local function MakeBossDebuffsOptions( boss, debuffs, isCustom )
 			index = index + 1
 		elseif isCustom then
 			-- Removing a duplicated debuff
-			table.remove(debuffs, index) 
+			table.remove(debuffs, index)
 		else
 			index = index + 1
-		end		
+		end
 	end
 end
 
@@ -226,7 +230,7 @@ local function MakeRaidDebuffsOptions(forceReloadData)
 	local first_ejid
 	LoadModuleInstance(forceReloadData)
 	wipe(RDO.OPTIONS_ITEMS)
-	if tonumber(visibleInstance) then	
+	if tonumber(visibleInstance) then
 		local module    = visibleModule
 		local instance  = visibleInstance
 		local options   = RDO.OPTIONS_ITEMS
@@ -239,7 +243,7 @@ local function MakeRaidDebuffsOptions(forceReloadData)
 		for bossKey,bossIndex in pairs(bossesIndexes) do
 			local order = bossIndex * 1000
 			local EJ_ID = GetBossTag(bossKey,"ejid") or 0
-			local EJ_ORDER = GetBossTag(bossKey,"order") 
+			local EJ_ORDER = GetBossTag(bossKey,"order")
 			local isCustom = deletable or (not debuffs[bossKey])
 			local nameFull, nameLoc = FormatBossName(  EJ_ID, EJ_ORDER, bossKey, isCustom)
 			options[bossKey] = {
@@ -247,19 +251,19 @@ local function MakeRaidDebuffsOptions(forceReloadData)
 				name = nameFull,
 				desc = string.format("    %d/%d", EJ_ID or 0, EJ_ORDER or 0),
 				order = order,
-				args = RDO.OPTIONS_BOSS, 
+				args = RDO.OPTIONS_BOSS,
 				handler = { bossKey = bossKey, bossName = nameLoc, ejid= EJ_ID, isCustom = isCustom },
 			}
 			MakeBossDebuffsOptions(bossKey, debuffs[bossKey], deletable)
 			if custom and (not deletable) then
 				MakeBossDebuffsOptions(bossKey, custom[bossKey], true )
-				if custom[boss] and #custom[boss]==0 then 
+				if custom[boss] and #custom[boss]==0 then
 					custom[boss] = nil
 				end
 			end
 			if EJ_ID>0 and (not first_ejid) then
 				first_ejid = EJ_ID
-			end	
+			end
 		end
 		if not (deletable or (custom and next(custom))) then RDO.db.profile.debuffs[instance] = nil end
 	end
@@ -299,7 +303,7 @@ local function OpenJournal(info)
 	EncounterJournal.lastInstance = instanceID
 	if not EJ_IsValidInstanceDifficulty(difficulty) then
 		difficulty = (difficulty==14 and 1) or (difficulty==15 and 2) or (difficulty==16 and 23) or (difficulty==17 and 7) or 0
-		if not EJ_IsValidInstanceDifficulty(difficulty) then 
+		if not EJ_IsValidInstanceDifficulty(difficulty) then
 			return
 		end
 	end
@@ -312,8 +316,8 @@ local function StatusEnableDebuff(status, spellId)
 		debuffsStatuses[spellId] = status
 		debuffsIndexes[spellId] = DbAddTableValue(spellId, status.dbx.debuffs, visibleInstance)
 		RDO:UpdateZoneSpells(visibleInstance)
-		RefreshDebuffItem(spellId) 
-	end	
+		RefreshDebuffItem(spellId)
+	end
 end
 
 local function StatusDisableDebuff(spellId)
@@ -324,14 +328,14 @@ local function StatusDisableDebuff(spellId)
 		debuffsStatuses[spellId] = nil
 		debuffsIndexes[spellId] = nil
 		for k,v in pairs(debuffsStatuses) do
-			if status==v and debuffsIndexes[k]>index then 
+			if status==v and debuffsIndexes[k]>index then
 				debuffsIndexes[k] = debuffsIndexes[k] - 1
 				RefreshDebuffItem(k)
 			end
 		end
 		RDO:UpdateZoneSpells(visibleInstance)
 		RefreshDebuffItem(spellId)
-	end	
+	end
 end
 
 local function StatusMoveDebuff(spellId1, up)
@@ -341,7 +345,7 @@ local function StatusMoveDebuff(spellId1, up)
 	if up then
 		order1,order2 = 0,order
 	else
-		order1,order2 = order,10000	
+		order1,order2 = order,10000
 	end
 	for k,option in pairs(RDO.OPTIONS_ITEMS) do
 		if option.order>=1000 and option.handler.spellId and option.order>order1 and option.order<order2 and group == math.floor(option.order/100) then
@@ -349,7 +353,7 @@ local function StatusMoveDebuff(spellId1, up)
 				order1 = option.order
 			else
 				order2 = option.order
-			end	
+			end
 			spellId2 = option.handler.spellId
 		end
 	end
@@ -381,10 +385,10 @@ do
 			order = 10,
 			name = L["Select module"],
 			desc = "",
-			get = function () 
-				return RDO.db.profile.lastSelectedModule 
+			get = function ()
+				return RDO.db.profile.lastSelectedModule
 			end,
-			set = function (info, v) 
+			set = function (info, v)
 				RDO.db.profile.lastSelectedModule = v
 				RDO.db.profile.lastSelectedInstance = nil
 				MakeRaidDebuffsOptions()
@@ -393,15 +397,15 @@ do
 				wipe(list)
 				local enabledModules = RDO.db.profile.enabledModules or {}
 				for name in pairs(enabledModules) do
-					if RDDB[name] then 
+					if RDDB[name] then
 						list[name] = L[name]
-					end	
+					end
 				end
 				list["[Custom Debuffs]"] = L["[Custom Debuffs]"]
 				return list
 			end,
 		}
-	end	
+	end
 
 	do
 		local list = {}
@@ -414,7 +418,7 @@ do
 				return select(2,GetInstanceName(RDO.db.profile.lastSelectedModule, RDO.db.profile.lastSelectedInstance))
 			end,
 			set = function(_,instance)
-				RDO.db.profile.lastSelectedInstance = tonumber( strmatch(instance, "<<(.+)>>$") or instance ) 
+				RDO.db.profile.lastSelectedInstance = tonumber( strmatch(instance, "<<(.+)>>$") or instance )
 				MakeRaidDebuffsOptions()
 			end,
 			values = function()
@@ -423,20 +427,20 @@ do
 				if module and RDDB[module] then
 					for instance in pairs(RDDB[module]) do
 						local name, key = GetInstanceName(module, instance)
-						list[key] = name 
+						list[key] = name
 					end
 				end
 				return list
 			end,
 		}
-	end	
+	end
 
 	options.refresh= {
 		type = "execute",
 		order = 22,
 		name = L["Refresh"],
 		width = "half",
-		func = function() 
+		func = function()
 			MakeRaidDebuffsOptions(true)
 		end,
 		hidden = function() return not RDO.auto_enabled	end,
@@ -478,26 +482,28 @@ end
 --============================================================
 do
 	local options = RDO.OPTIONS_INSTANCE
-	
+
 	options.spacer = {
-		type = "header", 
-		order = 10, 
+		type = "header",
+		order = 10,
 		name = function() return GetInstanceName(visibleModule,visibleInstance) end,
-		hidden = function(info) 
+		hidden = function(info)
 			return (not info.handler.ejid) and visibleModule~="[Custom Debuffs]"
 		end
 	}
-		
-	options.link = {
-		type = "execute",
-		order = 20,
-		width = "full",
-		name = L["Show in Encounter Journal"],
-		func = OpenJournal,
-		hidden = function(info) return not info.handler.ejid end
-	}
 
-	options.delete = {	
+	if not isClassic then
+		options.link = {
+			type = "execute",
+			order = 20,
+			width = "full",
+			name = L["Show in Encounter Journal"],
+			func = OpenJournal,
+			hidden = function(info) return not info.handler.ejid end
+		}
+	end
+
+	options.delete = {
 		type = "execute",
 		order = 30,
 		width = "full",
@@ -508,7 +514,7 @@ do
 				RDO:RefreshAutodetect()
 				MakeRaidDebuffsOptions(true)
 		end,
-		confirm = function() 
+		confirm = function()
 			local zone = RDO.db.profile.debuffs[visibleInstance or ""]
 			return (zone and next(zone)) and L["This instance is not empty. Are you sure you want to remove it ?"] or true
 		end,
@@ -516,8 +522,8 @@ do
 	}
 
 	options.separatorDebuffs = {
-		type = "header", 
-		order = 40, 
+		type = "header",
+		order = 40,
 		name = L["Debuffs"] ,
 	}
 
@@ -526,7 +532,7 @@ do
 		order= 50,
 		width = "full",
 		name = L["Enable All"],
-		func= function() 
+		func= function()
 			RDO:EnableInstanceAllDebuffs(visibleModule,visibleInstance)
 			LoadEnabledDebuffs()
 			RefreshDebuffsItemsNames()
@@ -546,9 +552,9 @@ do
 	}
 
 	options.separatorBoss = {
-		type = "header", 
-		order = 70, 
-		name = L["Bosses"] 
+		type = "header",
+		order = 70,
+		name = L["Bosses"]
 	}
 
 	options.createBoss = {
@@ -565,7 +571,7 @@ do
 				DbSetValue({}, RDO.db.profile.debuffs, visibleInstance, bossName)
 				if bossId then
 					SetBossTag(bossName, "ejid", bossId)
-				end	
+				end
 				MakeRaidDebuffsOptions(true)
 			end
 		end,
@@ -588,9 +594,9 @@ do
 	}
 
 	options.bossName = {
-		type = "header", 
-		order = 50, 
-		name = function(info) return info.handler.bossName end 
+		type = "header",
+		order = 50,
+		name = function(info) return info.handler.bossName end
 	}
 
 	do
@@ -601,23 +607,23 @@ do
 			width = "full",
 			name = L["New raid debuff"],
 			desc = L["Type the SpellId of the new raid debuff"],
-			get = function()  
-				return newSpellId and GetSpellInfo(newSpellId) or "" 
+			get = function()
+				return newSpellId and GetSpellInfo(newSpellId) or ""
 			end,
 			set = function(_,v)
 				newSpellId = tonumber(v)
 				local name = newSpellId and GetSpellInfo(newSpellId) or nil
-				if (not name) or name=="" then 
-					newSpellId= nil 
+				if (not name) or name=="" then
+					newSpellId= nil
 				end
 			end,
 		}
 		options.newDebuffExec = {
 			type = "execute",
 			order = 60,
-			width = "full",				
+			width = "full",
 			name = L["Create raid debuff"],
-			func = function(info) 
+			func = function(info)
 				if newSpellId and GetSpellInfo(newSpellId) then
 					local bossKey = info.handler.bossKey
 					local priority = DbAddTableValue( newSpellId, RDO.db.profile.debuffs, visibleInstance, bossKey)
@@ -631,7 +637,7 @@ do
 			end,
 			disabled= function() return (not newSpellId) or RDO.OPTIONS_ITEMS[tostring(newSpellId)] end
 		}
-	end	
+	end
 
 	options.separator = {type = "header", order = 100, name = "", hidden = function(info) return not info.handler.isCustom end }
 
@@ -662,7 +668,7 @@ do
 		order = 110,
 		width = "full",
 		name = L["Move to Top"],
-		func = function(info) 
+		func = function(info)
 			local firstBoss = bosses[1]
 			SetBossTag( info.handler.bossKey, "order", (GetBossTag(firstBoss, "order") or 0) - 1 )
 			MakeRaidDebuffsOptions(true)
@@ -676,7 +682,7 @@ do
 		order = 115,
 		width = "full",
 		name = L["Move to Bottom"],
-		func = function(info) 
+		func = function(info)
 			local lastBoss = bosses[#bosses]
 			SetBossTag( info.handler.bossKey, "order", (GetBossTag(lastBoss, "order") or 500) + 1 )
 			MakeRaidDebuffsOptions(true)
@@ -684,7 +690,7 @@ do
 		hidden = function(info) return (not info.handler.isCustom) or info.handler.ejid>0 end,
 		disabled = function(info) return bossesIndexes[info.handler.bossKey]>=#bosses end
 	}
-			
+
 	options.delete = {
 		type = "execute",
 		order = 120,
@@ -727,7 +733,7 @@ do
 			type="description",
 			order= 50,
 			fontSize= "small",
-			name = function(info) 
+			name = function(info)
 				wipe(lines)
 				local spellId = info.handler.spellId
 				local tipDebuff = Grid2Options.Tooltip
@@ -736,13 +742,13 @@ do
 				if not name then return "" end --invalid spellIds break the tooltip
 				tipDebuff:SetHyperlink("spell:"..spellId)
 				for i=2, min(5,tipDebuff:NumLines()) do
-					lines[i-1]= tipDebuff[i]:GetText() 
+					lines[i-1]= tipDebuff[i]:GetText()
 				end
 				return table.concat(lines,"\n")
 			end,
 		}
 	end
-	
+
 	options.header2 ={ type= "header", order= 40, name="", }
 
 	options.enableSpell = {
@@ -762,15 +768,15 @@ do
 
 	options.header3 = { type= "header", order= 140, name="" }
 
-	options.assignedStatus = {	
+	options.assignedStatus = {
 		type = "select",
 		order = 144,
 		name = L["Assigned to"],
-		get = function (info) 
+		get = function (info)
 			return statusesIndexes[ debuffsStatuses[info.handler.spellId] or statuses[1] ]
 		end,
-		set = function (info, v) 
-			StatusDisableDebuff( info.handler.spellId ) 
+		set = function (info, v)
+			StatusDisableDebuff( info.handler.spellId )
 			StatusEnableDebuff( statuses[v], info.handler.spellId )
 		end,
 		values = statusesNames,
@@ -787,10 +793,10 @@ do
 			local status = debuffsStatuses[spellId]
 			if status then
 				local index = debuffsIndexes[spellId]
-				return status.dbx.debuffs[visibleInstance][index] < 0	
-			end	
+				return status.dbx.debuffs[visibleInstance][index] < 0
+			end
 		end,
-		set = function(info, value) 
+		set = function(info, value)
 			local spellId = info.handler.spellId
 			local spellName = GetSpellInfo(spellId)
 			for spell,status in pairs(debuffsStatuses) do
@@ -822,24 +828,24 @@ do
 				Grid2Options:MessageDialog(L["This debuff is already at the top of the list."])
 			end
 		end,
-		hidden = function(info) 
-			return not debuffsStatuses[info.handler.spellId] 
+		hidden = function(info)
+			return not debuffsStatuses[info.handler.spellId]
 		end,
 	}
 
 	options.moveDn = {
 		type = "execute",
 		order = 147.5,
-		width = "full",			
+		width = "full",
 		name = L["Move Down"],
 		desc = L["Move debuff lower in the priority list."],
-		func = function(info) 
+		func = function(info)
 			if not StatusMoveDebuff( info.handler.spellId, false) then
 				Grid2Options:MessageDialog(L["This debuff is already at the bottom of the list."])
 			end
 		end,
-		hidden = function(info) 
-			return not debuffsStatuses[info.handler.spellId] 
+		hidden = function(info)
+			return not debuffsStatuses[info.handler.spellId]
 		end,
 	}
 
@@ -853,16 +859,16 @@ do
 	options.chatLink = {
 		type = "execute",
 		order = 149,
-		width = "full",			
+		width = "full",
 		name = L["Link to Chat"],
-		func = function(info) 
+		func = function(info)
 			local link = GetSpellLink(info.handler.spellId)
 			if link then
 				local ChatBox = ChatEdit_ChooseBoxForSend()
 				if not ChatBox:HasFocus() then
 					ChatFrame_OpenChat(link)
 				else
-					ChatBox:Insert(link) 
+					ChatBox:Insert(link)
 				end
 			end
 		end,
@@ -883,30 +889,30 @@ do
 				if not Grid2:DbGetValue("statuses", baseKey) then
 					-- Save status in database
 					local dbx = {type = "debuff", spellName = spellId, color1 = {r=1, g=0, b=0, a=1} }
-					Grid2:DbSetValue("statuses", baseKey, dbx) 
+					Grid2:DbSetValue("statuses", baseKey, dbx)
 					--Create status in runtime
 					local status = Grid2.setupFunc[dbx.type](baseKey, dbx)
 					--Create the status options
 					Grid2Options:MakeStatusOptions(status)
 				end
-			end	
+			end
 		end,
 	}
 
 	options.moveDebuff= {
 		type = "select",
 		order = 156,
-		width = "full",			
+		width = "full",
 		name = L["Move To"],
 		get = function() end,
 		set = function(info,newBoss)
-			local oldBoss = info.handler.bossKey 
+			local oldBoss = info.handler.bossKey
 			if newBoss~=oldBoss then
 				local spellId = info.handler.spellId
 				DbDelTableValue( spellId, RDO.db.profile.debuffs, visibleInstance, oldBoss )
 				DbAddTableValue( spellId, RDO.db.profile.debuffs, visibleInstance, newBoss )
 				MakeRaidDebuffsOptions()
-			end	
+			end
 		end,
 		values = bossesNames,
 		hidden = function(info) return (not info.handler.isCustom) or #bosses<=1 end,
@@ -917,12 +923,12 @@ do
 		order = 155,
 		width = "full",
 		name = L["Delete raid debuff"],
-		func = function(info) 
+		func = function(info)
 			local spellId = info.handler.spellId
 			local bossKey = info.handler.bossKey
-			StatusDisableDebuff(spellId) 
+			StatusDisableDebuff(spellId)
 			DbDelTableValue( spellId, RDO.db.profile.debuffs, visibleInstance, bossKey )
-			RDO.OPTIONS_ITEMS[tostring(spellId)]= nil			
+			RDO.OPTIONS_ITEMS[tostring(spellId)]= nil
 		end,
 		hidden = function(info) return not info.handler.isCustom end
 	}

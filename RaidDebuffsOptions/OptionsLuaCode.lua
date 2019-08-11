@@ -4,6 +4,8 @@
 local RDO = Grid2Options.RDO
 local RDDB = RDO.RDDB
 
+local EJ_GetInstanceInfo = EJ_GetInstanceInfo or Grid2.Dummy
+
 -- Generates lua code containing the instances/bosses/raid debuffs of the especified module.
 function RDO:GenerateModuleLuaCode(moduleName)
 
@@ -39,7 +41,7 @@ function RDO:GenerateModuleLuaCode(moduleName)
 			if not tonumber(bossName) then
 				local code, index = GenerateBossCode(bossName,bossdata)
 				bosses[#bosses+1], order[code] = code, index
-			end	
+			end
 		end
 		if moduleName ~= "[Custom Debuffs]" then
 			local zone = self.db.profile.debuffs[zoneName]
@@ -104,5 +106,5 @@ function RDO:GenerateEncounterJournalData(isRaid)
 	println("}")
 
 	return lines
-	
+
 end

@@ -1,5 +1,3 @@
-if Grid2.isClassic then return end
-
 -- Raid Debuffs module, implements raid-debuffs statuses
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2")
@@ -14,6 +12,11 @@ local GetTime = GetTime
 local UnitGUID = UnitGUID
 local UnitDebuff = UnitDebuff
 local GetSpellInfo = GetSpellInfo
+
+local isClassic = Grid2.isClassic
+local EJ_GetInstanceForMap = EJ_GetInstanceForMap or function(mapID) return mapID-100000 end
+local EJ_SelectInstance = EJ_SelectInstance or Grid2.Dummy
+local EJ_GetEncounterInfoByIndex = EJ_GetEncounterInfoByIndex or Grid2.Dummy
 
 GSRD.defaultDB = { profile = { debuffs = {}, enabledModules = {} } }
 
@@ -83,13 +86,14 @@ function GSRD:OnModuleDisable()
 	self:ResetZoneSpells()
 end
 
+-- In Classic Encounter Journal data does not exist so we always use map_id so: instance_id+100000=instance_map_id
 function GSRD:UpdateZoneSpells(event)
 	local bm = C_Map.GetBestMapForUnit("player")
-	if bm then
+	if bm or isClassic then
 		local map_id = select(8,GetInstanceInfo()) + 100000 -- +100000 to avoid collisions with instance_id
 		if event and map_id==instance_map_id then return end
 		self:ResetZoneSpells()
-		instance_id = EJ_GetInstanceForMap(bugged_maps[bm] or bm)
+		instance_id = EJ_GetInstanceForMap( (isClassic and map_id) or bugged_maps[bm] or bm )
 		instance_map_id = map_id
 		instance_map_name = GetInstanceInfo()
 		for status in next,statuses do
