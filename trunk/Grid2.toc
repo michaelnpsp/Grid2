@@ -1,4 +1,9 @@
-﻿## Interface: 80200
+﻿#@retail@
+## Interface: 80200
+#@end-retail@
+#@non-retail@
+# ## Interface: 11302
+#@end-non-retail@
 ## Title: Grid2
 ## Notes: A modular, lightweight and screen-estate saving grid of party/raid unit frames
 ## Notes-esES: Marcos de unidades de raid compactos y ligeros.
@@ -11,7 +16,6 @@
 ## SavedVariables: Grid2DB
 ## DefaultState: enabled
 ## LoadOnDemand: 0
-
 ## Version: @project-version@
 ## X-ReleaseDate: "$Date$"
 ## X-Category: UnitFrame
@@ -43,5 +47,47 @@ GridStatus.lua
 GridSetup.lua
 GridDefaults.lua
 
-modules.xml
+# Indicators
+modules\IndicatorAlpha.lua
+modules\IndicatorBorder.lua
+modules\IndicatorBar.lua
+modules\IndicatorMultiBar.lua
+modules\IndicatorText.lua
+modules\IndicatorIcon.lua
+modules\IndicatorIcons.lua
+modules\IndicatorSquare.lua
+modules\IndicatorTooltip.lua
+modules\IndicatorPortrait.lua
 
+# Statuses
+modules\StatusHealth.lua
+modules\StatusMana.lua
+modules\StatusColor.lua
+modules\StatusName.lua
+modules\StatusOffline.lua
+modules\StatusPvP.lua
+modules\StatusRange.lua
+modules\StatusReadyCheck.lua
+modules\StatusRole.lua
+modules\StatusTarget.lua
+modules\StatusVoiceComm.lua
+modules\StatusRaidIcon.lua
+modules\StatusAFK.lua
+modules\StatusBanzai.lua
+modules\StatusRes.lua
+modules\StatusHealsAoe.lua
+modules\StatusSelf.lua
+modules\StatusDirection.lua
+modules\StatusCombat.lua
+modules\StatusAuras.lua
+modules\StatusAurasBuffs.lua
+modules\StatusAurasDebuffs.lua
+
+#@retail@
+modules\StatusThreat.lua
+modules\StatusVehicle.lua
+modules\StatusShields.lua
+modules\StatusHealAbsorbs.lua
+modules\StatusSummon.lua
+modules\StatusPhased.lua
+#@end-retail@
