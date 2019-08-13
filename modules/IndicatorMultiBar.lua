@@ -20,6 +20,10 @@ local function Bar_CreateHH(self, parent)
 	bar:SetValue(0)
 end
 
+-- Warning Do not put bar:SetValue() methods inside this function because for some reason the bar is not updated&painted
+-- on current frame (the bar update is delayed to the next frame), but extra bar textures are updated on current frame.
+-- generating a graphic glitch because main bar & extra bars are displayed out of sync (in diferente frames)
+-- In this case we are talking about screen frames like in frames per second.
 local function Bar_OnFrameUpdate(bar)
 	local self        = bar.myIndicator
 	local direction   = self.direction
@@ -33,8 +37,6 @@ local function Bar_OnFrameUpdate(bar)
 	local maxIndex    = 0
 	if self.reverse then
 		valueMax, valueTo = 0, -valueTo
-	else
-		bar:SetValue(valueTo)
 	end
 	for i=2,bar.myMaxIndex do
 		local texture = myTextures[i]
@@ -99,25 +101,33 @@ local EnableDelayedUpdates = function()
 end
 
 -- Warning: This is an overrided indicator:Update() NOT the standard indicator:OnUpdate()
+-- We are calling bar:SetValue()/bar:SetMainBarValue() here instead of inside Bar_OnFrameUpdate() because the
+-- StatusBar texture is not updated inmmediatly like the additional bars textures, generating a graphic glitch.
 local function Bar_Update(self, parent, unit, status)
 	if unit then
 		local bar = parent[self.name]
 		local values = bar.myValues
 		if status then
 			local index = self.priorities[status]
-			-- local value = status:IsActive(unit) and status:GetPercent(unit) or 0; <- correct but more slow way
 			local value = status:GetPercent(unit) or 0
 			values[index] = value
-			-- Optimization to avoid updating bars with zero value
-			if value>0 and index>bar.myMaxIndex then bar.myMaxIndex = index	end
+			if value>0 and index>bar.myMaxIndex then
+				bar.myMaxIndex = index -- Optimization to avoid updating bars with zero value
+			end
+			if index==1 then
+			   bar:SetMainBarValue(value)
+			end
+			if self.backColor or bar.myMaxIndex>1 then
+				updates[bar] = true
+			end
 		else
 			for i, status in ipairs(self.statuses) do
-				-- values[i] = status:IsActive(unit) and status:GetPercent(unit) or 0; <- correct but more slow way
 				values[i] = status:GetPercent(unit) or 0
 			end
 			bar.myMaxIndex = #self.statuses
+			bar:SetMainBarValue(values[1])
+			updates[bar] = true
 		end
-		updates[bar] = true
 	end
 end
 -- }}}
@@ -141,7 +151,8 @@ local function Bar_Layout(self, parent)
 	if color then bar:SetStatusBarColor(color.r, color.g, color.b, min(self.opacity, color.a or 1) ) end
 	bar:SetSize(width, height)
 	bar:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
-	if self.reverse then bar:SetValue(0) end
+	bar:SetValue(0)
+	bar.SetMainBarValue = self.reverse and Grid2.Dummy or bar.SetValue
 	-- extra bars
 	local textures = bar.myTextures or { barTexture }
 	for i=1,self.barCount do
