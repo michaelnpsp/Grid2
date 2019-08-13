@@ -6,7 +6,7 @@
 ## Notes-zhCN: 小巧的轻量级模块化队伍框架
 ## Notes-zhTW: 精簡的團隊框架功能
 ## Author: Pastamancer & Maia, Jerry, Toadkiller
-
+## X-Curse-Project-ID: 15226
 ## OptionalDeps: Ace3, Clique
 ## SavedVariables: Grid2DB
 ## DefaultState: enabled
