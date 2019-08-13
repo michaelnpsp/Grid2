@@ -5,20 +5,20 @@
 # ## Interface: 11302
 #@end-non-retail@
 ## Title: Grid2
+## Author: Pastamancer & Maia, Jerry, Toadkiller
+## Version: @project-version@
 ## Notes: A modular, lightweight and screen-estate saving grid of party/raid unit frames
 ## Notes-esES: Marcos de unidades de raid compactos y ligeros.
 ## Notes-ruRU: Модульный, легкий, отображающий на экране область группы/рейда в виде сетки.
 ## Notes-zhCN: 小巧的轻量级模块化队伍框架
 ## Notes-zhTW: 精簡的團隊框架功能
-## Author: Pastamancer & Maia, Jerry, Toadkiller
+## X-Category: UnitFrame
+## X-Website: https://www.curseforge.com/wow/addons/grid2
 ## X-Curse-Project-ID: 15226
-## OptionalDeps: Ace3, Clique
-## SavedVariables: Grid2DB
 ## DefaultState: enabled
 ## LoadOnDemand: 0
-## Version: @project-version@
-## X-ReleaseDate: "$Date$"
-## X-Category: UnitFrame
+## SavedVariables: Grid2DB
+## OptionalDeps: Ace3, Clique
 
 # Ace Libraries
 #@no-lib-strip@
