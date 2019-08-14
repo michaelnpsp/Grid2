@@ -12,8 +12,6 @@
 ## Notes-ruRU: Модульный, легкий, отображающий на экране область группы/рейда в виде сетки.
 ## Notes-zhCN: 小巧的轻量级模块化队伍框架
 ## Notes-zhTW: 精簡的團隊框架功能
-## X-Category: UnitFrame
-## X-Website: https://www.curseforge.com/wow/addons/grid2
 ## X-Curse-Project-ID: 15226
 ## DefaultState: enabled
 ## LoadOnDemand: 0
