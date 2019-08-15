@@ -22,7 +22,6 @@ local UnitIsDead = UnitIsDead
 local UnitIsGhost = UnitIsGhost
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitIsFeignDeath = UnitIsFeignDeath
-local UnitGetIncomingHeals = UnitGetIncomingHeals
 local UnitHealthMax = UnitHealthMax
 
 -- Caches
@@ -399,10 +398,46 @@ Grid2.setupFunc["death"] = CreateDeath
 
 Grid2:DbSetStatusDefaultValue( "death", {type = "death", color1 = {r=1,g=1,b=1,a=1}})
 
--- Classic check
-if Grid2.isClassic then return end
-
 -- heals-incoming status
+
+local HealsUpdateEvent
+local UnitGetIncomingHeals = UnitGetIncomingHeals
+local UnitGetTotalHealAbsorbs = UnitGetTotalHealAbsorbs
+
+--{{ This code block can be safety be removed for retail
+if Grid2.isClassic then
+	local HealComm = LibStub("LibClassicHealComm-1.0", true)
+	local roster_units = Grid2.roster_units
+	local UnitGUID = UnitGUID
+	local function HealUpdated(event, casterGUID, spellID, healType, endTime, ... )
+		for i=select("#", ...),1,-1 do
+			HealsUpdateEvent( roster_units[select(i, ...)] )
+		end
+	end
+	local function HealModifier(event, guid)
+		HealsUpdateEvent( roster_units[guid] )
+	end
+	UnitGetTotalHealAbsorbs = function()
+		return 0
+	end
+	UnitGetIncomingHeals = function(unit)
+		local guid = UnitGUID(unit)
+		return (HealComm:GetHealAmount(guid, HealComm.ALL_HEALS) or 0) * (HealComm:GetHealModifier(guid) or 1)
+	end
+	RegisterEvent = function(event, func)
+		HealComm.RegisterCallback( "Grid2", "HealComm_HealStarted", HealUpdated )
+		HealComm.RegisterCallback( "Grid2", "HealComm_HealUpdated", HealUpdated )
+		HealComm.RegisterCallback( "Grid2", "HealComm_HealStopped", HealUpdated )
+		HealComm.RegisterCallback( "Grid2", "HealComm_ModifierChanged", HealModifier)
+	end
+	UnregisterEvent = function(event)
+		HealComm.UnregisterCallback( "Grid2", "HealComm_HealStarted" )
+		HealComm.UnregisterCallback( "Grid2", "HealComm_HealUpdated" )
+		HealComm.UnregisterCallback( "Grid2", "HealComm_HealStopped" )
+		HealComm.UnregisterCallback( "Grid2", "HealComm_ModifierChanged")
+	end
+end
+--}}
 
 Heals.GetColor = Grid2.statusLibrary.GetColor
 
@@ -422,9 +457,9 @@ local function HealsAbsorbNoPlayer(unit, myheal)
 end
 local HealsGetAmount = HealsNoPlayer
 
-local function HealsUpdateEvent(unit)
+HealsUpdateEvent = function(unit)
 	if unit then
-		local myheal
+		local myheal = 0
 		if myheal_required>0 then
 			myheal = UnitGetIncomingHeals(unit, "player") or 0
 		end
@@ -462,7 +497,7 @@ function Heals:OnEnable()
 	if not MyHeals.enabled then
 		RegisterEvent("UNIT_HEAL_PREDICTION", HealsUpdateEvent)
 	end
-	if self.dbx.includeHealAbsorbs then
+	if self.dbx.includeHealAbsorbs and not Grid2.isClassic then
 		RegisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", HealsUpdateEvent)
 	end
 	if not self.dbx.includePlayer then
@@ -475,7 +510,7 @@ function Heals:OnDisable()
 	if not MyHeals.enabled then
 		UnregisterEvent("UNIT_HEAL_PREDICTION")
 	end
-	if self.dbx.includeHealAbsorbs then
+	if self.dbx.includeHealAbsorbs and not Grid2.isClassic then
 		UnregisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED")
 	end
 	myheal_required = bit.band(myheal_required,2)
@@ -504,6 +539,8 @@ Grid2.setupFunc["heals-incoming"] = Create
 Grid2:DbSetStatusDefaultValue( "heals-incoming", {type = "heals-incoming", includePlayerHeals = false, flags = 0, multiplier=1, color1 = {r=0,g=1,b=0,a=1}})
 
 -- my-heals-incoming status
+
+if Grid2.isClassic then return end
 
 MyHeals.GetColor = Grid2.statusLibrary.GetColor
 
