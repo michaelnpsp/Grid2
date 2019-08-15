@@ -29,6 +29,7 @@ end, {
 
 Grid2Options:RegisterStatusOptions("heals-incoming", "health", function(self, status, options, optionParams)
 	self:MakeStatusStandardOptions(status, options, optionParams)
+	if not Grid2.isClassic then
 	options.includePlayerHeals = {
 		type = "toggle",
 		order = 110,
@@ -54,6 +55,7 @@ Grid2Options:RegisterStatusOptions("heals-incoming", "health", function(self, st
 			status:OnEnable()
 		end,
 	}
+	end
 	options.healTypes = {
 		type = "input",
 		order = 120,
