@@ -1,51 +1,22 @@
 package-as: Grid2
 
 externals:
-    Libs/LibStub: svn://svn.wowace.com/wow/libstub/mainline/tags/1.0
-    Libs/CallbackHandler-1.0:
-        url: svn://svn.wowace.com/wow/callbackhandler/mainline/trunk/CallbackHandler-1.0
-        tag: latest
-    Libs/AceAddon-3.0:
-        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceAddon-3.0
-        tag: latest
-    Libs/AceConsole-3.0:
-        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConsole-3.0
-        tag: latest
-    Libs/AceEvent-3.0:
-        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceEvent-3.0
-        tag: latest
-    Libs/AceDB-3.0:
-        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDB-3.0
-        tag: latest
-    Libs/AceLocale-3.0:
-        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceLocale-3.0
-        tag: latest
-    Libs/LibSharedMedia-3.0:
-        url: svn://svn.wowace.com/wow/libsharedmedia-3-0/mainline/trunk/LibSharedMedia-3.0
-        tag: latest
-    Options/Libs/AceGUI-3.0:
-        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceGUI-3.0
-        tag: latest
-    Options/Libs/AceGUI-3.0-SharedMediaWidgets:
-        url: svn://svn.wowace.com/wow/ace-gui-3-0-shared-media-widgets/mainline/trunk/AceGUI-3.0-SharedMediaWidgets
-        tag: latest
-    Options/Libs/AceGUI-3.0-Search-EditBox:
-        url: svn://svn.wowace.com/wow/acegui-3-0-search-editbox/mainline/trunk
-        tag: latest
-    Options/Libs/AceConfig-3.0:
-        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConfig-3.0
-    Options/Libs/AceComm-3.0:
-        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceComm-3.0
-        tag: latest
-    Options/Libs/AceSerializer-3.0:
-        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceSerializer-3.0
-        tag: latest
-    Options/Libs/LibCompress:
-        url: svn://svn.wowace.com/wow/libcompress/mainline/trunk
-        tag: latest
-    LDB/Libs/LibDBIcon-1.0:
-        url: svn://svn.wowace.com/wow/libdbicon-1-0/mainline/trunk/LibDBIcon-1.0/
-        tag: latest
+ Libs/LibStub: svn://svn.wowace.com/wow/libstub/mainline/tags/1.0
+ Libs/CallbackHandler-1.0: svn://svn.wowace.com/wow/callbackhandler/mainline/trunk/CallbackHandler-1.0
+ Libs/AceAddon-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceAddon-3.0
+ Libs/AceConsole-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConsole-3.0
+ Libs/AceEvent-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceEvent-3.0
+ Libs/AceDB-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDB-3.0
+ Libs/AceLocale-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceLocale-3.0
+ Libs/LibSharedMedia-3.0: svn://svn.wowace.com/wow/libsharedmedia-3-0/mainline/trunk/LibSharedMedia-3.0
+ Options/Libs/AceGUI-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceGUI-3.0
+ Options/Libs/AceGUI-3.0-SharedMediaWidgets: svn://svn.wowace.com/wow/ace-gui-3-0-shared-media-widgets/mainline/trunk/AceGUI-3.0-SharedMediaWidgets
+ Options/Libs/AceGUI-3.0-Search-EditBox: svn://svn.wowace.com/wow/acegui-3-0-search-editbox/mainline/trunk
+ Options/Libs/AceConfig-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConfig-3.0
+ Options/Libs/AceComm-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceComm-3.0
+ Options/Libs/AceSerializer-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceSerializer-3.0
+ Options/Libs/LibCompress: svn://svn.wowace.com/wow/libcompress/mainline/trunk
+ LDB/Libs/LibDBIcon-1.0: svn://svn.wowace.com/wow/libdbicon-1-0/mainline/trunk/LibDBIcon-1.0/
 
 ignore:
  - modules/StatusThreat.lua
@@ -58,7 +29,7 @@ ignore:
  - RaidDebuffsOptions/RaidDebuffsLegion.lua
 
 move-folders:
-    Grid2/Options: Grid2Options
-    Grid2/RaidDebuffs: Grid2RaidDebuffs
-    Grid2/RaidDebuffsOptions: Grid2RaidDebuffsOptions
-    Grid2/LDB: Grid2LDB
+ Grid2/Options: Grid2Options
+ Grid2/RaidDebuffs: Grid2RaidDebuffs
+ Grid2/RaidDebuffsOptions: Grid2RaidDebuffsOptions
+ Grid2/LDB: Grid2LDB
