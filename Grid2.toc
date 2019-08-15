@@ -44,6 +44,12 @@ GridIndicator.lua
 GridStatus.lua
 GridSetup.lua
 GridDefaults.lua
+#@retail@
+GridDefaultsRetail.lua
+#@end-retail@
+#@non-retail@
+# GridDefaultsClassic.lua
+#@end-non-retail@
 
 # Indicators
 modules\IndicatorAlpha.lua
@@ -80,7 +86,6 @@ modules\StatusCombat.lua
 modules\StatusAuras.lua
 modules\StatusAurasBuffs.lua
 modules\StatusAurasDebuffs.lua
-
 #@retail@
 modules\StatusThreat.lua
 modules\StatusVehicle.lua
