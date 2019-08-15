@@ -1,6 +1,7 @@
 -- Group of Buffs status
 local Grid2 = Grid2
-local UnitBuff = UnitBuff
+local isClassic = Grid2.isClassic
+local UnitAura = isClassic and LibStub("LibClassicDurations").UnitAuraDirect or UnitAura
 local SpellIsSelfBuff = SpellIsSelfBuff
 local UnitAffectingCombat = UnitAffectingCombat
 local SpellGetVisibilityInfo = SpellGetVisibilityInfo
@@ -18,12 +19,12 @@ local function status_GetIcons(self, unit)
 	color.r, color.g, color.b, color.a = self:GetColor(unit)
 	local i, j, spells, filter, name, caster, _ = 1, 1, self.spells, self.isMine
 	while true do
-		name, textures[j], counts[j], _, durations[j], expirations[j], caster = UnitBuff(unit, i)
+		name, textures[j], counts[j], _, durations[j], expirations[j], caster = UnitAura(unit, i)
 		if not name then return j-1, textures, counts, expirations, durations, colors end
-		if spells[name] and (filter==false or filter==myUnits[caster]) then 
+		if spells[name] and (filter==false or filter==myUnits[caster]) then
 			colors[j] = color
-			j = j + 1 
-		end	
+			j = j + 1
+		end
 		i = i + 1
 	end
 end
@@ -43,20 +44,20 @@ function blizzard:GetIcons(unit)
 	local filter = UnitAffectingCombat("player") and "RAID_INCOMBAT" or "RAID_OUTOFCOMBAT"
 	local color, i, j, name, caster, spellId, canApplyAura, isBossAura, valid, _ = self.dbx.color1, 1, 1
 	while true do
-		name, textures[j], counts[j], _, durations[j], expirations[j], caster, _, _, spellId, canApplyAura, isBossAura = UnitBuff(unit, i)
+		name, textures[j], counts[j], _, durations[j], expirations[j], caster, _, _, spellId, canApplyAura, isBossAura = UnitAura(unit, i)
 		if not name then return j-1, textures, counts, expirations, durations, colors end
-		if not isBossAura then 
+		if not isBossAura then
 			local hasCustom, alwaysShowMine, showForMySpec = SpellGetVisibilityInfo(spellId, filter)
 			if hasCustom  then
-				valid = showForMySpec or (alwaysShowMine and myUnits[caster]) 
+				valid = showForMySpec or (alwaysShowMine and myUnits[caster])
 			else
 				valid = canApplyAura and myUnits[caster] and not SpellIsSelfBuff(spellId)
 			end
 			if valid then
 				colors[j] = color
-				j = j + 1 
+				j = j + 1
 			end
-		end	
+		end
 		i = i + 1
 	end
 end
@@ -67,10 +68,12 @@ end
 
 function blizzard:OnEnable()
 	self:RegisterEvent("UNIT_AURA")
+	if isClassic then LibStub("LibClassicDurations"):Register(blizzard) end
 end
 
 function blizzard:OnDisable()
 	self:UnregisterEvent("UNIT_AURA")
+	if isClassic then LibStub("LibClassicDurations"):Unregister(blizzard) end
 end
 
 function blizzard:IsActive(unit)
@@ -90,7 +93,7 @@ Grid2.setupFunc["buffs"] = function(baseKey, dbx)
 		return blizzard_Create(baseKey,dbx)
 	else
 		return status_Create(baseKey,dbx)
-	end	
+	end
 end
 
 --[[ status database configuration
