@@ -12,7 +12,7 @@ local strfind = strfind
 local GetTime = GetTime
 local UnitGUID = UnitGUID
 local GetSpellInfo = GetSpellInfo
-local UnitAura = isClassic and LibStub("LibClassicDurations").UnitAuraDirect or UnitAura
+local UnitAura = UnitAura
 
 local EJ_GetInstanceForMap = EJ_GetInstanceForMap or function(mapID) return mapID-100000 end
 local EJ_SelectInstance = EJ_SelectInstance or Grid2.Dummy
@@ -80,6 +80,9 @@ end)
 
 function GSRD:OnModuleEnable()
 	self:UpdateZoneSpells(true)
+	if Grid2.classicDurations then
+		UnitAura = LibStub("LibClassicDurations").UnitAuraDirect
+	end
 end
 
 function GSRD:OnModuleDisable()
@@ -130,10 +133,10 @@ function GSRD:UpdateEvents()
 	if new ~= old then
 		if new then
 			frame:UnregisterEvent("UNIT_AURA")
-			if isClassic then LibStub("LibClassicDurations"):Unregister(GSRD) end
+			if Grid2.classicDurations then LibStub("LibClassicDurations"):Unregister(GSRD) end
 		else
 			frame:RegisterEvent("UNIT_AURA")
-			if isClassic then LibStub("LibClassicDurations"):Register(GSRD) end
+			if Grid2.classicDurations then LibStub("LibClassicDurations"):Register(GSRD) end
 		end
 	end
 end

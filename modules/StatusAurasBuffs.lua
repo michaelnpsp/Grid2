@@ -1,7 +1,6 @@
 -- Group of Buffs status
 local Grid2 = Grid2
-local isClassic = Grid2.isClassic
-local UnitAura = isClassic and LibStub("LibClassicDurations").UnitAuraDirect or UnitAura
+local UnitAura = UnitAura
 local SpellIsSelfBuff = SpellIsSelfBuff
 local UnitAffectingCombat = UnitAffectingCombat
 local SpellGetVisibilityInfo = SpellGetVisibilityInfo
@@ -68,12 +67,17 @@ end
 
 function blizzard:OnEnable()
 	self:RegisterEvent("UNIT_AURA")
-	if isClassic then LibStub("LibClassicDurations"):Register(blizzard) end
+	if Grid2.classicDurations then
+		LibStub("LibClassicDurations"):Register(blizzard)
+		UnitAura = LibStub("LibClassicDurations").UnitAuraDirect
+	end
 end
 
 function blizzard:OnDisable()
 	self:UnregisterEvent("UNIT_AURA")
-	if isClassic then LibStub("LibClassicDurations"):Unregister(blizzard) end
+	if Grid2.classicDurations then
+		LibStub("LibClassicDurations"):Unregister(blizzard)
+	end
 end
 
 function blizzard:IsActive(unit)
