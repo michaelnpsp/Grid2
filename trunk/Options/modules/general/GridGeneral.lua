@@ -11,7 +11,7 @@ Grid2Options:AddGeneralOptions( "General", "Themes", {
 		desc = L["Enable support for multiple themes, allowing to define different visual styles for the Grid2 frames. General options will change and a new Themes section will be displayed."],
 		width = "full",
 		order = 5,
-		get = function () 
+		get = function ()
 			 return Grid2Frame.dba.profile.extraThemes ~= nil
 		end,
 		set = function (_, v)
@@ -23,7 +23,7 @@ Grid2Options:AddGeneralOptions( "General", "Themes", {
 				Grid2Frame.dba.profile.extraThemes  = nil
 			else
 				Grid2Options:MessageDialog(L["Error: this option cannot be disabled because extra themes have been created. Remove the extra themes first."])
-			end			
+			end
 		end,
 	},
 }, nil)
@@ -193,6 +193,29 @@ Grid2Options:AddGeneralOptions( "General", "blink", {
 		end,
 	},
 })
+
+--==========================================================================
+-- Classic Auras Duration
+--==========================================================================
+
+if Grid2.isClassic then
+	Grid2Options:AddGeneralOptions( "General", "Auras", {
+		classicDurations = {
+			type = "toggle",
+			name = L["Enable Durations"],
+			desc = L["Check this option to be able to display auras duration & expiration time."],
+			width = "full",
+			order = 115,
+			get = function () return not Grid2.db.global.disableDurations end,
+			set = function (_, v)
+				Grid2.db.global.disableDurations = (not v) or nil
+				ReloadUI()
+			end,
+			confirm = function() return L["UI must be reloaded to change this option. Are you sure?"] end,
+		},
+	})
+end
+
 
 --==========================================================================
 -- Minimap

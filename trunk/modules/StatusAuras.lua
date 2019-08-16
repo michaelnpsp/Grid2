@@ -1,10 +1,9 @@
 -- Auras management
 local Grid2 = Grid2
-local isClassic = Grid2.isClassic
 local type = type
 local next = next
 local GetTime = GetTime
-local UnitAura = isClassic and LibStub("LibClassicDurations").UnitAuraDirect or UnitAura
+local UnitAura = UnitAura
 
 -- Local variables
 local Statuses = {}
@@ -122,14 +121,19 @@ do
 			if not frame then frame = CreateFrame("Frame", nil, Grid2LayoutFrame) end
 			frame:SetScript("OnEvent", AuraFrame_OnEvent)
 			frame:RegisterEvent("UNIT_AURA")
-			if isClassic then LibStub("LibClassicDurations"):Register('Grid2') end
+			if Grid2.classicDurations then
+				LibStub("LibClassicDurations"):Register(Grid2)
+				UnitAura = LibStub("LibClassicDurations").UnitAuraDirect
+			end
 		end
 	end
 	DisableAuraEvents = function()
 		if not next(Statuses) then
 			frame:SetScript("OnEvent", nil)
 			frame:UnregisterEvent("UNIT_AURA")
-			if isClassic then LibStub("LibClassicDurations"):Unregister('Grid2') end
+			if Grid2.classicDurations then
+				LibStub("LibClassicDurations"):Unregister(Grid2)
+			end
 		end
 	end
 end

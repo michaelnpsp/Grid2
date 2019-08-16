@@ -106,6 +106,8 @@ function Grid2:OnInitialize()
 
 	self.playerClass = select(2, UnitClass("player"))
 
+	self.classicDurations = self.isClassic and not self.db.global.disableDurations or nil
+
 	local media = LibStub("LibSharedMedia-3.0", true)
 	media:Register("statusbar", "Gradient", "Interface\\Addons\\Grid2\\media\\gradient32x32")
 	media:Register("statusbar", "Grid2 Flat", "Interface\\Addons\\Grid2\\media\\white16x16")

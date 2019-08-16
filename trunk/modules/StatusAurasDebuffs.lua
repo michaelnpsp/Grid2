@@ -1,6 +1,6 @@
 -- Group of Debuffs status
 local Grid2 = Grid2
-local UnitAura = Grid2.isClassic and LibStub("LibClassicDurations").UnitAuraDirect or UnitAura
+local UnitAura = UnitAura
 local myUnits = Grid2.roster_my_units
 local typeColors  = Grid2.debuffTypeColors
 local dispelTypes = Grid2.debuffDispelTypes
@@ -148,7 +148,12 @@ end
 do
 	local statusTypes = { "color", "icon", "icons", "percent", "text", "tooltip" }
 	Grid2.setupFunc["debuffs"] = function(baseKey, dbx)
-		if dbx.spellName then dbx.spellName = nil end -- fix possible wrong data in old database
+		if Grid2.classicDurations then
+			UnitAura = LibStub("LibClassicDurations").UnitAuraDirect
+		end
+		if dbx.spellName then
+			dbx.spellName = nil
+		end -- fix possible wrong data in old database
 		local status = Grid2.statusPrototype:new(baseKey, false)
 		status.OnUpdate = status_Update
 		return Grid2.CreateStatusAura(status, basekey, dbx, 'debuff', statusTypes)
