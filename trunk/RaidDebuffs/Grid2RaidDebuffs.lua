@@ -5,15 +5,15 @@ local GSRD = Grid2:NewModule("Grid2RaidDebuffs")
 local frame = CreateFrame("Frame")
 
 local Grid2 = Grid2
+local isClassic = Grid2.isClassic
 local next = next
 local ipairs = ipairs
 local strfind = strfind
 local GetTime = GetTime
 local UnitGUID = UnitGUID
-local UnitDebuff = UnitDebuff
 local GetSpellInfo = GetSpellInfo
+local UnitAura = isClassic and LibStub("LibClassicDurations").UnitAuraDirect or UnitAura
 
-local isClassic = Grid2.isClassic
 local EJ_GetInstanceForMap = EJ_GetInstanceForMap or function(mapID) return mapID-100000 end
 local EJ_SelectInstance = EJ_SelectInstance or Grid2.Dummy
 local EJ_GetEncounterInfoByIndex = EJ_GetEncounterInfoByIndex or Grid2.Dummy
@@ -57,7 +57,7 @@ frame:SetScript("OnEvent", function (self, event, unit)
 	if not next(Grid2:GetUnitFrames(unit)) then return end
 	local index = 1
 	while true do
-		local name, te, co, ty, du, ex, ca, _, _, id, _, isBoss = UnitDebuff(unit, index)
+		local name, te, co, ty, du, ex, ca, _, _, id, _, isBoss = UnitAura(unit, index, 'HARMFUL')
 		if not name then break end
 		local order = spells_order[name]
 		if not order then
@@ -130,8 +130,10 @@ function GSRD:UpdateEvents()
 	if new ~= old then
 		if new then
 			frame:UnregisterEvent("UNIT_AURA")
+			if isClassic then LibStub("LibClassicDurations"):Unregister(GSRD) end
 		else
 			frame:RegisterEvent("UNIT_AURA")
+			if isClassic then LibStub("LibClassicDurations"):Register(GSRD) end
 		end
 	end
 end
