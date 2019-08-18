@@ -7,14 +7,20 @@ L["GRID2_DESC"]  = "Grid2 is a party&raid unit frame addon. Grid2 displays healt
 
 L["General Settings"] = true
 
+L["Default Font"] = true
+L["Default values"] = true
+L["Default Font Border"] = true
+L["Default Texture"] = true
+L["Enabled indicators"] = true
+L["Right Click Menu"] = true
+L["Display the standard unit menu when right clicking on a frame."] = true
+
 L["statuses"] = "Statuses"
 L["indicators"] = "Indicators"
-L["Assigned indicators"] = true 
+L["Assigned indicators"] = true
 
 L["Frames"] = true
 L["frame"] = true
-
-L["Default Font"] = true
 
 L["Invert Bar Color"] = true
 L["Swap foreground/background colors on bars."] = true
@@ -90,6 +96,10 @@ L["LOW"] = true
 L["MEDIUM"] = true
 L["HIGH"] = true
 
+-- minimap icon
+L["Minimap Icon"] = true
+L["Show Minimap Icon"] = true
+
 --blink
 L["Misc"] = true
 L["blink"] = true
@@ -113,6 +123,7 @@ L["When duration<1sec"] = true
 -- misc
 L["Blizzard Raid Frames"] = true
 L["Hide Blizzard Raid Frames on Startup"] = true
+L["Hide Blizzard Raid Frames"] = true
 
 -- debugging & maintenance
 L["debugging"] = true
@@ -129,6 +140,7 @@ L["Reset locations to the default list."] = true
 L["Reset to defaults."] = true
 L["Reset Statuses"] = true
 L["Reset statuses to defaults."] = true
+L["Reset Position"] = true
 
 L["Warning! This option will delete all settings and profiles, are you sure ?"]= true
 
@@ -187,7 +199,7 @@ L["all"] = true
 L["Class"] = true
 L["Group"] = true
 L["Role"] = true
-L["Name"] = true 
+L["Name"] = true
 L["Index"] = true
 L["party"] = true
 L["raid"] = true
@@ -195,6 +207,48 @@ L["partypet"] = true
 L["raidpet"] = true
 L["Insert"] = true
 L["Copy"] = true
+L["By Instance Type"] = true
+L["By Raid Size"] = true
+L["Spec"] = true
+L["Select which layout to use for solo."] = true
+L["Select which layout to use for party."] = true
+L["%d man instances"] = true
+L["Display all groups"] = true
+L["Display all raid groups, if unchecked the groups will by filtered according to the instance size. Not all layouts will obey this setting."] = true
+L["Sort units by name"] = true
+L["Sort the units by player name, if unchecked the units will be displayed in raid order. Not all layouts will obey this setting."] = true
+L["Index (Raid Order)\nName (Unit Names))\nList (Name List)\nDef (Default)"] = true
+L["Default"] = true
+L["Tank"] = true
+L["Healer"] = true
+L["Dps"] = true
+L["MT"] = true
+L["MA"] = true
+L["Damager"] = true
+L["MainTank"] = true
+L["MainAssist"] = true
+L["Clone"] = true
+L["Roles"] = true
+L["Groups"] = true
+L["Name List"] = true
+L["Roles Order"] = true
+L["Create New Layout"] = true
+L["Create a new user defined layout by entering a name in the editbox."] = true
+L["Delete existing layouts from the database."] = true
+L["Are you sure you want to delete the selected layout?"] = true
+L["Default settings applied to all user defined layouts and some built-in layouts."] = true
+L["General Options"] = true
+L["Add a new header.\nA header displays a group of players or pets in a compat way."] = true
+L["Create New Header"] = true
+L["Select what kind of units you want to display on the new header and click the create button."] = true
+L["New Header Type"] = true
+L["players"] = true
+L["pets"] = true
+L["Def."] = true
+L["List"] = true
+L["Are you sure you want to remove this header?"] = true
+L["Are you sure you want to delete the selected layout?"] = true
+L["Layout Editor"] = true
 
 --{{{ Miscelaneous
 L["New"] = true
@@ -223,6 +277,8 @@ L["Set the opacity."] = true
 L["<CharacterOnlyString>"] = true
 L["Options for %s."]= true
 L["Delete this element"] = true
+L["Disable shadow"] = true
+L["Shadow"] = true
 
 --{{{ Indicator management
 L["New Indicator"] = true
@@ -241,14 +297,14 @@ L["Set cooldown to become darker over time instead of lighter."] = true
 L["Cooldown"]= true
 L["Text Location"]= true
 L["Disable OmniCC"]= true
-L["Animations"] = true 
+L["Animations"] = true
 L["Enable animation"] = true
 L["Turn on/off zoom animation of icons."] = true
 L["Duration"] = true
 L["Sets the duration in seconds."] = true
 L["Scale"] = true
 L["Sets the zoom factor."] = true
- 
+
 L["Type"] = true
 L["Type of indicator"] = true
 L["Type of indicator to create"] = true
@@ -312,7 +368,7 @@ L["Anchor & Direction"] = true
 L["Select where to anchor the bar and optional you can reverse the grow direction."] = true
 L["Previous Bar"] = true
 L["Topmost Bar"] = true
-L["Previous Bar & Reverse"] = true 
+L["Previous Bar & Reverse"] = true
 
 L["Border Size"] = true
 L["Adjust the border of each unit's frame."] = true
@@ -324,7 +380,7 @@ L["Adjust the distance between the border and the frame content."] = true
 L["Show statuses in Tooltip"] = true
 L["Show selected statuses information in tooltip when mouseover a unit."] = true
 L["Tooltip Anchor"] = true
-L["Sets where Tooltip is anchored relative to Grid2 window or select the game default anchor."] = true		
+L["Sets where Tooltip is anchored relative to Grid2 window or select the game default anchor."] = true
 L["Always display unit tooltip information when Out of Combat"] = true
 L["This option takes priority over any other tooltip configuration."] = true
 L["Never"] = true
@@ -342,11 +398,32 @@ L["Move the status lower in priority"] = true
 
 L["indicator"] = true
 
+L["Maintenance"] = true
+L["Create"] = true
+L["indicators management"] = true
+L["Create new indicator"] = true
+L["Delete Indicator"] = true
+L["Rename Indicator"] = true
+L["Indicator Type"] = true
+L["Icon"] = true
+L["Max Icons"] = true
+L["Icons per row"] = true
+L["Icon Size"] = true
+L["Icon Spacing"] = true
+L["Direction"] = true
+L["Select the direction of the main bar."] = true
+L["Show Tooltip"] = true
+L["Enable Advanced Tooltips"] = true
+L["Display default unit tooltip when Out of Combat"] = true
+
 -- indicator types
 L["icon"] = true
 L["square"] = true
 L["text"] = true
 L["bar"] = true
+L["icons"] = true
+L["multibar"] = true
+L["portrait"] = true
 
 -- indicators
 L["corner-top-left"]= true
@@ -394,11 +471,15 @@ L["buff-"] = "buff: "
 L["debuff-"] = "debuff: "
 L["color-"] = "color: "
 
+L["Status"] = true
 L["status"] = true
 
 L["buff"] = true
 L["debuff"] = true
 L["debuffType"] = true
+L["buffs-"] = true
+L["debuffs-"] = true
+
 
 L["New Buff"] = true
 L["New Debuff"] = true
@@ -462,6 +543,40 @@ L["Debuffs Group: Healing Reduced"] = true
 L["Filtered debuffs"] = true
 L["Listed debuffs will be ignored."] = true
 L["AURAVALUE_DESC"] = "Select an aura value to track. Auras can provide up to 3 values, but not all auras have additional values. Examples of auras providing additional values are: priest shields (shield amount is stored in Value1) or DeathKnight purgatory debuff."
+L["Enabled for"] = true
+L["All Classes"] = true
+L["Activation Stacks"] = true
+L["Select the minimum number of aura stacks to activate the status."] = true
+L["Track extra value"] = true
+L["Track"] = true
+L["Duration&Stacks"] = true
+L["Value"] = true
+L["Value Index"] = true
+L["Value Track"] = true
+L["NONE"] = true
+L["Value1"] = true
+L["Value2"] = true
+L["Value3"] = true
+L["Maximum Value"] = true
+L["Low value color"] = true
+L["Medium value color"] = true
+L["Normal value color"] = true
+L["Buffs: Defensive Cooldowns"] = true
+L["Debuffs: Healing Prevented "] = true
+L["Debuffs: Healing Reduced"] = true
+L["Non Boss Debuffs"] = true
+L["Boss Debuffs"] = true
+L["Short Duration"] = true
+L["Long Duration"] = true
+L["Non Self Casted"] = true
+L["Self Casted"] = true
+L["Whitelist"] = true
+L["Blacklist"] = true
+L["Use debuff Type color"] = true
+L["Use the debuff Type color first. The specified color will be applied only if the debuff has no type."] = true
+L["Low value"] = true
+L["Medium value"] = true
+L["Maximum value"] = true
 
 -- general statuses
 L["name"]= true
@@ -517,6 +632,8 @@ L["raid-debuffs4"] = "Raid Debuffs(4)"
 L["raid-debuffs5"] = "Raid Debuffs(5)"
 
 L["boss-shields"] = true
+L["my-heals-incoming"] = true
+L["boss-debuffs"] = true
 
 -- class specific buffs & debuffs statuses
 
@@ -525,7 +642,7 @@ L["EarthShield"] = true
 L["Earthliving"] = true
 L["Riptide"] = true
 L["ChainHeal"] = true
-L["HealingRain"] = true 
+L["HealingRain"] = true
 
 -- Druid
 L["Rejuvenation"]= true
@@ -622,7 +739,10 @@ L["Select the health update frequency."] = true
 -- health-low status
 L["Use Health Percent"] = true
 
--- range status 
+-- mana
+L["Hide mana of non healer players"] = true
+
+-- range status
 L["Range"] = true
 L["%d yards"] = true
 L["Range in yards beyond which the status will be lost."] = true
@@ -630,6 +750,8 @@ L["Default alpha"] = true
 L["Default alpha value when units are way out of range."] = true
 L["Update rate"] = true
 L["Rate at which the status gets updated"] = true
+L["Out of range alpha"] = true
+L["Out of range"] = true
 
 -- ready-check status
 L["Delay"] = true
@@ -643,13 +765,14 @@ L["Color for Not Ready."] = true
 L["AFK color"] = true
 L["Color for AFK."] = true
 
--- heals-incoming status 
+-- heals-incoming status
 L["Include player heals"] = true
 L["Substract heal absorbs"] =  true
 L["Substract heal absorbs shields from the incoming heals"] = true
 L["Display status for the player's heals."] = true
 L["Minimum value"] = true
 L["Incoming heals below the specified value will not be shown."] = true
+L["Heals multiplier"] = true
 
 --target status
 L["Your Target"] = true
@@ -697,7 +820,7 @@ L["Casting resurrection"] = true
 L["A resurrection spell is being casted on the unit"] = true
 L["Resurrected"] = true
 L["A resurrection spell has been casted on the unit"] = true
-		
+
 -- power
 L["Mana"] = true
 L["Rage"] = true
@@ -722,6 +845,9 @@ L["The value below which a shield is considered medium."] = true
 L["Custom Shields"] = true
 L["Type shield spell IDs separated by commas."] = true
 
+-- shields-overflow status
+L["shields-overflow"] = true
+
 -- heal-absorbs status
 L["heal-absorbs"] = true
 L["Maximum absorb amount"] = true
@@ -732,6 +858,18 @@ L["Low absorb threshold"] = true
 L["Hide in combat"] = true
 L["Hide Damagers"] = true
 
+-- combat status
+L["combat"] = true
+
+-- summon status
+L["summon"] = true
+L["Player Summoned"] = true
+L["Player has been summoned, waiting for a response."] = true
+L["Summon Accepted"] = true
+L["Player accepted the summon."] = true
+L["Summon Declined"] = true
+L["Player declined the summon."] = true
+
 -- status descriptions
 L["highlights your target"] = true
 L["hostile casts against raid members"] = true
@@ -739,13 +877,17 @@ L["advanced threat detection"] = true
 L["arrows pointing to each raid member"] = true
 L["display remaining amount of heal absorb shields"] = true
 L["display remaining amount of damage absorption shields"] = true
+L["display remaining amount of damage absorb shields"] = true
+L["Sticky Units"] = true
+L["Target"] = true
+L["Tanks"] = true
+L["Show only selected sticky units"] = true
 
 -- aoe heals
 L["aoe-"] = true
 L["neighbors"] = true
 L["highlighter"] = true
 L["OutgoingHeals"] = true
-
 L["AOE Heals"] = true
 L["Highlight status"] = true
 L["Autodetect"] = true
@@ -779,7 +921,25 @@ L["You can type spell IDs or spell names."] = true
 L["Display all solutions"] = true
 L["Display all solutions instead of only one solution per group."] = true
 
+-- raid debuffs
+L["Debuff Configuration"] = true
+L["Link to Chat"] = true
+L["Show in Encounter Journal"] = true
+L["Encounter Journal difficulty"] = true
+L["Delete this Instance"] = true
+L["Bosses"] = true
+L["Move To"] = true
+L["Add a New Boss"] = true
+L["RaidDebuffs Autodetection"] = true
+L["Debuffs Autodetection"] = true
+L["Enable Autodetection"] = true
+L["Enable Zones and Debuffs autodetection"] = true
+L["Move to Top"] = true
+L["Move to Bottom"] = true
+L["Delete Boss"] = true
+
 -- profiles management
+L["Profiles"] = true
 L["You can change the active database profile, so you can have different settings for every character.\n"] = true
 L["Current Profile"] = true
 L["Select one of your currently available profiles."] = true
@@ -813,6 +973,25 @@ L["Raid (Normal&Heroic)"] = true
 L["Raid (Mythic)"] = true
 L["Raid (World)"] = true
 L["Raid (Other)"] = true
+
+-- themes
+L["Enable Themes"] = true
+L["Themes"] = true
+L["themes management"] = true
+L["Default Theme"] = true
+L["Additional Themes"] = true
+L["Theme"] = true
+L["Enable Theme for:"] = true
+L["Create New Theme"] = true
+L["Rename Theme"] = true
+L["Reset Theme"] = true
+L["Delete Theme"] = true
+L["Single Theme"] = true
+L["Specialization"] = true
+L["Group Type"] = true
+L["Group&Raid Type"] = true
+L["By Group Type"] = true
+L["By Raid Type"] = true
 
 -- Import/export profiles module
 L["Import&Export"] = true

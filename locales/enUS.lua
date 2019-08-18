@@ -68,6 +68,10 @@ L["Revived"] = true
 L["Me"] = true
 ---}}}
 
+--{{{ Combat
+L["combat"] = true
+---}}}
+
 --Layouts
 L["None"] = true
 L["Solo"] = true
@@ -88,4 +92,6 @@ L["By Group | 40"] = true
 L["By Group | 40 w/Pets"] = true
 L["By Group | 4x10"] = true
 L["By Group | 4x10 w/Pets"] = true
+L["By Role | 10x4"] = true
 L["Select Layout"] = true
+
