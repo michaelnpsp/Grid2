@@ -1,6 +1,5 @@
---[[
-Created by Michael, based on Grid2Options\GridDefaults.lua from original Grid2 authors
---]]
+--[[ Created by Michael, based on Grid2Options\GridDefaults.lua from original Grid2 authors --]]
+if Grid2.isClassic then return end
 
 local Grid2 = Grid2
 local type, pairs = type, pairs

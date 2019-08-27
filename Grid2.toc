@@ -52,7 +52,7 @@ GridDefaults.lua
 GridDefaultsRetail.lua
 #@end-retail@
 #@non-retail@
-# GridDefaultsClassic.lua
+GridDefaultsClassic.lua
 #@end-non-retail@
 
 # Indicators
