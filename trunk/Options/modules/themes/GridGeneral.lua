@@ -1,6 +1,6 @@
 local L = Grid2Options.L
 
-local theme = Grid2Options.editedTheme 
+local theme = Grid2Options.editedTheme
 
 --=========================================================================================================
 
@@ -56,7 +56,7 @@ local layoutOptions =  { mainheader = {
 		set = function ()
 				  theme.layout.clamp = not theme.layout.clamp
 				  Grid2Layout:SetClamp()
-			  end,		
+			  end,
 }, displayheader = {
 		type = "header",
 		order = order_display,
@@ -69,7 +69,7 @@ local layoutOptions =  { mainheader = {
 		get = function() return theme.layout.FrameDisplay end,
 		set = function(_, v)
 			theme.layout.FrameDisplay = v
-			Grid2Layout:CheckVisibility()
+			Grid2Layout:UpdateVisibility()
 		end,
 		values={["Always"] = L["Always"], ["Grouped"] = L["Grouped"], ["Raid"] = L["Raid"]},
 }, petBattle = {
@@ -80,7 +80,7 @@ local layoutOptions =  { mainheader = {
 		get = function () return theme.layout.HideInPetBattle end,
 		set = function (_, v)
 				  theme.layout.HideInPetBattle = v or nil
-				  Grid2Layout:CheckVisibility()
+				  Grid2Layout:UpdateVisibility()
 			  end,
 }, frameStrata = {
 		type = "select",
@@ -242,7 +242,7 @@ local layoutOptions =  { mainheader = {
 			theme.layout.PosX = v / (screen_w / (UIParent:GetWidth()*UIParent:GetEffectiveScale()))
 			Grid2Layout:RestorePosition()
 			Grid2Layout:SavePosition()
-			Grid2Options:LayoutTestRefresh()	
+			Grid2Options:LayoutTestRefresh()
 		end,
 }, positiony = {
 		type = "range",
@@ -386,7 +386,7 @@ local frameOptions = { framewidth = {
 			Grid2Frame:LayoutFrames(true)
 		 end,
 		hasAlpha = true,
-		hidden = function() return not theme.frame.mouseoverHighlight end, 
+		hidden = function() return not theme.frame.mouseoverHighlight end,
 }, mouseoverTexture = {
 		type = "select", dialogControl = "LSM30_Background",
 		order = 80,
@@ -398,7 +398,7 @@ local frameOptions = { framewidth = {
 			Grid2Frame:LayoutFrames(true)
 		end,
 		values = AceGUIWidgetLSMlists.background,
-		hidden = function() return not theme.frame.mouseoverHighlight end, 
+		hidden = function() return not theme.frame.mouseoverHighlight end,
 }, }
 
 --===============================================================================================
@@ -409,7 +409,7 @@ local options = {
 }
 Grid2Options:AddThemeOptions( "appearance", "Appearance", options )
 
--- Refresh theme general options the first time they are displayed, it's a workaround to a weird bug in AceConfig/AceGUI: 
--- sometimes all editboxes of sliders do not display any value, this only happens when we have 3 nested groups like in: 
+-- Refresh theme general options the first time they are displayed, it's a workaround to a weird bug in AceConfig/AceGUI:
+-- sometimes all editboxes of sliders do not display any value, this only happens when we have 3 nested groups like in:
 -- "Themes>Default>General Tab>options width sliders", and clicking very fast to open general theme options.
 options.bugfix = { type = "header", order = 500, name = "", hidden = function()	options.bugfix = nil; LibStub("AceConfigRegistry-3.0"):NotifyChange("Grid2"); return true end }

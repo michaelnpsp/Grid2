@@ -110,6 +110,7 @@ do
 		Grid2:DbSetMap( "border", "debuff-Poison" , 70)
 		Grid2:DbSetMap( "border", "debuff-Curse"  , 60)
 	end elseif class=="MAGE" then Grid2.MakeDefaultsClass= function()
+		Grid2:DbSetValue( "statuses", "buff-FrostArmor-mine", {type = "buff", spellName = 168, mine = true, missing = true, color1 = {r=.2,g=.4,b=.4,a=1}})
 		Grid2:DbSetValue( "statuses", "buff-IceArmor-mine", {type = "buff", spellName = 10220, mine = true, missing = true, color1 = {r=.2,g=.4,b=.4,a=1}})
 		Grid2:DbSetValue( "statuses", "buff-IceBarrier-mine", {type = "buff", spellName = 11426, mine = true, missing = true, color1 = {r=1,g=1,b=1,a=1}})
 		Grid2:DbSetMap( "icon-right", "raid-icon-target", 90)

@@ -1,4 +1,4 @@
---[[ Icon indicator, created by Grid2 original authors, modified by Michael ]]-- 
+--[[ Icon indicator, created by Grid2 original authors, modified by Michael ]]--
 
 local Grid2 = Grid2
 local GetTime = GetTime
@@ -11,12 +11,12 @@ local function Icon_Create(self, parent)
 	Icon:SetTexCoord(0.05, 0.95, 0.05, 0.95)
 	Icon:SetAllPoints()
 	Icon:Show()
-	
+
 	if not self.disableCooldown then
 		local Cooldown
 		if self.dbx.disableOmniCC then
 			Cooldown = f.Cooldown or CreateFrame("Cooldown", nil, f, "CooldownFrameTemplate")
-			Cooldown.noCooldownCount = true 
+			Cooldown.noCooldownCount = true
 		else
 			local name = self.name:gsub("%-","")
 			local i,j = parent:GetName():match("Grid2LayoutHeader(%d+)UnitButton(%d+)")
@@ -29,7 +29,7 @@ local function Icon_Create(self, parent)
 		Cooldown:Hide()
 		f.Cooldown = Cooldown
 	end
-	
+
 	if not self.disableStack then
 		local TextFrame
 		if self.disableCooldown then
@@ -39,13 +39,13 @@ local function Icon_Create(self, parent)
 			TextFrame = f.TextFrame or CreateFrame("Frame", nil, f)
 			TextFrame:SetAllPoints()
 			TextFrame:Show()
-			f.TextFrame = TextFrame	
+			f.TextFrame = TextFrame
 		end
-		local CooldownText = f.CooldownText or f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")	
+		local CooldownText = f.CooldownText or f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 		CooldownText:SetParent(TextFrame)
 		CooldownText:SetFont(self.textfont, self.dbx.fontSize, self.dbx.fontFlags or "OUTLINE" )
 		local c = self.dbx.stackColor
-		if c then CooldownText:SetTextColor(c.r, c.g, c.b, c.a) end	
+		if c then CooldownText:SetTextColor(c.r, c.g, c.b, c.a) end
 		CooldownText:Hide()
 		f.CooldownText = CooldownText
 	end
@@ -74,7 +74,7 @@ end
 local function Icon_OnUpdate(self, parent, unit, status)
 	local Frame = parent[self.name]
 	if not status then Frame:Hide() return end
-	
+
 	local Icon = Frame.Icon
 	local r,g,b,a = status:GetColor(unit)
 
@@ -85,10 +85,10 @@ local function Icon_OnUpdate(self, parent, unit, status)
 	end
 	Icon:SetTexCoord(status:GetTexCoord(unit))
 	Icon:SetVertexColor(status:GetVertexColor(unit))
-	
+
 	local border = status:GetBorder()
 	if border==1 or self.useStatusColor then 	-- border=1 => always draw a border with the status color
-		Frame:SetBackdropBorderColor(r,g,b,a) 
+		Frame:SetBackdropBorderColor(r,g,b,a)
 	elseif border and self.borderSize then   	-- border=0 => status supports a border
 		local c = self.color
 		Frame:SetBackdropBorderColor(c.r, c.g, c.b, c.a)
@@ -99,7 +99,7 @@ local function Icon_OnUpdate(self, parent, unit, status)
 
 	if not self.disableStack then
 		local count = status:GetCount(unit)
-		if count>1 then 
+		if count>1 then
 			Frame.CooldownText:SetText(count)
 			Frame.CooldownText:Show()
 		else
@@ -113,16 +113,16 @@ local function Icon_OnUpdate(self, parent, unit, status)
 			Frame.Cooldown:SetCooldown(expiration - duration, duration)
 			Frame.Cooldown:Show()
 		else
-			Frame.Cooldown:Hide()	
+			Frame.Cooldown:Hide()
 		end
-	end	
+	end
 
 	if self.animEnabled and (not Frame.animElapsed) and (self.animOnUpdate or not Frame:IsVisible()) then
 		Frame.status = self
 		Frame.animElapsed = 0
 		Frame:SetScript("OnUpdate", Icon_AnimationOnUpdate )
 	end
-	
+
 	Frame:Show()
 end
 
@@ -147,7 +147,7 @@ local function Icon_Layout(self, parent)
 	f:SetBackdropBorderColor(r, g, b, a)
 	local size = self.iconSize
 	f:SetSize(size,size)
-	
+
 	if not self.disableStack then
 		if f.TextFrame then	f.TextFrame:SetFrameLevel(level+2) end
 		local CooldownText = f.CooldownText

@@ -86,7 +86,7 @@ Grid2Options:RegisterStatusOptions("heals-incoming", "health", function(self, st
 		end,
 	}
 end, {
-	titleIcon ="Interface\\Icons\\Spell_Holy_DivineProvidence"
+	titleIcon = Grid2.isClassic and "Interface\\Icons\\Spell_Holy_Heal" or "Interface\\Icons\\Spell_Holy_DivineProvidence"
 })
 
 Grid2Options:RegisterStatusOptions("my-heals-incoming", "health", function(self, status, options, optionParams)

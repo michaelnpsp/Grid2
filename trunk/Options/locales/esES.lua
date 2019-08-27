@@ -679,7 +679,8 @@ L["LifeCocoon"]= "Crisalida vital"
 
 -- mage
 L["FocusMagic"] = "Enfocar magia"
-L["IceArmor"] = "Armadura de Escarcha"
+L["FrostArmor"] = "Armadura de escarcha"
+L["IceArmor"] = "Armadura de hielo"
 L["IceBarrier"] = "Barrera de hielo"
 
 -- rogue
