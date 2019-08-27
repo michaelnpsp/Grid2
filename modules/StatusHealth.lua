@@ -403,6 +403,8 @@ Grid2:DbSetStatusDefaultValue( "death", {type = "death", color1 = {r=1,g=1,b=1,a
 local HealsUpdateEvent
 local UnitGetIncomingHeals = UnitGetIncomingHeals
 local UnitGetTotalHealAbsorbs = UnitGetTotalHealAbsorbs
+local RegisterEvent = RegisterEvent     -- Do not remove this line because RegisterEvent is redefined if we are in Classic
+local UnregisterEvent = UnregisterEvent -- Do not remove this line because UnregisterEvent is redefined if we are in Classic
 
 --{{ This code block can be safety be removed for retail
 if Grid2.isClassic then
@@ -425,16 +427,16 @@ if Grid2.isClassic then
 		return (HealComm:GetHealAmount(guid, HealComm.ALL_HEALS) or 0) * (HealComm:GetHealModifier(guid) or 1)
 	end
 	RegisterEvent = function(event, func)
-		HealComm.RegisterCallback( "Grid2", "HealComm_HealStarted", HealUpdated )
-		HealComm.RegisterCallback( "Grid2", "HealComm_HealUpdated", HealUpdated )
-		HealComm.RegisterCallback( "Grid2", "HealComm_HealStopped", HealUpdated )
-		HealComm.RegisterCallback( "Grid2", "HealComm_ModifierChanged", HealModifier)
+		HealComm.RegisterCallback( Grid2, "HealComm_HealStarted", HealUpdated )
+		HealComm.RegisterCallback( Grid2, "HealComm_HealUpdated", HealUpdated )
+		HealComm.RegisterCallback( Grid2, "HealComm_HealStopped", HealUpdated )
+		HealComm.RegisterCallback( Grid2, "HealComm_ModifierChanged", HealModifier)
 	end
 	UnregisterEvent = function(event)
-		HealComm.UnregisterCallback( "Grid2", "HealComm_HealStarted" )
-		HealComm.UnregisterCallback( "Grid2", "HealComm_HealUpdated" )
-		HealComm.UnregisterCallback( "Grid2", "HealComm_HealStopped" )
-		HealComm.UnregisterCallback( "Grid2", "HealComm_ModifierChanged")
+		HealComm.UnregisterCallback( Grid2, "HealComm_HealStarted" )
+		HealComm.UnregisterCallback( Grid2, "HealComm_HealUpdated" )
+		HealComm.UnregisterCallback( Grid2, "HealComm_HealStopped" )
+		HealComm.UnregisterCallback( Grid2, "HealComm_ModifierChanged")
 	end
 end
 --}}
@@ -459,10 +461,7 @@ local HealsGetAmount = HealsNoPlayer
 
 HealsUpdateEvent = function(unit)
 	if unit then
-		local myheal = 0
-		if myheal_required>0 then
-			myheal = UnitGetIncomingHeals(unit, "player") or 0
-		end
+		local myheal = myheal_required>0 and UnitGetIncomingHeals(unit, "player") or 0
 		if MyHeals.enabled then
 			local heal = myheal>=MyHeals.minimum and myheal * MyHeals.multiplier or 0
 			if myheals_cache[unit] ~= heal then
@@ -485,10 +484,14 @@ function Heals:UpdateDB()
 	local m = self.dbx.flags
 	self.minimum = (m and m>1 and m ) or 1
 	self.multiplier = self.dbx.multiplier or 1
-	if self.dbx.includeHealAbsorbs then
-		HealsGetAmount = self.dbx.includePlayerHeals and HealsAbsorbPlayer or HealsAbsorbNoPlayer
+	if Grid2.isClassic then
+		HealsGetAmount = HealsPlayer
 	else
-		HealsGetAmount = self.dbx.includePlayerHeals and HealsPlayer or HealsNoPlayer
+		if self.dbx.includeHealAbsorbs then
+			HealsGetAmount = self.dbx.includePlayerHeals and HealsAbsorbPlayer or HealsAbsorbNoPlayer
+		else
+			HealsGetAmount = self.dbx.includePlayerHeals and HealsPlayer or HealsNoPlayer
+		end
 	end
 end
 
@@ -500,7 +503,7 @@ function Heals:OnEnable()
 	if self.dbx.includeHealAbsorbs and not Grid2.isClassic then
 		RegisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", HealsUpdateEvent)
 	end
-	if not self.dbx.includePlayer then
+	if not self.dbx.includePlayer and not Grid2.isClassic then
 		myheal_required = bit.bor(myheal_required,1)
 	end
 end
@@ -520,8 +523,15 @@ function Heals:IsActive(unit)
 	return heals_cache[unit] > 1
 end
 
-function Heals:GetText(unit)
-	return fmt("+%.1fk", heals_cache[unit] / 1000)
+if Grid2.isClassic then
+	function Heals:GetText(unit)
+		local h = heals_cache[unit]
+		return h<1000 and fmt("%d",h) or fmt("%.1fk",h/1000)
+	end
+else
+	function Heals:GetText(unit)
+		return fmt("+%.1fk", heals_cache[unit] / 1000)
+	end
 end
 
 function Heals:GetPercent(unit)

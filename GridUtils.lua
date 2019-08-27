@@ -45,8 +45,8 @@ do
 			timer:SetLooping("REPEAT")
 		end
 		timer:SetScript("OnLoop", func)
-		if duration then 
-			timer:SetDuration(duration) 
+		if duration then
+			timer:SetDuration(duration)
 			if play~=false then timer:Play() end
 		end
 		return timer
@@ -56,12 +56,12 @@ do
 		if timer then
 			timer:Stop()
 			timers[#timers+1] = timer
-		end	
+		end
 	end
 end
 
 -- UTF8 string truncate
-do 
+do
 	local strbyte = string.byte
 	function Grid2.strcututf8(s, c)
 		local l, i = #s, 1
@@ -98,13 +98,13 @@ function Grid2.TableRemoveByValue(t,v)
 			tremove(t, i)
 			return
 		end
-	end	
+	end
 end
 
 -- Fill tokens table
 function Grid2.FillTokenTable(tbl,...)
 	tbl = tbl or {}
-	local m = select("#",...) 
+	local m = select("#",...)
 	for i = 1, m  do
 		local key = select(i,...)
 		tbl[ tonumber(key) or strtrim(key) ] = i
@@ -127,7 +127,7 @@ end
 -- Fill ipairs table
 function Grid2.FillTable(tbl,...)
 	tbl = tbl or {}
-	local m = select("#",...) 
+	local m = select("#",...)
 	for i = 1, m  do
 		tbl[i] = select(i,...)
 	end
@@ -146,8 +146,8 @@ end
 
 -- Common methods repository for statuses
 Grid2.statusLibrary = {
-	IsActive = function() 
-		return true 
+	IsActive = function()
+		return true
 	end,
 	GetColor = function(self)
 		local c = self.dbx.color1
@@ -165,14 +165,14 @@ Grid2.statusLibrary = {
 
 -- Used by bar indicators
 Grid2.AlignPoints= {
-	HORIZONTAL = { 
+	HORIZONTAL = {
 		[true]  = { "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT" },    -- normal Fill
 		[false] = { "BOTTOMRIGHT",  "BOTTOMLEFT", "TOPRIGHT", "TOPLEFT"  },  -- reverse Fill
-	},	
+	},
 	VERTICAL   = {
 		[true]  = { "BOTTOMLEFT","TOPLEFT","BOTTOMRIGHT","TOPRIGHT" }, -- normal Fill
 		[false] = { "TOPRIGHT", "BOTTOMRIGHT","TOPLEFT","BOTTOMLEFT" }, -- reverse Fill
-	}	
+	}
 }
 
 -- Create/Manage/Sets frame backdrops
@@ -186,13 +186,13 @@ do
 		local key = format("%s;%s;%d;%s;%d;%d", bgFile or "", edgeFile or "", edgeSize or -1, tostring(tile), tileSize or -1, inset or -1)
 		local backdrop = backdrops[key]
 		if not backdrop then
-			backdrop = { 
+			backdrop = {
 				bgFile = bgFile,
 				tile = tile,
 				tileSize = tileSize,
 				edgeFile = edgeFile,
 				edgeSize = edgeSize,
-				insets = { left = inset, right = inset, top = inset, bottom = inset },  
+				insets = { left = inset, right = inset, top = inset, bottom = inset },
 			}
 			backdrops[key] = backdrop
 		end
@@ -222,15 +222,15 @@ function Grid2:SetDefaultTheme(theme)
 	if theme==0 or themes.names[theme] then
 		themes.enabled.default = theme
 		self:ReloadTheme()
-	end	
+	end
 end
 
--- Grid2:RunSecure(priority, object, method, arg) 
+-- Grid2:RunSecure(priority, object, method, arg)
 -- Queue some methods to be executed when out of combat, if we are not in combat do nothing.
 -- Methods with lower priority value override the execution of methods with higher priority value.
--- Methods executed (in order of priority): ReloadProfile(1), ReloadTheme(2), ReloadLayout(3), ReloadFilter(4), FixRoster(5), UpdateSize(6), CheckVisibility(7)
+-- Methods executed (in order of priority): ReloadProfile(1), ReloadTheme(2), ReloadLayout(3), ReloadFilter(4), FixRoster(5), UpdateSize(6), UpdateVisibility(7)
 do
-	local sec_priority, sec_object, sec_method, sec_arg 
+	local sec_priority, sec_object, sec_method, sec_arg
 	function Grid2:PLAYER_REGEN_ENABLED()
 		if sec_priority then
 			sec_priority = nil
@@ -241,13 +241,13 @@ do
 		if InCombatLockdown() then
 			if not sec_priority or priority<sec_priority then
 				sec_priority, sec_object, sec_method, sec_arg = priority, object, method, arg
-			end	
+			end
 			return true
 		end
 	end
 end
 
--- Grid2:RunThrottled(object or arg1, method or func, delay) 
+-- Grid2:RunThrottled(object or arg1, method or func, delay)
 -- Delays and throttles the execution of a method or function
 do
 	local counts = {}
@@ -267,6 +267,6 @@ do
 				end
 			end
 			C_Timer.After(delay or 0.1, callback)
-		end	
+		end
 	end
 end

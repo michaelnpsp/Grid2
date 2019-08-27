@@ -224,12 +224,13 @@ function Grid2Layout:UpdateTheme()
 	local themes = self.dba.profile.extraThemes
 	self.db.profile = themes and themes[Grid2.currentTheme] or self.dba.profile
 	self.db.shared = self.dba.profile
+	self.frameWidth, self.frameHeight = nil, nil
 end
 
 function Grid2Layout:RefreshTheme()
 	self:RestorePosition()
 	self:UpdateFrame()
-	self:RefreshLayout()
+	self:ReloadLayout(true)
 end
 
 --{{{ Event handlers
@@ -237,7 +238,7 @@ function Grid2Layout:Grid_GroupTypeChanged(_, groupType, instType, maxPlayers)
 	Grid2Layout:Debug("GroupTypeChanged", groupType, instType, maxPlayers)
 	if not Grid2:ReloadTheme() then
 		if not self:ReloadLayout() then
-			self:CheckVisibility()
+			self:UpdateVisibility()
 		end
 	end
 end
@@ -261,7 +262,7 @@ function Grid2Layout:PetBattleTransition(event)
 		local inBattle = (event == "PET_BATTLE_OPENING_START") or nil
 		if inBattle or self.inBattlePet then -- PET_BATTLE_CLOSE event fires twice so we check "inBattlePet" variable to ignore the second event
 			self.inBattlePet = inBattle
-			self:CheckVisibility()
+			self:UpdateVisibility()
 		end
 	end
 end
@@ -380,15 +381,15 @@ function Grid2Layout:UpdateHeaders()
 end
 
 function Grid2Layout:RefreshLayout()
-	self.forceReload = true
-	self:ReloadLayout()
+	self:ReloadLayout(true)
 end
 
-function Grid2Layout:ReloadLayout()
+function Grid2Layout:ReloadLayout(force)
 	local p = self.db.profile
 	local partyType, instType, maxPlayers = Grid2:GetGroupType()
 	local layoutName = p.layouts[maxPlayers] or p.layouts[partyType.."@"..instType] or p.layouts[partyType]
-	if layoutName ~= self.layoutName or (self.layoutHasAuto and maxPlayers ~= self.instMaxPlayers) or self.forceReload then
+	if layoutName ~= self.layoutName or (self.layoutHasAuto and maxPlayers ~= self.instMaxPlayers) or force or self.forceReload then
+		self.forceReload = force
 		if not Grid2:RunSecure(3, self, "ReloadLayout") then
 			self.forceReload    = nil
 			self.partyType      = partyType
@@ -577,18 +578,17 @@ end
 function Grid2Layout:UpdateDisplay()
 	self:UpdateTextures()
 	self:UpdateColor()
-	self:CheckVisibility()
+	self:UpdateVisibility()
 	self:UpdateFramesSize()
 end
 
 function Grid2Layout:UpdateFramesSize()
 	local nw,nh = Grid2Frame:GetFrameSize()
-	local ow = self.layoutFrameWidth  or nw
-	local oh = self.layoutFrameHeight or nh
-	self.layoutFrameWidth  = nw
-	self.layoutFrameHeight = nh
+	local ow,oh = self.frameWidth or nw, self.frameHeight or nh
+	self.frameWidth, self.frameHeight = nw, nh
 	if nw~=ow or nh~=oh then
 		Grid2Frame:LayoutFrames()
+		Grid2Frame:UpdateIndicators()
 		self:UpdateHeaders() -- Force headers size update because this triggers a "Grid_UpdateLayoutSize" message.
 	end
 	if self.frame:GetWidth()==0 then
@@ -630,8 +630,8 @@ function Grid2Layout:UpdateColor()
 	frame:SetShown( settings.BorderA~=0 or settings.BackgroundA~=0 )
 end
 
-function Grid2Layout:CheckVisibility()
-	if not Grid2:RunSecure(7, self, "CheckVisibility") then
+function Grid2Layout:UpdateVisibility()
+	if not Grid2:RunSecure(7, self, "UpdateVisibility") then
 		local fd, pt = self.db.profile.FrameDisplay, Grid2:GetGroupType()
 		self.frame:SetShown(
 			( (fd == "Always") or (fd == "Grouped" and pt ~= "solo") or (fd == "Raid" and pt == "raid" ) ) and

@@ -173,7 +173,7 @@ end
 local function RegisterStatusAura(status, auraType, spell)
 	EnableAuraEvents()
 	if auraType=="debuffType" then
-			DebuffTypes[spell] = status
+		DebuffTypes[spell] = status
 	elseif not spell then
 		DebuffGroups[status] = true
 	else
