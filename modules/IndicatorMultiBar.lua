@@ -125,7 +125,7 @@ local function Bar_Update(self, parent, unit, status)
 				values[i] = status:GetPercent(unit) or 0
 			end
 			bar.myMaxIndex = #self.statuses
-			bar:SetMainBarValue(values[1])
+			bar:SetMainBarValue(values[1] or 0)
 			updates[bar] = true
 		end
 	end
