@@ -29,9 +29,9 @@ do
 			frame = CreateFrame("Frame", nil, Grid2LayoutFrame)
 			frame:SetScript( "OnEvent",  function(_, event, ...) Events[event](...) end )
 		end
-		frame:RegisterEvent(event) 
+		frame:RegisterEvent(event)
 		Events[event] = func
-	end	
+	end
 	function UnregisterEvent(event)
 		frame:UnregisterEvent( event )
 		Events[event] = nil
@@ -48,16 +48,16 @@ local function CheckEnemyUnit( sunit )
 				tguids[sg] = Grid2:GetUnitidByGUID( tg )
 			end
 			sguids[sg] = sunit
-		end	
-	end	
+		end
+	end
 end
 
-local extra_units = { "focus", "boss1", "boss2", "boss3", "boss4" }
+local extra_units = { focus = true, boss1= true, boss2 = true, boss3 = true, boss4 = true }
 local function SearchEnemyUnits()
 	for unit in Grid2:IterateRosterUnits() do
 		CheckEnemyUnit( target[unit] )
 	end
-	for _,unit in next, extra_units do
+	for unit in next, extra_units do
 		CheckEnemyUnit( unit )
 	end
 end
@@ -66,7 +66,7 @@ local function TimerEvent()
 	SearchEnemyUnits()
 	for status in next,statuses do
 		status:Update()
-	end	
+	end
 	wipe(sguids)
 	wipe(tguids)
 end
@@ -77,17 +77,29 @@ local function CombatEnterEvent()
 end
 
 local function CombatExitEvent()
-	if Banzai.enabled then UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED") end	
+	if Banzai.enabled then UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED") end
 	timer = Grid2:CancelTimer(timer)
 	for status in next,statuses do
 		status:ClearIndicators()
 	end
 end
 
+local function PlateAddedEvent(unit)
+	if UnitCanAttack(unit, "player") then
+		extra_units[unit] = true
+	end
+end
+
+local function PlateRemovedEvent(unit)
+	extra_units[unit] = nil
+end
+
 local function status_OnEnable(self)
 	if not next(statuses) then
 		RegisterEvent("PLAYER_REGEN_ENABLED" , CombatExitEvent)
 		RegisterEvent("PLAYER_REGEN_DISABLED", CombatEnterEvent)
+		RegisterEvent("NAME_PLATE_UNIT_ADDED", PlateAddedEvent)
+		RegisterEvent("NAME_PLATE_UNIT_REMOVED", PlateRemovedEvent)
 	end
 	statuses[self] = true
 end
@@ -97,7 +109,9 @@ local function status_OnDisable(self)
 	if not next(statuses) then
 		UnregisterEvent("PLAYER_REGEN_ENABLED")
 		UnregisterEvent("PLAYER_REGEN_DISABLED")
-	end	
+		UnregisterEvent("NAME_PLATE_UNIT_ADDED")
+		UnregisterEvent("NAME_PLATE_UNIT_REMOVED")
+	end
 end
 
 local function status_SetUpdateRate(self, delay)
@@ -119,12 +133,12 @@ do
 	function Banzai.CombatLogEvent()
 		local _, event,_,sourceGUID = CombatLogGetCurrentEventInfo()
 		local action = e[event]
-		if action then 
+		if action then
 			local unit = Grid2:GetUnitidByGUID(sourceGUID)
-			if not unit then action(sourceGUID) end	
-		end	
+			if not unit then action(sourceGUID) end
+		end
 	end
-end	
+end
 
 function Banzai:Update()
 	local ct = GetTime()
@@ -139,16 +153,16 @@ function Banzai:Update()
 		if unit then
 			local name, text, ico,_,et, _,_,spellId2,spellId1 = func(sguids[g]) -- Casting spellId1=9th, Channeling spellId2=8th
 			if name then
-				et         = et and et/1000 or ct+0.25 
+				et         = et and et/1000 or ct+0.25
 				bgid[g]    = unit
 				buni[unit] = spellId1 or spellId2 or name
 				bdur[unit] = et - ct
 				bexp[unit] = et
 				bico[unit] = ico or "Interface\\ICONS\\Ability_Creature_Cursed_02"
 				self:UpdateIndicators(unit)
-			end	
+			end
 		end
-	end	
+	end
 	wipe(bsrc)
 end
 
@@ -218,8 +232,8 @@ function BanzaiThreat:Update(reset)
 			local name = UnitName( sguids[g] )
 			units[unit] = name
 			units_prev[unit] = units_prev[unit]~=name and name or nil
-		end	
-	end	
+		end
+	end
 	for unit in next, units_prev do
 		self:UpdateIndicators(unit)
 	end
@@ -231,7 +245,7 @@ function BanzaiThreat:ClearIndicators()
 end
 
 function BanzaiThreat:IsActive(unit)
-	if units[unit] then	return true end	
+	if units[unit] then	return true end
 end
 
 function BanzaiThreat:GetText(unit)

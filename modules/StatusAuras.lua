@@ -295,8 +295,11 @@ do
 	local function GetPercentMax(self, unit)
 		return (self.val[unit] or 0) / self.valMax
 	end
-	local function GetText(self, unit)
+	local function GetTextValue(self, unit)
 		return fmt( "%.1fk", (self.val[unit] or 0) / 1000 )
+	end
+	local function GetText(self, unit)
+		return self.spellText
 	end
 	local function GetTimeColor(self, unit) -- Color by time remaining or time elapsed
 		local colors = self.colors
@@ -366,7 +369,9 @@ do
 				self.spells[spell] = true
 			end
 		elseif dbx.spellName then -- single spell
-			self.spell = type(dbx.spellName)=="number" and not self.dbx.useSpellId and GetSpellInfo(dbx.spellName) or dbx.spellName or "UNDEFINED"
+			local spell = dbx.spellName
+			self.spellText = type(spell)=='number' and GetSpellInfo(spell) or spell
+			self.spell = self.dbx.useSpellId and spell or self.spellText
 		end
 		if dbx.mine==2 then  -- 2>nil = not mine;  1|true>true = mine;  false|nil>false = mine&not-mine
 			self.isMine = nil
@@ -415,6 +420,11 @@ do
 		end
 		if self.handlerType ~= "buff" then
 			self.GetTooltip = GetDebuffTooltip
+		end
+		if dbx.text==1 then -- display value
+			GetText = GetTextValue
+		elseif dbx.text then -- custom text
+			self.spellText = dbx.text
 		end
 		if self.OnUpdate then self:OnUpdate(dbx) end
 		if self.enabled then self:OnEnable() end

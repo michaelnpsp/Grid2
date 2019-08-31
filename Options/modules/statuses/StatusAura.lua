@@ -4,6 +4,8 @@ local ColorCountValues = {1,2,3,4,5,6,7,8,9}
 local ColorizeByValues1= { L["Number of stacks"] , L["Remaining time"], L["Elapsed time"] }
 local ColorizeByValues2= { L["Number of stacks"] , L["Remaining time"], L["Elapsed time"], L["Value"] }
 local MonitorizeValues = { [0]= L["NONE"], [1] = L["Value1"], [2] = L["Value2"], [3] = L["Value3"] }
+local TextValues1 = { [1] = L['Value Tracked'], [2] = L['Aura Name'], [3] = L['Custom Text'] }
+local TextValues2 = { [2] = L['Aura Name'], [3] = L['Custom Text'] }
 
 local function StatusAuraGenerateColors(status, newCount)
 	local oldCount = status.dbx.colorCount or 1
@@ -51,7 +53,7 @@ function Grid2Options:MakeStatusAuraEnableStacksOptions(status, options, optionP
 				status:Refresh()
 			end,
 		}
-	end	
+	end
 end
 
 function Grid2Options:MakeStatusAuraMissingOptions(status, options, optionParams)
@@ -131,7 +133,7 @@ function Grid2Options:MakeStatusAuraUseSpellIdOptions(status, options, optionPar
 				status:UpdateDB()
 				Grid2Options:MakeStatusOptions(status)
 				LibStub("AceConfigRegistry-3.0"):NotifyChange("Grid2")
-			end	
+			end
 		end,
 	}
 end
@@ -241,7 +243,7 @@ end
 
 function Grid2Options:MakeStatusDebuffTypeColorsOptions(status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
-end	
+end
 
 function Grid2Options:MakeStatusDebuffTypeFilterOptions(status, options, optionParams)
 	self:MakeHeaderOptions( options, "DebuffFilter" )
@@ -316,6 +318,7 @@ function Grid2Options:MakeStatusAuraValueOptions(status, options, optionParams)
 				if v==0 then
 					status.dbx.valueIndex = nil
 					status.dbx.colorThresholdValue = nil
+					status.dbx.text = (status.dbx.text~=1) and status.dbx.text or nil
 				else
 					status.dbx.valueIndex = v
 				end
@@ -339,7 +342,40 @@ function Grid2Options:MakeStatusAuraValueOptions(status, options, optionParams)
 			status:UpdateDB()
 			status:UpdateAllUnits()
 		end,
-		disabled = function() return not status.dbx.valueIndex end
+		hidden = function() return not status.dbx.valueIndex end
+	}
+end
+
+function Grid2Options:MakeStatusAuraTextOptions(status, options, optionParams)
+	self:MakeHeaderOptions( options, "Text" )
+	options.textType = {
+		type = "select",
+		order = 96,
+		width ="normal",
+		name = L["Text to Display"],
+		desc = L['Text to display in Text Indicators.'],
+		get = function() -- nil => aura name(2) / 1 => value(1) /  any text => custom text(3)
+			local text = status.dbx.text or 2
+			return type(text)=='number' and text or 3
+		end,
+		set = function( _, v)
+			status.dbx.text = (v==3 and '') or (v~=2 and v) or nil
+			status:UpdateDB()
+		end,
+		values = function() return status.dbx.valueIndex and TextValues1 or TextValues2 end,
+	}
+	options.textCustom = {
+		type = "input",
+		order = 97,
+		name = L["Type Custom Text"],
+		desc = L["Text to display in Text Indicators."],
+		width = "normal",
+		get = function() return status.dbx.text end,
+		set = function(info,text)
+			status.dbx.text = text
+			status:UpdateDB()
+		end,
+		hidden = function() return type(status.dbx.text)~='string' end,
 	}
 end
 
@@ -543,6 +579,7 @@ Grid2Options:RegisterStatusOptions("buff", "buff", function(self, status, option
 	self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
 	self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
 	self:MakeStatusAuraValueOptions(status, options, optionParams)
+	self:MakeStatusAuraTextOptions(status, options, optionParams)
 	self:MakeStatusDeleteOptions(status, options, optionParams)
 end,{
 	groupOrder = 10
@@ -599,6 +636,7 @@ Grid2Options:RegisterStatusOptions("debuff", "debuff", function(self, status, op
 	self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
 	self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
 	self:MakeStatusAuraValueOptions(status, options, optionParams)
+	self:MakeStatusAuraTextOptions(status, options, optionParams)
 	self:MakeStatusDeleteOptions(status, options, optionParams)
 end,{
 	groupOrder = 30
