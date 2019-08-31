@@ -60,20 +60,30 @@ do
 			Grid2Layout:ReloadLayout()
 		end
 	end
+	local function SetVisibility(self)
+		Grid2Layout.db.profile.FrameDisplay = self.value
+		Grid2Layout:UpdateVisibility()
+	end
 	local function CreateMenuTable()
 		layoutName = Grid2Layout.layoutName
 		if partyType~=Grid2Layout.partyType or instType~=Grid2Layout.instType then
+			-- layouts
 			local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
+			wipe(menuTable)
 			partyType = Grid2Layout.partyType
 			instType = Grid2Layout.instType
-			wipe(menuTable)
-			menuTable[1] = { text = L["Select Layout"],  notCheckable= true, isTitle = true }
+			menuTable[#menuTable+1] = { text = L["Select Layout"],  notCheckable= true, isTitle = true }
 			for name, layout in pairs(Grid2Layout.layoutSettings) do
 				if layout.meta[partyType] and name~="None" then
 					menuTable[#menuTable+1] = { func= SetLayout, text = L[name], value = name, checked = function() return name == layoutName end }
 				end
 			end
 			sort(menuTable, function(a,b) if a.isTitle then return true elseif b.isTitle then return false else return a.text<b.text end end )
+			-- Visibility
+			table.insert( menuTable, 1, { func= SetVisibility, text = L["Raid"],    value = 'Raid',    checked = function() return Grid2Layout.db.profile.FrameDisplay == 'Raid' end } )
+			table.insert( menuTable, 1, { func= SetVisibility, text = L["Grouped"], value = 'Grouped', checked = function() return Grid2Layout.db.profile.FrameDisplay == 'Grouped' end } )
+			table.insert( menuTable, 1, { func= SetVisibility, text = L["Always"],  value = 'Always',  checked = function() return Grid2Layout.db.profile.FrameDisplay == 'Always' end } )
+			table.insert( menuTable, 1, { text = L["Grid2 Visibility"],  notCheckable= true, isTitle = true } )
 		end
 	end
 	MenuLayoutsShow= function()

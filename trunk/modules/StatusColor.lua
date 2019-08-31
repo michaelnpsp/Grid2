@@ -5,8 +5,8 @@ local Grid2 = Grid2
 local UnitClass = UnitClass
 local UnitIsEnemy= UnitIsEnemy
 local UnitIsCharmed= UnitIsCharmed
+local UnitCanAttack = UnitCanAttack
 local UnitCreatureType= UnitCreatureType
-local UnitHasVehicleUI= UnitHasVehicleUI
 
 -- Simple static color status
 local Color = {
@@ -114,10 +114,7 @@ Charmed:Inject(Shared)
 Charmed.GetColor = Color.GetColor
 
 function Charmed:IsActive(unit)
-	local owner = Grid2:GetOwnerUnitByUnit(unit)
-	if not (owner and UnitHasVehicleUI(owner)) then
-		return UnitIsCharmed(unit)
-	end
+	return UnitIsCharmed(unit) and UnitCanAttack("player", unit)
 end
 
 local charmedText = L["Charmed"]

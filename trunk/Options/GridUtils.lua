@@ -126,7 +126,7 @@ do
 		statuses    = "MakeStatusesOptions",
 		statuses_   = "MakeStatusChildOptions",
 		indicators_ = "MakeIndicatorChildOptions",
-	}	
+	}
 	local option = {
 		type = "description", order = 0, name = "",
 		hidden = function(info)
@@ -135,9 +135,9 @@ do
 				methods[key]( Grid2Options )
 			else
 				methods[typ..'_']( Grid2Options, Grid2[typ][key] )
-			end			
+			end
 			LibStub("AceConfigRegistry-3.0"):NotifyChange("Grid2")
-		end	
+		end
 	}
 	local function hook(self, options, extraOptions)
 		options = extraOptions or options
@@ -187,7 +187,8 @@ do
 		-- statuses headers
 		Colors	     = { type = "header", order = 10,  name = L["Colors"]      },
 		Thresholds   = { type = "header", order = 50,  name = L["Thresholds"], },
-		Value        = { type = "header", order = 90,  name = L["Value Track"] },
+		Value        = { type = "header", order = 90,  name = L["Value"] },
+		Text         = { type = "header", order = 95,  name = L["Text"] },
 		Misc         = { type = "header", order = 100, name = L["Misc"]        },
 		Auras	     = { type = "header", order = 150, name = L["Auras"]       },
 		DebuffFilter = { type = "header", order = 175, name = L["Filtered debuffs"] },
@@ -304,7 +305,7 @@ function Grid2Options:LocalizeIndicator(indicator, all)
 		icon = self.indicatorIconPath .. (self.indicatorTypesOrder[type] and type or "default")
 		suffix = ''
 	end
-	
+
 	return string.format( (all or type~='multibar') and "|T%s:0|t%s%s" or "|T%s:0|t|cFF808080%s%s|r", icon, self.LI[name] or L[name], suffix )
 end
 
@@ -395,7 +396,7 @@ function Grid2Options:UpdateIndicators(typ)
 	for _, indicator in Grid2:IterateIndicators() do
 		if (not typ) or indicator.dbx.type == typ then
 			self:RefreshIndicator(indicator, "Layout", "Update")
-		end	
+		end
 	end
 end
 
@@ -470,7 +471,7 @@ end
 -- Grid2Options:ConfirmDialog(), Grid2Options:ShowEditDialog()
 do
 	StaticPopupDialogs["GRID2OPTIONS_GENERAL_DIALOG"] = { timeout = 0, whileDead = 1, hideOnEscape = 1, button1 = ACCEPT, button2 = CANCEL }
-	
+
 	local function ShowDialog(message, textDefault, funcAccept, funcCancel, textAccept, textCancel)
 		local t = StaticPopupDialogs["GRID2OPTIONS_GENERAL_DIALOG"]
 		t.OnShow = function (self)	if textDefault then self.editBox:SetText(textDefault) end; self:SetFrameStrata("TOOLTIP") end
@@ -487,7 +488,7 @@ do
 	function Grid2Options:MessageDialog(message, funcAccept)
 		ShowDialog(message, nil, funcAccept or Grid2.Dummy)
 	end
-	
+
 	function Grid2Options:ConfirmDialog(message, funcAccept, funcCancel, textAccept, textCancel)
 		ShowDialog(message, nil, funcAccept, funcCancel or Grid2.Dummy, textAccept, textCancel )
 	end
