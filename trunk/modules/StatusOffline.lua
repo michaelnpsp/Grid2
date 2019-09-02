@@ -6,37 +6,32 @@ local Grid2 = Grid2
 local GetTime = GetTime
 local UnitIsConnected = UnitIsConnected
 
-local timer
-local offline = {}
+local offline = setmetatable({}, {__index = function(t,u) local v= not UnitIsConnected(u); t[u]=v; return v end})
 
--- Using a timer because UNIT_CONNECTION is not always fired when a unit reconnects :(
--- UnitIsConnected() returns wrong result for the first 20-25 seconds 
--- after the player disconnects so the code ignores the result in this case.
-local function TimerEvent()
-	local ct = GetTime()
-	for unit, dt in next,offline do
-		if UnitIsConnected(unit) and (ct-dt)>=25 then
-			offline[unit] = nil
-			Offline:UpdateIndicators(unit)
+-- Blizzard connection API is completelly bugged, this is a mess, behavior at 2019/09/01:
+-- We ignore UnitIsConnected() when possible (because can return wrong values, for example true if recently disconnected & in raid)
+-- We only use UnitIsConnected() if the unit is new, and we have not previous data cached about the connection status.
+-- UNIT_CONNECTION fires erratically, usually only whe a player is far away, so we have to rely on PARTY_MEMBER_ENABLE & PARTY_MEMBER_DISABLE too
+-- PARTY_MEMBER_ENABLE & PARTY_MEMBER_DISABLE fire when a player dies, or disconnects, but only if the player is near (visible range)
+--  This two events are fired too when the player cross the UnitIsVisible() limit, ENABLE when a player becomes visible, DISABLE in reverse case.
+--  We cannot use UnitIsConnected() inside ENABLE events (can returns wrong values too), so we use some heuristic:
+--   On ENABLE  we assume the player is connected without any further check.
+--   On DISABLE we check UnitIsConnected() (It does not work always, it seems only works in party, not in raid)
+-- This heuristic does not detect all cases.
+function Offline:UNIT_CONNECTION(event, unit, hasConnected)
+	if Grid2:IsUnitNoPetInRaid(unit) then
+		if event == 'UNIT_CONNECTION' then -- hasConnected is only available on this event
+			self:SetConnected(unit, hasConnected)
+		elseif event == 'PARTY_MEMBER_ENABLE' then -- always connected on this event.
+			self:SetConnected(unit, true)
+		elseif not UnitIsConnected(unit) then -- PARTY_MEMBER_DISABLE, this does not work always
+			self:SetConnected(unit, false)
 		end
 	end
-	if not next(offline) then
-		timer = Grid2:CancelTimer(timer)
-	end
-end
-
-
-function Offline:UNIT_CONNECTION(_, unit, hasConnected)
-	if Grid2:IsUnitNoPetInRaid(unit) then
-		self:SetConnected(unit, hasConnected)
-		self:UpdateIndicators(unit)
-	end	
 end
 
 function Offline:Grid_UnitUpdated(_, unit)
-	if Grid2:IsUnitNoPetInRaid(unit) then
-		self:SetConnected( unit, UnitIsConnected(unit) )
-	end	
+	offline[unit] = nil
 end
 
 function Offline:Grid_UnitLeft(_, unit)
@@ -44,29 +39,35 @@ function Offline:Grid_UnitLeft(_, unit)
 end
 
 function Offline:SetConnected(unit, connected)
-	if connected then
-		offline[unit] = nil
-	else
-		offline[unit] = GetTime()
-		timer = timer or Grid2:CreateTimer(TimerEvent, 2)
+	if offline[unit] ~= not connected then
+		if connected then
+			offline[unit] = false
+		else
+			offline[unit] = GetTime()
+		end
+		self:UpdateIndicators(unit)
 	end
 end
 
 function Offline:OnEnable()
 	self:RegisterEvent("UNIT_CONNECTION")
+	self:RegisterEvent('PARTY_MEMBER_ENABLE',  'UNIT_CONNECTION')
+	self:RegisterEvent('PARTY_MEMBER_DISABLE', 'UNIT_CONNECTION')
 	self:RegisterMessage("Grid_UnitUpdated")
 	self:RegisterMessage("Grid_UnitLeft")
 end
 
 function Offline:OnDisable()
 	self:UnregisterEvent("UNIT_CONNECTION")
+	self:UnregisterEvent('PARTY_MEMBER_ENABLE')
+	self:UnregisterEvent('PARTY_MEMBER_DISABLE')
 	self:UnregisterMessage("Grid_UnitUpdated")
 	self:UnregisterMessage("Grid_UnitLeft")
-	wipe(offline)	
+	wipe(offline)
 end
 
 function Offline:IsActive(unit)
-	return offline[unit]~=nil
+	return offline[unit]
 end
 
 local text = L["Offline"]
@@ -84,7 +85,7 @@ end
 
 function Offline:GetIcon()
 	return "Interface\\CharacterFrame\\Disconnect-Icon"
-end 
+end
 
 Offline.GetColor = Grid2.statusLibrary.GetColor
 
