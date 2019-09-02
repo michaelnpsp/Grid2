@@ -24,7 +24,7 @@ local function GetValues(info)
 				list[name] = L[name]
 			end
 		end
-	end	
+	end
 	local empty = not next(list)
 	list["NONE"] = L["None"]
 	return list, empty
@@ -168,7 +168,7 @@ function Grid2Options:MakeIndicatorBarAppearanceOptions(indicator,options)
 			local c = indicator.dbx.backColor
 			if not c then c = {}; indicator.dbx.backColor = c end
 			c.r, c.g, c.b, c.a = r, g, b, a
-			self:RefreshIndicator(indicator, "Layout", "Update")
+			self:RefreshIndicator(indicator, "Layout")
 		end,
 		hidden = function() return not indicator.dbx.backColor end
 	}

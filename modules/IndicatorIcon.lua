@@ -138,8 +138,8 @@ local function Icon_Layout(self, parent)
 	local r,g,b,a = f:GetBackdropBorderColor()
 	local borderSize = self.borderSize
 	if borderSize then
-		Icon:SetPoint("TOPLEFT", f ,"TOPLEFT", borderSize, -borderSize)
-		Icon:SetPoint("BOTTOMRIGHT", f ,"BOTTOMRIGHT", -borderSize, borderSize)
+		Icon:SetPoint("TOPLEFT", borderSize, -borderSize)
+		Icon:SetPoint("BOTTOMRIGHT", -borderSize, borderSize)
 	else
 		Icon:SetAllPoints(f)
 	end
@@ -150,16 +150,8 @@ local function Icon_Layout(self, parent)
 
 	if not self.disableStack then
 		if f.TextFrame then	f.TextFrame:SetFrameLevel(level+2) end
-		local CooldownText = f.CooldownText
-		local justifyH = self.dbx.fontJustifyH or "CENTER"
-		local justifyV = self.dbx.fontJustifyV or "MIDDLE"
-		CooldownText:SetJustifyH( justifyH )
-		CooldownText:SetJustifyV( justifyV )
-		CooldownText:ClearAllPoints()
-		CooldownText:SetPoint("TOP")
-		CooldownText:SetPoint("BOTTOM")
-		CooldownText:SetPoint("LEFT" , justifyH=="LEFT"  and 0 or -size, 0)
-		CooldownText:SetPoint("RIGHT", justifyH=="RIGHT" and 2 or  size+2, 0)
+		f.CooldownText:ClearAllPoints()
+		f.CooldownText:SetPoint(self.textPoint, self.textOffsetX, self.textOffsetY)
 	end
 end
 
@@ -187,7 +179,12 @@ local function Icon_UpdateDB(self)
 	self.useStatusColor  = dbx.useStatusColor
 	self.iconSize        = dbx.size or theme.iconSize or 14
 	self.color           = Grid2:MakeColor(dbx.color1)
-	self.textfont        = Grid2:MediaFetch("font", dbx.font or theme.font) or STANDARD_TEXT_FONT
+	-- stacks text
+	local jV,jH = dbx.fontJustifyV or 'MIDDLE', dbx.fontJustifyH or 'CENTER'
+	self.textPoint = (jV=='MIDDLE' and jH) or (jH=='CENTER' and jV) or jV..jH
+	self.textOffsetX = dbx.fontOffsetX or 0
+	self.textOffsetY = dbx.fontOffsetY or 0
+	self.textfont    = Grid2:MediaFetch("font", dbx.font or theme.font) or STANDARD_TEXT_FONT
 	-- animation
 	self.animEnabled  = dbx.animEnabled
 	if dbx.animEnabled then

@@ -107,7 +107,7 @@ local function Icon_Layout(self, parent)
 	local frameName
 	if not self.dbx.disableOmniCC then
 		local i,j  = parent:GetName():match("Grid2LayoutHeader(%d+)UnitButton(%d+)")
-		frameName  = format( "Grid2Icons%s%02d%02d", self.name:gsub("%-","") , i, j ) 
+		frameName  = format( "Grid2Icons%s%02d%02d", self.name:gsub("%-","") , i, j )
 	end
 	f:SetParent(parent)
 	f:ClearAllPoints()
@@ -120,7 +120,7 @@ local function Icon_Layout(self, parent)
 		if not frame then
 			frame = CreateFrame("Frame", nil, f)
 			frame.icon = frame:CreateTexture(nil, "ARTWORK")
-			frame.text = frame:CreateFontString(nil, "OVERLAY")			
+			frame.text = frame:CreateFontString(nil, "OVERLAY")
 			frame.cooldown = CreateFrame("Cooldown", frameName and frameName..i or nil, frame, "CooldownFrameTemplate")
 			frame.cooldown:SetHideCountdownNumbers(true)
 			auras[i] = frame
@@ -141,15 +141,8 @@ local function Icon_Layout(self, parent)
 			text:SetFont(self.font, self.fontSize, self.fontFlags )
 			local c = self.colorStack
 			text:SetTextColor(c.r, c.g, c.b, c.a)
-			local justifyH = self.dbx.fontJustifyH or "CENTER"
-			local justifyV = self.dbx.fontJustifyV or "MIDDLE"
-			text:SetJustifyH( justifyH )
-			text:SetJustifyV( justifyV  )
 			text:ClearAllPoints()
-			text:SetPoint("TOP")
-			text:SetPoint("BOTTOM")
-			text:SetPoint("LEFT" , justifyH=="LEFT"  and 0 or -self.iconSize, 0)
-			text:SetPoint("RIGHT", justifyH=="RIGHT" and 2 or  self.iconSize+2, 0)
+			text:SetPoint(self.fontPoint, self.fontOffsetX, self.fontOffsetY)
 			text:Show()
 		else
 			frame.text:Hide()
@@ -157,7 +150,7 @@ local function Icon_Layout(self, parent)
 		-- cooldown animation
 		if self.showCooldown then
 			frame.cooldown:SetDrawEdge(self.dbx.disableOmniCC~=nil)
-			frame.cooldown.noCooldownCount = self.dbx.disableOmniCC		
+			frame.cooldown.noCooldownCount = self.dbx.disableOmniCC
 			frame.cooldown:SetReverse(self.dbx.reverseCooldown)
 			frame.cooldown:SetAllPoints()
 			frame.cooldown:Show()
@@ -169,7 +162,7 @@ local function Icon_Layout(self, parent)
 		frame.icon:SetPoint("BOTTOMRIGHT", frame ,"BOTTOMRIGHT", -borderSize, borderSize)
 		frame.icon:SetTexCoord(0.05, 0.95, 0.05, 0.95)
 		--
-		frame:Hide()		
+		frame:Hide()
 		x = x + 1
 		if x>=self.maxIconsPerRow then x = 0; y = y + 1 end
 	end
@@ -221,6 +214,11 @@ local function Icon_UpdateDB(self)
 	self.borderOpacity   = dbx.borderOpacity  or 1
 	self.colorBorder     = Grid2:MakeColor(dbx.color1, "WHITE")
 	self.colorStack      = Grid2:MakeColor(dbx.colorStack, "WHITE")
+	-- stacks text
+	local jV,jH = dbx.fontJustifyV or 'MIDDLE', dbx.fontJustifyH or 'CENTER'
+	self.fontPoint       = (jV=='MIDDLE' and jH) or (jH=='CENTER' and jV) or jV..jH
+	self.fontOffsetX     = dbx.fontOffsetX or 0
+	self.fontOffsetY     = dbx.fontOffsetY or 0
 	self.fontFlags       = dbx.fontFlags or "OUTLINE"
 	self.fontSize        = dbx.fontSize or 9
 	self.font            = Grid2:MediaFetch("font", dbx.font or theme.font) or STANDARD_TEXT_FONT
