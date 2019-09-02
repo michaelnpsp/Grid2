@@ -31,7 +31,7 @@ do
 			Grid2:DbSetMap(indicator.name, status.name, nil)
 			indicator:UnregisterStatus(status)
 		end
-		Grid2Options:RefreshIndicator(indicator, "Layout", "Update")
+		Grid2Options:RefreshIndicator(indicator, "Layout")
 	end
 
 	local function SetStatusPriority(indicator, status, priority)
@@ -73,7 +73,7 @@ do
 			local newIndex = index>1 and index - 1 or #indicator.statuses
 			StatusSwapPriorities(indicator, index, newIndex)
 			RefreshIndicatorCurrentStatusOptions(info)
-			Grid2Options:RefreshIndicator(indicator, "Layout", "Update")
+			Grid2Options:RefreshIndicator(indicator, "Layout")
 		end
 	end
 
@@ -83,7 +83,7 @@ do
 			local newIndex = index<#indicator.statuses and index+1 or 1
 			StatusSwapPriorities(indicator, index, newIndex)
 			RefreshIndicatorCurrentStatusOptions(info)
-			Grid2Options:RefreshIndicator(indicator, "Layout", "Update")
+			Grid2Options:RefreshIndicator(indicator, "Layout")
 		end
 	end
 
@@ -188,7 +188,7 @@ do
 				local indicator = Grid2.indicators[key]
 				if indicator.dbx.type ~= 'multibar' then
 					RegisterIndicatorStatus(indicator, status, value)
-					self:RefreshIndicatorOptions(indicator) 
+					self:RefreshIndicatorOptions(indicator)
 				end
 			end,
 			confirm = function(info,key)
@@ -225,7 +225,7 @@ do
 			typeMorphValue[typeKey] = L[typeKey]
 			return typeMorphValue
 		end
-		return typeMorphValues	
+		return typeMorphValues
 	end
 
 	local function GetIndicatorTypeDisabled(info)
@@ -303,7 +303,7 @@ do
 		}
 	end
 end
-	
+
 -- Grid2Options:MakeIndicatorLevelOptions()
 do
 	local levelValues = { 1,2,3,4,5,6,7,8,9 }
@@ -318,7 +318,7 @@ do
 			end,
 			set = function (_, v)
 				indicator.dbx.level = v
-				self:RefreshIndicator(indicator, "Layout", "Update" )
+				self:RefreshIndicator(indicator, "Layout")
 			end,
 			values = levelValues,
 		}
@@ -386,7 +386,7 @@ function Grid2Options:MakeIndicatorBorderSizeOptions(indicator, options, optionP
 		set = function (_, v)
 			if v == 0 then v = nil end
 			indicator.dbx.borderSize = v
-			self:RefreshIndicator(indicator, "Layout", "Update")
+			self:RefreshIndicator(indicator, "Layout")
 		end,
 	}
 end
@@ -433,7 +433,7 @@ do
 		local c = dbx[colorKey]
 		if not c then c = {}; dbx[colorKey] = c end
 		c.r, c.g, c.b, c.a = r, g, b, a
-		Grid2Options:RefreshIndicator(indicator, "Layout", "Update")
+		Grid2Options:RefreshIndicator(indicator, "Layout")
 	end
 	function Grid2Options:MakeIndicatorColorOptions(indicator, options, optionParams)
 		local colorCount = indicator.dbx.colorCount or 1
@@ -480,7 +480,7 @@ function Grid2Options:MakeIndicatorLocationOptions(indicator, options)
 		set = function(_, v)
 			location.relPoint = self.pointMap[v]
 			location.point = location.relPoint
-			self:RefreshIndicator(indicator, "Layout", "Update" )
+			self:RefreshIndicator(indicator, "Layout")
 		end,
 	}
 	options.point = {
@@ -492,7 +492,7 @@ function Grid2Options:MakeIndicatorLocationOptions(indicator, options)
 		get = function() return self.pointMap[location.point] end,
 		set = function(_, v)
 			location.point = self.pointMap[v]
-			self:RefreshIndicator(indicator, "Layout", "Update" )
+			self:RefreshIndicator(indicator, "Layout")
 		end,
 	}
 	options.x = {
@@ -504,7 +504,7 @@ function Grid2Options:MakeIndicatorLocationOptions(indicator, options)
 		get = function() return location.x end,
 		set = function(_, v)
 			location.x = v
-			self:RefreshIndicator(indicator, "Layout", "Update" )
+			self:RefreshIndicator(indicator, "Layout")
 		end,
 	}
 	options.y = {
@@ -516,7 +516,7 @@ function Grid2Options:MakeIndicatorLocationOptions(indicator, options)
 		get = function() return location.y end,
 		set = function(_, v)
 			location.y = v
-			self:RefreshIndicator(indicator, "Layout", "Update" )
+			self:RefreshIndicator(indicator, "Layout")
 		end,
 	}
 end

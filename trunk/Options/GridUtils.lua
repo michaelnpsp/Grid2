@@ -361,41 +361,40 @@ function Grid2Options:GetAvailableIndicatorColorValues(status, indicatorAvailabl
 	return indicatorAvailable
 end
 
--- Reload indicator database configuration and refresh the indicator frames.
--- indicator:UpdateDB() is always called to reload indicator database config
--- method = "Create" | "Update" | key | nil
--- 	"Create" > Recreate the indicator
---  "Update" > Update all indicators in all registered frame units
---  nil      > Only indicator:UpdateDB() is called
---  key      > method defined inside indicator to execute after loading config
--- extraAction
--- 	"Update" > Update all indicators in all registered frame units
-function Grid2Options:RefreshIndicator(indicator, method, extraAction )
-	if method == "Create" then
-		Grid2Frame:WithAllFrames(indicator, "Disable")
-	end
+
+-- Grid2Options:UpdateIndicatorDB()
+function Grid2Options:UpdateIndicatorDB(indicator)
 	if indicator.UpdateDB then
 		indicator:UpdateDB()
 		if indicator.sideKick and indicator.sideKick.UpdateDB then
 			indicator.sideKick:UpdateDB()
 		end
 	end
-	if method and method ~= "Update" then
+end
+
+-- Reload indicator database configuration and refresh the indicator frames.
+-- indicator:UpdateDB() is always called to reload indicator database config
+-- method = "Create" | "Update" | key | nil
+-- 	"Create" > Recreate the indicator
+--  "Update"|nil > Update all indicators in all registered frame units
+--  key > method defined inside indicator to be executed
+function Grid2Options:RefreshIndicator(indicator, method)
+	self:UpdateIndicatorDB(indicator)
+	if method == "Create" then
+		Grid2Frame:WithAllFrames(indicator, "Disable")
+		Grid2Frame:WithAllFrames(indicator, "Create")
+		Grid2Frame:WithAllFrames(indicator, 'Layout')
+	elseif method ~= 'Update' then
 		Grid2Frame:WithAllFrames(indicator, method)
 	end
-	if method == "Create" then
-		Grid2Frame:WithAllFrames(indicator, "Layout")
-	end
-	if method == "Create" or method == "Update" or extraAction == "Update" then
-		Grid2Frame:UpdateIndicators()
-	end
+	Grid2Frame:UpdateIndicators()
 end
 
 -- Update all indicators of all frames
 function Grid2Options:UpdateIndicators(typ)
 	for _, indicator in Grid2:IterateIndicators() do
 		if (not typ) or indicator.dbx.type == typ then
-			self:RefreshIndicator(indicator, "Layout", "Update")
+			self:RefreshIndicator(indicator, "Layout")
 		end
 	end
 end

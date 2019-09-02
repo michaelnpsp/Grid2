@@ -39,9 +39,39 @@ function Grid2Options:MakeIndicatorIconCustomOptions(indicator, options)
 		end,
 	}
 	self:MakeHeaderOptions( options, "StackText" )
+	options.fontOffsetX = {
+		type = "range",
+		order = 104,
+		name = L["X Offset"],
+		desc = L["Adjust the horizontal offset of the text"],
+		softMin  = -50,
+		softMax = 50,
+		step = 1,
+		get = function () return indicator.dbx.fontOffsetX or 0	end,
+		set = function (_, v)
+			indicator.dbx.fontOffsetX = v
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		hidden= function() return indicator.dbx.disableStack end,
+	}
+	options.fontOffsetY = {
+		type = "range",
+		order = 105,
+		name = L["Y Offset"],
+		desc = L["Adjust the vertical offset of the text"],
+		softMin  = -50,
+		softMax = 50,
+		step = 1,
+		get = function () return indicator.dbx.fontOffsetY or 0	end,
+		set = function (_, v)
+			indicator.dbx.fontOffsetY = v
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		hidden= function() return indicator.dbx.disableStack end,
+	}
 	options.fontJustify = {
 		type = 'select',
-		order = 100,
+		order = 106,
 		name = L["Text Location"],
 		desc = L["Text Location"],
 		values = Grid2Options.pointValueListExtra,
@@ -69,7 +99,7 @@ function Grid2Options:MakeIndicatorIconCustomOptions(indicator, options)
 	}
 	options.font = {
 		type = "select", dialogControl = "LSM30_Font",
-		order = 105,
+		order = 107,
 		name = L["Font"],
 		desc = L["Adjust the font settings"],
 		get = function (info) return indicator.dbx.font or Grid2Options.MEDIA_VALUE_DEFAULT end,
@@ -82,7 +112,7 @@ function Grid2Options:MakeIndicatorIconCustomOptions(indicator, options)
 	}
 	options.fontFlags = {
 		type = "select",
-		order = 106,
+		order = 108,
 		name = L["Font Border"],
 		desc = L["Set the font border type."],
 		get = function ()

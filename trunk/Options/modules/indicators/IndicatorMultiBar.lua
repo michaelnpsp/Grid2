@@ -34,7 +34,7 @@ function Grid2Options:MakeIndicatorMultiBarAppearanceOptions(indicator,options)
 		set = function (_, v)
 			if v=="DEFAULT" then v= nil	end
 			indicator:SetOrientation(v)
-			self:RefreshIndicator(indicator, "Layout", "Update")
+			self:RefreshIndicator(indicator, "Layout")
 		end,
 		values={ ["DEFAULT"]= L["DEFAULT"], ["VERTICAL"] = L["VERTICAL"], ["HORIZONTAL"] = L["HORIZONTAL"]}
 	}
@@ -52,7 +52,7 @@ function Grid2Options:MakeIndicatorMultiBarAppearanceOptions(indicator,options)
 		set = function (_, v)
 			if v==0 then v= nil end
 			indicator.dbx.width = v
-			self:RefreshIndicator(indicator, "Layout", "Update")
+			self:RefreshIndicator(indicator, "Layout")
 		end,
 	}
 	options.barHeight= {
@@ -69,7 +69,7 @@ function Grid2Options:MakeIndicatorMultiBarAppearanceOptions(indicator,options)
 		set = function (_, v)
 			if v==0 then v= nil end
 			indicator.dbx.height = v
-			self:RefreshIndicator(indicator, "Layout", "Update")
+			self:RefreshIndicator(indicator, "Layout")
 		end,
 	}
 	options.reverseFill= {
@@ -81,7 +81,7 @@ function Grid2Options:MakeIndicatorMultiBarAppearanceOptions(indicator,options)
 		get = function () return indicator.dbx.reverseFill end,
 		set = function (_, v)
 			indicator.dbx.reverseFill = v or nil
-			self:RefreshIndicator(indicator, "Layout", "Update")
+			self:RefreshIndicator(indicator, "Layout")
 		end,
 	}
 end
@@ -100,7 +100,7 @@ function Grid2Options:MakeIndicatorMultiBarMiscOptions(indicator, options)
 		get = function () return indicator.dbx.opacity or 1	end,
 		set = function (_, v)
 			indicator.dbx.opacity = v
-			self:RefreshIndicator(indicator, "Layout", "Update")
+			self:RefreshIndicator(indicator, "Layout")
 		end,
 	}
 	options.inverColor= {
@@ -175,7 +175,7 @@ do
 			UnregisterIndicatorStatus(indicator, oldStatus)
 			RegisterIndicatorStatus(indicator, newStatus , index)
 		end
-		Grid2Options:RefreshIndicator(indicator, "Layout", "Update")
+		Grid2Options:RefreshIndicator(indicator, "Layout")
 	end
 	local function GetAvailableStatusValues(info)
 		local indicator = info.arg.indicator
@@ -250,16 +250,16 @@ do
 			name = L["Direction"],
 			desc = L["Select the direction of the main bar."],
 			order = 50.7,
-			get = function () 
+			get = function ()
 				return indicator.dbx.reverseMainBar and 2 or 1
 			end,
 			set = function (_, v)
 				indicator.dbx.reverseMainBar = (v==2) or nil
-				self:RefreshIndicator(indicator, "Layout", "Update" )
+				self:RefreshIndicator(indicator, "Layout" )
 			end,
 			values = DIRECTION_VALUES,
 			hidden = function() return indicator.dbx.textureColor == nil end,
-		}		
+		}
 		--[[
 		options.barMainReverse = {
 			type = "toggle",
@@ -271,7 +271,7 @@ do
 			get = function () return indicator.dbx.reverseMainBar end,
 			set = function (_, v)
 				indicator.dbx.reverseMainBar = v or nil
-				self:RefreshIndicator(indicator, "Layout", "Update" )
+				self:RefreshIndicator(indicator, "Layout" )
 			end,
 			hidden = function() return indicator.dbx.textureColor == nil end,
 		}--]]
@@ -291,7 +291,7 @@ do
 					UnregisterAllStatuses(indicator.sideKick)
 					indicator.dbx.textureColor = { r=0,g=0,b=0,a=1 }
 				end
-				self:RefreshIndicator(indicator, "Layout", "Update" )
+				self:RefreshIndicator(indicator, "Layout" )
 				self:MakeIndicatorOptions(indicator)
 			end,
 			hidden = function() return indicator.dbx.reverseMainBar end
@@ -324,7 +324,7 @@ do
 				set = function (_, v)
 					SetBarValue(indicator,i,"reverse",   (v==3) or nil )
 					SetBarValue(indicator,i,"noOverlap", (v==2) or nil )
-					self:RefreshIndicator(indicator, "Layout", "Update")
+					self:RefreshIndicator(indicator, "Layout")
 				end,
 				values = ANCHOR_VALUES,
 			}
@@ -399,7 +399,7 @@ do
 					local c = indicator.dbx.backColor
 					if not c then c = {}; indicator.dbx.backColor = c end
 					c.r, c.g, c.b, c.a = r, g, b, a
-					self:RefreshIndicator(indicator, "Layout", "Update")
+					self:RefreshIndicator(indicator, "Layout")
 				end,
 				hidden = function() return not indicator.dbx.backColor end
 			}

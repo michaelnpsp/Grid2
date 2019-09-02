@@ -26,12 +26,12 @@ function Grid2Options:MakeIndicatorSquareBorderOptions(indicator, options, optio
 		step = 1,
 		get = function () return indicator.dbx.borderSize or 0 end,
 		set = function (_, v)
-			if v == 0 then 
+			if v == 0 then
 				indicator.dbx.borderSize, indicator.dbx.borderSwap = nil, nil
 			else
 				indicator.dbx.borderSize = v
 			end
-			self:RefreshIndicator(indicator, "Layout", "Update")
+			self:RefreshIndicator(indicator, "Layout")
 		end,
 	}
 	self:MakeIndicatorColorOptions(indicator, options, optionParams)
@@ -44,7 +44,7 @@ function Grid2Options:MakeIndicatorSquareBorderOptions(indicator, options, optio
 		get = function () return indicator.dbx.borderSwap end,
 		set = function (_, v)
 			indicator.dbx.borderSwap = v or nil
-			self:RefreshIndicator(indicator, "Layout", "Update")
+			self:RefreshIndicator(indicator, "Layout")
 		end,
 		disabled = function() return not indicator.dbx.borderSize end,
 	}
