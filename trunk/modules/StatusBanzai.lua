@@ -15,8 +15,8 @@ local next = next
 
 local timer
 local statuses = {}
-local sguids   = {}
-local tguids   = {}
+local sguids   = {} -- enemy guid -> enemy unit
+local tguids   = {} -- enemy guid -> friendly unit targeted by the enemy
 local target   = setmetatable({}, {__index = function(t,k) local v=k.."target" t[k]=v return v end})
 
 -- events management
@@ -120,22 +120,27 @@ local function status_SetUpdateRate(self, delay)
 end
 
 -- banzai status
-local bsrc, buni, bgid, bdur, bexp, bico = {}, {}, {}, {}, {}, {}
+local bsrc = {} -- bsrc[enemy guid]  = function to check enemy unit casting info
+local bgid = {} -- bsrc[enemy guid]  = friendly unit in roster
+local buni = {} -- bsrc[roster unit] = spellID casted against the unit
+local bdur = {} -- bsrc[roster unit] = enemy cast duration
+local bexp = {} -- bsrc[roster unit] = enemy cast expiration
+local bico = {} -- bsrc[roster unit] = enemy cast icon
 
 do
+	local roster_units = Grid2.roster_units
 	local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo
 	local e = {}
-	e.SPELL_CAST_START       = function(g) bsrc[g]= UnitCastingInfo end
-	e.SPELL_CAST_SUCCESS     = function(g) bsrc[g]= UnitChannelInfo end
-	e.SPELL_CAST_INTERRUPTED = function(g) bsrc[g]= nil; local unit = bgid[g]; if unit then bexp[unit]= 0 end end
-	e.SPELL_MISSED           = e.SPELL_CAST_INTERRUPTED
-	e.UNIT_DIED              = e.SPELL_CAST_INTERRUPTED
+	e.SPELL_CAST_START   = function(g) bsrc[g]= UnitCastingInfo end
+	e.SPELL_CAST_SUCCESS = function(g) bsrc[g]= UnitChannelInfo end
+	e.SPELL_INTERRUPT    = function(g) bsrc[g]= nil; local unit = bgid[g]; if unit then bexp[unit]=0 end end
+	e.UNIT_DIED          = e.SPELL_INTERRUPT
 	function Banzai.CombatLogEvent()
-		local _, event,_,sourceGUID = CombatLogGetCurrentEventInfo()
+		local _, event,_,sourceGUID,_,_,_,destGUID, dstName, _, dstFlags, spellID, spellName , _, extraSpellID = CombatLogGetCurrentEventInfo()
 		local action = e[event]
 		if action then
-			local unit = Grid2:GetUnitidByGUID(sourceGUID)
-			if not unit then action(sourceGUID) end
+			local guid = (not extraSpellID) and sourceGUID or destGUID -- for SPELL_INTERRUPT & UNIT_DIED enemy is destGUID
+			if not roster_units[guid] then action(guid) end
 		end
 	end
 end
