@@ -313,8 +313,8 @@ function Grid2Frame:LayoutFrames(notify)
 end
 
 function Grid2Frame:GetFrameSize()
+	local _, _, m = Grid2:GetGroupType()
 	local p = self.db.profile
-	local m = Grid2Layout.instMaxPlayers or 0
 	return p.frameWidths[m] or p.frameWidth, p.frameHeights[m] or p.frameHeight
 end
 
