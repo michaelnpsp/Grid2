@@ -70,7 +70,7 @@ local function SerializeCurrentProfile(Hex, exportCustomLayouts )
 	for name, module in Grid2:IterateModules() do
 		local data = Grid2.db:GetNamespace(name,true)
 		if data then
-			config[name] = data.profile 
+			config[name] = data.profile
 		end
 	end
 	config["@Grid2Options"] = Grid2Options.db.profile
@@ -78,7 +78,7 @@ local function SerializeCurrentProfile(Hex, exportCustomLayouts )
 		local data = Grid2.db:GetNamespace('Grid2Layout',true)
 		if data then
 			config["@Grid2Layout"] = data.global
-		end	
+		end
 	end
 	local Serializer = LibStub:GetLibrary("AceSerializer-3.0")
 	local Compresor = LibStub:GetLibrary("LibCompress")
@@ -184,9 +184,9 @@ local function ImportProfile(sender, data, Hex, importCustomLayouts)
 		LibStub("AceConfigRegistry-3.0"):NotifyChange("Grid2")
 	end
 	Grid2.db:SetProfile(profileName)
-	if importCustomLayouts then	
+	if importCustomLayouts then
 		Grid2Options:AddNewCustomLayoutsOptions()
-	end	
+	end
 	return true
 end
 
@@ -197,11 +197,7 @@ local function ShowSerializeFrame(title,subtitle,data)
 	frame:SetTitle(L["Profile import/export"])
 	frame:SetStatusText(subtitle)
 	frame:SetLayout("Flow")
-	frame:SetCallback("OnClose",
-		function(widget)
-			AceGUI:Release(widget)
-			collectgarbage()
-		end)
+	frame:SetCallback("OnClose", function(widget) AceGUI:Release(widget) end)
 	frame:SetWidth(525)
 	frame:SetHeight(375)
 	local editbox = AceGUI:Create("MultiLineEditBox")
@@ -220,9 +216,9 @@ local function ShowSerializeFrame(title,subtitle,data)
 	else
 		editbox:DisableButton(false)
 		editbox.button:SetScript("OnClick",
-								function(widget)
-									ImportProfile(nil,editbox:GetText(),true, includeCustomLayouts)
-									AceGUI:Release(frame)
+								function()
+									frame:Hide()
+									ImportProfile(nil, editbox:GetText(), true, includeCustomLayouts)
 									collectgarbage()
 								end)
 	end
