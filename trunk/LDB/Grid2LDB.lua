@@ -84,6 +84,9 @@ do
 			table.insert( menuTable, 1, { func= SetVisibility, text = L["Grouped"], value = 'Grouped', checked = function() return Grid2Layout.db.profile.FrameDisplay == 'Grouped' end } )
 			table.insert( menuTable, 1, { func= SetVisibility, text = L["Always"],  value = 'Always',  checked = function() return Grid2Layout.db.profile.FrameDisplay == 'Always' end } )
 			table.insert( menuTable, 1, { text = L["Grid2 Visibility"],  notCheckable= true, isTitle = true } )
+			-- Movement
+			table.insert( menuTable, 1, { func= function() Grid2Layout:FrameLock() end, text = L["Locked"], value = '',  checked = function() return Grid2Layout.db.profile.FrameLock end, isNotRadio=true, keepShownOnClick=1 } )
+			table.insert( menuTable, 1, { text = L["Grid2 Movement"],  notCheckable= true, isTitle = true } )
 		end
 	end
 	MenuLayoutsShow= function()
