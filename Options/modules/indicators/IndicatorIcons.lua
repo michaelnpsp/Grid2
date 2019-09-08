@@ -65,9 +65,9 @@ function Grid2Options:MakeIndicatorAuraIconsSizeOptions(indicator, options, opti
 		name = L["Max Icons"],
 		desc = L["Select maximum number of icons to display."],
 		min = 1,
-		max = 20,
+		max = 6,
 		step = 1,
-		get = function () return indicator.dbx.maxIcons or 6 end,
+		get = function () return indicator.dbx.maxIcons or 3 end,
 		set = function (_, v)
 			indicator.dbx.maxIcons= v
 			self:RefreshIndicator(indicator, "Layout")
@@ -79,7 +79,7 @@ function Grid2Options:MakeIndicatorAuraIconsSizeOptions(indicator, options, opti
 		name = L["Icons per row"],
 		desc = L["Select the number of icons per row."],
 		min = 1,
-		max = 20,
+		max = 6,
 		step = 1,
 		get = function () return indicator.dbx.maxIconsPerRow or 3 end,
 		set = function (_, v)
