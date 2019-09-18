@@ -1,8 +1,10 @@
 ﻿#@retail@
 ## Interface: 80200
+## X-WoW-Project: retail
 #@end-retail@
 #@non-retail@
 # ## Interface: 11302
+## X-WoW-Project: classic
 #@end-non-retail@
 ## Title: Grid2
 ## Author: Pastamancer & Maia, Jerry, Toadkiller
@@ -37,7 +39,7 @@ Libs\LibSharedMedia-3.0\LibSharedMedia-3.0.lua
 #Locales
 locales.xml
 
-# Grid
+# Grid2
 GridCore.lua
 GridUtils.lua
 GridRoster.lua

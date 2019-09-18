@@ -15,7 +15,13 @@ Grid2 = LibStub("AceAddon-3.0"):NewAddon("Grid2", "AceEvent-3.0", "AceConsole-3.
 
 Grid2.versionstring = "Grid2 v"..GetAddOnMetadata("Grid2", "Version")
 
-Grid2.isClassic = select(4, GetBuildInfo())<20000
+Grid2.isClassic = select(4,GetBuildInfo())<20000
+
+if not strfind(Grid2.versionstring,'project') and (GetAddOnMetadata("Grid2", "X-WoW-Project")=='classic') ~= Grid2.isClassic then
+	Grid2.wrongVersionMessage = string.format("Error, this version of Grid2 was packaged for World of Warcraft %s. Please install the %s version instead.",
+								 Grid2.isClasic and 'Retail' or 'Classic', Grid2.isClasic and 'Classic' or 'Retail')
+	C_Timer.After(3, function() Grid2:Print(Grid2.wrongVersionMessage) end)
+end
 
 Grid2.debugFrame = Grid2DebugFrame or ChatFrame1
 function Grid2:Debug(s, ...)
@@ -264,6 +270,10 @@ function Grid2:InitializeOptions()
 end
 
 function Grid2:LoadGrid2Options()
+	if self.wrongVersionMessage then
+		Grid2:Print( self.wrongVersionMessage )
+		return
+	end
 	if not IsAddOnLoaded("Grid2Options") then
 		if InCombatLockdown() then
 			Grid2:Print("Grid2Options cannot be loaded in combat.")
