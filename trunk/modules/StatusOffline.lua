@@ -3,35 +3,79 @@ local Offline = Grid2.statusPrototype:new("offline")
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 local Grid2 = Grid2
-local GetTime = GetTime
+local next = next
+local select = select
+local UnitIsVisible = UnitIsVisible
 local UnitIsConnected = UnitIsConnected
+local GetRaidRosterInfo = GetRaidRosterInfo
 
-local offline = setmetatable({}, {__index = function(t,u) local v= not UnitIsConnected(u); t[u]=v; return v end})
+-- cache management variables
+local raid_indexes = Grid2.raid_indexes
+local offline = {}
+local timer
 
--- Blizzard connection API is completelly bugged, this is a mess, behavior at 2019/09/01:
--- We ignore UnitIsConnected() when possible (because can return wrong values, for example true if recently disconnected & in raid)
--- We only use UnitIsConnected() if the unit is new, and we have not previous data cached about the connection status.
--- UNIT_CONNECTION fires erratically, usually only whe a player is far away, so we have to rely on PARTY_MEMBER_ENABLE & PARTY_MEMBER_DISABLE too
+-- our online check function
+local function UnitIsOffline(unit)
+	local index = raid_indexes[unit]
+	if index then
+		if UnitIsVisible(unit) then -- GetRaidRosterInfo() can return wrong online info when the unit is not visible
+			return not select(8, GetRaidRosterInfo(index))
+		else
+			return offline[unit]
+		end
+	else
+		return not UnitIsConnected(unit)
+	end
+end
+
+-- workaround to blizzard bugs
+local function TimerEvent()
+	for unit in next,offline do
+		if not UnitIsOffline(unit) then
+			offline[unit] = nil
+			Offline:UpdateIndicators(unit)
+		end
+	end
+	if not next(offline) then
+		timer = Grid2:CancelTimer(timer)
+	end
+end
+
+-- set offline cache
+local function SetOfflineCache(unit, off)
+	if off then
+		timer = timer or Grid2:CreateTimer(TimerEvent, 2)
+		offline[unit] = true
+	else
+		offline[unit] = nil
+	end
+	return off
+end
+
+-- Blizzard connection API is completelly bugged, this is a mess, behavior at 2019/09/21:
+-- UNIT_CONNECTION fires erratically, usually only whe a player is far away, so we have to rely on PARTY_MEMBER_ENABLE & PARTY_MEMBER_DISABLE when in party
 -- PARTY_MEMBER_ENABLE & PARTY_MEMBER_DISABLE fire when a player dies, or disconnects, but only if the player is near (visible range)
 --  This two events are fired too when the player cross the UnitIsVisible() limit, ENABLE when a player becomes visible, DISABLE in reverse case.
 --  We cannot use UnitIsConnected() inside ENABLE events (can returns wrong values too), so we use some heuristic:
 --   On ENABLE  we assume the player is connected without any further check.
---   On DISABLE we check UnitIsConnected() (It does not work always, it seems only works in party, not in raid)
+--   On DISABLE we check UnitIsConnected() (Only works in party, not in raid)
 -- This heuristic does not detect all cases.
 function Offline:UNIT_CONNECTION(event, unit, hasConnected)
 	if Grid2:IsUnitNoPetInRaid(unit) then
 		if event == 'UNIT_CONNECTION' then -- hasConnected is only available on this event
 			self:SetConnected(unit, hasConnected)
-		elseif event == 'PARTY_MEMBER_ENABLE' then -- always connected on this event.
-			self:SetConnected(unit, true)
-		elseif not UnitIsConnected(unit) then -- PARTY_MEMBER_DISABLE, this does not work always
-			self:SetConnected(unit, false)
+		elseif not raid_indexes[unit] then -- not in raid
+			if event == 'PARTY_MEMBER_ENABLE' then -- always connected on this event.
+				self:SetConnected(unit, true)
+			elseif not UnitIsConnected(unit) then
+				self:SetConnected(unit, false)
+			end
 		end
 	end
 end
 
 function Offline:Grid_UnitUpdated(_, unit)
-	offline[unit] = nil
+	SetOfflineCache(unit, UnitIsOffline(unit))
 end
 
 function Offline:Grid_UnitLeft(_, unit)
@@ -39,12 +83,9 @@ function Offline:Grid_UnitLeft(_, unit)
 end
 
 function Offline:SetConnected(unit, connected)
-	if offline[unit] ~= not connected then
-		if connected then
-			offline[unit] = false
-		else
-			offline[unit] = GetTime()
-		end
+	local off = not connected
+	if offline[unit] ~= off then
+		SetOfflineCache(unit, off)
 		self:UpdateIndicators(unit)
 	end
 end
@@ -80,7 +121,7 @@ function Offline:GetPercent(unit)
 end
 
 function Offline:GetTexCoord()
- return 0.2, 0.8, 0.2, 0.8
+	return 0.2, 0.8, 0.2, 0.8
 end
 
 function Offline:GetIcon()
