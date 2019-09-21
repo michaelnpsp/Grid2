@@ -30,9 +30,15 @@ local roster_guids = {}
 -- indexed by GUID
 local roster_units = {}
 
--- unit tables
+-- indexed by unit, returns game indexes (party1 => 1, raid3 => 3, player => 0, etc)
+local party_indexes = {}
+local raid_indexes  = {}
+
+-- indexed by index
 local party_units = {}
 local raid_units = {}
+
+-- indexed by unit
 local pet_of_unit = {}
 local owner_of_unit = {}
 
@@ -45,17 +51,19 @@ local roster_unknowns
 
 -- populate unit tables
 do
-	local function register_unit(tbl, unit, pet)
+	local function register_unit(tbl, unit, pet, index, indexes)
 		table.insert(tbl, unit)
 		pet_of_unit[unit] = pet
 		owner_of_unit[pet] = unit
+		indexes[unit] = index
+		indexes[pet]  = index
 	end
-	register_unit(party_units, "player", "pet")
+	register_unit(party_units, "player", "pet", 0, party_indexes)
 	for i = 1, MAX_PARTY_MEMBERS do
-		register_unit(party_units, ("party%d"):format(i),("partypet%d"):format(i))
+		register_unit(party_units, ("party%d"):format(i), ("partypet%d"):format(i), i, party_indexes)
 	end
 	for i = 1, MAX_RAID_MEMBERS do
-		register_unit(raid_units, ("raid%d"):format(i),("raidpet%d"):format(i))
+		register_unit(raid_units, ("raid%d"):format(i), ("raidpet%d"):format(i), i, raid_indexes)
 	end
 end
 
@@ -119,15 +127,11 @@ function Grid2:UnitIsPet(unit)
 end
 
 function Grid2:UnitIsParty(unit)
-	for _, v in next, party_units do
-		if unit == v then return true end
-	end
+	return party_indexes[unit]
 end
 
 function Grid2:UnitIsRaid(unit)
-	for _, v in next, raid_units do
-		if unit == v then return true end
-	end
+	return raid_indexes[unit]
 end
 
 function Grid2:IterateRoster()
@@ -414,6 +418,8 @@ end
 Grid2.owner_of_unit   = owner_of_unit
 Grid2.roster_units    = roster_units
 Grid2.roster_my_units = roster_my_units
+Grid2.raid_indexes    = raid_indexes
+Grid2.party_indexes   = party_indexes
 --}}
 
 
