@@ -67,7 +67,7 @@ end
 function Role:Grid_RosterUpdate(event)
 	local _, count = Grid2:GetNonPetUnits()
 	for index=1,count do
-		local unit, _, _, _, role = Grid2:GetRosterInfoByIndex(index)	
+		local unit, _, _, _, role = Grid2:GetRosterInfoByIndex(index)
 		if role ~= role_cache[unit] then
 			role_cache[unit] = role
 			if event then self:UpdateIndicators(unit) end
@@ -159,7 +159,7 @@ function Assistant:Grid_RosterUpdate(event)
 				if event then self:UpdateIndicators(unit) end
 			end
 		end
-	end	
+	end
 end
 
 function Assistant:Grid_UnitLeft(_, unit)
@@ -298,7 +298,7 @@ end
 function MasterLooter:CalculateMasterLooter()
 	local units = Grid2:GetNonPetUnits()
 	local method, party, raid = GetLootMethod()
-	masterLooter = (method == "master") and units[ raid or party+1 ] or nil
+	masterLooter = (method == "master") and (units and units[ raid or party+1 ]) or nil
 end
 
 function MasterLooter:OnEnable()
@@ -377,8 +377,8 @@ function DungeonRole:GetColor(unit)
 	elseif role=="HEALER" then
 		c = self.dbx.color2
 	elseif role=="TANK" then
-		c = self.dbx.color3 
-	else 
+		c = self.dbx.color3
+	else
 		return 0,0,0,0
 	end
 	return c.r, c.g, c.b, c.a
@@ -410,9 +410,9 @@ end
 
 Grid2.setupFunc["dungeon-role"] = Create
 
-Grid2:DbSetStatusDefaultValue( "dungeon-role", { type = "dungeon-role", colorCount = 3,	
+Grid2:DbSetStatusDefaultValue( "dungeon-role", { type = "dungeon-role", colorCount = 3,
 	color1 = { r = 0.75, g = 0, b = 0 }, --dps
 	color2 = { r = 0, g = 0.75, b = 0 }, --heal
 	color3 = { r = 0, g = 0, b = 0.75 }, --tank
-	opacity = 0.75 
+	opacity = 0.75
 })
