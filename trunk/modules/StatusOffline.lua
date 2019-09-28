@@ -4,34 +4,18 @@ local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 local Grid2 = Grid2
 local next = next
-local select = select
-local UnitIsVisible = UnitIsVisible
+local GetTime = GetTime
 local UnitIsConnected = UnitIsConnected
-local GetRaidRosterInfo = GetRaidRosterInfo
 
 -- cache management variables
-local raid_indexes = Grid2.raid_indexes
-local offline = {}
 local timer
-
--- our online check function
-local function UnitIsOffline(unit)
-	local index = raid_indexes[unit]
-	if index then
-		if UnitIsVisible(unit) then -- GetRaidRosterInfo() can return wrong online info when the unit is not visible
-			return not select(8, GetRaidRosterInfo(index))
-		else
-			return offline[unit]
-		end
-	else
-		return not UnitIsConnected(unit)
-	end
-end
+local offline = {}
 
 -- workaround to blizzard bugs
 local function TimerEvent()
-	for unit in next,offline do
-		if not UnitIsOffline(unit) then
+	local ct = GetTime()
+	for unit,dt in next,offline do
+		if UnitIsConnected(unit) and (ct-dt)>=25 then
 			offline[unit] = nil
 			Offline:UpdateIndicators(unit)
 		end
@@ -43,13 +27,8 @@ end
 
 -- set offline cache
 local function SetOfflineCache(unit, off)
-	if off then
-		timer = timer or Grid2:CreateTimer(TimerEvent, 2)
-		offline[unit] = true
-	else
-		offline[unit] = nil
-	end
-	return off
+	if off then timer = timer or Grid2:CreateTimer(TimerEvent, 3) end
+	offline[unit] = off and GetTime() or nil
 end
 
 -- Blizzard connection API is completelly bugged, this is a mess, behavior at 2019/09/21:
@@ -63,28 +42,25 @@ end
 function Offline:UNIT_CONNECTION(event, unit, hasConnected)
 	if Grid2:IsUnitNoPetInRaid(unit) then
 		if event == 'UNIT_CONNECTION' then -- hasConnected is only available on this event
-			self:SetConnected(unit, hasConnected)
-		elseif not raid_indexes[unit] then -- not in raid
-			if event == 'PARTY_MEMBER_ENABLE' then -- always connected on this event.
-				self:SetConnected(unit, true)
-			elseif not UnitIsConnected(unit) then
-				self:SetConnected(unit, false)
-			end
+			self:SetOffline(unit, not hasConnected)
+		elseif event == 'PARTY_MEMBER_ENABLE' then -- always connected on this event.
+			self:SetOffline(unit, false)
+		elseif not UnitIsConnected(unit) then -- PARTY_MEMBER_DISABLE
+			self:SetOffline(unit, true)
 		end
 	end
 end
 
 function Offline:Grid_UnitUpdated(_, unit)
-	SetOfflineCache(unit, UnitIsOffline(unit))
+	SetOfflineCache(unit, not UnitIsConnected(unit))
 end
 
 function Offline:Grid_UnitLeft(_, unit)
 	offline[unit] = nil
 end
 
-function Offline:SetConnected(unit, connected)
-	local off = not connected
-	if offline[unit] ~= off then
+function Offline:SetOffline(unit, off)
+	if not offline[unit] == off then
 		SetOfflineCache(unit, off)
 		self:UpdateIndicators(unit)
 	end

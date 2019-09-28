@@ -1,4 +1,5 @@
 -- Roster management
+local Grid2 = Grid2
 
 -- Local variables to speedup things
 local ipairs, pairs, next = ipairs, pairs, next
@@ -12,6 +13,7 @@ local GetNumGroupMembers = GetNumGroupMembers
 local GetPartyAssignment = GetPartyAssignment
 local GetRaidRosterInfo = GetRaidRosterInfo
 local UnitGroupRolesAssigned = UnitGroupRolesAssigned or (function() return 'NONE' end)
+local isClassic = Grid2.isClassic
 
 -- realm name
 local my_realm = GetRealmName()
@@ -213,6 +215,9 @@ do
 				else
 					-- raid@other / Other instances: 5man/garrison/unknow instances
 					newInstType = "other"
+					if isClassic and (maxPlayers or 0)<=5 then
+						maxPlayers = 10 -- classic, raid inside dungeons
+					end
 				end
 			else
 				-- raid@none / In World Map or Garrison
