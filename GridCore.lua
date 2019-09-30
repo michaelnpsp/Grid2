@@ -19,7 +19,7 @@ Grid2.isClassic = select(4,GetBuildInfo())<20000
 
 if not strfind(Grid2.versionstring,'project') and (GetAddOnMetadata("Grid2", "X-WoW-Project")=='classic') ~= Grid2.isClassic then
 	Grid2.wrongVersionMessage = string.format("Error, this version of Grid2 was packaged for World of Warcraft %s. Please install the %s version instead.",
-								 Grid2.isClasic and 'Retail' or 'Classic', Grid2.isClasic and 'Classic' or 'Retail')
+								 Grid2.isClassic and 'Retail' or 'Classic', Grid2.isClassic and 'Classic' or 'Retail')
 	C_Timer.After(3, function() Grid2:Print(Grid2.wrongVersionMessage) end)
 end
 
