@@ -121,7 +121,30 @@ Grid2Options:RegisterStatusOptions("my-heals-incoming", "health", function(self,
 		end,
 	}
 end, {
-	titleIcon ="Interface\\Icons\\Spell_Holy_DivineProvidence"
+	titleIcon = "Interface\\Icons\\Spell_Holy_DivineProvidence"
+})
+
+
+Grid2Options:RegisterStatusOptions("overhealing", "health", function(self, status, options, optionParams)
+	self:MakeStatusStandardOptions(status, options, optionParams)
+	options.minimumOver = {
+		type = "input",
+		order = 120,
+		width = "full",
+		name = L["Minimum value"],
+		desc = L["Incoming overheals below the specified value will not be shown."],
+		get = function ()
+			return tostring(status.dbx.minimum or 0)
+		end,
+		set = function (_, v)
+			v = tonumber(v) or 0
+			status.dbx.minimum = v>0 and v or nil
+			status:UpdateDB()
+		end,
+	}
+end, {
+	title = L["display heals above max hp"],
+	titleIcon = Grid2.isClassic and "Interface\\Icons\\Spell_Holy_Heal" or "Interface\\Icons\\Spell_Holy_DivineProvidence"
 })
 
 
