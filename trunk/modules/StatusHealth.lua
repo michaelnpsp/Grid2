@@ -608,8 +608,6 @@ Grid2:DbSetStatusDefaultValue( "overhealing", {type = "overhealing", color1 = {r
 
 -- my-heals-incoming status
 
-if Grid2.isClassic then return end
-
 MyHeals.GetColor = Grid2.statusLibrary.GetColor
 
 function MyHeals:UpdateDB()

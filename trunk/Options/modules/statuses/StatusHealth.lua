@@ -30,18 +30,6 @@ end, {
 Grid2Options:RegisterStatusOptions("heals-incoming", "health", function(self, status, options, optionParams)
 	self:MakeStatusStandardOptions(status, options, optionParams)
 	if not Grid2.isClassic then
-		options.includePlayerHeals = {
-			type = "toggle",
-			order = 110,
-			name = L["Include player heals"],
-			desc = L["Include player heals"],
-			tristate = false,
-			get = function () return status.dbx.includePlayerHeals end,
-			set = function (_, v)
-				status.dbx.includePlayerHeals = v or nil
-				status:UpdateDB()
-			end,
-		}
 		options.includeHealAbsorbs = {
 			type = "toggle",
 			order = 115,
@@ -56,6 +44,18 @@ Grid2Options:RegisterStatusOptions("heals-incoming", "health", function(self, st
 			end,
 		}
 	end
+	options.includePlayerHeals = {
+		type = "toggle",
+		order = 110,
+		name = L["Include player heals"],
+		desc = L["Include player heals"],
+		tristate = false,
+		get = function () return status.dbx.includePlayerHeals end,
+		set = function (_, v)
+			status.dbx.includePlayerHeals = v or nil
+			status:UpdateDB()
+		end,
+	}
 	options.healTypes = {
 		type = "input",
 		order = 120,
