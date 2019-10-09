@@ -4,6 +4,7 @@ local type = type
 local next = next
 local GetTime = GetTime
 local UnitAura = UnitAura
+local isClassic = Grid2.isClassic
 
 -- Local variables
 local Statuses = {}
@@ -107,8 +108,35 @@ do
 	end
 end
 
+-- Class filter, for classic only
+local MakeStatusFilter, ClearUnitFilters
+if isClassic then
+	local next = next
+	local UnitClass = UnitClass
+	local filter_mt = {	__index = function(t,u) local _,c = UnitClass(u); local r=t.source[c]; t[u]=r; return r; end }
+	MakeStatusFilter = function(status)
+		local source = status.dbx.classFilter
+		if source then
+			if status.filtered then
+				wipe(status.filtered); status.filtered.source = source
+			else
+				status.filtered = setmetatable({source = source}, filter_mt)
+			end
+		elseif status.filtered then
+			status.filtered = nil
+		end
+	end
+	ClearUnitFilters = function(unit)
+		for status in next, Statuses do
+			local filtered = status.filtered
+			if filtered then filtered[unit] = nil end
+		end
+	end
+end
+
 -- Passing Statuses instead of nil, because i dont know if nil is valid for RegisterMessage
 Grid2.RegisterMessage( Statuses, "Grid_UnitUpdated", function(_, u)
+	if isClassic then ClearUnitFilters(u) end
 	AuraFrame_OnEvent(nil,nil,u)
 end)
 
@@ -245,6 +273,28 @@ do
 		self.idx[unit], self.exp[unit], self.val[unit] = nil, nil, nil
 		return true
 	end
+	-- with class filters, used in classic
+	local function IsActiveFilter(self, unit)
+		return not self.filtered[unit] and self.idx[unit]~=nil
+	end
+	local function IsActiveStacksFilter(self, unit)
+		return not self.filtered[unit] and self.idx[unit] and self.cnt[unit]>=self.stacks
+	end
+	local function IsActiveBlinkFilter(self, unit)
+		if self.filtered[unit] or not self.idx[unit] then return end
+		return self.tkr[unit]==1 or "blink"
+	end
+	local function IsActiveStacksBlinkFilter(self, unit)
+		if self.filtered[unit] or not (self.idx[unit] and self.cnt[unit]>=self.stacks) then return end
+		return self.tkr[unit]==1 or "blink"
+	end
+	local function IsInactiveFilter(self, unit)
+		return not self.filtered[unit] and not (self.idx[unit] or unit_is_pet[unit])
+	end
+	local function IsInactiveBlinkFilter(self, unit)
+		return not self.filtered[unit] and not self.idx[unit] and "blink"
+	end
+	-- no class filters
 	local function IsActive(self, unit)
 		if self.idx[unit] then return true end
 	end
@@ -265,6 +315,7 @@ do
 	local function IsInactiveBlink(self, unit)
 		return not self.idx[unit] and "blink"
 	end
+	--
 	local function GetIcon(self, unit) return
 		self.tex[unit]
 	end
@@ -359,6 +410,7 @@ do
 	local function UpdateDB(self,dbx)
 		if self.enabled then self:OnDisable() end
 		local dbx = dbx or self.dbx
+		if isClassic then MakeStatusFilter(self) end
 		self.vId = dbx.valueIndex or 0
 		self.valMax = dbx.valueMax
 		self.GetPercent = dbx.valueIndex and (dbx.valueMax and GetPercentMax or GetPercentHealth) or Grid2.statusLibrary.GetPercent
@@ -384,7 +436,11 @@ do
 			self.GetIcon  = GetIconMissing
 			self.GetCount = GetCountMissing
 			self.GetExpirationTime = GetExpirationTimeMissing
-			self.IsActive = dbx.blinkThreshold and IsInactiveBlink or IsInactive
+			if self.filtered then
+				self.IsActive = dbx.blinkThreshold and IsInactiveBlinkFilter or IsInactiveFilter
+			else
+				self.IsActive = dbx.blinkThreshold and IsInactiveBlink or IsInactive
+			end
 			self.thresholds = nil
 		else
 			self.stacks = dbx.enableStacks
@@ -393,10 +449,18 @@ do
 			self.GetExpirationTime = GetExpirationTime
 			if dbx.blinkThreshold then
 				self.thresholds = { dbx.blinkThreshold }
-				self.IsActive = self.stacks and IsActiveStacksBlink or IsActiveBlink
+				if self.filtered then
+					self.IsActive = self.stacks and IsActiveStacksBlinkFilter or IsActiveBlinkFilter
+				else
+					self.IsActive = self.stacks and IsActiveStacksBlink or IsActiveBlink
+				end
 			else
 				self.thresholds = dbx.colorThreshold
-				self.IsActive = self.stacks and IsActiveStacks or IsActive
+				if self.filtered then
+					self.IsActive = self.stacks and IsActiveStacksFilter or IsActiveFilter
+				else
+					self.IsActive = self.stacks and IsActiveStacks or IsActive
+				end
 			end
 		end
 		local colorCount = dbx.colorCount or 1
