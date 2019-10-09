@@ -428,9 +428,9 @@ if Grid2.isClassic then
 	UnitGetTotalHealAbsorbs = function()
 		return 0
 	end
-	UnitGetIncomingHeals = function(unit)
+	UnitGetIncomingHeals = function(unit, caster)
 		local guid = UnitGUID(unit)
-		return (HealComm:GetHealAmount(guid, HealComm.ALL_HEALS) or 0) * (HealComm:GetHealModifier(guid) or 1)
+		return (HealComm:GetHealAmount(guid, HealComm.ALL_HEALS, nil, caster and UnitGUID(caster)) or 0) * (HealComm:GetHealModifier(guid) or 1)
 	end
 	RegisterEvent = function(event, func)
 		HealComm.RegisterCallback( Grid2, "HealComm_HealStarted", HealUpdated )
@@ -498,14 +498,10 @@ function Heals:UpdateDB()
 	local m = self.dbx.flags
 	self.minimum = (m and m>1 and m ) or 1
 	self.multiplier = self.dbx.multiplier or 1
-	if Grid2.isClassic then
-		HealsGetAmount = HealsPlayer
+	if self.dbx.includeHealAbsorbs and not Grid2.isClassic then
+		HealsGetAmount = self.dbx.includePlayerHeals and HealsAbsorbPlayer or HealsAbsorbNoPlayer
 	else
-		if self.dbx.includeHealAbsorbs then
-			HealsGetAmount = self.dbx.includePlayerHeals and HealsAbsorbPlayer or HealsAbsorbNoPlayer
-		else
-			HealsGetAmount = self.dbx.includePlayerHeals and HealsPlayer or HealsNoPlayer
-		end
+		HealsGetAmount = self.dbx.includePlayerHeals and HealsPlayer or HealsNoPlayer
 	end
 end
 
@@ -576,7 +572,7 @@ end
 
 function OverHeals:OnEnable()
 	self:UpdateDB()
-	if not heals_required==0 then RegisterEvent("UNIT_HEAL_PREDICTION", HealsUpdateEvent) end
+	if heals_required==0 then RegisterEvent("UNIT_HEAL_PREDICTION", HealsUpdateEvent) end
 	heals_required = bit.bor(heals_required,4) -- set bit3
 	overheals_enabled = true
 end
@@ -624,9 +620,7 @@ end
 
 function MyHeals:OnEnable()
 	self:UpdateDB()
-	if heals_required==0 then
-		RegisterEvent("UNIT_HEAL_PREDICTION", HealsUpdateEvent)
-	end
+	if heals_required==0 then RegisterEvent("UNIT_HEAL_PREDICTION", HealsUpdateEvent) end
 	myheal_required = bit.bor(myheal_required,2) -- set bit2
 	heals_required = bit.bor(heals_required,2)   -- set bit2
 	myheals_enabled = true
@@ -637,17 +631,22 @@ function MyHeals:OnDisable()
 	myheals_enabled = false
 	myheal_required = bit.band(myheal_required,1) -- clear bit2
 	heals_required = bit.band(heals_required,7-2) -- clear bit2
-	if heals_required==0 then
-		UnregisterEvent("UNIT_HEAL_PREDICTION")
-	end
+	if heals_required==0 then UnregisterEvent("UNIT_HEAL_PREDICTION") end
 end
 
 function MyHeals:IsActive(unit)
 	return myheals_cache[unit] > 1
 end
 
-function MyHeals:GetText(unit)
-	return fmt("+%.1fk", myheals_cache[unit] / 1000)
+if Grid2.isClassic then
+	function MyHeals:GetText(unit)
+		local h = myheals_cache[unit]
+		return h<1000 and fmt("%d",h) or fmt("%.1fk",h/1000)
+	end
+else
+	function MyHeals:GetText(unit)
+		return fmt("+%.1fk", myheals_cache[unit] / 1000)
+	end
 end
 
 function MyHeals:GetPercent(unit)

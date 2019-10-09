@@ -30,31 +30,31 @@ end, {
 Grid2Options:RegisterStatusOptions("heals-incoming", "health", function(self, status, options, optionParams)
 	self:MakeStatusStandardOptions(status, options, optionParams)
 	if not Grid2.isClassic then
-	options.includePlayerHeals = {
-		type = "toggle",
-		order = 110,
-		name = L["Include player heals"],
-		desc = L["Include player heals"],
-		tristate = false,
-		get = function () return status.dbx.includePlayerHeals end,
-		set = function (_, v)
-			status.dbx.includePlayerHeals = v or nil
-			status:UpdateDB()
-		end,
-	}
-	options.includeHealAbsorbs = {
-		type = "toggle",
-		order = 115,
-		name = L["Substract heal absorbs"],
-		desc = L["Substract heal absorbs shields from the incoming heals"],
-		tristate = false,
-		get = function () return status.dbx.includeHealAbsorbs end,
-		set = function (_, v)
-			status:OnDisable()
-			status.dbx.includeHealAbsorbs = v or nil
-			status:OnEnable()
-		end,
-	}
+		options.includePlayerHeals = {
+			type = "toggle",
+			order = 110,
+			name = L["Include player heals"],
+			desc = L["Include player heals"],
+			tristate = false,
+			get = function () return status.dbx.includePlayerHeals end,
+			set = function (_, v)
+				status.dbx.includePlayerHeals = v or nil
+				status:UpdateDB()
+			end,
+		}
+		options.includeHealAbsorbs = {
+			type = "toggle",
+			order = 115,
+			name = L["Substract heal absorbs"],
+			desc = L["Substract heal absorbs shields from the incoming heals"],
+			tristate = false,
+			get = function () return status.dbx.includeHealAbsorbs end,
+			set = function (_, v)
+				status:OnDisable()
+				status.dbx.includeHealAbsorbs = v or nil
+				status:OnEnable()
+			end,
+		}
 	end
 	options.healTypes = {
 		type = "input",
@@ -121,9 +121,8 @@ Grid2Options:RegisterStatusOptions("my-heals-incoming", "health", function(self,
 		end,
 	}
 end, {
-	titleIcon = "Interface\\Icons\\Spell_Holy_DivineProvidence"
+	titleIcon = Grid2.isClassic and "Interface\\Icons\\Spell_Holy_Heal" or "Interface\\Icons\\Spell_Holy_DivineProvidence"
 })
-
 
 Grid2Options:RegisterStatusOptions("overhealing", "health", function(self, status, options, optionParams)
 	self:MakeStatusStandardOptions(status, options, optionParams)
