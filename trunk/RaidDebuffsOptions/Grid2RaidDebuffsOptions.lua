@@ -75,9 +75,9 @@ function RDO:RefreshAutodetect()
 	end
 end
 
--- Trying to fix or delete instances in old database formats, now the
--- instance keys must be integers, we don't allow strings.
+-- Fix several things in database
 function RDO:FixWrongInstances()
+	-- Trying to fix or delete instances in old database formats, now the instance keys must be integers, we don't allow strings.
 	local saved = {}
 	for mapid, data in pairs(RDO.db.profile.debuffs) do
 		if type(mapid)~="number" then
@@ -87,6 +87,12 @@ function RDO:FixWrongInstances()
 	end
 	for k,v in pairs(saved) do
 		RDO.db.profile.debuffs[k] = v
+	end
+	-- remove enabled but non existant modules
+	for key in pairs(RDO.db.profile.enabledModules) do
+		if not RDDB[key] then
+			RDO.db.profile.enabledModules[key] = nil
+		end
 	end
 end
 
