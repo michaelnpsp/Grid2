@@ -6,6 +6,9 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 
 local groupFilters = Grid2Layout.groupFilters
 
+local DEFAULT_ROLE 		  = Grid2.isClassic and 'ROLE' or 'ASSIGNEDROLE'
+local DEFAULT_ROLE_ORDER  = Grid2.isClassic and 'MAINTANK,MAINASSIST,NONE' or 'TANK,HEALER,DAMAGER,NONE'
+
 local DEFAULT_GROUP_ORDER = "WARRIOR,DEATHKNIGHT,DEMONHUNTER,ROGUE,MONK,PALADIN,DRUID,SHAMAN,PRIEST,MAGE,WARLOCK,HUNTER"
 local DEFAULT_PET_ORDER   = "HUNTER,WARLOCK,MAGE,DEATHKNIGHT,DRUID,PRIEST,SHAMAN,MONK,PALADIN,DEMONHUNTER,ROGUE,WARRIOR"
 
@@ -37,29 +40,6 @@ Grid2Layout:AddLayout("By Group w/Pets", {
 	[2] = PETS_GROUP,
 })
 
-Grid2Layout:AddLayout("By Role", {
-	meta = META_ALL,
-	[1] = {
-		maxColumns = 8,
-		groupFilter = "auto",
-		groupBy = "ASSIGNEDROLE",
-		groupingOrder = "TANK,HEALER,DAMAGER,NONE",
-		sortMethod = "NAME",
-	},
-})
-
-Grid2Layout:AddLayout("By Role w/Pets", {
-	meta = META_ALL,
-	[1] = {
-		maxColumns = 8,
-		groupFilter = "auto",
-		groupBy = "ASSIGNEDROLE",
-		groupingOrder = "TANK,HEALER,DAMAGER,NONE",
-		sortMethod = "NAME",
-	},
-	[2] = PETS_GROUP,
-})
-
 Grid2Layout:AddLayout("By Class", {
 	meta = META_ALL,
 	[1]= {
@@ -83,13 +63,36 @@ Grid2Layout:AddLayout("By Class w/Pets", {
 	[2] = PETS_GROUP,
 })
 
+Grid2Layout:AddLayout("By Role", {
+	meta = META_ALL,
+	[1] = {
+		maxColumns = 8,
+		groupFilter = "auto",
+		groupBy = DEFAULT_ROLE,
+		groupingOrder = DEFAULT_ROLE_ORDER,
+		sortMethod = "NAME",
+	},
+})
+
+Grid2Layout:AddLayout("By Role w/Pets", {
+	meta = META_ALL,
+	[1] = {
+		maxColumns = 8,
+		groupFilter = "auto",
+		groupBy = DEFAULT_ROLE,
+		groupingOrder = DEFAULT_ROLE_ORDER,
+		sortMethod = "NAME",
+	},
+	[2] = PETS_GROUP,
+})
+
 -- raid only layouts
 
 Grid2Layout:AddLayout("By Group & Role", {
 	meta = META_RAID,
 	defaults = {
-		groupBy = "ASSIGNEDROLE",
-		groupingOrder = "TANK,HEALER,DAMAGER,NONE",
+		groupBy = DEFAULT_ROLE,
+		groupingOrder = DEFAULT_ROLE_ORDER,
 		sortMethod = "NAME",
 	},
 })

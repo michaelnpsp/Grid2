@@ -9,6 +9,8 @@ local Grid2Layout = Grid2:GetModule("Grid2Layout")
 
 --=====================================================================================
 
+local RETAIL = not Grid2.isClassic
+
 local EDITOR_IDENTIFIER = "LayoutEditor"
 
 local CHARACTER_PLUS_TEXTURE = "Interface\\PaperDollInfoFrame\\Character-Plus"
@@ -21,7 +23,7 @@ local DEFAULT_PET_ORDER   = "HUNTER,WARLOCK,MAGE,DEATHKNIGHT,DRUID,PRIEST,SHAMAN
 
 local COLUMN_VALUES = {	["1"]="1", ["2"]="2", ["3"]="3", ["4"]="4", ["5"]="5", ["6"]="6", ["7"]="7", ["8"]="8" }
 
-local GROUPBY_VALUES ={ CLASS = L["Class"], GROUP = L["Group"], ASSIGNEDROLE  = L["Role"], NONE  = L["None"] }
+local GROUPBY_VALUES ={ CLASS = L["Class"], GROUP = L["Group"], ASSIGNEDROLE = RETAIL and L["Role"] or nil, ROLE = L["Role(Raid)"], NONE = L["None"] }
 
 local SORTBYN_VALUES= { INDEX = L["Index"], NAME = L["Name"], NAMELIST = L["List"],	NIL = L["Def."] }
 
@@ -51,7 +53,7 @@ local function SelectGroup( info, layoutName, headerIndex )
 	repeat
 		tmpTable[#tmpTable+1] = info[#tmpTable+1]
 		options = options.args[ info[#tmpTable] ]
-	until #tmpTable>=#info or options.arg==EDITOR_IDENTIFIER 
+	until #tmpTable>=#info or options.arg==EDITOR_IDENTIFIER
 	tmpTable[#tmpTable+1] = layoutName
 	tmpTable[#tmpTable+1] = tostring(headerIndex)
 	LibStub("AceConfigDialog-3.0"):SelectGroup( "Grid2", unpack(tmpTable) )
@@ -83,7 +85,7 @@ end
 local function GetValue(attr, defvalue)
 	return editedHeader[attr] or (editedLayout.defaults and editedLayout.defaults[attr]) or defvalue
 end
-		
+
 local function GetHeaderName(info)
 	if editedLayout then
 		local index = tonumber(info[#info])
@@ -92,22 +94,22 @@ local function GetHeaderName(info)
 			if layout then
 				return string.format( "%s(%d)", layout.type=='pet' and L['pets'] or L['players'], index )
 			end
-		end	
-	end	
+		end
+	end
 end
 
 local function IsHeaderHidden(info)
 	return not (editedLayout and editedLayout[tonumber(info[#info])])
 end
 
-local function CreateHeader(info, index)  
+local function CreateHeader(info, index)
 	if type(index)=='number' then
 		table.insert( editedLayout, index+1, Grid2.CopyTable(editedLayout[index]) )
 		index = index + 1
 	else
 		table.insert( editedLayout, { type = (index=="pet" and "pet" or nil), unitsPerColumn = 5, maxColumns = 1 } )
 		index= #editedLayout
-	end	
+	end
 	RefreshLayout()
 	SelectGroup( info, editedLayoutName, index )
 	return true
@@ -177,7 +179,7 @@ function Grid2Options:AddNewCustomLayoutsOptions()
 	for name in pairs(Grid2Layout.customLayouts) do
 		if not editorOptions[name] then
 			CreateLayoutOptions(name)
-		end	
+		end
 	end
 end
 
@@ -198,14 +200,14 @@ headerOptions = {
 		name   = L["Columns"],
 		desc   = L["Maximum number of columns to display"],
 		get    = function()  return tostring(GetValue("maxColumns", 1)) end,
-		set    = function(_,v)	
-			editedHeader.maxColumns = tonumber(v) 
+		set    = function(_,v)
+			editedHeader.maxColumns = tonumber(v)
 			RefreshLayout()
 		end,
 		values = COLUMN_VALUES,
 		hidden = false,
 	},
-	
+
 	upc =  {
 		type   = 'select',
 		order  = 3,
@@ -213,8 +215,8 @@ headerOptions = {
 		name   = L["Units/Column"],
 		desc   = L["Maximum number of units per column to display"],
 		get    = function()	return string.format("%02d", GetValue("unitsPerColumn",5))	end,
-		set    = function(_,v)	
-			editedHeader.unitsPerColumn= tonumber(v) 
+		set    = function(_,v)
+			editedHeader.unitsPerColumn= tonumber(v)
 			RefreshLayout()
 		end,
 		values = { ["01"]="01", ["02"]="02", ["03"]="03", ["04"]="04", ["05"]="05", ["10"]="10", ["15"]="15", ["20"]="20", ["25"]="25", ["30"]="30", ["35"]="35", ["40"]="40" },
@@ -228,14 +230,14 @@ headerOptions = {
 		name   = L["Sort by"],
 		desc   = L["Index (Raid Order)\nName (Unit Names))\nList (Name List)\nDef (Default)"],
 		get    = function() return GetValue("sortMethod", "NIL") end,
-		set    = function(_,v) 	
-			editedHeader.sortMethod = v~="NIL" and v or nil 
+		set    = function(_,v)
+			editedHeader.sortMethod = v~="NIL" and v or nil
 			RefreshLayout()
 		end,
 		values = function()	return editedHeader.nameList and SORTBYN_VALUES or SORTBY_VALUES end,
 		hidden = false,
 	},
-	
+
 	groupby =  {
 		type   = 'select',
 		order  = 5,
@@ -253,6 +255,9 @@ headerOptions = {
 					elseif v=="ASSIGNEDROLE" then
 						editedHeader.groupBy = "ASSIGNEDROLE"
 						editedHeader.groupingOrder = "TANK,HEALER,DAMAGER,NONE"
+					elseif v=='ROLE' then
+						editedHeader.groupBy = "ROLE"
+						editedHeader.groupingOrder = "MAINTANK,MAINASSIST,NONE"
 					else
 						editedHeader.groupingOrder, editedHeader.groupBy = nil, nil
 					end
@@ -262,7 +267,7 @@ headerOptions = {
 		disabled = function() return editedHeader.nameList~=nil end,
 		hidden = false,
 	},
-	
+
 	nameList = {
 		type = "input",
 		order = 50,
@@ -270,10 +275,10 @@ headerOptions = {
 		name = L["Name List"],
 		desc = L["Type a list of player names"],
 		multiline = 5,
-		get = function() 
+		get = function()
 			return editedHeader.nameList and table.concat( { strsplit(",", editedHeader.nameList ) } , ", " ) or ""
 		end,
-		set = function(_, v) 
+		set = function(_, v)
 			local t = { strsplit("\n,;:|", v) }
 			for i=#t,1,-1 do
 				t[i] = strtrim( t[i] )
@@ -289,12 +294,12 @@ headerOptions = {
 			else
 				editedHeader.nameList = nil
 				editedHeader.sortMethod = (editedHeader.sortMethod~="NAMELIST") and editedHeader.sortMethod or nil
-			end			
+			end
 			RefreshLayout()
 		end,
 		hidden = false,
 	},
-	
+
 	vehicle = {
 		type = "toggle",
 		name = L["Toggle for vehicle"],
@@ -302,16 +307,16 @@ headerOptions = {
 		order = 55,
 		width = "double",
 		tristate = true,
-		get = function() 
+		get = function()
 			return editedHeader.toggleForVehicle
-		end, 
-		set = function(info, value) 
+		end,
+		set = function(info, value)
 			editedHeader.toggleForVehicle = value
 			RefreshLayout()
 		end,
 		hidden = false,
 	},
-	
+
 	actionheader = { type = "header", order = 100, name = "", hidden = false },
 
 	clone =  {
@@ -322,8 +327,8 @@ headerOptions = {
 		desc   = L["Clone this header"],
 		func   = function(info)	CreateHeader(info, editedHeaderIndex) end,
 		hidden = false,
-	},	
-	
+	},
+
 	delete =  {
 		type   = 'execute',
 		order  = 102,
@@ -331,23 +336,23 @@ headerOptions = {
 		name   = string.format( "|T%s:0|t%s", READY_CHECK_NOT_READY_TEXTURE, L["Delete"] ),
 		desc   = L["Delete this header"],
 		func   = function(info)	RemoveHeader(info, editedHeaderIndex) end,
-		confirm = function() 
+		confirm = function()
 			if #editedLayout>1 then
-				return L["Are you sure you want to remove this header?"] 
+				return L["Are you sure you want to remove this header?"]
 			else
 				return L["Are you sure you want to delete the selected layout?"]
 			end
 		end,
 		hidden = false,
-	},	
+	},
 
 }
 
-do
+if RETAIL then
 	local roles  = { "TANK", "HEALER", "DAMAGER", "NONE", TANK=1, HEALER=2, DAMAGER=3, NONE=4 }
 	local values = { L["Tank"], L["Healer"], L["Damager"], L["None"] }
-	local function hidden() 
-		return editedHeader.groupBy ~= "ASSIGNEDROLE" 
+	local function hidden()
+		return editedHeader.groupBy ~= "ASSIGNEDROLE"
 	end
 	local function get(info)
 		local role = select(info.arg, strsplit(",", editedHeader.groupingOrder) )
@@ -357,7 +362,7 @@ do
 		local index   = info.arg
 		local tbl     = { strsplit(",", editedHeader.groupingOrder) }
 		local oldrole = tbl[index]
-		local newrole = roles[value] 
+		local newrole = roles[value]
 		for i=1,#tbl do
 			if tbl[i]==newrole then
 				tbl[i] = oldrole
@@ -394,7 +399,7 @@ do
 			order = 30+i,
 			width = 0.23,
 			get = FilterGet,
-			set = FilterSet, 
+			set = FilterSet,
 			disabled = function() return editedHeader.groupFilter=="auto" end,
 			hidden = false,
 			arg = {  tostring(i), "groupFilter", "1,2,3,4,5,6,7,8" },
@@ -411,17 +416,24 @@ do
 			editedHeader.groupFilter = value and "auto" or nil
 			editedHeader.strictFiltering = (editedHeader.roleFilter~=nil and editedHeader.groupFilter~=nil) or nil
 			RefreshLayout()
-		end, 
+		end,
 		hidden = false,
 	}
 end
 
 do
-	local roles  = { "TANK", "HEALER", "DAMAGER", "NONE", "MAINTANK", "MAINASSIST" }
-	local names  = { L["Tank"], L["Healer"], L["Dps"], L["None"], L["MT"], L["MA"] }
-	local descs  = { L["Tank"], L["Healer"], L["Dps"], L["None"], L["MainTank"], L["MainAssist"] }
-	local widths = { .4,       .4,           .3,        .5,           .3,          .3,     }
-
+	local roles, names, descs, widths
+	if RETAIL then
+		roles  = { "TANK", "HEALER", "DAMAGER", "NONE", "MAINTANK", "MAINASSIST" }
+		names  = { L["Tank"], L["Healer"], L["Dps"], L["None"], L["MT"], L["MA"] }
+		descs  = { L["Tank"], L["Healer"], L["Dps"], L["None"], L["MainTank"], L["MainAssist"] }
+		widths = { .4,       .4,           .3,        .5,           .3,          .3,     }
+	else
+		roles  = { "MAINTANK", "MAINASSIST", "NONE" }
+		names  = { L["MainTank"], L["MainAssist"], L["None"] }
+		descs  = names
+		widths = { .75, .75, .75 }
+	end
 	headerOptions.roleheader = { type = "header", order = 40, name = L["Roles"], hidden = false }
 	for i,role in ipairs(roles) do
 		headerOptions['role'..i] = {
@@ -431,7 +443,7 @@ do
 			order = 40+i,
 			width = widths[i],
 			get = FilterGet,
-			set = FilterSet, 
+			set = FilterSet,
 			hidden = false,
 			arg = { role, "roleFilter", "DAMAGER,HEALER,MAINASSIST,MAINTANK,NONE,TANK" },
 		}
@@ -447,14 +459,14 @@ layoutOptions = {
 			editedLayout          = Grid2Layout.layoutSettings[editedLayoutName]
 			return true
 	end },
-	
+
 	new = {
 		type  = "group",
 		order = 300,
 		name  = "+",
 		desc  = L["Add a new header.\nA header displays a group of players or pets in a compat way."],
-		
-		args  = { 
+
+		args  = {
 
 			title = {
 				order = 1,
@@ -462,13 +474,13 @@ layoutOptions = {
 				name = "|cffffd200".. L["Create New Header"] .."|r",
 				fontSize = "medium",
 			},
-		
+
 			desc = {
 				order = 2,
 				type = "description",
 				name = L["Select what kind of units you want to display on the new header and click the create button."] .. "\n",
 			},
-				
+
 			type ={
 				type   = 'select',
 				order  = 10,
@@ -487,18 +499,18 @@ layoutOptions = {
 				width  = 0.6,
 				name   = string.format( "|T%s:0|t%s", CHARACTER_PLUS_TEXTURE, L["Create"] ),
 				desc   = L["Create New Header"],
-				func   = function(info)	
+				func   = function(info)
 					CreateHeader( info, layoutOptions.new.args.type.arg )
 					layoutOptions.new.args.type.arg = "player"
 				end,
 				hidden = false,
-			},	
-			
-		}, 
-		
+			},
+
+		},
+
 		hidden = function() return #editedLayout>=15 end,
 	},
-	
+
 }
 
 for i=1,15 do
@@ -531,48 +543,48 @@ generalOptions = {
 		get = function(info)
 			return Grid2Layout.db.global.displayAllGroups
 		end,
-		set = function(info,v) 
+		set = function(info,v)
 			Grid2Layout.db.global.displayAllGroups= v or nil
 			RefreshLayout(true)
 		end,
 	},
-	
+
 	sortMethod = {
 		order = 1,
 		type = "toggle",
 		name = "|cffffd200".. L["Sort units by name"] .."|r",
 		desc = L["Sort the units by player name, if unchecked the units will be displayed in raid order. Not all layouts will obey this setting."],
 		width = "full",
-		get = function() 
+		get = function()
 			return Grid2Layout.customDefaults.sortMethod=="NAME"
 		end,
-		set = function(info,v) 
+		set = function(info,v)
 			Grid2Layout.customDefaults.sortMethod = (v and "NAME") or nil
 			RefreshLayout(true)
 		end,
 	},
-	
+
 	vehicle = {
 		order = 2,
 		type = "toggle",
 		name = "|cffffd200".. L["Toggle for vehicle"] .."|r",
 		desc = L["When the player is in a vehicle replace the player frame with the vehicle frame."],
 		width = "full",
-		get = function() 
+		get = function()
 			return Grid2Layout.customDefaults.toggleForVehicle
 		end,
-		set = function(info,v) 
+		set = function(info,v)
 			Grid2Layout.customDefaults.toggleForVehicle = v
 			RefreshLayout(true)
 		end,
 	},
-	
+
 	createdesc = {
 		order = 10,
 		type = "description",
 		name = "\n" .. L["Create a new user defined layout by entering a name in the editbox."],
 	},
-	
+
 	create = {
 		type = "input",
 		order = 11,
@@ -596,7 +608,7 @@ generalOptions = {
 		type = "description",
 		name = "\n" .. L["Delete existing layouts from the database."],
 	},
-	
+
 	delete = {
 		type   = "select",
 		name   = L['Delete Layout'],
@@ -609,7 +621,7 @@ generalOptions = {
 		confirmText = L["Are you sure you want to delete the selected layout?"],
 		disabled = function() return not next(Grid2Layout.customLayouts) end,
 	},
-	
+
 }
 
 
@@ -634,7 +646,7 @@ editorOptions.__general = {
 
 --=====================================================================================
 
--- Editor is displayed in two different places, option when Themes are enabled: General -> LayoutEditor	
+-- Editor is displayed in two different places, option when Themes are enabled: General -> LayoutEditor
 Grid2Options:AddGeneralOptions( "LayoutEditor", nil, {
 	type   = "group",
 	name   = L["Layouts"],
