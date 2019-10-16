@@ -52,8 +52,9 @@ Grid2Options:RegisterStatusOptions("heals-incoming", "health", function(self, st
 		tristate = false,
 		get = function () return status.dbx.includePlayerHeals end,
 		set = function (_, v)
+			status:OnDisable()
 			status.dbx.includePlayerHeals = v or nil
-			status:UpdateDB()
+			status:OnEnable()
 		end,
 	}
 	options.healTypes = {
