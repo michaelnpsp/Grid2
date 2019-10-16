@@ -513,7 +513,7 @@ function Heals:OnEnable()
 	if self.dbx.includeHealAbsorbs and not Grid2.isClassic then
 		RegisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", HealsUpdateEvent)
 	end
-	if not self.dbx.includePlayer and not Grid2.isClassic then
+	if not self.dbx.includePlayerHeals then
 		myheal_required = bit.bor(myheal_required,1)
 	end
 	heals_required = bit.bor(heals_required,1) -- set bit1
