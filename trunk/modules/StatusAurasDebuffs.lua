@@ -2,7 +2,7 @@
 local Grid2 = Grid2
 local UnitAura = UnitAura
 local myUnits = Grid2.roster_my_units
-local typeColors  = Grid2.debuffTypeColors
+local typeColors = Grid2.debuffTypeColors
 local dispelTypes = Grid2.debuffDispelTypes
 
 local emptyTable = {}
@@ -12,42 +12,71 @@ local expirations = {}
 local durations = {}
 local colors = {}
 
--- Called by StatusAura.lua to filter auras
+-- Called from StatusAura.lua to filter auras
+
+-- All debuffs + black list
 local function status_UpdateStateBlackList(self, unit, name)
-	-- All debuffs + black list
 	return not self.spells[name]
 end
 
+-- Boss Debuffs filter + black list
 local function status_UpdateStateBoss(self, _, name, _, _, boss)
-	-- Boss Debuffs filter + black list
 	return boss and (not self.spells[name])
 end
 
+-- Filter + black list
 local function status_UpdateStateFilter(self, unit, name, duration, caster, boss)
-	-- Filter + black list
 	return ( not self.spells[name] ) and
 		   ( self.filterLong  ==nil  or self.filterLong  ~= (duration>=300) ) and
 		   ( self.filterBoss  ==nil  or self.filterBoss  ~= boss ) and
 		   ( self.filterCaster==nil  or self.filterCaster~= (myUnits[caster]==true) )
 end
 
-local function status_UpdateStateDispel(self, unit)
-	-- Dispeleable debuffs
-	local name, texture, count, debuffType, duration, expiration = UnitAura(unit, 1, 'RAID|HARMFUL')
-	if name and dispelTypes[debuffType] then
-		self.idx[unit] = 1
-		self.tex[unit] = texture
-		self.dur[unit] = duration
-		self.exp[unit] = expiration
-		self.cnt[unit] = count
-		self.typ[unit] = debuffType
-		self.tkr[unit] = 1
-		self.seen = 1
-	elseif self.idx[unit] then
-		self:Reset(unit)
-		self.seen = 1  -- using 1 we force indicators update to clear the status, but avoiding more StatusAuras calls to this function to check next unit auras.
-	else
-		self.seen = -1 -- avoid indicators update, status was inactive and must continue inactive
+-- Dispellable debuffs
+local status_UpdateStateDispel, InitDispellData
+if Grid2.isClassic then
+	local dispellable
+	InitDispellData = function()
+		local class = select(2,UnitClass('player'))
+		if class == 'DRUID' then
+			dispellable = { Poison = IsPlayerSpell(2893) or IsPlayerSpell(8946), Curse = IsPlayerSpell(2782) }
+		elseif class == 'PALADIN' then
+			dispellable = { Poison = IsPlayerSpell(4987) or IsPlayerSpell(1152), Disease = IsPlayerSpell(4987) or IsPlayerSpell(1152), Magic = IsPlayerSpell(4987) }
+		elseif class == 'PRIEST' then
+			dispellable = { Magic = IsPlayerSpell(527), Disease = IsPlayerSpell(552) or IsPlayerSpell(528) }
+		elseif class == 'SHAMAN' then
+			dispellable = { Disease = IsPlayerSpell(2870), Poison = IsPlayerSpell(526) }
+		elseif class == 'MAGE' then
+			dispellable = { Curse = IsPlayerSpell(475) }
+		elseif class == 'WARLOCK' then
+			dispellable = { Magic = true }
+		else
+			dispellable = {}
+		end
+		InitDispellData = nil
+	end
+	status_UpdateStateDispel = function(self, _, _, _, _, _, typ)
+		return typ and dispellable[typ]
+	end
+else
+	status_UpdateStateDispel = function(self, unit)
+		-- Dispeleable debuffs
+		local name, texture, count, debuffType, duration, expiration = UnitAura(unit, 1, 'RAID|HARMFUL')
+		if name and dispelTypes[debuffType] then
+			self.idx[unit] = 1
+			self.tex[unit] = texture
+			self.dur[unit] = duration
+			self.exp[unit] = expiration
+			self.cnt[unit] = count
+			self.typ[unit] = debuffType
+			self.tkr[unit] = 1
+			self.seen = 1
+		elseif self.idx[unit] then
+			self:Reset(unit)
+			self.seen = 1  -- using 1 we force indicators update to clear the status, but avoiding more StatusAuras calls to this function to check next unit auras.
+		else
+			self.seen = -1 -- avoid indicators update, status was inactive and must continue inactive
+		end
 	end
 end
 
@@ -151,9 +180,12 @@ do
 		if Grid2.classicDurations then
 			UnitAura = LibStub("LibClassicDurations").UnitAuraDirect
 		end
-		if dbx.spellName then
+		if InitDispellData then -- dispell data for classic
+			InitDispellData()
+		end
+		if dbx.spellName then -- fix possible wrong data in old database
 			dbx.spellName = nil
-		end -- fix possible wrong data in old database
+		end
 		local status = Grid2.statusPrototype:new(baseKey, false)
 		status.OnUpdate = status_Update
 		return Grid2.CreateStatusAura(status, basekey, dbx, 'debuff', statusTypes)
