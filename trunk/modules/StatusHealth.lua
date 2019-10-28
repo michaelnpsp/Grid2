@@ -8,10 +8,10 @@ local HealthCurrent = Grid2.statusPrototype:new("health-current", false)
 local HealthLow = Grid2.statusPrototype:new("health-low",false)
 local FeignDeath = Grid2.statusPrototype:new("feign-death", false)
 local HealthDeficit = Grid2.statusPrototype:new("health-deficit", false)
-local Death = Grid2.statusPrototype:new("death", true)
 local Heals = Grid2.statusPrototype:new("heals-incoming", false)
 local MyHeals = Grid2.statusPrototype:new("my-heals-incoming", false)
 local OverHeals = Grid2.statusPrototype:new("overhealing", false)
+local Death = Grid2.statusPrototype:new("death", true)
 
 local Grid2 = Grid2
 local next = next
@@ -27,13 +27,19 @@ local UnitHealthMax = UnitHealthMax
 
 -- Caches
 local heals_enabled = false
-local overheals_enabled = false
-local myheals_enabled = false
 local heals_required = 0
-local myheal_required = 0
+local heals_minimum = 1
+local heals_multiplier = 1
 local heals_cache = setmetatable( {}, {__index = function() return 0 end} )
+
+local myheals_enabled = false
+local myheal_required = 0
+local myheals_minimum = 1
+local myheals_multiplier = 1
 local myheals_cache = setmetatable( {}, {__index = function() return 0 end} )
-local overheals_cache = {}
+
+local overheals_enabled = false
+local overheals_minimum = 1
 
 -- Health statuses update function
 local statuses = {}
@@ -469,7 +475,7 @@ HealsUpdateEvent = function(unit)
 	if unit then
 		local myheal = myheal_required>0 and UnitGetIncomingHeals(unit, "player") or 0
 		if myheals_enabled then
-			local heal = myheal>=MyHeals.minimum and myheal * MyHeals.multiplier or 0
+			local heal = myheal>=myheals_minimum and myheal * myheals_multiplier or 0
 			if myheals_cache[unit] ~= heal then
 				myheals_cache[unit] = heal
 				MyHeals:UpdateIndicators(unit)
@@ -477,18 +483,13 @@ HealsUpdateEvent = function(unit)
 		end
 		if heals_enabled or overheals_enabled then
 			local heal = HealsGetAmount(unit, myheal)
-			heal = heal>=Heals.minimum and heal * Heals.multiplier or 0
+			heal = heal>=heals_minimum and heal * heals_multiplier or 0
 			if heals_cache[unit] ~= heal then
 				heals_cache[unit] = heal
 				Heals:UpdateIndicators(unit)
 			end
 			if overheals_enabled then
-				local over = UnitHealth(unit) + heal - UnitHealthMax(unit)
-				if over<=OverHeals.minimum then over=nil end
-				if over ~= overheals_cache[unit] then
-					overheals_cache[unit] = over
-					OverHeals:UpdateIndicators(unit)
-				end
+				OverHeals:UpdateIndicators(unit)
 			end
 		end
 	end
@@ -496,8 +497,8 @@ end
 
 function Heals:UpdateDB()
 	local m = self.dbx.flags
-	self.minimum = (m and m>1 and m ) or 1
-	self.multiplier = self.dbx.multiplier or 1
+	heals_minimum = (m and m>1 and m ) or 1
+	heals_multiplier = self.dbx.multiplier or 1
 	if self.dbx.includeHealAbsorbs and not Grid2.isClassic then
 		HealsGetAmount = self.dbx.includePlayerHeals and HealsAbsorbPlayer or HealsAbsorbNoPlayer
 	else
@@ -567,34 +568,36 @@ Grid2:DbSetStatusDefaultValue( "heals-incoming", {type = "heals-incoming", inclu
 OverHeals.GetColor = Grid2.statusLibrary.GetColor
 
 function OverHeals:UpdateDB()
-	self.minimum = self.dbx.minimum or 0
+	overheals_minimum = self.dbx.minimum or 1
 end
 
 function OverHeals:OnEnable()
 	self:UpdateDB()
+	Health_Enable(self)
 	if heals_required==0 then RegisterEvent("UNIT_HEAL_PREDICTION", HealsUpdateEvent) end
 	heals_required = bit.bor(heals_required,4) -- set bit3
 	overheals_enabled = true
 end
 
 function OverHeals:OnDisable()
-	wipe(overheals_cache)
+	Health_Disable(self)
 	overheals_enabled = false
 	heals_required = bit.band(heals_required,7-4) -- clear bit3
 	if heals_required==0 then UnregisterEvent("UNIT_HEAL_PREDICTION") end
 end
 
 function OverHeals:IsActive(unit)
-	return overheals_cache[unit] ~= nil
+	return heals_cache[unit]+UnitHealth(unit)-UnitHealthMax(unit)>=overheals_minimum
 end
 
 function OverHeals:GetText(unit)
-	local h = overheals_cache[unit] or 0
+	local h = heals_cache[unit]+UnitHealth(unit)-UnitHealthMax(unit)
 	return h<1000 and fmt("%d",h) or fmt("%.1fk",h/1000)
 end
 
 function OverHeals:GetPercent(unit)
-	return (overheals_cache[unit] or 0) / (UnitHealthMax(unit) or 0)
+	local h = heals_cache[unit]+UnitHealth(unit)-UnitHealthMax(unit)
+	return h / (UnitHealthMax(unit) or 0)
 end
 
 local function Create(baseKey, dbx)
@@ -612,8 +615,8 @@ MyHeals.GetColor = Grid2.statusLibrary.GetColor
 
 function MyHeals:UpdateDB()
 	local m = self.dbx.flags
-	self.minimum = (m and m>1 and m ) or 1
-	self.multiplier = self.dbx.multiplier or 1
+	myheals_minimum = (m and m>1 and m ) or 1
+	myheals_multiplier = self.dbx.multiplier or 1
 end
 
 function MyHeals:OnEnable()
