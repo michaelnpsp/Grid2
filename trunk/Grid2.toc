@@ -31,7 +31,7 @@ Libs\AceConsole-3.0\AceConsole-3.0.xml
 Libs\AceLocale-3.0\AceLocale-3.0.xml
 Libs\LibSharedMedia-3.0\LibSharedMedia-3.0.lua
 #@non-retail@
-# Libs\LibClassicHealComm-1.0\lib.xml
+# Libs\LibHealComm-4.0\LibHealComm-4.0.xml
 # Libs\LibClassicDurations\LibClassicDurations.xml
 #@end-non-retail@
 #@end-no-lib-strip@

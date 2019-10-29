@@ -420,7 +420,7 @@ local UnregisterEvent = UnregisterEvent -- Do not remove this line because Unreg
 
 --{{ This code block can be safety be removed for retail
 if Grid2.isClassic then
-	local HealComm = LibStub("LibClassicHealComm-1.0", true)
+	local HealComm = LibStub("LibHealComm-4.0",true)
 	local roster_units = Grid2.roster_units
 	local UnitGUID = UnitGUID
 	local function HealUpdated(event, casterGUID, spellID, healType, endTime, ... )
