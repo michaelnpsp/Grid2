@@ -1,5 +1,39 @@
 local L = Grid2Options.L
 
+if Grid2.isClassic then
+	local TIME_VALUES = { [0] = L['None'] }
+	for i=1,5 do TIME_VALUES[i] = string.format(L["%d seconds"], i)	end
+	function Grid2Options:MakeStatusHealsClassicOptions(status, options)
+		local LHC = LibStub("LibHealComm-4.0")
+		options.classicTimeBand = {
+			type = "select",
+			name = L["Heals Time Band"],
+			desc = L["Show only heals that are going to land within the selected time period. Select None to display all heals."],
+			order = 290,
+			get = function() return status.dbx.healTimeBand or 0 end,
+			set = function(_, v)
+				status.dbx.healTimeBand = v~=0 and v or nil
+				status:UpdateDB()
+			end,
+			values = TIME_VALUES
+		}
+		options.classicHealTypes = {
+			type = "multiselect",
+			order = 300,
+			name = L["Heal Types"],
+			get = function(info, value)
+				return bit.band(status.dbx.healTypeFlags or LHC.ALL_HEALS, value) ~= 0
+			end,
+			set = function(info, value)
+				status.dbx.healTypeFlags = bit.bxor(status.dbx.healTypeFlags or LHC.ALL_HEALS, value)
+				if status.dbx.healTypeFlags == LHC.ALL_HEALS then status.dbx.healTypeFlags = nil end
+				status:UpdateDB()
+			end,
+			values = { [LHC.DIRECT_HEALS] = L['Casted'], [LHC.CHANNEL_HEALS] = L['Channeled'], [LHC.HOT_HEALS]=L['HOTs'], [LHC.BOMB_HEALS] = L['Bomb'] }
+		}
+	end
+end
+
 Grid2Options:RegisterStatusOptions("health-current", "health", function(self, status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
 	self:MakeSpacerOptions(options, 30)
@@ -29,7 +63,9 @@ end, {
 
 Grid2Options:RegisterStatusOptions("heals-incoming", "health", function(self, status, options, optionParams)
 	self:MakeStatusStandardOptions(status, options, optionParams)
-	if not Grid2.isClassic then
+	if Grid2.isClassic then
+		self:MakeStatusHealsClassicOptions(status, options)
+	else
 		options.includeHealAbsorbs = {
 			type = "toggle",
 			order = 115,
@@ -48,7 +84,7 @@ Grid2Options:RegisterStatusOptions("heals-incoming", "health", function(self, st
 		type = "toggle",
 		order = 110,
 		name = L["Include player heals"],
-		desc = L["Include player heals"],
+		desc = L["Include heals casted by me, if unchecked only other players heals are displayed."],
 		tristate = false,
 		get = function () return status.dbx.includePlayerHeals end,
 		set = function (_, v)
@@ -57,7 +93,7 @@ Grid2Options:RegisterStatusOptions("heals-incoming", "health", function(self, st
 			status:OnEnable()
 		end,
 	}
-	options.healTypes = {
+	options.minimumValue = {
 		type = "input",
 		order = 120,
 		width = "full",
@@ -92,7 +128,7 @@ end, {
 
 Grid2Options:RegisterStatusOptions("my-heals-incoming", "health", function(self, status, options, optionParams)
 	self:MakeStatusStandardOptions(status, options, optionParams)
-	options.healTypes = {
+	options.minimumValue = {
 		type = "input",
 		order = 120,
 		width = "full",
@@ -121,6 +157,9 @@ Grid2Options:RegisterStatusOptions("my-heals-incoming", "health", function(self,
 			status:UpdateDB()
 		end,
 	}
+	if Grid2.isClassic then
+		self:MakeStatusHealsClassicOptions(status, options)
+	end
 end, {
 	titleIcon = Grid2.isClassic and "Interface\\Icons\\Spell_Holy_Heal" or "Interface\\Icons\\Spell_Holy_DivineProvidence"
 })
