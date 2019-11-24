@@ -150,11 +150,12 @@ local function Health_RegisterEvents()
 	RegisterEvent("UNIT_HEALTH", UpdateIndicators )
 	RegisterEvent("UNIT_MAXHEALTH", UpdateIndicators )
 	RegisterEvent("UNIT_HEALTH_FREQUENT", UpdateIndicators )
+	RegisterEvent("UNIT_CONNECTION", UpdateIndicators )
 	EnableQuickHealth()
 end
 
 local function Health_UnregisterEvents()
-	UnregisterEvent( "UNIT_HEALTH", "UNIT_HEALTH_FREQUENT", "UNIT_MAXHEALTH" )
+	UnregisterEvent( "UNIT_HEALTH", "UNIT_HEALTH_FREQUENT", "UNIT_MAXHEALTH", "UNIT_CONNECTION" )
 	DisableQuickHealth()
 end
 
