@@ -2,17 +2,15 @@
 ## Interface: 80200
 #@end-retail@
 #@non-retail@
-# ## Interface: 11302
+# ## Interface: 11303
 #@end-non-retail@
 ## Title: Grid2 |cd2ff7d0aRaidDebuffs Options|r
 ## Title-esES: Grid2 |cd2ff7d0aRaidDebuffs Opciones|r
 ## Notes: Load on demand Options for Grid2RaidDebuffs.
 ## Notes-esES: Opciones de configuracion para el modulo Grid2RaidDebuffs.
 ## Author: Michael
-
 ## Dependencies: Grid2, Grid2RaidDebuffs
 ## LoadOnDemand: 1
-
 ## Version: @project-version@
 
 Grid2RaidDebuffsOptions.lua
