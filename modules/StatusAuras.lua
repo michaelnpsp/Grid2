@@ -394,9 +394,9 @@ do
 	local function OnEnable(self)
 		if self.spell then -- standalone buff or debuff
 			RegisterStatusAura(self, self.handlerType, self.spell)
-		elseif self.handlerType=="buff" or self.dbx.useWhiteList then
+		elseif self.handlerType=='buff' then
 			for spell in pairs(self.spells) do
-				RegisterStatusAura( self, self.handlerType, spell )
+				RegisterStatusAura( self, 'buff', spell )
 			end
 		else -- debuffType or group of filtered debuffs
 			RegisterStatusAura(self, self.handlerType, self.dbx.subType)

@@ -14,6 +14,11 @@ local colors = {}
 
 -- Called from StatusAura.lua to filter auras
 
+-- All debuffs + white list
+local function status_UpdateStateWhiteList(self, unit, name)
+	return self.spells[name]
+end
+
 -- All debuffs + black list
 local function status_UpdateStateBlackList(self, unit, name)
 	return not self.spells[name]
@@ -154,6 +159,7 @@ local function status_Update(self, dbx)
 		self.UpdateState  = status_UpdateStateDispel
 	elseif dbx.useWhiteList then
 		self.GetIcons 	  = status_GetIconsWhiteList
+		self.UpdateState  = status_UpdateStateWhiteList
 	else
 		self.filterLong   = dbx.filterLongDebuffs
 		self.filterBoss   = dbx.filterBossDebuffs
