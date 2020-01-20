@@ -745,4 +745,77 @@ RDDB["Battle for Azeroth"] = {
 		297907, -- Cursed Heart
 		},
 	},
+	[1180] = {
+		{ id = 1180, name = "Ny'alotha, the Waking City", raid = true },
+		["Wrathion, the Black Emperor"] = {
+		order = 1, ejid = 2368,
+		306163, -- Incineration
+		314347, -- Noxxious Choke
+		307013, -- Burning Madness
+		},
+		["Maut"] = {
+		order = 2, ejid = 2365,
+		307806, -- Devour Magic
+		306301, -- Forbidden Mana
+		},
+		["The Prophet Skitra"] = {
+		order = 3, ejid = 2369,
+		308059, -- Shadow Shock Applied
+		307950, -- Shred Psyche
+		},
+		["Dark Inquisitor Xanesh"] = {
+		order = 4, ejid = 2377,
+		313198, -- Void Touched
+		312406, -- Voidwoken
+		},
+		["The Hivemind"] = {
+		order = 5, ejid = 2372,
+		313461, -- Corrosion
+		313129, -- Mindless
+		313460, -- Nullification
+		},
+		["Shad'har the Insatiable"] = {
+		order = 6, ejid = 2367,
+		307358, -- Debilitating Spit
+		307945, -- Umbral Eruption
+		306929, -- Bubbling Breath
+		307260, -- Fixate
+		},
+		["Drest'agath"] = {
+		order = 7, ejid = 2373,
+		310552, -- Mind Flay
+		310358, -- Muttering Insanity
+		},
+		["Il'gynoth, Corruption Reborn"] = {
+		order = 8, ejid = 2374,
+		275269, -- Fixate
+		311159, -- Cursed Blood
+		},
+		["Vexiona"] = {
+		order = 9, ejid = 2370,
+		307314, -- Encroaching Shadows
+		307359, -- Despair
+		310323, -- Desolation
+		},
+		["Ra-den the Despoiled"] = {
+		order = 10, ejid = 2364,
+		313227, -- Decaying Wound
+		310019, -- Charged Bonds
+		313077, -- Unstable Nightmare
+		315252, -- Dread Inferno Fixate
+		316065, -- Corrupted Existence
+		},
+		["Carapace of N'Zoth"] = {
+		order = 11, ejid = 2366,
+		307008, -- Breed Madness
+		306973, -- Madness Bomb
+		306984, -- Insanity Bomb
+		},
+		["N'Zoth the Corruptor"] = {
+		order = 12, ejid = 2375,
+		308885, -- Mind Flay
+		317112, -- Evoke Anguish
+		309980, -- Paranoia
+		},
+	},
 }
