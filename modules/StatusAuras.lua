@@ -420,8 +420,8 @@ do
 		if dbx.auras then -- multiple spells
 			self.spells = self.spells or {}
 			wipe(self.spells)
-			for _,spell in ipairs(dbx.auras) do
-				self.spells[spell] = true
+			for _,spell in ipairs(dbx.auras) do -- We only allow spell names because DebuffsGroups do not support spellIDs
+				self.spells[ type(spell)=='number' and GetSpellInfo(spell) or spell ] = true
 			end
 		elseif dbx.spellName then -- single spell
 			local spell = dbx.spellName
