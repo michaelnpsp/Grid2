@@ -23,6 +23,7 @@ GSRD.defaultDB = { profile = { debuffs = {}, enabledModules = {} } }
 -- general variables
 local instance_id
 local instance_map_id
+local instance_bmap_id
 local instance_map_name
 local statuses = {}
 local spells_order = {}
@@ -104,9 +105,6 @@ end
 -- In Classic Encounter Journal data does not exist so we always use map_id so: instance_id+100000=instance_map_id
 function GSRD:UpdateZoneSpells(event)
 	local bm = C_Map.GetBestMapForUnit("player")
-
-	print(">>>>>", bm, EJ_GetInstanceForMap(bm), EJ_GetInstanceForMap(1581) )
-
 	if bm or isClassic then
 		local map_id = select(8,GetInstanceInfo()) + 100000 -- +100000 to avoid collisions with instance_id
 		if event and map_id==instance_map_id then return end
@@ -114,6 +112,7 @@ function GSRD:UpdateZoneSpells(event)
 		instance_id = EJ_GetInstanceForMap( (isClassic and map_id) or bugged_maps[bm] or bm )
 		instance_map_id = map_id
 		instance_map_name = GetInstanceInfo()
+		instance_bmap_id = bm or -1
 		for status in next,statuses do
 			status:LoadZoneSpells()
 		end
@@ -277,7 +276,7 @@ function class:LoadZoneSpells()
 			end
 		end
 		if GSRD.debugging then
-			GSRD:Debug("Zone [%s][%d/%d] Status [%s]: %d raid debuffs loaded", instance_map_name, instance_id, instance_map_id, self.name, spells_count)
+			GSRD:Debug("Zone [%s][%d/%d/%d] Status [%s]: %d raid debuffs loaded", instance_map_name, instance_bmap_id, instance_id, instance_map_id, self.name, spells_count)
 		end
 	end
 end
