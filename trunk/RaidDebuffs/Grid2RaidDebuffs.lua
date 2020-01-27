@@ -37,12 +37,24 @@ local auto_instance
 local auto_debuffs
 local auto_blacklist = { [160029] = true, [36032] = true, [6788] = true, [80354] = true, [95223] = true, [114216] = true, [57723] = true }
 
--- Fix some bugged maps (EJ_GetInstanceInfo does not return valid instanceID for these maps)
--- We replace bugged mapIDs with another non bugged mapIDs of the same instance.
+-- Fix some bugged maps (EJ_GetInstanceInfo does not return valid instanceID for the listed maps)
+-- We replace bugged mapIDs with another non-bugged mapIDs of the same instance.
 local bugged_maps = {
-	[1150] = 1148, -- Fix for Uldir map 1150 (ticket #588)
-	[1515] = 1512, -- Fix for Eternal Palace map 1515 (ticket #691)
-	[1516] = 1512, -- Fix for Eternal Palace map 1516 (ticket #691)
+	-- Fix for Uldir map 1150 (ticket #588)
+	[1150] = 1148,
+	-- Fixes for Eternal Palace (ticket #691)
+	[1515] = 1512,
+	[1516] = 1512,
+	-- Fixes for Ny'alotha the Waking City (ticket #786)
+	[1580] = 1581, -- Game can return 1580 or 1582 on first map
+	[1582] = 1581,
+	[1583] = 1581, -- Preventive added 1583-1589 ranges (but probably they are unused maps IDs and not needed)
+	[1584] = 1581,
+	[1585] = 1581,
+	[1586] = 1581,
+	[1587] = 1581,
+	[1588] = 1581,
+	[1589] = 1581,
 }
 
 -- LDB Tooltip
@@ -92,6 +104,9 @@ end
 -- In Classic Encounter Journal data does not exist so we always use map_id so: instance_id+100000=instance_map_id
 function GSRD:UpdateZoneSpells(event)
 	local bm = C_Map.GetBestMapForUnit("player")
+
+	print(">>>>>", bm, EJ_GetInstanceForMap(bm), EJ_GetInstanceForMap(1581) )
+
 	if bm or isClassic then
 		local map_id = select(8,GetInstanceInfo()) + 100000 -- +100000 to avoid collisions with instance_id
 		if event and map_id==instance_map_id then return end
