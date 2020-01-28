@@ -598,7 +598,6 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			status:Refresh()
 			status:UpdateAllUnits()
 		end,
-		hidden = function() return status.dbx.filterDispelDebuffs end,
 	}
 end
 
