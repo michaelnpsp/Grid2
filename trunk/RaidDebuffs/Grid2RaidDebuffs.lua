@@ -47,15 +47,8 @@ local bugged_maps = {
 	[1515] = 1512,
 	[1516] = 1512,
 	-- Fixes for Ny'alotha the Waking City (ticket #786)
-	[1580] = 1581, -- Game can return 1580 or 1582 on first map
+	[1580] = 1581,
 	[1582] = 1581,
-	[1583] = 1581, -- Preventive added 1583-1589 ranges (but probably they are unused maps IDs and not needed)
-	[1584] = 1581,
-	[1585] = 1581,
-	[1586] = 1581,
-	[1587] = 1581,
-	[1588] = 1581,
-	[1589] = 1581,
 }
 
 -- LDB Tooltip

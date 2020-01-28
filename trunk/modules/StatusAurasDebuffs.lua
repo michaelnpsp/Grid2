@@ -68,14 +68,16 @@ else
 		-- Dispeleable debuffs
 		local name, texture, count, debuffType, duration, expiration = UnitAura(unit, 1, 'RAID|HARMFUL')
 		if name and dispelTypes[debuffType] then
-			self.idx[unit] = 1
-			self.tex[unit] = texture
-			self.dur[unit] = duration
-			self.exp[unit] = expiration
-			self.cnt[unit] = count
-			self.typ[unit] = debuffType
-			self.tkr[unit] = 1
-			self.seen = 1
+			if not self.spells[name] then -- check blacklist
+				self.idx[unit] = 1
+				self.tex[unit] = texture
+				self.dur[unit] = duration
+				self.exp[unit] = expiration
+				self.cnt[unit] = count
+				self.typ[unit] = debuffType
+				self.tkr[unit] = 1
+				self.seen = 1
+			end
 		elseif self.idx[unit] then
 			self:Reset(unit)
 			self.seen = 1  -- using 1 we force indicators update to clear the status, but avoiding more StatusAuras calls to this function to check next unit auras.
