@@ -38,7 +38,7 @@ local function status_UpdateStateFilter(self, unit, name, duration, caster, boss
 end
 
 -- Dispellable debuffs
-local status_UpdateStateDispel, InitDispellData
+local status_UpdateStateDispel, status_UpdateStateDispelBlackList, InitDispellData
 if Grid2.isClassic then
 	local dispellable
 	InitDispellData = function()
@@ -63,26 +63,55 @@ if Grid2.isClassic then
 	status_UpdateStateDispel = function(self, _, _, _, _, _, typ)
 		return typ and dispellable[typ]
 	end
+	status_UpdateStateDispelBlackList = function(self, _, name, _, _, _, typ)
+		return typ and dispellable[typ] and (not self.spells[name])
+	end
 else
 	status_UpdateStateDispel = function(self, unit)
 		-- Dispeleable debuffs
 		local name, texture, count, debuffType, duration, expiration = UnitAura(unit, 1, 'RAID|HARMFUL')
-		if name and dispelTypes[debuffType] then
-			if not self.spells[name] then -- check blacklist
-				self.idx[unit] = 1
-				self.tex[unit] = texture
-				self.dur[unit] = duration
-				self.exp[unit] = expiration
-				self.cnt[unit] = count
-				self.typ[unit] = debuffType
-				self.tkr[unit] = 1
-				self.seen = 1
-			end
+		if name then
+			self.idx[unit] = 1
+			self.tex[unit] = texture
+			self.dur[unit] = duration
+			self.exp[unit] = expiration
+			self.cnt[unit] = count
+			self.typ[unit] = debuffType
+			self.tkr[unit] = 1
+			self.seen = 1
 		elseif self.idx[unit] then
 			self:Reset(unit)
 			self.seen = 1  -- using 1 we force indicators update to clear the status, but avoiding more StatusAuras calls to this function to check next unit auras.
 		else
 			self.seen = -1 -- avoid indicators update, status was inactive and must continue inactive
+		end
+	end
+	status_UpdateStateDispelBlackList = function(self, unit)
+		-- Dispeleable debuffs + blacklist
+		local i, spells = 1, self.spells
+		while true do
+			local name, texture, count, debuffType, duration, expiration = UnitAura(unit, i, 'RAID|HARMFUL')
+			if name then
+				if not spells[name] then -- check blacklist
+					self.idx[unit] = i
+					self.tex[unit] = texture
+					self.dur[unit] = duration
+					self.exp[unit] = expiration
+					self.cnt[unit] = count
+					self.typ[unit] = debuffType
+					self.tkr[unit] = 1
+					self.seen = 1
+					return
+				end
+			elseif self.idx[unit] then
+				self:Reset(unit)
+				self.seen = 1  -- using 1 we force indicators update to clear the status, but avoiding more StatusAuras calls to this function to check next unit auras.
+				return
+			else
+				self.seen = -1 -- avoid indicators update, status was inactive and must continue inactive
+				return
+			end
+			i = i + 1
 		end
 	end
 end
@@ -133,12 +162,12 @@ local function status_GetIconsFilter(self, unit)
 end
 
 local function status_GetIconsDispel(self, unit)
-	local i, j, name, debuffType = 1, 1
+	local i, j, spells, name, debuffType = 1, 1, self.spells
 	while true do
 		name, textures[j], counts[j], debuffType, durations[j], expirations[j] = UnitAura(unit, i, "RAID|HARMFUL")
 		if not name then return j-1, textures, counts, expirations, durations, colors end
-		if dispelTypes[debuffType] then
-			colors[j] = typeColors[debuffType]
+		if not spells[name] then
+			colors[j] = typeColors[debuffType] or self.color
 			j = j + 1
 		end
 		i = i + 1
@@ -158,7 +187,7 @@ local function status_Update(self, dbx)
 	if dbx.filterDispelDebuffs then
 		self.GetIcons     = status_GetIconsDispel
 		self.GetTooltip   = status_GetTooltipDispel
-		self.UpdateState  = status_UpdateStateDispel
+		self.UpdateState  = dbx.auras and status_UpdateStateDispelBlackList or status_UpdateStateDispel
 	elseif dbx.useWhiteList then
 		self.GetIcons 	  = status_GetIconsWhiteList
 		self.UpdateState  = status_UpdateStateWhiteList
