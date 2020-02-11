@@ -799,6 +799,10 @@ RDDB["Battle for Azeroth"] = {
 		},
 		["Ra-den the Despoiled"] = {
 		order = 10, ejid = 2364,
+		306819, -- Nullifying Strike
+		306273, -- Unstable Vita
+		306279, -- Instability Exposure
+		309777, -- Void Defilement
 		313227, -- Decaying Wound
 		310019, -- Charged Bonds
 		313077, -- Unstable Nightmare
