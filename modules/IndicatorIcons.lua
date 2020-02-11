@@ -2,6 +2,7 @@
 
 local Grid2 = Grid2
 local min = min
+local wipe = wipe
 local pairs = pairs
 local ipairs = ipairs
 local format = string.format
@@ -80,12 +81,10 @@ local function Icon_OnFrameUpdate(f)
 end
 
 -- Delayed updates
-local count = 0
 local updates = {}
 local EnableDelayedUpdates = function()
 	CreateFrame("Frame", nil, Grid2LayoutFrame):SetScript("OnUpdate", function()
 		for i=1,#updates do
-			count = count + 1
 			Icon_OnFrameUpdate(updates[i])
 		end
 		wipe(updates)
