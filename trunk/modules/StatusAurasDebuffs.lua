@@ -117,61 +117,62 @@ else
 end
 
 -- Called by "icons" indicator
-local function status_GetIconsWhiteList(self, unit)
-	local i, j, spells = 1, 1, self.spells
-	local name, debuffType
-	while true do
+local function status_GetIconsWhiteList(self, unit, max)
+	local i, j, spells, name, debuffType = 1, 1, self.spells
+	repeat
 		name, textures[j], counts[j], debuffType, durations[j], expirations[j] = UnitAura(unit, i, 'HARMFUL')
-		if not name then return j-1, textures, counts, expirations, durations, colors end
+		if not name then break end
 		if spells[name] then
 			colors[j] = typeColors[debuffType] or self.color
 			j = j + 1
 		end
 		i = i + 1
-	end
+	until j>max
+	return j-1, textures, counts, expirations, durations, colors
 end
 
-local function status_GetIconsBlackList(self, unit)
-	local i, j, spells = 1, 1, self.spells
-	local name, debuffType
-	while true do
+local function status_GetIconsBlackList(self, unit, max)
+	local i, j, spells, name, debuffType = 1, 1, self.spells
+	repeat
 		name, textures[j], counts[j], debuffType, durations[j], expirations[j] = UnitAura(unit, i, 'HARMFUL')
-		if not name then return j-1, textures, counts, expirations, durations, colors end
+		if not name then break end
 		if not spells[name] then
 			colors[j] = typeColors[debuffType] or self.color
 			j = j + 1
 		end
 		i = i + 1
-	end
+	until j>max
+	return j-1, textures, counts, expirations, durations, colors
 end
 
-local function status_GetIconsFilter(self, unit)
-	local i, j = 1, 1
+local function status_GetIconsFilter(self, unit, max)
 	local filterLong, filterBoss, filterCaster, spells = self.filterLong, self.filterBoss, self.filterCaster, self.spells
-	local name, debuffType, caster, isBossDebuff, _
-	while true do
+	local i, j, name, debuffType, caster, isBossDebuff, _ = 1, 1
+	repeat
 		name, textures[j], counts[j], debuffType, durations[j], expirations[j], caster, _, _, _, _, isBossDebuff = UnitAura(unit, i, 'HARMFUL')
-		if not name then return j-1, textures, counts, expirations, durations, colors end
+		if not name then break end
 		local filtered = spells[name] or (filterLong and (durations[j]>=300)==filterLong) or (filterBoss~=nil and filterBoss==isBossDebuff) or (filterCaster~=nil and filterCaster==(caster==unit or myUnits[caster]==true))
 		if not filtered then
 			colors[j] = typeColors[debuffType] or self.color
 			j = j + 1
 		end
 		i = i + 1
-	end
+	until j>max
+	return j-1, textures, counts, expirations, durations, colors
 end
 
-local function status_GetIconsDispel(self, unit)
+local function status_GetIconsDispel(self, unit, max)
 	local i, j, spells, name, debuffType = 1, 1, self.spells
-	while true do
+	repeat
 		name, textures[j], counts[j], debuffType, durations[j], expirations[j] = UnitAura(unit, i, "RAID|HARMFUL")
-		if not name then return j-1, textures, counts, expirations, durations, colors end
+		if not name then break end
 		if not spells[name] then
 			colors[j] = typeColors[debuffType] or self.color
 			j = j + 1
 		end
 		i = i + 1
-	end
+	until j>max
+	return j-1, textures, counts, expirations, durations, colors
 end
 
 -- Called by "tooltip" indicator

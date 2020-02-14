@@ -14,18 +14,19 @@ local colors = {}
 local color = {}
 
 -- buffs group status
-local function status_GetIcons(self, unit)
+local function status_GetIcons(self, unit, max)
 	color.r, color.g, color.b, color.a = self:GetColor(unit)
 	local i, j, spells, filter, name, caster, _ = 1, 1, self.spells, self.isMine
-	while true do
+	repeat
 		name, textures[j], counts[j], _, durations[j], expirations[j], caster = UnitAura(unit, i)
-		if not name then return j-1, textures, counts, expirations, durations, colors end
+		if not name then break end
 		if spells[name] and (filter==false or filter==myUnits[caster]) then
 			colors[j] = color
 			j = j + 1
 		end
 		i = i + 1
-	end
+	until j>max
+	return j-1, textures, counts, expirations, durations, colors
 end
 
 local statusTypes = { "color", "icon", "icons", "percent", "text" }
@@ -39,12 +40,12 @@ end
 -- special buffs Blizzard status
 local blizzard = { GetColor = Grid2.statusLibrary.GetColor }
 
-function blizzard:GetIcons(unit)
+function blizzard:GetIcons(unit, max)
 	local filter = UnitAffectingCombat("player") and "RAID_INCOMBAT" or "RAID_OUTOFCOMBAT"
 	local color, i, j, name, caster, spellId, canApplyAura, isBossAura, valid, _ = self.dbx.color1, 1, 1
-	while true do
+	repeat
 		name, textures[j], counts[j], _, durations[j], expirations[j], caster, _, _, spellId, canApplyAura, isBossAura = UnitAura(unit, i)
-		if not name then return j-1, textures, counts, expirations, durations, colors end
+		if not name then break end
 		if not isBossAura then
 			local hasCustom, alwaysShowMine, showForMySpec = SpellGetVisibilityInfo(spellId, filter)
 			if hasCustom  then
@@ -58,7 +59,8 @@ function blizzard:GetIcons(unit)
 			end
 		end
 		i = i + 1
-	end
+	until j>max
+	return j-1, textures, counts, expirations, durations, colors
 end
 
 function blizzard:UNIT_AURA(_, unit)

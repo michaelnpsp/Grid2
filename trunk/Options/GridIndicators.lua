@@ -197,7 +197,7 @@ do
 			function Test:GetColor()    return math.random(0,1),math.random(0,1),math.random(0,1),1 end
 			function Test:GetPercent()	return math.random() end
 			function Test:GetIcon()	    return TestIcons[ math.random(#TestIcons) ]	end
-			function Test:GetIcons() 	return #TestIcons, TestAuras.tex, TestAuras.cnt, TestAuras.exp, TestAuras.dur, TestAuras.col end
+			function Test:GetIcons(_,m) return math.min(m,#TestIcons), TestAuras.tex, TestAuras.cnt, TestAuras.exp, TestAuras.dur, TestAuras.col end
 			Test.dbx = TestIcons -- Asigned to TestIcons to avoid creating a new table
 			Grid2:RegisterStatus( Test, {"text","color", "percent", "icon"}, "test" )
 			ToggleTestMode = function()
