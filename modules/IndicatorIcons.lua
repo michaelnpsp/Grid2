@@ -29,8 +29,7 @@ local function Icon_OnFrameUpdate(f)
 	for _, status in ipairs(self.statuses) do
 		if status:IsActive(unit) then
 			if status.GetIcons then
-				local auras = f.auras
-				local k, textures, counts, expirations, durations, colors = status:GetIcons(unit)
+				local k, textures, counts, expirations, durations, colors = status:GetIcons(unit,max)
 				for j=1,k do
 					local aura = auras[i]
 					aura.icon:SetTexture(textures[j])
@@ -48,8 +47,8 @@ local function Icon_OnFrameUpdate(f)
 					end
 					aura:Show()
 					i = i + 1
-					if i>max then break end
 				end
+				max = max - k
 			else
 				local aura = auras[i]
 				aura.icon:SetTexture(status:GetIcon(unit))
@@ -69,8 +68,9 @@ local function Icon_OnFrameUpdate(f)
 				end
 				aura:Show()
 				i = i + 1
+				max = max - 1
 			end
-			if i>max then break end
+			if max<=0 then break end
 		end
 	end
 	for j=i,f.visibleCount do
@@ -192,7 +192,7 @@ local function Icon_UpdateDB(self)
 	self.frameLevel     = dbx.level or 1
 	self.iconSize       = dbx.iconSize or theme.iconSize or 14
 	self.iconSpacing    = dbx.iconSpacing or 1
-	self.maxIcons       = dbx.maxIcons or 6
+	self.maxIcons       = dbx.maxIcons or 3
 	self.maxIconsPerRow = dbx.maxIconsPerRow or 3
 	self.iconTotSize    = self.iconSize + self.iconSpacing
 	local maxRows = math.floor(self.maxIcons/self.maxIconsPerRow) + (self.maxIcons%self.maxIconsPerRow==0 and 0 or 1)
