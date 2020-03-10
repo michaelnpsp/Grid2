@@ -7,6 +7,7 @@ local PI2 = PI*2
 local sqrt = math.sqrt
 local floor = math.floor
 local atan2 = math.atan2
+local pairs = pairs
 local GetPlayerFacing = GetPlayerFacing
 local UnitPosition = UnitPosition
 local UnitIsUnit = UnitIsUnit
@@ -70,41 +71,43 @@ local function UpdateDirections()
 	local x1,y1, _, map1 = UnitPosition("player")
 	if x1 or guessDirections then
 		local facing = GetPlayerFacing()
-		for unit,guid in Grid2:IterateRosterUnits() do
-			local direction, distance, update
-			if not UnitIsUnit(unit, "player") and UnitCheck(unit, mouseover) then
-				local x2,y2, _, map2 = UnitPosition(unit)
-				if map1 == map2 then
-					if x2 then
-						local dx, dy = x2 - x1, y2 - y1
-						direction = floor((atan2(dy,dx)-facing) / PI2 * 32 + 0.5) % 32
-						if distances then distance = floor( ((dx*dx+dy*dy)^0.5)/10 ) + 1 end
-					elseif guessDirections then -- disabled guessDirections, this condition is never true
-						local frame = plates[guid] or GetPlate(guid)
-						if frame then
-							local s = frame:GetEffectiveScale()
-							local x, y = frame:GetCenter()
-							local dx, dy = x*s - playerx, y*s - playery
-							direction = floor( (atan2(dy,dx)/PI2+0.75) * 32 ) % 32
+		if facing then
+			for unit,guid in Grid2:IterateRosterUnits() do
+				local direction, distance, update
+				if not UnitIsUnit(unit, "player") and UnitCheck(unit, mouseover) then
+					local x2,y2, _, map2 = UnitPosition(unit)
+					if map1 == map2 then
+						if x2 then
+							local dx, dy = x2 - x1, y2 - y1
+							direction = floor((atan2(dy,dx)-facing) / PI2 * 32 + 0.5) % 32
+							if distances then distance = floor( ((dx*dx+dy*dy)^0.5)/10 ) + 1 end
+						elseif guessDirections then -- disabled guessDirections, this condition is never true
+							local frame = plates[guid] or GetPlate(guid)
+							if frame then
+								local s = frame:GetEffectiveScale()
+								local x, y = frame:GetCenter()
+								local dx, dy = x*s - playerx, y*s - playery
+								direction = floor( (atan2(dy,dx)/PI2+0.75) * 32 ) % 32
+							end
 						end
 					end
 				end
+				if distances and distances[unit]~=distance then
+					distances[unit], update  = distance, true
+				end
+				if direction~=directions[unit] then
+					directions[unit], update = direction, true
+				end
+				if update then
+					Direction:UpdateIndicators(unit)
+				end
 			end
-			if distances and distances[unit]~=distance then
-				distances[unit], update  = distance, true
-			end
-			if direction~=directions[unit] then
-				directions[unit], update = direction, true
-			end
-			if update then
-				Direction:UpdateIndicators(unit)
-			end
+			return
 		end
-	else
-		for unit,_ in pairs(directions) do
-			directions[unit]= nil
-			Direction:UpdateIndicators(unit)
-		end
+	end
+	for unit,_ in pairs(directions) do
+		directions[unit]= nil
+		Direction:UpdateIndicators(unit)
 	end
 end
 

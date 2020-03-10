@@ -157,7 +157,7 @@ do
 		[968]  = 10, -- Rated Eye of the Storm
 		[2107] = 15, -- Arathi Basin (patch 8.1.5)
 		[566]  = 15, -- Eye of the Storm
-		[1105] = 15, -- Deepwind Gorge
+		[2245] = 15, -- Deepwind Gorge
 		[1681] = 15, -- Arathi Blizzard
 		[30]   = 40, -- Alterac Valley
 		[628]  = 40, -- Isle of Conquest
