@@ -752,11 +752,15 @@ RDDB["Battle for Azeroth"] = {
 		306163, -- Incineration
 		314347, -- Noxxious Choke
 		307013, -- Burning Madness
+		313250, -- Creeping Madness (mythic)
 		},
 		["Maut"] = {
 		order = 2, ejid = 2365,
 		307806, -- Devour Magic
 		306301, -- Forbidden Mana
+		307399, -- Shadow Wounds
+		314992, -- Drain Essence
+		314337, -- Ancient Curse (mythic)
 		},
 		["The Prophet Skitra"] = {
 		order = 3, ejid = 2369,
@@ -780,6 +784,8 @@ RDDB["Battle for Azeroth"] = {
 		307945, -- Umbral Eruption
 		306929, -- Bubbling Breath
 		307260, -- Fixate
+		312332, -- Slimy Residue
+		306930, -- Entropic Breath
 		},
 		["Drest'agath"] = {
 		order = 7, ejid = 2373,
@@ -814,6 +820,7 @@ RDDB["Battle for Azeroth"] = {
 		307008, -- Breed Madness
 		306973, -- Madness Bomb
 		306984, -- Insanity Bomb
+		307008, -- Breed Madness
 		},
 		["N'Zoth the Corruptor"] = {
 		order = 12, ejid = 2375,
