@@ -174,7 +174,9 @@ Banzai = Grid2.statusPrototype:new("banzai", false)
 
 local bsrc = {} -- bsrc[enemy guid]  = function to check enemy unit casting info
 local bgid = {} -- bgid[enemy guid]  = friendly unit in roster
-local buni = {} -- buni[roster unit] = spellID casted against the unit
+local bfun = {} -- bfun[enemy guid]  = function to check cast/channel info
+local buni = {} -- buni[roster unit] = enemy guid
+local bspl = {} -- bspl[roster unit] = spellID casted against the unit
 local bdur = {} -- bdur[roster unit] = enemy cast duration
 local bexp = {} -- bexp[roster unit] = enemy cast expiration
 local bico = {} -- bico[roster unit] = enemy cast icon
@@ -201,9 +203,9 @@ end
 
 function Banzai:Update()
 	local ct = GetTime()
-	for unit,guid in next,buni do -- Delete expired banzais
-		if ct>=bexp[unit] then
-			buni[unit], bdur[unit], bico[unit], bexp[unit], bgid[guid] = nil, nil, nil, nil, nil
+	for unit,guid in next,buni do -- Delete expired or canceled banzais
+		if ct>=bexp[unit] or not bfun[guid](sguids[guid] or 0) then
+			buni[unit], bdur[unit], bico[unit], bexp[unit], bspl[unit], bgid[guid], bfun[guid] = nil, nil, nil, nil, nil, nil, nil
 			self:UpdateIndicators(unit)
 		end
 	end
@@ -214,7 +216,9 @@ function Banzai:Update()
 			if name then
 				et         = et and et/1000 or ct+0.25
 				bgid[g]    = unit
-				buni[unit] = spellId1 or spellId2 or name
+				bfun[g]    = func
+				buni[unit] = g
+				bspl[unit] = spellId1 or spellId2 or name
 				bdur[unit] = et - ct
 				bexp[unit] = et
 				bico[unit] = ico or "Interface\\ICONS\\Ability_Creature_Cursed_02"
@@ -226,7 +230,7 @@ function Banzai:Update()
 end
 
 function Banzai:GetTooltip(unit, tip)
-	local spellID = buni[unit]
+	local spellID = bspl[unit]
 	if type(spellID) == 'number' then
 		tip:SetSpellByID(spellID)
 	end
@@ -238,6 +242,8 @@ function Banzai:ClearIndicators()
 	wipe(bico)
 	wipe(bdur)
 	wipe(bexp)
+	wipe(bfun)
+	wipe(bspl)
 	for unit in next,buni do
 		buni[unit] = nil
 		self:UpdateIndicators(unit)
