@@ -14,6 +14,7 @@ local DebuffTypes = {}
 local DebuffGroups = {}
 local debuffTypeColors = {}
 local debuffDispelTypes = { Magic = true, Curse = true, Disease = true, Poison = true }
+local cache_tex, cache_cnt, cache_exp, cache_dur, cache_col = {}, {}, {}, {}, {}
 
 -- UNIT_AURA event management
 local AuraFrame_OnEvent
@@ -385,6 +386,19 @@ do
 			return 0,0,0,1
 		end
 	end
+	local function GetDebuffTypeIcons(self, unit, max)
+		local i, j, subType, color, name, debuffType = 1, 1, self.dbx.subType, self.dbx.color1
+		repeat
+			name, cache_tex[j], cache_cnt[j], debuffType, cache_dur[j], cache_exp[j] = UnitAura(unit, i, 'HARMFUL')
+			if not name then break end
+			if subType == debuffType then
+				cache_col[j] = color
+				j = j + 1
+			end
+			i = i + 1
+		until j>max
+		return j-1, cache_tex, cache_cnt, cache_exp, cache_dur, cache_col
+	end
 	local function GetDebuffTooltip(self, unit, tip)
 		local index = self.idx[unit]
 		if index then
@@ -481,6 +495,7 @@ do
 		if dbx.type == "debuffType" then
 			self.debuffFilter = dbx.debuffFilter
 			self.GetBorder = GetBorderMandatory
+			self.GetIcons  = GetDebuffTypeIcons
 			debuffTypeColors[dbx.subType] = dbx.color1
 		else
 			self.GetBorder = GetBorderOptional
