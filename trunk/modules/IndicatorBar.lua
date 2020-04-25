@@ -40,10 +40,10 @@ local function Bar_Layout(self, parent)
 		if bgTex then bgTex:Hide() end
 	else
 		local w = self.width  or parent.container:GetWidth()
-		local h = self.height or parent.container:GetHeight()	
+		local h = self.height or parent.container:GetHeight()
 		Bar:SetFrameLevel(level)
 		Bar:SetSize(w, h)
-		Bar:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)			
+		Bar:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
 		local color = self.backColor
 		if color then
 			local tex = Bar:GetStatusBarTexture()
@@ -52,17 +52,17 @@ local function Bar_Layout(self, parent)
 			bgTex:SetTexture(self.texture)
 			bgTex:ClearAllPoints()
 			if self.dbx.invertColor then
-				bgTex:SetAllPoints(Bar)				
-			else	
+				bgTex:SetAllPoints(Bar)
+			else
 				bgTex:SetPoint( points[1], tex, points[2], 0, 0)
 				bgTex:SetPoint( points[3], tex, points[4], 0, 0)
 				bgTex:SetPoint( points[2], Bar, points[2], 0, 0)
 				bgTex:SetPoint( points[4], Bar, points[4], 0, 0)
-				bgTex:SetVertexColor( color.r, color.g, color.b, color.a )				
+				bgTex:SetVertexColor( color.r, color.g, color.b, color.a )
 			end
 			bgTex:Show()
-		elseif bgTex then 
-			bgTex:Hide() 
+		elseif bgTex then
+			bgTex:Hide()
 		end
 	end
 	Bar:Show()
@@ -79,13 +79,17 @@ end
 local function Bar_SetValueParent(self, parent, value)
 	parent[self.name]:SetValue(value)
 	local barChild = parent[self.childName]
-	if value+barChild:GetValue()>1 then barChild:SetValue(1-value) end
+	local childValue = barChild.realValue or 0
+	if childValue>0 then
+		barChild:SetValue( value+childValue>1 and 1-value or childValue)
+	end
 end
 
 local function Bar_SetValueChild(self, parent, value)
-	local v = parent[self.parentName]:GetValue()
-	if value+v>1 then value = 1-v end
-	parent[self.name]:SetValue(value)	
+	local barChild = parent[self.name]
+	local parentValue = parent[self.parentName]:GetValue()
+	barChild:SetValue( value+parentValue>1 and 1-parentValue or value)
+	barChild.realValue = value
 end
 
 --{{{ Bar OnUpdate
@@ -105,16 +109,16 @@ local function tevent(timer)
 	else
 		timeLeft = 0; tdestroy(bar)
 	end
-	bar.indicator:SetValue( bar:GetParent(), timeLeft ) 
+	bar.indicator:SetValue( bar:GetParent(), timeLeft )
 end
 local function tcreate(bar, duration, expiration)
 	local delay = duration>3 and 0.2 or 0.1
-	local timer = timers[bar] 
+	local timer = timers[bar]
 	if not timer then
 		timer = Grid2:CreateTimer(tevent, delay)
 		timer._bar = bar
 		timers[bar] = timer
-	elseif duration<=3 then	
+	elseif duration<=3 then
 		timer:SetDuration(delay)
 	end
 	bar._duration   = duration
@@ -135,7 +139,7 @@ local function Bar_OnUpdateD(self, parent, unit, status)
 			else
 				tdestroy(bar)
 			end
-		end	
+		end
 	else
 		tdestroy(bar)
 	end
@@ -160,7 +164,7 @@ local function Bar_Disable(self, parent)
 	local bar = parent[self.name]
 	bar:Hide()
 	bar:SetParent(nil)
-	bar:ClearAllPoints()	
+	bar:ClearAllPoints()
 end
 
 local function Bar_UpdateDB(self)
@@ -176,7 +180,7 @@ local function Bar_UpdateDB(self)
 	self.offsety     = l.y
 	self.width       = dbx.width
 	self.height      = dbx.height
-	self.reverseFill = dbx.reverseFill	
+	self.reverseFill = dbx.reverseFill
 	self.backColor   = dbx.backColor or (dbx.invertColor and defaultBackColor) or nil
 	self.OnUpdate    = (dbx.duration and Bar_OnUpdateD) or (dbx.stack and Bar_OnUpdateS) or Bar_OnUpdate
 	if dbx.anchorTo then
@@ -184,7 +188,7 @@ local function Bar_UpdateDB(self)
 		barParent.childName = self.name
 		barParent.SetValue  = Bar_SetValueParent
 		self.parentName     = dbx.anchorTo
-		self.SetValue       = Bar_SetValueChild		
+		self.SetValue       = Bar_SetValueChild
 		self.reverseFill    = barParent.reverseFill
 		self.orientation    = barParent.orientation
 	else
@@ -231,8 +235,8 @@ local function Create(indicatorKey, dbx)
 	Bar.GetBlinkFrame  = Bar_GetBlinkFrame
 	Bar.OnUpdate       = Bar_OnUpdate
 	Bar.SetOrientation = Bar_SetOrientation
-	Bar.Disable        = Bar_Disable	
-	Bar.Layout         = Bar_Layout	
+	Bar.Disable        = Bar_Disable
+	Bar.Layout         = Bar_Layout
 	Bar.UpdateDB       = Bar_UpdateDB
 	Bar_UpdateDB(Bar,dbx)
 	Grid2:RegisterIndicator(Bar, { "percent" } )
