@@ -43,6 +43,8 @@ Grid2Options:AddGeneralOptions( "General", "Themes", {
 		longDurationStackFormat  = "%.1f:%d",
 		shortDurationStackFormat = "%.0f:%d",
 		invertDurationStack      = false,
+		secondsElapsedFormat     = "%ds",
+		minutesElapsedFormat     = "%dm",
 	}
 	shortFormat = used when duration >= 1 sec
 	longFormat  = used when duration <  1 sec
@@ -52,6 +54,13 @@ Grid2Options:AddGeneralOptions( "General", "Themes", {
 		"%d" = represents duration, becomes translated to/from: "%.0f" or "%.1f" (floating point number)
 		"%s" = represents stacks,   becomes translated to/from: "%d" (integer number)
 --]]
+
+-- Update text indicators database
+local function UpdateTextIndicators()
+	for _, indicator in Grid2:IterateIndicators("text") do
+		indicator:UpdateDB()
+	end
+end
 
 -- Posible values for "Display tenths of a second" options
 local tenthsValues = { L["Never"], L["Always"] , L["When duration<1sec"] }
@@ -106,9 +115,7 @@ do
 			dbx["short"..formatType] = short
 			dbx["long" ..formatType] = long
 			if inverted ~= nil then	dbx.invertDurationStack = inverted end
-			for _, indicator in Grid2:IterateIndicators("text") do
-				indicator:UpdateDB()
-			end
+			UpdateTextIndicators()
 		end
 	end
 end
@@ -131,7 +138,7 @@ Grid2Options:AddGeneralOptions( "General", "Text Formatting", {
 		set = function (_, v) SetFormat("DecimalFormat", nil, v) end,
 		values = tenthsValues,
 	},
-	separator = { type = "description", name = "", order = 3 },
+	separator1 = { type = "description", name = "", order = 3 },
 	dsFormat = {
 		type = "input",
 		order = 4,
@@ -148,6 +155,35 @@ Grid2Options:AddGeneralOptions( "General", "Text Formatting", {
 		get = function ()  return GetTenths("DurationStackFormat") end,
 		set = function (_, v) SetFormat("DurationStackFormat", nil, v) end,
 		values = tenthsValues
+	},
+	separator2 = { type = "description", name = "", order = 6 },
+	secFormat = {
+		type = "input",
+		order = 7,
+		name = L["Seconds Format"],
+		desc = L["Examples:\n%ds\n%d seconds"],
+		get = function() 
+			return Grid2.db.profile.formatting.secondsElapsedFormat 
+		end,
+		set = function(_,v)	
+			string.format(v, 1) -- sanity check, crash if v is not a correct format mask
+			Grid2.db.profile.formatting.secondsElapsedFormat  = v
+			UpdateTextIndicators()
+		end,
+	},
+	minFormat = {
+		type = "input",
+		order = 8,
+		name = L["Minutes Format"],
+		desc = L["Examples:\n%dm\n%d minutes"],
+		get = function() 
+			return Grid2.db.profile.formatting.minutesElapsedFormat 
+		end,
+		set = function(_,v)	
+			string.format(v, 1) -- sanity check, crash if v is not a correct format mask
+			Grid2.db.profile.formatting.minutesElapsedFormat  = v
+			UpdateTextIndicators()
+		end,
 	},
 })
 

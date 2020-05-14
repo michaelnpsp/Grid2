@@ -5,12 +5,16 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 local AFK = Grid2.statusPrototype:new("afk")
 
 local Grid2 = Grid2
+local GetTime = GetTime
 local UnitIsAFK = UnitIsAFK
+
+local afk_cache = setmetatable({}, {__index = function(t,k) local v=GetTime(); t[k]=v; return v end})
 
 AFK.GetColor = Grid2.statusLibrary.GetColor
 
 function AFK:UpdateUnit(_, unit)
 	if unit then
+		afk_cache[unit] = nil
 		self:UpdateIndicators(unit)
 	end
 end
@@ -27,14 +31,20 @@ function AFK:OnDisable()
 	self:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
 	self:UnregisterEvent("READY_CHECK")
 	self:UnregisterEvent("READY_CHECK_FINISHED")
+	wipe(afk_cache)
 end
 
 function AFK:IsActive(unit)
 	return UnitIsAFK(unit)
 end
 
+function AFK:GetStartTime(unit)
+	return afk_cache[unit]
+end
+
+local text = L["AFK"]
 function AFK:GetText(unit)
-	return L["AFK"]
+	return text
 end
 
 local function CreateStatusAFK(baseKey, dbx)

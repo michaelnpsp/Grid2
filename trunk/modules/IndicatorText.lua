@@ -15,6 +15,8 @@ Grid2.defaults.profile.formatting = {
 	longDurationStackFormat  = "%.1f:%d",
 	shortDurationStackFormat = "%.0f:%d", 
 	invertDurationStack      = false,
+	secondsElapsedFormat     = "%ds",
+	minutesElapsedFormat     = "%dm",
 }
 
 local timers = {}
@@ -77,8 +79,14 @@ local function _UpdateSD(text)
 	end	
 end
 -- elapsed
+local FmtEM, FmtES
 local function UpdateE(text)
-	text:SetFormattedText( "%.0f", curTime - expirations[text]  )
+	local t = curTime - expirations[text]
+	if t>=60 then
+		text:SetFormattedText( FmtEM, t/60 )
+	else
+		text:SetFormattedText( FmtES, t  )
+	end	
 end
 -- duration
 local function UpdateD(text)
@@ -150,6 +158,14 @@ local function Text_OnUpdateDE(self, parent, unit, status)
 				self.updateFunc(Text)
 				return
 			end
+		elseif self.elapsed then
+			curTime = GetTime() -- not local because is used later by self.updateFunc
+			expirations[Text] = status:GetStartTime(unit) or curTime
+			if not timers[Text] then 
+				TimerStart(Text, self.updateFunc) 
+			end
+			self.updateFunc(Text)
+			return
 		else
 			Text:SetText( string_cut(status:GetText(unit) or "", self.textlength) )
 			if timers[Text] then TimerStop(Text) end
@@ -221,6 +237,8 @@ local function Text_UpdateDB(self)
 	FmtDE[false] = fmt.shortDecimalFormat
 	FmtDES[true] = fmt.longDurationStackFormat
 	FmtDES[false] = fmt.shortDurationStackFormat
+	FmtES = fmt.secondsElapsedFormat
+	FmtEM = fmt.minutesElapsedFormat
 	UpdateES = fmt.invertDurationStack and _UpdateSE or _UpdateES
 	UpdateDS = fmt.invertDurationStack and _UpdateSD or _UpdateDS
 	-- indicator dbx

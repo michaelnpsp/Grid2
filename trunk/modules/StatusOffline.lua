@@ -87,6 +87,10 @@ function Offline:IsActive(unit)
 	return offline[unit]
 end
 
+function Offline:GetStartTime(unit)
+	return offline[unit]
+end
+
 local text = L["Offline"]
 function Offline:GetText(unit)
 	return text
