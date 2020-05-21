@@ -6,24 +6,33 @@ local AFK = Grid2.statusPrototype:new("afk")
 
 local Grid2 = Grid2
 local GetTime = GetTime
+local UnitGUID = UnitGUID
 local UnitIsAFK = UnitIsAFK
 
 local afk_cache = setmetatable({}, {__index = function(t,k) local v=GetTime(); t[k]=v; return v end})
 
 AFK.GetColor = Grid2.statusLibrary.GetColor
 
-function AFK:UpdateUnit(_, unit)
+local function UpdateUnit(_, unit)
 	if unit then
-		afk_cache[unit] = nil
-		self:UpdateIndicators(unit)
+		if not UnitIsAFK(unit) then -- only clear cache, afk_cache is already assigned when metatable lookup fails in GetStartTime()
+			afk_cache[ UnitGUID(unit) ] = nil
+		end
+		AFK:UpdateIndicators(unit)		
+	end
+end
+
+function AFK:ZONE_CHANGED_NEW_AREA()
+	for unit in Grid2:IterateRosterUnits() do
+		UpdateUnit(nil,unit)
 	end
 end
 
 function AFK:OnEnable()
-	self:RegisterEvent("PLAYER_FLAGS_CHANGED", "UpdateUnit")
-	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "UpdateAllUnits")
-	self:RegisterEvent("READY_CHECK", "UpdateAllUnits")
-	self:RegisterEvent("READY_CHECK_FINISHED", "UpdateAllUnits")
+	self:RegisterEvent("PLAYER_FLAGS_CHANGED", UpdateUnit)
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+	self:RegisterEvent("READY_CHECK", "ZONE_CHANGED_NEW_AREA")
+	self:RegisterEvent("READY_CHECK_FINISHED", "ZONE_CHANGED_NEW_AREA")
 end
 
 function AFK:OnDisable()
@@ -39,7 +48,7 @@ function AFK:IsActive(unit)
 end
 
 function AFK:GetStartTime(unit)
-	return afk_cache[unit]
+	return afk_cache[ UnitGUID(unit) ]
 end
 
 local text = L["AFK"]
