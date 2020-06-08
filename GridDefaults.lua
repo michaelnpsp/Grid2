@@ -51,7 +51,7 @@ end
 function Grid2:UpdateDefaults()
 
 	local version= Grid2:DbGetValue("versions","Grid2") or 0
-	if version>=6 then return end
+	if version>=7 then return end
 	if version==0 then
 		self:MakeDefaultsCommon()
 		self:MakeDefaultsClass()
@@ -86,8 +86,11 @@ function Grid2:UpdateDefaults()
 		if version<6 then
 			Grid2:DbSetValue( "indicators", "tooltip", {type = "tooltip", displayUnitOOC = true} )
 		end
+		if version<7 then
+			Grid2:DbSetValue( "indicators", "background", {type = "background"})
+		end
 	end
 	-- Set database version
-	Grid2:DbSetValue("versions","Grid2",6)
+	Grid2:DbSetValue("versions","Grid2",7)
 
 end

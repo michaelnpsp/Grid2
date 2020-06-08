@@ -52,7 +52,7 @@ local function Square_Layout(self, parent)
 			local c = self.color
 			Square:SetBackdropBorderColor( c.r, c.g, c.b, c.a )
 		end
-	end	
+	end
 	Square:Show()
 end
 
@@ -60,7 +60,7 @@ local function Square_Disable(self, parent)
 	local f = parent[self.name]
 	f:Hide()
 	f:SetParent(nil)
-	f:ClearAllPoints()	
+	f:ClearAllPoints()
 end
 
 local function Square_UpdateDB(self)
@@ -102,4 +102,3 @@ local function Create(indicatorKey, dbx)
 end
 
 Grid2.setupFunc["square"] = Create
- 

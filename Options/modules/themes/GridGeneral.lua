@@ -301,9 +301,13 @@ local frameOptions = { framewidth = {
 			Grid2Options:LayoutTestRefresh()
 		end,
 		disabled = InCombatLockdown,
-}, texture = {
+}, headerback = {
+		type = "header",
+		order = 21,
+		name = L["Background"],
+}, backgroundTexture = {
 		type = "select", dialogControl = "LSM30_Statusbar",
-		order = 25,
+		order = 22,
 		name = L["Background Texture"],
 		desc = L["Select the frame background texture."],
 		get = function (info) return theme.frame.frameTexture or "Gradient" end,
@@ -312,39 +316,56 @@ local frameOptions = { framewidth = {
 			Grid2Frame:LayoutFrames(true)
 		end,
 		values = AceGUIWidgetLSMlists.statusbar,
-}, borderDistance= {
-		type = "range",
-		name = L["Inner Border Size"],
-		desc = L["Sets the size of the inner border of each unit frame"],
-		min = -16,
-		max = 16,
-		step = 1,
-		order = 27,
-		get = function ()
-			return theme.frame.frameBorderDistance
-		end,
-		set = function (_, v)
-			theme.frame.frameBorderDistance = v
-			Grid2Frame:LayoutFrames(true)
-		end,
-}, colorContent = {
+},  backgroundColor = {
 		type = "color",
-		order = 30,
+		order = 23,
 		name = L["Background Color"],
-		desc = L["Sets the background color of each unit frame"],
+		desc = L["Sets the default color for the background indicator."],
 		get = function()
 			local c= theme.frame.frameContentColor
 			return c.r, c.g, c.b, c.a
 		end,
 		set = function( info, r,g,b,a )
-			local c= theme.frame.frameContentColor
+			local c = theme.frame.frameContentColor
 			c.r, c.g, c.b, c.a = r, g, b, a
-			Grid2Frame:LayoutFrames(true)
 			Grid2Frame:UpdateIndicators()
 		 end,
 		hasAlpha = true,
-
-}, colorFrame = {
+}, headerborder = {
+		type = "header",
+		order = 25,
+		name = L["Borders"],
+}, borderIndicatorColor = {
+	type = "color",
+	order = 32,
+	name = L["Outer Border Color"],
+	desc = L["Sets the default color for the border indicator."],
+	get = function()
+		c = Grid2:MakeColor( theme.frame.frameBorderColor, 'TRANSPARENT' )
+		return c.r, c.g, c.b, c.a
+	end,
+	set = function( info, r,g,b,a )
+		local c = theme.frame.frameBorderColor or {}
+		c.r, c.g, c.b, c.a = r, g, b, a
+		theme.frame.frameBorderColor = c
+		Grid2Frame:UpdateIndicators()
+	 end,
+	hasAlpha = true,
+}, borderIndicatorSize = {
+	type = "range",
+	order = 33,
+	name = L["Outer Border Size"],
+	desc = L["Adjust the border of each unit's frame."],
+	min = 1,
+	max = 20,
+	step = 1,
+	get = function () return theme.frame.frameBorder end,
+	set = function (_, frameBorder)
+		theme.frame.frameBorder = frameBorder
+		Grid2Frame:LayoutFrames(true)
+	end,
+	disabled = InCombatLockdown,
+}, innerBordercolor = {
 		type = "color",
 		order = 40,
 		name = L["Inner Border Color"],
@@ -359,11 +380,42 @@ local frameOptions = { framewidth = {
 			Grid2Frame:LayoutFrames(true)
 		 end,
 		hasAlpha = true,
+}, innerBorderDistance= {
+		type = "range",
+		order = 41,
+		name = L["Inner Border Size"],
+		desc = L["Sets the size of the inner border of each unit frame"],
+		min = -16,
+		max = 16,
+		step = 1,
+		get = function ()
+			return theme.frame.frameBorderDistance
+		end,
+		set = function (_, v)
+			theme.frame.frameBorderDistance = v
+			Grid2Frame:LayoutFrames(true)
+		end,
+}, borderIndicatorTexture = {
+	type = "select", dialogControl = "LSM30_Border",
+	order = 42,
+	name = L["Outer Border Texture"],
+	desc = L["Adjust the border texture."],
+	get = function (info) return theme.frame.frameBorderTexture or "Grid2 Flat" end,
+	set = function (info, v)
+		theme.frame.frameBorderTexture = v
+		Grid2Frame:LayoutFrames(true)
+	end,
+	values = AceGUIWidgetLSMlists.border,
+
+}, headermouse = {
+		type = "header",
+		order = 50,
+		name = L["Mouseover"],
 }, mouseoverHighlight = {
 		type = "toggle",
 		name = L["Mouseover Highlight"],
 		desc = L["Toggle mouseover highlight."],
-		order = 60,
+		order = 51,
 		get = function ()
 			return theme.frame.mouseoverHighlight
 		end,
@@ -373,7 +425,7 @@ local frameOptions = { framewidth = {
 		end,
 }, mouseoverColor = {
 		type = "color",
-		order = 70,
+		order = 55,
 		name = L["Highlight Color"],
 		desc = L["Sets the hightlight color of each unit frame"],
 		get = function()
