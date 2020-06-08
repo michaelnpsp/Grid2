@@ -8,6 +8,8 @@ local defaultFont = "Friz Quadrata TT"
 
 -- Default configurations
 function Grid2:MakeDefaultsCommon()
+	Grid2:DbSetValue( "indicators",  "background", {type = "background"})
+
 	Grid2:DbSetValue( "indicators",  "tooltip", {type = "tooltip", showTooltip = 4, showDefault = true} )
 
 	Grid2:DbSetValue( "indicators",  "alpha", {type = "alpha"})

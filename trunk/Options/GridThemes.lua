@@ -341,6 +341,14 @@ Grid2:RegisterMessage("Grid_ThemeChanged", function() LibStub("AceConfigRegistry
 
 --===========================================================================================
 
+function Grid2Options:ThemesAreEnabled()
+	return Grid2Frame.dba.profile.extraThemes ~= nil
+end
+
+function Grid2Options:ThemesAreDisabled()
+	return Grid2Frame.dba.profile.extraThemes == nil
+end
+
 local order = 0
 function Grid2Options:AddThemeOptions( key, name, options )
 	order = order + 1

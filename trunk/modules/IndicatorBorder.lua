@@ -2,6 +2,8 @@
 
 local Border = Grid2.indicatorPrototype:new("border")
 
+local Grid2Frame = Grid2Frame
+
 Border.Create = Grid2.Dummy
 Border.Layout = Grid2.Dummy
 
@@ -9,8 +11,12 @@ function Border:OnUpdate(parent, unit, status)
 	if status then
 		parent:SetBackdropBorderColor(status:GetColor(unit))
 	else
-		local c = self.dbx.color1
-		parent:SetBackdropBorderColor(c.r, c.g, c.b, c.a)
+		local c = Grid2Frame.db.profile.frameBorderColor
+		if c then
+			parent:SetBackdropBorderColor(c.r, c.g, c.b, c.a)
+		else
+			parent:SetBackdropBorderColor(0,0,0,0)
+		end
 	end
 end
 

@@ -36,6 +36,7 @@
 
 <Script file="modules\indicators\Indicator.lua"/>
 <Script file="modules\indicators\IndicatorAlpha.lua"/>
+<Script file="modules\indicators\IndicatorBackground.lua"/>
 <Script file="modules\indicators\IndicatorBar.lua"/>
 <Script file="modules\indicators\IndicatorMultiBar.lua"/>
 <Script file="modules\indicators\IndicatorBorder.lua"/>

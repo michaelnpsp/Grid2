@@ -12,7 +12,7 @@ Grid2Options.indicatorIconPath = "Interface\\Addons\\Grid2Options\\media\\indica
 Grid2Options.indicatorTypes = {}
 
 -- Indicators sort order
-Grid2Options.indicatorTypesOrder= { tooltip = 1, alpha = 2, border = 3, multibar = 4, bar = 5, text = 6, square = 7, icon = 8, icons = 9, portrait = 10 }
+Grid2Options.indicatorTypesOrder= { tooltip = 1, alpha = 2, background = 3, border = 4, multibar = 5, bar = 6, text = 7, square = 8, icon = 9, icons = 10, portrait = 11 }
 
 do
 	-- ban these indicator names

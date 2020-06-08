@@ -60,6 +60,7 @@ GridDefaultsClassic.lua
 # Indicators
 modules\IndicatorAlpha.lua
 modules\IndicatorBorder.lua
+modules\IndicatorBackground.lua
 modules\IndicatorBar.lua
 modules\IndicatorMultiBar.lua
 modules\IndicatorText.lua
