@@ -22,7 +22,7 @@ function Grid2Options:MakeIndicatorBorderCustomOptions(indicator,options)
 			local c = Grid2Frame.db.profile.frameBorderColor or {}
 			c.r, c.g, c.b, c.a = r, g, b, a
 			Grid2Frame.db.profile.frameBorderColor = c
-			Grid2Frame:UpdateIndicators()
+			self:RefreshIndicator(indicator, "Update")
 		end,
 	}
 	options.sepColor = { order = 11, type = "description", name = "" }
