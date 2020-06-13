@@ -348,7 +348,7 @@ local frameOptions = { framewidth = {
 		local c = theme.frame.frameBorderColor or {}
 		c.r, c.g, c.b, c.a = r, g, b, a
 		theme.frame.frameBorderColor = c
-		Grid2Frame:UpdateIndicators()
+		Grid2Options:RefreshIndicator(Grid2.indicators.border, "Update")
 	 end,
 	hasAlpha = true,
 }, borderIndicatorSize = {

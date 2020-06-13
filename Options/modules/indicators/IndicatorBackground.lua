@@ -22,7 +22,7 @@ function Grid2Options:MakeIndicatorBackgroundOptions(indicator,options)
 		set = function( info, r,g,b,a )
 			local c= Grid2Frame.db.profile.frameContentColor
 			c.r, c.g, c.b, c.a = r, g, b, a
-			Grid2Frame:UpdateIndicators()
+			self:RefreshIndicator(indicator, "Update")
 		end,
 	}
 	options.message = {

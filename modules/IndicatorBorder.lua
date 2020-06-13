@@ -2,7 +2,7 @@
 
 local Border = Grid2.indicatorPrototype:new("border")
 
-local Grid2Frame = Grid2Frame
+local cr, cg, cb, ca = 0, 0, 0, 0
 
 Border.Create = Grid2.Dummy
 Border.Layout = Grid2.Dummy
@@ -11,12 +11,7 @@ function Border:OnUpdate(parent, unit, status)
 	if status then
 		parent:SetBackdropBorderColor(status:GetColor(unit))
 	else
-		local c = Grid2Frame.db.profile.frameBorderColor
-		if c then
-			parent:SetBackdropBorderColor(c.r, c.g, c.b, c.a)
-		else
-			parent:SetBackdropBorderColor(0,0,0,0)
-		end
+		parent:SetBackdropBorderColor(cr, cg, cb, ca)
 	end
 end
 
@@ -24,8 +19,14 @@ function Border:Disable(parent)
 	parent:SetBackdropBorderColor(0,0,0,0)
 end
 
+function Border:UpdateDB()
+	local c = Grid2:MakeColor(Grid2Frame.db.profile.frameBorderColor, 'TRANSPARENT')
+	cr, cg, cb, ca = c.r, c.g, c.b, c.a
+end
+
 local function Create(indicatorKey, dbx)
 	Border.dbx = dbx
+	Border:UpdateDB()
 	Grid2:RegisterIndicator(Border, { "color" })
 	return Border
 end
