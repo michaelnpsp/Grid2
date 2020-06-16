@@ -11,7 +11,7 @@ function Grid2Options:MakeIndicatorBorderCustomOptions(indicator,options)
 	options.borderColor = {
 		type = "color",
 		order = 10,
-		name = L["Default Border Color"],
+		name = L["Border Color"],
 		desc = L["Sets the color for the border when no status is active."],
 		hasAlpha = true,
 		get = function()
@@ -25,7 +25,6 @@ function Grid2Options:MakeIndicatorBorderCustomOptions(indicator,options)
 			self:RefreshIndicator(indicator, "Update")
 		end,
 	}
-	options.sepColor = { order = 11, type = "description", name = "" }
 	options.borderSize = {
 		type = "range",
 		order = 20,
@@ -41,10 +40,9 @@ function Grid2Options:MakeIndicatorBorderCustomOptions(indicator,options)
 		end,
 		disabled = InCombatLockdown,
 	}
-	options.sepSize = { order = 21, type = "description", name = "" }
 	options.borderTexture = {
 		type = "select", dialogControl = "LSM30_Border",
-		order = 30,
+		order = 50,
 		name = L["Border Texture"],
 		desc = L["Adjust the border texture."],
 		get = function (info) return Grid2Frame.db.profile.frameBorderTexture or "Grid2 Flat" end,
@@ -54,10 +52,42 @@ function Grid2Options:MakeIndicatorBorderCustomOptions(indicator,options)
 		end,
 		values = AceGUIWidgetLSMlists.border,
 	}
+	options.innerBordercolor = {
+		type = "color",
+		order = 40,
+		name = L["Inner Border Color"],
+		desc = L["Sets the color of the inner border of each unit frame"],
+		get = function()
+			local c= Grid2Frame.db.profile.frameColor
+			return c.r, c.g, c.b, c.a
+		end,
+		set = function( info, r,g,b,a )
+			local c= Grid2Frame.db.profile.frameColor
+			c.r, c.g, c.b, c.a = r, g, b, a
+			Grid2Frame:LayoutFrames(true)
+		 end,
+		hasAlpha = true,
+	}
+	options.innerBorderDistance= {
+		type = "range",
+		order = 45,
+		name = L["Inner Border Size"],
+		desc = L["Sets the size of the inner border of each unit frame"],
+		min = -16,
+		max = 16,
+		step = 1,
+		get = function ()
+			return Grid2Frame.db.profile.frameBorderDistance
+		end,
+		set = function (_, v)
+			Grid2Frame.db.profile.frameBorderDistance = v
+			Grid2Frame:LayoutFrames(true)
+		end,
+	}
 	options.message = {
 		type = "description",
 		order = 100,
-		name = L['|cFFe0e000\nWarning: These options are applied to the active theme, if you want to change the settings for another theme go to the Appearance tab inside the Themes section.'],
+		name = L['|cFFe0e000\nThese options are applied to the active theme, if you want to change the settings for another theme go to the Appearance tab inside the Themes section.'],
 		hidden = self.ThemesAreDisabled,
 	}
 end
