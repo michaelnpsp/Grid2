@@ -215,7 +215,7 @@ function Leader:UpdateActiveUnits()
 end
 
 function Leader:UpdateLeader(event)
-	if not (raidLeader and UnitIsGroupLeader(raidLeader)) then
+	if not (raidLeader and UnitIsGroupLeader(raidLeader) and Grid2:IsUnitInRaid(raidLeader)) then
 		local prevLeader = raidLeader
 		self:CalculateLeader()
 		if raidLeader ~= prevLeader then

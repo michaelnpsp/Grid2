@@ -338,7 +338,7 @@ local frameOptions = { framewidth = {
 }, borderIndicatorColor = {
 	type = "color",
 	order = 32,
-	name = L["Outer Border Color"],
+	name = L["Border Color"],
 	desc = L["Sets the default color for the border indicator."],
 	get = function()
 		c = Grid2:MakeColor( theme.frame.frameBorderColor, 'TRANSPARENT' )
@@ -354,7 +354,7 @@ local frameOptions = { framewidth = {
 }, borderIndicatorSize = {
 	type = "range",
 	order = 33,
-	name = L["Outer Border Size"],
+	name = L["Border Size"],
 	desc = L["Adjust the border of each unit's frame."],
 	min = 1,
 	max = 20,
@@ -398,7 +398,7 @@ local frameOptions = { framewidth = {
 }, borderIndicatorTexture = {
 	type = "select", dialogControl = "LSM30_Border",
 	order = 42,
-	name = L["Outer Border Texture"],
+	name = L["Border Texture"],
 	desc = L["Adjust the border texture."],
 	get = function (info) return theme.frame.frameBorderTexture or "Grid2 Flat" end,
 	set = function (info, v)

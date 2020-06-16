@@ -13,7 +13,7 @@ function Grid2Options:MakeIndicatorBackgroundOptions(indicator,options)
 		hasAlpha = true,
 		order = 10,
 		width = "full",
-		name = L["Default Background Color"],
+		name = L["Background Color"],
 		desc = L["Sets the background color to use when no status is active."],
 		get = function()
 			local c= Grid2Frame.db.profile.frameContentColor
@@ -28,7 +28,7 @@ function Grid2Options:MakeIndicatorBackgroundOptions(indicator,options)
 	options.message = {
 		type = "description",
 		order = 100,
-		name = L['|cFFe0e000\nWarning: These options are applied to the active theme, if you want to change the settings for another theme go to the Appearance tab inside the Themes section.'],
+		name = L['|cFFe0e000\nThese options are applied to the active theme, if you want to change the settings for another theme go to the Appearance tab inside the Themes section.'],
 		hidden = self.ThemesAreDisabled,
 	}
 	return options
