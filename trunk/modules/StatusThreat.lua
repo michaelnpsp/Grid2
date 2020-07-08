@@ -1,10 +1,11 @@
-if Grid2.isClassic then return end
-
 local Threat = Grid2.statusPrototype:new("threat")
 
 local Grid2 = Grid2
 local UnitExists = UnitExists
 local UnitThreatSituation = UnitThreatSituation
+
+local colors
+local activeValue
 
 function Threat:UpdateUnit(_, unit)
 	if unit then -- unit can be nil which is so wtf
@@ -24,23 +25,22 @@ function Threat:OnDisable()
 end
 
 function Threat:UpdateDB()
-	self.colors      = { self.dbx.color1, self.dbx.color2, self.dbx.color3 }
-	self.activeValue = self.dbx.disableBlink or "blink"
+	colors      = { self.dbx.color1, self.dbx.color2, self.dbx.color3 }
+	activeValue = self.dbx.disableBlink or "blink"
 end
 
 -- 1 = not tanking, higher threat than tank
 -- 2 = insecurely tanking.
 -- 3 = securely tanking something
 function Threat:IsActive(unit)
-	local threat = UnitExists(unit) and UnitThreatSituation(unit) -- hack thanks Potje
-	if threat and threat > 0 then
-		return self.activeValue
+	local threat = UnitExists(unit) and UnitThreatSituation(unit) or 0 -- hack thanks Potje
+	if threat > 0 then
+		return activeValue
 	end
 end
 
 function Threat:GetColor(unit)
-	local threat= UnitThreatSituation(unit)
-	local color = self.colors[threat]
+	local color = colors[ UnitThreatSituation(unit) ]
 	return color.r, color.g, color.b, color.a
 end
 

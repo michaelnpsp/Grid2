@@ -3,7 +3,7 @@
 ## X-WoW-Project: retail
 #@end-retail@
 #@non-retail@
-# ## Interface: 11304
+# ## Interface: 11305
 ## X-WoW-Project: classic
 #@end-non-retail@
 ## Title: Grid2
