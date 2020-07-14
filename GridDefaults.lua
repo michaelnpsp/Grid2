@@ -4,6 +4,9 @@ Created by Michael, based on Grid2Options\GridDefaults.lua from original Grid2 a
 
 local Grid2 = Grid2
 
+-- Latest database profile version
+local DB_VERSION = 8
+
 -- Database manipulation functions
 function Grid2:DbSetStatusDefaultValue(name, value)
 	self.defaults.profile.statuses[name] = value
@@ -50,8 +53,8 @@ end
 -- Plugins can hook this function to initialize or update values in database
 function Grid2:UpdateDefaults()
 
-	local version= Grid2:DbGetValue("versions","Grid2") or 0
-	if version>=7 then return end
+	local version = Grid2:DbGetValue("versions","Grid2") or 0
+	if version>=DB_VERSION then return end
 	if version==0 then
 		self:MakeDefaultsCommon()
 		self:MakeDefaultsClass()
@@ -89,8 +92,27 @@ function Grid2:UpdateDefaults()
 		if version<7 then
 			Grid2:DbSetValue( "indicators", "background", {type = "background"})
 		end
+		if version<8 then
+			-- upgrade multibars
+			for _,dbx in pairs(self.db.profile.indicators) do
+				if dbx.type=='multibar' then
+					local opacity = math.min(dbx.opacity or 1, dbx.invertColor and 0.8 or 1)
+					dbx.textureColor = dbx.textureColor or {}
+					dbx.textureColor.a = math.min( dbx.textureColor.a or 1, opacity )
+					dbx.backColor  = dbx.backColor or (dbx.invertColor and {r=0,g=0,b=0,a=1}) -- now invert color needs a background color&texture
+					dbx.backAnchor = dbx.backColor and (dbx.backMainAnchor and 1 or 2) -- change background anchor codes, now nil means fills the whole background
+					for i=1,(dbx.barCount or 0) do
+						local bar = dbx['bar'..i] or {}
+						bar.color = bar.color or {}
+						bar.color.a = math.min( opacity, bar.color.a or 1 )
+						dbx[i], dbx['bar'..i] = bar, nil
+					end
+					dbx.barCount, dbx.opacity, dbx.backMainAnchor = nil, nil, nil
+				end
+			end
+		end
 	end
 	-- Set database version
-	Grid2:DbSetValue("versions","Grid2",7)
+	Grid2:DbSetValue("versions","Grid2",DB_VERSION)
 
 end

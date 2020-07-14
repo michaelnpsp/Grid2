@@ -156,7 +156,7 @@ end
 --}}}
 
 local function Bar_SetOrientation(self, orientation)
-	self.orientation     = orientation
+	self.orientation     = orientation or Grid2Frame.db.profile.orientation
 	self.dbx.orientation = orientation
 end
 
