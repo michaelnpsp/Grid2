@@ -44,7 +44,7 @@ function indicator:RegisterStatus(status, priority)
 	self:SetStatusPriority(status, priority)
 	if not Grid2.suspendedIndicators[self.name] then
 		status:RegisterIndicator(self)
-	end	
+	end
 end
 
 function indicator:UnregisterStatus(status)
@@ -112,7 +112,7 @@ function Grid2:WakeUpIndicator(indicator)
 	tinsert(self.indicatorEnabled, indicator)
 	if indicator.UpdateDB then
 		indicator:UpdateDB()
-	end	
+	end
 	indicator.suspended = nil
 	if indicator.sideKick then
 		self:WakeUpIndicator(indicator.sideKick)
@@ -181,6 +181,10 @@ function Grid2:UnregisterIndicator(indicator)
 		Grid2:UnregisterIndicator(indicator.sideKick)
 		indicator.sideKick = nil
 	end
+end
+
+function Grid2:GetIndicatorByName(name)
+	return name and Grid2.indicators[name]
 end
 
 function Grid2:GetIndicatorsEnabled()

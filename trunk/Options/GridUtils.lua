@@ -361,14 +361,12 @@ function Grid2Options:GetAvailableIndicatorColorValues(status, indicatorAvailabl
 	return indicatorAvailable
 end
 
-
 -- Grid2Options:UpdateIndicatorDB()
 function Grid2Options:UpdateIndicatorDB(indicator)
-	if indicator.UpdateDB then
+	if indicator and indicator.UpdateDB then
 		indicator:UpdateDB()
-		if indicator.sideKick and indicator.sideKick.UpdateDB then
-			indicator.sideKick:UpdateDB()
-		end
+		self:UpdateIndicatorDB( indicator.sideKick )
+		self:UpdateIndicatorDB( Grid2:GetIndicatorByName(indicator.childName) )
 	end
 end
 
@@ -390,13 +388,18 @@ function Grid2Options:RefreshIndicator(indicator, method)
 	Grid2Frame:UpdateIndicators()
 end
 
--- Update all indicators of all frames
+-- Update & Layout all enabled indicators of all frames
 function Grid2Options:UpdateIndicators(typ)
-	for _, indicator in Grid2:IterateIndicators() do
-		if (not typ) or indicator.dbx.type == typ then
-			self:RefreshIndicator(indicator, "Layout")
+	for _, indicator in ipairs(Grid2:GetIndicatorsEnabled()) do
+		if indicator.parentName==nil and ( typ==nil or indicator.dbx.type == typ ) then
+			self:UpdateIndicatorDB(indicator)
+			Grid2Frame:WithAllFrames(indicator, 'Layout')
+			if indicator.childName then
+				Grid2Frame:WithAllFrames( Grid2:GetIndicatorByName(indicator.childName), 'Layout' )
+			end
 		end
 	end
+	Grid2Frame:UpdateIndicators()
 end
 
 -- Grid2Options:GetLayouts()
