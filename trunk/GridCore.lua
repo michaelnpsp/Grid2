@@ -213,12 +213,13 @@ function Grid2:CheckTheme()
 	local spec    = GetSpecialization() or 0
 	local groupType, instType, maxPlayers = self:GetGroupType()
 	local kM   = tostring(maxPlayers)
+	local kC   = fmt("%s@0",     self.playerClass)
 	local kS   = fmt("%s@%d",    self.playerClass, spec)
 	local kSM  = fmt("%s@%d",    kS, maxPlayers)
 	local kSGI = fmt("%s@%s@%s", kS, groupType, instType)
 	local kSG  = fmt("%s@%s",    kS, groupType)
 	local kGI  = fmt("%s@%s",    groupType, instType)
-	theme = enabled[kSM] or enabled[kSGI] or enabled[kSG] or enabled[kS] or enabled[kM] or enabled[kGI] or enabled[groupType] or theme
+	theme = enabled[kSM] or enabled[kSGI] or enabled[kSG] or enabled[kS] or enabled[kC] or enabled[kM] or enabled[kGI] or enabled[groupType] or theme
 	theme = themes.names[theme] and theme or 0
 	return theme, themes.indicators[theme] or {}
 end

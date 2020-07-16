@@ -93,8 +93,8 @@ modules\StatusCombat.lua
 modules\StatusAuras.lua
 modules\StatusAurasBuffs.lua
 modules\StatusAurasDebuffs.lua
-#@retail@
 modules\StatusThreat.lua
+#@retail@
 modules\StatusVehicle.lua
 modules\StatusShields.lua
 modules\StatusHealAbsorbs.lua

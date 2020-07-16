@@ -22,7 +22,6 @@ externals:
 
 ignore:
  - GridDefaultsRetail.lua
- - modules/StatusThreat.lua
  - modules/StatusVehicle.lua
  - modules/StatusShields.lua
  - modules/StatusHealAbsorbs.lua

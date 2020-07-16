@@ -107,6 +107,7 @@ do
 	local CONDITIONS_NAMES  = {}
 
 	do
+		-- groups & raids
 		local CONDITIONS = { 'solo', 'party', 'arena', 'raid', 'raid@pvp' ,'raid@lfr', 'raid@flex', 'raid@mythic', '10', '15', '20', '25', '30', '40' }
 		local CONDITIONS_DESC = { L['Solo'], L['Party'], L['Arena'], L['Raid'], L['Raid (PvP)'], L['Raid (LFR)'], L['Raid (N&H)'], L['Raid (Mythic)'], L['10 man'], L['15 man'], L['20 man'], L['25 man'], L['30 man'], L['40 man'] }
 		for o,k in ipairs(CONDITIONS) do
@@ -114,11 +115,17 @@ do
 			CONDITIONS_VALUES[key] = CONDITIONS_DESC[o] -- Descriptions used in "Enable Theme for" dropdown list values
 			CONDITIONS_NAMES[key]  = CONDITIONS_DESC[o] -- Description used as title in themes dropdown lists
 		end
+		-- current class
+		local classLoc, class = UnitClass("player")
+		local classKey = string.format("100;%s@0", class)
+		local classDesc= string.format("%s(%s)", classLoc, L["Class"])
+		CONDITIONS_VALUES[classKey] = classDesc
+		CONDITIONS_NAMES[classKey]  = classDesc
+		-- current class + specs
 		if not Grid2.isClassic then
-			local class = select(2, UnitClass("player"))
 			local count = GetNumSpecializations()
 			for i=1,count do
-				local key = string.format("%d00;%s@%d",i, class, i)
+				local key = string.format("%d01;%s@%d",i, class, i)
 				local _, name, _, icon = GetSpecializationInfo(i)
 				if strlen(name)<12 then
 					name = string.format("|T%s:0|t%s(%s)",icon, name, L['Spec'] )
@@ -128,7 +135,7 @@ do
 				CONDITIONS_VALUES[ key ] = name
 				CONDITIONS_NAMES[ key ]  = name
 				for o,k in ipairs(CONDITIONS) do
-					local key = string.format( "%d%02d;%s@%d@%s", i,o,class,i,k )
+					local key = string.format( "%d%02d;%s@%d@%s", i,o+1,class,i,k )
 					CONDITIONS_VALUES[ key ] = string.format( '|T%s:0|t%s', icon, CONDITIONS_DESC[o] )
 					CONDITIONS_NAMES[ key ]  = string.format( '%s & %s', name, CONDITIONS_DESC[o] )
 				end
