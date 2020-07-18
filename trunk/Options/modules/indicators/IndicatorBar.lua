@@ -135,24 +135,52 @@ function Grid2Options:MakeIndicatorBarAppearanceOptions(indicator,options)
 			self:RefreshIndicator(indicator, "Layout")
 		end,
 	}
+	options.reverseFill= {
+		type = "toggle",
+		name = L["Reverse Fill"],
+		desc = L["Fill the bar in reverse."],
+		order = 44,
+		tristate = false,
+		get = function () return indicator.dbx.reverseFill end,
+		set = function (_, v)
+			indicator.dbx.reverseFill = v or nil
+			self:RefreshIndicator(indicator, "Layout")
+			if indicator.childName then
+				self:RefreshIndicator( Grid2.indicators[indicator.childName], "Layout" )
+			end
+		end,
+	}
+	self:MakeHeaderOptions( options, "Background" )
 	options.enableBack = {
 		type = "toggle",
 		name = L["Enable Background"],
 		desc = L["Enable Background"],
-		order = 45,
+		order = 61,
 		get = function () return indicator.dbx.backColor~=nil end,
 		set = function (_, v)
 			if v then
 				indicator.dbx.backColor = { r=0,g=0,b=0,a=1 }
 			else
-				indicator.dbx.backColor = nil
+				indicator.dbx.backColor, indicator.dbx.backTexture = nil, nil
 			end
 			self:RefreshIndicator(indicator, "Create")
 		end,
 	}
+	options.backAlwaysVisible = {
+		type = "toggle",
+		name = L["Always Visible"],
+		desc = L["Display the background even when the indicator is not active."],
+		order = 62,
+		get = function () return not indicator.dbx.hideWhenInactive end,
+		set = function (_, v)
+			indicator.dbx.hideWhenInactive = (not v) or nil
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		hidden = function() return not indicator.dbx.backColor end,
+	}
 	options.backColor = {
 		type = "color",
-		order = 46,
+		order = 63,
 		name = L["Background Color"],
 		desc = L["Background Color"],
 		hasAlpha = true,
@@ -170,22 +198,20 @@ function Grid2Options:MakeIndicatorBarAppearanceOptions(indicator,options)
 			c.r, c.g, c.b, c.a = r, g, b, a
 			self:RefreshIndicator(indicator, "Layout")
 		end,
-		hidden = function() return not indicator.dbx.backColor end
+		hidden = function() return not indicator.dbx.backColor end,
 	}
-	options.reverseFill= {
-		type = "toggle",
-		name = L["Reverse Fill"],
-		desc = L["Fill the bar in reverse."],
-		order = 44,
-		tristate = false,
-		get = function () return indicator.dbx.reverseFill end,
-		set = function (_, v)
-			indicator.dbx.reverseFill = v or nil
+	options.backTexture = {
+		type = "select", dialogControl = "LSM30_Statusbar",
+		order = 64,
+		name = L["Background Texture"],
+		desc = L["Adjust the background texture."],
+		get = function (info) return indicator.dbx.backTexture or self.MEDIA_VALUE_DEFAULT end,
+		set = function (info, v)
+			indicator.dbx.backTexture = v~=self.MEDIA_VALUE_DEFAULT and v or nil
 			self:RefreshIndicator(indicator, "Layout")
-			if indicator.childName then
-				self:RefreshIndicator( Grid2.indicators[indicator.childName], "Layout" )
-			end
 		end,
+		values = self.GetStatusBarValues,
+		hidden = function() return not indicator.dbx.backColor end,
 	}
 end
 
@@ -219,11 +245,12 @@ function Grid2Options:MakeIndicatorBarMiscOptions(indicator, options)
 			Grid2Frame:UpdateIndicators()
 		end,
 	}
+	self:MakeHeaderOptions( options, "Special" )
 	options.inverColor= {
 		type = "toggle",
 		name = L["Invert Bar Color"],
 		desc = L["Swap foreground/background colors on bars."],
-		order = 49,
+		order = 71,
 		tristate = false,
 		get = function () return indicator.dbx.invertColor	end,
 		set = function (_, v)

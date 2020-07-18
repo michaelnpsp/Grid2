@@ -180,6 +180,8 @@ do
 		Appearance = { type = "header", order = 10,  name = L["Appearance"] },
 		Icon	   = { type = "header", order = 10,  name = L["Icon"] },
 		Border     = { type = "header", order = 20,  name = L["Border"]     },
+		Background = { type = "header", order = 60,  name = L["Background"] },
+		Special    = { type = "header", order = 70,  name = L["Special"] },
 		Display    = { type = "header", order = 80,  name = L["Display"]    },
 		StackText  = { type = "header", order = 90,  name = L["Stack Text"] },
 		Cooldown   = { type = "header", order = 125, name = L["Cooldown"]	},

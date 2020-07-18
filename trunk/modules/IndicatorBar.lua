@@ -49,7 +49,7 @@ local function Bar_Layout(self, parent)
 			local tex = Bar:GetStatusBarTexture()
 			local layer, sublayer = tex:GetDrawLayer()
 			bgTex:SetDrawLayer(layer, sublayer-1)
-			bgTex:SetTexture(self.texture)
+			bgTex:SetTexture(self.backTexture)
 			bgTex:ClearAllPoints()
 			if self.dbx.invertColor then
 				bgTex:SetAllPoints(Bar)
@@ -88,7 +88,7 @@ end
 local function Bar_SetValueChild(self, parent, value)
 	local barChild = parent[self.name]
 	local parentValue = parent[self.parentName]:GetValue()
-	barChild:SetValue( value+parentValue>1 and 1-parentValue or value)
+	barChild:SetValue(value+parentValue>1 and 1-parentValue or value)
 	barChild.realValue = value
 end
 
@@ -126,6 +126,7 @@ local function tcreate(bar, duration, expiration)
 	return timer
 end
 
+-- standard updates, bar always visible
 local function Bar_OnUpdateD(self, parent, unit, status)
 	local bar,value = parent[self.name],0
 	if status then
@@ -153,6 +154,39 @@ end
 local function Bar_OnUpdate(self, parent, unit, status)
 	self:SetValue(parent, status and status:GetPercent(unit) or 0)
 end
+
+-- special updates when background is enabled, bar hidden if no status active
+local function Bar_OnUpdateD2(self, parent, unit, status)
+	local bar,value = parent[self.name],0
+	if status then
+		local expiration = status:GetExpirationTime(unit)
+		if expiration then
+			local timeLeft = expiration - GetTime()
+			if timeLeft>0 then
+				local duration = status:GetDuration(unit) or timeLeft
+				value = timeLeft / duration
+				tcreate(bar, duration, expiration)
+			else
+				tdestroy(bar)
+			end
+		end
+		self:SetValue(parent,value)
+		bar:Show()
+	else
+		tdestroy(bar)
+		bar:Hide()
+	end
+end
+
+local function Bar_OnUpdateS2(self, parent, unit, status)
+	self:SetValue( parent, status and status:GetCount(unit)/status:GetCountMax(unit) or 0)
+	parent[self.name]:SetShown(status~=nil)
+end
+
+local function Bar_OnUpdate2(self, parent, unit, status)
+	self:SetValue(parent, status and status:GetPercent(unit) or 0)
+	parent[self.name]:SetShown(status~=nil)
+end
 --}}}
 
 local function Bar_SetOrientation(self, orientation)
@@ -172,6 +206,7 @@ local function Bar_UpdateDB(self)
 	local theme = Grid2Frame.db.profile
 	local l = dbx.location
 	self.texture     = Grid2:MediaFetch("statusbar", dbx.texture or theme.barTexture, "Gradient")
+	self.backTexture = dbx.backTexture and Grid2:MediaFetch("statusbar", dbx.backTexture, "Gradient") or self.texture
 	self.orientation = dbx.orientation or theme.orientation
 	self.frameLevel  = dbx.level or 1
 	self.anchor      = l.point
@@ -182,7 +217,11 @@ local function Bar_UpdateDB(self)
 	self.height      = dbx.height
 	self.reverseFill = dbx.reverseFill
 	self.backColor   = dbx.backColor or (dbx.invertColor and defaultBackColor) or nil
-	self.OnUpdate    = (dbx.duration and Bar_OnUpdateD) or (dbx.stack and Bar_OnUpdateS) or Bar_OnUpdate
+	if dbx.hideWhenInactive then
+		self.OnUpdate = (dbx.duration and Bar_OnUpdateD2) or (dbx.stack and Bar_OnUpdateS2) or Bar_OnUpdate2
+	else
+		self.OnUpdate = (dbx.duration and Bar_OnUpdateD) or (dbx.stack and Bar_OnUpdateS) or Bar_OnUpdate
+	end
 	if dbx.anchorTo then
 		local barParent = Grid2.indicators[dbx.anchorTo]
 		barParent.childName = self.name
