@@ -31,6 +31,20 @@ if Grid2.isClassic then
 			end,
 			values = { [LHC.DIRECT_HEALS] = L['Casted'], [LHC.CHANNEL_HEALS] = L['Channeled'], [LHC.HOT_HEALS]=L['HOTs'], [LHC.BOMB_HEALS] = L['Bomb'] }
 		}
+		options.shortenNumbers = {
+			type = "toggle",
+			tristate = false,
+			width = "full",
+			order = 350,
+			name = L["Shorten Heal Numbers"],
+			desc = L["Shorten Heal Numbers"],
+			get = function () return not status.dbx.displayRawNumbers end,
+			set = function (_, v)
+				status.dbx.displayRawNumbers = not v or nil
+				status:UpdateDB()
+				status:UpdateAllUnits()
+			end,
+		}
 	end
 end
 
@@ -50,6 +64,22 @@ Grid2Options:RegisterStatusOptions("health-current", "health", function(self, st
 		end,
 		values= { n = L["Normal"], q = L["Instant"] },
 	}
+	if Grid2.isClassic then
+		options.healthShorten = {
+			type = "toggle",
+			tristate = false,
+			width = "full",
+			order = 36,
+			name = L["Shorten Health Numbers"],
+			desc = L["Shorten Health Numbers"],
+			get = function () return not status.dbx.displayRawNumbers end,
+			set = function (_, v)
+				status.dbx.displayRawNumbers = not v or nil
+				status:UpdateDB()
+				status:UpdateAllUnits()
+			end,
+		}
+	end
 	self:MakeStatusToggleOptions(status, options, optionParams, "deadAsFullHealth")
 end, {
 	deadAsFullHealth = L["Show dead as having Full Health"],
@@ -181,6 +211,22 @@ Grid2Options:RegisterStatusOptions("overhealing", "health", function(self, statu
 			status:UpdateDB()
 		end,
 	}
+	if Grid2.isClassic then
+		options.shortenNumbers = {
+			type = "toggle",
+			tristate = false,
+			width = "full",
+			order = 300,
+			name = L["Shorten Overhealing Numbers"],
+			desc = L["Shorten Overhealing Numbers"],
+			get = function () return not status.dbx.displayRawNumbers end,
+			set = function (_, v)
+				status.dbx.displayRawNumbers = not v or nil
+				status:UpdateDB()
+				status:UpdateAllUnits()
+			end,
+		}
+	end
 end, {
 	title = L["display heals above max hp"],
 	titleIcon = Grid2.isClassic and "Interface\\Icons\\Spell_Holy_Heal" or "Interface\\Icons\\Spell_Holy_DivineProvidence"
@@ -211,7 +257,25 @@ end, {
 	titleIcon = Grid2.isClassic and "Interface\\Icons\\Ability_Rogue_Rupture" or "Interface\\Icons\\Ability_rogue_bloodyeye"
 })
 
-Grid2Options:RegisterStatusOptions("health-deficit", "health", Grid2Options.MakeStatusColorThresholdOptions, {
+Grid2Options:RegisterStatusOptions("health-deficit", "health", function(self, status, options, optionParams)
+	Grid2Options:MakeStatusColorThresholdOptions(status, options, optionParams)
+	if Grid2.isClassic then
+		options.healthShorten = {
+			type = "toggle",
+			tristate = false,
+			width = "full",
+			order = 100,
+			name = L["Shorten Health Numbers"],
+			desc = L["Shorten Health Numbers"],
+			get = function () return not status.dbx.displayRawNumbers end,
+			set = function (_, v)
+				status.dbx.displayRawNumbers = not v or nil
+				status:UpdateDB()
+				status:UpdateAllUnits()
+			end,
+		}
+	end
+end, {
 	titleIcon = "Interface\\Icons\\Spell_shadow_lifedrain"
 })
 

@@ -15,6 +15,7 @@ local Death = Grid2.statusPrototype:new("death", true)
 
 local Grid2 = Grid2
 local next = next
+local tostring = tostring
 local fmt = string.format
 local select = select
 local GetTime = GetTime
@@ -196,15 +197,19 @@ local function HealthCurrent_GetPercentDFH(self, unit)
 end
 
 if Grid2.isClassic then
-	function HealthCurrent:GetText(unit)
+	function HealthCurrent:GetText1(unit)
 		local h = UnitHealth(unit)
 		return h<1000 and fmt("%d",h) or fmt("%.1fk",h/1000)
 	end
+	function HealthCurrent:GetText2(unit)
+		return tostring(UnitHealth(unit))
+	end
 else
-	function HealthCurrent:GetText(unit)
+	function HealthCurrent:GetText1(unit)
 		return fmt("%.1fk", UnitHealth(unit) / 1000)
 	end
 end
+HealthCurrent.GetText = HealthCurrent.GetText1
 
 function HealthCurrent:GetColor(unit)
 	local f,t
@@ -218,6 +223,7 @@ function HealthCurrent:GetColor(unit)
 end
 
 function HealthCurrent:UpdateDB()
+	self.GetText = self.dbx.displayRawNumbers and self.GetText2 or self.GetText1
 	self.GetPercent = self.dbx.deadAsFullHealth and HealthCurrent_GetPercentDFH or HealthCurrent_GetPercent
 	self.color1 = Grid2:MakeColor(self.dbx.color1)
 	self.color2 = Grid2:MakeColor(self.dbx.color2)
@@ -316,15 +322,19 @@ function HealthDeficit:IsActive(unit)
 end
 
 if Grid2.isClassic then
-	function HealthDeficit:GetText(unit)
+	function HealthDeficit:GetText1(unit)
 		local h = UnitHealth(unit) - UnitHealthMax(unit)
 		return h>-1000 and fmt("%d",h) or fmt("%.1fk",h/1000)
 	end
+	function HealthDeficit:GetText2(unit)
+		return tostring(UnitHealth(unit) - UnitHealthMax(unit))
+	end
 else
-	function HealthDeficit:GetText(unit)
+	function HealthDeficit:GetText1(unit)
 		return fmt("%.1fk", (UnitHealth(unit) - UnitHealthMax(unit)) / 1000)
 	end
 end
+HealthDeficit.GetText = HealthDeficit.GetText1
 
 function HealthDeficit:GetPercent(unit)
 	local m = UnitHealthMax(unit)
@@ -335,8 +345,13 @@ function HealthDeficit:GetPercentText(unit)
 	return fmt( "%.0f%%", -self:GetPercent(unit)*100 )
 end
 
+function HealthDeficit:UpdateDB()
+	self.GetText = self.dbx.displayRawNumbers and self.GetText2 or self.GetText1
+end
+
 local function CreateHealthDeficit(baseKey, dbx)
 	Grid2:RegisterStatus(HealthDeficit, { "percent", "color", "text"}, baseKey, dbx)
+	HealthDeficit:UpdateDB()
 	return HealthDeficit
 end
 
@@ -532,6 +547,7 @@ function Heals:UpdateDB()
 		heals_bitflag  = self.dbx.healTypeFlags or HealComm.ALL_HEALS
 		heals_timeband = self.dbx.healTimeBand
 	end
+	self.GetText = self.dbx.displayRawNumbers and self.GetText2 or self.GetText1
 end
 
 function Heals:OnEnable()
@@ -567,15 +583,19 @@ function Heals:IsActive(unit)
 end
 
 if Grid2.isClassic then
-	function Heals:GetText(unit)
+	function Heals:GetText1(unit)
 		local h = heals_cache[unit]
 		return h<1000 and fmt("%d",h) or fmt("%.1fk",h/1000)
 	end
+	function Heals:GetText2(unit)
+		return tostring(heals_cache[unit])
+	end
 else
-	function Heals:GetText(unit)
+	function Heals:GetText1(unit)
 		return fmt("+%.1fk", heals_cache[unit] / 1000)
 	end
 end
+Heals.GetText = Heals.GetText1
 
 function Heals:GetPercent(unit)
 	local m = UnitHealthMax(unit)
@@ -595,10 +615,9 @@ Grid2:DbSetStatusDefaultValue( "heals-incoming", {type = "heals-incoming", inclu
 
 -- overhealing
 
-OverHeals.GetColor = Grid2.statusLibrary.GetColor
-
 function OverHeals:UpdateDB()
 	overheals_minimum = self.dbx.minimum or 1
+	self.GetText = self.dbx.displayRawNumbers and self.GetText2 or self.GetText1
 end
 
 function OverHeals:OnEnable()
@@ -620,10 +639,18 @@ function OverHeals:IsActive(unit)
 	return heals_cache[unit]+UnitHealth(unit)-UnitHealthMax(unit)>=overheals_minimum
 end
 
-function OverHeals:GetText(unit)
+function OverHeals:GetText1(unit)
 	local h = heals_cache[unit]+UnitHealth(unit)-UnitHealthMax(unit)
 	return h<1000 and fmt("%d",h) or fmt("%.1fk",h/1000)
 end
+
+function OverHeals:GetText2(unit)
+	return tostring( heals_cache[unit]+UnitHealth(unit)-UnitHealthMax(unit) )
+end
+
+OverHeals.GetText = GetText1
+
+OverHeals.GetColor = Grid2.statusLibrary.GetColor
 
 function OverHeals:GetPercent(unit)
 	local h = heals_cache[unit]+UnitHealth(unit)-UnitHealthMax(unit)
