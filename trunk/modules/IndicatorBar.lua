@@ -4,6 +4,8 @@ local Grid2 = Grid2
 local Grid2Frame = Grid2Frame
 local GetTime = GetTime
 local min = min
+local TimerCreate  = Grid2.CreateTimer
+local TimerDestroy = Grid2.CancelTimer
 
 local AlignPoints = Grid2.AlignPoints
 local defaultBackColor = { r=0, g=0, b=0, a=1 }
@@ -98,7 +100,7 @@ local function tdestroy(bar)
 	local timer = timers[bar]
 	if timer then
 		timers[bar], timer._bar = nil, nil
-		Grid2:CancelTimer(timer)
+		TimerDestroy(nil, timer)
 	end
 end
 local function tevent(timer)
@@ -115,7 +117,7 @@ local function tcreate(bar, duration, expiration)
 	local delay = duration>3 and 0.2 or 0.1
 	local timer = timers[bar]
 	if not timer then
-		timer = Grid2:CreateTimer(tevent, delay)
+		timer = TimerCreate(nil, tevent, delay)
 		timer._bar = bar
 		timers[bar] = timer
 	elseif duration<=3 then
