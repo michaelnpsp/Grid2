@@ -469,12 +469,14 @@ if Grid2.isClassic then -- This code block can be safety be removed for retail
 		HealComm.RegisterCallback( Grid2, "HealComm_HealStarted", HealUpdated )
 		HealComm.RegisterCallback( Grid2, "HealComm_HealUpdated", HealUpdated )
 		HealComm.RegisterCallback( Grid2, "HealComm_HealStopped", HealUpdated )
+		HealComm.RegisterCallback( Grid2, "HealComm_HealDelayed", HealUpdated )
 		HealComm.RegisterCallback( Grid2, "HealComm_ModifierChanged", HealModifier)
 	end
 	UnregisterEvent = function(event)
 		HealComm.UnregisterCallback( Grid2, "HealComm_HealStarted" )
 		HealComm.UnregisterCallback( Grid2, "HealComm_HealUpdated" )
 		HealComm.UnregisterCallback( Grid2, "HealComm_HealStopped" )
+		HealComm.UnregisterCallback( Grid2, "HealComm_HealDelayed" )
 		HealComm.UnregisterCallback( Grid2, "HealComm_ModifierChanged")
 	end
 	function HealsPlayer(unit)
@@ -678,6 +680,7 @@ function MyHeals:UpdateDB()
 		myheals_bitflag  = self.dbx.healTypeFlags or HealComm.ALL_HEALS
 		myheals_timeband = self.dbx.healTimeBand
 	end
+	self.GetText = self.dbx.displayRawNumbers and self.GetText2 or self.GetText1
 end
 
 function MyHeals:OnEnable()
@@ -701,15 +704,19 @@ function MyHeals:IsActive(unit)
 end
 
 if Grid2.isClassic then
-	function MyHeals:GetText(unit)
+	function MyHeals:GetText1(unit)
 		local h = myheals_cache[unit]
 		return h<1000 and fmt("%d",h) or fmt("%.1fk",h/1000)
 	end
+	function MyHeals:GetText2(unit)
+		return tostring(myheals_cache[unit])
+	end
 else
-	function MyHeals:GetText(unit)
+	function MyHeals:GetText1(unit)
 		return fmt("+%.1fk", myheals_cache[unit] / 1000)
 	end
 end
+MyHeals.GetText = MyHeals.GetText1
 
 function MyHeals:GetPercent(unit)
 	local m = UnitHealthMax(unit)

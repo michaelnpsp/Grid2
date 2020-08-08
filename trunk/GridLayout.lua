@@ -608,8 +608,8 @@ function Grid2Layout:UpdateSize()
 		local child = g:GetAttribute("child1")
 		remSize = child and child:IsVisible() and 0 or remSize + col
 	end
-	local col = curCol - remSize + p.Spacing*2 - p.Padding
-	local row = maxRow + p.Spacing*2
+	local col = math.max( curCol - remSize + p.Spacing*2 - p.Padding, 1 )
+	local row = math.max( maxRow + p.Spacing*2, 1 )
 	if p.horizontal then col,row = row,col end
 	self.frameBack:SetSize(col,row)
 	if not Grid2:RunSecure(6, self, "UpdateSize") then

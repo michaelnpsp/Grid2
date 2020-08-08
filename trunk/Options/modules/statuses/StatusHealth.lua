@@ -2,7 +2,7 @@ local L = Grid2Options.L
 
 if Grid2.isClassic then
 	local TIME_VALUES = { [0] = L['None'] }
-	for i=1,5 do TIME_VALUES[i] = string.format(L["%d seconds"], i)	end
+	for i=1,15 do TIME_VALUES[i] = string.format(L["%d seconds"], i)	end
 	function Grid2Options:MakeStatusHealsClassicOptions(status, options)
 		local LHC = LibStub("LibHealComm-4.0")
 		options.classicTimeBand = {
