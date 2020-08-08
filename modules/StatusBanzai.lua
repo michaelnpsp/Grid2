@@ -204,7 +204,7 @@ end
 function Banzai:Update()
 	local ct = GetTime()
 	for unit,guid in next,buni do -- Delete expired or canceled banzais
-		if ct>=bexp[unit] or not bfun[guid](sguids[guid] or 0) then
+		if ct>=(bexp[unit] or 0) or not (bfun[guid] and bfun[guid](sguids[guid] or 0)) then
 			buni[unit], bdur[unit], bico[unit], bexp[unit], bspl[unit], bgid[guid], bfun[guid] = nil, nil, nil, nil, nil, nil, nil
 			self:UpdateIndicators(unit)
 		end
