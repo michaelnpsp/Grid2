@@ -81,7 +81,7 @@ local function LayoutMouseUp()
 end
 
 local function LayoutGetTestFrame(i)
-	local f = frames[i] or CreateFrame("Frame", nil, layoutFrame) 
+	local f = frames[i] or CreateFrame("Frame", nil, layoutFrame, BackdropTemplateMixin and "BackdropTemplate" or nil)
 	f:SetBackdrop(frameBackdrop)
 	frames[i]= f
 	return f
@@ -137,15 +137,15 @@ local function InitFrames()
 	local p = theme.layout
 	-- create layout frame
 	if not layoutFrame then
-		layoutFrame = CreateFrame('Frame', nil, UIParent)
+		layoutFrame = CreateFrame('Frame', nil, UIParent, BackdropTemplateMixin and "BackdropTemplate" or nil)
 		layoutFrame:SetScript("OnMouseUp", LayoutMouseUp)
 		layoutFrame:SetScript("OnMouseDown", LayoutMouseDown)
 		layoutFrame:SetMovable(true)
-		layoutFrame:EnableMouse(true)	
+		layoutFrame:EnableMouse(true)
 		layoutFrame.Text = layoutFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		layoutFrame.Text:SetPoint("BOTTOM", layoutFrame, "TOP", 0, -8)
 		layoutFrame.Text:SetShadowOffset(1,-1)
-		layoutFrame.Text:SetShadowColor(0,0,0, 1)		
+		layoutFrame.Text:SetShadowColor(0,0,0, 1)
 		layoutFrame.Text:SetTextColor(1, 1, 1, 1)
 		layoutFrame.Text:Show()
 	end
@@ -188,7 +188,7 @@ function Grid2Options:LayoutTestRefresh(name, width, height, maxPlayers)
 	InitFrames()
 
 	layoutFrame.Text:SetText( string.format("|cFFfefe00%s:|r %s  |cFFfefe00%s:|r %s", L["Theme"], theme.db.names[theme.index] or L['Default'], L["Layout"], LG[layoutName]) )
-	
+
 	width  = width  or theme.frame.frameWidth
 	height = height or theme.frame.frameHeight
 	local settings = theme.layout

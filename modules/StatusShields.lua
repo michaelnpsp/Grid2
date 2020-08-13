@@ -99,7 +99,7 @@ function Overflow:OnEnable()
 	self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED", "UpdateUnit")
 	self:RegisterEvent("UNIT_MAXHEALTH", "UpdateUnit")
 	self:RegisterEvent("UNIT_HEALTH", "UpdateUnit")
-	self:RegisterEvent("UNIT_HEALTH_FREQUENT", "UpdateUnit")
+	if not Grid2.isWoW90 then self:RegisterEvent("UNIT_HEALTH_FREQUENT", "UpdateUnit") end
 	self:RegisterMessage("Grid_UnitUpdated", "UpdateUnit")
 end
 
@@ -107,7 +107,7 @@ function Overflow:OnDisable()
 	self:UnregisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
 	self:UnregisterEvent("UNIT_MAXHEALTH")
 	self:UnregisterEvent("UNIT_HEALTH")
-	self:UnregisterEvent("UNIT_HEALTH_FREQUENT")
+	if not Grid2.isWoW90 then self:UnregisterEvent("UNIT_HEALTH_FREQUENT") end
 	self:UnregisterMessage("Grid_UnitUpdated")
 end
 
