@@ -13,7 +13,7 @@ Grid2.defaults.profile.formatting = {
 	longDecimalFormat        = "%.1f",
 	shortDecimalFormat       = "%.0f",
 	longDurationStackFormat  = "%.1f:%d",
-	shortDurationStackFormat = "%.0f:%d", 
+	shortDurationStackFormat = "%.0f:%d",
 	invertDurationStack      = false,
 	secondsElapsedFormat     = "%ds",
 	minutesElapsedFormat     = "%dm",
@@ -27,7 +27,7 @@ local curTime -- Here goes current time to minimize GetTime() calls
 
 -- {{ Timer management
 local TimerStart, TimerStop
-do 
+do
 	local timer
 	function TimerStart(text, func)
 		timer = Grid2:CreateTimer( function()
@@ -37,7 +37,7 @@ do
 			end
 		end, 0.1 )
 		timers[text] = func
-		TimerStart = function(text, func) 
+		TimerStart = function(text, func)
 			if not next(timers) then timer:Play() end
 			timers[text] = func
 		end
@@ -46,7 +46,7 @@ do
 		timers[text], expirations[text], stacks[text] = nil, nil, nil
 		if not next(timers) then timer:Stop() end
 	end
-end	
+end
 --}}
 
 -- {{ Update functions
@@ -67,7 +67,7 @@ local function _UpdateDS(text)
 		text:SetFormattedText( FmtDES[timeLeft<1], timeLeft, stacks[text] or 1 )
 	else
 		text:SetText("")
-	end	
+	end
 end
 -- stacks + duration
 local function _UpdateSD(text)
@@ -76,7 +76,7 @@ local function _UpdateSD(text)
 		text:SetFormattedText( FmtDES[timeLeft<1], stacks[text] or 1, timeLeft )
 	else
 		text:SetText("")
-	end	
+	end
 end
 -- elapsed
 local FmtEM, FmtES
@@ -86,7 +86,7 @@ local function UpdateE(text)
 		text:SetFormattedText( FmtEM, t/60 )
 	else
 		text:SetFormattedText( FmtES, t  )
-	end	
+	end
 end
 -- duration
 local function UpdateD(text)
@@ -107,7 +107,7 @@ local UpdateDS = _UpdateDS
 local function Text_Create(self, parent)
 	local f = self:CreateFrame("Frame", parent)
 	f:SetAllPoints()
-	f:SetBackdrop(nil)
+	if not Grid2.isWoW90 then f:SetBackdrop(nil) end
 	local Text = f.Text or f:CreateFontString(nil, "OVERLAY")
 	Text:SetFontObject(GameFontHighlightSmall)
 	f.Text = Text
@@ -145,15 +145,15 @@ local function Text_OnUpdateDE(self, parent, unit, status)
 			curTime = GetTime() -- not local because is used later by self.updateFunc
 			if expiration > curTime then
 				if self.stack then
-					stacks[Text] = status:GetCount(unit)				
+					stacks[Text] = status:GetCount(unit)
 				end
 				if self.elapsed then
 					expirations[Text] = min( expiration - (status:GetDuration(unit) or 0), curTime )
 				else
 					expirations[Text] = expiration
 				end
-				if not timers[Text] then 
-					TimerStart(Text, self.updateFunc) 
+				if not timers[Text] then
+					TimerStart(Text, self.updateFunc)
 				end
 				self.updateFunc(Text)
 				return
@@ -161,8 +161,8 @@ local function Text_OnUpdateDE(self, parent, unit, status)
 		elseif self.elapsed then
 			curTime = GetTime() -- not local because is used later by self.updateFunc
 			expirations[Text] = status:GetStartTime(unit) or curTime
-			if not timers[Text] then 
-				TimerStart(Text, self.updateFunc) 
+			if not timers[Text] then
+				TimerStart(Text, self.updateFunc)
 			end
 			self.updateFunc(Text)
 			return
@@ -172,7 +172,7 @@ local function Text_OnUpdateDE(self, parent, unit, status)
 			return
 		end
 	end
-	Text:Hide()	
+	Text:Hide()
 	if timers[Text] then TimerStop(Text) end
 end
 
@@ -199,7 +199,7 @@ local function Text_OnUpdateP(self, parent, unit, status)
 			text = status:GetPercentText(unit)
 		else
 			percent, text = status:GetPercent(unit)
-		end	
+		end
 		if text then
 			Text:SetText( text )
 		elseif percent then
@@ -220,14 +220,14 @@ local function Text_OnUpdate(self, parent, unit, status)
 		Text:Show()
 	else
 		Text:Hide()
-	end	
+	end
 end
 
 local function Text_Disable(self, parent)
 	local f = parent[self.name]
 	f:Hide()
 	f:SetParent(nil)
-	f:ClearAllPoints()	
+	f:ClearAllPoints()
 end
 
 local function Text_UpdateDB(self)
@@ -268,7 +268,7 @@ local function Text_UpdateDB(self)
 		else
 			self.updateFunc = dbx.elapsed and UpdateE or UpdateD
 		end
-		self.OnUpdate = Text_OnUpdateDE		
+		self.OnUpdate = Text_OnUpdateDE
 	elseif dbx.stack then
 		self.OnUpdate = Text_OnUpdateS
 	elseif dbx.percent then

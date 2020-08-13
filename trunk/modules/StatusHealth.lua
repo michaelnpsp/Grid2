@@ -63,9 +63,11 @@ end
 -- Events management
 local RegisterEvent, UnregisterEvent
 do
+	local isWoW90 = Grid2.isWoW90
 	local frame
 	local Events = {}
 	function RegisterEvent(event, func)
+		if isWoW90 and event == 'UNIT_HEALTH_FREQUENT' then return end
 		if not frame then
 			frame = CreateFrame("Frame", nil, Grid2LayoutFrame)
 			frame:SetScript( "OnEvent",  function(_, event, ...) Events[event](...) end )
@@ -138,9 +140,9 @@ do
 		if HealthCurrent.dbx.quickHealth then
 			RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", CombatLogEvent)
 			RegisterEvent("GROUP_ROSTER_UPDATE", RosterUpdateEvent)
-			RegisterEvent("UNIT_HEALTH_FREQUENT", HealthChangedEvent)
 			RegisterEvent("UNIT_HEALTH", HealthChangedEvent)
 			RegisterEvent("UNIT_MAXHEALTH", HealthChangedEvent)
+			RegisterEvent("UNIT_HEALTH_FREQUENT", HealthChangedEvent)
 			UnitHealth = UnitQuickHealth
 		end
 	end

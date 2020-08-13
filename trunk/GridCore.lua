@@ -16,6 +16,7 @@ Grid2 = LibStub("AceAddon-3.0"):NewAddon("Grid2", "AceEvent-3.0", "AceConsole-3.
 Grid2.versionstring = "Grid2 v"..GetAddOnMetadata("Grid2", "Version")
 
 Grid2.isClassic = select(4,GetBuildInfo())<20000
+Grid2.isWoW90   = select(4,GetBuildInfo())>=90000
 
 if not strfind(Grid2.versionstring,'project') and (GetAddOnMetadata("Grid2", "X-WoW-Project")=='classic') ~= Grid2.isClassic then
 	Grid2.wrongVersionMessage = string.format("Error, this version of Grid2 was packaged for World of Warcraft %s. Please install the %s version instead.",
