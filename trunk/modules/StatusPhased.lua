@@ -5,7 +5,7 @@ local Phased = Grid2.statusPrototype:new("phased")
 local Grid2 = Grid2
 local IsInInstance = IsInInstance
 local UnitInPhase = UnitInPhase
-local UnitIsWarModePhased = UnitIsWarModePhased
+local UnitIsWarModePhased = UnitIsWarModePhased or Grid2.Dummy
 local UnitDistanceSquared = UnitDistanceSquared
 
 local timer
