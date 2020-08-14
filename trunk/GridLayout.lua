@@ -187,7 +187,6 @@ function Grid2Layout:OnModuleInitialize()
 	self.frame:SetScript("OnMouseDown", function (_, button) self:StartMoveFrame(button) end)
 	-- extra frame for background and border textures, to be able to resize in combat
 	self.frameBack = CreateFrame("Frame", "Grid2LayoutFrameBack", self.frame, BackdropTemplateMixin and "BackdropTemplate" or nil)
-
 	-- custom defaults
 	self.customDefaults = self.db.global.customDefaults
 	-- add custom layouts
