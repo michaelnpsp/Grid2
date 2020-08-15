@@ -40,6 +40,26 @@ Grid2Layout:AddLayout("By Group w/Pets", {
 	[2] = PETS_GROUP,
 })
 
+Grid2Layout:AddLayout("By Group & Class", {
+	meta = META_ALL,
+	defaults = {
+		groupBy = "CLASS",
+		groupingOrder = DEFAULT_GROUP_ORDER,
+		sortMethod = "NAME",
+	},
+})
+
+Grid2Layout:AddLayout("By Group & Class w/Pets", {
+	meta = META_ALL,
+	defaults = {
+		groupBy = "CLASS",
+		groupingOrder = DEFAULT_GROUP_ORDER,
+		sortMethod = "NAME",
+	},
+	[1] = "auto",
+	[2] = PETS_GROUP,
+})
+
 Grid2Layout:AddLayout("By Class", {
 	meta = META_ALL,
 	[1]= {
@@ -96,3 +116,4 @@ Grid2Layout:AddLayout("By Group & Role", {
 		sortMethod = "NAME",
 	},
 })
+
