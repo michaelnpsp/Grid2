@@ -4,20 +4,27 @@ local Phased = Grid2.statusPrototype:new("phased")
 
 local Grid2 = Grid2
 local IsInInstance = IsInInstance
-local UnitInPhase = UnitInPhase or UnitPhaseReason
-local UnitIsWarModePhased = UnitIsWarModePhased or Grid2.Dummy
+local UnitInPhase = UnitInPhase
+local UnitIsWarModePhased = UnitIsWarModePhased
 local UnitDistanceSquared = UnitDistanceSquared
 
 local timer
 local range = {}
 local cache = {}
 
+local UnitOutOfPhase
+if Grid2.isWoW90 then
+	UnitOutOfPhase = UnitPhaseReason
+else
+	UnitOutOfPhase = function(unit) return UnitIsWarModePhased(unit) or not UnitInPhase(unit); end
+end
+
 local function ResetUnit(_, unit)
 	cache[unit], range[unit] = nil, nil
 end
 
 local function UpdateUnit(_, unit)
-	local phased = range[unit] and (UnitIsWarModePhased(unit) or not UnitInPhase(unit))
+	local phased = range[unit] and UnitOutOfPhase(unit)
 	if phased~=cache[unit] then
 		cache[unit] = phased
 		Phased:UpdateIndicators(unit)
