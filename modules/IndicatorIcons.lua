@@ -65,7 +65,7 @@ local function Icon_OnFrameUpdate(f)
 				end
 				if useStatus then
 					local r,g,b,a = status:GetColor(unit)
-					aura:SetBackdropBorderColor(r,g,b, min(a,self.borderOpacity) )
+					aura:SetBackdropBorderColor(r,g,b, min(a or 1,self.borderOpacity) )
 				end
 				aura:Show()
 				i = i + 1

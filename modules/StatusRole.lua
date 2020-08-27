@@ -105,7 +105,7 @@ function Role:GetColor(unit)
 	elseif role == "MAINTANK" then
 		c = self.dbx.color2
 	else
-		return
+		return 0,0,0,0
 	end
 	return c.r, c.g, c.b, c.a
 end
