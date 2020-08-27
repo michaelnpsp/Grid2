@@ -153,6 +153,10 @@ local function Icon_Layout(self, parent)
 		f.CooldownText:ClearAllPoints()
 		f.CooldownText:SetPoint(self.textPoint, self.textOffsetX, self.textOffsetY)
 	end
+
+	if f.Cooldown and self.disableIcon then
+		f.Cooldown:SetSwipeTexture(0)
+	end
 end
 
 local function Icon_Disable(self, parent)
