@@ -45,11 +45,11 @@ function Grid2Options:MakeIndicatorTextCustomOptions(indicator, options)
 		order = 75,
 		name = L["Font Border"],
 		desc = L["Set the font border type."],
-		get = function () 
+		get = function ()
 			if indicator.dbx.fontFlags then
-				return (indicator.dbx.shadowDisabled and '0;' or '1;') .. indicator.dbx.fontFlags 
+				return (indicator.dbx.shadowDisabled and '0;' or '1;') .. indicator.dbx.fontFlags
 			else
-				return self.FONT_FLAGS_DEFAULT 
+				return self.FONT_FLAGS_DEFAULT
 			end
 		end,
 		set = function (_, v)

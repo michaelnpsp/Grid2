@@ -79,36 +79,30 @@ function ReadyCheck:GetReadyCheckStatus(unit)
 	local state = GetReadyCheckStatus(unit)
 	if state then
 		readyStatuses[unit] = state
+		return state
 	else
-		state = readyStatuses[unit] 
-		if state == "waiting" then state = "afk" end
+		state = readyStatuses[unit]
+		return state~="waiting" and state or 'afk'
 	end
-	return state
 end
 
 local colors = { waiting = "color1", ready = "color2", notready = "color3", afk = "color4" }
 function ReadyCheck:GetColor(unit)
 	local state = self:GetReadyCheckStatus(unit)
-	if state then
-		local color = self.dbx[colors[state]]
-		return color.r, color.g, color.b, color.a
-	end
+	local color = self.dbx[ colors[state] ]
+	return color.r, color.g, color.b, color.a
 end
 
 local icons = { waiting = READY_CHECK_WAITING_TEXTURE, ready = READY_CHECK_READY_TEXTURE, notready = READY_CHECK_NOT_READY_TEXTURE, afk = READY_CHECK_AFK_TEXTURE }
 function ReadyCheck:GetIcon(unit)
 	local state = self:GetReadyCheckStatus(unit)
-	if state then
-		return icons[state]
-	end
+	return icons[state]
 end
 
 local texts = { waiting = L["?"], ready = L["R"], notready = L["X"], afk = L["AFK"] }
 function ReadyCheck:GetText(unit)
 	local state = self:GetReadyCheckStatus(unit)
-	if state then
-		return texts[state]
-	end
+	return texts[state]
 end
 
 local function Create(baseKey, dbx)

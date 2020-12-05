@@ -26,17 +26,27 @@ function indicator:new(name)
 	e.priorities = p
 	e.name = name
 	e.statuses = {}
+	e.prototype = self
 	return e
 end
 
-function indicator:CreateFrame(type, parent)
+function indicator:CreateFrame(type, parent, template)
 	local f = parent[self.name]
-	if not (f and f:GetObjectType()==type) then
-		f = CreateFrame(type, nil, parent, (isWoW90 and type=='Frame') and "BackdropTemplate" or nil   )
+	if not (f and f:GetObjectType()==type and f.__template == template) then
+		f = CreateFrame(type, nil, parent, (isWoW90 or template~="BackdropTemplate") and template or nil)
+		f.__template = template
 		parent[self.name] = f
 	end
 	f:Hide()
 	return f
+end
+
+function indicator:Update(parent, unit)
+	self:OnUpdate(parent, unit, self:GetCurrentStatus(unit) )
+end
+
+function indicator:UpdateDB()
+	if self.LoadDB then self:LoadDB() end
 end
 
 function indicator:RegisterStatus(status, priority)
@@ -89,21 +99,6 @@ function indicator:GetCurrentStatus(unit)
 		end
 	end
 end
-
---{{ Update functions
-function indicator:UpdateBlink(parent, unit)
-	local status, state = self:GetCurrentStatus(unit)
-	local func = self.GetBlinkFrame
-	if func then Grid2Frame:SetBlinkEffect( func(self,parent) , state=="blink" ) end
-	self:OnUpdate(parent, unit, status)
-end
-
-function indicator:UpdateNoBlink(parent, unit)
-	self:OnUpdate(parent, unit, self:GetCurrentStatus(unit) )
-end
-
-indicator.Update = indicator.UpdateBlink
---}}
 
 function Grid2:WakeUpIndicator(indicator)
 	local statuses = indicator.statuses
@@ -160,6 +155,7 @@ function Grid2:RegisterIndicator(indicator, types)
 		end
 		t[name] = indicator
 	end
+	indicator:UpdateDB()
 end
 
 function Grid2:UnregisterIndicator(indicator)

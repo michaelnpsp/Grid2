@@ -163,7 +163,7 @@ RDDB["Classic"] = {
 		["Onyxia"] = {
 		order = 1,
 		18431, -- clamor-bramante
-		},		
+		},
 	},
 	[100309] = {
 		{ id = 100309, name = "Zul'gurub", raid = true },
@@ -217,6 +217,102 @@ RDDB["Classic"] = {
 		23895, -- Renovar
 		23860, -- Fuego Sagrado
 		23865, -- Serpiente parasitaria
+		},
+	},
+	[100533] = {
+		{ id = 100533, name = "Naxxramas", raid = true },
+		["Anub'Rekhan"] = {
+		order = 1, ejid = nil,
+		28786, --Locust Swarm
+		28969, --acid-spit
+		28783, --impale
+		28991, --web
+		},
+		["Grand Widow Faerlina"] = {
+		order = 2, ejid = nil,
+		28796, --Poison Bolt Volley
+		28794, --Rain of Fire
+		},
+		["Maexxna"] = {
+		order = 3, ejid = nil,
+		28622, --Web Wrap
+		29484, --web-spray
+		28776,--Necrotic Poison
+		},
+		["Noth the Plaguebringer"] = {
+		order = 4, ejid = nil,
+		29213, --Curse of the Plaguebringer
+		29214, --Wrath of the Plaguebringer
+		29212, --Cripple
+		},
+		["Heigan The Unclean"] = {
+		order = 5, ejid = nil,
+		29998,--Decrepit Fever (N, H)
+		29310,--Spell Disruption
+		},
+		["Loatheb"] = {
+		order = 6, ejid = nil,
+		29232, --fungal-bloom
+		29865, --poison-aura
+		29185, --corrupted-mind
+		},
+		["Instructor Razuvious"] = {
+		order = 7, ejid = nil,
+		26613, --unbalancing-strike
+		},
+		["Gothik The Harvester"] = {
+		order = 8, ejid = nil,
+		5164,  --knockdown
+		30285, --eagle-claw
+		27825, --shadow-mark
+		17467, --unholy-aura
+		28679, --harvest-soul
+		},
+		["Four Horsemen"] = {
+		order = 9, ejid = nil,
+		28863, --void-zone
+		28882, --righteous-fire
+		28832, --mark-of-korthazz
+		28833, --mark-of-blaumeux
+		28835, --mark-of-zeliek
+		28834, --mark-of-mograine
+		},
+		["Patchwerk"] = {
+		order = 10, ejid = nil,
+		28311, --slime-bolt
+		},
+		["Grobbulus"] = {
+		order = 11, ejid = nil,
+		28169,--Mutating Injection
+		},
+		["Gluth"] = {
+		order = 12, ejid = nil,
+		29685, --terrifying-roar
+		25646, --mortal-wound
+		29306, --infected-wound
+		},
+		["Thaddius"] = {
+		order = 13, ejid = nil,
+		28084, --Negative Charge (N, H)
+		28059, --Positive Charge (N, H)
+		},
+		["Sapphiron"] = {
+		order = 14, ejid = nil,
+		28522, --Icebolt
+		28542, --Life Drain
+		},
+		["Kel'Thuzad"] = {
+		order = 15, ejid = nil,
+		28410,--Chains of Kel'Thuzad (H)
+		27819,--Detonate Mana (NH)
+		27808,--Frost Blast (NH)
+		},
+		["Trash"] = {
+		order = 16, ejid = nil,
+		4283,  --stomp
+		15579, --cleave
+		13737, --mortal-strike
+		16145, --sunder-armor
 		},
 	},
 }

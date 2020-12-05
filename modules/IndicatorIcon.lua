@@ -5,7 +5,7 @@ local GetTime = GetTime
 local fmt = string.format
 
 local function Icon_Create(self, parent)
-	local f = self:CreateFrame("Frame", parent)
+	local f = self:CreateFrame("Frame", parent, "BackdropTemplate")
 	local Icon = f.Icon or f:CreateTexture(nil, "ARTWORK")
 	f.Icon = Icon
 	Icon:SetTexCoord(0.05, 0.95, 0.05, 0.95)
@@ -55,25 +55,9 @@ local function Icon_GetBlinkFrame(self, parent)
 	return parent[self.name]
 end
 
-local function Icon_AnimationOnUpdate(frame, elapsed)
-	local status = frame.status
-	local duration = status.animDuration
-	elapsed = elapsed + frame.animElapsed
-	if elapsed < duration then
-		frame.animElapsed = elapsed
-		elapsed = elapsed / duration
-		if elapsed>0.5 then elapsed = 1-elapsed end
-		frame:SetScale( 1 + elapsed*status.animScale )
-	else
-		frame.animElapsed = nil
-		frame:SetScript("OnUpdate", nil)
-		frame:SetScale(1)
-	end
-end
-
 local function Icon_OnUpdate(self, parent, unit, status)
 	local Frame = parent[self.name]
-	if not status then Frame:Hide() return end
+	if not status then Frame:Hide(); return; end
 
 	local Icon = Frame.Icon
 	local r,g,b,a = status:GetColor(unit)
@@ -115,12 +99,6 @@ local function Icon_OnUpdate(self, parent, unit, status)
 		else
 			Frame.Cooldown:Hide()
 		end
-	end
-
-	if self.animEnabled and (not Frame.animElapsed) and (self.animOnUpdate or not Frame:IsVisible()) then
-		Frame.status = self
-		Frame.animElapsed = 0
-		Frame:SetScript("OnUpdate", Icon_AnimationOnUpdate )
 	end
 
 	Frame:Show()
@@ -166,7 +144,7 @@ local function Icon_Disable(self, parent)
 	f:ClearAllPoints()
 end
 
-local function Icon_UpdateDB(self)
+local function Icon_LoadDB(self)
 	local dbx = self.dbx
 	local theme = Grid2Frame.db.profile
 	-- location
@@ -189,13 +167,6 @@ local function Icon_UpdateDB(self)
 	self.textOffsetX = dbx.fontOffsetX or 0
 	self.textOffsetY = dbx.fontOffsetY or 0
 	self.textfont    = Grid2:MediaFetch("font", dbx.font or theme.font) or STANDARD_TEXT_FONT
-	-- animation
-	self.animEnabled  = dbx.animEnabled
-	if dbx.animEnabled then
-		self.animScale    = ((dbx.animScale or 1.5)-1) * 2
-		self.animDuration = dbx.animDuration or 0.7
-		self.animOnUpdate = not dbx.animOnEnabled
-	end
 	-- ignore icon and use a solid square texture
 	self.disableIcon  = dbx.disableIcon
 	-- backdrop
@@ -211,8 +182,8 @@ local function CreateIcon(indicatorKey, dbx)
 	indicator.Layout        = Icon_Layout
 	indicator.OnUpdate      = Icon_OnUpdate
 	indicator.Disable       = Icon_Disable
-	indicator.UpdateDB      = Icon_UpdateDB
-	Icon_UpdateDB(indicator)
+	indicator.LoadDB        = Icon_LoadDB
+	indicator:UpdateDB()
 	Grid2:RegisterIndicator(indicator, { "icon" })
 	return indicator
 end

@@ -20,7 +20,7 @@ function Alpha:Disable(parent)
 	parent:SetAlpha(1)
 end
 
-function Alpha:UpdateDB()
+function Alpha:LoadDB()
 	defaultAlpha = self.dbx.defaultAlpha or 1
 	enabledAlpha = self.dbx.alpha
 	self.OnUpdate = enabledAlpha and Alpha_OnUpdate2 or Alpha_OnUpdate1
@@ -28,7 +28,6 @@ end
 
 local function Create(indicatorKey, dbx)
 	Alpha.dbx = dbx
-	Alpha:UpdateDB()
 	Grid2:RegisterIndicator(Alpha, { "percent" })
 	return Alpha
 end

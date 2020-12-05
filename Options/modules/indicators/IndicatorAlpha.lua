@@ -8,7 +8,7 @@ Grid2Options:RegisterIndicatorOptions("alpha",  false, function(self, indicator)
 end)
 
 function Grid2Options:MakeIndicatorAlphaOptions(indicator,options)
-	options.header1 = { type = "header", order = 5, name = "Default Alpha" }
+	options.header1 = { type = "header", order = 5, name = L["Default Alpha"] }
 	options.defaultAlpha = {
 		type = "range",
 		order = 10,
@@ -24,7 +24,7 @@ function Grid2Options:MakeIndicatorAlphaOptions(indicator,options)
 			self:RefreshIndicator(indicator, "Update")
 		end,
 	}
-	options.header2 = { type = "header", order = 15, name = "Active Alpha" }
+	options.header2 = { type = "header", order = 15, name = L["Active Alpha"] }
 	options.alphaMode = {
 		type = "toggle",
 		name = L["Use Status Alpha"],

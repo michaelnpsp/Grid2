@@ -68,7 +68,7 @@ options.deleteStatus = {
 		RDO:LoadStatuses()
 	end,
 	confirm = function(info)
-		return string.format( "Are your sure you want to delete %s status ?", RDO.statusesNames[#RDO.statuses] )
+		return string.format( L["Are your sure you want to delete %s status ?"], RDO.statusesNames[#RDO.statuses] )
 	end,
 	disabled = function()
 		local status = RDO.statuses[#RDO.statuses]

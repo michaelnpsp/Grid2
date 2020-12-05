@@ -5,6 +5,7 @@ local next = next
 local GetTime = GetTime
 local UnitAura = UnitAura
 local isClassic = Grid2.isClassic
+local Grid2Frame = Grid2Frame
 
 -- Local variables
 local Statuses = {}
@@ -427,6 +428,7 @@ do
 	local function UpdateDB(self,dbx)
 		if self.enabled then self:OnDisable() end
 		local dbx = dbx or self.dbx
+		local blinkThreshold = Grid2Frame.db.shared.blinkType~="None" and dbx.blinkThreshold or nil
 		if isClassic then MakeStatusFilter(self) end
 		self.vId = dbx.valueIndex or 0
 		self.valMax = dbx.valueMax
@@ -454,9 +456,9 @@ do
 			self.GetCount = GetCountMissing
 			self.GetExpirationTime = GetExpirationTimeMissing
 			if self.filtered then
-				self.IsActive = dbx.blinkThreshold and IsInactiveBlinkFilter or IsInactiveFilter
+				self.IsActive = blinkThreshold and IsInactiveBlinkFilter or IsInactiveFilter
 			else
-				self.IsActive = dbx.blinkThreshold and IsInactiveBlink or IsInactive
+				self.IsActive = blinkThreshold and IsInactiveBlink or IsInactive
 			end
 			self.thresholds = nil
 		else
@@ -464,8 +466,8 @@ do
 			self.GetIcon  = GetIcon
 			self.GetCount = GetCount
 			self.GetExpirationTime = GetExpirationTime
-			if dbx.blinkThreshold then
-				self.thresholds = { dbx.blinkThreshold }
+			if blinkThreshold then
+				self.thresholds = { blinkThreshold }
 				if self.filtered then
 					self.IsActive = self.stacks and IsActiveStacksBlinkFilter or IsActiveBlinkFilter
 				else

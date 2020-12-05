@@ -7,7 +7,9 @@ Grid2Options:RegisterIndicatorOptions("icon", true, function(self, indicator)
 	self:MakeIndicatorLocationOptions(indicator, options)
 	self:MakeIndicatorIconSizeOptions(indicator, options)
 	self:MakeIndicatorBorderOptions(indicator, options)
-	self:MakeIndicatorIconCustomOptions(indicator, options)
+	self:MakeIndicatorCooldownOptions(indicator, options)
+	self:MakeIndicatorAnimationOptions(indicator, options)
+	self:MakeIndicatorIconCustomOptions(indicator, options)	
 	self:MakeIndicatorStatusOptions(indicator, statuses)
 	self:AddIndicatorOptions(indicator, statuses, options )
 end)
@@ -146,121 +148,12 @@ function Grid2Options:MakeIndicatorIconCustomOptions(indicator, options)
 		order = 110,
 		name = L["Color"],
 		desc = L["Color"],
-		get = function()
-			local c = indicator.dbx.stackColor
-			if c then 	return c.r, c.g, c.b, c.a
-			else		return 1,1,1,1
-			end
-		end,
-		set = function( info, r,g,b,a )
-			local c = indicator.dbx.stackColor
-			if c then c.r, c.g, c.b, c.a = r, g, b, a
-			else	  indicator.dbx.stackColor= { r=r, g=g, b=b, a=a}
-			end
-			local indicatorKey = indicator.name
-			self:RefreshIndicator(indicator, "Create")
-		 end,
 		hasAlpha = true,
+		get = function() return self:UnpackColor( indicator.dbx.stackColor, "WHITE" ) end,
+		set = function( info, r,g,b,a )
+			self:PackColor( r,g,b,a, indicator.dbx, "stackColor" )
+			self:RefreshIndicator(indicator, "Create")
+		end,
 		hidden= function() return indicator.dbx.disableStack end,
 	}
-	self:MakeHeaderOptions( options, "Cooldown" )
-	options.disableCooldown = {
-		type = "toggle",
-		order = 130,
-		name = L["Disable Cooldown"],
-		desc = L["Disable the Cooldown Frame"],
-		tristate = false,
-		get = function () return indicator.dbx.disableCooldown end,
-		set = function (_, v)
-			indicator.dbx.disableCooldown = v or nil
-			self:RefreshIndicator(indicator, "Create")
-		end,
-	}
-	options.reverseCooldown = {
-		type = "toggle",
-		order = 135,
-		name = L["Reverse Cooldown"],
-		desc = L["Set cooldown to become darker over time instead of lighter."],
-		tristate = false,
-		get = function () return indicator.dbx.reverseCooldown end,
-		set = function (_, v)
-			indicator.dbx.reverseCooldown = v or nil
-			self:RefreshIndicator(indicator, "Create")
-		end,
-		hidden= function() return indicator.dbx.disableCooldown end,
-	}
-	options.disableOmniCC = {
-		type = "toggle",
-		order = 140,
-		name = L["Disable OmniCC"],
-		desc = L["Disable OmniCC"],
-		tristate = false,
-		get = function () return indicator.dbx.disableOmniCC end,
-		set = function (_, v)
-			indicator.dbx.disableOmniCC = v or nil
-			self:RefreshIndicator(indicator, "Create")
-		end,
-		hidden= function() return indicator.dbx.disableCooldown end,
-	}
-	self:MakeHeaderOptions( options, "Animation" )
-	options.animEnabled = {
-		type = "toggle",
-		order = 155,
-		name = L["Enable animation"],
-		desc = L["Turn on/off zoom animation of icons."],
-		tristate = false,
-		get = function () return indicator.dbx.animEnabled end,
-		set = function (_, v)
-			indicator.dbx.animEnabled = v or nil
-			if not v then
-				indicator.dbx.animScale = nil
-				indicator.dbx.animDuration = nil
-			end
-			indicator:UpdateDB()
-		end,
-	}
-	options.animOnEnabled = {
-		type = "toggle",
-		order = 157,
-		name = L["Only on Activation"],
-		desc = L["Start the animation only when the indicator is activated, not on updates."],
-		tristate = false,
-		get = function () return indicator.dbx.animOnEnabled end,
-		set = function (_, v)
-			indicator.dbx.animOnEnabled = v or nil
-			indicator:UpdateDB()
-		end,
-		hidden= function() return not indicator.dbx.animEnabled end,
-	}
-	options.animDuration = {
-		type = "range",
-		order = 160,
-		name = L["Duration"],
-		desc = L["Sets the duration in seconds."],
-		min  = 0.1,
-		max  = 2,
-		step = 0.1,
-		get = function () return indicator.dbx.animDuration or 0.7 end,
-		set = function (_, v)
-			indicator.dbx.animDuration = v
-			indicator:UpdateDB()
-		end,
-		hidden= function() return not indicator.dbx.animEnabled end,
-	}
-	options.animScale = {
-		type = "range",
-		order = 165,
-		name = L["Scale"],
-		desc = L["Sets the zoom factor."],
-		min  = 1.1,
-		max  = 3,
-		step = 0.1,
-		get = function () return indicator.dbx.animScale or 1.5	end,
-		set = function (_, v)
-			indicator.dbx.animScale = v
-			indicator:UpdateDB()
-		end,
-		hidden= function() return not indicator.dbx.animEnabled end,
-	}
-
 end

@@ -43,7 +43,7 @@ local layoutOptions =  { mainheader = {
 		get = function () return not theme.frame.menuDisabled end,
 		set = function (_, v)
 			theme.frame.menuDisabled = (not v) or nil
-			Grid2Frame:UpdateMenu()
+			Grid2Layout:UpdateMenu()
 		end,
 }, clamp = {
 		type = "toggle",

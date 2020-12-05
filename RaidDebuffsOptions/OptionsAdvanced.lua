@@ -85,21 +85,18 @@ do
 		wipe(bosses)
 		wipe(bossesNames)
 		wipe(bossesIndexes)
-		-- fixing inconsistencies between custom debuffs bosses keys and modules bosses keys,
-		-- if the same boss has different keys, the boss key in the custom database is changed.
-		local function FixCustomBossesKeys( zone, zoneToFix )
-			local function findkey(zone,ejid)
-				for k,v in pairs(zone) do
-					if ejid==v.ejid then return k,v end
-				end
-			end
-			if zoneToFix then
-				for k,v in pairs(zone) do
-					if v.ejid and v.ejid~=0 then
-						local key,data = findkey(zoneToFix,v.ejid)
-						if key and k ~= key then
-							zoneToFix[k] = data
-							zoneToFix[key] = nil
+		-- join bosses tables with different names but same ejid
+		local function FixCustomBossesKeys( refZone, zoneToFix )
+			if not zoneToFix then return end
+			for keyRef,dataRef in pairs(refZone) do
+				if dataRef.ejid and dataRef.ejid~=0 then
+					for key,data in pairs(zoneToFix) do
+						if data.ejid==dataRef.ejid and key~=keyRef then
+							if GSRD.debugging then GSRD:Debug("Fixing Duplicated Boss: %s => %s, ejid: [%d/%s], debuffs count: [%d]", key, keyRef, dataRef.ejid, dataRef.name or "nil", #data); end
+							local dataFixed = zoneToFix[keyRef] or { order = dataRef.order, ejid = dataRef.ejid }
+							for i,spell in ipairs(data) do table.insert(dataFixed, spell); end
+							zoneToFix[keyRef], zoneToFix[key] = dataFixed, nil
+							break
 						end
 					end
 				end

@@ -364,15 +364,8 @@ do
 				name = L["Color"],
 				desc = L["Select bar color"],
 				get = function()
-					local c = indicator.dbx[i].color
-					if not c.r then
-						c = indicator.dbx.textureColor
-					end
-					if c.r then
-						return c.r, c.g, c.b, c.a
-					else
-						return 0, 0, 0, 0
-					end
+					local c = indicator.dbx[i].color.r and indicator.dbx[i].color or indicator.dbx.textureColor
+					return c.r or 0, c.g or 0, c.b or 0, c.a or 0
 				end,
 				set = function( info, r,g,b,a )
 					local c = indicator.dbx[i].color
@@ -420,14 +413,9 @@ do
 				name = L["Color"],
 				desc = L["Background Color"],
 				hasAlpha = true,
-				get = function()
-					local c = indicator.dbx.backColor
-					if c then return c.r, c.g, c.b, c.a end
-				end,
+				get = function() return self:UnpackColor( indicator.dbx.backColor ) end,				
 				set = function(info,r,g,b,a)
-					local c = indicator.dbx.backColor
-					if not c then c = {}; indicator.dbx.backColor = c end
-					c.r, c.g, c.b, c.a = r, g, b, a
+					self:PackColor( r,g,b,a, indicator.dbx, "backColor" )
 					self:RefreshIndicator(indicator, "Layout")
 				end,
 				hidden = function() return not indicator.dbx.backColor end

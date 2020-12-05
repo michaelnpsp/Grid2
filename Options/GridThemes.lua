@@ -219,7 +219,7 @@ do
 		desc  = L["Select an existing theme to be used as template to create the new theme."],
 		get   = false,
 		set   = function(_, itemp)
-			Grid2Options:ShowEditDialog( "Type the name of the new Theme:", '', function(name)
+			Grid2Options:ShowEditDialog( L["Type the name of the new Theme:"], '', function(name)
 				local index = #editedTheme.db.names+1
 				editedTheme.db.names[index] = name
 				editedTheme.db.indicators[index] = {}
@@ -243,7 +243,7 @@ do
 		get    = false,
 		set    = function(_, index)
 			local name = editedTheme.db.names[index] or L['Default']
-			Grid2Options:ShowEditDialog( "Rename Theme:", name, function(text)
+			Grid2Options:ShowEditDialog( L["Rename Theme:"], name, function(text)
 				editedTheme.db.names[index] = text
 				LibStub("AceConfigRegistry-3.0"):NotifyChange("Grid2")
 			end)

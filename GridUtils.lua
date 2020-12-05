@@ -10,20 +10,26 @@ local pairs = pairs
 local tonumber = tonumber
 local tremove = table.remove
 
+-- Dummy function
 function Grid2.Dummy()
 end
 
-local defaultColors = {
-	TRANSPARENT = {r=0,g=0,b=0,a=0},
-	BLACK       = {r=0,g=0,b=0,a=1},
-	WHITE       = {r=1,g=1,b=1,a=1},
-}
-function Grid2:MakeColor(color, default)
-	return color or defaultColors[default or "TRANSPARENT"]
-end
-
+-- Fetch LibSharedMedia resources
 function Grid2:MediaFetch(mediatype, key, def)
 	return (key and media:Fetch(mediatype, key)) or (def and media:Fetch(mediatype, def))
+end
+
+-- Default Colors
+do
+	local defaultColors = {
+		TRANSPARENT = {r=0,g=0,b=0,a=0},
+		BLACK       = {r=0,g=0,b=0,a=1},
+		WHITE       = {r=1,g=1,b=1,a=1},
+	}
+	function Grid2:MakeColor(color, default)
+		return color or defaultColors[default or "TRANSPARENT"]
+	end
+	Grid2.defaultColors = defaultColors	
 end
 
 -- Repeating Timer Management

@@ -58,11 +58,7 @@ function Grid2Options:MakeIndicatorPortraitOptions(indicator, options)
 		order = 45,
 		get = function () return indicator.dbx.backColor~=nil end,
 		set = function (_, v)
-			if v then
-				indicator.dbx.backColor = { r=0,g=0,b=0,a=1 }
-			else
-				indicator.dbx.backColor = nil
-			end
+			indicator.dbx.backColor = v and { r=0,g=0,b=0,a=1 } or nil
 			self:RefreshIndicator(indicator, "Create")
 		end,	
 	}
@@ -72,18 +68,9 @@ function Grid2Options:MakeIndicatorPortraitOptions(indicator, options)
 		name = L["Background Color"],
 		desc = L["Background Color"],
 		hasAlpha = true,
-		get = function()
-			local c = indicator.dbx.backColor
-			if c then
-				return c.r, c.g, c.b, c.a
-			else
-				return 0,0,0,1
-			end
-		end,
+		get = function() return self:UnpackColor( indicator.dbx.backColor, "BLACK" ) end,
 		set = function(info,r,g,b,a)
-			local c = indicator.dbx.backColor
-			if not c then c = {}; indicator.dbx.backColor = c end
-			c.r, c.g, c.b, c.a = r, g, b, a
+			self:PackColor( r,g,b,a, indicator.dbx, "backColor" )
 			self:RefreshIndicator(indicator, "Create")
 		end,
 		hidden = function() return not indicator.dbx.backColor end

@@ -304,14 +304,35 @@ headerOptions = {
 		type = "toggle",
 		name = L["Toggle for vehicle"],
 		desc = L["When the player is in a vehicle replace the player frame with the vehicle frame."],
-		order = 55,
-		width = "double",
+		order = 54,
+		width = 1.2,
 		tristate = true,
 		get = function()
 			return editedHeader.toggleForVehicle
 		end,
 		set = function(info, value)
 			editedHeader.toggleForVehicle = value
+			RefreshLayout()
+		end,
+		hidden = false,
+	},
+
+	hidePlayer = {
+		type = "toggle",
+		name = L["Hide Player"],
+		desc = L["Do not display the player frame (only applied when in group)."],
+		order = 55,
+		width = "normal",
+		tristate = false,
+		get = function()
+			return editedHeader.showPlayer==false
+		end,
+		set = function(info, value)
+			if value then
+				editedHeader.showPlayer = false
+			else
+				editedHeader.showPlayer = nil
+			end
 			RefreshLayout()
 		end,
 		hidden = false,

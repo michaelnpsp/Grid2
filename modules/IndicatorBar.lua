@@ -203,7 +203,7 @@ local function Bar_Disable(self, parent)
 	bar:ClearAllPoints()
 end
 
-local function Bar_UpdateDB(self)
+local function Bar_LoadDB(self)
 	local dbx = self.dbx
 	local theme = Grid2Frame.db.profile
 	local l = dbx.location
@@ -259,7 +259,7 @@ local function BarColor_SetBarColorInverted(self, parent, r, g, b, a)
 	end
 end
 
-local function BarColor_UpdateDB(self)
+local function BarColor_LoadDB(self)
 	if self.dbx.invertColor then
 		self.backColor   = self.dbx.backColor or defaultBackColor
 		self.SetBarColor = BarColor_SetBarColorInverted
@@ -278,8 +278,7 @@ local function Create(indicatorKey, dbx)
 	Bar.SetOrientation = Bar_SetOrientation
 	Bar.Disable        = Bar_Disable
 	Bar.Layout         = Bar_Layout
-	Bar.UpdateDB       = Bar_UpdateDB
-	Bar_UpdateDB(Bar,dbx)
+	Bar.LoadDB         = Bar_LoadDB
 	Grid2:RegisterIndicator(Bar, { "percent" } )
 
 	local colorKey      = indicatorKey .. "-color"
@@ -289,8 +288,7 @@ local function Create(indicatorKey, dbx)
 	BarColor.Create     = Grid2.Dummy
 	BarColor.Layout     = Grid2.Dummy
 	BarColor.OnUpdate   = BarColor_OnUpdate
-	BarColor.UpdateDB   = BarColor_UpdateDB
-	BarColor_UpdateDB(BarColor)
+	BarColor.LoadDB     = BarColor_LoadDB
 	Grid2:RegisterIndicator(BarColor, { "color" })
 
 	Bar.sideKick = BarColor

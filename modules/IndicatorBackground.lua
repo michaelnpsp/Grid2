@@ -18,14 +18,13 @@ function Background:OnUpdate(parent, unit, status)
 	end
 end
 
-function Background:UpdateDB()
+function Background:LoadDB()
 	local c = Grid2Frame.db.profile.frameContentColor
 	cr, cg, cb, ca = c.r, c.g, c.b, c.a
 end
 
 local function Create(indicatorKey, dbx)
 	Background.dbx = dbx
-	Background:UpdateDB()
 	Grid2:RegisterIndicator(Background, { "color" })
 	return Background
 end

@@ -4,7 +4,11 @@ local L = Grid2Options.L
 local select = select
 local GetSpellInfo = GetSpellInfo
 
-local classHeals = {
+local classHeals = Grid2.isClassic and {
+	SHAMAN  = { 1064 }, -- Chain Heal
+	PRIEST  = { 596 },  -- Prayer of Healing
+	DRUID   = { 740 },  -- Tranquility
+} or {
 	SHAMAN  = { 1064, 73921, 127944 },     	  -- Chain Heal, Healing Rain, Tide Totem
 	PRIEST  = { 34861, 23455, 88686, 64843 }, -- Circle of Healing, Holy Nova, Holy Word: Sanctuary, Divine Himn
 	PALADIN = { 85222, 114871, 119952 },   	  -- Light of Dawn, Holy Prism, Arcing Light(Light Hammer's effect)
@@ -15,7 +19,7 @@ local classHeals = {
 				127944, -- Shaman Tide Totem
 				64843,  -- Priest Divine Himn
 				115310, -- Monk Revival
-	},
+	}
 }
 
 -- Misc util functions

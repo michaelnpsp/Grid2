@@ -202,7 +202,7 @@ end
 -- Grid2Options:MakeIndicatorTypeOptions()
 do
 	local typeMorphValue  = {}
-	local typeMorphValues = { icon = L["icon"], square = L["square"], text = L["text"] }
+	local typeMorphValues = { icon = L["icon"], square = L["square"], shape = L["shape"], text = L["text"] }
 
 	local function RegisterIndicatorStatusesFromDatabase(indicator)
 		if indicator then
@@ -247,8 +247,9 @@ do
 
 		-- Set new fields width defaults values
 		dbx.type = value
+		dbx.animEnabled = nil
 		for k, v in pairs(Grid2Options.indicatorDefaultValues[value]) do
-			if (not dbx[k]) then
+			if not dbx[k] then
 				indicator.dbx[k] = v
 				dbx[k] = v
 			end
@@ -521,3 +522,141 @@ function Grid2Options:MakeIndicatorLocationOptions(indicator, options)
 	}
 end
 
+-- Grid2Options:MakeIndicatorAnimationOptions()
+function Grid2Options:MakeIndicatorAnimationOptions(indicator, options)
+	self:MakeHeaderOptions( options, "Animation" )
+	options.animEnabled = {
+		type = "toggle",
+		order = 155,
+		name = L["Enable animation"],
+		desc = L["Turn on/off zoom animation of icons."],
+		tristate = false,
+		get = function () return indicator.dbx.animEnabled end,
+		set = function (_, v)
+			indicator.dbx.animEnabled = v or nil
+			if not v then
+				indicator.dbx.animScale = nil
+				indicator.dbx.animDuration = nil
+				indicator.dbx.animOrigin = nil
+			end
+			indicator:UpdateDB()
+		end,
+	}
+	options.animOnEnabled = {
+		type = "toggle",
+		order = 157,
+		name = L["Only on Activation"],
+		desc = L["Start the animation only when the indicator is activated, not on updates."],
+		tristate = false,
+		get = function () return indicator.dbx.animOnEnabled end,
+		set = function (_, v)
+			indicator.dbx.animOnEnabled = v or nil
+			indicator:UpdateDB()
+		end,
+		hidden= function() return not indicator.dbx.animEnabled end,
+	}
+	options.animDuration = {
+		type = "range",
+		order = 160,
+		name = L["Duration"],
+		desc = L["Sets the duration in seconds."],
+		min  = 0.1,
+		max  = 2,
+		step = 0.1,
+		get = function () return indicator.dbx.animDuration or 0.7 end,
+		set = function (_, v)
+			indicator.dbx.animDuration = v
+			Grid2Frame:WithAllFrames( function (f)
+				local anim = indicator:GetBlinkFrame(f).scaleAnim
+				if anim then
+					anim.grow:SetDuration(v/2)
+					anim.shrink:SetDuration(v/2)
+				end
+			end)
+		end,
+		hidden= function() return not indicator.dbx.animEnabled end,
+	}
+	options.animScale = {
+		type = "range",
+		order = 164,
+		name = L["Scale"],
+		desc = L["Sets the zoom factor."],
+		min  = 1.1,
+		max  = 3,
+		step = 0.1,
+		get = function () return indicator.dbx.animScale or 1.5	end,
+		set = function (_, v)
+			indicator.dbx.animScale = v
+			Grid2Frame:WithAllFrames( function (f)
+				local anim = indicator:GetBlinkFrame(f).scaleAnim
+				if anim then
+					anim.grow:SetScale(v,v)
+					anim.shrink:SetScale(1/v,1/v)
+				end
+			end)
+		end,
+		hidden= function() return not indicator.dbx.animEnabled end,
+	}
+	options.animOrigin = {
+		type = 'select',
+		order = 165,
+		name = L["Origin"],
+		desc = L["Zoom origin point"],
+		values = self.pointValueList,
+		get = function() return self.pointMap[indicator.dbx.animOrigin or 'CENTER'] end,
+		set = function(_, v)
+			local point = self.pointMap[v]
+			indicator.dbx.animOrigin = point~='CENTER' and point or nil
+			Grid2Frame:WithAllFrames( function (f)
+				local anim = indicator:GetBlinkFrame(f).scaleAnim
+				if anim then
+					anim.grow:SetOrigin(point,0,0)
+					anim.shrink:SetOrigin(point,0,0)
+				end
+			end)
+		end,
+		hidden= function() return not indicator.dbx.animEnabled end,
+	}
+end
+
+function Grid2Options:MakeIndicatorCooldownOptions(indicator, options)
+	self:MakeHeaderOptions( options, "Cooldown" )
+	options.disableCooldown = {
+		type = "toggle",
+		order = 130,
+		name = L["Disable Cooldown"],
+		desc = L["Disable the Cooldown Frame"],
+		tristate = false,
+		get = function () return indicator.dbx.disableCooldown end,
+		set = function (_, v)
+			indicator.dbx.disableCooldown = v or nil
+			self:RefreshIndicator(indicator, "Create")
+		end,
+	}
+	options.reverseCooldown = {
+		type = "toggle",
+		order = 135,
+		name = L["Reverse Cooldown"],
+		desc = L["Set cooldown to become darker over time instead of lighter."],
+		tristate = false,
+		get = function () return indicator.dbx.reverseCooldown end,
+		set = function (_, v)
+			indicator.dbx.reverseCooldown = v or nil
+			self:RefreshIndicator(indicator, "Create")
+		end,
+		hidden= function() return indicator.dbx.disableCooldown end,
+	}
+	options.disableOmniCC = {
+		type = "toggle",
+		order = 140,
+		name = L["Disable OmniCC"],
+		desc = L["Disable OmniCC"],
+		tristate = false,
+		get = function () return indicator.dbx.disableOmniCC end,
+		set = function (_, v)
+			indicator.dbx.disableOmniCC = v or nil
+			self:RefreshIndicator(indicator, "Create")
+		end,
+		hidden= function() return indicator.dbx.disableCooldown end,
+	}
+end

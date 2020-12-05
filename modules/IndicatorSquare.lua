@@ -3,7 +3,7 @@
 local Grid2 = Grid2
 
 local function Square_Create(self, parent)
-	self:CreateFrame("Frame", parent)
+	self:CreateFrame("Frame", parent, "BackdropTemplate")
 end
 
 local function Square_GetBlinkFrame(self, parent)
@@ -63,7 +63,7 @@ local function Square_Disable(self, parent)
 	f:ClearAllPoints()
 end
 
-local function Square_UpdateDB(self)
+local function Square_LoadDB(self)
 	local dbx = self.dbx
 	-- variables
 	local l = dbx.location
@@ -95,8 +95,7 @@ local function Create(indicatorKey, dbx)
 	indicator.Layout = Square_Layout
 	indicator.OnUpdate = Square_OnUpdate
 	indicator.Disable = Square_Disable
-	indicator.UpdateDB = Square_UpdateDB
-	Square_UpdateDB(indicator)
+	indicator.LoadDB = Square_LoadDB
 	Grid2:RegisterIndicator(indicator, { "color" })
 	return indicator
 end

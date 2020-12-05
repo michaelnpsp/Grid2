@@ -14,14 +14,9 @@ function Grid2Options:MakeIndicatorBorderCustomOptions(indicator,options)
 		name = L["Border Color"],
 		desc = L["Sets the color for the border when no status is active."],
 		hasAlpha = true,
-		get = function()
-			c = Grid2:MakeColor( Grid2Frame.db.profile.frameBorderColor, 'TRANSPARENT' )
-			return c.r, c.g, c.b, c.a
-		end,
+		get = function() return self:UnpackColor( Grid2Frame.db.profile.frameBorderColor, 'TRANSPARENT' ) end,
 		set = function( info, r,g,b,a )
-			local c = Grid2Frame.db.profile.frameBorderColor or {}
-			c.r, c.g, c.b, c.a = r, g, b, a
-			Grid2Frame.db.profile.frameBorderColor = c
+			self:PackColor( r,g,b,a, Grid2Frame.db.profile, "frameBorderColor" )
 			self:RefreshIndicator(indicator, "Update")
 		end,
 	}
@@ -57,13 +52,9 @@ function Grid2Options:MakeIndicatorBorderCustomOptions(indicator,options)
 		order = 40,
 		name = L["Inner Border Color"],
 		desc = L["Sets the color of the inner border of each unit frame"],
-		get = function()
-			local c= Grid2Frame.db.profile.frameColor
-			return c.r, c.g, c.b, c.a
-		end,
+		get = function() return self:UnpackColor( Grid2Frame.db.profile.frameColor ) end,
 		set = function( info, r,g,b,a )
-			local c= Grid2Frame.db.profile.frameColor
-			c.r, c.g, c.b, c.a = r, g, b, a
+			self:PackColor( r,g,b,a, Grid2Frame.db.profile, "frameColor" )
 			Grid2Frame:LayoutFrames(true)
 		 end,
 		hasAlpha = true,

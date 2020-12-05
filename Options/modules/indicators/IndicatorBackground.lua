@@ -15,13 +15,9 @@ function Grid2Options:MakeIndicatorBackgroundOptions(indicator,options)
 		width = "full",
 		name = L["Background Color"],
 		desc = L["Sets the background color to use when no status is active."],
-		get = function()
-			local c= Grid2Frame.db.profile.frameContentColor
-			return c.r, c.g, c.b, c.a
-		end,
+		get = function() return self:UnpackColor( Grid2Frame.db.profile.frameContentColor ) end,
 		set = function( info, r,g,b,a )
-			local c= Grid2Frame.db.profile.frameContentColor
-			c.r, c.g, c.b, c.a = r, g, b, a
+			self:PackColor( r,g,b,a, Grid2Frame.db.profile, "frameContentColor" )
 			self:RefreshIndicator(indicator, "Update")
 		end,
 	}

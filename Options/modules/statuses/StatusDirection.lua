@@ -12,7 +12,7 @@ Grid2Options:RegisterStatusOptions( "direction", "target", function(self, status
 	options.colorCount = {
 		type = "toggle",
 		order = 80,
-		name = "Color by distance",
+		name = L["Color by distance"],
 		get = function () return status.dbx.colorCount~=nil end,
 		set = function (_, v)
 			if v then
@@ -103,7 +103,6 @@ Grid2Options:RegisterStatusOptions( "direction", "target", function(self, status
 	options.stickyTanks = {
 		type = "toggle",
 		order = 130,
-		width = "half",
 		name = L["Tanks"],
 		desc = L["Always display direction for tanks"],
 		tristate = false,
@@ -113,11 +112,22 @@ Grid2Options:RegisterStatusOptions( "direction", "target", function(self, status
 			status:UpdateDB()
 		end,
 	}
-	options.stickyTarget = {
+	options.stickyMouseover = {
 		type = "toggle",
 		order = 140,
-		width = "half",
-		name = L["Target"],
+		name = L["Mouseover"],
+		desc = L["Always display direction for mouseover"],
+		tristate = false,
+		get = function ()	return status.dbx.StickyMouseover end,
+		set = function (_, v)
+			status.dbx.StickyMouseover = v or nil
+			status:UpdateDB()
+		end,
+	}
+	options.stickyTarget = {
+		type = "toggle",
+		order = 150,
+		name = L["Target Unit"],
 		desc = L["Always display direction for target"],
 		tristate = false,
 		get = function ()	return status.dbx.StickyTarget end,
@@ -128,27 +138,13 @@ Grid2Options:RegisterStatusOptions( "direction", "target", function(self, status
 	}
 	options.stickyFocus = {
 		type = "toggle",
-		order = 150,
-		width = "half",
-		name = L["Focus"],
+		order = 160,
+		name = L["Focus Unit"],
 		desc = L["Always display direction for focus"],
 		tristate = false,
 		get = function ()	return status.dbx.StickyFocus end,
 		set = function (_, v)
 			status.dbx.StickyFocus = v or nil
-			status:UpdateDB()
-		end,
-	}
-	options.stickyMouseover = {
-		type = "toggle",
-		order = 160,
-		width = "half",
-		name = L["Mouseover"],
-		desc = L["Always display direction for mouseover"],
-		tristate = false,
-		get = function ()	return status.dbx.StickyMouseover end,
-		set = function (_, v)
-			status.dbx.StickyMouseover = v or nil
 			status:UpdateDB()
 		end,
 	}
@@ -167,29 +163,6 @@ Grid2Options:RegisterStatusOptions( "direction", "target", function(self, status
 			return not (status.dbx.StickyMouseover or status.dbx.StickyFocus or status.dbx.StickyTarget or status.dbx.StickyTanks)
 		end,
 	}
-	--[[ Disabled because new nameplates restrictions don't allow this anymore
-	options.spacer3 = {
-		type = "header",
-		order = 180,
-		name = "",
-	}
-	options.guessDirections = {
-		type = "toggle",
-		order = 190,
-		width = "full",
-		name = L["Estimate directions"],
-		desc = L["Try to display directions when inside Instances. Experimental, only works with melee classes."],
-		tristate = false,
-		get = function ()	return status.dbx.guessDirections end,
-		set = function (_, v)
-			status.dbx.guessDirections = v or nil
-			if status.enabled then
-				status:OnDisable()
-				status:OnEnable()
-			end
-		end,
-	}
-	--]]
 end, {
 	title = L["arrows pointing to each raid member"],
 	titleIcon = "Interface\\Vehicles\\Arrow",

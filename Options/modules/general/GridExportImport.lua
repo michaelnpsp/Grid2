@@ -285,30 +285,77 @@ function Comm:OnCommReceived(prefix, message, distribution, sender)
 end
 
 -- Profile database cleaning
-local function CleanDatabaseItems( itemType, setup )
-	for baseKey, dbx in pairs(setup) do
-		if not (dbx.type and Grid2.setupFunc[dbx.type]) then
-			setup[baseKey] = nil
-			print( string.format( "Grid2: Removed orphan %s type=[%s] name=[%s]:", itemType, dbx.type or "nil", baseKey) )
+local CleanDatabase, uiReloadPending
+do
+	local count
+	local function msg(text)
+		count = count + 1
+		print( 'Grid2: '..text )
+	end
+	local function CleanDatabaseItems( itemType, setup )
+		for baseKey, dbx in pairs(setup) do
+			if not (dbx.type and Grid2.setupFunc[dbx.type]) then
+				setup[baseKey] = nil
+				msg( string.format( "Removed orphan %s type=[%s] name=[%s]:", itemType, dbx.type or "nil", baseKey) )
+			end
 		end
 	end
-end
 
-local function CleanStatusMap(setup)
-	for baseKey, map in pairs(setup) do
-		local indicator = Grid2.indicators[baseKey]
-		if indicator then
-			for statusKey, priority in pairs(map) do
-				local status = Grid2.statuses[statusKey]
-				if not( status and tonumber(priority) ) then
-					map[statusKey] = nil
-					print( string.format( "Grid2: Removed map for indicator=[%s] <=> status=[%s], reason: status does not exists or wrong priority.", baseKey, statusKey ) )
+	local function CleanStatusMap(setup)
+		for baseKey, map in pairs(setup) do
+			local indicator = Grid2.indicators[baseKey]
+			if indicator then
+				for statusKey, priority in pairs(map) do
+					local status = Grid2.statuses[statusKey]
+					if not( status and tonumber(priority) ) then
+						map[statusKey] = nil
+						msg( string.format( "Removed map for indicator=[%s] <=> status=[%s], reason: status does not exists or wrong priority.", baseKey, statusKey ) )
+					end
 				end
+			else
+				setup[baseKey] = nil
+				msg( string.format( "Removed statusMap for non existent [%s] indicator.", baseKey ) )
 			end
-		else
-			setup[baseKey] = nil
-			print( string.format( "Grid2: Removed statusMap for non existent [%s] indicator ", baseKey ) )
 		end
+	end
+
+	local function RenameIndicator(db, oldName, newName)
+		if db.indicators[oldName]~=nil and db.indicators[newName]==nil then
+			db.indicators[newName] = db.indicators[oldName]
+			db.indicators[oldName] = nil
+			if db.statusMap[oldName]~=nil and db.statusMap[newName]==nil then
+				db.statusMap[newName] = db.statusMap[oldName]
+				db.statusMap[oldName] = nil
+			end
+		end
+	end
+
+	local function FixDatabaseIndicators(db)
+		local blacklist = Grid2Options.indicatorBlacklistNames
+		local indicators = {}
+		for k,v in pairs(db.indicators) do
+			if blacklist[k] then
+				indicators[#indicators+1] = k
+			end
+		end
+		if #indicators>0 then
+			uiReloadPending = true
+			for _,oldName in ipairs(indicators) do
+				local newName = oldName..'-indicator'
+				RenameIndicator(db, oldName, newName)
+				RenameIndicator(db, oldName..'-color', newName..'-color')
+				msg( string.format( "Indicator [%s] renamed to [%s].", oldName, newName ) )
+			end
+		end
+	end
+
+	CleanDatabase = function(db)
+		count = 0
+		CleanDatabaseItems( "status", db.statuses )
+		CleanDatabaseItems( "indicator", db.indicators )
+		CleanStatusMap( db.statusMap )
+		FixDatabaseIndicators(db)
+		return count
 	end
 end
 
@@ -381,21 +428,23 @@ Grid2Options.AdvancedProfileOptions = { type = "group", order= 200, name = L["Im
 	header3 ={
 		type = "header",
 		order = 90,
-		name = "Profile database maintenance",
+		name = L["Profile database maintenance"],
 	},
 	cleanDatabase = {
 		type = "execute",
 		order= 100,
 		width = "full",
-		name = "Clean Current Profile",
-		desc = "Remove wrong or obsolete objects (indicators, statuses, etc) from the current profile database.",
+		name = L["Clean Current Profile"],
+		desc = L["Remove invalid or obsolete objects (indicators, statuses, etc) from the current profile database."],
 		func = function()
-			CleanDatabaseItems( "status", Grid2.db.profile.statuses )
-			CleanDatabaseItems( "indicator", Grid2.db.profile.indicators )
-			CleanStatusMap( Grid2.db.profile.statusMap )
-			print("Grid2 Database cleaning finished.")
+			if CleanDatabase(Grid2.db.profile)>0 then
+				print("Grid2: Database clean finished, some errors were fixed, an UI Reload is advised.")
+			else
+				print("Grid2: Database check finished, database is ok, nothing to fix.")
+			end
 		end,
 		confirm = function() return L["Warning, the clean process will remove statuses and indicators of non enabled modules. Are you sure you want to clean the current profile ?"] end,
+		disabled = function() return uiReloadPending end, -- We cannot clean the database a second time without a ui reload if an indicator was renamed in the first cleaning
 	},
 } }
 -- }}

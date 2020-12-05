@@ -113,7 +113,7 @@ local function UpdatePortraits(event, unit)
 	end
 end
 
-local function Portrait_UpdateDB(self)
+local function Portrait_LoadDB(self)
 	self.OnUpdate = (self.dbx.portraitType == '3D' and Portrait_OnUpdate3D) or
 					(self.dbx.portraitType == 'class' and Portrait_OnUpdateClass) or
 					Portrait_OnUpdate2D
@@ -131,8 +131,7 @@ local function Create(indicatorKey, dbx)
 	indicator.Layout = Portrait_Layout
 	indicator.Disable = Portrait_Disable
 	indicator.OnSuspend = Portrait_OnSuspend
-	indicator.UpdateDB = Portrait_UpdateDB
-	Portrait_UpdateDB(indicator)
+	indicator.LoadDB = Portrait_LoadDB
 	Grid2:RegisterIndicator(indicator, { "portrait" })
 	return indicator
 end

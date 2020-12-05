@@ -200,12 +200,9 @@ Grid2Options:AddGeneralOptions( "General", "blink", {
 		get = function () return Grid2Frame.db.shared.blinkType end,
 		set = function (_, v)
 			Grid2Frame.db.shared.blinkType = v
-			Grid2Frame:UpdateBlink()
-			if v == 'None' then
-				for _,indicator in ipairs(Grid2:GetIndicatorsSorted()) do
-					if indicator.GetBlinkFrame then
-						Grid2Frame:WithAllFrames(function (f) Grid2Frame:SetBlinkEffect(indicator:GetBlinkFrame(f),false) end)
-					end
+			for _,indicator in ipairs(Grid2:GetIndicatorsSorted()) do
+				if indicator.GetBlinkFrame then
+					indicator:UpdateDB()
 				end
 			end
 			Grid2Options:MakeStatusesOptions(Grid2Options.statusesOptions)
@@ -225,7 +222,14 @@ Grid2Options:AddGeneralOptions( "General", "blink", {
 		end,
 		set = function (_, v)
 			Grid2Frame.db.shared.blinkFrequency = v
-			Grid2Frame:UpdateBlink()
+			for _,indicator in ipairs(Grid2:GetIndicatorsSorted()) do
+				if indicator.GetBlinkFrame then
+					Grid2Frame:WithAllFrames(function (f) 
+						local anim = indicator:GetBlinkFrame(f).blinkAnim
+						if anim then anim.settings:SetDuration(1/v) end
+					end)
+				end	
+			end
 		end,
 	},
 })

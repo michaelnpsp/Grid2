@@ -129,6 +129,7 @@ local function Text_Layout(self, parent)
 	Text:SetWidth(parent:GetWidth())
 	Text:SetShadowOffset(1,-1)
 	Text:SetShadowColor(0,0,0, self.shadowAlpha)
+	Text:Show()
 	Frame:Show()
 end
 
@@ -226,11 +227,12 @@ end
 local function Text_Disable(self, parent)
 	local f = parent[self.name]
 	f:Hide()
+	f.Text:Hide()
 	f:SetParent(nil)
 	f:ClearAllPoints()
 end
 
-local function Text_UpdateDB(self)
+local function Text_LoadDB(self)
 	-- text fmt
 	local fmt = Grid2.db.profile.formatting
 	FmtDE[true] = fmt.longDecimalFormat
@@ -294,8 +296,7 @@ local function Create(indicatorKey, dbx)
 	indicator.GetBlinkFrame = Text_GetBlinkFrame
 	indicator.Layout = Text_Layout
 	indicator.Disable = Text_Disable
-	indicator.UpdateDB = Text_UpdateDB
-	Text_UpdateDB(indicator, dbx)
+	indicator.LoadDB = Text_LoadDB
 	Grid2:RegisterIndicator(indicator, { "text" })
 
 	local colorKey = indicatorKey .. "-color"
@@ -304,7 +305,6 @@ local function Create(indicatorKey, dbx)
 	TextColor.parentName = indicatorKey
 	TextColor.Create = Grid2.Dummy
 	TextColor.Layout = Grid2.Dummy
-	TextColor.UpdateDB = Grid2.Dummy
 	TextColor.OnUpdate = TextColor_OnUpdate
 	Grid2:RegisterIndicator(TextColor, { "color" })
 

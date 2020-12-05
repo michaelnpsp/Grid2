@@ -21,7 +21,7 @@ local EJ_GetEncounterInfoByIndex = EJ_GetEncounterInfoByIndex or Grid2.Dummy
 GSRD.defaultDB = { profile = { debuffs = {}, enabledModules = {} } }
 
 -- general variables
-local instance_id
+local instance_ej_id
 local instance_map_id
 local instance_bmap_id
 local instance_map_name
@@ -35,8 +35,9 @@ local auto_status
 local auto_time
 local auto_boss
 local auto_instance
+local auto_encounter
 local auto_debuffs
-local auto_blacklist = { [160029] = true, [36032] = true, [6788] = true, [80354] = true, [95223] = true, [114216] = true, [57723] = true }
+local auto_blacklist = { [160029] = true, [36032] = true, [6788] = true, [80354] = true, [95223] = true, [114216] = true, [57723] = true, [225080] = true, [25771] = true }
 
 -- Fix some bugged maps (EJ_GetInstanceInfo does not return valid instanceID for the listed maps)
 -- We replace bugged mapIDs with another non-bugged mapIDs of the same instance.
@@ -49,6 +50,8 @@ local bugged_maps = {
 	-- Fixes for Ny'alotha the Waking City (ticket #786)
 	[1580] = 1581,
 	[1582] = 1581,
+	-- Spires of Ascension
+	[1692] = 1693,
 }
 
 -- LDB Tooltip
@@ -95,14 +98,14 @@ function GSRD:OnModuleDisable()
 	self:ResetZoneSpells()
 end
 
--- In Classic Encounter Journal data does not exist so we always use map_id so: instance_id+100000=instance_map_id
+-- In Classic Encounter Journal data does not exist so we always use map_id so: instance_ej_id+100000=instance_map_id
 function GSRD:UpdateZoneSpells(event)
 	local bm = C_Map.GetBestMapForUnit("player")
 	if bm or isClassic then
-		local map_id = select(8,GetInstanceInfo()) + 100000 -- +100000 to avoid collisions with instance_id
+		local map_id = select(8,GetInstanceInfo()) + 100000 -- +100000 to avoid collisions with instance_ej_id
 		if event and map_id==instance_map_id then return end
 		self:ResetZoneSpells()
-		instance_id = EJ_GetInstanceForMap( (isClassic and map_id) or bugged_maps[bm] or bm )
+		instance_ej_id = EJ_GetInstanceForMap( (isClassic and map_id) or bugged_maps[bm] or bm )
 		instance_map_id = map_id
 		instance_map_name = GetInstanceInfo()
 		instance_bmap_id = bm or -1
@@ -117,7 +120,7 @@ function GSRD:UpdateZoneSpells(event)
 end
 
 function GSRD:GetCurrentZone()
-	return instance_id, instance_map_id
+	return instance_ej_id, instance_map_id
 end
 
 function GSRD:ClearAllIndicators()
@@ -127,7 +130,7 @@ function GSRD:ClearAllIndicators()
 end
 
 function GSRD:ResetZoneSpells()
-	instance_id = nil
+	instance_ej_id = nil
 	instance_map_id = nil
 	instance_map_name = nil
 	wipe(spells_order)
@@ -163,6 +166,7 @@ function GSRD:RegisterNewDebuff(spellId, caster, te, co, ty, du, ex, isBoss)
 	local debuffs = auto_status.dbx.debuffs[auto_instance]
 	if not debuffs then
 		debuffs = {}; auto_status.dbx.debuffs[auto_instance] = debuffs
+		if GSRD.debugging then GSRD:Debug("New Debuff detected: [%d] instance: [%d] boss: [%s]", spellId, auto_instance, auto_encounter or "nil"); end
 	end
 	local order = #debuffs + 1
 	spells_order[spellId]  = order
@@ -173,16 +177,17 @@ function GSRD:RegisterNewDebuff(spellId, caster, te, co, ty, du, ex, isBoss)
 end
 
 function GSRD:RegisterEncounter(encounterName)
-	encounterName = encounterName or auto_boss or self:GetBossName()
-	auto_instance = IsInInstance() and instance_id or instance_map_id
-	local debuffs = self.db.profile.debuffs[auto_instance]
+	encounterName  = encounterName or auto_boss or self:GetBossName()
+	auto_encounter = encounterName
+	auto_instance  = IsInInstance() and instance_ej_id or instance_map_id
+	local debuffs  = self.db.profile.debuffs[auto_instance]
 	if not debuffs then
 		debuffs = { { id = auto_instance, name = instance_map_name, raid = IsInRaid() or nil } }
 		self.db.profile.debuffs[auto_instance] = debuffs
 	end
 	auto_debuffs = debuffs[encounterName]
 	if not auto_debuffs then
-		local instance = (instance_id or 0)>0 and instance_id or 1028 -- 0=>asuming Azeroth worldmap (1028)
+		local instance = (instance_ej_id or 0)>0 and instance_ej_id or (isClassic and 1028 or 1192)-- 0=>asuming Azeroth(1028)(classic) or Shadowlands(1192)(retail)
 		local encOrder, encName, encID, _ = 0
 		EJ_SelectInstance(instance)
 		repeat
@@ -257,7 +262,8 @@ end
 function class:LoadZoneSpells()
 	if instance_map_id then
 		spells_count = 0
-		local db = self.dbx.debuffs[ instance_map_id ] or self.dbx.debuffs[ instance_id ]
+		local debuffs = self.dbx.debuffs
+		local db = debuffs[instance_map_id] or debuffs[instance_ej_id]
 		if db then
 			for index, spell in ipairs(db) do
 				local name = spell<0 and -spell or GetSpellInfo(spell)
@@ -269,7 +275,7 @@ function class:LoadZoneSpells()
 			end
 		end
 		if GSRD.debugging then
-			GSRD:Debug("Zone [%s][%d/%d/%d] Status [%s]: %d raid debuffs loaded", instance_map_name, instance_bmap_id, instance_id, instance_map_id, self.name, spells_count)
+			GSRD:Debug("Zone[%s] C_MapID[%d] EjID[%d] mapID[%d] Status [%s]: %d raid debuffs loaded from [%d]", instance_map_name, instance_bmap_id, instance_ej_id, instance_map_id, self.name, spells_count, (debuffs[instance_map_id] and instance_map_id) or (debuffs[instance_ej_id] and instance_ej_id) )
 		end
 	end
 end

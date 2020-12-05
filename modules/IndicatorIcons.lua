@@ -16,7 +16,6 @@ local function Icon_Create(self, parent)
 	f.visibleCount = 0
 end
 
--- Warning: This is an overrided indicator:Update() NOT the standard indicator:OnUpdate()
 local function Icon_OnFrameUpdate(f)
 	local unit = f.myFrame.unit
 	if not unit then return end
@@ -24,7 +23,8 @@ local function Icon_OnFrameUpdate(f)
 	local max = self.maxIcons
 	local auras = f.auras
 	local showStack = self.showStack
-	local showCool = self.showCooldown
+	local showCool  = self.showCooldown
+	local showIcons = self.showIcons
 	local useStatus = self.useStatusColor
 	local i = 1
 	for _, status in ipairs(self.statuses) do
@@ -33,7 +33,16 @@ local function Icon_OnFrameUpdate(f)
 				local k, textures, counts, expirations, durations, colors = status:GetIcons(unit,max)
 				for j=1,k do
 					local aura = auras[i]
-					aura.icon:SetTexture(textures[j])
+					if showIcons then
+						aura.icon:SetTexture(textures[j])
+						if useStatus then
+							local c = colors[j]
+							aura:SetBackdropBorderColor(c.r, c.g, c.b, min(c.a,self.borderOpacity) )
+						end
+					else
+						local c = colors[j]
+						aura.icon:SetColorTexture(c.r, c.g, c.b)
+					end
 					if showStack then
 						local count = counts[j]
 						aura.text:SetText(count>1 and count or "")
@@ -42,19 +51,24 @@ local function Icon_OnFrameUpdate(f)
 						local expiration, duration = expirations[j], durations[j]
 						aura.cooldown:SetCooldown(expiration - duration, duration)
 					end
-					if useStatus then
-						local c = colors[j]
-						aura:SetBackdropBorderColor(c.r,c.g,c.b, min(c.a,self.borderOpacity) )
-					end
 					aura:Show()
 					i = i + 1
 				end
 				max = max - k
 			else
 				local aura = auras[i]
-				aura.icon:SetTexture(status:GetIcon(unit))
-				aura.icon:SetTexCoord(status:GetTexCoord(unit))
-				aura.icon:SetVertexColor(status:GetVertexColor(unit))
+				if showIcons then
+					aura.icon:SetTexture(status:GetIcon(unit))
+					aura.icon:SetTexCoord(status:GetTexCoord(unit))
+					aura.icon:SetVertexColor(status:GetVertexColor(unit))
+					if useStatus then
+						local r,g,b,a = status:GetColor(unit)
+						aura:SetBackdropBorderColor(r,g,b, min(a or 1,self.borderOpacity) )
+					end
+				else
+					local r,g,b = status:GetColor(unit)
+					aura.icon:SetColorTexture(r,g,b)
+				end
 				if showStack then
 					local count = status:GetCount(unit)
 					aura.text:SetText(count>1 and count or "")
@@ -62,10 +76,6 @@ local function Icon_OnFrameUpdate(f)
 				if showCool then
 					local expiration, duration = status:GetExpirationTime(unit) or 0, status:GetDuration(unit) or 0
 					aura.cooldown:SetCooldown(expiration - duration, duration)
-				end
-				if useStatus then
-					local r,g,b,a = status:GetColor(unit)
-					aura:SetBackdropBorderColor(r,g,b, min(a or 1,self.borderOpacity) )
 				end
 				aura:Show()
 				i = i + 1
@@ -93,6 +103,7 @@ local EnableDelayedUpdates = function()
 	EnableDelayedUpdates = Grid2.Dummy
 end
 
+-- Warning: This is an overrided indicator:Update() NOT the standard indicator:OnUpdate()
 local function Icon_Update(self, parent)
 	updates[#updates+1] = parent[self.name]
 end
@@ -120,9 +131,6 @@ local function Icon_Layout(self, parent)
 		if not frame then
 			frame = CreateFrame("Frame", nil, f, ICON_TEMPLATE)
 			frame.icon = frame:CreateTexture(nil, "ARTWORK")
-			frame.text = frame:CreateFontString(nil, "OVERLAY")
-			frame.cooldown = CreateFrame("Cooldown", frameName and frameName..i or nil, frame, "CooldownFrameTemplate")
-			frame.cooldown:SetHideCountdownNumbers(true)
 			auras[i] = frame
 		end
 		frame:SetSize( self.iconSize, self.iconSize )
@@ -136,25 +144,27 @@ local function Icon_Layout(self, parent)
 		frame:SetPoint( self.anchorIcon, f, self.anchorIcon, (x*ux+y*vx)*size, (x*uy+y*vy)*size )
 		-- stack count text
 		if self.showStack then
-			local text = frame.text
-			text:SetFontObject(GameFontHighlightSmall)
-			text:SetFont(self.font, self.fontSize, self.fontFlags )
 			local c = self.colorStack
-			text:SetTextColor(c.r, c.g, c.b, c.a)
-			text:ClearAllPoints()
-			text:SetPoint(self.fontPoint, self.fontOffsetX, self.fontOffsetY)
-			text:Show()
-		else
+			frame.text = frame.text or frame:CreateFontString(nil, "OVERLAY")
+			frame.text:SetFontObject(GameFontHighlightSmall)
+			frame.text:SetFont(self.font, self.fontSize, self.fontFlags )
+			frame.text:SetTextColor(c.r, c.g, c.b, c.a)
+			frame.text:ClearAllPoints()
+			frame.text:SetPoint(self.fontPoint, self.fontOffsetX, self.fontOffsetY)
+			frame.text:Show()
+		elseif frame.text then
 			frame.text:Hide()
 		end
 		-- cooldown animation
 		if self.showCooldown then
+			frame.cooldown = frame.cooldown or CreateFrame("Cooldown", frameName and frameName..i or nil, frame, "CooldownFrameTemplate")
+			frame.cooldown:SetHideCountdownNumbers(true)
 			frame.cooldown:SetDrawEdge(self.dbx.disableOmniCC~=nil)
 			frame.cooldown.noCooldownCount = self.dbx.disableOmniCC
 			frame.cooldown:SetReverse(self.dbx.reverseCooldown)
 			frame.cooldown:SetAllPoints()
 			frame.cooldown:Show()
-		else
+		elseif frame.cooldown then
 			frame.cooldown:Hide()
 		end
 		-- icon texture
@@ -177,7 +187,7 @@ end
 
 local pointsX = { TOPLEFT =  1,	TOPRIGHT = -1, BOTTOMLEFT = 1, BOTTOMRIGHT = -1 }
 local pointsY = { TOPLEFT = -1, TOPRIGHT = -1, BOTTOMLEFT = 1, BOTTOMRIGHT =  1 }
-local function Icon_UpdateDB(self)
+local function Icon_LoadDB(self)
 	local dbx = self.dbx
 	local theme = Grid2Frame.db.profile
 	-- location
@@ -210,6 +220,7 @@ local function Icon_UpdateDB(self)
 	end
 	self.showCooldown    = not dbx.disableCooldown
 	self.showStack       = not dbx.disableStack
+	self.showIcons       = not dbx.disableIcons
 	self.useStatusColor  = dbx.useStatusColor
 	self.borderOpacity   = dbx.borderOpacity  or 1
 	self.colorBorder     = Grid2:MakeColor(dbx.color1, "WHITE")
@@ -231,11 +242,9 @@ Grid2.setupFunc["icons"] = function(indicatorKey, dbx)
 	indicator.dbx      = dbx
 	indicator.Create   = Icon_Create
 	indicator.Layout   = Icon_Layout
-	indicator.OnUpdate = Icon_OnUpdate
 	indicator.Disable  = Icon_Disable
 	indicator.Update   = Icon_Update
-	indicator.UpdateDB = Icon_UpdateDB
-	Icon_UpdateDB(indicator)
+	indicator.LoadDB   = Icon_LoadDB
 	EnableDelayedUpdates()
 	Grid2:RegisterIndicator(indicator, { "icon", "icons" })
 	return indicator

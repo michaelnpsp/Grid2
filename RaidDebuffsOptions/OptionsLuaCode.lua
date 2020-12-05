@@ -83,10 +83,10 @@ function RDO:GenerateEncounterJournalData(isRaid)
 	end
 
 	println('local RDDB = Grid2Options:GetRaidDebuffsTable()')
-	println('RDDB["Battle for Azeroth"] = {')
+	println('RDDB["Shadowlands"] = {')
 	println( isRaid and "\t-- Raid instances" or "\t-- 5 man instances" )
 
-	EJ_SelectTier(8)
+	EJ_SelectTier( EJ_GetNumTiers() )
 	for index=1,100 do
 		local instanceID, name, description, bgImage, buttonImage, loreImage, dungeonAreaMapID, link = EJ_GetInstanceByIndex(index, isRaid)
 		if not instanceID then break end

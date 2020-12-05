@@ -184,18 +184,9 @@ function Grid2Options:MakeIndicatorBarAppearanceOptions(indicator,options)
 		name = L["Background Color"],
 		desc = L["Background Color"],
 		hasAlpha = true,
-		get = function()
-			local c = indicator.dbx.backColor
-			if c then
-				return c.r, c.g, c.b, c.a
-			else
-				return 0,0,0,1
-			end
-		end,
+		get = function() return self:UnpackColor( indicator.dbx.backColor, "BLACK" ) end,
 		set = function(info,r,g,b,a)
-			local c = indicator.dbx.backColor
-			if not c then c = {}; indicator.dbx.backColor = c end
-			c.r, c.g, c.b, c.a = r, g, b, a
+			self:PackColor( r,g,b,a, indicator.dbx, "backColor" )
 			self:RefreshIndicator(indicator, "Layout")
 		end,
 		hidden = function() return not indicator.dbx.backColor end,

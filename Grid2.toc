@@ -1,9 +1,9 @@
 ﻿#@retail@
-## Interface: 80300
+## Interface: 90002
 ## X-WoW-Project: retail
 #@end-retail@
 #@non-retail@
-# ## Interface: 11305
+# ## Interface: 11306
 ## X-WoW-Project: classic
 #@end-non-retail@
 ## Title: Grid2
@@ -47,6 +47,7 @@ GridFrame.lua
 GridLayout.lua
 GridLayoutLayouts.lua
 GridIndicator.lua
+GridIndicatorEffects.lua
 GridStatus.lua
 GridSetup.lua
 GridDefaults.lua
@@ -69,6 +70,7 @@ modules\IndicatorIcons.lua
 modules\IndicatorSquare.lua
 modules\IndicatorTooltip.lua
 modules\IndicatorPortrait.lua
+modules\IndicatorShape.lua
 
 # Statuses
 modules\StatusHealth.lua

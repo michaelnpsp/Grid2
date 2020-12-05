@@ -49,7 +49,7 @@ end
 function Grid2Options:MakeIndicatorAuraIconsSizeOptions(indicator, options, optionParams)
 	options.orientation = {
 		type = "select",
-		order = 10,
+		order = 11,
 		name = L["Orientation"],
 		desc = L["Set the icons orientation."],
 		get = function () return indicator.dbx.orientation or "HORIZONTAL" end,
@@ -59,9 +59,21 @@ function Grid2Options:MakeIndicatorAuraIconsSizeOptions(indicator, options, opti
 		end,
 		values={ VERTICAL = L["VERTICAL"], HORIZONTAL = L["HORIZONTAL"] }
 	}
+	options.disableIcons = {
+		type = "toggle",
+		name = L["Display Squares"],
+		desc = L["Display flat square textures instead of the icons provided by the statuses."],
+		order = 12,
+		tristate = false,
+		get = function () return indicator.dbx.disableIcons end,
+		set = function (_, v)
+			indicator.dbx.disableIcons = v or nil
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+	}
 	options.maxIcons = {
 		type = "range",
-		order = 11,
+		order = 13,
 		name = L["Max Icons"],
 		desc = L["Select maximum number of icons to display."],
 		min = 1,
@@ -75,7 +87,7 @@ function Grid2Options:MakeIndicatorAuraIconsSizeOptions(indicator, options, opti
 	}
 	options.maxIconsPerRow = {
 		type = "range",
-		order = 12,
+		order = 14,
 		name = L["Icons per row"],
 		desc = L["Select the number of icons per row."],
 		min = 1,
@@ -89,7 +101,7 @@ function Grid2Options:MakeIndicatorAuraIconsSizeOptions(indicator, options, opti
 	}
 	options.iconsize = {
 		type = "range",
-		order = 13,
+		order = 15,
 		name = L["Icon Size"],
 		desc = L["Adjust the size of the icons, select Zero to use the theme default icon size."],
 		min = 0,
@@ -103,7 +115,7 @@ function Grid2Options:MakeIndicatorAuraIconsSizeOptions(indicator, options, opti
 	}
 	options.iconSpacing = {
 		type = "range",
-		order = 14,
+		order = 16,
 		name = L["Icon Spacing"],
 		desc = L["Adjust the space between icons."],
 		softMin = 0,
@@ -125,39 +137,9 @@ end
 function Grid2Options:MakeIndicatorAuraIconsCustomOptions(indicator, options)
 	self:MakeHeaderOptions( options, "Appearance"  )
 	self:MakeHeaderOptions( options, "StackText" )
-	options.fontOffsetX = {
-		type = "range",
-		order = 101,
-		name = L["X Offset"],
-		desc = L["Adjust the horizontal offset of the text"],
-		softMin  = -50,
-		softMax = 50,
-		step = 1,
-		get = function () return indicator.dbx.fontOffsetX or 0	end,
-		set = function (_, v)
-			indicator.dbx.fontOffsetX = v
-			self:RefreshIndicator(indicator, "Layout")
-		end,
-		hidden= function() return indicator.dbx.disableStack end,
-	}
-	options.fontOffsetY = {
-		type = "range",
-		order = 102,
-		name = L["Y Offset"],
-		desc = L["Adjust the vertical offset of the text"],
-		softMin  = -50,
-		softMax = 50,
-		step = 1,
-		get = function () return indicator.dbx.fontOffsetY or 0	end,
-		set = function (_, v)
-			indicator.dbx.fontOffsetY = v
-			self:RefreshIndicator(indicator, "Layout")
-		end,
-		hidden= function() return indicator.dbx.disableStack end,
-	}
 	options.fontJustify = {
 		type = 'select',
-		order = 104,
+		order = 101,
 		name = L["Text Location"],
 		desc = L["Text Location"],
 		values = Grid2Options.pointValueListExtra,
@@ -184,20 +166,20 @@ function Grid2Options:MakeIndicatorAuraIconsCustomOptions(indicator, options)
 	}
 	options.font = {
 		type = "select", dialogControl = "LSM30_Font",
-		order = 105,
+		order = 102,
 		name = L["Font"],
 		desc = L["Adjust the font settings"],
 		get = function (info) return indicator.dbx.font or self.MEDIA_VALUE_DEFAULT end,
 		set = function (info, v)
-			indicator.dbx.font = Grid2Options.MEDIA_VALUE_DEFAULT~=v and v or nil
+			indicator.dbx.font = self.MEDIA_VALUE_DEFAULT~=v and v or nil
 			self:RefreshIndicator(indicator, "Layout")
 		end,
-		values = self.GetStatusBarValues,
+		values = self.GetFontValues,
 		hidden= function() return indicator.dbx.disableStack end,
 	}
 	options.fontFlags = {
 		type = "select",
-		order = 106,
+		order = 103,
 		name = L["Font Border"],
 		desc = L["Set the font border type."],
 		get = function ()
@@ -213,7 +195,7 @@ function Grid2Options:MakeIndicatorAuraIconsCustomOptions(indicator, options)
 	}
 	options.fontsize = {
 		type = "range",
-		order = 109,
+		order = 104,
 		name = L["Font Size"],
 		desc = L["Adjust the font size."],
 		min = 6,
@@ -226,26 +208,47 @@ function Grid2Options:MakeIndicatorAuraIconsCustomOptions(indicator, options)
 		end,
 		hidden= function() return indicator.dbx.disableStack end,
 	}
+	options.fontOffsetX = {
+		type = "range",
+		order = 105,
+		name = L["X Offset"],
+		desc = L["Adjust the horizontal offset of the text"],
+		softMin  = -50,
+		softMax = 50,
+		step = 1,
+		get = function () return indicator.dbx.fontOffsetX or 0	end,
+		set = function (_, v)
+			indicator.dbx.fontOffsetX = v
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		hidden= function() return indicator.dbx.disableStack end,
+	}
+	options.fontOffsetY = {
+		type = "range",
+		order = 106,
+		name = L["Y Offset"],
+		desc = L["Adjust the vertical offset of the text"],
+		softMin  = -50,
+		softMax = 50,
+		step = 1,
+		get = function () return indicator.dbx.fontOffsetY or 0	end,
+		set = function (_, v)
+			indicator.dbx.fontOffsetY = v
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		hidden= function() return indicator.dbx.disableStack end,
+	}
 	options.fontColor = {
 		type = "color",
 		order = 110,
 		name = L["Color"],
 		desc = L["Color"],
-		get = function()
-			local c = indicator.dbx.colorStack
-			if c then 	return c.r, c.g, c.b, c.a
-			else		return 1,1,1,1
-			end
-		end,
+		hasAlpha = true,
+		get = function() return self:UnpackColor( indicator.dbx.colorStack, "WHITE" ) end,
 		set = function( info, r,g,b,a )
-			local c = indicator.dbx.colorStack
-			if c then c.r, c.g, c.b, c.a = r, g, b, a
-			else	  indicator.dbx.colorStack= { r=r, g=g, b=b, a=a}
-			end
-			local indicatorKey = indicator.name
+			self:PackColor( r,g,b,a, indicator.dbx, "colorStack" )
 			self:RefreshIndicator(indicator, "Layout" )
 		 end,
-		hasAlpha = true,
 		hidden= function() return indicator.dbx.disableStack end,
 	}
 	self:MakeHeaderOptions( options, "Cooldown" )

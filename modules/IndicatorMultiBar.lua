@@ -187,10 +187,6 @@ local function Bar_Layout(self, parent)
 	bar:Show()
 end
 
-local function Bar_GetBlinkFrame(self, parent)
-	return parent[self.name]
-end
-
 local function Bar_SetOrientation(self, orientation)
 	self.dbx.orientation = orientation
 	self.orientation = orientation or Grid2Frame.db.profile.orientation
@@ -207,7 +203,7 @@ local function Bar_Disable(self, parent)
 	bar:ClearAllPoints()
 end
 
-local function Bar_UpdateDB(self)
+local function Bar_LoadDB(self)
 	local dbx          = self.dbx
 	local l            = dbx.location
 	local theme        = Grid2Frame.db.profile
@@ -282,7 +278,7 @@ local function BarColor_SetBarColorInverted(self, parent, r, g, b, a)
 	textures[#textures]:SetVertexColor(r, g, b, a)
 end
 
-local function BarColor_UpdateDB(self)
+local function BarColor_LoadDB(self)
 	local dbx = self.dbx
 	self.SetBarColor = dbx.invertColor and BarColor_SetBarColorInverted or BarColor_SetBarColor
 	self.OnUpdate = dbx.textureColor.r and Grid2.Dummy or BarColor_OnUpdate
@@ -298,13 +294,11 @@ local function Create(indicatorKey, dbx)
 	-- Hack to caculate status index fast: statuses[priorities[status]] == status
 	Bar.sortStatuses   = function (a,b) return Bar.priorities[a] < Bar.priorities[b] end
 	Bar.Create         = Bar_CreateHH
-	Bar.GetBlinkFrame  = Bar_GetBlinkFrame
 	Bar.SetOrientation = Bar_SetOrientation
 	Bar.Disable        = Bar_Disable
 	Bar.Layout         = Bar_Layout
 	Bar.Update         = Bar_Update
-	Bar.UpdateDB       = Bar_UpdateDB
-	Bar_UpdateDB(Bar)
+	Bar.LoadDB         = Bar_LoadDB
 	Grid2:RegisterIndicator(Bar, { "percent" })
 	EnableDelayedUpdates()
 
@@ -314,8 +308,7 @@ local function Create(indicatorKey, dbx)
 	BarColor.parentName = indicatorKey
 	BarColor.Create     = Grid2.Dummy
 	BarColor.Layout     = Grid2.Dummy
-	BarColor.UpdateDB   = BarColor_UpdateDB
-	BarColor_UpdateDB(BarColor)
+	BarColor.LoadDB     = BarColor_LoadDB
 	Grid2:RegisterIndicator(BarColor, { "color" })
 	Bar.sideKick = BarColor
 
