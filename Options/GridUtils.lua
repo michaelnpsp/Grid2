@@ -240,7 +240,7 @@ do
 	function Grid2Options:MakeTitleOptions(options, title, subtitle, desc, icon, coords, arg)
 		options.title = {
 			type  = "description", order = 0, width = "full", fontSize = "large", dialogControl = "Grid2Title",
-			image = icon, imageWidth = 36, imageHeight = 36, imageCoords = coords or titleCoords,
+			image = icon, imageWidth = 34, imageHeight = 34, imageCoords = coords or titleCoords,
 			name  = string.format(titleMask, title, subtitle),
 			desc = desc,
 			arg = arg, -- optional multipurpose argument

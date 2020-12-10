@@ -52,7 +52,7 @@ local Grid2Options = {
 }
 
 -- Declare some variables for fast access to main sections options.
--- generalOptions, themesOptions, indicatorsOptions, statusesOptions 
+-- generalOptions, themesOptions, indicatorsOptions, statusesOptions
 for k,o in pairs(Grid2Options.options.args) do
 	Grid2Options[k..'Options'] = o.args
 end
@@ -63,7 +63,7 @@ function Grid2Options:Initialize()
 	self:EnableLoadOnDemand(not Grid2.db.global.LoadOnDemandDisabled)
 	self:MakeOptions()
 	LibStub("AceConfig-3.0"):RegisterOptionsTable("Grid2", self.options)
-	LibStub("AceConfigDialog-3.0"):SetDefaultSize("Grid2", 735, 550)
+	LibStub("AceConfigDialog-3.0"):SetDefaultSize("Grid2", 735, 558)
 	self.Initialize = nil
 end
 

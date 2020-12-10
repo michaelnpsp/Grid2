@@ -10,6 +10,9 @@ function RDO:InitGeneralOptions()
 	Grid2Options:MakeStatusTitleOptions( RDO.statuses[1], options)
 end
 
+-- separate content from title
+options.separator0 = { type = "description", order = 9, name = "\n" }
+
 -- raid-debuffs statuses
 do
 	local statusColor = {

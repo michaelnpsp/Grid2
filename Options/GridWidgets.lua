@@ -42,8 +42,7 @@ do
 		tooltip:ClearAllPoints()
 		tooltip:SetPoint("TOP",frame,"BOTTOM", 0, -8)
 		tooltip:ClearLines()
-		-- tooltip:SetText( text , 1, .82, 0, 1, true)
-		tooltip:AddLine( text , 1, 1, 1, true)
+		tooltip:SetText( text , 1, 1, 1, 1, true)
 		tooltip:Show()
 	end
 
@@ -60,18 +59,16 @@ do
 	end
 
 	local function OnIconEnter(self)
-		local parent = self.frame:GetParent().obj
-		local option = parent.options[self.index]
+		local option = self.parentObj.options[self.index]
 		if option.tooltip then
 			ShowTooltip(self.frame, option.tooltip)
 		end
 	end
 
 	local function OnIconClick(self)
-		local parent = self.frame:GetParent().obj
-		local option = parent.options[self.index]
+		local option = self.parentObj.options[self.index]
 		if option.func then
-			option.func( parent.userdata, self.index )
+			option.func( self.parentObj.userdata, self.index )
 		end
 	end
 
@@ -102,6 +99,7 @@ do
 		end,
 		["OnRelease"] = function(self)
 			for _,icon in ipairs(self.icons) do
+				icon.index, icon.parentObj = nil, nil
 				icon:Release()
 			end
 			wipe(self.icons)
@@ -110,7 +108,7 @@ do
 		["SetImageSize"] = function(self, width, height)
 			self.image:SetWidth(width)
 			self.image:SetHeight(height)
-			self:SetHeight(height)
+			self:SetHeight(height+3)
 		end,
 		["SetImage"] = function(self, path,...)
 			self.image:SetTexture(path)
@@ -150,6 +148,7 @@ do
 			for i,option in ipairs(options) do
 				local icon = AceGUI:Create("Icon")
 				icon.index = i
+				icon.parentObj = self
 				icon:SetImage(option.image)
 				icon:SetImageSize(imgSize,imgSize)
 				icon:SetHeight(iconSize)
@@ -178,12 +177,12 @@ do
 		image:SetPoint("TOPLEFT")
 
 		local label = frame:CreateFontString(nil, "BACKGROUND", "GameFontHighlightSmall")
-		label:SetPoint("TOPLEFT", image, "TOPRIGHT", 4, 0)
+		label:SetPoint("LEFT", image, "RIGHT", 4, 0)
 
 		local line = frame:CreateTexture(nil, "BACKGROUND")
 		line:SetHeight(6)
-		line:SetPoint("BOTTOMLEFT", 0, -5)
-		line:SetPoint("BOTTOMRIGHT", 0, -5)
+		line:SetPoint("BOTTOMLEFT", 0, -4)
+		line:SetPoint("BOTTOMRIGHT", 0, -4)
 		line:SetTexture(137057) -- Interface\\Tooltips\\UI-Tooltip-Border
 		line:SetTexCoord(0.81, 0.94, 0.5, 1)
 

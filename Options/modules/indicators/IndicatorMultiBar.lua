@@ -10,6 +10,7 @@ Grid2Options:RegisterIndicatorOptions("multibar", true, function(self, indicator
 	self:MakeIndicatorMultiBarAppearanceOptions(indicator,layout)
 	self:MakeIndicatorMultiBarTexturesOptions(indicator,bars)
 	local options = Grid2Options.indicatorsOptions[indicator.name].args; wipe(options)
+	self:MakeIndicatorTitleOptions(options, indicator)
 	options["bars"]   = { type = "group", order = 10, name = L["Bars"], args = bars }
 	options["layout"] = { type = "group", order = 30, name = L["Layout"], args = layout }
 	if indicator.dbx.textureColor.r==nil then
@@ -413,7 +414,7 @@ do
 				name = L["Color"],
 				desc = L["Background Color"],
 				hasAlpha = true,
-				get = function() return self:UnpackColor( indicator.dbx.backColor ) end,				
+				get = function() return self:UnpackColor( indicator.dbx.backColor ) end,
 				set = function(info,r,g,b,a)
 					self:PackColor( r,g,b,a, indicator.dbx, "backColor" )
 					self:RefreshIndicator(indicator, "Layout")
