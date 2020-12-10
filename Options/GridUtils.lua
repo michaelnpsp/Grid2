@@ -243,7 +243,7 @@ do
 			image = icon, imageWidth = 34, imageHeight = 34, imageCoords = coords or titleCoords,
 			name  = string.format(titleMask, title, subtitle),
 			desc = desc,
-			arg = arg, -- optional multipurpose argument
+			arg = arg, -- optional argument to inject action icons configuration, see Grid2Title widget in GridWidget.lua
 		}
 	end
 end

@@ -120,7 +120,7 @@ local function Bar_Update(self, parent, unit, status)
 			if self.backAnchor or bar.myMaxIndex>1 then
 				updates[bar] = true
 			end
-		else
+		else -- update due a layout or groupType change not from a status notifying a change
 			for i, status in ipairs(self.statuses) do
 				values[i] = status:GetPercent(unit) or 0
 			end
