@@ -49,14 +49,12 @@ do
 					end
 				end
 			end
-			if typ then
-				local s = DebuffTypes[typ]
-				if s and not s.seen and not (s.debuffFilter and s.debuffFilter[nam]) then
-					if exp~=s.exp[u] or cnt~=s.cnt[u] then
-						s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u] = 1, i, tex, cnt, dur, exp
-					else
-						s.seen, s.idx[u] = -1, i
-					end
+			local s = DebuffTypes[typ or 'Typeless']
+			if s and not s.seen and not (s.debuffFilter and s.debuffFilter[nam]) then
+				if exp~=s.exp[u] or cnt~=s.cnt[u] then
+					s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u] = 1, i, tex, cnt, dur, exp
+				else
+					s.seen, s.idx[u] = -1, i
 				end
 			end
 			for s in next, DebuffGroups do
@@ -265,10 +263,12 @@ do
 	local fmt = string.format
 	local UnitHealthMax = UnitHealthMax
 	local unit_is_pet   = Grid2.owner_of_unit
-	local function Refresh()
+	local function Refresh(self, full)
+		if full then self:UpdateDB() end
 		for unit in Grid2:IterateRosterUnits() do
 			AuraFrame_OnEvent(nil,nil,unit)
 		end
+		if full then self:UpdateAllUnits() end
 	end
 	local function Reset(self, unit)
 		-- multibar indicator needs val[unit]=nil because due to a speed optimization it does not check if status is active before calling GetPercent()
@@ -392,7 +392,7 @@ do
 		repeat
 			name, cache_tex[j], cache_cnt[j], debuffType, cache_dur[j], cache_exp[j] = UnitAura(unit, i, 'HARMFUL')
 			if not name then break end
-			if subType == debuffType then
+			if subType == (debuffType or 'Typeless') then
 				cache_col[j] = color
 				j = j + 1
 			end
@@ -433,9 +433,9 @@ do
 		self.vId = dbx.valueIndex or 0
 		self.valMax = dbx.valueMax
 		self.GetPercent = dbx.valueIndex and (dbx.valueMax and GetPercentMax or GetPercentHealth) or Grid2.statusLibrary.GetPercent
+		if self.spells then wipe(self.spells) end
 		if dbx.auras then -- multiple spells
 			self.spells = self.spells or {}
-			wipe(self.spells)
 			for _,spell in ipairs(dbx.auras) do -- We only allow spell names because DebuffsGroups do not support spellIDs
 				self.spells[ type(spell)=='number' and GetSpellInfo(spell) or spell ] = true
 			end
@@ -555,10 +555,11 @@ Grid2.setupFunc["buff"]       = CreateAura
 Grid2.setupFunc["debuff"]     = CreateAura
 Grid2.setupFunc["debuffType"] = CreateAura
 
-Grid2:DbSetStatusDefaultValue( "debuff-Magic",   {type = "debuffType", subType = "Magic",   color1 = {r=.2,g=.6,b=1,a=1}} )
-Grid2:DbSetStatusDefaultValue( "debuff-Poison",  {type = "debuffType", subType = "Poison",  color1 = {r=0,g=.6,b=0,a=1 }} )
-Grid2:DbSetStatusDefaultValue( "debuff-Curse",   {type = "debuffType", subType = "Curse",   color1 = {r=.6,g=0,b=1,a=1 }} )
-Grid2:DbSetStatusDefaultValue( "debuff-Disease", {type = "debuffType", subType = "Disease", color1 = {r=.6,g=.4,b=0,a=1}} )
+Grid2:DbSetStatusDefaultValue( "debuff-Magic",    {type = "debuffType", subType = "Magic",    color1 = {r=.2,g=.6,b=1,a=1}} )
+Grid2:DbSetStatusDefaultValue( "debuff-Poison",   {type = "debuffType", subType = "Poison",   color1 = {r=0,g=.6,b=0,a=1 }} )
+Grid2:DbSetStatusDefaultValue( "debuff-Curse",    {type = "debuffType", subType = "Curse",    color1 = {r=.6,g=0,b=1,a=1 }} )
+Grid2:DbSetStatusDefaultValue( "debuff-Disease",  {type = "debuffType", subType = "Disease",  color1 = {r=.6,g=.4,b=0,a=1}} )
+Grid2:DbSetStatusDefaultValue( "debuff-Typeless", {type = "debuffType", subType = "Typeless", color1 = {r=0,g=0,b=0,a=1}} )
 
 --===============================================================================
 -- Publish some functions & tables

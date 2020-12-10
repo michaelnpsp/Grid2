@@ -31,10 +31,10 @@ do
 			local group = Grid2Options:GetStatusGroup(status)
 			if suspended then
 				group.order = group.order - 500
-				group.name  = strsub(group.name,11,-3)	
+				group.name  = strsub(group.name,11,-3)
 			else
 				group.order = group.order + 500
-				group.name  = string.format('|cFF808080%s|r',group.name)	
+				group.name  = string.format('|cFF808080%s|r',group.name)
 			end
 			status:Refresh()
 		end
@@ -50,9 +50,9 @@ do
 			set     = function(_,v)	StatusSetPlayerClass(status, v) end,
 			values  = ClassesValues,
 		}
-		if headerKey~=false then 
+		if headerKey~=false then
 			self:MakeHeaderOptions( options, headerKey or "General" )
-		end	
+		end
 	end
 end
 

@@ -46,5 +46,8 @@ Everyone has full permission to do whatever they want with this model file in
 any non-commercial manner.
 For any commercial use, contact Guillotine first at curse.guillotine@gmail.com
 
+Delete Icon from IcoCentre: <https://www.shareicon.net/delete-remove-cross-92993/>
+License: Free for commercial use.
+
 ------------------------------------------------------------------------
 

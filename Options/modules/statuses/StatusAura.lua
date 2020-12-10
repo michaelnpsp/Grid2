@@ -49,8 +49,7 @@ function Grid2Options:MakeStatusAuraEnableStacksOptions(status, options, optionP
 			end,
 			set = function (_, v)
 				status.dbx.enableStacks = v~=1 and v or nil
-				status:UpdateDB()
-				status:Refresh()
+				status:Refresh(true)
 			end,
 		}
 	end
@@ -71,8 +70,7 @@ function Grid2Options:MakeStatusAuraMissingOptions(status, options, optionParams
 				status.dbx.valueIndex = nil
 				status.dbx.enableStacks = nil
 			end
-			status:UpdateDB()
-			status:Refresh()
+			status:Refresh(true)
 			self:MakeStatusOptions(status)
 		end,
 	}
@@ -190,7 +188,7 @@ function Grid2Options:MakeStatusAuraCommonOptions(status, options, optionParams)
 				type = "toggle",
 				name = L["Use debuff Type color"],
 				desc = L["Use the debuff Type color first. The specified color will be applied only if the debuff has no type."],
-				order = 10.1,
+				order = 19,
 				get = function () return status.dbx.debuffTypeColorize end,
 				set = function (_, v)
 					status.dbx.debuffTypeColorize = v or nil
@@ -239,87 +237,6 @@ function Grid2Options:MakeStatusAuraColorThresholdOptions(status, options, optio
 			}
 		end
 	end
-end
-
-function Grid2Options:MakeStatusClassFilterOptions(status, options, optionParams)
-	options = options or {}
-	if Grid2.isClassic then
-		self:MakeHeaderOptions( options, "ClassFilter" )
-		options.classFilter = {	type = "group", order = 205, inline= true, name = '', args = {}	}
-		for classType, className in pairs(LOCALIZED_CLASS_NAMES_MALE) do
-			options.classFilter.args[classType] = {
-				type = "toggle",
-				name = className,
-				width = "half",
-				desc = (L["Show on %s."]):format(className),
-				tristate = false,
-				get = function ()
-					return not (status.dbx.classFilter and status.dbx.classFilter[classType])
-				end,
-				set = function (_, value)
-					local dbx = status.dbx
-					if not value then
-						dbx.classFilter = dbx.classFilter or {}
-						dbx.classFilter[classType] = true
-					elseif dbx.classFilter then
-						dbx.classFilter[classType] = nil
-						if not next(dbx.classFilter) then
-							dbx.classFilter = nil
-						end
-					end
-					status:UpdateDB()
-					status:UpdateAllUnits()
-				end,
-			}
-		end
-	end
-	return options
-end
-
-function Grid2Options:MakeStatusDebuffTypeColorsOptions(status, options, optionParams)
-	self:MakeStatusColorOptions(status, options, optionParams)
-end
-
-function Grid2Options:MakeStatusDebuffTypeFilterOptions(status, options, optionParams)
-	self:MakeHeaderOptions( options, "DebuffFilter" )
-	options.debuffFilter = {
-		type = "input",
-		order = 180,
-		width = "full",
-		name = "",
-		multiline = status.dbx.debuffFilter and math.max(#status.dbx.debuffFilter,3) or 3,
-		get = function()
-				if status.dbx.debuffFilter then
-					local debuffs= {}
-					for name in next,status.dbx.debuffFilter do
-						debuffs[#debuffs+1] = name
-					end
-					return table.concat( debuffs, "\n" )
-				end
-		end,
-		set = function(_, v)
-			local debuffs= { strsplit("\n,", v) }
-			if next(debuffs) then
-				if status.dbx.debuffFilter then
-					wipe(status.dbx.debuffFilter)
-				else
-					status.dbx.debuffFilter = {}
-				end
-				for _,debuff in pairs(debuffs) do
-					debuff = strtrim(debuff)
-					if #debuff>0 then
-						debuff = tonumber(debuff) and GetSpellInfo(debuff) or debuff
-						status.dbx.debuffFilter[debuff] = true
-					end
-				end
-			end
-			if not next(status.dbx.debuffFilter) then
-				status.dbx.debuffFilter = nil
-			end
-			status:UpdateDB()
-			status:UpdateAllUnits()
-		end,
-	}
 end
 
 function Grid2Options:MakeStatusAuraDescriptionOptions(status, options, optionParams)
@@ -415,188 +332,82 @@ function Grid2Options:MakeStatusAuraTextOptions(status, options, optionParams)
 	}
 end
 
-function Grid2Options:MakeStatusAuraListOptions(status, options, optionParams)
-	self:MakeHeaderOptions( options, "Display" )
-	options.aurasList = {
-		type = "input",
-		order = 155,
-		width = "full",
-		name = "",
-		multiline = math.min( math.max(status.dbx.auras and #status.dbx.auras or 0,5),10),
-		get = function()
-			local auras = {}
-			for _,aura in pairs(status.dbx.auras) do
-				auras[#auras+1]= (type(aura)=="number") and GetSpellInfo(aura) or aura
-			end
-			return table.concat( auras, "\n" )
-		end,
-		set = function(_, v)
-			wipe(status.dbx.auras)
-			local auras = { strsplit("\n,", strtrim(v)) }
-			for _,name in pairs(auras) do
-				local aura = strtrim(name)
-				if #aura>0 then
-					table.insert(status.dbx.auras, tonumber(aura) or aura )
-				end
-			end
-			status:UpdateDB()
-			status:Refresh()
-		end,
-		hidden = function() return status.dbx.auras==nil end
-	}
+function Grid2Options:MakeStatusClassFilterOptions(status, options, optionParams)
+	options = options or {}
+	if Grid2.isClassic then
+		self:MakeHeaderOptions( options, "ClassFilter" )
+		options.classFilter = {	type = "group", order = 205, inline= true, name = '', args = {}	}
+		for classType, className in pairs(LOCALIZED_CLASS_NAMES_MALE) do
+			options.classFilter.args[classType] = {
+				type = "toggle",
+				name = className,
+				width = "half",
+				desc = (L["Show on %s."]):format(className),
+				tristate = false,
+				get = function ()
+					return not (status.dbx.classFilter and status.dbx.classFilter[classType])
+				end,
+				set = function (_, value)
+					local dbx = status.dbx
+					if not value then
+						dbx.classFilter = dbx.classFilter or {}
+						dbx.classFilter[classType] = true
+					elseif dbx.classFilter then
+						dbx.classFilter[classType] = nil
+						if not next(dbx.classFilter) then
+							dbx.classFilter = nil
+						end
+					end
+					status:UpdateDB()
+					status:UpdateAllUnits()
+				end,
+			}
+		end
+	end
+	return options
 end
 
-function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionParams)
-	options.showDispelDebuffs = {
-		type = "toggle",
-		name = L["Dispellable by Me"],
-		desc = L["Display only debuffs i can dispell"],
-		order = 150.9,
+function Grid2Options:MakeStatusDebuffTypeColorsOptions(status, options, optionParams)
+	self:MakeStatusColorOptions(status, options, optionParams)
+end
+
+function Grid2Options:MakeStatusDebuffTypeFilterOptions(status, options, optionParams)
+	self:MakeHeaderOptions( options, "DebuffFilter" )
+	options.debuffFilter = {
+		type = "input", dialogControl = "Grid2ExpandedEditBox",
+		order = 180,
 		width = "full",
-		get = function () return status.dbx.filterDispelDebuffs end,
-		set = function (_, v)
-			status.dbx.filterDispelDebuffs = v or nil
-			if v and status.dbx.auras then
-				status.dbx.aurasBak = status.dbx.auras
-				status.dbx.auras = nil
+		name = "",
+		multiline = status.dbx.debuffFilter and math.max(#status.dbx.debuffFilter,3) or 3,
+		get = function()
+				if status.dbx.debuffFilter then
+					local debuffs= {}
+					for name in next,status.dbx.debuffFilter do
+						debuffs[#debuffs+1] = name
+					end
+					return table.concat( debuffs, "\n" )
+				end
+		end,
+		set = function(_, v)
+			local debuffs= { strsplit("\n,", v) }
+			if next(debuffs) then
+				if status.dbx.debuffFilter then
+					wipe(status.dbx.debuffFilter)
+				else
+					status.dbx.debuffFilter = {}
+				end
+				for _,debuff in pairs(debuffs) do
+					debuff = strtrim(debuff)
+					if #debuff>0 then
+						debuff = tonumber(debuff) and GetSpellInfo(debuff) or debuff
+						status.dbx.debuffFilter[debuff] = true
+					end
+				end
+			end
+			if not next(status.dbx.debuffFilter) then
+				status.dbx.debuffFilter = nil
 			end
 			status:UpdateDB()
-			status:Refresh()
-		end,
-		hidden = function() return status.dbx.useWhiteList end
-	}
-	options.showBossDebuffs = {
-		type = "toggle",
-		name = L["Boss Debuffs"],
-		desc = L["Display debuffs direct casted by Bosses"],
-		order = 151.5,
-		get = function () return status.dbx.filterBossDebuffs~=true end,
-		set = function (_, v)
-			status.dbx.filterBossDebuffs = (not v) and true or nil
-			status:UpdateDB()
-			status:Refresh()
-		end,
-		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs end
-	}
-	options.showNonBossDebuffs = {
-		type = "toggle",
-		name = L["Non Boss Debuffs"],
-		desc = L["Display debuffs not casted by Bosses"],
-		order = 151,
-		get = function () return status.dbx.filterBossDebuffs~=false end,
-		set = function (_, v)
-			if v then
-				status.dbx.filterBossDebuffs = nil
-			else
-				status.dbx.filterBossDebuffs = false
-			end
-			status:UpdateDB()
-			status:Refresh()
-		end,
-		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs end
-	}
-	options.filterSep1 = { type = "description", name = "", order = 151.9 }
-	options.showLongDebuffs = {
-		type = "toggle",
-		name = L["Long Duration"],
-		desc = L["Display debuffs with duration above 5 minutes."],
-		order = 152.5,
-		get = function () return status.dbx.filterLongDebuffs~=true end,
-		set = function (_, v)
-			status.dbx.filterLongDebuffs = (not v) and true or nil
-			status:UpdateDB()
-			status:Refresh()
-		end,
-		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs or status.dbx.filterBossDebuffs==false end
-	}
-	options.showShortDebuffs = {
-		type = "toggle",
-		name = L["Short Duration"],
-		desc = L["Display debuffs with duration below 5 minutes."],
-		order = 152,
-		get = function () return status.dbx.filterLongDebuffs~=false end,
-		set = function (_, v)
-			if v then
-				status.dbx.filterLongDebuffs = nil
-			else
-				status.dbx.filterLongDebuffs = false
-			end
-			status:UpdateDB()
-			status:Refresh()
-		end,
-		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs or status.dbx.filterBossDebuffs==false end
-	}
-	options.filterSep2 = { type = "description", name = "", order = 152.9 }
-	options.showSelfDebuffs = {
-		type = "toggle",
-		name = L["Self Casted"],
-		desc = L["Display self debuffs"],
-		order = 153.5,
-		get = function () return status.dbx.filterCaster~=true end,
-		set = function (_, v)
-			status.dbx.filterCaster = (not v) and true or nil
-			status:UpdateDB()
-			status:Refresh()
-		end,
-		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs or status.dbx.filterBossDebuffs==false end
-	}
-	options.showNonSelfDebuffs = {
-		type = "toggle",
-		name = L["Non Self Casted"],
-		desc = L["Display non self debuffs"],
-		order = 153,
-		get = function () return status.dbx.filterCaster~=false end,
-		set = function (_, v)
-			if v then
-				status.dbx.filterCaster = nil
-			else
-				status.dbx.filterCaster = false
-			end
-			status:UpdateDB()
-			status:Refresh()
-		end,
-		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs or status.dbx.filterBossDebuffs==false end
-	}
-	options.filterSep3 = { type = "description", name = "", order = 153.9 }
-	options.useWhiteList = {
-		type = "toggle",
-		name = L["Whitelist"],
-		desc = L["Display only debuffs configured in the list below."],
-		order = 154,
-		get = function () return status.dbx.useWhiteList and status.dbx.auras~=nil end,
-		set = function (_, v)
-			if v then
-				status.dbx.auras = status.dbx.auras or status.dbx.aurasBak or {}
-				status.dbx.aurasBak = nil
-				status.dbx.useWhiteList = true
-			else
-				status.dbx.aurasBak = status.dbx.auras
-				status.dbx.auras = nil
-				status.dbx.useWhiteList = nil
-			end
-			status:UpdateDB()
-			status:Refresh()
-			status:UpdateAllUnits()
-		end,
-		hidden = function() return status.dbx.filterDispelDebuffs end,
-	}
-	options.useBlackList = {
-		type = "toggle",
-		name = L["Blacklist"],
-		desc = L["Ignore debuffs configured in the list below."],
-		order = 154.5,
-		get = function () return (not status.dbx.useWhiteList) and status.dbx.auras~=nil end,
-		set = function (_, v)
-			if v then
-				status.dbx.auras = status.dbx.auras or status.dbx.aurasBak or {}
-				status.dbx.aurasBak = nil
-			else
-				status.dbx.aurasBak = status.dbx.auras
-				status.dbx.auras = nil
-			end
-			status.dbx.useWhiteList = nil
-			status:UpdateDB()
-			status:Refresh()
 			status:UpdateAllUnits()
 		end,
 	}
@@ -616,51 +427,8 @@ Grid2Options:RegisterStatusOptions("buff", "buff", function(self, status, option
 	self:MakeStatusAuraValueOptions(status, options, optionParams)
 	self:MakeStatusAuraTextOptions(status, options, optionParams)
 	self:MakeStatusClassFilterOptions(status, options, optionParams)
-	self:MakeStatusDeleteOptions(status, options, optionParams)
 end,{
-	groupOrder = 10
-})
-
-Grid2Options:RegisterStatusOptions("buffs", "buff", function(self, status, options, optionParams)
-	self:MakeStatusEnabledOptions(status, options, optionParams)
-	if status.dbx.subType == 'blizzard' then
-		self:MakeStatusColorOptions(status, options, optionParams)
-		self:MakeStatusDeleteOptions(status, options, optionParams)
-	else
-		self:MakeStatusAuraDescriptionOptions(status, options)
-		self:MakeStatusAuraListOptions(status, options, optionParams)
-		self:MakeStatusAuraCommonOptions(status, options, optionParams)
-		self:MakeStatusAuraMissingOptions(status, options, optionParams)
-		self:MakeStatusColorOptions(status, options, optionParams)
-		self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
-		self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
-		self:MakeStatusClassFilterOptions(status, options, optionParams)
-		self:MakeStatusDeleteOptions(status, options, optionParams)
-	end
-end,{
-	groupOrder = 20
-})
-
-Grid2Options:RegisterStatusOptions("debuffType", "debuff", function(self, status, options, optionParams)
-	self:MakeStatusEnabledOptions(status, options, optionParams)
-	self:MakeStatusDebuffTypeColorsOptions(status, options, optionParams)
-	self:MakeStatusDebuffTypeFilterOptions(status, options, optionParams)
-end,{
-	groupOrder = 10
-} )
-
-Grid2Options:RegisterStatusOptions("debuffs", "debuff", function(self, status, options, optionParams)
-	self:MakeStatusEnabledOptions(status, options, optionParams, false)
-	self:MakeStatusAuraDescriptionOptions(status, options, optionParams)
-	self:MakeStatusDebuffsFilterOptions(status, options, optionParams)
-	self:MakeStatusAuraListOptions(status, options, optionParams)
-	self:MakeStatusAuraCommonOptions(status, options, optionParams)
-	self:MakeStatusColorOptions(status, options, optionParams)
-	self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
-	self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
-	self:MakeStatusDeleteOptions(status, options, optionParams)
-end,{
-	groupOrder = 20
+	groupOrder = 10, isDeletable = true
 })
 
 Grid2Options:RegisterStatusOptions("debuff", "debuff", function(self, status, options, optionParams)
@@ -674,9 +442,16 @@ Grid2Options:RegisterStatusOptions("debuff", "debuff", function(self, status, op
 	self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
 	self:MakeStatusAuraValueOptions(status, options, optionParams)
 	self:MakeStatusAuraTextOptions(status, options, optionParams)
-	self:MakeStatusDeleteOptions(status, options, optionParams)
 end,{
-	groupOrder = 30
+	groupOrder = 30, isDeletable = true,
 })
+
+Grid2Options:RegisterStatusOptions("debuffType", "debuff", function(self, status, options, optionParams)
+	self:MakeStatusEnabledOptions(status, options, optionParams)
+	self:MakeStatusDebuffTypeColorsOptions(status, options, optionParams)
+	self:MakeStatusDebuffTypeFilterOptions(status, options, optionParams)
+end,{
+	groupOrder = function(status) return status.name=='debuff-Typeless' and 15 or 10; end
+} )
 
 -- }}

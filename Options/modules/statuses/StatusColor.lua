@@ -65,10 +65,9 @@ end, {
 	width = "full",
 })
 
-Grid2Options:RegisterStatusOptions("color", "color", function(self, status, options, optionParams)
-	self:MakeStatusColorOptions(status, options, optionParams)
-	self:MakeStatusDeleteOptions(status, options, optionParams)
-end)
+Grid2Options:RegisterStatusOptions( "color", "color", Grid2Options.MakeStatusColorOptions, {
+	isDeletable = true
+} )
 
 Grid2Options:RegisterStatusOptions( "charmed", "combat", Grid2Options.MakeStatusColorOptions, {
 	titleIcon = "Interface\\Icons\\Spell_Shadow_ShadowWordDominate",

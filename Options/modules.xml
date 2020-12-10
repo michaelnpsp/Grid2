@@ -14,6 +14,8 @@
 
 <Script file="modules\statuses\Status.lua"/>
 <Script file="modules\statuses\StatusAura.lua"/>
+<Script file="modules\statuses\StatusAuraBuffs.lua"/>
+<Script file="modules\statuses\StatusAuraDebuffs.lua"/>
 <Script file="modules\statuses\StatusAuraNew.lua"/>
 <Script file="modules\statuses\StatusAuraNewSpells.lua"/>
 <Script file="modules\statuses\StatusAuraNewPredictor.lua"/>

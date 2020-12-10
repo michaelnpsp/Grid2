@@ -196,6 +196,7 @@ do
 			end,
 			disabled = function() return status:IsSuspended() end,
 		}
+		return options
 	end
 end
 

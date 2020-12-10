@@ -50,116 +50,111 @@ local function GetSpellID(name, defaultSpells)
 end
 
 -- MakeStatusOutgoingOptions()
-local MakeStatusOutgoingOptions
-do
-	-- local prev_spells = {}
-	function MakeStatusOutgoingOptions(self, status, options)
-		self:MakeStatusEnabledOptions(status, options)
-		self:MakeStatusColorOptions(status, options)
-		options.showIfMine = {
-			type = "toggle",
-			order = 30,
-			name = L["Show if mine"],
-			desc = L["Show my spells only."],
-			get = function () return status.dbx.mine == true end,
-			set = function (_, v)
-				status.dbx.mine = v or nil
-				status:UpdateDB()
-			end,
-		}
-		options.showIfNotMine = {
-			type = "toggle",
-			order = 35,
-			name = L["Show if not mine"],
-			desc = L["Show others spells only."],
-			get = function () return status.dbx.mine == false end,
-			set = function (_, v)
-				if v then
-					status.dbx.mine = false
-				else
-					status.dbx.mine = nil
-				end
-				status:UpdateDB()
-			end,
-		}
-		options.spacer = { type = "header", order = 39, name = "" }
-		options.activeTime = {
-			name = L["Active time"],
-			desc = L["Show the status for the specified number of seconds."],
-			order = 40,
-			type = "range", min = 0.2, max = 5, step = 0.1,
-			get = function()
-				return status.dbx.activeTime or 2
-			end,
-			set = function( _, v )
-				status.dbx.activeTime = v
-				status:UpdateDB()
-			end,
-		}
-		options.auras = {
-			type = "input",
-			order = 50,
-			width = "full",
-			name = L["Spells"],
-			desc = L["You can type spell IDs or spell names."],
-			multiline= 10,
-			get = function()
-					local auras = {}
-					for _,spell in pairs(status.dbx.spellList) do
-						local name = GetSpellInfo(spell)
-						if name then
-							auras[#auras+1] = name
-						end
-					end
-					return table.concat( auras, "\n" )
-			end,
-			set = function(_, v)
-				wipe(status.dbx.spellList)
-				local auras = { strsplit("\n,", v) }
-				for i,v in pairs(auras) do
-					local aura = strtrim(v)
-					if #aura>0 then
-						local spellID = tonumber(aura)
-						if spellID then
-							spellID = GetSpellInfo(spellID) and spellID or 0
-						else
-							spellID = GetSpellID(aura, classHeals)
-						end
-						if spellID > 0 then
-							table.insert(status.dbx.spellList, spellID)
-						end
-					end
-				end
-				status:UpdateDB()
-			end,
-		}
-		options.addSpells = {
-			type = "select",
-			order = 45,
-			name = L["Add heal spells"],
-			desc = L[""],
-			get = function () end,
-			set = function(_,v)
-				for className,spells in pairs(classHeals) do
-					if v==className or (v=="" and className~="ZRAID") then
-						for _,spellID in pairs(spells) do
-							table.insert(status.dbx.spellList, spellID)
-						end
-					end
-				end
-				status:UpdateDB()
-			end,
-			values = function()
-				local list = {}
-				for class in pairs(classHeals) do
-					list[class] = LOCALIZED_CLASS_NAMES_MALE[class] or L["Raid Cooldowns"]
-				end
-				list[""] = L["All Classes"]
-				return list
+local function MakeStatusOutgoingOptions(self, status, options)
+	self:MakeStatusEnabledOptions(status, options)
+	self:MakeStatusColorOptions(status, options)
+	options.showIfMine = {
+		type = "toggle",
+		order = 30,
+		name = L["Show if mine"],
+		desc = L["Show my spells only."],
+		get = function () return status.dbx.mine == true end,
+		set = function (_, v)
+			status.dbx.mine = v or nil
+			status:UpdateDB()
+		end,
+	}
+	options.showIfNotMine = {
+		type = "toggle",
+		order = 35,
+		name = L["Show if not mine"],
+		desc = L["Show others spells only."],
+		get = function () return status.dbx.mine == false end,
+		set = function (_, v)
+			if v then
+				status.dbx.mine = false
+			else
+				status.dbx.mine = nil
 			end
-		}
-		self:MakeStatusDeleteOptions(status, options)
-	end
+			status:UpdateDB()
+		end,
+	}
+	options.spacer = { type = "header", order = 39, name = "" }
+	options.activeTime = {
+		name = L["Active time"],
+		desc = L["Show the status for the specified number of seconds."],
+		order = 40,
+		type = "range", min = 0.2, max = 5, step = 0.1,
+		get = function()
+			return status.dbx.activeTime or 2
+		end,
+		set = function( _, v )
+			status.dbx.activeTime = v
+			status:UpdateDB()
+		end,
+	}
+	options.auras = {
+		type = "input",
+		order = 50,
+		width = "full",
+		name = L["Spells"],
+		desc = L["You can type spell IDs or spell names."],
+		multiline= 10,
+		get = function()
+				local auras = {}
+				for _,spell in pairs(status.dbx.spellList) do
+					local name = GetSpellInfo(spell)
+					if name then
+						auras[#auras+1] = name
+					end
+				end
+				return table.concat( auras, "\n" )
+		end,
+		set = function(_, v)
+			wipe(status.dbx.spellList)
+			local auras = { strsplit("\n,", v) }
+			for i,v in pairs(auras) do
+				local aura = strtrim(v)
+				if #aura>0 then
+					local spellID = tonumber(aura)
+					if spellID then
+						spellID = GetSpellInfo(spellID) and spellID or 0
+					else
+						spellID = GetSpellID(aura, classHeals)
+					end
+					if spellID > 0 then
+						table.insert(status.dbx.spellList, spellID)
+					end
+				end
+			end
+			status:UpdateDB()
+		end,
+	}
+	options.addSpells = {
+		type = "select",
+		order = 45,
+		name = L["Add heal spells"],
+		desc = L[""],
+		get = function () end,
+		set = function(_,v)
+			for className,spells in pairs(classHeals) do
+				if v==className or (v=="" and className~="ZRAID") then
+					for _,spellID in pairs(spells) do
+						table.insert(status.dbx.spellList, spellID)
+					end
+				end
+			end
+			status:UpdateDB()
+		end,
+		values = function()
+			local list = {}
+			for class in pairs(classHeals) do
+				list[class] = LOCALIZED_CLASS_NAMES_MALE[class] or L["Raid Cooldowns"]
+			end
+			list[""] = L["All Classes"]
+			return list
+		end
+	}
 end
 
 -- MakeCategoryOptions()
@@ -231,4 +226,4 @@ local function MakeCategoryOptions()
 end
 
 Grid2Options:RegisterStatusCategory("aoe-heal", { name = L["AOE Heals"], icon = "Interface\\Icons\\Spell_holy_holynova", options = MakeCategoryOptions() } )
-Grid2Options:RegisterStatusOptions("aoe-heals", "aoe-heal", MakeStatusOutgoingOptions, { groupOrder= 50, titleIcon ="Interface\\Icons\\Spell_holy_holybolt" } )
+Grid2Options:RegisterStatusOptions("aoe-heals", "aoe-heal", MakeStatusOutgoingOptions, { groupOrder= 50, titleIcon ="Interface\\Icons\\Spell_holy_holybolt", isDeletable = true } )

@@ -35,10 +35,38 @@ Grid2Options.debuffTypeIcons = {
 	Poison  = "Interface\\Icons\\Spell_nature_nullifydisease",
 	Disease = "Interface\\Icons\\Spell_nature_removedisease",
 	Curse   = "Interface\\Icons\\Spell_nature_removedisease",
+	Typeless= "Interface\\Icons\\Spell_holy_harmundeadaura",
 	Default = "Interface\\Icons\\Spell_holy_harmundeadaura",
 }
 -- status.dbx.type -> categoryKey
 Grid2Options.typeCategories = {}
+
+-- Register a special derived label widget with a delete icon to the right, used in MakeStatusTitleOptions()
+Grid2Options.statusTitleIconsOptions = {
+	size = 24, offsetx = -4, offsety = -2, anchor = 'TOPRIGHT',
+	{ image = "Interface\\AddOns\\Grid2Options\\media\\delete", tooltip = L["Delete this status"], func = function(info) Grid2Options:DeleteStatus(info.option.arg.status) end },
+}
+
+-- Delete a status
+function Grid2Options:DeleteStatusReal(status)
+	local category = self:GetStatusCategory(status)
+	Grid2.db.profile.statuses[status.name] = nil
+	Grid2:UnregisterStatus(status)
+	Grid2Frame:UpdateIndicators()
+	self:DeleteStatusOptions(category, status)
+	self:SelectGroup('statuses', category)
+end
+
+-- Delete a deletable status
+function Grid2Options:DeleteStatus(status)
+	if status then
+		if next(status.indicators)==nil and not status:IsSuspended() then
+			Grid2Options:ConfirmDialog( L["Are you sure you want to delete this status ?"], function() Grid2Options:DeleteStatusReal(status) end )
+		else
+			Grid2Options:MessageDialog( L["This status cannot be deleted because is attached to some indicators or the status is not enabled for this character."] )
+		end
+	end
+end
 
 -- Grid2Options:GetStatusSetupFunc()
 function Grid2Options:GetStatusSetupFunc(status)
@@ -156,13 +184,11 @@ end
 
 -- Add a title option to the status options
 function Grid2Options:MakeStatusTitleOptions(status, options, optionParams)
-	if not (options.title or (optionParams and optionParams.hideTitle) ) then
-		local name, desc, icon, iconCoords, _
-		local group = self:GetStatusGroup(status)
-		if group and false then -- TODO, i dont remember why this false condition :(
-			name, desc, icon, iconCoords = group.name, group.desc, group.icon, group.iconCoords
-		else
-			_, name, desc, icon, iconCoords = self:GetStatusInfo(status)
+	if not options.title then
+		local _, name, desc, icon, iconCoords = self:GetStatusInfo(status)
+		local isDeletable = optionParams and optionParams.isDeletable
+		if type(isDeletable)=='function' then
+			isDeletable = isDeletable(status)
 		end
 		self:MakeTitleOptions(
 			options,
@@ -170,7 +196,8 @@ function Grid2Options:MakeStatusTitleOptions(status, options, optionParams)
 			desc,
 			optionParams and optionParams.titleDesc or self:GetStatusDescription(status),
 			icon,
-			iconCoords
+			iconCoords,
+			isDeletable and { status = status, icons = Grid2Options.statusTitleIconsOptions }
 		)
 	end
 end
@@ -182,7 +209,7 @@ function Grid2Options:MakeStatusChildOptions(status, options)
 	if setupFunc then
 		if not (optionParams and optionParams.hideTitle) then
 			self:MakeStatusTitleOptions(status, options, optionParams)
-			options.settings   = { type = "group", order = 100, name = L['status'],   args = {} }
+			options.settings   = { type = "group", order = 100, name = L['status'], args = {} }
 			options.indicators = { type = "group", order = 200, name = L['indicators'], args = {} }
 			self:MakeStatusIndicatorsOptions( status, options.indicators.args )
 			options = options.settings.args

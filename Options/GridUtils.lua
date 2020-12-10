@@ -237,17 +237,14 @@ end
 do
 	local titleCoords = { 0.05, 0.95, 0.05, 0.95 }
 	local titleMask   = NORMAL_FONT_COLOR_CODE .. "%s|r\n%s"
-	local titleSep    = { type = "header",	order = 0.5, width = "full", name = "" }
-	function Grid2Options:MakeTitleOptions(options, title, subtitle, desc, icon, coords)
+	function Grid2Options:MakeTitleOptions(options, title, subtitle, desc, icon, coords, arg)
 		options.title = {
-			type  = "description", order = 0, width = "full", fontSize = "large",
-			image = icon, imageWidth  = 30, imageHeight = 30, imageCoords = coords or titleCoords,
+			type  = "description", order = 0, width = "full", fontSize = "large", dialogControl = "Grid2Title",
+			image = icon, imageWidth = 36, imageHeight = 36, imageCoords = coords or titleCoords,
 			name  = string.format(titleMask, title, subtitle),
+			desc = desc,
+			arg = arg, -- optional multipurpose argument
 		}
-		if desc then
-			options.titleDesc = { type = "description", order = 0.2, fontSize = "small", name = desc }
-		end
-		options.titleSep = titleSep
 	end
 end
 

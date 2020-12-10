@@ -14,6 +14,11 @@ Grid2Options.indicatorTypes = {}
 -- Indicators sort order
 Grid2Options.indicatorTypesOrder= { tooltip = 1, alpha = 2, background = 3, border = 4, multibar = 5, bar = 6, text = 7, square = 8, shape = 9, icon = 10, icons = 11, portrait = 12 }
 
+Grid2Options.indicatorTitleIconsOptions = {
+	size = 24, offsetx = -4, offsety = -2, anchor = 'TOPRIGHT',
+	{ image = "Interface\\AddOns\\Grid2Options\\media\\delete", tooltip = L["Delete this indicator"], func = function(info) Grid2Options:DeleteIndicator( info.option.arg.indicator ) end },
+}
+
 do
 	-- ban these indicator names
 	local indicator_name_blacklist = {
@@ -48,6 +53,33 @@ do
 		shape  = { size = 5 },
 		text   = { duration = true, stack= false, textlength = 12, fontSize = 11, font = "Friz Quadrata TT" },
 	}
+
+	-- Deletes the specific indicator
+	local function DeleteIndicatorReal(indicator)
+		local name = indicator.name
+		Grid2Options.LI[name] = nil
+		Grid2Frame:WithAllFrames(indicator, "Disable")
+		Grid2:DbSetIndicator(name,nil)
+		if indicator.dbx.sideKick then
+			Grid2:DbSetIndicator(indicator.dbx.sideKick.name, nil)
+		end
+		for _,t in pairs(Grid2.db.profile.themes.indicators) do
+			t[name] = nil
+		end
+		Grid2:UnregisterIndicator(indicator)
+		Grid2Frame:UpdateIndicators()
+		Grid2Options:DeleteIndicatorOptions(indicator)
+		Grid2Options:SelectGroup('indicators')
+	end
+
+	-- Published because is used outside indicators management panel too
+	function Grid2Options:DeleteIndicator(indicator)
+		if self:IndicatorIsInUse(indicator) then
+			self:MessageDialog( L["This indicator cannot be deleted because is in use. Uncheck the statuses linked to the indicator first."] )
+		else
+			self:ConfirmDialog( L["Are you sure you want to delete this indicator ?"], function() DeleteIndicatorReal(indicator) end )
+		end
+	end
 
 	-- new values
 	local newIndicatorValues = { name = "", type = "square", relPoint = "TOPLEFT" }
@@ -159,23 +191,7 @@ do
 	end
 
 	local function DeleteIndicator(info, name)
-		local indicator = Grid2.indicators[name]
-		if not indicator or #indicator.statuses>0 or (indicator.sideKick and #indicator.sideKick.statuses>0) or indicator.parentName or indicator.childName then
-			Grid2Options:MessageDialog( L["The selected indicator cannot be deleted because is in use. Uncheck the statuses linked to the indicator first."] )
-			return
-		end
-		Grid2Options.LI[indicator.name] = nil
-		Grid2Frame:WithAllFrames(indicator, "Disable")
-		Grid2:DbSetIndicator(indicator.name,nil)
-		if indicator.dbx.sideKick then
-			Grid2:DbSetIndicator(indicator.dbx.sideKick.name, nil)
-		end
-		for _,t in pairs(Grid2.db.profile.themes.indicators) do
-			t[name] = nil
-		end
-		Grid2:UnregisterIndicator(indicator)
-		Grid2Frame:UpdateIndicators()
-		Grid2Options:DeleteIndicatorOptions(indicator)
+		Grid2Options:DeleteIndicator( Grid2.indicators[name] )
 	end
 
 	-- function ToggleTestMode()
@@ -295,8 +311,6 @@ do
 		order   = 150,
 		get     = false,
 		set     = DeleteIndicator,
-		confirm = true,
-		confirmText = L["Are you sure you want to delete the selected indicator?"],
 		values  = GetCreatableIndicatorsValues,
 	}
 
@@ -328,6 +342,29 @@ end
 -- Public methods
 --=============================================================================================================
 
+-- Creates a title
+function Grid2Options:MakeIndicatorTitleOptions(options, indicator)
+	local isDeletable = self.indicatorTypes[indicator.dbx.type]
+	self:MakeTitleOptions( options,
+		self.LI[indicator.name] or L[indicator.name],
+		string.format( "%s: %s", L['indicator'], L[indicator.dbx.type] ),
+		nil,
+		self:GetIndicatorTypeIcon(indicator.dbx.type),
+		nil,
+		isDeletable and { indicator = indicator, icons = Grid2Options.indicatorTitleIconsOptions }
+		)
+end
+
+--Check if the indicator is in use (and can not be safetly deleted).
+function Grid2Options:IndicatorIsInUse(indicator)
+	return indicator==nil or #indicator.statuses>0 or (indicator.sideKick and #indicator.sideKick.statuses>0) or indicator.parentName or indicator.childName
+end
+
+-- Calculate icon type path
+function Grid2Options:GetIndicatorTypeIcon(type)
+	return self.indicatorIconPath .. (self.indicatorTypesOrder[type] and type or "default")
+end
+
 -- Register indicator options
 function Grid2Options:RegisterIndicatorOptions(type, isCreatable, funcMakeOptions, optionParams)
 	self.typeMakeOptions[type] = funcMakeOptions
@@ -340,6 +377,7 @@ end
 -- Insert options of a indicator in AceConfigTable
 function Grid2Options:AddIndicatorOptions(indicator, statusOptions, layoutOptions, colorOptions)
 	local options = self.indicatorsOptions[indicator.name].args; wipe(options)
+	self:MakeIndicatorTitleOptions(options, indicator)
 	if statusOptions then options["statuses"] = { type = "group", order = 10, name = L["statuses"], args = statusOptions } end
 	if colorOptions  then options["colors"]   = { type = "group", order = 20, name = L["Colors"],	args = colorOptions  } end
 	if layoutOptions then options["layout"]   = { type = "group", order = 30, name = L["Layout"],	args = layoutOptions } end
@@ -359,7 +397,7 @@ function Grid2Options:MakeIndicatorOptions(indicator)
 	self.indicatorsOptions[indicator.name] = {
 		type = "group",
 		childGroups = "tab",
-		icon  = self.indicatorIconPath .. (self.indicatorTypesOrder[type] and type or "default"),
+		icon  = self:GetIndicatorTypeIcon(type),
 		order = self.indicatorTypesOrder[type] or nil,
 		name  = self.LI[indicator.name] or L[indicator.name],
 		desc  = L["Options for %s."]:format(indicator.name),

@@ -14,6 +14,27 @@ local colors = {}
 
 -- Called from StatusAura.lua to filter auras
 
+-- Compile a filter function
+local function CompileUpdateStateFilter(status)
+	local t = {}
+	if next(status.spells)      then t[#t+1] = string.format( "not self.spells[name]" ) end
+	if status.filterLong  ~=nil then t[#t+1] = string.format( "%s (duration>=300)", status.filterLong and 'not' or '') end
+	if status.filterBoss  ~=nil then t[#t+1] = string.format( "%s boss",          status.filterBoss and 'not' or '') end
+	if status.filterCaster~=nil then t[#t+1] = string.format( "%s (caster=='player' or caster=='pet' or caster=='vehicle')", status.filterCaster and 'not' or '') end
+	if status.filterTypes ~=nil then t[#t+1] = string.format( "%s (type=='Typeless')",  status.filterTypes and 'not' or '') end
+	local source = "return function(self, unit, name, duration, caster, boss, typ) return " .. table.concat(t,' and ') .. ' end'
+	return assert(loadstring(source))()
+end
+
+-- Filter + black list
+local function status_UpdateStateFilter(self, unit, name, duration, caster, boss, typ)
+	return ( not self.spells[name] ) and
+		   ( self.filterLong  ==nil  or self.filterLong  ~= (duration>=300) ) and
+		   ( self.filterBoss  ==nil  or self.filterBoss  ~= boss ) and
+		   ( self.filterCaster==nil  or self.filterCaster~= (myUnits[caster]==true) ) and
+		   ( self.filterTyped ==nil  or self.filterTyped ~= (typ=='Typeless') )
+end
+
 -- All debuffs + white list
 local function status_UpdateStateWhiteList(self, unit, name)
 	return self.spells[name]
@@ -27,14 +48,6 @@ end
 -- Boss Debuffs filter + black list
 local function status_UpdateStateBoss(self, _, name, _, _, boss)
 	return boss and (not self.spells[name])
-end
-
--- Filter + black list
-local function status_UpdateStateFilter(self, unit, name, duration, caster, boss)
-	return ( not self.spells[name] ) and
-		   ( self.filterLong  ==nil  or self.filterLong  ~= (duration>=300) ) and
-		   ( self.filterBoss  ==nil  or self.filterBoss  ~= boss ) and
-		   ( self.filterCaster==nil  or self.filterCaster~= (myUnits[caster]==true) )
 end
 
 -- Dispellable debuffs
@@ -146,12 +159,12 @@ local function status_GetIconsBlackList(self, unit, max)
 end
 
 local function status_GetIconsFilter(self, unit, max)
-	local filterLong, filterBoss, filterCaster, spells = self.filterLong, self.filterBoss, self.filterCaster, self.spells
+	local filterLong, filterBoss, filterCaster, filterTyped, spells = self.filterLong, self.filterBoss, self.filterCaster, self.filterTyped, self.spells
 	local i, j, name, debuffType, caster, isBossDebuff, _ = 1, 1
 	repeat
 		name, textures[j], counts[j], debuffType, durations[j], expirations[j], caster, _, _, _, _, isBossDebuff = UnitAura(unit, i, 'HARMFUL')
 		if not name then break end
-		local filtered = spells[name] or (filterLong and (durations[j]>=300)==filterLong) or (filterBoss~=nil and filterBoss==isBossDebuff) or (filterCaster~=nil and filterCaster==(caster==unit or myUnits[caster]==true))
+		local filtered = spells[name] or (filterLong~=nil and (durations[j]>=300)==filterLong) or (filterBoss~=nil and filterBoss==isBossDebuff) or (filterCaster~=nil and filterCaster==(caster==unit or myUnits[caster]==true)) or (filterTyped~=nil and filterTyped~=not debuffType )
 		if not filtered then
 			colors[j] = typeColors[debuffType] or self.color
 			j = j + 1
@@ -185,6 +198,8 @@ end
 
 -- Called by status:UpdateDB()
 local function status_Update(self, dbx)
+	self.spells = self.spells or emptyTable
+	self.color  = dbx.color1
 	if dbx.filterDispelDebuffs then
 		self.GetIcons     = status_GetIconsDispel
 		self.GetTooltip   = status_GetTooltipDispel
@@ -196,19 +211,18 @@ local function status_Update(self, dbx)
 		self.filterLong   = dbx.filterLongDebuffs
 		self.filterBoss   = dbx.filterBossDebuffs
 		self.filterCaster = dbx.filterCaster
-		if self.filterLong == nil and self.filterBoss == nil and self.filterCaster == nil then
+		self.filterTyped  = dbx.filterTyped
+		if self.filterLong == nil and self.filterBoss == nil and self.filterTyped ==nil and self.filterCaster == nil then
 			self.UpdateState  = status_UpdateStateBlackList
 			self.GetIcons     = status_GetIconsBlackList
 		elseif self.filterBoss==false then
 			self.UpdateState  = status_UpdateStateBoss
 			self.GetIcons     = status_GetIconsFilter
 		else
-			self.UpdateState  = status_UpdateStateFilter
-			self.GetIcons     = status_GetIconsFilter
+			self.UpdateState = CompileUpdateStateFilter(self)
+			self.GetIcons    = status_GetIconsFilter
 		end
 	end
-	self.spells = self.spells or emptyTable
-	self.color  = dbx.color1
 end
 
 -- Registration

@@ -166,7 +166,7 @@ function GSRD:RegisterNewDebuff(spellId, caster, te, co, ty, du, ex, isBoss)
 	local debuffs = auto_status.dbx.debuffs[auto_instance]
 	if not debuffs then
 		debuffs = {}; auto_status.dbx.debuffs[auto_instance] = debuffs
-		if GSRD.debugging then GSRD:Debug("New Debuff detected: [%d] instance: [%d] boss: [%s]", spellId, auto_instance, auto_encounter or "nil"); end
+		if self.debugging then self:Debug("New Debuff detected: [%d] instance: [%d] boss: [%s]", spellId, auto_instance, auto_encounter or "nil"); end
 	end
 	local order = #debuffs + 1
 	spells_order[spellId]  = order
@@ -205,6 +205,13 @@ end
 
 function GSRD:ENCOUNTER_START(_,encounterID,encounterName)
 	self:RegisterEncounter(encounterName)
+end
+
+function GSRD:ZONE_CHANGED(event) -- general fix for subzones in instances with no assigned ejid
+	if instance_ej_id==0 and IsInInstance() then
+		if self.debugging then self:Debug("Wrong SubZone detected bMapID: [%d], reloading raid debuffs",instance_bmap_id or -1); end
+		self:UpdateZoneSpells(false)
+	end
 end
 
 function GSRD:PLAYER_REGEN_DISABLED()
@@ -284,6 +291,7 @@ function class:OnEnable()
 	if not next(statuses) then
 		GSRD:RegisterEvent("ZONE_CHANGED_NEW_AREA", "UpdateZoneSpells")
 		GSRD:RegisterMessage("Grid_UnitLeft")
+		if not isClassic then GSRD:RegisterEvent("ZONE_CHANGED"); end
 	end
 	statuses[self] = true
 	self:LoadZoneSpells()
@@ -295,6 +303,7 @@ function class:OnDisable()
 	if not next(statuses) then
 		GSRD:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
 		GSRD:UnregisterMessage("Grid_UnitLeft")
+		if not isClassic then GSRD:UnregisterEvent("ZONE_CHANGED"); end
 		GSRD:ResetZoneSpells()
 		GSRD:UpdateEvents()
 	end
