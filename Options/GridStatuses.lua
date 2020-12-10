@@ -44,11 +44,11 @@ Grid2Options.typeCategories = {}
 -- Register a special derived label widget with a delete icon to the right, used in MakeStatusTitleOptions()
 Grid2Options.statusTitleIconsOptions = {
 	size = 24, offsetx = -4, offsety = -2, anchor = 'TOPRIGHT',
-	{ image = "Interface\\AddOns\\Grid2Options\\media\\delete", tooltip = L["Delete this status"], func = function(info) Grid2Options:DeleteStatus(info.option.arg.status) end },
+	{ image = "Interface\\AddOns\\Grid2Options\\media\\delete", tooltip = L["Delete this status"], func = function(info) Grid2Options:DeleteStatusConfirm(info.option.arg.status) end },
 }
 
 -- Delete a status
-function Grid2Options:DeleteStatusReal(status)
+function Grid2Options:DeleteStatus(status)
 	local category = self:GetStatusCategory(status)
 	Grid2.db.profile.statuses[status.name] = nil
 	Grid2:UnregisterStatus(status)
@@ -57,11 +57,11 @@ function Grid2Options:DeleteStatusReal(status)
 	self:SelectGroup('statuses', category)
 end
 
--- Delete a deletable status
-function Grid2Options:DeleteStatus(status)
+-- Delete a status after confirmation
+function Grid2Options:DeleteStatusConfirm(status)
 	if status then
 		if next(status.indicators)==nil and not status:IsSuspended() then
-			Grid2Options:ConfirmDialog( L["Are you sure you want to delete this status ?"], function() Grid2Options:DeleteStatusReal(status) end )
+			Grid2Options:ConfirmDialog( L["Are you sure you want to delete this status ?"], function() Grid2Options:DeleteStatus(status) end )
 		else
 			Grid2Options:MessageDialog( L["This status cannot be deleted because is attached to some indicators or the status is not enabled for this character."] )
 		end
@@ -100,21 +100,16 @@ function Grid2Options:AddStatusCategoryOptions(catKey, category)
 	end
 end
 
-function Grid2Options:GetStatusDescription(status)
-	local dbx = status.dbx
-	if dbx.type == "buff" or dbx.type == "debuff" then
-		local spellId = tonumber(dbx.spellName)
-		if spellId then
-			local tip = Grid2Options.Tooltip
-			tip:ClearLines()
-			tip:SetHyperlink("spell:"..spellId)
-			local count = tip:NumLines()
-			if count>1 and count<=10 then
-				return tip[count]:GetText()
-			end
+function Grid2Options:GetStatusTooltipText(status, params)
+	if not (params and params.titleDesc) then
+		local dbx = status.dbx
+		if dbx.type == "buff" or dbx.type == "debuff" then
+			return tonumber(dbx.spellName) and "spell:"..dbx.spellName
+		elseif dbx.type == 'buffs' and dbx.subType == "blizzard" then
+			return L["Show relevant buffs for each unit frame (the same buffs displayed by the Blizzard raid frames)."]
 		end
-	elseif dbx.type == 'buffs' and dbx.subType == "blizzard" then
-		return L["Show relevant buffs for each unit frame (the same buffs displayed by the Blizzard raid frames)."]
+	else
+		return params.titleDesc
 	end
 end
 
@@ -133,18 +128,19 @@ end
 
 -- Calculate status information necessary to create the status and group options
 do
-	local iconCoords = { 0.05, 0.95, 0.05, 0.95 }
-	function Grid2Options:GetStatusInfo(status)
-		local params = self.optionParams[status.dbx.type]
-		if not ( params and params.masterStatus and  params.masterStatus ~= status.name ) then
+	local iconCoords, emptyTable = { 0.05, 0.95, 0.05, 0.95 }, {}
+	function Grid2Options:GetStatusInfo(status, params)
+		params = params or self.optionParams[status.dbx.type] or {}
+		if not (params.masterStatus and params.masterStatus ~= status.name ) then
 			local catKey   = self:GetStatusCategory(status)
 			local catGroup = self.statusesOptions[catKey]
 			if catGroup then
-				local name, desc, icon, coords, _
+				local name, desc, icon, coords, deletable, _
 				local category = self.categories[catKey]
 				local dbx = status.dbx
 				if dbx.type == "buff" or dbx.type == "debuff" then
-					name,_,icon = GetSpellInfo( tonumber(dbx.spellName) or dbx.spellName )
+					local spellID = tonumber(dbx.spellName)
+					name,_,icon = GetSpellInfo( spellID or dbx.spellName )
 					desc = string.format( "%s: %s", L[dbx.type], name or dbx.spellName )
 				elseif dbx.type == "buffs" then
 					desc = L["Buffs Group"]
@@ -155,10 +151,11 @@ do
 					desc = L[dbx.type]
 				end
 				name   = self.LocalizeStatus(status, true)
-				desc   = desc or (params and params.title) or L["Options for %s."]:format(name)
-				icon   = icon or (params and params.titleIcon) or category.icon
-				coords = params and params.titleIconCoords or iconCoords
-				return catGroup, name, desc, icon, coords, params
+				desc   = desc or params.title or L["Options for %s."]:format(name)
+				icon   = icon or params.titleIcon or category.icon
+				coords = params.titleIconCoords or iconCoords
+				deletable = type(params.isDeletable)=='function' and params.isDeletable(status) or params.isDeletable
+				return catGroup, name, desc, icon, coords, deletable, params
 			end
 		end
 	end
@@ -185,19 +182,15 @@ end
 -- Add a title option to the status options
 function Grid2Options:MakeStatusTitleOptions(status, options, optionParams)
 	if not options.title then
-		local _, name, desc, icon, iconCoords = self:GetStatusInfo(status)
-		local isDeletable = optionParams and optionParams.isDeletable
-		if type(isDeletable)=='function' then
-			isDeletable = isDeletable(status)
-		end
+		local cat, name, desc, icon, iconCoords, deletable = self:GetStatusInfo(status, optionParams)
 		self:MakeTitleOptions(
 			options,
 			fmt( "%s  |cFF8681d1[%s]|r", name, self:GetStatusCompIndicatorsText(status) ),
 			desc,
-			optionParams and optionParams.titleDesc or self:GetStatusDescription(status),
+			self:GetStatusTooltipText(status, optionParams),
 			icon,
 			iconCoords,
-			isDeletable and { status = status, icons = Grid2Options.statusTitleIconsOptions }
+			deletable and { status = status, icons = Grid2Options.statusTitleIconsOptions }
 		)
 	end
 end
@@ -249,7 +242,7 @@ end
 
 -- Creates the parent group option and the options of the status in AceConfigTable
 function Grid2Options:MakeStatusOptions(status)
-	local catGroup, name, desc, icon, coords, params = self:GetStatusInfo(status)
+	local catGroup, name, desc, icon, coords, deletable, params = self:GetStatusInfo(status)
 	if catGroup then
 		local order = params and params.groupOrder
 		local group = catGroup.args[status.name]

@@ -288,7 +288,6 @@ end
 --- }}}
 
 local function Create(indicatorKey, dbx)
-
 	local Bar = Grid2.indicators[indicatorKey] or Grid2.indicatorPrototype:new(indicatorKey)
 	Bar.dbx = dbx
 	-- Hack to caculate status index fast: statuses[priorities[status]] == status

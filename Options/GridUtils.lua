@@ -237,13 +237,13 @@ end
 do
 	local titleCoords = { 0.05, 0.95, 0.05, 0.95 }
 	local titleMask   = NORMAL_FONT_COLOR_CODE .. "%s|r\n%s"
-	function Grid2Options:MakeTitleOptions(options, title, subtitle, desc, icon, coords, arg)
+	function Grid2Options:MakeTitleOptions(options, title, subtitle, tipText, icon, coords, arg)
 		options.title = {
 			type  = "description", order = 0, width = "full", fontSize = "large", dialogControl = "Grid2Title",
 			image = icon, imageWidth = 34, imageHeight = 34, imageCoords = coords or titleCoords,
 			name  = string.format(titleMask, title, subtitle),
-			desc = desc,
-			arg = arg, -- optional argument to inject action icons configuration, see Grid2Title widget in GridWidget.lua
+			desc  = tipText,
+			arg   = arg, -- optional argument to inject action icons configuration, see Grid2Title widget in GridWidget.lua
 		}
 	end
 end

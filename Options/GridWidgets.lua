@@ -1,3 +1,7 @@
+-------------------------------------------------------------------------------------------------
+-- Grid2 AceGUI widgets to be used in AceConfigTables, using dialogControl property.
+-------------------------------------------------------------------------------------------------
+
 local AceGUI= LibStub("AceGUI-3.0", true)
 
 -------------------------------------------------------------------------------------------------
@@ -24,13 +28,21 @@ do
 end
 
 -------------------------------------------------------------------------------------------------
+-- Custom "description" AceConfigDialog control
 -- Title displayed on top of the configuration panel for items like statuses, indicators, etc
--- optional action icons displayed on the top right can be defined
---	{
+-- optional action icons displayed on the top right can be defined.
+-- AceConfigTable option usage example:
+--	iconsTable = {
 --		size = 32, padding = 2, spacing = 4 , offsetx = 0, offsety = 0, anchor = 'TOPRIGHT',
 --		[1] = { image = "Path to icon texture", tooltip = "Delete Item", func = deleteFunction },
 --		[2] = { image = "Path to icon texture", tooltip = 'Create Item', func = createFunction },
 --	} )
+--  description = {
+--	  type  = "description", dialogControl = "Grid2Title",
+--    order = 0, width = "full", fontSize = "large",
+--	  image = icon, imageWidth = 34, imageHeight = 34, name = "Title", desc = "Tooltip",
+--	  arg = iconsTable || { icons = iconsTable },
+--  }
 -------------------------------------------------------------------------------------------------
 do
 	local Type, Version = "Grid2Title", 1
@@ -42,7 +54,11 @@ do
 		tooltip:ClearAllPoints()
 		tooltip:SetPoint("TOP",frame,"BOTTOM", 0, -8)
 		tooltip:ClearLines()
-		tooltip:SetText( text , 1, 1, 1, 1, true)
+		if text:find( "^spell:%d+$" ) then
+			tooltip:SetHyperlink(text)
+		else
+			tooltip:SetText( text , 1, 1, 1, 1, true)
+		end
 		tooltip:Show()
 	end
 
@@ -72,7 +88,7 @@ do
 		end
 	end
 
-	-- create action icons when userdata configuration is available (is set by AceConfigDialog after widget creation)
+	-- create action icons when AceConfigTable userdata configuration is available
 	local function OnShow(frame)
 		local self = frame.obj
 		local options = self.userdata and self.userdata.option
@@ -143,8 +159,9 @@ do
 			local iconSize = options.size or 32
 			local offsetx  = options.offsetx or 0
 			local offsety  = options.offsety or 0
+			local anchor   = options.anchor or 'TOPRIGHT'
 			local imgSize  = iconSize - (options.padding or 0)*2
-			local multx    = string.find(options.anchor,'LEFT') and (iconSize+spacing) or -(iconSize+spacing)
+			local multx    = string.find(anchor,'LEFT') and (iconSize+spacing) or -(iconSize+spacing)
 			for i,option in ipairs(options) do
 				local icon = AceGUI:Create("Icon")
 				icon.index = i
@@ -157,7 +174,7 @@ do
 				icon:SetCallback( "OnEnter", OnIconEnter )
 				icon:SetCallback( "OnLeave", OnLeave )
 				icon.frame:SetParent( self.frame )
-				icon.frame:SetPoint( options.anchor, (i-1)*multx+offsetx, offsety )
+				icon.frame:SetPoint( anchor, (i-1)*multx+offsetx, offsety )
 				icon.image:ClearAllPoints()
 				icon.image:SetPoint( "CENTER" )
 				icon.frame:Show()
