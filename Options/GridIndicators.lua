@@ -16,7 +16,7 @@ Grid2Options.indicatorTypesOrder= { tooltip = 1, alpha = 2, background = 3, bord
 
 Grid2Options.indicatorTitleIconsOptions = {
 	size = 24, offsetx = -4, offsety = -2, anchor = 'TOPRIGHT',
-	{ image = "Interface\\AddOns\\Grid2Options\\media\\delete", tooltip = L["Delete this indicator"], func = function(info) Grid2Options:DeleteIndicator( info.option.arg.indicator ) end },
+	{ image = "Interface\\AddOns\\Grid2Options\\media\\delete", tooltip = L["Delete this indicator"], func = function(info) Grid2Options:DeleteIndicatorConfirm( info.option.arg.indicator ) end },
 }
 
 do
@@ -73,7 +73,7 @@ do
 	end
 
 	-- Published because is used outside indicators management panel too
-	function Grid2Options:DeleteIndicator(indicator)
+	function Grid2Options:DeleteIndicatorConfirm(indicator)
 		if self:IndicatorIsInUse(indicator) then
 			self:MessageDialog( L["This indicator cannot be deleted because is in use. Uncheck the statuses linked to the indicator first."] )
 		else
@@ -191,7 +191,7 @@ do
 	end
 
 	local function DeleteIndicator(info, name)
-		Grid2Options:DeleteIndicator( Grid2.indicators[name] )
+		Grid2Options:DeleteIndicatorConfirm( Grid2.indicators[name] )
 	end
 
 	-- function ToggleTestMode()

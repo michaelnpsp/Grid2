@@ -182,8 +182,11 @@ do
 		end
 	end
 	-- needed to trigger an update when switching from one BG directly to another
-	function Grid2:PLAYER_ENTERING_WORLD()
+	function Grid2:PLAYER_ENTERING_WORLD(_, isLogin, isReloadUI)
 		groupType, updateCount = nil, 0
+		if not (isLogin or isReloadUI) then
+			self:ReloadProfile() -- to detect blizzard silent spec change when entering in a LFG instance
+		end
 		self:GroupChanged('PLAYER_ENTERING_WORLD')
 	end
 	-- partyTypes = solo party arena raid / instTypes = none pvp lfr flex mythic other
