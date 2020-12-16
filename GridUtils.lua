@@ -29,7 +29,7 @@ do
 	function Grid2:MakeColor(color, default)
 		return color or defaultColors[default or "TRANSPARENT"]
 	end
-	Grid2.defaultColors = defaultColors	
+	Grid2.defaultColors = defaultColors
 end
 
 -- Repeating Timer Management

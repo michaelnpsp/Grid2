@@ -92,6 +92,7 @@ Grid2:DbSetStatusDefaultValue( "shields", { type = "shields", thresholdMedium = 
 local Overflow = Grid2.statusPrototype:new("shields-overflow")
 
 local overflow_cache = {}
+local unit_is_valid = Grid2.unit_is_valid
 
 Overflow.GetColor = Grid2.statusLibrary.GetColor
 
@@ -112,10 +113,12 @@ function Overflow:OnDisable()
 end
 
 function Overflow:UpdateUnit(event, unit)
-	local v = UnitHealth(unit) + (UnitGetTotalAbsorbs(unit) or 0)
-	local m = UnitHealthMax(unit)
-	overflow_cache[unit] = v>m and (v-m)/m or nil
-	if event~='Grid_UnitUpdated' then self:UpdateIndicators(unit) end
+	if unit_is_valid[unit] then
+		local v = UnitHealth(unit) + (UnitGetTotalAbsorbs(unit) or 0)
+		local m = UnitHealthMax(unit)
+		overflow_cache[unit] = v>m and (v-m)/m or nil
+		if event~='Grid_UnitUpdated' then self:UpdateIndicators(unit) end
+	end
 end
 
 function Overflow:GetPercent(unit)

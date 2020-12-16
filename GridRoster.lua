@@ -44,12 +44,16 @@ local raid_units = {}
 local pet_of_unit = {}
 local owner_of_unit = {}
 
+-- valid units (only friendly party and raid units, excluding nameplates, focus, etc).
+local unit_is_valid = {}
+
 -- indexed by index, only nonpet units
 local roster_count = 0
 local roster_indexed
 
 -- flag to track if roster contains unknown units, workaround to blizard bug (see ticket #628)
 local roster_unknowns
+
 
 -- populate unit tables
 do
@@ -59,6 +63,7 @@ do
 		owner_of_unit[pet] = unit
 		indexes[unit] = index
 		indexes[pet]  = index
+		unit_is_valid[unit] = true
 	end
 	register_unit(party_units, "player", "pet", 0, party_indexes)
 	for i = 1, MAX_PARTY_MEMBERS do
@@ -423,6 +428,7 @@ do
 end
 
 --{{ Publish tables used by some statuses
+Grid2.unit_is_valid   = unit_is_valid
 Grid2.owner_of_unit   = owner_of_unit
 Grid2.roster_units    = roster_units
 Grid2.roster_my_units = roster_my_units

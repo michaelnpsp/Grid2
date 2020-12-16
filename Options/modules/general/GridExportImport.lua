@@ -359,6 +359,11 @@ do
 	end
 end
 
+-- Publish some useful functions
+function Grid2Options:ExportText(title,data)
+	ShowSerializeFrame(title,'',data)
+end
+
 -- {{ Create profile advanced options
 Grid2Options.AdvancedProfileOptions = { type = "group", order= 200, name = L["Import&Export"], desc = L["Options for %s."]:format(L["Import&Export"]), args = {
 	header1 ={

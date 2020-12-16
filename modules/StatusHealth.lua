@@ -25,6 +25,8 @@ local UnitIsGhost = UnitIsGhost
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitIsFeignDeath = UnitIsFeignDeath
 local UnitHealthMax = UnitHealthMax
+local C_Timer_After = C_Timer.After
+local unit_is_valid = Grid2.unit_is_valid
 
 -- Caches
 local heals_enabled = false
@@ -52,7 +54,7 @@ local healthdeficit_enabled = false
 local statuses = {}
 
 local function UpdateIndicators(unit)
-	if unit then
+	if unit_is_valid[unit] then
 		for status in next, statuses do
 			status:UpdateIndicators(unit)
 		end
@@ -278,10 +280,12 @@ local feign_cache = {}
 FeignDeath.GetColor = Grid2.statusLibrary.GetColor
 
 local function FeignDeathUpdateEvent(unit)
-	local feign = UnitIsFeignDeath(unit)
-	if feign~=feign_cache[unit] then
-		feign_cache[unit] = feign
-		FeignDeath:UpdateIndicators(unit)
+	if unit_is_valid[unit] then
+		local feign = UnitIsFeignDeath(unit)
+		if feign~=feign_cache[unit] then
+			feign_cache[unit] = feign
+			FeignDeath:UpdateIndicators(unit)
+		end
 	end
 end
 
@@ -402,12 +406,16 @@ Grid2:DbSetStatusDefaultValue( "health-deficit", {type = "health-deficit", color
 local textDeath = L["DEAD"]
 local textGhost = L["GHOST"]
 local dead_cache = {}
+local units_to_fix = {}
 
 Death.GetColor = Grid2.statusLibrary.GetColor
 
 local function DeathUpdateUnit(_, unit, noUpdate)
-	if unit then
+	if unit_is_valid[unit] then
 		local new = UnitIsDeadOrGhost(unit) and (UnitIsGhost(unit) and textGhost or textDeath) or false
+		if (not new) and UnitHealth(unit)<=0 and not units_to_fix[unit] then
+			Death:FixDeathBug(unit) -- see ticket #907
+		end
 		if new ~= dead_cache[unit] then
 			dead_cache[unit] = new
 			if not noUpdate then
@@ -424,6 +432,23 @@ local function DeathUpdateUnit(_, unit, noUpdate)
 			end
 		end
 	end
+end
+
+local function DeathTimerEvent()
+	local updateFunc = HealthCurrent.enabled and HealthCurrent.dbx.deadAsFullHealth and HealthCurrent.UpdateIndicators
+	for unit in next, units_to_fix do
+		DeathUpdateUnit(nil, unit)
+		if updateFunc then updateFunc(HealthCurrent,unit) end
+	end
+	wipe(units_to_fix)
+end
+
+function Death:FixDeathBug(unit)
+	if not next(units_to_fix) then
+		C_Timer_After(0.05, DeathTimerEvent)
+	end
+	units_to_fix[unit] = true
+	Grid2:Debug("Fixing possible death bug (ticket #907) for unit:", unit)
 end
 
 function Death:Grid_UnitUpdated(_, unit)

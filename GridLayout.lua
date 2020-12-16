@@ -405,8 +405,8 @@ function Grid2Layout:PlaceHeaders()
 			frame:SetPoint(anchor, prevFrame, relPoint, xMult2, yMult2 )
 		end
 		frame:Show()
-		prevFrame = frame
 		self:Debug("Placing group", groupNumber, frame:GetName(), anchor, prevFrame and prevFrame:GetName(), relPoint)
+		prevFrame = frame
 	end
 end
 
