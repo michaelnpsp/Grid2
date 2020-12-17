@@ -194,8 +194,7 @@ local layoutOptions =  { mainheader = {
 			  end,
 		set = function (_, v)
 				  theme.layout.ScaleSize = v
-				  Grid2Layout:SavePosition()
-				  Grid2Layout:RestorePosition() -- really not necessary
+				  Grid2Layout:RestorePosition()
 				  Grid2Options:LayoutTestRefresh()
 			  end,
 }, anchorheader = {

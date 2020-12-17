@@ -681,6 +681,8 @@ function Grid2Layout:UpdateVisibility()
 	end
 end
 
+-- Grid2 uses UI Root coordinates to store the window position (always 768 pixels height) so these coordinates are
+-- independent of the UI Frame Scale Coordinates and monitor physical resolution (assuming the same aspect ratio).
 function Grid2Layout:SavePosition()
 	local f = self.frame
 	if f:GetLeft() and f:GetWidth() then
@@ -699,15 +701,8 @@ function Grid2Layout:SavePosition()
 	end
 end
 
-function Grid2Layout:ResetPosition()
-	local s = UIParent:GetEffectiveScale()
-	self.db.profile.PosX =   UIParent:GetWidth()  / 2 * s
-	self.db.profile.PosY = - UIParent:GetHeight() / 2 * s
-	self.db.profile.anchor = "TOPLEFT"
-	self:RestorePosition()
-	self:SavePosition()
-end
-
+-- Restores the Grid2 window position, the window is always placed in the same exact absolute screen position
+-- even if the WoW UI Scale or Grid2 window Scale was changed (assuming the screen aspect ratio has not changed).
 function Grid2Layout:RestorePosition()
 	local f = self.frame
 	local b = self.frameBack
@@ -722,6 +717,15 @@ function Grid2Layout:RestorePosition()
 	b:ClearAllPoints()
 	b:SetPoint(p.groupAnchor) -- Using groupAnchor instead of anchor, see ticket #442.
 	self:Debug("Restored Position", a, p.ScaleSize, x, y)
+end
+
+function Grid2Layout:ResetPosition()
+	local s = UIParent:GetEffectiveScale()
+	self.db.profile.PosX =   UIParent:GetWidth()  / 2 * s
+	self.db.profile.PosY = - UIParent:GetHeight() / 2 * s
+	self.db.profile.anchor = "TOPLEFT"
+	self:RestorePosition()
+	self:SavePosition()
 end
 
 function Grid2Layout:AddLayout(layoutName, layout)
