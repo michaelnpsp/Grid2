@@ -179,7 +179,7 @@ do
 	_options.themeDesc = {
 		order = 9,
 		type = "description",
-		name = L["You can change the active theme, you can also assign different themes for each specialization, group type, raid type or instance size."] .. "\n"
+		name = "\n" .. L["You can change the active theme, you can also assign different themes for each specialization, group type, raid type or instance size."] .. "\n"
 	}
 
 	_options.themeDef = {

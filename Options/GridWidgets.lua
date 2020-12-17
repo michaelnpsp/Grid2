@@ -6,16 +6,14 @@ local AceGUI= LibStub("AceGUI-3.0", true)
 
 -------------------------------------------------------------------------------------------------
 -- Modified Multiline Editbox that vertical fills the parent container even in AceConfigDialog Flow layouts.
--- The multiline editbox must be the last defined element in an AceConfigTable, to avoid an infinite recursion.
+-- The multiline editbox must be the last defined element in an AceConfigTable.
 -------------------------------------------------------------------------------------------------
 do
 	local WidgetType, container = "Grid2ExpandedEditBox"
 	local function Resize(frame, width, height)
 		if not container then -- container used as recursion lock
 			container = frame.obj.parent
-			if container.children[#container.children] == frame.obj then
-				frame:SetHeight( frame:GetTop() - container.frame:GetBottom() )
-			end
+			frame.obj:SetHeight( frame:GetTop() - container.frame:GetBottom() )
 			container = nil
 		end
 	end

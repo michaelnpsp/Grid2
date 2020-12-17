@@ -203,6 +203,7 @@ function Grid2Layout:OnModuleEnable()
 	self:RegisterMessage("Grid_RosterUpdate")
 	self:RegisterMessage("Grid_GroupTypeChanged")
 	self:RegisterMessage("Grid_UpdateLayoutSize")
+	self:RegisterEvent("UI_SCALE_CHANGED")
 	if not Grid2.isClassic then
 		self:RegisterEvent("PET_BATTLE_OPENING_START", "PetBattleTransition")
 		self:RegisterEvent("PET_BATTLE_CLOSE", "PetBattleTransition")
@@ -238,7 +239,6 @@ function Grid2Layout:UpdateTheme()
 end
 
 function Grid2Layout:RefreshTheme()
-	self:RestorePosition()
 	self:UpdateFrame()
 	self:ReloadLayout(true)
 end
@@ -277,10 +277,15 @@ function Grid2Layout:UNIT_TARGETABLE_CHANGED(_,unit)
 	end
 end
 
+-- Maintain Grid2 window on the same position if the screen scale is changed.
+function Grid2Layout:UI_SCALE_CHANGED()
+	self:RestorePosition()
+end
+
 -- We delay UpdateSize() call to avoid calculating the wrong window size, because when "Grid_UpdateLayoutSize"
 -- message is triggered the blizzard code has not yet updated the size of the secure group headers.
 function Grid2Layout:Grid_UpdateLayoutSize()
-	Grid2:RunThrottled(self, "UpdateSize")
+	Grid2:RunThrottled(self, "UpdateSize", 0.01)
 end
 
 function Grid2Layout:PetBattleTransition(event)
@@ -443,7 +448,7 @@ function Grid2Layout:LoadLayout(layoutName)
 	if layout then
 		self:Debug("LoadLayout", layoutName)
 		self.layoutName = layoutName
-		self:Scale()
+		self:RestorePosition()
 		self:ResetHeaders()
 		if layout[1] then
 			for _, layoutHeader in ipairs(layout) do
@@ -706,8 +711,9 @@ end
 function Grid2Layout:RestorePosition()
 	local f = self.frame
 	local b = self.frameBack
-	local s = f:GetEffectiveScale()
 	local p = self.db.profile
+	f:SetScale(p.ScaleSize)
+	local s = f:GetEffectiveScale()
 	local x = p.PosX / s
 	local y = p.PosY / s
 	local a = p.anchor
@@ -715,13 +721,7 @@ function Grid2Layout:RestorePosition()
 	f:SetPoint(a, x, y)
 	b:ClearAllPoints()
 	b:SetPoint(p.groupAnchor) -- Using groupAnchor instead of anchor, see ticket #442.
-	self:Debug("Restored Position", a, x, y)
-end
-
-function Grid2Layout:Scale()
-	self:SavePosition()
-	self.frame:SetScale(self.db.profile.ScaleSize)
-	self:RestorePosition()
+	self:Debug("Restored Position", a, p.ScaleSize, x, y)
 end
 
 function Grid2Layout:AddLayout(layoutName, layout)
