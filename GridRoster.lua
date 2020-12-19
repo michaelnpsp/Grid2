@@ -64,6 +64,7 @@ do
 		indexes[unit] = index
 		indexes[pet]  = index
 		unit_is_valid[unit] = true
+		unit_is_valid[pet] = true
 	end
 	register_unit(party_units, "player", "pet", 0, party_indexes)
 	for i = 1, MAX_PARTY_MEMBERS do

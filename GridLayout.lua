@@ -245,7 +245,7 @@ end
 
 --{{{ Event handlers
 function Grid2Layout:Grid_GroupTypeChanged(_, groupType, instType, maxPlayers)
-	Grid2Layout:Debug("GroupTypeChanged", groupType, instType, maxPlayers)
+	self:Debug("GroupTypeChanged", groupType, instType, maxPlayers)
 	if not Grid2:ReloadTheme() then
 		if not self:ReloadLayout() then
 			self:UpdateVisibility()
@@ -280,6 +280,7 @@ end
 -- Maintain Grid2 window on the same position if the screen scale is changed.
 function Grid2Layout:UI_SCALE_CHANGED()
 	self:RestorePosition()
+	self:Debug("UI Scale Change detected: main frame position restored:", GetCVar("uiScale") )
 end
 
 -- We delay UpdateSize() call to avoid calculating the wrong window size, because when "Grid_UpdateLayoutSize"

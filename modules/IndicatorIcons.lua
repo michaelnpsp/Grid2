@@ -158,11 +158,11 @@ local function Icon_Layout(self, parent)
 		-- cooldown animation
 		if self.showCooldown then
 			frame.cooldown = frame.cooldown or CreateFrame("Cooldown", frameName and frameName..i or nil, frame, "CooldownFrameTemplate")
+			frame.cooldown:SetAllPoints()
 			frame.cooldown:SetHideCountdownNumbers(true)
 			frame.cooldown:SetDrawEdge(self.dbx.disableOmniCC~=nil)
 			frame.cooldown.noCooldownCount = self.dbx.disableOmniCC
 			frame.cooldown:SetReverse(self.dbx.reverseCooldown)
-			frame.cooldown:SetAllPoints()
 			frame.cooldown:Show()
 		elseif frame.cooldown then
 			frame.cooldown:Hide()

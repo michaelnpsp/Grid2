@@ -55,13 +55,12 @@ do
 		if text:find( "^spell:%d+$" ) then
 			tooltip:SetHyperlink(text)
 		else
-			tooltip:SetText( text , 1, 1, 1, 1, true)
+			tooltip:SetText(text , 1, 1, 1, 1, true)
 		end
 		tooltip:Show()
 	end
 
 	local function OnEnter(frame)
-		self = frame.obj
 		local desc = frame.obj.userdata.option.desc
 		if desc then
 			ShowTooltip(frame, desc)
