@@ -271,24 +271,23 @@ function Grid2:InitializeOptions()
 	self.InitializeOptions = nil
 end
 
-function Grid2:LoadGrid2Options()
-	if self.wrongVersionMessage then
-		Grid2:Print( self.wrongVersionMessage )
-		return
-	end
+function Grid2:OpenGrid2Options()
 	if not IsAddOnLoaded("Grid2Options") then
 		if InCombatLockdown() then
-			Grid2:Print("Grid2Options cannot be loaded in combat.")
+			self:Print("Grid2Options cannot be loaded in combat.")
 			return
 		end
 		LoadAddOn("Grid2Options")
 	end
-	if Grid2Options then
-		self:LoadOptions()
-		self.LoadGrid2Options = function() return true end
-		return true
+	if not Grid2Options then
+		self:Print("You need Grid2Options addon enabled to be able to configure Grid2.")
+		return
 	end
-	Grid2:Print("You need Grid2Options addon enabled to be able to configure Grid2.")
+	self.OpenGrid2Options = function(self)
+		Grid2Options:OnChatCommand()
+	end
+	self:LoadOptions()
+	self:OpenGrid2Options()
 end
 
 function Grid2:RefreshOptions()
@@ -298,8 +297,10 @@ function Grid2:RefreshOptions()
 end
 
 function Grid2:OnChatCommand(input)
-	if Grid2:LoadGrid2Options() then
-		Grid2Options:OnChatCommand(input)
+	if strlen(input or '')==0 or input=='options' then
+		self:OpenGrid2Options()
+	else
+		self:ProcessCommandLine(input)
 	end
 end
 

@@ -349,6 +349,13 @@ function Grid2Layout:FrameLock(locked)
 	self.frame:EnableMouse(not p.FrameLock)
 end
 
+-- display: Never, Always, Grouped, Raid, false|nil = toggle Never/Always
+function Grid2Layout:FrameVisibility(display)
+	local p = self.db.profile
+	p.FrameDisplay = display or (p.FrameDisplay=='Never' and 'Always' or 'Never')
+	self:UpdateVisibility()
+end
+
 --{{{ ConfigMode support
 CONFIGMODE_CALLBACKS = CONFIGMODE_CALLBACKS or {}
 CONFIGMODE_CALLBACKS["Grid2"] = function(action)
@@ -676,6 +683,7 @@ function Grid2Layout:UpdateVisibility()
 	if not Grid2:RunSecure(7, self, "UpdateVisibility") then
 		local fd, pt = self.db.profile.FrameDisplay, Grid2:GetGroupType()
 		self.frame:SetShown(
+			fd~='Never' and
 			( (fd == "Always") or (fd == "Grouped" and pt ~= "solo") or (fd == "Raid" and pt == "raid" ) ) and
 			not (self.db.profile.HideInPetBattle and self.inBattlePet)
 		)

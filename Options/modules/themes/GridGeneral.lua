@@ -66,12 +66,12 @@ local layoutOptions =  { mainheader = {
 		name = L["Show Frame"],
 		desc = L["Sets when the Grid is visible: Choose 'Always', 'Grouped', or 'Raid'."],
 		order = order_display + 1,
-		get = function() return theme.layout.FrameDisplay end,
+		get = function() return theme.layout.FrameDisplay~="Never" and theme.layout.FrameDisplay or "@Never" end,
 		set = function(_, v)
-			theme.layout.FrameDisplay = v
+			theme.layout.FrameDisplay = v~='@Never' and v or 'Never'
 			Grid2Layout:UpdateVisibility()
 		end,
-		values={["Always"] = L["Always"], ["Grouped"] = L["Grouped"], ["Raid"] = L["Raid"]},
+		values={["Always"] = L["Always"], ["Grouped"] = L["Grouped"], ["Raid"] = L["Raid"], ["@Never"] = L["Never"]},
 }, petBattle = {
 		type = "toggle",
 		name = L["Hide in Pet Battles"],

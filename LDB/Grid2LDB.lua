@@ -15,7 +15,7 @@ local Grid2LDB = DataBroker:NewDataObject("Grid2", {
 	icon  = "Interface\\AddOns\\Grid2\\media\\icon",
 	OnClick = function(self, button)
 		if button=="LeftButton" then
-			Grid2:OnChatCommand("grid2")
+			Grid2:OnChatCommand()
 		elseif button=="RightButton" then
 			MenuLayoutsShow()
 		end
@@ -61,8 +61,7 @@ do
 		end
 	end
 	local function SetVisibility(self)
-		Grid2Layout.db.profile.FrameDisplay = self.value
-		Grid2Layout:UpdateVisibility()
+		Grid2Layout:FrameVisibility(self.value)
 	end
 	local function CreateMenuTable()
 		layoutName = Grid2Layout.layoutName
@@ -80,6 +79,7 @@ do
 			end
 			sort(menuTable, function(a,b) if a.isTitle then return true elseif b.isTitle then return false else return a.text<b.text end end )
 			-- Visibility
+			table.insert( menuTable, 1, { func= SetVisibility, text = L["Never"],   value = 'Never',   checked = function() return Grid2Layout.db.profile.FrameDisplay == 'Never' end } )
 			table.insert( menuTable, 1, { func= SetVisibility, text = L["Raid"],    value = 'Raid',    checked = function() return Grid2Layout.db.profile.FrameDisplay == 'Raid' end } )
 			table.insert( menuTable, 1, { func= SetVisibility, text = L["Grouped"], value = 'Grouped', checked = function() return Grid2Layout.db.profile.FrameDisplay == 'Grouped' end } )
 			table.insert( menuTable, 1, { func= SetVisibility, text = L["Always"],  value = 'Always',  checked = function() return Grid2Layout.db.profile.FrameDisplay == 'Always' end } )

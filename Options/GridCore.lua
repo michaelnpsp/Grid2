@@ -77,7 +77,7 @@ function Grid2Options:MakeOptions()
 	collectgarbage("collect")
 end
 
-function Grid2Options:OnChatCommand(input)
+function Grid2Options:OnChatCommand()
 	local dialog = LibStub("AceConfigDialog-3.0")
 	if dialog.OpenFrames["Grid2"] then
 		dialog:Close("Grid2")

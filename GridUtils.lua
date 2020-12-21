@@ -213,24 +213,6 @@ do
 	end
 end
 
--- Useful to change theme from external sources (macros, wa2,etc)
--- theme = number(theme index starting in 0) or string(theme name)
-function Grid2:SetDefaultTheme(theme)
-	local themes = self.db.profile.themes
-	if type(theme)~='number' then
-		for index,name in pairs(themes.names) do
-			if theme==name then	theme = index; break; end
-		end
-		if type(theme)~='number' and (theme=='Default' or theme==L['Default']) then
-			theme = 0
-		end
-	end
-	if theme==0 or themes.names[theme] then
-		themes.enabled.default = theme
-		self:ReloadTheme()
-	end
-end
-
 -- Grid2:RunSecure(priority, object, method, arg)
 -- Queue some methods to be executed when out of combat, if we are not in combat do nothing.
 -- Methods with lower priority value override the execution of methods with higher priority value.
@@ -273,6 +255,65 @@ do
 				end
 			end
 			C_Timer.After(delay or 0.1, callback)
+		end
+	end
+end
+
+-- Useful to change theme from external sources (macros, wa2,etc)
+-- theme = number(theme index starting in 0) or string(theme name)
+function Grid2:SetDefaultTheme(theme)
+	local themes = self.db.profile.themes
+	if type(theme)~='number' then
+		for index,name in pairs(themes.names) do
+			if theme==name then	theme = index; break; end
+		end
+		if type(theme)~='number' and (theme=='Default' or theme==L['Default']) then
+			theme = 0
+		end
+	end
+	if theme==0 or themes.names[theme] then
+		themes.enabled.default = theme
+		self:ReloadTheme()
+		return true
+	end
+end
+
+-- Process command line order
+do
+	local display = {  never = 'Never', always = 'Always', grouped = 'Grouped', raid = 'Raid', toggle = false }
+	function Grid2:ProcessCommandLine(input)
+		local command, param = strsplit(" ", input or "", 2)
+		local c, p = strlower(command), strlower(param or "")
+		if c=='lock' then -- lock toggle
+			Grid2Layout:FrameLock( p~='toggle' or nil )
+		elseif c=='unlock' then
+			Grid2Layout:FrameLock(false)
+		elseif c=='show' and display[p]~=nil then
+			Grid2Layout:FrameVisibility( display[p] )
+		elseif c=='theme' and param and not InCombatLockdown() then
+			if not self:SetDefaultTheme( tonumber(param) or strtrim(param,'" ') ) then
+				self:Print("Specified theme does not exist.")
+			end
+		elseif c=='profile' and param and not InCombatLockdown() then
+			param = strtrim(param,'" ')
+			for _,name in ipairs(self.db:GetProfiles()) do
+				if param == name and name~=self.db:GetCurrentProfile() then
+					self.db:SetProfile(name)
+					return
+				end
+			end
+			self:Print("Specified profile does not exist.")
+		elseif c=='help' then
+			self:Print("commands (/grid2, /gr2)")
+			print("    /grid2")
+			print("    /grid2 options")
+			print("    /grid2 help")
+			print("    /grid2 unlock")
+			print("    /grid2 lock")
+			print("    /grid2 lock toggle")
+			print("    /grid2 profile name")
+			print("    /grid2 theme name || index")
+			print("    /grid2 show never || always || grouped || raid || toggle\n")
 		end
 	end
 end
