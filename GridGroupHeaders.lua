@@ -52,7 +52,7 @@ do
 	end )
 	function RunSecure(func, self)
 		if (self:GetAttribute("startingIndex") or 1)<=0 then
-			return -- hackish, ignore frames precreation trick becaouse is only usable in blizzard secure frames
+			return -- hackish, ignore frames precreation trick because is only necessary in blizzard secure group frames
 		end
 		if InCombatLockdown() then
 			if not next(frames) then frame:RegisterEvent('PLAYER_REGEN_ENABLED') end
@@ -483,7 +483,6 @@ do
 	local function Hide(self)
 		self:UnregisterEvent("GROUP_ROSTER_UPDATE")
 		self:UnregisterEvent("UNIT_NAME_UPDATE")
-		self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 		if self.isPetHeader then self:UnregisterEvent("UNIT_PET") end
 	end
 
