@@ -381,9 +381,13 @@ local function DisplayButtons(self, unitTable)
 	local curAnchor, buttonNum, colUnitCount = self, 1, 1
 	local start, finish, step
 	if self:GetAttribute("sortDir")=='DESC' then
-		start, finish, step = #unitTable-startingIndex+1, start-numDisplayed+1, -1
+		start  = #unitTable-startingIndex+1
+		finish = start-numDisplayed+1
+		step   = -1
 	else
-		start, finish, step = startingIndex, start+numDisplayed-1, 1
+		start  = startingIndex
+		finish = start+numDisplayed-1
+		step   = 1
 	end
 	for i = start, finish, step do
 		local unitButton = self[buttonNum]
