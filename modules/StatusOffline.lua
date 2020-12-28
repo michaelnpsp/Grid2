@@ -40,7 +40,7 @@ end
 --   On DISABLE we check UnitIsConnected() (Only works in party, not in raid)
 -- This heuristic does not detect all cases.
 function Offline:UNIT_CONNECTION(event, unit, hasConnected)
-	if Grid2:IsUnitNoPetInRaid(unit) then
+	if Grid2:IsUnitInRaid(unit) then
 		if event == 'UNIT_CONNECTION' then -- hasConnected is only available on this event
 			self:SetOffline(unit, not hasConnected)
 		elseif event == 'PARTY_MEMBER_ENABLE' then -- always connected on this event.

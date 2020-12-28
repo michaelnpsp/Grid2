@@ -9,14 +9,17 @@ local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 local Grid2 = Grid2
 local IsInRaid = IsInRaid
 local UnitExists = UnitExists
+local UnitIsGroupLeader = UnitIsGroupLeader
 local GetRaidRosterInfo = GetRaidRosterInfo
 local GetPartyAssignment = GetPartyAssignment
-local UnitIsGroupLeader = UnitIsGroupLeader
-local UnitGroupRolesAssigned= UnitGroupRolesAssigned
+local UnitGroupRolesAssigned= UnitGroupRolesAssigned or (function() return 'NONE' end)
 local GetTexCoordsForRoleSmallCircle= GetTexCoordsForRoleSmallCircle
+local UnitIsUnit = UnitIsUnit
 local MAIN_TANK = MAIN_TANK
 local MAIN_ASSIST = MAIN_ASSIST
-local next = next
+local raid_indexes = Grid2.raid_indexes
+local party_indexes = Grid2.party_indexes
+local next, select = next, select
 
 -- Code to disable statuses in combat
 local SetHideInCombat
@@ -65,9 +68,13 @@ function Role:UpdateActiveUnits()
 end
 
 function Role:Grid_RosterUpdate(event)
-	local _, count = Grid2:GetNonPetUnits()
-	for index=1,count do
-		local unit, _, _, _, role = Grid2:GetRosterInfoByIndex(index)
+	for unit in Grid2:IteratePlayerUnits() do
+		local index, role = raid_indexes[unit]
+		if index then
+			role = select(10,GetRaidRosterInfo(index))
+		elseif party_indexes[unit] then
+			role = (GetPartyAssignment("MAINTANK",unit) and "MAINTANK") or (GetPartyAssignment("MAINASSIST",unit) and "MAINASSIST")
+		end
 		if role ~= role_cache[unit] then
 			role_cache[unit] = role
 			if event then self:UpdateIndicators(unit) end
@@ -149,14 +156,15 @@ end
 
 function Assistant:Grid_RosterUpdate(event)
 	if IsInRaid() then
-		local units, count = Grid2:GetNonPetUnits()
-		for index=1,count do
-			local unit = units[index]
-			local name, rank = GetRaidRosterInfo(index)
-			local assis = rank==1 or nil
-			if assis ~= assis_cache[unit] then
-				assis_cache[unit] = assis
-				if event then self:UpdateIndicators(unit) end
+		for unit in Grid2:IteratePlayerUnits() do
+			local index = raid_indexes[unit]
+			if index then
+				local name, rank = GetRaidRosterInfo(index)
+				local assis = rank==1 or nil
+				if assis ~= assis_cache[unit] then
+					assis_cache[unit] = assis
+					if event then self:UpdateIndicators(unit) end
+				end
 			end
 		end
 	end
@@ -217,7 +225,7 @@ end
 function Leader:UpdateLeader(event)
 	if not (raidLeader and UnitIsGroupLeader(raidLeader) and Grid2:IsUnitInRaid(raidLeader)) then
 		local prevLeader = raidLeader
-		self:CalculateLeader()
+		raidLeader = self:CalculateLeader()
 		if raidLeader ~= prevLeader then
 			if prevLeader then self:UpdateIndicators(prevLeader) end
 			if raidLeader then self:UpdateIndicators(raidLeader) end
@@ -226,22 +234,18 @@ function Leader:UpdateLeader(event)
 end
 
 function Leader:CalculateLeader()
-	local units, count = Grid2:GetNonPetUnits()
-	for i=1,count do
-		local unit = units[i]
+	for unit in Grid2:IteratePlayerUnits() do
 		if UnitIsGroupLeader(unit) then
-			raidLeader = unit
-			return
+			return unit
 		end
 	end
-	raidLeader = nil
 end
 
 function Leader:OnEnable()
 	self:SetHideInCombat(self.dbx.hideInCombat)
 	self:RegisterEvent("PARTY_LEADER_CHANGED", "UpdateLeader")
 	self:RegisterMessage("Grid_RosterUpdate", "UpdateLeader")
-	self:CalculateLeader()
+	raidLeader = self:CalculateLeader()
 end
 
 function Leader:OnDisable()
@@ -252,7 +256,7 @@ function Leader:OnDisable()
 end
 
 function Leader:IsActive(unit)
-	return unit == raidLeader
+	return readLieader and UnitIsUnit( unit, raidLeader )
 end
 
 function Leader:GetIcon(unit)
@@ -288,7 +292,7 @@ end
 
 function MasterLooter:UpdateMasterLooter()
 	local prevMaster = masterLooter
-	self:CalculateMasterLooter()
+	masterLooter = self:CalculateMasterLooter()
 	if masterLooter ~= prevMaster then
 		if prevMaster   then self:UpdateIndicators(prevMaster) end
 		if masterLooter then self:UpdateIndicators(masterLooter) end
@@ -296,16 +300,21 @@ function MasterLooter:UpdateMasterLooter()
 end
 
 function MasterLooter:CalculateMasterLooter()
-	local units = Grid2:GetNonPetUnits()
-	local method, party, raid = GetLootMethod()
-	masterLooter = (method == "master") and (units and units[ raid or party+1 ]) or nil
+	local method, partyID, raidID = GetLootMethod()
+	if method=='master' then
+		if raidID then
+			return 'raid'..raidID
+		elseif partyID then
+			return partyID==0 and 'player' or 'party'..partyID
+		end
+	end
 end
 
 function MasterLooter:OnEnable()
 	self:SetHideInCombat(self.dbx.hideInCombat)
 	self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED", "UpdateMasterLooter")
 	self:RegisterMessage("Grid_RosterUpdate", "UpdateMasterLooter")
-	self:CalculateMasterLooter()
+	masterLooter = self:CalculateMasterLooter()
 end
 
 function MasterLooter:OnDisable()
@@ -316,7 +325,7 @@ function MasterLooter:OnDisable()
 end
 
 function MasterLooter:IsActive(unit)
-	return unit == masterLooter
+	return masterLooter and UnitIsUnit( unit, masterLooter )
 end
 
 function MasterLooter:GetIcon(unit)

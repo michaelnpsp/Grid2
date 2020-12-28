@@ -16,7 +16,7 @@ function Voice:OnEnable()
 	self:RegisterMessage("Grid_UnitLeft", "Grid_UnitUpdated")
 	self:RegisterMessage("Grid_UnitUpdated")
 end
-	
+
 function Voice:OnDisable()
 	self:UnregisterEvent("VOICE_CHAT_CHANNEL_MEMBER_SPEAKING_STATE_CHANGED")
 	self:UnregisterMessage("Grid_UnitLeft")
@@ -27,11 +27,11 @@ end
 function Voice:VOICE_CHAT_CHANNEL_MEMBER_SPEAKING_STATE_CHANGED(_, memberID, channelID, isSpeaking)
 	local guid = C_VoiceChat_GetMemberGUID( memberID, channelID )
 	if guid then
-		local unit = Grid2:GetUnitidByGUID(guid) 
+		local unit = Grid2:GetUnitByGUID(guid)
 		if unit then
 			cache[unit] = isSpeaking or nil
 			self:UpdateIndicators(unit)
-		end	
+		end
 	end
 end
 

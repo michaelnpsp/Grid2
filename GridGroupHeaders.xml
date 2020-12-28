@@ -1,0 +1,23 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="GridGroupHeaders.lua"/>
+	<!-- A base template for insecure frames -->
+	<Frame name="Grid2InsecureFrameTemplate" virtual="true"/>
+	<!-- A frame used for managing group members -->
+    <Frame name="Grid2InsecureGroupHeaderTemplate" inherits="Grid2InsecureFrameTemplate" hidden="true" virtual="true">
+        <Scripts>
+            <OnLoad function="Grid2InsecureGroupHeader_OnLoad"/>
+        </Scripts>
+    </Frame>
+    <!-- A frame used for managing group pets -->
+    <Frame name="Grid2InsecureGroupPetHeaderTemplate" inherits="Grid2InsecureFrameTemplate" hidden="true" virtual="true">
+        <Scripts>
+			<OnLoad> Grid2InsecureGroupHeader_OnLoad(self,true); </OnLoad>
+        </Scripts>
+    </Frame>
+    <Frame name="Grid2InsecureGroupSpecialHeaderTemplate" inherits="Grid2InsecureFrameTemplate" hidden="true" virtual="true">
+        <Scripts>
+			<OnLoad function="Grid2InsecureGroupSpecialHeader_OnLoad" />
+        </Scripts>
+    </Frame>
+</Ui>

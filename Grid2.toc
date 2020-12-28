@@ -39,6 +39,8 @@ Libs\LibSharedMedia-3.0\LibSharedMedia-3.0.lua
 #Locales
 locales.xml
 
+GridGroupHeaders.xml
+
 # Grid2
 GridCore.lua
 GridUtils.lua

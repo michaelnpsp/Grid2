@@ -19,7 +19,6 @@ local NUM_HEADERS = 0
 local FRAMES_TEMPLATE = "SecureUnitButtonTemplate"                        .. (BackdropTemplateMixin and ",BackdropTemplate" or "")
 local FRAMEC_TEMPLATE = "ClickCastUnitTemplate,SecureUnitButtonTemplate"  .. (BackdropTemplateMixin and ",BackdropTemplate" or "")
 local SECURE_INIT_TMP =  [[
-	RegisterUnitWatch(self)
 	self:SetAttribute("*type1", "target")
 	self:SetAttribute("*type2", "togglemenu")
 	self:SetAttribute("useparent-toggleForVehicle", true)
@@ -37,13 +36,13 @@ local SECURE_INIT = SECURE_INIT_TMP
 
 local GridLayoutHeaderClass = {
 	prototype = {},
-	new = function (self, type)
+	new = function (self, template)
 		NUM_HEADERS = NUM_HEADERS + 1
-		local frame = CreateFrame("Frame", "Grid2LayoutHeader"..NUM_HEADERS, Grid2Layout.frame, type=='pet' and "SecureGroupPetHeaderTemplate" or "SecureGroupHeaderTemplate" )
+		local frame = CreateFrame("Frame", "Grid2LayoutHeader"..NUM_HEADERS, Grid2Layout.frame, template )
 		for name, func in pairs(self.prototype) do
 			frame[name] = func
 		end
-		if ClickCastHeader then
+		if ClickCastHeader and not self.isInsecure then
 			frame:SetAttribute("template", FRAMEC_TEMPLATE)
 			SecureHandler_OnLoad(frame)
 			frame:SetFrameRef("clickcast_header", Clique.header)
@@ -55,7 +54,16 @@ local GridLayoutHeaderClass = {
 		frame:Reset()
 		frame:SetOrientation()
 		return frame
-	end
+	end,
+	template = function(self, header, insecure)
+		if header.type=='special' then
+			return 'Grid2InsecureGroupSpecialHeaderTemplate'
+		elseif header.type=='pet' then
+			return insecure and 'Grid2InsecureGroupPetHeaderTemplate' or 'SecureGroupPetHeaderTemplate'
+		else
+			return insecure and 'Grid2InsecureGroupHeaderTemplate' or 'SecureGroupHeaderTemplate'
+		end
+	end,
 }
 
 local HeaderAttributes = {
@@ -63,17 +71,18 @@ local HeaderAttributes = {
 	"sortDir", "groupBy", "groupingOrder", "maxColumns", "unitsPerColumn",
 	"startingIndex", "columnSpacing", "columnAnchorPoint",
 	"useOwnerUnit", "filterOnPet", "unitsuffix", "sortMethod",
-	"toggleForVehicle", "showSolo", "showPlayer", "showParty", "showRaid"
+	"toggleForVehicle", "showSolo", "showPlayer", "showParty", "showRaid",
+	"hideEmptyUnits"
 }
 
 function GridLayoutHeaderClass.prototype:Reset()
-	self.tokenNames  = nil
-	self.tokenFilter = nil
+	self:Hide()
 	local defaults = Grid2Layout.customDefaults
 	for _, attr in ipairs(HeaderAttributes) do
 		self:SetAttribute(attr, defaults[attr] or nil  )
 	end
-	self:Hide()
+	self.tokenNames  = nil
+	self.tokenFilter = nil
 end
 
 local anchorPoints = {
@@ -177,8 +186,8 @@ function Grid2Layout:OnModuleInitialize()
 	-- useful variables
 	self.dba = self.db
 	self.db = { global = self.dba.global, profile = self.dba.profile, shared = self.dba.profile }
-	self.groups = { player = {}, pet = {} }
-	self.indexes = { player = 0,  pet = 0  }
+	self.groups  = setmetatable( {}, { __index = function(t,k) t[k]= {}; return t[k]; end } )
+	self.indexes = setmetatable( {}, { __index = function(t,k) return 0;  end } )
 	self.groupsUsed = {}
 	-- create main frame
 	self.frame = CreateFrame("Frame", "Grid2LayoutFrame", UIParent)
@@ -256,7 +265,7 @@ end
 function Grid2Layout:Grid_RosterUpdate(_, unknowns)
 	if self.layoutHasFilter then
 		Grid2:RunThrottled(self, "ReloadFilter", .25)
-	elseif unknowns then
+	elseif unknowns and not self.db.global.useInsecureHeaders then
 		Grid2:RunThrottled(self, "FixRoster", .25)
 	end
 end
@@ -286,7 +295,7 @@ end
 -- We delay UpdateSize() call to avoid calculating the wrong window size, because when "Grid_UpdateLayoutSize"
 -- message is triggered the blizzard code has not yet updated the size of the secure group headers.
 function Grid2Layout:Grid_UpdateLayoutSize()
-	Grid2:RunThrottled(self, "UpdateSize", 0.01)
+	Grid2:RunThrottled(self, "UpdateSize", 0.05)
 end
 
 function Grid2Layout:PetBattleTransition(event)
@@ -311,11 +320,13 @@ function Grid2Layout:UpdateMenu()
 end
 
 -- Workaround to a blizzard bug in SecureGroupHeaders.lua (see: https://www.wowace.com/projects/grid2/issues/628 )
--- In patch 8.1 SecureTemplates code do not display "unknown entities" because GetRaidRosterInfo() returns nil for these units:
+-- In patch 8.1 SecureTemplates code does not display "unknown entities" because GetRaidRosterInfo() returns nil for these units:
 -- If unknown entities are detected in roster, we update the headers every 1/4 seconds until all unknown entities are gone.
 function Grid2Layout:FixRoster()
+	print("FixRosterEntering...")
 	if Grid2:RosterHasUnknowns() then
 		if not Grid2:RunSecure(5, self, "FixRoster") then
+			print("Updating Headers........")
 			self:UpdateHeaders()
 			Grid2:UpdateRoster()
 		end
@@ -384,8 +395,9 @@ function Grid2Layout:SetClamp()
 end
 
 function Grid2Layout:ResetHeaders()
-	self.layoutHasFilter = nil
-	self.layoutHasAuto   = nil
+	self.layoutHasSpecial = nil
+	self.layoutHasFilter  = nil
+	self.layoutHasAuto    = nil
 	for type, headers in pairs(self.groups) do
 		for i=self.indexes[type],1,-1 do
 			headers[i]:Reset()
@@ -476,17 +488,20 @@ end
 
 --{{ Header management
 function Grid2Layout:AddHeader(layoutHeader, defaults)
-	local type    = layoutHeader.type or 'player'
-	local index   = self.indexes[type] + 1
-	local headers = self.groups[type]
-	local header  = headers[index]
+	local template = self.layoutHeaderClass:template(layoutHeader, self.db.global.useInsecureHeaders)
+	local index    = self.indexes[template] + 1
+	local headers  = self.groups[template]
+	local header   = headers[index]
 	if not header then
-		header = self.layoutHeaderClass:new(type)
+		header = self.layoutHeaderClass:new(template)
 		headers[index] = header
 	end
-	self.indexes[type] = index
+	if layoutHeader.type=='special' then
+		self.layoutHasSpecial = true
+	end
+	header.headerType = layoutHeader.type
+	self.indexes[template] = index
 	self.groupsUsed[#self.groupsUsed+1] = header
-	self.headerType = type
 	self:SetHeaderAttributes(header, defaults)
 	self:SetHeaderAttributes(header, layoutHeader)
 	self:FixHeaderAttributes(header)
@@ -621,6 +636,7 @@ function Grid2Layout:ForceFramesCreation(header)
 		header:SetAttribute("startingIndex", 1-maxFrames )
 		header:SetAttribute("startingIndex", startingIndex)
 		header.FrameCount= maxFrames
+		header:Hide()
 	end
 end
 
@@ -654,8 +670,7 @@ function Grid2Layout:UpdateSize()
 		if maxRow<row then maxRow = row end
 		local col = g[mcol](g) + p.Padding
 		curCol = curCol + col
-		local child = g:GetAttribute("child1")
-		remSize = child and child:IsVisible() and 0 or remSize + col
+		remSize = (g.headerType=='special' or (g[1] and g[1]:IsVisible())) and 0 or remSize + col
 	end
 	local col = math.max( curCol - remSize + p.Spacing*2 - p.Padding, 1 )
 	local row = math.max( maxRow + p.Spacing*2, 1 )

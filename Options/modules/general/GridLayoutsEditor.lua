@@ -555,8 +555,23 @@ generalOptions = {
 		name = L["Default settings applied to all user defined layouts and some built-in layouts."] .. "\n"
 	},
 
-	allGroups = {
+	insecureHeaders = {
 		order = 1,
+		type = "toggle",
+		name = "|cffffd200".. L["Use Custom Unit Frames"] .."|r",
+		desc = L["Use custom unit frames instead of blizzard frames. This fixes some bugs in blizzard code, but as caveat frame units cannot join/exit the roster while in combat."],
+		width = "full",
+		get = function(info)
+			return Grid2Layout.db.global.useInsecureHeaders
+		end,
+		set = function(info,v)
+			Grid2Layout.db.global.useInsecureHeaders= v or nil
+			RefreshLayout(true)
+		end,
+	},
+
+	allGroups = {
+		order = 2,
 		type = "toggle",
 		name = "|cffffd200".. L["Display all groups"] .."|r",
 		desc = L["Display all raid groups, if unchecked the groups will by filtered according to the instance size. Not all layouts will obey this setting."],
@@ -571,7 +586,7 @@ generalOptions = {
 	},
 
 	sortMethod = {
-		order = 1,
+		order = 3,
 		type = "toggle",
 		name = "|cffffd200".. L["Sort units by name"] .."|r",
 		desc = L["Sort the units by player name, if unchecked the units will be displayed in raid order. Not all layouts will obey this setting."],
@@ -586,7 +601,7 @@ generalOptions = {
 	},
 
 	vehicle = {
-		order = 2,
+		order = 4,
 		type = "toggle",
 		name = "|cffffd200".. L["Toggle for vehicle"] .."|r",
 		desc = L["When the player is in a vehicle replace the player frame with the vehicle frame."],

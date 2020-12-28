@@ -140,6 +140,12 @@ Grid2.RegisterMessage( Statuses, "Grid_UnitUpdated", function(_, u)
 	AuraFrame_OnEvent(nil,nil,u)
 end)
 
+Grid2.RegisterMessage( Statuses, "Grid_UnitLeft", function(_, u) -- TODO, maybe search for another way to clear auras on no existant units.
+	if isClassic then ClearUnitFilters(u) end
+	AuraFrame_OnEvent(nil,nil,u)
+end)
+
+
 -- EnableAuraEvents() DisableAuraEvents()
 local EnableAuraEvents, DisableAuraEvents
 do

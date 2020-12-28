@@ -25,8 +25,9 @@ local UnitIsGhost = UnitIsGhost
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitIsFeignDeath = UnitIsFeignDeath
 local UnitHealthMax = UnitHealthMax
+local UnitExists = UnitExists
 local C_Timer_After = C_Timer.After
-local unit_is_valid = Grid2.unit_is_valid
+local unit_is_valid = Grid2.roster_guids
 
 -- Caches
 local heals_enabled = false
@@ -189,7 +190,11 @@ end
 -- health-current status
 HealthCurrent.OnEnable  = Health_Enable
 HealthCurrent.OnDisable = Health_Disable
-HealthCurrent.IsActive  = Grid2.statusLibrary.IsActive
+-- HealthCurrent.IsActive  = Grid2.statusLibrary.IsActive
+
+function HealthCurrent:IsActive(unit)
+	return UnitExists(unit)
+end
 
 function HealthCurrent_GetPercent(self,unit)
 	local m = UnitHealthMax(unit)
@@ -253,11 +258,11 @@ HealthLow.OnDisable = Health_Disable
 HealthLow.GetColor  = Grid2.statusLibrary.GetColor
 
 function HealthLow:IsActive1(unit)
-	return HealthCurrent:GetPercent(unit) < self.dbx.threshold
+	return UnitExists(unit) and HealthCurrent:GetPercent(unit) < self.dbx.threshold
 end
 
 function HealthLow:IsActive2(unit)
-	return UnitHealth(unit) < self.dbx.threshold
+	return UnitExists(unit) and UnitHealth(unit) < self.dbx.threshold
 end
 
 function HealthLow:UpdateDB()
@@ -371,11 +376,11 @@ HealthDeficit.GetText = HealthDeficit.GetText1
 
 function HealthDeficit:GetPercent1(unit)
 	local m = UnitHealthMax(unit)
-	return m == 0 and 1 or ( m - UnitHealth(unit) ) / m
+	return m == 0 and 0 or ( m - UnitHealth(unit) ) / m
 end
 function HealthDeficit:GetPercent2(unit)
 	local m = UnitHealthMax(unit)
-	return m == 0 and 1 or max( ( m - UnitHealth(unit) - heals_cache[unit] ) / m, 0)
+	return m == 0 and 0 or max( ( m - UnitHealth(unit) - heals_cache[unit] ) / m, 0)
 end
 HealthDeficit.GetPercent = HealthDeficit.GetPercent1
 
