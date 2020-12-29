@@ -39,23 +39,23 @@ end
 local RunSecure
 do
 	local frames = {}
-	local frame = CreateFrame("Frame")
-	frame:Hide()
-	frame:SetScript('OnEvent', function()
-		for frame, func in next(frames) do
-			if frame:IsVisible()then
+	local frameEvent = CreateFrame("Frame")
+	frameEvent:Hide()
+	frameEvent:SetScript('OnEvent', function()
+		for frame, func in next,frames do
+			if frame:IsVisible() then
 				func(frame)
 			end
 		end
 		wipe(frames)
-		frame:UnregisterEvent('PLAYER_REGEN_ENABLED')
+		frameEvent:UnregisterEvent('PLAYER_REGEN_ENABLED')
 	end )
 	function RunSecure(func, self)
 		if (self:GetAttribute("startingIndex") or 1)<=0 then
 			return -- hackish, ignore frames precreation trick because is only necessary in blizzard secure group frames
 		end
 		if InCombatLockdown() then
-			if not next(frames) then frame:RegisterEvent('PLAYER_REGEN_ENABLED') end
+			if not next(frames) then frameEvent:RegisterEvent('PLAYER_REGEN_ENABLED') end
 			frames[self] = func
 			return
 		end
@@ -394,9 +394,7 @@ local function DisplayButtons(self, unitTable)
 		unitButton:ClearAllPoints()
 		if buttonNum==1 then
 			unitButton:SetPoint(point, curAnchor, point, 0, 0)
-			if colAnchorPoint then
-				unitButton:SetPoint(colAnchorPoint, curAnchor, colAnchorPoint, 0, 0)
-			end
+			if colAnchorPoint then unitButton:SetPoint(colAnchorPoint, curAnchor, colAnchorPoint, 0, 0) end
 		elseif colUnitCount==1 then
 			unitButton:SetPoint(colAnchorPoint, self[buttonNum-unitsPerColumn], colRelPoint, colxMult*colSpacing, colyMult*colSpacing)
 		else

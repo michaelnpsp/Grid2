@@ -295,7 +295,7 @@ end
 -- We delay UpdateSize() call to avoid calculating the wrong window size, because when "Grid_UpdateLayoutSize"
 -- message is triggered the blizzard code has not yet updated the size of the secure group headers.
 function Grid2Layout:Grid_UpdateLayoutSize()
-	Grid2:RunThrottled(self, "UpdateSize", 0.05)
+	Grid2:RunThrottled(self, "UpdateSize", 0.01)
 end
 
 function Grid2Layout:PetBattleTransition(event)
@@ -592,9 +592,8 @@ function Grid2Layout:LoadHeaderFilter(header)
 		wipe(nameListTable)
 		local filter  = header.tokenFilter
 		local strict  = header:GetAttribute("strictFiltering")
-		local _,count = Grid2:GetNonPetUnits()
-		for index=1,count do
-			local unit, name, class, group, role1, role2 = Grid2:GetRosterInfoByIndex(index)
+		for unit in Grid2:IterateGroupedUnits() do
+			local name, class, group, role1, role2 = Grid2:GetRosterInfo(unit)
 			if nameList[name] and (
 				(     strict  and  filter[group] and (filter[role1] or filter[role2]) ) or
 				( not strict  and (filter[group] or   filter[role1] or filter[role2]) )

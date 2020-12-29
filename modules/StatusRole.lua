@@ -68,7 +68,7 @@ function Role:UpdateActiveUnits()
 end
 
 function Role:Grid_RosterUpdate(event)
-	for unit in Grid2:IteratePlayerUnits() do
+	for unit in Grid2:IterateGroupedPlayers() do
 		local index, role = raid_indexes[unit]
 		if index then
 			role = select(10,GetRaidRosterInfo(index))
@@ -156,7 +156,7 @@ end
 
 function Assistant:Grid_RosterUpdate(event)
 	if IsInRaid() then
-		for unit in Grid2:IteratePlayerUnits() do
+		for unit in Grid2:IterateGroupedPlayers() do
 			local index = raid_indexes[unit]
 			if index then
 				local name, rank = GetRaidRosterInfo(index)
@@ -234,7 +234,7 @@ function Leader:UpdateLeader(event)
 end
 
 function Leader:CalculateLeader()
-	for unit in Grid2:IteratePlayerUnits() do
+	for unit in Grid2:IterateGroupedPlayers() do
 		if UnitIsGroupLeader(unit) then
 			return unit
 		end

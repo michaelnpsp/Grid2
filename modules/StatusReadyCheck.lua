@@ -14,19 +14,18 @@ local readyStatuses = {}
 function ReadyCheck:ClearStatusDelayed()
 	readyCount = readyCount + 1
 	local timerIndex = readyCount
-	C_Timer.After( self.dbx.threshold or 0.01, function() 
+	C_Timer.After( self.dbx.threshold or 0.01, function()
 		if timerIndex==readyCount then -- do nothing if a new timer or readycheck was launched
 			readyChecking = nil
 			wipe(readyStatuses)
 			self:UpdatePlayerUnits()
-		end 
-	end ) 
+		end
+	end )
 end
 
 function ReadyCheck:UpdatePlayerUnits()
-	local units, count = Grid2:GetNonPetUnits()
-	for i=1,count do
-		self:UpdateIndicators(units[i])
+	for unit in Grid2:IterateGroupedPlayers() do
+		self:UpdateIndicators(unit)
 	end
 end
 
@@ -37,9 +36,9 @@ function ReadyCheck:READY_CHECK()
 end
 
 function ReadyCheck:READY_CHECK_CONFIRM(_, unit)
-	-- warning do not remove the line below (without this line Icons indicator fails for the last player because it delays the update 
-	-- to the next frame OnUpdate() when ReadyCheck has already finished and GetReadyCheckStatus() inside GetIcon() or GetText() returns nil 
-	readyStatuses[unit] = GetReadyCheckStatus(unit) 
+	-- warning do not remove the line below (without this line Icons indicator fails for the last player because it delays the update
+	-- to the next frame OnUpdate() when ReadyCheck has already finished and GetReadyCheckStatus() inside GetIcon() or GetText() returns nil
+	readyStatuses[unit] = GetReadyCheckStatus(unit)
 	self:UpdateIndicators(unit)
 end
 
@@ -67,7 +66,7 @@ function ReadyCheck:OnDisable()
 	self:UnregisterEvent("READY_CHECK_FINISHED")
 	self:UnregisterMessage("Grid_UnitUpdated")
 	wipe(readyStatuses)
-	readyCount = readyCount + 1	
+	readyCount = readyCount + 1
 	readyChecking = nil
 end
 

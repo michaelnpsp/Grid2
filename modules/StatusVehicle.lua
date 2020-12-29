@@ -24,7 +24,7 @@ function Vehicle:OnDisable()
 end
 
 function Vehicle:IsActive(unit)
-	local owner = Grid2:GetOwnerUnitByUnit(unit)
+	local owner = Grid2:GetOwnerOfUnit(unit)
 	if owner and UnitHasVehicleUI(owner) then
 		return true
 	else
@@ -38,7 +38,7 @@ end
 
 local text = L["vehicle"]
 function Vehicle:GetText(unit)
-	local owner = Grid2:GetOwnerUnitByUnit(unit)
+	local owner = Grid2:GetOwnerOfUnit(unit)
 	if owner and UnitHasVehicleUI(owner) then
 		return UnitName(owner)
 	else

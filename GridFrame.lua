@@ -371,7 +371,7 @@ function Grid2Frame:UNIT_ENTERED_VEHICLE(_, unit)
 end
 
 function Grid2Frame:UNIT_EXITED_VEHICLE(_, unit)
-	local pet = Grid2:GetPetUnitByUnit(unit) or unit
+	local pet = Grid2:GetPetOfUnit(unit) or unit
 	for frame in next, Grid2:GetUnitFrames(pet) do
 		local old, new = frame.unit, SecureButton_GetModifiedUnit(frame)
 		if old ~= new then

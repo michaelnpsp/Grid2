@@ -10,29 +10,37 @@ local UnitGUID = UnitGUID
 local UnitClass = UnitClass
 local UnitExists = UnitExists
 local GetNumGroupMembers = GetNumGroupMembers
+local GetRaidRosterInfo = GetRaidRosterInfo
+local GetPartyAssignment = GetPartyAssignment
+local UnitGroupRolesAssigned = UnitGroupRolesAssigned or (function() return 'NONE' end)
 local isClassic = Grid2.isClassic
 
--- roster tables
+-- helper tables to check units types/categories
+local party_indexes   = {} -- player=>0, party1=>1, ..
+local raid_indexes    = {} -- raid1=>1, raid2=>2, ..
+local pet_of_unit     = {} -- party1=>partypet1, raid3=>raidpet3, arena1=>arenapet1, ..
+local owner_of_unit   = {} -- partypet1=>party1, raidpet3=>raid3, arenapet1=>arena1, ..
+local grouped_players = {} -- party1=>1, raid1=>1 ; only party/raid player/owner units
+local grouped_pets    = {} -- partypet1=>!, raidpet2=>1 ; only party/raid pet units
 local roster_my_units = { player = true, pet = true, vehicle = true }
-local roster_names    = {} -- raid1     => name, ...
-local roster_realms   = {} -- raid1     => realm, ...
-local roster_guids    = {} -- raid1     => guid, ...
-local roster_players  = {} -- raid1     => guid ; only non pet units
-local roster_pets     = {} -- raidpet1  => guid ; only pet units
-local pet_of_unit     = {} -- party1    => partypet1, raid3    => raidpet3,...
-local owner_of_unit   = {} -- partypet1 => party1,    raidpet3 => raid3,...
-local party_indexes   = {} -- player    => 0, party1 => 1,...
-local raid_indexes    = {} -- raid1     => 1, raid2  => 2,...
-local arena_indexes   = {} -- arena1    => 1, arena2 => 2,...
-local roster_units    = {} -- guid      => raid1, ...
+-- roster tables / store only existing units
+local roster_names    = {} -- raid1=>name, ..
+local roster_realms   = {} -- raid1=>realm,..
+local roster_guids    = {} -- raid1=>guid,..
+local roster_players  = {} -- raid1=>guid ;only non pet units in group/raid
+local roster_pets     = {} -- raidpet1=>guid ;only pet units in group/raid
+local roster_units    = {} -- guid=>raid1, ..
 
 -- populate unit tables
 do
 	local function register_unit(unit, pet, index, indexes)
 		pet_of_unit[unit] = pet
 		owner_of_unit[pet] = unit
-		indexes[unit] = index
+		if index then
+			indexes[unit], grouped_players[unit], grouped_pets[pet] = index, index, index
+		end
 	end
+	register_unit( "player", "pet", 0, party_indexes )
 	for i = 1, MAX_PARTY_MEMBERS do
 		register_unit( ("party%d"):format(i), ("partypet%d"):format(i), i, party_indexes )
 	end
@@ -40,15 +48,13 @@ do
 		register_unit( ("raid%d"):format(i), ("raidpet%d"):format(i), i, raid_indexes )
 	end
 	for i= 1, 5 do
-		register_unit( ("arena%d"):format(i), ("arenapet%d"):format(i), i, arena_indexes )
+		register_unit( ("arena%d"):format(i), ("arenapet%d"):format(i) )
 	end
-	register_unit( "player", "pet", 0, party_indexes )
 end
 
 -- roster management
 do
-	-- flag to track if roster contains unknown units, workaround to blizzard bug (see ticket #628)
-	local roster_unknowns
+	local roster_unknowns -- flag to track if roster contains unknown units, workaround for blizzard bug (see ticket #628)
 
 	local function UpdateUnit(unit)
 		local modified
@@ -91,26 +97,28 @@ do
 		roster_names[unit]  = name
 		roster_realms[unit] = realm
 		roster_guids[unit]  = guid
-		if pet_of_unit[unit] then
+		if grouped_players[unit] then
 			roster_units[guid] = unit
 			roster_players[unit] = guid
-		elseif owner_of_unit[unit] then
+		elseif grouped_pets[unit] then
 			roster_units[guid] = unit
 			roster_pets[unit] = guid
 		end
 		Grid2:SendMessage("Grid_UnitUpdated", unit)
+		print("+++Add:", unit, name)
 	end
 
 	local function DelUnit(unit)
+		print("---Del:", unit, roster_names[unit])
+		local guid = roster_guids[unit]
 		roster_names[unit]  = nil
 		roster_realms[unit] = nil
 		roster_guids[unit]  = nil
-		if owner_of_unit[unit] then
-			roster_pets[unit] = nil
-		else
+		if grouped_players[unit] then
 			roster_players[unit] = nil
+		elseif grouped_pets[unit] then
+			roster_pets[unit] = nil
 		end
-		local guid = roster_guids[unit]
 		if unit == roster_units[guid] then
 			roster_units[guid] = nil
 		end
@@ -119,31 +127,47 @@ do
 
 	function Grid2:UNIT_NAME_UPDATE(_, unit)
 		print("*UNIT_NAME_UPDATE", unit, (UnitName(unit)), roster_names[unit] )
-		self:RosterRefreshUnit(unit)
-		self:UpdateFramesOfUnit(unit)
+		if roster_guids[unit] then
+			UpdateUnit(unit)
+			self:UpdateFramesOfUnit(unit)
+		end
 	end
 
 	function Grid2:UNIT_PET(_, owner)
 		local unit = pet_of_unit[owner]
-		if UnitExists(unit) then
-			self:RosterRefreshUnit(unit)
+		print("*UNIT_PET", owner, unit)
+		if roster_guids[unit] then
+			UpdateUnit(unit)
 			self:UpdateFramesOfUnit(unit)
 		end
 	end
-	-- Grid2Frame:OnUnitStateChanged() and Grid2Frame:OnAttributeChanged() manage units roster joins/leaves
-	-- so we only need to take care of changes on units names/guids here.
-	function Grid2:UpdateRoster()
-		roster_unknowns = false
-		for unit in next, roster_guids do
-			if UnitExists(unit) and UpdateUnit(unit) then
-				print("Updating unit:", unit, UnitName(unit) )
-				self:UpdateFramesOfUnit(unit)
+	-- Called from Grid2Frame:OnUnitStateChanged() to maintain roster up to date, only Special headers trigger this callback.
+	function Grid2:RosterRefreshUnit(unit)
+		if UnitExists(unit) then
+			if roster_guids[unit] then
+				UpdateUnit(unit)
+			else
+				AddUnit(unit)
 			end
+		elseif roster_guids[unit] then
+			DelUnit(unit)
 		end
-		self:SendMessage("Grid_RosterUpdate", roster_unknowns)
-		if roster_unknowns then
-			print(">>>>>>>>>>>> Roster has Unknowns !!!!!!")
+	end
+	-- Called from Grid2Frame:OnAttributeChanged() to maintain roster up to date.
+	function Grid2:RosterRegisterUnit(unit)
+		if UnitExists(unit) and not roster_guids[unit] then
+			AddUnit(unit)
 		end
+	end
+	-- Called from Grid2Frame:OnAttributeChanged() to maintain roster up to date.
+	function Grid2:RosterUnregisterUnit(unit)
+		if roster_guids[unit] then
+			DelUnit(unit)
+		end
+	end
+	-- Workaround for blizzard bug (see ticket #628)
+	function Grid2:RosterHasUnknowns()
+		return roster_unknowns
 	end
 	-- We delay roster updates to the next frame Update, to ensure all GROUP_ROSTER_UPDATE group headers events were already
 	-- processed, in this way roster is up to date: non-existant units already removed from roster when UpdateRoster() is executed.
@@ -156,33 +180,21 @@ do
 			frameThrottling:Show()
 		end
 	end
-	-- Called from Grid2Frame:OnUnitStateChanged() to maintain roster up to date, only Special headers trigger this callback.
-	function Grid2:RosterRefreshUnit(unit)
-		if UnitExists(unit) then
-			if roster_names[unit] then
-				UpdateUnit(unit)
-			else
-				AddUnit(unit)
+	-- GROUP_ROSTER_UPDATE => Grid2:GroupChanged() => Grid2:QueueUpdateRoster() => Grid2:UpdateRoster()
+	-- Grid2Frame:OnUnitStateChanged() and Grid2Frame:OnAttributeChanged() process units roster joins&leaves
+	-- so we only need to track changes on units names/guids here.
+	function Grid2:UpdateRoster()
+		roster_unknowns = false
+		for unit in next, roster_guids do
+			if UnitExists(unit) and UpdateUnit(unit) then
+				print("Updating unit:", unit, UnitName(unit) )
+				self:UpdateFramesOfUnit(unit)
 			end
-		elseif roster_names[unit] then
-			DelUnit(unit)
 		end
-	end
-	-- Called from Grid2Frame:OnAttributeChanged() to maintain roster up to date.
-	function Grid2:RosterRegisterUnit(unit)
-		if UnitExists(unit) and not roster_names[unit] then
-			AddUnit(unit)
+		self:SendMessage("Grid_RosterUpdate", roster_unknowns)
+		if roster_unknowns then
+			print(">>>>>>>>>>>> Roster has Unknowns !!!!!!")
 		end
-	end
-	-- Called from Grid2Frame:OnAttributeChanged() to maintain roster up to date.
-	function Grid2:RosterUnregisterUnit(unit)
-		if roster_names[unit] then
-			DelUnit(unit)
-		end
-	end
-	-- Workaround for blizzard bug (see ticket #628)
-	function Grid2:RosterHasUnknowns()
-		return roster_unknowns
 	end
 end
 
@@ -279,58 +291,74 @@ do
 	end
 end
 
---{{ Public variables and methods to be used by statuses
-function Grid2:GetUnitByGUID(guid)
+--{{ Public variables and methods used by some statuses
+function Grid2:GetRosterInfo(unit)
+	local index, name, group, class, role1, role2, _ = raid_indexes[unit]
+	if index then
+		name, _, group, _, _, class, _, _, _, role1, _, role2 = GetRaidRosterInfo(index)
+	else
+		name = UnitName(unit)
+		if name then
+			group = 1
+			_, class = UnitClass(unit)
+			role1 = (GetPartyAssignment("MAINTANK",unit) and "MAINTANK") or (GetPartyAssignment("MAINASSIST",unit) and "MAINASSIST")
+			role2 = UnitGroupRolesAssigned(unit)
+		end
+	end
+	return name, class, group, role1, role2
+end
+
+function Grid2:GetUnitOfGUID(guid) -- only party/raid units
 	return roster_units[guid]
 end
 
-function Grid2:IsGUIDInRaid(guid)
+function Grid2:IsGUIDInRaid(guid) -- only party/raid units
 	return roster_units[guid]
 end
 
-function Grid2:GetPetUnitByUnit(unit)
+function Grid2:GetPetOfUnit(unit) -- pet unit of a owner unit
 	return pet_of_unit[unit]
 end
 
-function Grid2:GetOwnerUnitByUnit(unit)
+function Grid2:GetOwnerOfUnit(unit) -- owner unit of a pet unit
 	return owner_of_unit[unit]
 end
 
-function Grid2:IsUnitInRaid(unit)
+function Grid2:IsUnitInRaid(unit) -- raid/party units
 	return roster_guids[unit]
 end
 
-function Grid2:IsUnitNoPetInRaid(unit)
-	return roster_guids[unit] and pet_of_unit[unit]
+function Grid2:IsPlayerInRaid(unit) -- non-pet raid/party units
+	return roster_players[unit]
 end
 
-function Grid2:UnitIsPet(unit)
+function Grid2:UnitIsPet(unit) -- only valid for raid/party/arena units, not pets in target/focus.
 	return owner_of_unit[unit]
 end
 
-function Grid2:IterateRoster()
+function Grid2:IterateRosterGUIDs() -- guid=>unit, only guids/units in party/raid
 	return next, roster_units
 end
 
-function Grid2:IterateRosterUnits()
+function Grid2:IterateRosterUnits() -- unit=>guid, all units: player/pet/partyN/raidN/arenaM/bossN/target/focus
 	return next, roster_guids
 end
 
-function Grid2:IteratePlayerUnits()
+function Grid2:IterateGroupedPlayers() -- grouped units: player/partyN/raidN
 	return next, roster_players
 end
 
-function Grid2:IteratePetUnits()
+function Grid2:IterateGroupedPets() -- grouped units's pets: pet/partypetN/raidpetN
 	return next, roster_pets
 end
 
 Grid2.roster_guids    = roster_guids
+Grid2.roster_units    = roster_units
 Grid2.roster_players  = roster_players
 Grid2.roster_pets     = roster_pets
-Grid2.roster_units    = roster_units
+Grid2.roster_names    = roster_names
 Grid2.owner_of_unit   = owner_of_unit
 Grid2.roster_my_units = roster_my_units
 Grid2.raid_indexes    = raid_indexes
 Grid2.party_indexes   = party_indexes
-Grid2.arena_indexes   = arena_indexes
 --}}
