@@ -540,10 +540,18 @@ do
 		SetRegisterEvent( self, normalUnits,'GROUP_ROSTER_UPDATE' )
 	end
 
+	local function ApplySpecialFilter(self)
+		wipe(srtTable)
+		local unitsFilter = self:GetAttribute('unitsFilter')
+		if unitsFilter then
+			fillArrayTable( srtTable, strsplit(",",unitsFilter) )
+		end
+	end
+
 	-- update header
 	local function Update(self)
 		if RunSecure(Update, self) then
-			fillArrayTable( wipe(srtTable), strsplit(",", self:GetAttribute('unitsFilter')) )
+			ApplySpecialFilter( self )
 			DisplayButtons( self, srtTable )
 			RegisterEvents( self, srtTable )
 		end

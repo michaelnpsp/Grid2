@@ -20,6 +20,7 @@ local party_indexes   = {} -- player=>0, party1=>1, ..
 local raid_indexes    = {} -- raid1=>1, raid2=>2, ..
 local pet_of_unit     = {} -- party1=>partypet1, raid3=>raidpet3, arena1=>arenapet1, ..
 local owner_of_unit   = {} -- partypet1=>party1, raidpet3=>raid3, arenapet1=>arena1, ..
+local grouped_units   = {} -- party1=>1, raid1=>1 ; units in party or raid
 local grouped_players = {} -- party1=>1, raid1=>1 ; only party/raid player/owner units
 local grouped_pets    = {} -- partypet1=>!, raidpet2=>1 ; only party/raid pet units
 local roster_my_units = { player = true, pet = true, vehicle = true }
@@ -37,7 +38,7 @@ do
 		pet_of_unit[unit] = pet
 		owner_of_unit[pet] = unit
 		if index then
-			indexes[unit], grouped_players[unit], grouped_pets[pet] = index, index, index
+			indexes[unit], grouped_units[unit], grouped_players[unit], grouped_pets[pet] = index, index, index, index
 		end
 	end
 	register_unit( "player", "pet", 0, party_indexes )
@@ -55,6 +56,7 @@ end
 -- roster management
 do
 	local roster_unknowns -- flag to track if roster contains unknown units, workaround for blizzard bug (see ticket #628)
+	local frames_of_unit = Grid2.frames_of_unit
 
 	local function UpdateUnit(unit)
 		local modified
@@ -73,7 +75,6 @@ do
 		local name, realm = UnitName(unit)
 		if name == UNKNOWNOBJECT then
 			roster_unknowns = true
-			print("***UNKNOWN Unit:", unit, name)
 		end
 		if name ~= roster_names[unit] then
 			roster_names[unit] = name
@@ -105,11 +106,9 @@ do
 			roster_pets[unit] = guid
 		end
 		Grid2:SendMessage("Grid_UnitUpdated", unit)
-		print("+++Add:", unit, name)
 	end
 
 	local function DelUnit(unit)
-		print("---Del:", unit, roster_names[unit])
 		local guid = roster_guids[unit]
 		roster_names[unit]  = nil
 		roster_realms[unit] = nil
@@ -126,7 +125,6 @@ do
 	end
 
 	function Grid2:UNIT_NAME_UPDATE(_, unit)
-		print("*UNIT_NAME_UPDATE", unit, (UnitName(unit)), roster_names[unit] )
 		if roster_guids[unit] then
 			UpdateUnit(unit)
 			self:UpdateFramesOfUnit(unit)
@@ -135,13 +133,12 @@ do
 
 	function Grid2:UNIT_PET(_, owner)
 		local unit = pet_of_unit[owner]
-		print("*UNIT_PET", owner, unit)
 		if roster_guids[unit] then
 			UpdateUnit(unit)
 			self:UpdateFramesOfUnit(unit)
 		end
 	end
-	-- Called from Grid2Frame:OnUnitStateChanged() to maintain roster up to date, only Special headers trigger this callback.
+	-- Called from Grid2Frame:OnUnitStateChanged() to maintain roster up to date, this callback is only fired by Special headers.
 	function Grid2:RosterRefreshUnit(unit)
 		if UnitExists(unit) then
 			if roster_guids[unit] then
@@ -187,14 +184,10 @@ do
 		roster_unknowns = false
 		for unit in next, roster_guids do
 			if UnitExists(unit) and UpdateUnit(unit) then
-				print("Updating unit:", unit, UnitName(unit) )
 				self:UpdateFramesOfUnit(unit)
 			end
 		end
 		self:SendMessage("Grid_RosterUpdate", roster_unknowns)
-		if roster_unknowns then
-			print(">>>>>>>>>>>> Roster has Unknowns !!!!!!")
-		end
 	end
 end
 
@@ -359,6 +352,7 @@ Grid2.roster_pets     = roster_pets
 Grid2.roster_names    = roster_names
 Grid2.owner_of_unit   = owner_of_unit
 Grid2.roster_my_units = roster_my_units
+Grid2.grouped_units   = grouped_units
 Grid2.raid_indexes    = raid_indexes
 Grid2.party_indexes   = party_indexes
 --}}

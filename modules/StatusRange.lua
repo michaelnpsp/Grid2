@@ -9,56 +9,78 @@ local tonumber = tonumber
 local tostring = tostring
 local UnitIsUnit = UnitIsUnit
 local UnitInRange = UnitInRange
+local UnitCanAttack = UnitCanAttack
+local UnitCanAssist = UnitCanAssist
 local IsSpellInRange = IsSpellInRange
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local CheckInteractDistance = CheckInteractDistance
 
 local timer
-
+local curAlpha
+local curRange
+local UnitRangeCheck
 local cache = {}
+local playerClass = select(2, UnitClass("player"))
+local grouped_units = Grid2.grouped_units
+
+local rezSpell = ({
+		DRUID       = 20484,
+		PRIEST      = 2006,
+		PALADIN     = 7328,
+		SHAMAN      = 2008,
+		MONK        = 115178,
+		DEATHKNIGHT = 61999,
+		WARLOCK     = 20707
+	})[playerClass]
+
+local rangeSpellID = (Grid2.isClassic and {
+		DRUID   = 774,
+		PALADIN = 19750,
+		SHAMAN  = 25357,
+		PRIEST  = 2050
+	} or {
+		DRUID   = 774,
+		PALADIN = 19750,
+		SHAMAN  = 77472,
+		PRIEST  = 73325,
+		MONK    = 115450
+	})[playerClass]
+
+local rangeSpell = GetSpellInfo(rangeSpellID or 0)
 
 local Ranges= {
-	["10"] = function(unit) return CheckInteractDistance(unit,3) end,
-	["28"] = function(unit) return CheckInteractDistance(unit,4) end,
-	["38"] = UnitInRange,
-	["99"] = UnitIsVisible,
-}
-local UnitRangeCheck
-local UnitIsInRange
-
-local playerClass = select(2, UnitClass("player"))
-
-local rangeSpell
-local rangeSpellID
-
-if Grid2.isClassic then
-	rangeSpellID = ({PALADIN=19750,SHAMAN=25357,DRUID=774,PRIEST=2050})[playerClass]
-else
-	rangeSpellID = ({PALADIN=19750,SHAMAN=77472,DRUID=774,PRIEST=73325,MONK=115450})[playerClass]
-end
-
-if rangeSpellID then
-	rangeSpell = GetSpellInfo(rangeSpellID)
-	Ranges[ rangeSpell ] = function(unit) return IsSpellInRange(rangeSpell, unit) == 1 end
-end
-
-local rezSpell = ({DRUID=20484,PRIEST=2006,PALADIN=7328,SHAMAN=2008,MONK=115178,DEATHKNIGHT=61999,WARLOCK=20707})[playerClass]
-if rezSpell then
-	rezSpell = GetSpellInfo(rezSpell)
-	UnitIsInRange = function(unit)
-		if UnitIsDeadOrGhost(unit) then
-			return UnitIsUnit(unit,"player") or IsSpellInRange(rezSpell,unit) == 1
+	[99] = UnitIsVisible,
+	[10] = function(unit)
+		return CheckInteractDistance(unit,3)
+	end,
+	[28] = function(unit)
+		return CheckInteractDistance(unit,4)
+	end,
+	[38] = function(unit)
+		if grouped_units[unit] then
+			return unit=='player' or UnitInRange(unit)
 		else
-			return UnitRangeCheck(unit)
+			return CheckInteractDistance(unit,4) -- 28 yards for non grouped units: target/focus/bossX
 		end
-	end
-end
-
--- Roster ranges update function
+	end,
+	["heal"] = function(unit)
+		if UnitCanAssist("player", unit) then
+			if UnitIsUnit(unit,'player') then
+				return true
+			elseif UnitIsDeadOrGhost(unit) then
+				return IsSpellInRange(rezSpell, unit)==1
+			else
+				return IsSpellInRange(rangeSpell, unit)==1
+			end
+		elseif UnitCanAttack("player", unit) then
+			return CheckInteractDistance(unit,4) -- 28y for enemies
+		end
+	end,
+}
 
 local function Update()
 	for unit in Grid2:IterateRosterUnits() do
-		local value = UnitIsInRange(unit) and 1 or false
+		local value = UnitRangeCheck(unit) and 1 or false
 		if value ~= cache[unit] then
 			cache[unit] = value
 			Range:UpdateIndicators(unit)
@@ -66,39 +88,6 @@ local function Update()
 	end
 end
 
--- Range status
-
-function Range:OnEnable()
-	self:UpdateDB()
-	self:RegisterMessage("Grid_UnitUpdated")
-	self:RegisterMessage("Grid_UnitLeft")
-	self:RegisterMessage("Grid_GroupTypeChanged")
-	self:RegisterMessage("Grid_PlayerSpecChanged")
-	timer:Play()
-end
-
-function Range:OnDisable()
-	self:UnregisterMessage("Grid_UnitUpdated")
-	self:UnregisterMessage("Grid_UnitLeft")
-	self:UnregisterMessage("Grid_GroupTypeChanged")
-	self:UnregisterMessage("Grid_PlayerSpecChanged")
-	timer:Stop()
-end
-
--- {{ Workaround for WoW 5.0.4 UnitInRange() bug (returns false for player&pet while solo or in arena)
-local Ranges38 = {
-	solo  = function() return true end,
-	arena = function(unit) return UnitIsUnit(unit,"player") or UnitInRange(unit) end
-}
-function Range:Grid_GroupTypeChanged(_, groupType)
-	if self.range == "38" then
-		self:UpdateDB()
-	end
-end
--- }}
-
--- If the range configured is a Heal Spell, when changing spec the heal spell could not be available
--- in this case we fall back to the standard 38 yards range.
 function Range:Grid_PlayerSpecChanged()
 	if not tonumber(self.dbx.range) then -- If is not a number -> Using RangeSpell for the player class if available
 		self:UpdateDB()
@@ -106,11 +95,38 @@ function Range:Grid_PlayerSpecChanged()
 end
 
 function Range:Grid_UnitUpdated(_, unit)
-	cache[unit] = UnitIsInRange(unit) and 1 or false
+	cache[unit] = UnitRangeCheck(unit) and 1 or false
 end
 
 function Range:Grid_UnitLeft(_, unit)
 	cache[unit] = nil
+end
+
+function Range:GetPercent(unit)
+	return cache[unit] or curAlpha
+end
+
+function Range:GetRanges()
+	return Ranges, curRange
+end
+
+function Range:IsActive(unit)
+	return not cache[unit]
+end
+
+function Range:OnEnable()
+	self:UpdateDB()
+	self:RegisterMessage("Grid_UnitUpdated")
+	self:RegisterMessage("Grid_UnitLeft")
+	self:RegisterMessage("Grid_PlayerSpecChanged")
+	timer:Play()
+end
+
+function Range:OnDisable()
+	self:UnregisterMessage("Grid_UnitUpdated")
+	self:UnregisterMessage("Grid_UnitLeft")
+	self:UnregisterMessage("Grid_PlayerSpecChanged")
+	timer:Stop()
 end
 
 -- Due to ancient code, configuration can store a heal spell name in status.dbx.range (Rejuv, Healing wave, etc), but this prevents
@@ -118,31 +134,11 @@ end
 -- So we check if status.dbx.range stores a heal spell name (the value is not a number), and in this case the code loads the correct
 -- heal spell for the class (precalculated in rangeSpell variable) instead of the heal spell stored in config.
 function Range:UpdateDB()
-	Ranges["38"] = Ranges38[ Grid2:GetGroupType() ] or UnitInRange
-	self.defaultAlpha = self.dbx.default or 0.25
-	self.range = tonumber(self.dbx.range) and tostring(self.dbx.range) or (rangeSpellID and IsSpellKnown(rangeSpellID) and rangeSpell)
-	UnitRangeCheck = Ranges[self.range]
-	if not UnitRangeCheck then
-		self.range = "38"
-		UnitRangeCheck = Ranges["38"]
-	end
-	if not rezSpell then
-		UnitIsInRange = UnitRangeCheck
-	end
+	curAlpha = self.dbx.default or 0.25
+	curRange = tonumber(self.dbx.range) or (rangeSpellID and IsSpellKnown(rangeSpellID) and 'heal') or 38
+	UnitRangeCheck = Ranges[curRange] or Ranges[38]
 	timer = timer or Grid2:CreateTimer( Update )
 	timer:SetDuration(self.dbx.elapsed or 0.25)
-end
-
-function Range:GetPercent(unit)
-	return cache[unit] or self.defaultAlpha
-end
-
-function Range:GetRanges()
-	return Ranges, rangeSpell
-end
-
-function Range:IsActive(unit)
-	return not cache[unit]
 end
 
 Range.GetColor = Grid2.statusLibrary.GetColor
@@ -154,4 +150,4 @@ end
 
 Grid2.setupFunc["range"] = Create
 
-Grid2:DbSetStatusDefaultValue( "range", {type = "range", color1 = {r=1, g=0, b=0, a=1}, range= 38, default = 0.25, elapsed = 0.5})
+Grid2:DbSetStatusDefaultValue( "range", {type = "range", color1 = {r=1, g=0, b=0, a=1}, range=38, default = 0.25, elapsed = 0.5})

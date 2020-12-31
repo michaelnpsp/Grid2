@@ -72,17 +72,24 @@ local HeaderAttributes = {
 	"startingIndex", "columnSpacing", "columnAnchorPoint",
 	"useOwnerUnit", "filterOnPet", "unitsuffix", "sortMethod",
 	"toggleForVehicle", "showSolo", "showPlayer", "showParty", "showRaid",
-	"hideEmptyUnits"
+	"hideEmptyUnits", 'unitsFilter'
 }
 
 function GridLayoutHeaderClass.prototype:Reset()
+	-- Hide the header before initializing attributes to avoid a lot of unnecesary SecureGroupHeader_Update() calls
 	self:Hide()
+	-- SecureGroupFrames code does not correctly resets all the buttons, we need to do it manually because
+	-- Grid2Frame relies on :OnAttributeChanged() event to add/delete units in roster and unit_frames tables.
+	for _,uframe in ipairs(self) do
+		if uframe.unit==nil then break end
+		uframe:SetAttribute("unit", nil)
+	end
+	-- Initialize attributes
+	self.tokenNames, self.tokenFilter = nil, nil
 	local defaults = Grid2Layout.customDefaults
 	for _, attr in ipairs(HeaderAttributes) do
 		self:SetAttribute(attr, defaults[attr] or nil  )
 	end
-	self.tokenNames  = nil
-	self.tokenFilter = nil
 end
 
 local anchorPoints = {
@@ -445,7 +452,11 @@ function Grid2Layout:RefreshLayout()
 	self:ReloadLayout(true)
 end
 
+-- If player does not exist (this can happen just before a load screen when changing instances if layout load is delayed by RunSecure()
+-- due to combat restrictions) we cannot setup SecureGroupHeaders so we ignore the layout change, anyway the layour will be reloaded
+-- on PLAYER_ENTERING_WORLD event when the load screen finish. See Ticket #923.
 function Grid2Layout:ReloadLayout(force)
+	if not UnitExists('player') then self:Debug("ReloadLayout Ignored because player unit does not exist"); return end
 	local p = self.db.profile
 	local partyType, instType, maxPlayers = Grid2:GetGroupType()
 	local layoutName = p.layouts[maxPlayers] or p.layouts[partyType.."@"..instType] or p.layouts[partyType]

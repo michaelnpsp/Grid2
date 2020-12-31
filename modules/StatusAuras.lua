@@ -2,6 +2,7 @@
 local Grid2 = Grid2
 local type = type
 local next = next
+local rawget = rawget
 local GetTime = GetTime
 local UnitAura = UnitAura
 local isClassic = Grid2.isClassic
@@ -24,11 +25,9 @@ do
 	local val = {0, 0, 0}
 	local myUnits  = Grid2.roster_my_units
 	local myFrames = Grid2.frames_of_unit
+	local roUnits  = Grid2.roster_guids
 	AuraFrame_OnEvent = function(_, event, u)
-		-- Usually if no frames exists for the unit this function returns and do nothing (we ignore units not displayed by Grid2 like nameplates or units filtered by the active layout)
-		-- except if "event" is nil, in this case we are in a "Grid_UnitUpdated" event and the frames maybe were not created yet, so we need to save the auras states for future use.
-		local frames = myFrames[u]
-		if event and not next(frames) then return end
+		if not roUnits[u] then return end
 		-- Scan Debuffs, Debuff Types, Debuff Groups
 		local i = 1
 		while true do
@@ -97,7 +96,8 @@ do
 			s.seen = false
 		end
 		-- Update indicators that needs updating only once.
-		if frames then
+		if event then
+			local frames = myFrames[u]
 			for indicator in next, indicators do
 				for frame in next, frames do
 					indicator:Update(frame, u)
@@ -108,9 +108,9 @@ do
 	end
 end
 
--- Class filter, for classic only
-local MakeStatusFilter, ClearUnitFilters
-if isClassic then
+
+local UpdateAurasOfUnit, ClearAurasOfUnit, MakeStatusFilter
+if isClassic then -- classic
 	local next = next
 	local UnitClass = UnitClass
 	local filter_mt = {	__index = function(t,u) local _,c = UnitClass(u); local r=t.source[c]; t[u]=r; return r; end }
@@ -126,25 +126,31 @@ if isClassic then
 			status.filtered = nil
 		end
 	end
-	ClearUnitFilters = function(unit)
+	ClearAurasOfUnit = function(_, unit)
 		for status in next, Statuses do
 			local filtered = status.filtered
 			if filtered then filtered[unit] = nil end
+			status.idx[unit], status.exp[unit], status.val[unit] = nil, nil, nil
 		end
+	end
+	UpdateAurasOfUnit = function(_, unit)
+		ClearAurasOfUnit(nil, unit)
+		AuraFrame_OnEvent(nil, nil, unit)
+	end
+else -- retail
+	ClearAurasOfUnit = function(_, unit)
+		for status in next, Statuses do
+			status.idx[unit], status.exp[unit], status.val[unit] = nil, nil, nil
+		end
+	end
+	UpdateAurasOfUnit = function(_, unit)
+		AuraFrame_OnEvent(nil, nil, unit)
 	end
 end
 
--- Passing Statuses instead of nil, because i dont know if nil is valid for RegisterMessage
-Grid2.RegisterMessage( Statuses, "Grid_UnitUpdated", function(_, u)
-	if isClassic then ClearUnitFilters(u) end
-	AuraFrame_OnEvent(nil,nil,u)
-end)
-
-Grid2.RegisterMessage( Statuses, "Grid_UnitLeft", function(_, u) -- TODO, maybe search for another way to clear auras on no existant units.
-	if isClassic then ClearUnitFilters(u) end
-	AuraFrame_OnEvent(nil,nil,u)
-end)
-
+-- update and clear auras when unit changes
+Grid2.RegisterMessage( Statuses, "Grid_UnitUpdated", UpdateAurasOfUnit )
+Grid2.RegisterMessage( Statuses, "Grid_UnitLeft",    ClearAurasOfUnit  )
 
 -- EnableAuraEvents() DisableAuraEvents()
 local EnableAuraEvents, DisableAuraEvents

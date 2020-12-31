@@ -62,20 +62,21 @@ function GridFrameEvents:OnAttributeChanged(name, value)
 		if value then
 			local unit = SecureButton_GetModifiedUnit(self)
 			if old_unit ~= unit then
-				self.unit = unit
 				Grid2Frame:Debug("updated", self:GetName(), name, value, unit)
+				self.unit = unit
 				if not next(frames_of_unit[unit]) then
 					Grid2:RosterRegisterUnit(unit)
 				end
 				Grid2:SetFrameUnit(self, unit)
 				if old_unit and not next(frames_of_unit[old_unit]) then
 					Grid2:RosterUnregisterUnit(old_unit)
+					frames_of_unit[old_unit] = nil
 				end
 				self:UpdateIndicators()
 			end
 		elseif old_unit then
-			self.unit = nil
 			Grid2Frame:Debug("removed", self:GetName(), name, old_unit)
+			self.unit = nil
 			Grid2:SetFrameUnit(self, nil)
 			if not next(frames_of_unit[old_unit]) then
 				Grid2:RosterUnregisterUnit(old_unit)
@@ -84,7 +85,7 @@ function GridFrameEvents:OnAttributeChanged(name, value)
 	end
 end
 
--- Dispatch OnEnter,OnLeave events to other modules
+-- Dispatch OnEnter, OnLeave events to other modules
 local eventHooks = { OnEnter = {}, OnLeave = {} }
 
 function GridFrameEvents:OnEnter()

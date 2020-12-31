@@ -18,7 +18,7 @@ local function UpdateUnit(_, unit)
 		if not UnitIsAFK(unit) then -- only clear cache, afk_cache is already assigned when metatable lookup fails in GetStartTime()
 			afk_cache[ UnitGUID(unit) ] = nil
 		end
-		AFK:UpdateIndicators(unit)		
+		AFK:UpdateIndicators(unit)
 	end
 end
 

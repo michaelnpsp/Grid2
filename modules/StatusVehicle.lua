@@ -5,6 +5,7 @@ local Vehicle = Grid2.statusPrototype:new("vehicle")
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 local Grid2 = Grid2
+local UnitName = UnitName
 local UnitHasVehicleUI = UnitHasVehicleUI
 
 function Vehicle:UpdateUnit(_, unit)

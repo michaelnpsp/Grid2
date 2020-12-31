@@ -61,29 +61,33 @@ Grid2.tooltipFunc['RaidDebuffsCount'] = function(tooltip)
 	end
 end
 
+-- roster units
+local unit_in_roster = Grid2.roster_guids
+
 -- GSRD
 frame:SetScript("OnEvent", function (self, event, unit)
-	if not next(Grid2:GetUnitFrames(unit)) then return end
-	local index = 1
-	while true do
-		local name, te, co, ty, du, ex, ca, _, _, id, _, isBoss = UnitAura(unit, index, 'HARMFUL')
-		if not name then break end
-		local order = spells_order[name]
-		if not order then
-			order, name = spells_order[id], id
-		end
-		if order then
-			spells_status[name]:AddDebuff(order, te, co, ty, du, ex, index)
-		elseif auto_time and (not auto_blacklist[id]) and (ex<=0 or du<=0 or ex-du>=auto_time) then
-			order = GSRD:RegisterNewDebuff(id, ca, te, co, ty, du, ex, isBoss)
-			if order then
-				auto_status:AddDebuff(order, te, co, ty, du, ex, index)
+	if unit_in_roster[unit] then
+		local index = 1
+		while true do
+			local name, te, co, ty, du, ex, ca, _, _, id, _, isBoss = UnitAura(unit, index, 'HARMFUL')
+			if not name then break end
+			local order = spells_order[name]
+			if not order then
+				order, name = spells_order[id], id
 			end
+			if order then
+				spells_status[name]:AddDebuff(order, te, co, ty, du, ex, index)
+			elseif auto_time and (not auto_blacklist[id]) and (ex<=0 or du<=0 or ex-du>=auto_time) then
+				order = GSRD:RegisterNewDebuff(id, ca, te, co, ty, du, ex, isBoss)
+				if order then
+					auto_status:AddDebuff(order, te, co, ty, du, ex, index)
+				end
+			end
+			index = index + 1
 		end
-		index = index + 1
-	end
-	for status in next, statuses do
-		status:UpdateState(unit)
+		for status in next, statuses do
+			status:UpdateState(unit)
+		end
 	end
 end)
 
