@@ -7,12 +7,8 @@ local UNKNOWNOBJECT = UNKNOWNOBJECT
 local IsInRaid = IsInRaid
 local UnitName = UnitName
 local UnitGUID = UnitGUID
-local UnitClass = UnitClass
 local UnitExists = UnitExists
 local GetNumGroupMembers = GetNumGroupMembers
-local GetRaidRosterInfo = GetRaidRosterInfo
-local GetPartyAssignment = GetPartyAssignment
-local UnitGroupRolesAssigned = UnitGroupRolesAssigned or (function() return 'NONE' end)
 local isClassic = Grid2.isClassic
 
 -- helper tables to check units types/categories
@@ -284,22 +280,6 @@ do
 end
 
 --{{ Public variables and methods used by some statuses
-function Grid2:GetRosterInfo(unit)
-	local index, name, group, class, role1, role2, _ = raid_indexes[unit]
-	if index then
-		name, _, group, _, _, class, _, _, _, role1, _, role2 = GetRaidRosterInfo(index)
-	else
-		name = UnitName(unit)
-		if name then
-			group = 1
-			_, class = UnitClass(unit)
-			role1 = (GetPartyAssignment("MAINTANK",unit) and "MAINTANK") or (GetPartyAssignment("MAINASSIST",unit) and "MAINASSIST")
-			role2 = UnitGroupRolesAssigned(unit)
-		end
-	end
-	return name, class, group, role1, role2
-end
-
 function Grid2:GetUnitOfGUID(guid) -- only party/raid units
 	return roster_units[guid]
 end

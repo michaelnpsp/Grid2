@@ -107,39 +107,6 @@ function Grid2.TableRemoveByValue(t,v)
 	end
 end
 
--- Fill tokens table
-function Grid2.FillTokenTable(tbl,...)
-	tbl = tbl or {}
-	local m = select("#",...)
-	for i = 1, m  do
-		local key = select(i,...)
-		tbl[ tonumber(key) or strtrim(key) ] = i
-	end
-	return tbl
-end
-
--- Double fill table
-function Grid2.DoubleFillTable(tbl,...)
-	tbl = tbl or {}
-	local m = select("#", ...)
-	for i = 1, m do
-		local k = strtrim( (select(i, ...)) )
-		tbl[i] = k
-		tbl[k] = i
-	end
-	return tbl
-end
-
--- Fill ipairs table
-function Grid2.FillTable(tbl,...)
-	tbl = tbl or {}
-	local m = select("#",...)
-	for i = 1, m  do
-		tbl[i] = select(i,...)
-	end
-	return tbl
-end
-
 -- Creates a location table, used by GridDefaults.lua
 function Grid2.CreateLocation(a,b,c,d)
     local p = a or "TOPLEFT"

@@ -58,21 +58,22 @@ local GridLayoutHeaderClass = {
 	template = function(self, header, insecure)
 		if header.type=='special' then
 			return 'Grid2InsecureGroupSpecialHeaderTemplate'
-		elseif header.type=='pet' then
-			return insecure and 'Grid2InsecureGroupPetHeaderTemplate' or 'SecureGroupPetHeaderTemplate'
+		elseif insecure or (header.nameList and (header.roleFilter or header.groupFilter)) then
+			return header.type=='pet' and 'Grid2InsecureGroupPetHeaderTemplate' or 'Grid2InsecureGroupHeaderTemplate'
 		else
-			return insecure and 'Grid2InsecureGroupHeaderTemplate' or 'SecureGroupHeaderTemplate'
+			return header.type=='pet' and 'SecureGroupPetHeaderTemplate' or 'SecureGroupHeaderTemplate'
 		end
 	end,
 }
 
+-- "hideEmptyUnits"&"unitsFilter" are extra attributes used only by Grid2 Special Group Header
 local HeaderAttributes = {
 	"nameList", "groupFilter", "roleFilter", "strictFiltering",
 	"sortDir", "groupBy", "groupingOrder", "maxColumns", "unitsPerColumn",
 	"startingIndex", "columnSpacing", "columnAnchorPoint",
 	"useOwnerUnit", "filterOnPet", "unitsuffix", "sortMethod",
 	"toggleForVehicle", "showSolo", "showPlayer", "showParty", "showRaid",
-	"hideEmptyUnits", 'unitsFilter'
+	"hideEmptyUnits", "unitsFilter"
 }
 
 function GridLayoutHeaderClass.prototype:Reset()
@@ -270,9 +271,7 @@ function Grid2Layout:Grid_GroupTypeChanged(_, groupType, instType, maxPlayers)
 end
 
 function Grid2Layout:Grid_RosterUpdate(_, unknowns)
-	if self.layoutHasFilter then
-		Grid2:RunThrottled(self, "ReloadFilter", .25)
-	elseif unknowns and not self.db.global.useInsecureHeaders then
+	if unknowns and not self.db.global.useInsecureHeaders then
 		Grid2:RunThrottled(self, "FixRoster", .25)
 	end
 end
@@ -566,70 +565,14 @@ function Grid2Layout:FixHeaderAttributes(header)
 			header:SetAttribute("groupFilter", groupFilter)
 		end
 	end
-	-- manual nameList + group/role filter
-	local nameList   = header:GetAttribute("nameList")
-	local roleFilter = header:GetAttribute("roleFilter")
-	if nameList and (groupFilter or roleFilter) then
-		self.layoutHasFilter = true
-		if groupFilter then
-			header.tokenFilter = Grid2.FillTokenTable( header.tokenFilter, strsplit(",", groupFilter) )
-			header:SetAttribute("groupFilter", nil)
-		end
-		if roleFilter then
-			header.tokenFilter = Grid2.FillTokenTable( header.tokenFilter, strsplit(",", roleFilter) )
-			header:SetAttribute("roleFilter", nil)
-		end
-		header.tokenNames = Grid2.DoubleFillTable( {}, strsplit(",", nameList) )
-	end
 	-- workaround to blizzard pet bug
 	if header.headerType == 'pet' then -- force these so that the bug in SecureGroupPetHeader_Update doesn't trigger
 		header:SetAttribute("filterOnPet", true)
 		header:SetAttribute("useOwnerUnit", false)
 		header:SetAttribute("unitsuffix", nil)
 	end
-	-- apply custom filter if necessary
-	self:LoadHeaderFilter(header)
 	-- workaround to blizzard bug
 	self:ForceFramesCreation(header)
-end
---}}
-
--- {{ Manual filter header by nameList + groupFilter/roleFilter because SecureGroupHeaders does not support this double filter
--- Warning this custom filter cannot be applied in combat, any refresh is delayed if the player is in combat.
-local nameListTable = {}
-function Grid2Layout:LoadHeaderFilter(header)
-	local nameList = header.tokenNames
-	if nameList then
-		wipe(nameListTable)
-		local filter  = header.tokenFilter
-		local strict  = header:GetAttribute("strictFiltering")
-		for unit in Grid2:IterateGroupedUnits() do
-			local name, class, group, role1, role2 = Grid2:GetRosterInfo(unit)
-			if nameList[name] and (
-				(     strict  and  filter[group] and (filter[role1] or filter[role2]) ) or
-				( not strict  and (filter[group] or   filter[role1] or filter[role2]) )
-			) then
-				nameListTable[#nameListTable+1] = name
-			end
-		end
-		if header:GetAttribute("sortMethod")=="NAMELIST" then
-			table.sort(nameListTable, function(a,b) return nameList[a]<nameList[b] end)
-		end
-		local newList = table.concat( nameListTable, "," )
-		if newList ~= header:GetAttribute("nameList") then
-			header:SetAttribute( "nameList", newList )
-			return true
-		end
-	end
-end
-
-function Grid2Layout:ReloadFilter()
-	if not Grid2:RunSecure(4, self, "ReloadFilter") then
-		for _,header in ipairs(self.groupsUsed) do
-			self:LoadHeaderFilter(header)
-		end
-	end
-	return true
 end
 --}}
 

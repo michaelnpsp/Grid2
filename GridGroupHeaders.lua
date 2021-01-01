@@ -188,30 +188,13 @@ local function sortByGroupAndID(a, b)
 	end
 end
 
--- players, filter roster by name list
-local function ApplyNameListFilter(self, raid, start, stop)
-	fillTable( wipe(tokTable), strsplit(",", self:GetAttribute('nameList')) )
-	local GetRosterInfo = GetRosterInfoFunc(raid)
-	for i = start, stop, 1 do
-		local unit, name = GetRosterInfo(i)
-		if tokTable[name] then
-			tinsert(srtTable, unit)
-			srtTable[unit] = name
-		end
-	end
-	if sortMethod == 'NAME' then
-		tsort(srtTable, sortByUnit)
-	elseif sortMethod == 'NAMELIST'  then
-		tsort(srtTable, sortByNameList)
-	end
-end
-
--- player, general filter
-local function ApplyGeneralFilter(self, raid, start, stop)
+-- players filter
+local function ApplyPlayersFilter(self, raid, start, stop)
 	-- fill tokens Table
 	local strictFiltering = self:GetAttribute("strictFiltering")
 	local groupFilter     = self:GetAttribute("groupFilter")
 	local roleFilter      = self:GetAttribute("roleFilter")
+	local nameList        = self:GetAttribute('nameList')
 	wipe(tokTable)
 	if groupFilter and roleFilter then -- by group, class and/or role
 		fillHashTable(tokTable, strsplit(",", groupFilter))
@@ -227,15 +210,18 @@ local function ApplyGeneralFilter(self, raid, start, stop)
 			fillHashTable(tokTable,'MAINTANK','MAINASSIST','TANK','HEALER','DAMAGER','NONE')
 		end
 	end
+	if nameList then
+		fillHashTable(tokTable, strsplit(",", nameList))
+	end
 	-- filter roster units
-	local groupBy = self:GetAttribute("groupBy")
 	local GetRosterInfo = GetRosterInfoFunc(raid)
+	local groupBy = self:GetAttribute("groupBy")
 	for i = start, stop do
 		local unit, name, subgroup, class, role, arole, valid = GetRosterInfo(i)
 		if strictFiltering then
-			valid = tokTable[subgroup] and tokTable[class] and (tokTable[role] or tokTable[arole])
+			valid = tokTable[subgroup] and tokTable[class] and (tokTable[role] or tokTable[arole]) and (not nameList or tokTable[name])
 		else
-			valid = tokTable[subgroup] or tokTable[class] or tokTable[role] or tokTable[arole]
+			valid = tokTable[subgroup] or tokTable[class] or tokTable[role] or tokTable[arole] or tokTable[name]
 		end
 		if valid then
 			tinsert(srtTable, unit)
@@ -250,56 +236,42 @@ local function ApplyGeneralFilter(self, raid, start, stop)
 		tsort(srtTable, sortMethod=="NAME" and sortByGroupAndUnit or sortByGroupAndID)
 	elseif sortMethod=="NAME" then
 		tsort(srtTable, sortByUnit)
+	elseif sortMethod=='NAMELIST' then
+		tsort(srtTable, sortByNameList)
 	end
 end
 
--- pets, filter roster by name list
-local function ApplyPetsNameListFilter(self, raid, start, stop)
-	local GetRosterInfo = GetRosterInfoFunc(raid)
-	local filterOnPet   = self:GetAttribute("filterOnPet")
-	local useOwnerUnit  = self:GetAttribute("useOwnerUnit")
-	fillTable( tokTable, strsplit(",", self:GetAttribute("nameList")) )
-	for i = start, stop, 1 do
-		local unit, name = GetRosterInfo(i)
-		local petUnit = GetPetUnit(raid, i)
-		if UnitExists(petUnit) then
-			name = filterOnPet and UnitName(petUnit) or name
-			if tokTable[name] then
-				if not useOwnerUnit then unit = petUnit; end
-				tinsert(srtTable, unit)
-				srtTable[unit] = name
-			end
-		end
-	end
-	if sortMethod == "NAME" then
-		tsort(srtTable, sortByUnit)
-	end
-end
-
--- pets, general filter
-local function ApplyPetsGeneralFilter(self, raid, start,stop)
+-- pets filter
+local function ApplyPetsFilter(self, raid, start,stop)
 	-- fill tokens Table
-	local groupFilter = self:GetAttribute("groupFilter") or "1,2,3,4,5,6,7,8"
-	local strictFiltering = self:GetAttribute("strictFiltering")
-	local groupBy = self:GetAttribute("groupBy")
 	local useOwnerUnit = self:GetAttribute("useOwnerUnit")
 	local filterOnPet = self:GetAttribute("filterOnPet")
-	local GetRosterInfo = GetRosterInfoFunc(raid)
-	fillHashTable( wipe(tokTable), strsplit(",",groupFilter) )
+	local strictFiltering = self:GetAttribute("strictFiltering")
+	local groupFilter = self:GetAttribute("groupFilter") or "1,2,3,4,5,6,7,8"
+	local nameList = self:GetAttribute("nameList")
+	-- fill tokens table
+	wipe(tokTable)
+	fillHashTable( tokTable, strsplit(",",groupFilter) )
+	if nameList then
+		fillHashTable( tokTable, strsplit(",",nameList) )
+	end
 	-- filter pets units
+	local GetRosterInfo = GetRosterInfoFunc(raid)
+	local groupBy = self:GetAttribute("groupBy")
 	for i = start, stop do
 		local unit, name, subgroup, class, role, valid = GetRosterInfo(i)
 		local petUnit = GetPetUnit(raid, i)
 		if UnitExists(petUnit) then
+			local unitName = filterOnPet and UnitName(petUnit) or name
 			if strictFiltering then
-				valid = tokTable[subgroup] and tokTable[class]
+				valid = tokTable[subgroup] and tokTable[class] and (not nameList or tokTable[unitName])
 			else
-				valid = tokTable[subgroup] or tokTable[class] or tokTable[role]
+				valid = tokTable[subgroup] or tokTable[class] or tokTable[role] or (nameList and tokTable[unitName])
 			end
 			if valid then
 				if not useOwnerUnit then unit = petUnit	end
 				tinsert(srtTable, unit)
-				srtTable[unit] = filterOnPet and UnitName(petUnit) or name
+				srtTable[unit] = unitName
 				grpTable[unit] = (groupBy=="GROUP" and subgroup) or (groupBy=="CLASS" and class) or (groupBy=="ROLE" and role)
 			end
 		end
@@ -311,15 +283,6 @@ local function ApplyPetsGeneralFilter(self, raid, start,stop)
 		tsort(srtTable, sortMethod=='NAME' and sortByGroupAndUnit or sortByGroupAndID)
 	elseif sortMethod=='NAME' then
 		tsort(srtTable, sortByUnit)
-	end
-end
-
--- filter generic
-local function ApplyFilter(self, raid, start, stop)
-	if self:GetAttribute("nameList") then
-		(self.isPetHeader and ApplyPetsNameListFilter or ApplyNameListFilter)(self, raid, start, stop)
-	else
-		(self.isPetHeader and ApplyPetsGeneralFilter or ApplyGeneralFilter)(self, raid, start, stop)
 	end
 end
 
@@ -460,7 +423,11 @@ do
 			wipe(srtTable)
 			local raid, start, stop = GetGroupType(self)
 			if raid~=nil then
-				ApplyFilter(self, raid, start, stop)
+				if self.isPetHeader then
+					ApplyPetsFilter(self, raid, start, stop)
+				else
+					ApplyPlayersFilter(self, raid, start, stop)
+				end
 			end
 			DisplayButtons(self, srtTable)
 		end
@@ -504,8 +471,8 @@ do
 	local function RefreshButtons(self, pattern)
 		local index, unitButton = 1, self[1]
 		while unitButton and unitButton:IsVisible() do
-			if pattern==nil or strfind(button.unit,pattern) then
-				button:OnUnitStateChanged()
+			if pattern==nil or strfind(unitButton.unit,pattern) then
+				unitButton:OnUnitStateChanged()
 			end
 			index = index + 1; unitButton = self[index]
 		end
