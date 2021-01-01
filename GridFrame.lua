@@ -62,7 +62,7 @@ function GridFrameEvents:OnAttributeChanged(name, value)
 		if value then
 			local unit = SecureButton_GetModifiedUnit(self)
 			if old_unit ~= unit then
-				Grid2Frame:Debug("updated", self:GetName(), name, value, unit)
+				Grid2Frame:Debug("updated", self:GetName(), name, value, unit, '<=', old_unit)
 				self.unit = unit
 				if not next(frames_of_unit[unit]) then
 					Grid2:RosterRegisterUnit(unit)

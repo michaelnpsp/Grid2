@@ -357,14 +357,15 @@ local function DisplayButtons(self, unitTable)
 	local numDisplayed = min( unitCount, numColumns*unitsPerColumn )
 	local unitsPerColumn = min( unitsPerColumn, numDisplayed )
 	-- hide unused buttons
-	for i = numDisplayed+1,(self.numDisplayed or 0) do
-		local button = self[i]
-		button:Hide()
-		button:ClearAllPoints()
-		button:SetAttribute("unit", nil)
+	local index = numDisplayed+1
+	local unitButton = self[index]
+	while unitButton and unitButton:IsVisible() do
+		unitButton:Hide()
+		unitButton:ClearAllPoints()
+		unitButton:SetAttribute("unit", nil)
+		index = index + 1; unitButton = self[index]
 	end
-	self.numDisplayed = numDisplayed
-	-- create buttons if necessary
+	-- create enough buttons
 	local numButtons = max(1, numDisplayed)
 	for i = #self+1, numButtons do
 		self[i] = CreateButton(self, i)
@@ -501,11 +502,12 @@ hideEmptyUnits = true|nil
 do
 	-- misc functions
 	local function RefreshButtons(self, pattern)
-		for i=self.numDisplayed,1,-1 do
-			local button = self[i]
+		local index, unitButton = 1, self[1]
+		while unitButton and unitButton:IsVisible() do
 			if pattern==nil or strfind(button.unit,pattern) then
 				button:OnUnitStateChanged()
 			end
+			index = index + 1; unitButton = self[index]
 		end
 	end
 
@@ -559,10 +561,11 @@ do
 
 	-- event callbacks
 	local function OnHide(self)
+		SetRegisterEvent( self, false, 'GROUP_ROSTER_UPDATE' )
 		SetRegisterEvent( self, false, 'PLAYER_TARGET_CHANGED' )
 		SetRegisterEvent( self, false, 'PLAYER_FOCUS_CHANGED' )
 		SetRegisterEvent( self, false, 'INSTANCE_ENCOUNTER_ENGAGE_UNIT' )
-		SetRegisterEvent( self, false, 'GROUP_ROSTER_UPDATE' )
+		SetRegisterEvent( self, false, 'PLAYER_REGEN_ENABLED' )
 	end
 
 	local function OnAttributeChanged(self, name, value)

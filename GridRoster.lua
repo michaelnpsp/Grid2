@@ -24,7 +24,7 @@ local grouped_units   = {} -- party1=>1, raid1=>1 ; units in party or raid
 local grouped_players = {} -- party1=>1, raid1=>1 ; only party/raid player/owner units
 local grouped_pets    = {} -- partypet1=>!, raidpet2=>1 ; only party/raid pet units
 local roster_my_units = { player = true, pet = true, vehicle = true }
--- roster tables / store only existing units
+-- roster tables / storing only existing units
 local roster_names    = {} -- raid1=>name, ..
 local roster_realms   = {} -- raid1=>realm,..
 local roster_guids    = {} -- raid1=>guid,..
@@ -56,7 +56,6 @@ end
 -- roster management
 do
 	local roster_unknowns -- flag to track if roster contains unknown units, workaround for blizzard bug (see ticket #628)
-	local frames_of_unit = Grid2.frames_of_unit
 
 	local function UpdateUnit(unit)
 		local modified

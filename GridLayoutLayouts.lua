@@ -44,7 +44,6 @@ Grid2Layout:AddLayout("Special Test", {
 	},
 })
 
-
 Grid2Layout:AddLayout("By Group w/Pets", {
 	meta = META_ALL,
 	[1] = "auto",
