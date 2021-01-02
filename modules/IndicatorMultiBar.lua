@@ -158,6 +158,7 @@ local function Bar_Layout(self, parent)
 	for i=1,barCount do
 		local setup = self.bars[i]
 		local texture = textures[i+1] or bar:CreateTexture()
+		texture:Hide()
 		texture:ClearAllPoints()
 		texture.mySetSize = texture[ self.SetSizeMethod ]
 		texture.myReverse = setup.reverse
@@ -169,7 +170,7 @@ local function Bar_Layout(self, parent)
 		if c then
 			texture:SetVertexColor( c.r, c.g, c.b, setup.opacity )
 		else
-			ctextures = texcolor or {}; ctextures[#ctextures+1] = texture
+			ctextures = ctextures or {}; ctextures[#ctextures+1] = texture
 		end
 		if setup.background then
 			texture:SetAllPoints(); texture:Show()
