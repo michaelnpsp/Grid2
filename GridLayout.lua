@@ -433,7 +433,11 @@ function Grid2Layout:RefreshLayout()
 	self:ReloadLayout(true)
 end
 
+-- If player does not exist (this can happen just before a load screen when changing instances if layout load is delayed by RunSecure()
+-- due to combat restrictions) we cannot setup SecureGroupHeaders so we ignore the layout change, anyway the layour will be reloaded
+-- on PLAYER_ENTERING_WORLD event when the load screen finish. See Ticket #923.
 function Grid2Layout:ReloadLayout(force)
+	if not UnitExists('player') then self:Debug("ReloadLayout Ignored because player unit does not exist"); return end
 	local p = self.db.profile
 	local partyType, instType, maxPlayers = Grid2:GetGroupType()
 	local layoutName = p.layouts[maxPlayers] or p.layouts[partyType.."@"..instType] or p.layouts[partyType]
