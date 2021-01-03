@@ -15,6 +15,7 @@
 			<OnLoad> Grid2InsecureGroupHeader_OnLoad(self,true); </OnLoad>
         </Scripts>
     </Frame>
+	<!-- A frame used for managing non grouped units like target, focus, bossX -->
     <Frame name="Grid2InsecureGroupSpecialHeaderTemplate" inherits="Grid2InsecureFrameTemplate" hidden="true" virtual="true">
         <Scripts>
 			<OnLoad function="Grid2InsecureGroupSpecialHeader_OnLoad" />

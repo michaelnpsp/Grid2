@@ -1,6 +1,7 @@
 --[[
 --  Grid2InsecureGroupHeader, Grid2InsecureGroupPetHeader, Grid2InsecureGroupSpecialHeader
 --]]
+local dummyFunc = function() end
 local select = select
 local unpack = unpack
 local tonumber = tonumber
@@ -20,7 +21,6 @@ local GetFrameHandle = GetFrameHandle
 local RegisterUnitWatch = RegisterUnitWatch
 local UnregisterUnitWatch = UnregisterUnitWatch
 local UnitWatchRegistered = UnitWatchRegistered
-local dummyFunc = function() end
 local UnitGroupRolesAssigned = UnitGroupRolesAssigned or dummyFunc
 local UNKNOWN = UNKNOWNOBJECT or "Unknown"
 
@@ -247,11 +247,11 @@ local function ApplyPetsFilter(self, raid, start,stop)
 	local useOwnerUnit = self:GetAttribute("useOwnerUnit")
 	local filterOnPet = self:GetAttribute("filterOnPet")
 	local strictFiltering = self:GetAttribute("strictFiltering")
-	local groupFilter = self:GetAttribute("groupFilter") or "1,2,3,4,5,6,7,8"
+	local groupFilter = self:GetAttribute("groupFilter")
 	local nameList = self:GetAttribute("nameList")
 	-- fill tokens table
 	wipe(tokTable)
-	fillHashTable( tokTable, strsplit(",",groupFilter) )
+	fillHashTable( tokTable, strsplit(",",groupFilter or "1,2,3,4,5,6,7,8") )
 	if nameList then
 		fillHashTable( tokTable, strsplit(",",nameList) )
 	end
