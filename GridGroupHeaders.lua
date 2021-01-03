@@ -42,13 +42,13 @@ do
 	local frameEvent = CreateFrame("Frame")
 	frameEvent:Hide()
 	frameEvent:SetScript('OnEvent', function()
+		frameEvent:UnregisterEvent('PLAYER_REGEN_ENABLED')
 		for frame, func in next,frames do
 			if frame:IsVisible() then
 				func(frame)
 			end
 		end
 		wipe(frames)
-		frameEvent:UnregisterEvent('PLAYER_REGEN_ENABLED')
 	end )
 	function RunSecure(func, self)
 		if (self:GetAttribute("startingIndex") or 1)<=0 then
@@ -319,15 +319,6 @@ local function DisplayButtons(self, unitTable)
 	local numColumns = min( ceil(unitCount/unitsPerColumn), maxColumns )
 	local numDisplayed = min( unitCount, numColumns*unitsPerColumn )
 	local unitsPerColumn = min( unitsPerColumn, numDisplayed )
-	-- hide unused buttons
-	local index = numDisplayed+1
-	local unitButton = self[index]
-	while unitButton and unitButton:IsVisible() do
-		unitButton:Hide()
-		unitButton:ClearAllPoints()
-		unitButton:SetAttribute("unit", nil)
-		index = index + 1; unitButton = self[index]
-	end
 	-- create enough buttons
 	local numButtons = max(1, numDisplayed)
 	for i = #self+1, numButtons do
@@ -372,6 +363,15 @@ local function DisplayButtons(self, unitTable)
 		colUnitCount = colUnitCount<unitsPerColumn and colUnitCount+1 or 1
 		buttonNum = buttonNum + 1
 		curAnchor = unitButton
+	end
+	-- hide unused buttons
+	local index = numDisplayed+1
+	local unitButton = self[index]
+	while unitButton and unitButton:IsVisible() do
+		unitButton:Hide()
+		unitButton:ClearAllPoints()
+		unitButton:SetAttribute("unit", nil)
+		index = index + 1; unitButton = self[index]
 	end
 	-- calculate total header size
 	local buttonWidth, buttonHeight = self[1]:GetWidth(), self[1]:GetHeight()
@@ -463,7 +463,7 @@ do
 end
 
 --[[ Grid2InsecureGroupSpecialHeader
-unitsFilter = "target, focus, player, party1, boss1, boss2, boss3, arena1, arena2, arena3"
+unitsFilter = "target, focus, player, party1, boss1, boss2, boss3, arena1, arena2, arena3, .."
 hideEmptyUnits = true|nil
 --]]
 do
