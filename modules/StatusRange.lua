@@ -23,7 +23,7 @@ local cache = {}
 local playerClass = select(2, UnitClass("player"))
 local grouped_units = Grid2.grouped_units
 
-local rezSpell = ({
+local rezSpellID = ({
 		DRUID       = 20484,
 		PRIEST      = 2006,
 		PALADIN     = 7328,
@@ -32,6 +32,7 @@ local rezSpell = ({
 		DEATHKNIGHT = 61999,
 		WARLOCK     = 20707
 	})[playerClass]
+local rezSpell = rezSpellID and GetSpellInfo(rezSpellID)
 
 local rangeSpellID = (Grid2.isClassic and {
 		DRUID   = 774,
@@ -45,8 +46,7 @@ local rangeSpellID = (Grid2.isClassic and {
 		PRIEST  = 73325,
 		MONK    = 115450
 	})[playerClass]
-
-local rangeSpell = GetSpellInfo(rangeSpellID or 0)
+local rangeSpell = rangeSpellID and GetSpellInfo(rangeSpellID)
 
 local Ranges= {
 	[99] = UnitIsVisible,
@@ -72,7 +72,7 @@ local Ranges= {
 			else
 				return IsSpellInRange(rangeSpell, unit)==1
 			end
-		elseif UnitCanAttack("player", unit) then
+		else
 			return CheckInteractDistance(unit,4) -- 28y for enemies
 		end
 	end,
