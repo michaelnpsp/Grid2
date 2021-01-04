@@ -40,7 +40,7 @@ Grid2Layout:AddLayout("Special Test", {
 		type = 'special',
 		hideEmptyUnits = false,
 		maxColumns = 2,
-		unitsFilter = 'target,focus,player,party1,boss1,boss2,boss3,boss4,boss5',
+		unitsFilter = 'player,party1,party2,party3,party4,target,focus,boss1,boss2,boss3',
 	},
 })
 

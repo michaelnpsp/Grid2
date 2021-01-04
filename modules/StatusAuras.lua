@@ -7,6 +7,7 @@ local GetTime = GetTime
 local UnitAura = UnitAura
 local isClassic = Grid2.isClassic
 local Grid2Frame = Grid2Frame
+local UnitIsEnemy = UnitIsEnemy
 
 -- Local variables
 local Statuses = {}
@@ -27,7 +28,7 @@ do
 	local myFrames = Grid2.frames_of_unit
 	local roUnits  = Grid2.roster_guids
 	AuraFrame_OnEvent = function(_, event, u)
-		if not roUnits[u] then return end
+		if not roUnits[u] or UnitIsEnemy(u,'player') then return end
 		-- Scan Debuffs, Debuff Types, Debuff Groups
 		local i = 1
 		while true do

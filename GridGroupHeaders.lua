@@ -503,6 +503,7 @@ do
 		end
 		SetRegisterEvent( self, self.buttonTarget, 'PLAYER_TARGET_CHANGED' )
 		SetRegisterEvent( self, self.buttonFocus, 'PLAYER_FOCUS_CHANGED' )
+		SetRegisterEvent( self, self.buttonTarget or self.buttonFocus, 'PLAYER_ENTERING_WORLD' )
 		SetRegisterEvent( self, bossUnits, 'INSTANCE_ENCOUNTER_ENGAGE_UNIT' )
 		SetRegisterEvent( self, normalUnits,'GROUP_ROSTER_UPDATE' )
 	end
@@ -531,6 +532,7 @@ do
 		SetRegisterEvent( self, false, 'PLAYER_FOCUS_CHANGED' )
 		SetRegisterEvent( self, false, 'INSTANCE_ENCOUNTER_ENGAGE_UNIT' )
 		SetRegisterEvent( self, false, 'PLAYER_REGEN_ENABLED' )
+		SetRegisterEvent( self, false, 'PLAYER_ENTERING_WORLD' )
 	end
 
 	local function OnAttributeChanged(self, name, value)
@@ -549,6 +551,9 @@ do
 			RefreshButtons(self, "^boss")
 		elseif event=='PLAYER_REGEN_ENABLED' then
 			RefreshButtons(self, "^boss")
+		elseif event=='PLAYER_ENTERING_WORLD' then
+			if self.buttonTarget then self.buttonTarget:OnUnitStateChanged() end
+			if self.buttonFocus  then self.buttonFocus:OnUnitStateChanged() end
 		else -- GROUP_ROSTER_UPDATE
 			RefreshButtons(self)
 		end

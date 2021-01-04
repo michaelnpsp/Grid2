@@ -42,7 +42,8 @@ local function GetPercentCustomMax(self, unit)
 end
 -- Use unit maximum health as max shield value (used by bar indicators)
 local function GetPercentHealthMax(_, unit)
-	return (UnitGetTotalHealAbsorbs(unit) or 0) / UnitHealthMax(unit)
+	local m = UnitHealthMax(unit)
+	return m>0 and (UnitGetTotalHealAbsorbs(unit) or 0) / m or 0
 end
 
 function Shields:GetText(unit)

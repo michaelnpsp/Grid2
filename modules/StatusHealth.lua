@@ -19,13 +19,13 @@ local tostring = tostring
 local fmt = string.format
 local select = select
 local GetTime = GetTime
+local UnitExists = UnitExists
 local UnitHealth = UnitHealth
 local UnitIsDead = UnitIsDead
 local UnitIsGhost = UnitIsGhost
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitIsFeignDeath = UnitIsFeignDeath
 local UnitHealthMax = UnitHealthMax
-local UnitExists = UnitExists
 local C_Timer_After = C_Timer.After
 local unit_is_valid = Grid2.roster_guids
 
@@ -190,11 +190,11 @@ end
 -- health-current status
 HealthCurrent.OnEnable  = Health_Enable
 HealthCurrent.OnDisable = Health_Disable
--- HealthCurrent.IsActive  = Grid2.statusLibrary.IsActive
+HealthCurrent.IsActive  = Grid2.statusLibrary.IsActive
 
-function HealthCurrent:IsActive(unit)
-	return UnitExists(unit)
-end
+--function HealthCurrent:IsActive(unit)
+--	return UnitExists(unit)
+--end
 
 function HealthCurrent_GetPercent(self,unit)
 	local m = UnitHealthMax(unit)
@@ -204,7 +204,7 @@ end
 local function HealthCurrent_GetPercentDFH(self, unit)
 	if UnitIsDeadOrGhost(unit) then return 1 end
 	local m = UnitHealthMax(unit)
-	return m == 0 and 0 or UnitHealth(unit) / m
+	return m == 0 and 1 or UnitHealth(unit) / m
 end
 
 if Grid2.isClassic then
