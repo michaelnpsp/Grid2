@@ -343,7 +343,8 @@ do
 		return self.dur[unit]
 	end
 	local function GetPercentHealth(self, unit)
-		return (self.val[unit] or 0) / UnitHealthMax(unit)
+		local m = UnitHealthMax(unit)
+		return m>0 and (self.val[unit] or 0) / m or 0
 	end
 	local function GetPercentMax(self, unit)
 		return (self.val[unit] or 0) / self.valMax

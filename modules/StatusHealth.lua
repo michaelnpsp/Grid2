@@ -726,8 +726,8 @@ OverHeals.GetText = GetText1
 OverHeals.GetColor = Grid2.statusLibrary.GetColor
 
 function OverHeals:GetPercent(unit)
-	local h = heals_cache[unit]+UnitHealth(unit)-UnitHealthMax(unit)
-	return h / (UnitHealthMax(unit) or 0)
+	local m = UnitHealthMax(unit)
+	return m>0 and ( heals_cache[unit]+UnitHealth(unit)-m ) / m or 0
 end
 
 local function Create(baseKey, dbx)
