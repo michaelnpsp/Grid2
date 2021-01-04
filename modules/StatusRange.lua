@@ -20,10 +20,10 @@ local curAlpha
 local curRange
 local UnitRangeCheck
 local cache = {}
-local playerClass = select(2, UnitClass("player"))
 local grouped_units = Grid2.grouped_units
+local playerClass = select(2, UnitClass("player"))
 
-local rezSpellID = ({
+local rezSpellID = ({ -- classic has the same spellIDs
 		DRUID       = 20484,
 		PRIEST      = 2006,
 		PALADIN     = 7328,
@@ -34,16 +34,11 @@ local rezSpellID = ({
 	})[playerClass]
 local rezSpell = rezSpellID and GetSpellInfo(rezSpellID)
 
-local rangeSpellID = (Grid2.isClassic and {
+local rangeSpellID = ({
 		DRUID   = 774,
 		PALADIN = 19750,
-		SHAMAN  = 25357,
-		PRIEST  = 2050
-	} or {
-		DRUID   = 774,
-		PALADIN = 19750,
-		SHAMAN  = 77472,
-		PRIEST  = 73325,
+		PRIEST  = Grid2.isClassic and 2050  or 73325,
+		SHAMAN  = Grid2.isClassic and 25357 or 77472,
 		MONK    = 115450
 	})[playerClass]
 local rangeSpell = rangeSpellID and GetSpellInfo(rangeSpellID)

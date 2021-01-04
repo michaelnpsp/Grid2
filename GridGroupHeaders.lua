@@ -50,10 +50,8 @@ do
 		end
 		wipe(frames)
 	end )
-	function RunSecure(func, self)
-		if (self:GetAttribute("startingIndex") or 1)<=0 then
-			return -- hackish, ignore frames precreation trick because is only necessary in blizzard secure group frames
-		end
+	function RunSecure(func, self, special)
+		if special and (self:GetAttribute("startingIndex") or 1)<=0 then return end-- ignore frames precreation trick for special headers.
 		if InCombatLockdown() then
 			if not next(frames) then frameEvent:RegisterEvent('PLAYER_REGEN_ENABLED') end
 			frames[self] = func
@@ -519,7 +517,7 @@ do
 
 	-- update header
 	local function Update(self)
-		if RunSecure(Update, self) then
+		if RunSecure(Update, self, true) then
 			ApplySpecialFilter( self )
 			DisplayButtons( self, srtTable )
 			RegisterEvents( self, srtTable )
