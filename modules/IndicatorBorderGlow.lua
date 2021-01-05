@@ -58,4 +58,4 @@ local function Create(indicatorKey, dbx)
 	return indicator
 end
 
-Grid2.setupFunc["borderglow"] = Create
+Grid2.setupFunc["glowborder"] = Create

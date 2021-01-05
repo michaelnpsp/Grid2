@@ -1,12 +1,13 @@
 local L = Grid2Options.L
 
-local DefFrequencies = { 0.25, 0.12, 0.12 }
+local DEFAULT_FREQS = { 0.25, 0.12, 0.12 }
 local COLOR_VALUES = { [1] = L["Status Color"], [2] = L["Custom Color"] }
 local EFFECT_VALUES = { [1] = L['Pixel'], [2] = L['Shine'], [3] = L["Blizzard"] }
+if Grid2.isClassic then EFFECT_VALUES[2] = nil end
 
 local function CheckBlizzardGlowEffectNotUsed(indExcluded)
 	for _,indicator in Grid2:IterateIndicators() do
-		if indicator~=indExcluded and indicator.dbx.type=='borderglow' and indicator.dbx.glowType==3 then
+		if indicator~=indExcluded and indicator.dbx.type=='glowborder' and indicator.dbx.glowType==3 then
 			Grid2Options:MessageDialog(L["Blizzard Glow effect is already in use by another indicator, select another effect."])
 			return
 		end
@@ -14,7 +15,7 @@ local function CheckBlizzardGlowEffectNotUsed(indExcluded)
 	return true
 end
 
-Grid2Options:RegisterIndicatorOptions("borderglow", true, function(self, indicator)
+Grid2Options:RegisterIndicatorOptions("glowborder", true, function(self, indicator)
 	local statuses, options = {}, {}
 	self:MakeIndicatorBorderGlowOptions(indicator, options)
 	self:MakeIndicatorStatusOptions(indicator, statuses)
@@ -65,6 +66,7 @@ function Grid2Options:MakeIndicatorBorderGlowOptions(indicator,options)
 			end,
 			set = function (_, v)
 				if v~=3 or CheckBlizzardGlowEffectNotUsed(indicator) then
+					Grid2Frame:WithAllFrames(function (f) indicator:Disable(f) end)
 					indicator.dbx.glowType = v
 					self:RefreshIndicator(indicator, "Update")
 				end
@@ -81,9 +83,9 @@ function Grid2Options:MakeIndicatorBorderGlowOptions(indicator,options)
 		min = -1.5,
 		max = 1.5,
 		step = 0.01,
-		get = function () return indicator.dbx.frequency or DefFrequencies[indicator.dbx.glowType or 1] end,
+		get = function () return indicator.dbx.frequency or DEFAULT_FREQS[indicator.dbx.glowType or 1] end,
 		set = function (_, v)
-			indicator.dbx.frequency = (v~=0 and v~=DefFrequencies[v]) and v or nil
+			indicator.dbx.frequency = (v~=0 and v~=DEFAULT_FREQS[v]) and v or nil
 			self:RefreshIndicator(indicator, "Update")
 		end,
 	}
