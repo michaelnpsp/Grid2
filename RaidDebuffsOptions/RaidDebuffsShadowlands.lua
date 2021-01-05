@@ -223,7 +223,7 @@ RDDB["Shadowlands"] = {
 		},
 		["Amarth, The Harvester"] = {
 		order = 2, ejid = 2391,
-		320462, -- Descarga necrótica
+		320170, -- Descarga necrótica
 		333633, -- Ecos torturados
 		},
 		["Surgeon Stitchflesh"] = {
