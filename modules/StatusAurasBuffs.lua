@@ -34,6 +34,7 @@ local function status_Create(baseKey, dbx)
 	local status = Grid2.statusPrototype:new(baseKey, false)
 	if dbx.spellName then dbx.spellName = nil end -- fix possible wrong data in old database
 	status.GetIcons = status_GetIcons
+	if Grid2.classicDurations then UnitAura = LibStub("LibClassicDurations").UnitAuraDirect end
 	return Grid2.CreateStatusAura( status, basekey, dbx, 'buff', statusTypes )
 end
 

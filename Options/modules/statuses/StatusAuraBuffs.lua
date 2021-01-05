@@ -1,10 +1,10 @@
 local L = Grid2Options.L
 
 function Grid2Options:MakeStatusBuffsListOptions(status, options, optionParams)
-	self:MakeHeaderOptions( options, "Display" )
+	self:MakeHeaderOptions( options, "AurasExpanded" )
 	options.aurasList = {
 		type = "input", dialogControl = "Grid2ExpandedEditBox",
-		order = 155,
+		order = 310,
 		width = "full",
 		name = "",
 		multiline = math.min( math.max(status.dbx.auras and #status.dbx.auras or 0,5),10),
