@@ -42,6 +42,7 @@
 <Script file="modules\indicators\IndicatorBar.lua"/>
 <Script file="modules\indicators\IndicatorMultiBar.lua"/>
 <Script file="modules\indicators\IndicatorBorder.lua"/>
+<Script file="modules\indicators\IndicatorBorderGlow.lua"/>
 <Script file="modules\indicators\IndicatorIcon.lua"/>
 <Script file="modules\indicators\IndicatorIcons.lua"/>
 <Script file="modules\indicators\IndicatorSquare.lua"/>
