@@ -92,7 +92,7 @@ local function GetHeaderName(info)
 		if index then
 			local layout = editedLayout[index]
 			if layout then
-				return string.format( "%s(%d)", layout.type=='pet' and L['pets'] or L['players'], index )
+				return string.format( "%s(%d)", (layout.type=='pet' and L['pets']) or (layout.type=='special' and L['special']) or L['players'], index )
 			end
 		end
 	end
@@ -107,7 +107,7 @@ local function CreateHeader(info, index)
 		table.insert( editedLayout, index+1, Grid2.CopyTable(editedLayout[index]) )
 		index = index + 1
 	else
-		table.insert( editedLayout, { type = (index=="pet" and "pet" or nil), unitsPerColumn = 5, maxColumns = 1 } )
+		table.insert( editedLayout, { type = (index=="pet" and "pet") or (index=="special" and "special") or nil, unitsPerColumn = 5, maxColumns = 1 } )
 		index= #editedLayout
 	end
 	RefreshLayout()
@@ -174,6 +174,10 @@ local function FilterSet(info,value)
 	RefreshLayout()
 end
 
+local function IsOptionHidden()
+	return editedHeader.type=='special'
+end
+
 -- Used by Profile Export/Import module
 function Grid2Options:AddNewCustomLayoutsOptions()
 	for name in pairs(Grid2Layout.customLayouts) do
@@ -183,6 +187,8 @@ function Grid2Options:AddNewCustomLayoutsOptions()
 	end
 end
 
+--=====================================================================================
+-- standard header player or pets
 --=====================================================================================
 
 headerOptions = {
@@ -235,7 +241,7 @@ headerOptions = {
 			RefreshLayout()
 		end,
 		values = function()	return editedHeader.nameList and SORTBYN_VALUES or SORTBY_VALUES end,
-		hidden = false,
+		hidden = IsOptionHidden,
 	},
 
 	groupby =  {
@@ -265,7 +271,7 @@ headerOptions = {
 		end,
 		values = GROUPBY_VALUES,
 		disabled = function() return editedHeader.nameList~=nil end,
-		hidden = false,
+		hidden = IsOptionHidden,
 	},
 
 	nameList = {
@@ -297,7 +303,50 @@ headerOptions = {
 			end
 			RefreshLayout()
 		end,
-		hidden = false,
+		hidden = IsOptionHidden,
+	},
+
+	unitsList = {
+		type = "input",
+		order = 50,
+		width = "full",
+		name = L["Units List"],
+		desc = L["Type a list of unit names, valid units:\ntarget, focus\nboss1, boss2, boss3, boss4, boss5\narena1, arena2, arena3, arena4, arena5\nplayer, party1, party2, party3, party4\nraid1, raid2, raid3, .. , raid40"],
+		multiline = 9,
+		get = function()
+			return editedHeader.unitsFilter or ''
+		end,
+		set = function(_, v)
+			local t = { strsplit("\n,;:|", v) }
+			for i=#t,1,-1 do
+				v = strlower( strtrim( t[i] ) )
+				v = strmatch(v,'^target$') or strmatch(v,'^focus$') or strmatch(v,'^player$') or strmatch(v,'^party%d+$') or strmatch(v,'^raid%d+$') or strmatch(v,'^boss%d+$') or strmatch(v,'^arena%d+$')
+				if v then
+					t[i] = v
+				else
+					table.remove(t,i)
+				end
+			end
+			editedHeader.unitsFilter = table.concat( t, "," )
+			RefreshLayout()
+		end,
+		hidden = function() return editedHeader.type~='special' end,
+	},
+
+	hideEmptyButtons = {
+		type = "toggle",
+		name = L["Hide Empty Units"],
+		desc = L["Hide the frame if the unit does not exist."],
+		order = 55,
+		width = 1.2,
+		get = function()
+			return editedHeader.hideEmptyUnits
+		end,
+		set = function(info, value)
+			editedHeader.hideEmptyUnits = value or nil
+			RefreshLayout()
+		end,
+		hidden = function() return editedHeader.type~='special' end,
 	},
 
 	vehicle = {
@@ -319,7 +368,7 @@ headerOptions = {
 
 	hidePlayer = {
 		type = "toggle",
-		name = L["Hide Player"],
+		name = L["Hide Player Unit"],
 		desc = L["Do not display the player frame (only applied when in group)."],
 		order = 55,
 		width = "normal",
@@ -335,7 +384,7 @@ headerOptions = {
 			end
 			RefreshLayout()
 		end,
-		hidden = false,
+		hidden = IsOptionHidden,
 	},
 
 	actionheader = { type = "header", order = 100, name = "", hidden = false },
@@ -411,7 +460,7 @@ if RETAIL then
 end
 
 do
-	headerOptions.groupheader = { type = "header", order = 30, name = L["Groups"], hidden = false }
+	headerOptions.groupheader = { type = "header", order = 30, name = L["Groups"], hidden = IsOptionHidden }
 	for i=1,8 do
 		headerOptions['group'..i] = {
 			type = "toggle",
@@ -422,7 +471,7 @@ do
 			get = FilterGet,
 			set = FilterSet,
 			disabled = function() return editedHeader.groupFilter=="auto" end,
-			hidden = false,
+			hidden = IsOptionHidden,
 			arg = {  tostring(i), "groupFilter", "1,2,3,4,5,6,7,8" },
 		}
 	end
@@ -438,7 +487,7 @@ do
 			editedHeader.strictFiltering = (editedHeader.roleFilter~=nil and editedHeader.groupFilter~=nil) or nil
 			RefreshLayout()
 		end,
-		hidden = false,
+		hidden = IsOptionHidden,
 	}
 end
 
@@ -455,7 +504,7 @@ do
 		descs  = names
 		widths = { .75, .75, .75 }
 	end
-	headerOptions.roleheader = { type = "header", order = 40, name = L["Roles"], hidden = false }
+	headerOptions.roleheader = { type = "header", order = 40, name = L["Roles"], hidden = IsOptionHidden }
 	for i,role in ipairs(roles) do
 		headerOptions['role'..i] = {
 			type = "toggle",
@@ -465,7 +514,7 @@ do
 			width = widths[i],
 			get = FilterGet,
 			set = FilterSet,
-			hidden = false,
+			hidden = IsOptionHidden,
 			arg = { role, "roleFilter", "DAMAGER,HEALER,MAINASSIST,MAINTANK,NONE,TANK" },
 		}
 	end
@@ -509,7 +558,7 @@ layoutOptions = {
 				desc   = L["Select what kind of units you want to display on the new header and click the create button."],
 				get    = function(info)	return layoutOptions.new.args.type.arg end,
 				set    = function(info,v) layoutOptions.new.args.type.arg = v end,
-				values = { player = L["players"], pet = L["pets"] },
+				values = { player = L["players"], pet = L["pets"], special = L["special"] },
 				arg    = "player",
 				hidden = false,
 			},
@@ -558,14 +607,14 @@ generalOptions = {
 	insecureHeaders = {
 		order = 1,
 		type = "toggle",
-		name = "|cffffd200".. L["Use Custom Unit Frames"] .."|r",
-		desc = L["Use custom unit frames instead of blizzard frames. This fixes some bugs in blizzard code, but as caveat frame units cannot join/exit the roster while in combat."],
+		name = "|cffffd200".. L["Use Blizzard Unit Frames"] .."|r",
+		desc = L["Disable this option to use custom unit frames instead of blizzard frames. This fixes some bugs in blizzard code, but units cannot join/exit the roster while in combat."],
 		width = "full",
 		get = function(info)
-			return Grid2Layout.db.global.useInsecureHeaders
+			return not Grid2Layout.db.global.useInsecureHeaders
 		end,
 		set = function(info,v)
-			Grid2Layout.db.global.useInsecureHeaders= v or nil
+			Grid2Layout.db.global.useInsecureHeaders= (not v) or nil
 			RefreshLayout(true)
 		end,
 	},

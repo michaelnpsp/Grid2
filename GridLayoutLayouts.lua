@@ -34,16 +34,6 @@ Grid2Layout:AddLayout("By Group", {
 	meta = META_ALL,
 })
 
-Grid2Layout:AddLayout("Special Test", {
-	meta = META_ALL,
-	[1] = {
-		type = 'special',
-		hideEmptyUnits = false,
-		maxColumns = 2,
-		unitsFilter = 'player,party1,party2,party3,party4,target,focus,boss1,boss2,boss3',
-	},
-})
-
 Grid2Layout:AddLayout("By Group w/Pets", {
 	meta = META_ALL,
 	[1] = "auto",

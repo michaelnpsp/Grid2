@@ -733,7 +733,7 @@ function Grid2Layout:AddCustomLayouts()
 	if self.customLayouts then
 		for n,l in pairs(self.customLayouts) do
 			for _,h in ipairs(l) do
-				h.type = strmatch(h.type or '', 'pet') -- conversion of old format
+				h.type = (h.type=='special' and 'special') or strmatch(h.type or '', 'pet') -- conversion from old format
 				if Grid2.isClassic and h.groupBy == 'ASSIGNEDROLE' then -- convert non existant roles in classic
 					h.groupBy, h.groupingOrder = 'ROLE', 'MAINTANK,MAINASSIST,NONE'
 				end
