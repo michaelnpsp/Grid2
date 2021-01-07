@@ -10,6 +10,7 @@ local GetReadyCheckStatus = GetReadyCheckStatus
 local readyChecking
 local readyCount = 0
 local readyStatuses = {}
+local roster_players = Grid2.roster_players
 
 function ReadyCheck:ClearStatusDelayed()
 	readyCount = readyCount + 1
@@ -71,7 +72,7 @@ function ReadyCheck:OnDisable()
 end
 
 function ReadyCheck:IsActive(unit)
-	return readyChecking
+	return readyChecking and roster_players[unit]
 end
 
 function ReadyCheck:GetReadyCheckStatus(unit)
