@@ -4,6 +4,7 @@ local UnitAura = UnitAura
 local myUnits = Grid2.roster_my_units
 local typeColors = Grid2.debuffTypeColors
 local dispelTypes = Grid2.debuffDispelTypes
+local playerDispelTypes = Grid2.debuffPlayerDispelTypes
 
 local emptyTable = {}
 local textures = {}
@@ -50,83 +51,20 @@ local function status_UpdateStateBoss(self, _, name, _, _, boss)
 	return boss and (not self.spells[name])
 end
 
--- Dispellable debuffs
-local status_UpdateStateDispel, status_UpdateStateDispelBlackList, InitDispellData
-if Grid2.isClassic then
-	local dispellable
-	InitDispellData = function()
-		local class = select(2,UnitClass('player'))
-		if class == 'DRUID' then
-			dispellable = { Poison = IsPlayerSpell(2893) or IsPlayerSpell(8946), Curse = IsPlayerSpell(2782) }
-		elseif class == 'PALADIN' then
-			dispellable = { Poison = IsPlayerSpell(4987) or IsPlayerSpell(1152), Disease = IsPlayerSpell(4987) or IsPlayerSpell(1152), Magic = IsPlayerSpell(4987) }
-		elseif class == 'PRIEST' then
-			dispellable = { Magic = IsPlayerSpell(527), Disease = IsPlayerSpell(552) or IsPlayerSpell(528) }
-		elseif class == 'SHAMAN' then
-			dispellable = { Disease = IsPlayerSpell(2870), Poison = IsPlayerSpell(526) }
-		elseif class == 'MAGE' then
-			dispellable = { Curse = IsPlayerSpell(475) }
-		elseif class == 'WARLOCK' then
-			dispellable = { Magic = true }
-		else
-			dispellable = {}
-		end
-		InitDispellData = nil
-	end
-	status_UpdateStateDispel = function(self, _, _, _, _, _, typ)
-		return typ and dispellable[typ]
-	end
-	status_UpdateStateDispelBlackList = function(self, _, name, _, _, _, typ)
-		return typ and dispellable[typ] and (not self.spells[name])
-	end
-else
-	status_UpdateStateDispel = function(self, unit)
-		-- Dispeleable debuffs
-		local name, texture, count, debuffType, duration, expiration = UnitAura(unit, 1, 'RAID|HARMFUL')
-		if name then
-			self.idx[unit] = 1
-			self.tex[unit] = texture
-			self.dur[unit] = duration
-			self.exp[unit] = expiration
-			self.cnt[unit] = count
-			self.typ[unit] = debuffType
-			self.tkr[unit] = 1
-			self.seen = 1
-		elseif self.idx[unit] then
-			self:Reset(unit)
-			self.seen = 1  -- using 1 we force indicators update to clear the status, but avoiding more StatusAuras calls to this function to check next unit auras.
-		else
-			self.seen = -1 -- avoid indicators update, status was inactive and must continue inactive
-		end
-	end
-	status_UpdateStateDispelBlackList = function(self, unit)
-		-- Dispeleable debuffs + blacklist
-		local i, spells = 1, self.spells
-		while true do
-			local name, texture, count, debuffType, duration, expiration = UnitAura(unit, i, 'RAID|HARMFUL')
-			if name then
-				if not spells[name] then -- check blacklist
-					self.idx[unit] = i
-					self.tex[unit] = texture
-					self.dur[unit] = duration
-					self.exp[unit] = expiration
-					self.cnt[unit] = count
-					self.typ[unit] = debuffType
-					self.tkr[unit] = 1
-					self.seen = 1
-					return
-				end
-			elseif self.idx[unit] then
-				self:Reset(unit)
-				self.seen = 1  -- using 1 we force indicators update to clear the status, but avoiding more StatusAuras calls to this function to check next unit auras.
-				return
-			else
-				self.seen = -1 -- avoid indicators update, status was inactive and must continue inactive
-				return
-			end
-			i = i + 1
-		end
-	end
+-- Dispellable by Player debuffs
+local function status_UpdateStateDispel(self, _, _, _, _, _, typ)
+	return typ and playerDispelTypes[typ]
+end
+local function status_UpdateStateDispelBlackList (self, _, name, _, _, _, typ)
+	return typ and playerDispelTypes[typ] and (not self.spells[name])
+end
+
+-- Non Dispellable by Player debuffs
+local function status_UpdateStateNonDispel(self, _, _, _, _, _, typ)
+	return not (typ and playerDispelTypes[typ])
+end
+local function status_UpdateStateNonDispelBlackList (self, _, name, _, _, _, typ)
+	return not (typ and playerDispelTypes[typ]) and (not self.spells[name])
 end
 
 -- Called by "icons" indicator
@@ -188,7 +126,20 @@ local function status_GetIconsDispel(self, unit, max)
 	return j-1, textures, counts, expirations, durations, colors
 end
 
--- Called by "tooltip" indicator
+local function status_GetIconsNonDispel(self, unit, max)
+	local i, j, spells, name, debuffType = 1, 1, self.spells
+	repeat
+		name, textures[j], counts[j], debuffType, durations[j], expirations[j] = UnitAura(unit, i, "HARMFUL")
+		if not name then break end
+		if not (debuffType and playerDispelTypes[debuffType]) and not spells[name] then
+			colors[j] = typeColors[debuffType] or self.color
+			j = j + 1
+		end
+		i = i + 1
+	until j>max
+	return j-1, textures, counts, expirations, durations, colors
+end
+
 local function status_GetTooltipDispel(self, unit, tip)
 	local index = self.idx[unit]
 	if index then
@@ -196,14 +147,25 @@ local function status_GetTooltipDispel(self, unit, tip)
 	end
 end
 
+local function status_GetTooltipNonDispel(self, unit, tip)
+	local index = self.idx[unit]
+	if index then
+		tip:SetUnitDebuff(unit, index)
+	end
+end
+
 -- Called by status:UpdateDB()
 local function status_Update(self, dbx)
 	self.spells = self.spells or emptyTable
 	self.color  = dbx.color1
-	if dbx.filterDispelDebuffs then
+	if dbx.filterDispelDebuffs==true then
 		self.GetIcons     = status_GetIconsDispel
 		self.GetTooltip   = status_GetTooltipDispel
 		self.UpdateState  = dbx.auras and status_UpdateStateDispelBlackList or status_UpdateStateDispel
+	elseif dbx.filterDispelDebuffs==false then
+		self.GetIcons     = status_GetIconsNonDispel
+		self.GetTooltip   = status_GetTooltipNonDispel
+		self.UpdateState  = dbx.auras and status_UpdateStateNonDispelBlackList or status_UpdateStateNonDispel
 	elseif dbx.useWhiteList then
 		self.GetIcons 	  = status_GetIconsWhiteList
 		self.UpdateState  = status_UpdateStateWhiteList
@@ -231,9 +193,6 @@ do
 	Grid2.setupFunc["debuffs"] = function(baseKey, dbx)
 		if Grid2.classicDurations then
 			UnitAura = LibStub("LibClassicDurations").UnitAuraDirect
-		end
-		if InitDispellData then -- dispell data for classic
-			InitDispellData()
 		end
 		if dbx.spellName then -- fix possible wrong data in old database
 			dbx.spellName = nil

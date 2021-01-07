@@ -336,21 +336,54 @@ end
 
 -- Grid2Options:MakeIndicatorSizeOptions()
 function Grid2Options:MakeIndicatorIconSizeOptions(indicator, options, optionParams)
-	options.size = {
-		type = "range",
-		order = 10,
+	options.sizeSource = {
+		type = "select",
+		order = 10.1,
 		name = L["Icon Size"],
-		desc = L["Adjust the size of the icon, select zero to use the theme default icon size."],
-		min = 0,
-		max = 50,
-		step = 1,
-		get = function ()
-			return indicator.dbx.size
-		end,
-		set = function (_, v)
-			indicator.dbx.size = v>0 and v or nil
+		desc = L["Default:\nUse the size specified by the active theme.\nPixels:\nUser defined size in pixels.\nPercent:\nUser defined size as percent of the frame height."],
+		get = function (info) return (indicator.dbx.size==nil and 1) or (indicator.dbx.size>1 and 2) or 3 end,
+		set = function (info, v)
+			indicator.dbx.size = (v==3 and .4) or (v==2 and 14) or nil
 			self:RefreshIndicator(indicator, "Layout")
 		end,
+		values = { L["Default"], L["Pixels"], L["Percent"] },
+	}
+	options.sizeAbsolute = {
+		type = "range",
+		order = 10.2,
+		name = L["Icon Size"],
+		desc = L["Adjust the size of the icon."],
+		min = 5,
+		softMax = 50,
+		step = 1,
+		get = function ()
+			return indicator.dbx.size or Grid2Frame.db.profile.iconSize
+		end,
+		set = function (_, v)
+			indicator.dbx.size = v
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		disabled = function() return indicator.dbx.size==nil end,
+		hidden = function()	return (indicator.dbx.size or Grid2Frame.db.profile.iconSize or 0)<=1 end,
+	}
+	options.sizeRelative = {
+		type = "range",
+		order = 10.3,
+		name = L["Icon Size"],
+		desc = L["Adjust the size of the icon."],
+		min = 0.01,
+		max = 1,
+		step = 0.01,
+		isPercent = true,
+		get = function ()
+			return indicator.dbx.size or Grid2Frame.db.profile.iconSize
+		end,
+		set = function (_, v)
+			indicator.dbx.size = v
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		disabled = function() return indicator.dbx.size==nil end,
+		hidden = function() return (indicator.dbx.size or Grid2Frame.db.profile.iconSize or 1)>1 end,
 	}
 end
 

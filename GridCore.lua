@@ -18,6 +18,8 @@ Grid2.versionstring = "Grid2 v"..GetAddOnMetadata("Grid2", "Version")
 Grid2.isClassic = select(4,GetBuildInfo())<20000
 Grid2.isWoW90   = select(4,GetBuildInfo())>=90000
 
+Grid2.playerClass = select(2, UnitClass("player"))
+
 if not strfind(Grid2.versionstring,'project') and (GetAddOnMetadata("Grid2", "X-WoW-Project")=='classic') ~= Grid2.isClassic then
 	Grid2.wrongVersionMessage = string.format("Error, this version of Grid2 was packaged for World of Warcraft %s. Please install the %s version instead.",
 								 Grid2.isClassic and 'Retail' or 'Classic', Grid2.isClassic and 'Classic' or 'Retail')
@@ -111,8 +113,6 @@ function Grid2:OnInitialize()
 
 	self.debugging = self.db.global.debug
 
-	self.playerClass = select(2, UnitClass("player"))
-
 	self.classicDurations = self.isClassic and not self.db.global.disableDurations or nil
 
 	local media = LibStub("LibSharedMedia-3.0", true)
@@ -136,6 +136,7 @@ function Grid2:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	self:RegisterEvent("UNIT_NAME_UPDATE")
 	self:RegisterEvent("UNIT_PET")
+	self:RegisterEvent("SPELLS_CHANGED", "UpdatePlayerDispelTypes")
 	if not self.isClassic then
 		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	end

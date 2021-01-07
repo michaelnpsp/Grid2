@@ -245,6 +245,84 @@ function Grid2:SetDefaultTheme(theme)
 	end
 end
 
+-- dispellable by player spells types tracking
+do
+	local class, dispel, func  = Grid2.playerClass, {}, nil
+	if Grid2.isClassic then
+		if class == 'DRUID' then
+			func = function()
+				dispel.Poison = IsPlayerSpell(2893) or IsPlayerSpell(8946)
+				dispel.Curse  = IsPlayerSpell(2782)
+			end
+		elseif class == 'PALADIN' then
+			func = function()
+				dispel.Poison  = IsPlayerSpell(4987) or IsPlayerSpell(1152)
+				dispel.Disease = IsPlayerSpell(4987) or IsPlayerSpell(1152)
+				dispel.Magic   = IsPlayerSpell(4987)
+			end
+		elseif class == 'PRIEST' then
+			func = function()
+				dispel.Magic   = IsPlayerSpell(527)
+				dispel.Disease = IsPlayerSpell(552) or IsPlayerSpell(528)
+			end
+		elseif class == 'SHAMAN' then
+			func = function()
+				dispel.Disease = IsPlayerSpell(2870)
+				dispel.Poison  = IsPlayerSpell(526)
+			end
+		elseif class == 'MAGE' then
+			func = function()
+				dispel.Curse = IsPlayerSpell(475)
+			end
+		elseif class == 'WARLOCK' then
+			func = function()
+				dispel.Magic = IsPlayerSpell(19505)
+			end
+		end
+	else -- retail
+		if class == 'DRUID' then
+			func = function()
+				dispel.Magic  = IsPlayerSpell(88423)
+				dispel.Curse  = IsPlayerSpell(88423) or IsPlayerSpell(2782)
+				dispel.Poison = IsPlayerSpell(88423) or IsPlayerSpell(2782)
+			end
+		elseif class == 'PALADIN' then
+			func = function()
+				dispel.Magic   = IsPlayerSpell(4987)
+				dispel.Disease = IsPlayerSpell(4987) or IsPlayerSpell(213644)
+				dispel.Poison  = IsPlayerSpell(4987) or IsPlayerSpell(213644)
+			end
+		elseif class == 'PRIEST' then
+			func = function()
+				dispel.Magic   = IsPlayerSpell(527)
+				dispel.Disease = IsPlayerSpell(527) or IsPlayerSpell(213634)
+			end
+		elseif class == 'SHAMAN' then
+			func = function(self, event)
+				dispel.Magic = IsPlayerSpell(77130)
+				dispel.Curse = IsPlayerSpell(77130) or IsPlayerSpell(51886)
+			end
+		elseif class == 'MAGE' then
+			func = function()
+				dispel.Curse = IsPlayerSpell(475)
+			end
+		elseif class == 'WARLOCK' then
+			func = function()
+				dispel.Magic = IsPlayerSpell(115276) or IsPlayerSpell(89808)
+			end
+		elseif class == 'MONK' then
+			func = function()
+				dispel.Magic   = IsPlayerSpell(115450)
+				dispel.Disease = IsPlayerSpell(115450) or IsPlayerSpell(218164)
+				dispel.Poison  = IsPlayerSpell(115450) or IsPlayerSpell(218164)
+			end
+		end
+	end
+	-- publish usefull tables and methods
+	Grid2.debuffPlayerDispelTypes = dispel
+	Grid2.UpdatePlayerDispelTypes = func
+end
+
 -- Process command line order
 do
 	local display = {  never = 'Never', always = 'Always', grouped = 'Grouped', raid = 'Raid', toggle = false }

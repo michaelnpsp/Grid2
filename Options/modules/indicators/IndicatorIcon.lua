@@ -9,7 +9,7 @@ Grid2Options:RegisterIndicatorOptions("icon", true, function(self, indicator)
 	self:MakeIndicatorBorderOptions(indicator, options)
 	self:MakeIndicatorCooldownOptions(indicator, options)
 	self:MakeIndicatorAnimationOptions(indicator, options)
-	self:MakeIndicatorIconCustomOptions(indicator, options)	
+	self:MakeIndicatorIconCustomOptions(indicator, options)
 	self:MakeIndicatorStatusOptions(indicator, statuses)
 	self:AddIndicatorOptions(indicator, statuses, options )
 end)
@@ -43,7 +43,7 @@ function Grid2Options:MakeIndicatorIconCustomOptions(indicator, options)
 	self:MakeHeaderOptions( options, "StackText" )
 	options.fontOffsetX = {
 		type = "range",
-		order = 104,
+		order = 109.1,
 		name = L["X Offset"],
 		desc = L["Adjust the horizontal offset of the text"],
 		softMin  = -50,
@@ -58,7 +58,7 @@ function Grid2Options:MakeIndicatorIconCustomOptions(indicator, options)
 	}
 	options.fontOffsetY = {
 		type = "range",
-		order = 105,
+		order = 109.2,
 		name = L["Y Offset"],
 		desc = L["Adjust the vertical offset of the text"],
 		softMin  = -50,

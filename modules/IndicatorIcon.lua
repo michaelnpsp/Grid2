@@ -124,6 +124,9 @@ local function Icon_Layout(self, parent)
 	Grid2:SetFrameBackdrop(f, self.backdrop)
 	f:SetBackdropBorderColor(r, g, b, a)
 	local size = self.iconSize
+	if size<=1 then
+		size = size * parent:GetHeight()
+	end
 	f:SetSize(size,size)
 
 	if not self.disableStack then
