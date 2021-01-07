@@ -608,7 +608,7 @@ generalOptions = {
 		order = 1,
 		type = "toggle",
 		name = "|cffffd200".. L["Use Blizzard Unit Frames"] .."|r",
-		desc = L["Disable this option to use custom unit frames instead of blizzard frames. This fixes some bugs in blizzard code, but units cannot join/exit the roster while in combat."],
+		desc = L["Disable this option to use custom unit frames instead of blizzard frames. This fixes some bugs in blizzard code, but units cannot join/leave the roster while in combat."],
 		width = "full",
 		get = function(info)
 			return not Grid2Layout.db.global.useInsecureHeaders

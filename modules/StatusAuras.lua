@@ -109,10 +109,9 @@ do
 	end
 end
 
-
-local UpdateAurasOfUnit, ClearAurasOfUnit, MakeStatusFilter
-if isClassic then -- classic
-	local next = next
+-- class filter for WoW Classic
+local MakeStatusFilter
+if isClassic then
 	local UnitClass = UnitClass
 	local filter_mt = {	__index = function(t,u) local _,c = UnitClass(u); local r=t.source[c]; t[u]=r; return r; end }
 	MakeStatusFilter = function(status)
@@ -127,31 +126,24 @@ if isClassic then -- classic
 			status.filtered = nil
 		end
 	end
-	ClearAurasOfUnit = function(_, unit)
+end
+
+-- Clear/update auras when unit changes or leaves the roster.
+do
+	local function ClearAurasOfUnit(_, unit)
 		for status in next, Statuses do
 			local filtered = status.filtered
 			if filtered then filtered[unit] = nil end
 			status.idx[unit], status.exp[unit], status.val[unit] = nil, nil, nil
 		end
 	end
-	UpdateAurasOfUnit = function(_, unit)
-		ClearAurasOfUnit(nil, unit)
+	local function UpdateAurasOfUnit(_, unit, joined)
+		if not joined then ClearAurasOfUnit(nil, unit) end -- we need to clear auras here due to special headers (a unit frame of a non-existent unit could be visible if hideEmptyUnits=false).
 		AuraFrame_OnEvent(nil, nil, unit)
 	end
-else -- retail
-	ClearAurasOfUnit = function(_, unit)
-		for status in next, Statuses do
-			status.idx[unit], status.exp[unit], status.val[unit] = nil, nil, nil
-		end
-	end
-	UpdateAurasOfUnit = function(_, unit)
-		AuraFrame_OnEvent(nil, nil, unit)
-	end
+	Grid2.RegisterMessage( Statuses, "Grid_UnitLeft", ClearAurasOfUnit )
+	Grid2.RegisterMessage( Statuses, "Grid_UnitUpdated", UpdateAurasOfUnit )
 end
-
--- update and clear auras when unit changes
-Grid2.RegisterMessage( Statuses, "Grid_UnitUpdated", UpdateAurasOfUnit )
-Grid2.RegisterMessage( Statuses, "Grid_UnitLeft",    ClearAurasOfUnit  )
 
 -- EnableAuraEvents() DisableAuraEvents()
 local EnableAuraEvents, DisableAuraEvents

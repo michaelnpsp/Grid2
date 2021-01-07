@@ -100,7 +100,7 @@ do
 			roster_units[guid] = unit
 			roster_pets[unit] = guid
 		end
-		Grid2:SendMessage("Grid_UnitUpdated", unit)
+		Grid2:SendMessage("Grid_UnitUpdated", unit, true)
 	end
 
 	local function DelUnit(unit)
