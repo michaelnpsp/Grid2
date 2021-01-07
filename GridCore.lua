@@ -136,7 +136,9 @@ function Grid2:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	self:RegisterEvent("UNIT_NAME_UPDATE")
 	self:RegisterEvent("UNIT_PET")
-	self:RegisterEvent("SPELLS_CHANGED", "UpdatePlayerDispelTypes")
+	if self.UpdatePlayerDispelTypes then
+		self:RegisterEvent("SPELLS_CHANGED", "UpdatePlayerDispelTypes")
+	end
 	if not self.isClassic then
 		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	end
