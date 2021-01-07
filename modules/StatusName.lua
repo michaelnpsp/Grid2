@@ -4,6 +4,8 @@ local UnitName = UnitName
 
 Name.IsActive = Grid2.statusLibrary.IsActive
 
+local defaultName
+
 function Name:UNIT_NAME_UPDATE(_, unit)
 	self:UpdateIndicators(unit)
 end
@@ -17,16 +19,20 @@ function Name:OnDisable()
 end
 
 function Name:GetText(unit)
-	return UnitName(unit) or unit
+	return UnitName(unit) or (defaultName==1 and unit) or defaultName or ''
 end
 
 function Name:GetTooltip(unit,tip)
 	tip:SetUnit(unit)
 end
 
+function Name:UpdateDB()
+	defaultName = self.dbx.defaultName
+end
+
 local function Create(baseKey, dbx)
 	Grid2:RegisterStatus(Name, {"text","tooltip"}, baseKey, dbx)
-
+	Name:UpdateDB()
 	return Name
 end
 
