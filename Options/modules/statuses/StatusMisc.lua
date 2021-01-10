@@ -2,8 +2,6 @@
 
 local L = Grid2Options.L
 
-Grid2Options:RegisterStatusOptions("name", "hidden")
-
 Grid2Options:RegisterStatusOptions("afk", "misc", nil, {
 	titleIcon = "Interface\\ICONS\\Spell_nature_sleep"
 })

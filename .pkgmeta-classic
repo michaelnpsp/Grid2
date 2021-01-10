@@ -29,6 +29,7 @@ ignore:
  - modules/StatusHealAbsorbs.lua
  - modules/StatusSummon.lua
  - modules/StatusPhased.lua
+ - modules/StatusStagger.lua
  - RaidDebuffsOptions/RaidDebuffsBfA.lua
  - RaidDebuffsOptions/RaidDebuffsLegion.lua
  - RaidDebuffsOptions/RaidDebuffsShadowlands.lua
