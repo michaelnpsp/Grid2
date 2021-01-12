@@ -8,12 +8,12 @@ Name.IsActive = Grid2.statusLibrary.IsActive
 local defaultName
 
 local function GetText1(self, unit)
-	return UnitName(unit) or (defaultName==1 and unit) or defaultName or ''
+	return UnitName(unit) or (defaultName==1 and unit) or defaultName
 end
 
 local function GetText2(self, unit)
 	local name = UnitName(unit)
-	return (name and strCyr2Lat(name)) or (defaultName==1 and unit) or defaultName or ''
+	return (name and strCyr2Lat(name)) or (defaultName==1 and unit) or defaultName
 end
 
 function Name:UNIT_NAME_UPDATE(_, unit)
