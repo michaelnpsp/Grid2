@@ -2,8 +2,6 @@
 
 local L = Grid2Options.L
 
-Grid2Options:RegisterStatusOptions("name", "hidden")
-
 Grid2Options:RegisterStatusOptions("afk", "misc", nil, {
 	titleIcon = "Interface\\ICONS\\Spell_nature_sleep"
 })
@@ -59,4 +57,12 @@ Grid2Options:RegisterStatusOptions("summon", "misc", nil, {
 	width = "full",
 	titleIcon = "2470702",
 	titleIconCoords = {0.5890625, 0.7390625, 0.115625,  0.415625},
+})
+
+Grid2Options:RegisterStatusOptions("monk-stagger", "misc", nil, {
+	color1 = L["High stagger"],
+	color2 = L["Medium stagger"],
+	color3 = L["Low stagger"],
+	width = "full",
+	titleIcon = "463281",
 })
