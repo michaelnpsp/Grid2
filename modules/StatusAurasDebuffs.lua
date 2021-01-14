@@ -27,15 +27,6 @@ local function CompileUpdateStateFilter(status)
 	return assert(loadstring(source))()
 end
 
--- Filter + black list
-local function status_UpdateStateFilter(self, unit, name, duration, caster, boss, typ)
-	return ( not self.spells[name] ) and
-		   ( self.filterLong  ==nil  or self.filterLong  ~= (duration>=300) ) and
-		   ( self.filterBoss  ==nil  or self.filterBoss  ~= boss ) and
-		   ( self.filterCaster==nil  or self.filterCaster~= (myUnits[caster]==true) ) and
-		   ( self.filterTyped ==nil  or self.filterTyped ~= (typ=='Typeless') )
-end
-
 -- All debuffs + white list
 local function status_UpdateStateWhiteList(self, unit, name)
 	return self.spells[name]
@@ -44,11 +35,6 @@ end
 -- All debuffs + black list
 local function status_UpdateStateBlackList(self, unit, name)
 	return not self.spells[name]
-end
-
--- Boss Debuffs filter + black list
-local function status_UpdateStateBoss(self, _, name, _, _, boss)
-	return boss and (not self.spells[name])
 end
 
 -- Dispellable by Player debuffs
@@ -177,9 +163,6 @@ local function status_Update(self, dbx)
 		if self.filterLong == nil and self.filterBoss == nil and self.filterTyped ==nil and self.filterCaster == nil then
 			self.UpdateState  = status_UpdateStateBlackList
 			self.GetIcons     = status_GetIconsBlackList
-		elseif self.filterBoss==false then
-			self.UpdateState  = status_UpdateStateBoss
-			self.GetIcons     = status_GetIconsFilter
 		else
 			self.UpdateState = CompileUpdateStateFilter(self)
 			self.GetIcons    = status_GetIconsFilter
