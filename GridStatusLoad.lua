@@ -1,10 +1,16 @@
--- Statuses Load filter management
+-- Statuses Load filter management, by MiCHaEL
 local Grid2 = Grid2
 local Grid2Frame = Grid2Frame
+local pairs = pairs
+local next = next
 
--- misc functions
+-- local variables
+local indicators = {} -- indicators marked for update
 local registered = {} -- registered messages
-local function SetRegisterMessage(enabled, message)
+local statuses   = { playerSpec = {}, groupInstType = {} }
+
+-- local functions
+local function RegisterMessage(message, enabled)
 	if not enabled ~= not registered[message] then
 		registered[message] = not not enabled
 		if enabled then
@@ -15,8 +21,25 @@ local function SetRegisterMessage(enabled, message)
 	end
 end
 
-local indicators = {} -- temporary table
-local function UpdateMarkedIndicators()
+local function UpdateMessages(status, load)
+	statuses.playerSpec[status] = load and load.playerSpec~=nil or nil
+	statuses.groupInstType[status] = load and (load.groupType~=nil or load.instType~=nil) or nil
+	RegisterMessage( "Grid_GroupTypeChanged",  next(statuses.groupInstType) )
+	RegisterMessage( "Grid_PlayerSpecChanged", next(statuses.playerSpec) )
+end
+
+local function RegisterIndicators(self)
+	local method = self.suspended and "UnregisterStatus" or "RegisterStatus"
+	for indicator, priority in pairs(self.priorities) do -- register/unregister indicators
+		indicator[method](indicator, self, priority)
+		indicators[indicator] = true
+	end
+	if not self.suspended then
+		self:Refresh() -- needed by aura statuses, to fill status cache with units aura info
+	end
+end
+
+local function UpdateIndicators()
 	for _, frame in next, Grid2Frame.registeredFrames do
 		local unit = frame.unit
 		if unit then
@@ -28,7 +51,7 @@ local function UpdateMarkedIndicators()
 	wipe(indicators)
 end
 
-local function UpdateSuspended(self)
+local function UpdateStatus(self)
 	local prev = self.suspended
 	local load = self.dbx.load
 	if load then
@@ -45,70 +68,49 @@ local function UpdateSuspended(self)
 	end
 end
 
-local function RefreshSuspended(self, update)
-	if UpdateSuspended(self) then
-		local method = self.suspended and "UnregisterStatus" or "RegisterStatus"
-		for indicator, priority in pairs(self.priorities) do
-			indicator[method](indicator, self, priority)
-			indicators[indicator] = true
-		end
-		if not self.suspended then
-			self:Refresh() -- needed by aura statuses
-		end
-		if update then
-			UpdateMarkedIndicators()
-		end
-		return true
+local function RefreshStatus(self)
+	if UpdateStatus(self) then
+		RegisterIndicators(self)
+		UpdateIndicators()
 	end
 end
 
-local statuses = { playerSpec = {}, groupType = {}, instType = {} }
-local function RefreshStatusesFilters(filterType)
+local function RefreshStatuses(filterType)
 	for status in pairs(statuses[filterType]) do
-		RefreshSuspended(status)
+		if UpdateStatus(status) then
+			RegisterIndicators(status)
+		end
 	end
+	UpdateIndicators()
 end
 
--- messages management
+-- message events
 function Grid2:Grid_GroupTypeChanged()
-	RefreshStatusesFilters('groupType')
-	RefreshStatusesFilters('instType')
-	UpdateMarkedIndicators()
+	RefreshStatuses('groupInstType')
 end
 
 function Grid2:Grid_PlayerSpecChanged()
-	RefreshStatusesFilters('playerSpec')
-	UpdateMarkedIndicators()
+	RefreshStatuses('playerSpec')
 end
 
 -- status methods
 local status = Grid2.statusPrototype
 
-function status:RegisterLoad(update)
+function status:RegisterLoad()
 	local load = self.dbx and self.dbx.load
 	if load then
-		statuses.playerSpec[self] = load.playerSpec~=nil or nil
-		statuses.groupType[self]  = load.groupType ~=nil or nil
-		statuses.instType[self]   = load.instType  ~=nil or nil
-		if update then UpdateSuspended(self) end
-	else
-		statuses.playerSpec[self] = nil
-		statuses.groupType[self]  = nil
-		statuses.instType[self]   = nil
-		if update then self.suspended = nil end
+		UpdateMessages(self, load)
+		UpdateStatus(self)
 	end
-	SetRegisterMessage( next(statuses.groupType) or next(statuses.instType),  "Grid_GroupTypeChanged" )
-	SetRegisterMessage( next(statuses.playerSpec), "Grid_PlayerSpecChanged" )
 end
 
 function status:UnregisterLoad()
 	if self.dbx.load then
-		self.dbx = nil
-		self:RegisterLoad()
+		UpdateMessages(self)
 	end
 end
 
 function status:RefreshLoad() -- used by options
-	self:RegisterLoad(false)
-	return RefreshSuspended(self, true)
+	UpdateMessages(self, self.dbx and self.dbx.load)
+	RefreshStatus(self)
 end

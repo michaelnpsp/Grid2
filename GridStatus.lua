@@ -121,7 +121,7 @@ function Grid2:RegisterStatus(status, types, baseKey, dbx)
 		t[#t+1] = status
 	end
 	status.dbx = dbx
-	status:RegisterLoad(true)
+	status:RegisterLoad()
 end
 
 function Grid2:UnregisterStatus(status)

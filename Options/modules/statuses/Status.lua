@@ -129,6 +129,24 @@ do
 	end
 
 	function Grid2Options:MakeStatusLoadOptions(status, options, optionParams)
+		options.Never = {
+			type = "toggle",
+			width = "full",
+			name = L["Never"],
+			desc = L["Never load this status"],
+			order = 1,
+			get = function(info) return status.dbx.load and status.dbx.load.disabled end,
+			set = function(info, value)
+				if value then
+					if status.dbx.load==nil then status.dbx.load = {} end
+					status.dbx.load.disabled = true
+				else
+					status.dbx.load.disabled = nil
+					if not next(status.dbx.load) then status.dbx.load = nil end
+				end
+				RefreshStatus(status)
+			end,
+		}
 		SetFilterOptions( status, options, 10,
 			'playerClass',
 			PLAYER_CLASSES,
@@ -182,24 +200,6 @@ do
 				L["Load the status only if the unit frame belong to the specified class."]
 			)
 		end
-		options.Never = {
-			type = "toggle",
-			width = "full",
-			name = L["Never"],
-			desc = L["Never load this status"],
-			order = 1,
-			get = function(info) return status.dbx.load and status.dbx.load.disabled end,
-			set = function(info, value)
-				if value then
-					if status.dbx.load==nil then status.dbx.load = {} end
-					status.dbx.load.disabled = true
-				else
-					status.dbx.load.disabled = nil
-					if not next(status.dbx.load) then status.dbx.load = nil end
-				end
-				RefreshStatus(status)
-			end,
-		}
 	end
 end
 
