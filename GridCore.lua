@@ -18,7 +18,11 @@ Grid2.versionstring = "Grid2 v"..GetAddOnMetadata("Grid2", "Version")
 Grid2.isClassic = select(4,GetBuildInfo())<20000
 Grid2.isWoW90   = select(4,GetBuildInfo())>=90000
 
-Grid2.playerClass = select(2, UnitClass("player"))
+Grid2.groupType      = "solo"
+Grid2.instType       = "other"
+Grid2.instMaxPlayers = 1
+Grid2.playerClass    = select(2, UnitClass("player"))
+Grid2.playerFaction  = UnitFactionGroup('player')
 
 if not strfind(Grid2.versionstring,'project') and (GetAddOnMetadata("Grid2", "X-WoW-Project")=='classic') ~= Grid2.isClassic then
 	Grid2.wrongVersionMessage = string.format("Error, this version of Grid2 was packaged for World of Warcraft %s. Please install the %s version instead.",
@@ -148,6 +152,8 @@ function Grid2:OnEnable()
 	self.db.RegisterCallback(self, "OnProfileCopied", "ProfileChanged")
 	self.db.RegisterCallback(self, "OnProfileReset", "ProfileChanged")
 
+	self.playerClassSpec = self.playerClass .. GetSpecialization()
+
 	self:LoadConfig()
 
 	self:SendMessage("Grid_Enabled")
@@ -191,6 +197,7 @@ end
 
 function Grid2:PLAYER_SPECIALIZATION_CHANGED(_,unit)
 	if unit=='player' then
+		self.playerClassSpec = self.playerClass .. GetSpecialization()
 		if not Grid2:ReloadProfile() then
 			Grid2:ReloadTheme()
 			self:SendMessage("Grid_PlayerSpecChanged") -- Send message only if profile has not changed

@@ -13,7 +13,7 @@ do
 	local function Resize(frame, width, height)
 		if not container then -- container used as recursion lock
 			container = frame.obj.parent
-			frame.obj:SetHeight( frame:GetTop() - container.frame:GetBottom() )
+			frame.obj:SetHeight( frame:GetTop() - container.frame:GetBottom() - 2 )
 			container = nil
 		end
 	end

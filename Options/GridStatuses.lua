@@ -60,7 +60,7 @@ end
 -- Delete a status after confirmation
 function Grid2Options:DeleteStatusConfirm(status)
 	if status then
-		if next(status.indicators)==nil and not status:IsSuspended() then
+		if next(status.indicators)==nil and not status.suspended then
 			Grid2Options:ConfirmDialog( L["Are you sure you want to delete this status ?"], function() Grid2Options:DeleteStatus(status) end )
 		else
 			Grid2Options:MessageDialog( L["This status cannot be deleted because is attached to some indicators or the status is not enabled for this character."] )
@@ -202,8 +202,10 @@ function Grid2Options:MakeStatusChildOptions(status, options)
 	if setupFunc then
 		if not (optionParams and optionParams.hideTitle) then
 			self:MakeStatusTitleOptions(status, options, optionParams)
-			options.settings   = { type = "group", order = 100, name = L['status'], args = {} }
-			options.indicators = { type = "group", order = 200, name = L['indicators'], args = {} }
+			options.settings   = { type = "group", order = 100, name = L['General'], args = {} }
+			options.load       = { type = "group", order = 200, name = L['Load'], args = {} }
+			options.indicators = { type = "group", order = 300, name = L['Indicators'], args = {} }
+			self:MakeStatusLoadOptions( status, options.load.args )
 			self:MakeStatusIndicatorsOptions( status, options.indicators.args )
 			options = options.settings.args
 		end
@@ -258,7 +260,7 @@ function Grid2Options:MakeStatusOptions(status)
 		group.iconCoords = coords
 		group.childGroups = params and params.childGroups or "tab"
 		group.order = (type(order)=='function' and order(status) or order) or (status.name==status.dbx.type and 100 or 200)
-		if status:IsSuspended() then
+		if status.suspended then
 			group.order = group.order+500
 			group.name  = string.format('|cFF808080%s|r',group.name)
 		end

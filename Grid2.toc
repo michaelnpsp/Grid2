@@ -52,6 +52,7 @@ GridLayoutLayouts.lua
 GridIndicator.lua
 GridIndicatorEffects.lua
 GridStatus.lua
+GridStatusLoad.lua
 GridSetup.lua
 GridDefaults.lua
 #@retail@

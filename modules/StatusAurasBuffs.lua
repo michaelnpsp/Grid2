@@ -90,7 +90,7 @@ end
 local function blizzard_Create(baseKey,dbx)
 	local status = Grid2.statusPrototype:new(baseKey)
 	status:Inject(blizzard)
-	Grid2:RegisterStatus(status,  { "icons" }, baseKey, dbx)
+	Grid2:RegisterStatus(status, { "icons" }, baseKey, dbx)
 	return status
 end
 

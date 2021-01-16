@@ -17,6 +17,7 @@ function status:new(name, embed)
 	if embed ~= false then LibStub("AceEvent-3.0"):Embed(e)	end
 	e.name = name
 	e.indicators = {}
+	e.priorities = {}
 	return e
 end
 -- shading color: icon indicator
@@ -62,11 +63,6 @@ status.Refresh = Grid2.Dummy
 -- all indicators
 status.UpdateAllUnits = Grid2.statusLibrary.UpdateAllUnits
 
-function status:IsSuspended()
-	local dbx = self.dbx
-	return (dbx and dbx.playerClass and dbx.playerClass ~= Grid2.playerClass) or nil
-end
-
 function status:UpdateDB(dbx)
 	if dbx then	self.dbx = dbx end
 end
@@ -85,43 +81,47 @@ function status:UpdateIndicators(unit)
 	end
 end
 
-function status:RegisterIndicator(indicator)
-	if self.indicators[indicator] then return end
-	local enabled = next(self.indicators)
-	self.indicators[indicator] = true
-	if not enabled then
-		self.enabled = true
-		self:OnEnable()
+function status:RegisterIndicator(indicator, priority, suspended)
+	if not self.indicators[indicator] then
+		self.priorities[indicator] = priority or indicator.priorities[self]
+		if not suspended then
+			local enabled = next(self.indicators)
+			self.indicators[indicator] = true
+			if not enabled then
+				self.enabled = true
+				self:OnEnable()
+			end
+		end
 	end
 end
 
-function status:UnregisterIndicator(indicator)
-	if not self.indicators[indicator] then return end
-	self.indicators[indicator] = nil
-	local enabled = next(self.indicators)
-	if not enabled then
-		self.enabled = nil
-		self:OnDisable()
+function status:UnregisterIndicator(indicator, priority)
+	if self.indicators[indicator] then
+		self.indicators[indicator] = nil
+		if not priority then
+			self.priorities[indicator] = nil
+		end
+		local enabled = next(self.indicators)
+		if not enabled then
+			self.enabled = nil
+			self:OnDisable()
+		end
 	end
 end
 
 function Grid2:RegisterStatus(status, types, baseKey, dbx)
 	local name = status.name
-	if (baseKey and baseKey ~= name) then
-		self.statuses[name] = nil
-		status.name = baseKey
-	else
-		self.statuses[name] = status
-		for _, type in ipairs(types) do
-			local t = self.statusTypes[type]
-			if not t then
-				t = {}
-				self.statusTypes[type] = t
-			end
-			t[#t+1] = status
+	self.statuses[name] = status
+	for _, type in ipairs(types) do
+		local t = self.statusTypes[type]
+		if not t then
+			t = {}
+			self.statusTypes[type] = t
 		end
+		t[#t+1] = status
 	end
 	status.dbx = dbx
+	status:RegisterLoad(true)
 end
 
 function Grid2:UnregisterStatus(status)
@@ -130,7 +130,9 @@ function Grid2:UnregisterStatus(status)
 			indicator:UnregisterStatus(status)
 		end
 	end
-	if status.Destroy then status:Destroy() end
+	if status.Destroy then
+		status:Destroy()
+	end
 	local name = status.name
 	self.statuses[name] = nil
 	for type, t in pairs(self.statusTypes) do
@@ -141,12 +143,11 @@ function Grid2:UnregisterStatus(status)
 			end
 		end
 	end
+	status:UnregisterLoad()
 end
 
 function Grid2:GetStatusByName(name)
-	for key, status in Grid2:IterateStatuses() do
-		if key == name then return status end
-	end
+	return self.statuses[name]
 end
 
 function Grid2:IterateStatuses(type)

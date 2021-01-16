@@ -206,17 +206,17 @@ do
 		[1280] = 40, -- Tarren Mill vs Southshore
 	}
 	-- Local variables
-	local updateCount, groupType, instType, instMaxPlayers = 0
+	local updateCount = 0
 	-- Used by another modules
 	function Grid2:GetGroupType()
-		return groupType or "solo", instType or "other", instMaxPlayers or 1
+		return self.groupType or "solo", self.instType or "other", self.instMaxPlayers or 1
 	end
 	-- Workaround to fix maxPlayers in pvp when UI is reloaded (retry every .5 seconds for 2-3 seconds), see ticket #641
 	function Grid2:FixGroupMaxPlayers(newInstType)
 		if updateCount<=5 and (newInstType == 'pvp' or newInstType == 'arena') then
 			updateCount = updateCount + 1001 -- +1000, trick to avoid launching the timer if already launched (updateCount<=5 will fail)
 			C_Timer.After( .5, function()
-				if instMaxPlayers==40 and (instType=='pvp' or instType=='arena') then
+				if self.instMaxPlayers==40 and (self.instType=='pvp' or self.instType=='arena') then
 					updateCount = updateCount - 1000
 					Grid2:GroupChanged('GRID2_TIMER')
 				end
@@ -225,10 +225,10 @@ do
 	end
 	-- needed to trigger an update when switching from one BG directly to another
 	function Grid2:PLAYER_ENTERING_WORLD(_, isLogin, isReloadUI)
-		groupType, updateCount = nil, 0
 		if not (isLogin or isReloadUI) then
 			self:ReloadProfile() -- to detect blizzard silent spec change when entering in a LFG instance
 		end
+		self.groupType, updateCount = nil, 0
 		self:GroupChanged('PLAYER_ENTERING_WORLD')
 	end
 	-- partyTypes = solo party arena raid / instTypes = none pvp lfr flex mythic other
@@ -270,10 +270,10 @@ do
 			maxPlayers = 40
 			self:FixGroupMaxPlayers(newInstType)
 		end
-		if groupType ~= newGroupType or instType ~= newInstType or instMaxPlayers ~= maxPlayers then
-			self:Debug("GroupChanged", event, instName, instMapID, groupType, instType, instMaxPlayers, "=>", newGroupType, newInstType, maxPlayers)
-			groupType, instType, instMaxPlayers = newGroupType, newInstType, maxPlayers
-			self:SendMessage("Grid_GroupTypeChanged", groupType, instType, maxPlayers)
+		if self.groupType ~= newGroupType or self.instType ~= newInstType or self.instMaxPlayers ~= maxPlayers then
+			self:Debug("GroupChanged", event, instName, instMapID, self.groupType, self.instType, self.instMaxPlayers, "=>", newGroupType, newInstType, maxPlayers)
+			self.groupType, self.instType, self.instMaxPlayers = newGroupType, newInstType, maxPlayers
+			self:SendMessage("Grid_GroupTypeChanged", newGroupType, newInstType, maxPlayers)
 		end
 		self:QueueUpdateRoster()
 	end

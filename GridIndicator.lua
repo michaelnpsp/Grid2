@@ -50,20 +50,22 @@ function indicator:UpdateDB()
 end
 
 function indicator:RegisterStatus(status, priority)
-	if self.priorities[status] then return end
-	self.statuses[#self.statuses + 1] = status
-	self:SetStatusPriority(status, priority)
-	if not Grid2.suspendedIndicators[self.name] then
-		status:RegisterIndicator(self)
+	if not self.priorities[status] then
+		if not status.suspended then
+			self.statuses[#self.statuses + 1] = status
+			self.priorities[status] = priority
+			self:SortStatuses()
+		end
+		status:RegisterIndicator( self, priority, Grid2.suspendedIndicators[self.name] )
 	end
 end
 
-function indicator:UnregisterStatus(status)
+function indicator:UnregisterStatus(status, priority)
 	if not self.priorities[status] then return end
 	self.priorities[status] = nil
 	tremove(self.statuses, self:GetStatusIndex(status))
 	self:SortStatuses()
-	status:UnregisterIndicator(self)
+	status:UnregisterIndicator(self, priority)
 end
 
 function indicator:GetStatusIndex(status)
@@ -79,12 +81,15 @@ function indicator:SortStatuses()
 end
 
 function indicator:SetStatusPriority(status, priority)
-	self.priorities[status] = priority
-	self:SortStatuses()
+	if not status.suspended then
+		self.priorities[status] = priority
+		self:SortStatuses()
+	end
+	status.priorities[self] = priority
 end
 
 function indicator:GetStatusPriority(status)
-	return self.priorities[status]
+	return status.priorities[self]
 end
 
 function indicator:GetCurrentStatus(unit)

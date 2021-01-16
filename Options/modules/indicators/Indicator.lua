@@ -7,6 +7,14 @@ local L = Grid2Options.L
 -- Grid2Options:MakeIndicatorStatusOptions()
 -- Grid2Options:MakeStatusIndicatorOptions()
 do
+	local function GetIndexOfValue(map, status)
+		for i, s in ipairs(map) do
+			if s == status then
+				return i
+			end
+		end
+	end
+
 	local function GetIndicatorNewPriority(indicator)
 		local priority = 50
 		local map = Grid2:DbGetValue('statusMap', indicator.name)
@@ -34,11 +42,6 @@ do
 		Grid2Options:RefreshIndicator(indicator, "Layout")
 	end
 
-	local function SetStatusPriority(indicator, status, priority)
-		Grid2:DbSetMap( indicator.name, status.name, priority)
-		indicator:SetStatusPriority(status, priority)
-	end
-
 	local function RefreshIndicatorCurrentStatusOptions(info)
 		wipe(info.arg.options)
 		Grid2Options:MakeIndicatorCurrentStatusOptions(info.arg.indicator, info.arg.options)
@@ -58,54 +61,71 @@ do
 		SetIndicatorStatus(info, info[#info], value)
 	end
 
-	local function StatusSwapPriorities(indicator, index1, index2)
-		local status1 = indicator.statuses[index1]
-		local status2 = indicator.statuses[index2]
-		local priority1 = indicator:GetStatusPriority(status1)
-		local priority2 = indicator:GetStatusPriority(status2)
-		SetStatusPriority(indicator, status1, priority2)
-		SetStatusPriority(indicator, status2, priority1)
+	local function SetStatusPriority(info, map, indicator, status, priority, index)
+		Grid2:DbSetMap( indicator.name, status.name, priority)
+		indicator:SetStatusPriority(status, priority)
+		map[index], map[status] = status, priority
+		local key, opt = status.name, info.arg.options
+		opt[key     ].order = 500  -priority
+		opt[key..'U'].order = 500.1-priority
+		opt[key..'D'].order = 500.2-priority
+		opt[key..'S'].order = 500.3-priority
 	end
 
-	local function StatusShiftUp(info, indicator, lowerStatus)
-		local index = indicator:GetStatusIndex(lowerStatus)
+	local function StatusSwapPriorities(info, map, indicator, index1, index2)
+		local status1 = map[index1]
+		local status2 = map[index2]
+		local priority1 = map[status1]
+		local priority2 = map[status2]
+		SetStatusPriority(info, map, indicator, status1, priority2, index2)
+		SetStatusPriority(info, map, indicator, status2, priority1, index1)
+	end
+
+	local function StatusShiftUp(info, map, indicator, lowerStatus)
+		local index = GetIndexOfValue(map, lowerStatus)
 		if index then
-			local newIndex = index>1 and index - 1 or #indicator.statuses
-			StatusSwapPriorities(indicator, index, newIndex)
-			RefreshIndicatorCurrentStatusOptions(info)
+			local newIndex = index>1 and index - 1 or #map
+			StatusSwapPriorities(info, map, indicator, index, newIndex)
 			Grid2Options:RefreshIndicator(indicator, "Layout")
 		end
 	end
 
-	local function StatusShiftDown(info, indicator, higherStatus)
-		local index = indicator:GetStatusIndex(higherStatus)
+	local function StatusShiftDown(info, map, indicator, higherStatus)
+		local index = GetIndexOfValue(map, higherStatus)
 		if index then
-			local newIndex = index<#indicator.statuses and index+1 or 1
-			StatusSwapPriorities(indicator, index, newIndex)
-			RefreshIndicatorCurrentStatusOptions(info)
+			local newIndex = index<#map and index+1 or 1
+			StatusSwapPriorities(info, map, indicator, index, newIndex)
 			Grid2Options:RefreshIndicator(indicator, "Layout")
 		end
+	end
+
+	local function LoadStatusMap(indicator)
+		local map = {}
+		local dbx = Grid2:DbGetValue("statusMap", indicator.name)
+		if dbx then
+			for statusKey, priority in pairs(dbx) do
+				local status = Grid2:GetStatusByName(statusKey)
+				if status then
+					map[#map+1] = status
+					map[status] = priority
+				end
+			end
+		end
+		table.sort( map, function(a,b) return map[a] > map[b] end )
+		return map
 	end
 
 	-- Grid2Options:MakeIndicatorCurrentStatusOptions(indicator, options)
 	function Grid2Options:MakeIndicatorCurrentStatusOptions(indicator, options)
 		if indicator.statuses then
+			local map  = LoadStatusMap(indicator)
+			local hide = #map<=1 or nil
 			local arg  = { indicator = indicator, options = options }
-			local more = #indicator.statuses>1
-			local count, group, root = 0
-			if #indicator.statuses>15 then
-				count, group, root = 1, 0, options
-			end
-			for index, status in ipairs(indicator.statuses) do
-				count = count - 1
-				if count==0 then -- Using groups AceGUI performance is much better when a lot of statuses are displayed
-					options, count, group = {}, 15, group+1
-					root['S'..group] = { type = "group", order = group, inline = true, name = "", args = options }
-				end
-				local statusKey, order = status.name, index*5
-				options[statusKey] = {
+			for _,status in ipairs(map) do
+				local priority = map[status]
+				options[status.name] = {
 					type = "toggle",
-					order = order,
+					order = 500-map[status],
 					width = 1.7,
 					name =  Grid2Options.LocalizeStatus(status),
 					desc = L["Select statuses to display with the indicator"],
@@ -113,37 +133,38 @@ do
 					set = SetIndicatorStatusCurrent,
 					arg = arg,
 				}
-				if more then
-					options[statusKey .. "U"] = {
-						type = "execute",
-						order = order + 1,
-						width = 0.15,
-						image = "Interface\\Addons\\Grid2Options\\media\\arrow-up",
-						imageWidth= 16,
-						imageHeight= 14,
-						name= "",
-						desc = L["Move the status higher in priority"],
-						func = function (info) StatusShiftUp(info, indicator, status) end,
-						arg = arg,
-					}
-					options[statusKey .. "D"] = {
-						type = "execute",
-						order = order + 2,
-						width = 0.15,
-						image = "Interface\\Addons\\Grid2Options\\media\\arrow-down",
-						imageWidth= 16,
-						imageHeight= 14,
-						name= "",
-						desc = L["Move the status lower in priority"],
-						func = function (info) StatusShiftDown(info, indicator, status) end,
-						arg = arg,
-					}
-					options[statusKey .."S"] = {
-						type = "description",
-						name = "",
-						order = order + 3
-					}
-				end
+				options[status.name .. "U"] = {
+					type = "execute",
+					order = 500.1 - map[status],
+					width = 0.15,
+					image = "Interface\\Addons\\Grid2Options\\media\\arrow-up",
+					imageWidth= 16,
+					imageHeight= 14,
+					name= "",
+					desc = L["Move the status higher in priority"],
+					func = function (info) StatusShiftUp(info, map, indicator, status) end,
+					arg = arg,
+					hidden = hide,
+				}
+				options[status.name .. "D"] = {
+					type = "execute",
+					order = 500.2 - map[status],
+					width = 0.15,
+					image = "Interface\\Addons\\Grid2Options\\media\\arrow-down",
+					imageWidth= 16,
+					imageHeight= 14,
+					name= "",
+					desc = L["Move the status lower in priority"],
+					func = function (info) StatusShiftDown(info, map, indicator, status) end,
+					arg = arg,
+					hidden = hide,
+				}
+				options[status.name .."S"] = {
+					type = "description",
+					name = "",
+					order = 500.3 - map[status],
+					hidden = hide,
+				}
 			end
 		end
 	end
@@ -194,7 +215,7 @@ do
 			confirm = function(info,key)
 				return Grid2.indicators[key].dbx.type == 'multibar' and L['This indicator cannot be changed from here: go to "indicators" section to assign/unassign statuses to this indicator.']
 			end,
-			disabled = function() return status:IsSuspended() end,
+			disabled = function() return status.suspended end,
 		}
 		return options
 	end

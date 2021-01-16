@@ -415,7 +415,6 @@ end
 
 -- {{ Register
 Grid2Options:RegisterStatusOptions("buff", "buff", function(self, status, options, optionParams)
-	self:MakeStatusEnabledOptions(status, options, optionParams)
 	self:MakeStatusAuraDescriptionOptions(status, options)
 	self:MakeStatusAuraCommonOptions(status, options, optionParams)
 	self:MakeStatusAuraEnableStacksOptions(status, options, optionParams)
@@ -432,7 +431,6 @@ end,{
 })
 
 Grid2Options:RegisterStatusOptions("debuff", "debuff", function(self, status, options, optionParams)
-	self:MakeStatusEnabledOptions(status, options, optionParams)
 	self:MakeStatusAuraEnableStacksOptions(status, options, optionParams)
 	self:MakeStatusAuraDescriptionOptions(status, options, optionParams)
 	self:MakeStatusAuraCommonOptions(status, options, optionParams)
@@ -447,7 +445,6 @@ end,{
 })
 
 Grid2Options:RegisterStatusOptions("debuffType", "debuff", function(self, status, options, optionParams)
-	self:MakeStatusEnabledOptions(status, options, optionParams)
 	self:MakeStatusDebuffTypeColorsOptions(status, options, optionParams)
 	self:MakeStatusDebuffTypeFilterOptions(status, options, optionParams)
 end,{
