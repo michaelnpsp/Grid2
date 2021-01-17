@@ -58,7 +58,6 @@ local function UpdateStatus(self)
 		self.suspended =
 			( load.disabled ) or
 			( load.playerClassSpec and not load.playerClassSpec[ Grid2.playerClassSpec ]    ) or
-			( load.playerFaction   and not load.playerFaction[ Grid2.playerFaction ]        ) or
 			( load.groupType       and not load.groupType[ Grid2.groupType ]                ) or
 			( load.instType        and not load.instType[ Grid2.instType ]                  ) or nil
 		return self.suspended ~= prev
@@ -72,6 +71,7 @@ local function RefreshStatus(self)
 	if UpdateStatus(self) then
 		RegisterIndicators(self)
 		UpdateIndicators()
+		return true
 	end
 end
 
@@ -112,5 +112,5 @@ end
 
 function status:RefreshLoad() -- used by options
 	UpdateMessages(self, self.dbx and self.dbx.load)
-	RefreshStatus(self)
+	return RefreshStatus(self)
 end

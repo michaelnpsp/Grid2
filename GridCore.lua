@@ -22,7 +22,6 @@ Grid2.groupType      = "solo"
 Grid2.instType       = "other"
 Grid2.instMaxPlayers = 1
 Grid2.playerClass    = select(2, UnitClass("player"))
-Grid2.playerFaction  = UnitFactionGroup('player')
 
 if not strfind(Grid2.versionstring,'project') and (GetAddOnMetadata("Grid2", "X-WoW-Project")=='classic') ~= Grid2.isClassic then
 	Grid2.wrongVersionMessage = string.format("Error, this version of Grid2 was packaged for World of Warcraft %s. Please install the %s version instead.",

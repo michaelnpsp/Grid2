@@ -25,12 +25,6 @@ do
 		other  = L["other"],
 	}
 
-	local PLAYER_FACTIONS = {
-		Alliance = L["Alliance"],
-		Horde = L["Horde"],
-		Neutral = L["Neutral"],
-	}
-
 	local PLAYER_CLASSES = {}
 	for class, translation in pairs(LOCALIZED_CLASS_NAMES_MALE) do
 		local coord = CLASS_ICON_TCOORDS[class]
@@ -165,13 +159,6 @@ do
 				L["Load the status only if your toon has the specified class and specialization."]
 			)
 		end
-		SetFilterOptions( status, options, 30,
-			'playerFaction',
-			PLAYER_FACTIONS,
-			(UnitFactionGroup('player')),
-			L["Player Faction"],
-			L["Load the status only if your toon belong to the specified faction."]
-		)
 		SetFilterOptions( status, options, 40,
 			'groupType',
 			GROUP_TYPES,
