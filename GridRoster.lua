@@ -205,6 +205,14 @@ do
 		[628]  = 40, -- Isle of Conquest
 		[1280] = 40, -- Tarren Mill vs Southshore
 	}
+	-- instance difficultiss only used when in party or solo
+	local ins_difficulties = {
+		[1]  = 'normal',
+		[2]  = 'heroic',
+		[8]  = 'mythic', -- mythic keystone
+		[16] = 'mythic', -- mythic raid
+		[23] = 'mythic', -- mythic dungeon
+	}
 	-- Local variables
 	local updateCount = 0
 	-- Used by another modules
@@ -251,7 +259,7 @@ do
 					newInstType = "mythic"
 				elseif maxPlayers == 30 then      -- raid@flex / Flexible instances normal/heroic (but no LFR)
 					newInstType = "flex"
-				else                              -- raid@other / Other instances: 5man/garrison/unknow instances
+				else                              -- raid@other / Other instances: 5man/unknow instances
 					newInstType = "other"
 					if isClassic and (maxPlayers or 0)<=5 then
 						maxPlayers = 10 -- classic, raid inside dungeons
@@ -261,10 +269,13 @@ do
 				newInstType = "none"
 				maxPlayers = 40
 			end
-		elseif GetNumGroupMembers()>0 then
-			newGroupType, newInstType, maxPlayers = "party", "other", 5
 		else
-			newGroupType, newInstType, maxPlayers = "solo", "other", 1
+			newInstType = (not InInstance) and 'none' or ins_difficulties[difficultyID] or 'other'
+			if GetNumGroupMembers()>0 then
+				newGroupType, maxPlayers = "party", 5
+			else
+				newGroupType, maxPlayers = "solo", 1
+			end
 		end
 		if maxPlayers == nil or maxPlayers == 0 then
 			maxPlayers = 40

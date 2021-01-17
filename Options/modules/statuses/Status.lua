@@ -18,11 +18,13 @@ do
 
 	local INSTANCE_TYPES = {
 		none   = L["None"],
-		pvp    = L["pvp"],
-		lfr    = L["lfr"],
-		flex   = L["flex"],
-		mythic = L["mythic"],
-		other  = L["other"],
+		normal = L["Normal Dungeon"],
+		heroic = L["Heroic Dungeon"],
+		mythic = L["Mythic Dungeon/Raid"],
+		flex   = L["Normal/Heroic Raid"],
+		lfr    = L["Looking for Raid"],
+		pvp    = L["PvP"],
+		other  = L["Other"],
 	}
 
 	local PLAYER_CLASSES = {}
