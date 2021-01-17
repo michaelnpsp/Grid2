@@ -62,13 +62,15 @@ do
 		end
 	end
 
-	local function RefreshStatus(status)
-		if status:RefreshLoad() then
+	local function RefreshStatus(status, isUnitFilter)
+		if isUnitFilter then
+			status:Refresh(true)
+		elseif status:RefreshLoad() then
 			RefreshStatusOptions(status)
 		end
 	end
 
-	local function SetFilterOptions( status, options, order, key, values, defValue, name, desc )
+	local function SetFilterOptions( status, options, order, key, values, defValue, name, desc, isUnitFilter, isSingle )
 		local dbx    = status.dbx
 		local filter = dbx.load and dbx.load[key]
 		local multi  = filter and next(filter, next(filter))~=nil
@@ -79,17 +81,17 @@ do
 			order = order,
 			get = function(info) return filter end,
 			set = function(info)
-				if multi then
+				if multi or (isSingle and filter)then
 					multi, filter, dbx.load[key] = nil, nil, nil
 					if not next(dbx.load) then dbx.load = nil end
-				elseif filter then
+				elseif filter and not isSingle then
 					multi = true
-				elseif dbx.load then
-					filter = { [defValue] = true }; dbx.load[key] = filter
 				else
-					filter = { [defValue] = true }; dbx.load = { [key] = filter }
+					dbx.load = dbx.load or {}
+					filter = { [defValue] = true }
+					dbx.load[key] = filter
 				end
-				RefreshStatus(status)
+				RefreshStatus(status, isUnitFilter)
 			end,
 			disabled = function() return dbx.load and dbx.load.disabled end,
 		}
@@ -101,7 +103,7 @@ do
 			get = function() return filter and next(filter) end,
 			set = function(_,v)
 				wipe(filter)[v] = true
-				RefreshStatus(status)
+				RefreshStatus(status, isUnitFilter)
 			end,
 			disabled = function() return not filter or dbx.load.disabled end,
 			hidden   = function() return multi end,
@@ -115,7 +117,7 @@ do
 			get = function(info, value) return filter[value] end,
 			set = function(info, value)
 				filter[value] = (not filter[value]) or nil
-				RefreshStatus(status)
+				RefreshStatus(status, isUnitFilter)
 			end,
 			hidden = function() return not multi end,
 			disabled = function() return dbx.load and dbx.load.disabled end,
@@ -190,14 +192,16 @@ do
 				UNIT_REACTIONS,
 				'friendly',
 				L["Unit Reaction"],
-				L["Load the status only if the unit frame has the specified reaction towards the player."]
+				L["Load the status only if the unit frame has the specified reaction towards the player."],
+				true, true
 			)
 			SetFilterOptions( status, options, 70,
 				'unitClass',
 				PLAYER_CLASSES,
 				select(2,UnitClass('player')),
 				L["Unit Class"],
-				L["Load the status only if the unit frame belong to the specified class."]
+				L["Load the status only if the unit frame belong to the specified class."],
+				true
 			)
 		end
 	end

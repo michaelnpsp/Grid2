@@ -1,13 +1,12 @@
 -- Auras management
 local Grid2 = Grid2
+local Grid2Frame = Grid2Frame
 local type = type
 local next = next
 local rawget = rawget
 local GetTime = GetTime
 local UnitAura = UnitAura
 local isClassic = Grid2.isClassic
-local Grid2Frame = Grid2Frame
-local UnitIsEnemy = UnitIsEnemy
 
 -- Local variables
 local Statuses = {}
@@ -28,7 +27,7 @@ do
 	local myFrames = Grid2.frames_of_unit
 	local roUnits  = Grid2.roster_guids
 	AuraFrame_OnEvent = function(_, event, u)
-		if not roUnits[u] or UnitIsEnemy(u,'player') then return end
+		if not roUnits[u] then return end
 		-- Scan Debuffs, Debuff Types, Debuff Groups
 		local i = 1
 		while true do
@@ -109,20 +108,33 @@ do
 	end
 end
 
--- class filter for WoW Classic
+-- unit class/reaction filters
 local MakeStatusFilter
-if isClassic then
+do
 	local UnitClass = UnitClass
-	local filter_mt = {	__index = function(t,u) local _,c = UnitClass(u); local r=t.source[c]; t[u]=r; return r; end }
+	local UnitCanAssist = UnitCanAssist
+	local filter_mt = {	__index = function(t,u)
+		local load, r = t.source
+		if load.unitReaction then
+			r = not UnitCanAssist('player', u)
+			if load.unitReaction.hostile then r = not r end
+		end
+		if not r and load.unitClass then
+			local _,class = UnitClass(u)
+			r = not load.unitClass[class]
+		end
+		t[u] = r
+		return r
+	end }
 	MakeStatusFilter = function(status)
-		local source = status.dbx.classFilter
-		if source then
+		local load = status.dbx.load
+		if load and (load.unitReaction or load.unitClass) then
 			if status.filtered then
-				wipe(status.filtered); status.filtered.source = source
+				wipe(status.filtered).source = load
 			else
-				status.filtered = setmetatable({source = source}, filter_mt)
+				status.filtered = setmetatable({source = load}, filter_mt)
 			end
-		elseif status.filtered then
+		else
 			status.filtered = nil
 		end
 	end
@@ -269,18 +281,25 @@ do
 	local UnitHealthMax = UnitHealthMax
 	local unit_is_pet   = Grid2.owner_of_unit
 	local function Refresh(self, full)
-		if full then self:UpdateDB() end
+		if full then
+			self:UpdateDB()
+		end
+		if self.filtered then
+			wipe(self.filtered).source = self.dbx.load
+		end
 		for unit in Grid2:IterateRosterUnits() do
 			AuraFrame_OnEvent(nil,nil,unit)
 		end
-		if full then self:UpdateAllUnits() end
+		if full then
+			self:UpdateAllUnits()
+		end
 	end
 	local function Reset(self, unit)
 		-- multibar indicator needs val[unit]=nil because due to a speed optimization it does not check if status is active before calling GetPercent()
 		self.idx[unit], self.exp[unit], self.val[unit] = nil, nil, nil
 		return true
 	end
-	-- with class filters, used in classic
+	-- with unit class/reaction filters
 	local function IsActiveFilter(self, unit)
 		return not self.filtered[unit] and self.idx[unit]~=nil
 	end
@@ -301,7 +320,7 @@ do
 	local function IsInactiveBlinkFilter(self, unit)
 		return not self.filtered[unit] and not self.idx[unit] and "blink"
 	end
-	-- no class filters
+	-- no unit class/reaction filters
 	local function IsActive(self, unit)
 		if self.idx[unit] then return true end
 	end
@@ -323,8 +342,8 @@ do
 		return not self.idx[unit] and "blink"
 	end
 	--
-	local function GetIcon(self, unit) return
-		self.tex[unit]
+	local function GetIcon(self, unit)
+		return self.tex[unit]
 	end
 	local function GetIconMissing(self)
 		return self.missingTexture
@@ -435,7 +454,7 @@ do
 		if self.enabled then self:OnDisable() end
 		local dbx = dbx or self.dbx
 		local blinkThreshold = Grid2Frame.db.shared.blinkType~="None" and dbx.blinkThreshold or nil
-		if isClassic then MakeStatusFilter(self) end
+		MakeStatusFilter(self)
 		self.vId = dbx.valueIndex or 0
 		self.valMax = dbx.valueMax
 		self.GetPercent = dbx.valueIndex and (dbx.valueMax and GetPercentMax or GetPercentHealth) or Grid2.statusLibrary.GetPercent
