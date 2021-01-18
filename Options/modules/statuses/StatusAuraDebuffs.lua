@@ -79,7 +79,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			status.dbx.filterTyped = (not v) and true or nil
 			status:Refresh(true)
 		end,
-		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs~=nil or status.dbx.filterBossDebuffs==false end
+		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs~=nil end
 	}
 	options.showUntypedDebuffs = {
 		type = "toggle",
@@ -95,7 +95,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			end
 			status:Refresh(true)
 		end,
-		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs~=nil or status.dbx.filterBossDebuffs==false end
+		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs~=nil end
 	}
 	options.filterSep0 = { type = "description", name = "", order = 83.5 }
 	options.showNonBossDebuffs = {
@@ -141,7 +141,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			end
 			status:Refresh(true)
 		end,
-		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs~=nil or status.dbx.filterBossDebuffs==false end
+		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs~=nil end
 	}
 	options.showLongDebuffs = {
 		type = "toggle",
@@ -153,7 +153,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			status.dbx.filterLongDebuffs = (not v) and true or nil
 			status:Refresh(true)
 		end,
-		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs~=nil or status.dbx.filterBossDebuffs==false end
+		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs~=nil end
 	}
 	options.filterSep2 = { type = "description", name = "", order = 87.5 }
 	options.showNonSelfDebuffs = {
@@ -170,7 +170,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			end
 			status:Refresh(true)
 		end,
-		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs~=nil or status.dbx.filterBossDebuffs==false end
+		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs~=nil end
 	}
 	options.showSelfDebuffs = {
 		type = "toggle",
@@ -182,7 +182,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			status.dbx.filterCaster = (not v) and true or nil
 			status:Refresh(true)
 		end,
-		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs~=nil or status.dbx.filterBossDebuffs==false end
+		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs~=nil end
 	}
 	options.filterSep3 = { type = "description", name = "", order = 89.5 }
 	options.useWhiteList = {
