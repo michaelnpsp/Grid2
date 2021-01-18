@@ -33,8 +33,8 @@ do
 		PLAYER_CLASSES[class] =	string.format("|TInterface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES:0:0:0:0:256:256:%f:%f:%f:%f:0|t%s",coord[1]*256,coord[2]*256,coord[3]*256,coord[4]*256,translation)
 	end
 
+	local CLASSES_SPECS = {}
 	if not Grid2.isClassic then
-		local CLASSES_SPECS = {}
 		for classID = 1, 30 do
 		  local info = C_CreatureInfo.GetClassInfo(classID)
 		  if info then

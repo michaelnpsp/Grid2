@@ -57,9 +57,9 @@ local function UpdateStatus(self)
 	if load then
 		self.suspended =
 			( load.disabled ) or
-			( load.playerClassSpec and not load.playerClassSpec[ Grid2.playerClassSpec ]    ) or
-			( load.groupType       and not load.groupType[ Grid2.groupType ]                ) or
-			( load.instType        and not load.instType[ Grid2.instType ]                  ) or nil
+			( load.playerClassSpec and not load.playerClassSpec[ Grid2.playerClassSpec ] ) or
+			( load.groupType       and not load.groupType[ Grid2.groupType ]             ) or
+			( load.instType        and not load.instType[ Grid2.instType ]               ) or nil
 		return self.suspended ~= prev
 	else
 		self.suspended = nil
