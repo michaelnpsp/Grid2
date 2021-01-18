@@ -214,7 +214,6 @@ do
 		Misc         = { type = "header", order = 100, name = L["Misc"]        },
 		Auras	     = { type = "header", order = 150, name = L["Auras"]       },
 		DebuffFilter = { type = "header", order = 175, name = L["Filtered debuffs"] },
-		ClassFilter  = { type = "header", order = 200, name = L["Class Filter"] },
 		AurasExpanded= { type = "header", order = 300,  name = L["Display"] },
 	}
 	function Grid2Options:MakeHeaderOptions( options, key )

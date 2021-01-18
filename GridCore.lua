@@ -7,8 +7,7 @@ local next = next
 local ipairs = ipairs
 local tostring = tostring
 local fmt = string.format
-local Dummy = function() end
-local GetSpecialization = GetSpecialization or Dummy
+local GetSpecialization = GetSpecialization or function() end
 
 -- Initialization
 Grid2 = LibStub("AceAddon-3.0"):NewAddon("Grid2", "AceEvent-3.0", "AceConsole-3.0")
@@ -151,7 +150,7 @@ function Grid2:OnEnable()
 	self.db.RegisterCallback(self, "OnProfileCopied", "ProfileChanged")
 	self.db.RegisterCallback(self, "OnProfileReset", "ProfileChanged")
 
-	self.playerClassSpec = self.playerClass .. GetSpecialization()
+	self.playerClassSpec = self.playerClass .. (GetSpecialization() or 0)
 
 	self:LoadConfig()
 
@@ -196,7 +195,7 @@ end
 
 function Grid2:PLAYER_SPECIALIZATION_CHANGED(_,unit)
 	if unit=='player' then
-		self.playerClassSpec = self.playerClass .. GetSpecialization()
+		self.playerClassSpec = self.playerClass .. (GetSpecialization() or 0)
 		if not Grid2:ReloadProfile() then
 			Grid2:ReloadTheme()
 			self:SendMessage("Grid_PlayerSpecChanged") -- Send message only if profile has not changed

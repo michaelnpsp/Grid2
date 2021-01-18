@@ -42,7 +42,6 @@ Grid2Options:RegisterStatusOptions("buffs", "buff", function(self, status, optio
 		self:MakeStatusColorOptions(status, options, optionParams)
 		self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
 		self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
-		self:MakeStatusClassFilterOptions(status, options, optionParams)
 	end
 end,{
 	groupOrder = 20, isDeletable = true,

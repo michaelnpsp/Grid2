@@ -10,10 +10,10 @@ do
 	}
 
 	local GROUP_TYPES = {
-		solo = L['Solo'],
+		solo  = L['Solo'],
 		party = L['Party'],
 		arena = L["Arena"],
-		raid = L["Raid"],
+		raid  = L["Raid"],
 	}
 
 	local INSTANCE_TYPES = {
@@ -33,17 +33,19 @@ do
 		PLAYER_CLASSES[class] =	string.format("|TInterface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES:0:0:0:0:256:256:%f:%f:%f:%f:0|t%s",coord[1]*256,coord[2]*256,coord[3]*256,coord[4]*256,translation)
 	end
 
-	local CLASSES_SPECS = {}
-	for classID = 1, 30 do
-	  local info = C_CreatureInfo.GetClassInfo(classID)
-	  if info then
-		local class = info.classFile
-		local coord = CLASS_ICON_TCOORDS[class]
-		for index=GetNumSpecializationsForClassID(classID), 1,-1 do
-			local _, specName, _, specIcon = GetSpecializationInfoForClassID(classID, index)
-			CLASSES_SPECS[class..index] = string.format("|TInterface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES:0:0:0:0:256:256:%f:%f:%f:%f:0|t|T%s:0|t%s",coord[1]*256,coord[2]*256,coord[3]*256,coord[4]*256,specIcon,specName)
+	if not Grid2.isClassic then
+		local CLASSES_SPECS = {}
+		for classID = 1, 30 do
+		  local info = C_CreatureInfo.GetClassInfo(classID)
+		  if info then
+			local class = info.classFile
+			local coord = CLASS_ICON_TCOORDS[class]
+			for index=GetNumSpecializationsForClassID(classID), 1,-1 do
+				local _, specName, _, specIcon = GetSpecializationInfoForClassID(classID, index)
+				CLASSES_SPECS[class..index] = string.format("|TInterface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES:0:0:0:0:256:256:%f:%f:%f:%f:0|t|T%s:0|t%s",coord[1]*256,coord[2]*256,coord[3]*256,coord[4]*256,specIcon,specName)
+			end
+		  end
 		end
-	  end
 	end
 
 	local function RefreshStatusOptions(status)
@@ -181,7 +183,7 @@ do
 				UNIT_REACTIONS,
 				'friendly',
 				L["Unit Reaction"],
-				L["Load the status only if the unit frame has the specified reaction towards the player."],
+				L["Load the status only if the unit has the specified reaction towards the player."],
 				true, true
 			)
 			SetFilterOptions( status, options, 70,
@@ -189,7 +191,7 @@ do
 				PLAYER_CLASSES,
 				select(2,UnitClass('player')),
 				L["Unit Class"],
-				L["Load the status only if the unit frame belong to the specified class."],
+				L["Load the status only if the unit belong to the specified class."],
 				true
 			)
 		end

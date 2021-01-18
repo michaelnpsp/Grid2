@@ -332,41 +332,6 @@ function Grid2Options:MakeStatusAuraTextOptions(status, options, optionParams)
 	}
 end
 
-function Grid2Options:MakeStatusClassFilterOptions(status, options, optionParams)
-	options = options or {}
-	if Grid2.isClassic then
-		self:MakeHeaderOptions( options, "ClassFilter" )
-		options.classFilter = {	type = "group", order = 205, inline= true, name = '', args = {}	}
-		for classType, className in pairs(LOCALIZED_CLASS_NAMES_MALE) do
-			options.classFilter.args[classType] = {
-				type = "toggle",
-				name = className,
-				width = "half",
-				desc = (L["Show on %s."]):format(className),
-				tristate = false,
-				get = function ()
-					return not (status.dbx.classFilter and status.dbx.classFilter[classType])
-				end,
-				set = function (_, value)
-					local dbx = status.dbx
-					if not value then
-						dbx.classFilter = dbx.classFilter or {}
-						dbx.classFilter[classType] = true
-					elseif dbx.classFilter then
-						dbx.classFilter[classType] = nil
-						if not next(dbx.classFilter) then
-							dbx.classFilter = nil
-						end
-					end
-					status:UpdateDB()
-					status:UpdateAllUnits()
-				end,
-			}
-		end
-	end
-	return options
-end
-
 function Grid2Options:MakeStatusDebuffTypeColorsOptions(status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
 end
@@ -425,7 +390,6 @@ Grid2Options:RegisterStatusOptions("buff", "buff", function(self, status, option
 	self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
 	self:MakeStatusAuraValueOptions(status, options, optionParams)
 	self:MakeStatusAuraTextOptions(status, options, optionParams)
-	self:MakeStatusClassFilterOptions(status, options, optionParams)
 end,{
 	groupOrder = 10, isDeletable = true
 })
