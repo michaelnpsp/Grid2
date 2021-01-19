@@ -23,6 +23,7 @@ local AuraFrame_OnEvent
 do
 	local indicators = {}
 	local val = {0, 0, 0}
+	local pTypes   = Grid2.debuffPlayerDispelTypes
 	local myUnits  = Grid2.roster_my_units
 	local myFrames = Grid2.frames_of_unit
 	local roUnits  = Grid2.roster_guids
@@ -57,7 +58,7 @@ do
 				end
 			end
 			for s in next, DebuffGroups do
-				if (not s.seen) and s:UpdateState(u, nam, dur, cas, bos, typ) then
+				if (not s.seen) and s:UpdateState(u, nam, dur, cas, bos, typ, pTypes) then
 					s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.typ[u], s.tkr[u] = 1, i, tex, cnt, dur, exp, typ, 1
 				end
 			end

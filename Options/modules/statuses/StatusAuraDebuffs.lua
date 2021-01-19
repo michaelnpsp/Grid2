@@ -32,6 +32,19 @@ end
 
 function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionParams)
 	self:MakeHeaderOptions( options, "Display" )
+	options.strictFiltering = {
+		type = "toggle",
+		width = "full",
+		name = '|cFFffff00' .. L["Use strict filtering (all conditions must be met)."],
+		desc = L[""],
+		order = 80.5,
+		get = function() return not status.dbx.lazyFiltering end,
+		set = function(_,v)
+			status.dbx.lazyFiltering = (not v) or nil
+			status:Refresh(true)
+		end,
+		hidden = function() return status.dbx.useWhiteList end,
+	}
 	options.showDispelDebuffs = {
 		type = "toggle",
 		name = L["Dispellable by Me"],
@@ -76,10 +89,10 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 		order = 82,
 		get = function () return status.dbx.filterTyped~=true end,
 		set = function (_, v)
-			status.dbx.filterTyped = (not v) and true or nil
+			status.dbx.filterTyped = (not v) or nil
 			status:Refresh(true)
 		end,
-		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs~=nil end
+		hidden = function() return status.dbx.useWhiteList end
 	}
 	options.showUntypedDebuffs = {
 		type = "toggle",
@@ -95,7 +108,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			end
 			status:Refresh(true)
 		end,
-		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs~=nil end
+		hidden = function() return status.dbx.useWhiteList end
 	}
 	options.filterSep0 = { type = "description", name = "", order = 83.5 }
 	options.showNonBossDebuffs = {
@@ -112,7 +125,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			end
 			status:Refresh(true)
 		end,
-		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs~=nil end
+		hidden = function() return status.dbx.useWhiteList end
 	}
 	options.showBossDebuffs = {
 		type = "toggle",
@@ -121,10 +134,10 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 		order = 85,
 		get = function () return status.dbx.filterBossDebuffs~=true end,
 		set = function (_, v)
-			status.dbx.filterBossDebuffs = (not v) and true or nil
+			status.dbx.filterBossDebuffs = (not v) or nil
 			status:Refresh(true)
 		end,
-		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs~=nil end
+		hidden = function() return status.dbx.useWhiteList end
 	}
 	options.filterSep1 = { type = "description", name = "", order = 85.5 }
 	options.showShortDebuffs = {
@@ -141,7 +154,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			end
 			status:Refresh(true)
 		end,
-		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs~=nil end
+		hidden = function() return status.dbx.useWhiteList end
 	}
 	options.showLongDebuffs = {
 		type = "toggle",
@@ -153,7 +166,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			status.dbx.filterLongDebuffs = (not v) and true or nil
 			status:Refresh(true)
 		end,
-		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs~=nil end
+		hidden = function() return status.dbx.useWhiteList end
 	}
 	options.filterSep2 = { type = "description", name = "", order = 87.5 }
 	options.showNonSelfDebuffs = {
@@ -170,7 +183,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			end
 			status:Refresh(true)
 		end,
-		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs~=nil end
+		hidden = function() return status.dbx.useWhiteList end
 	}
 	options.showSelfDebuffs = {
 		type = "toggle",
@@ -182,16 +195,20 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			status.dbx.filterCaster = (not v) and true or nil
 			status:Refresh(true)
 		end,
-		hidden = function() return status.dbx.useWhiteList or status.dbx.filterDispelDebuffs~=nil end
+		hidden = function() return status.dbx.useWhiteList end
 	}
-	options.filterSep3 = { type = "description", name = "", order = 89.5 }
 	options.useWhiteList = {
 		type = "toggle",
 		name = L["Whitelist"],
-		desc = L["Display only debuffs defined in a user defined list."],
+		desc = L["Display only debuffs contained in a user defined list."],
 		order = 90,
 		get = function () return status.dbx.useWhiteList and status.dbx.auras~=nil end,
 		set = function (_, v)
+			status.dbx.filterDispelDebuffs = nil
+			status.dbx.filterLongDebuffs = nil
+			status.dbx.filterBossDebuffs = nil
+			status.dbx.filterCaster = nil
+			status.dbx.filterTyped = nil
 			if v then
 				status.dbx.auras = status.dbx.auras or status.dbx.aurasBak or {}
 				status.dbx.aurasBak = nil
@@ -204,12 +221,11 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			status:Refresh(true)
 			self:MakeStatusOptions(status)
 		end,
-		hidden = function() return status.dbx.filterDispelDebuffs~=nil end,
 	}
 	options.useBlackList = {
 		type = "toggle",
 		name = L["Blacklist"],
-		desc = L["Ignore debuffs defined in a user defined list."],
+		desc = L["Ignore debuffs contained in a user defined list. This condition is always strict."],
 		order = 91,
 		get = function () return (not status.dbx.useWhiteList) and status.dbx.auras~=nil end,
 		set = function (_, v)
@@ -244,11 +260,18 @@ Grid2Options:RegisterStatusOptions("debuffs", "debuff", function(self, status, o
 		type = "group", order = 10, name = L['General'],
 		args = self:MakeStatusDebuffsGeneralOptions(status,{}, optionParams),
 	}
-	options.indicators = { type = "group", order = 30, name = L['indicators'], args = self:MakeStatusIndicatorsOptions(status,{}, optionParams)     }
-	options.filterlist = {
+	options.debuffslist = {
 		type = "group", order = 20, name = L[ status.dbx.useWhiteList and 'Whitelist' or 'Blacklist'],
 		desc = L["Type a list of debuffs, one debuff per line."],
 		args = self:MakeStatusDebuffsListOptions(status,{}, optionParams), hidden = function() return status.dbx.auras==nil end
+	}
+	options.load = {
+		type = "group", order = 30, name = L['Load'],
+		args = self:MakeStatusLoadOptions( status, {}, optionParams )
+	}
+	options.indicators = {
+		type = "group", order = 40, name = L['indicators'],
+		args = self:MakeStatusIndicatorsOptions(status,{}, optionParams)
 	}
 end,{
 	groupOrder = 20, hideTitle = true, isDeletable = true,

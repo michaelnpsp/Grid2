@@ -195,6 +195,7 @@ do
 				true
 			)
 		end
+		return options
 	end
 end
 
