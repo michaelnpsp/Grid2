@@ -333,28 +333,12 @@ headerOptions = {
 		hidden = function() return editedHeader.type~='special' end,
 	},
 
-	hideEmptyButtons = {
-		type = "toggle",
-		name = L["Hide Empty Units"],
-		desc = L["Hide the frame if the unit does not exist."],
-		order = 55,
-		width = 1.2,
-		get = function()
-			return editedHeader.hideEmptyUnits
-		end,
-		set = function(info, value)
-			editedHeader.hideEmptyUnits = value or nil
-			RefreshLayout()
-		end,
-		hidden = function() return editedHeader.type~='special' end,
-	},
-
 	vehicle = {
 		type = "toggle",
-		name = L["Toggle for vehicle"],
+		name = L["Toggle vehicle"],
 		desc = L["When the player is in a vehicle replace the player frame with the vehicle frame."],
 		order = 54,
-		width = 1.2,
+		width = .8,
 		tristate = true,
 		get = function()
 			return editedHeader.toggleForVehicle
@@ -368,10 +352,10 @@ headerOptions = {
 
 	hidePlayer = {
 		type = "toggle",
-		name = L["Hide Player Unit"],
+		name = L["Hide Player"],
 		desc = L["Do not display the player frame (only applied when in group)."],
 		order = 55,
-		width = "normal",
+		width = .8,
 		tristate = false,
 		get = function()
 			return editedHeader.showPlayer==false
@@ -385,6 +369,39 @@ headerOptions = {
 			RefreshLayout()
 		end,
 		hidden = IsOptionHidden,
+	},
+
+	hideEmptyButtons = {
+		type = "toggle",
+		name = L["Hide Empty"],
+		desc = L["Hide the frame if the unit does not exist."],
+		order = 55,
+		width = .8,
+		get = function()
+			return editedHeader.hideEmptyUnits
+		end,
+		set = function(info, value)
+			editedHeader.hideEmptyUnits = value or nil
+			RefreshLayout()
+		end,
+		hidden = function() return editedHeader.type~='special' end,
+	},
+
+	detachHeader = {
+		type = "toggle",
+		name = L["Detach Header"],
+		desc = L["Allow to move this header independent of the other headers."],
+		order = 56,
+		width = .8,
+		get = function()
+			return editedHeader.detachHeader
+		end,
+		set = function(info, value)
+			editedHeader.detachHeader = value or nil
+			RefreshLayout()
+		end,
+		disabled = function() return editedHeaderIndex==1 end,
+		hidden = false,
 	},
 
 	actionheader = { type = "header", order = 100, name = "", hidden = false },

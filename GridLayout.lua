@@ -58,7 +58,7 @@ local GridLayoutHeaderClass = {
 	template = function(self, header, insecure)
 		if header.type=='special' then
 			return 'Grid2InsecureGroupSpecialHeaderTemplate'
-		elseif insecure or (header.nameList and (header.roleFilter or header.groupFilter)) then
+		elseif insecure or header.detachHeader or (header.nameList and (header.roleFilter or header.groupFilter)) then
 			return header.type=='pet' and 'Grid2InsecureGroupPetHeaderTemplate' or 'Grid2InsecureGroupHeaderTemplate'
 		else
 			return header.type=='pet' and 'SecureGroupPetHeaderTemplate' or 'SecureGroupHeaderTemplate'
@@ -86,7 +86,6 @@ function GridLayoutHeaderClass.prototype:Reset()
 		uframe:SetAttribute("unit", nil)
 	end
 	-- Initialize attributes
-	self.tokenNames, self.tokenFilter = nil, nil
 	local defaults = Grid2Layout.customDefaults
 	for _, attr in ipairs(HeaderAttributes) do
 		self:SetAttribute(attr, defaults[attr] or nil  )
@@ -163,6 +162,7 @@ Grid2Layout.defaultDB = {
 		groupAnchor = "TOPLEFT",
 		PosX = 500,
 		PosY = -200,
+		Positions = {},
 		-- profile options shared by all themes, but stored on default/first theme
 		minimapIcon = { hide = false },
 	},
@@ -329,10 +329,8 @@ end
 -- In patch 8.1 SecureTemplates code does not display "unknown entities" because GetRaidRosterInfo() returns nil for these units:
 -- If unknown entities are detected in roster, we update the headers every 1/4 seconds until all unknown entities are gone.
 function Grid2Layout:FixRoster()
-	print("FixRosterEntering...")
 	if Grid2:RosterHasUnknowns() then
 		if not Grid2:RunSecure(5, self, "FixRoster") then
-			print("Updating Headers........")
 			self:UpdateHeaders()
 			Grid2:UpdateRoster()
 		end
@@ -351,7 +349,7 @@ function Grid2Layout:StopMoveFrame()
 		self.frame:StopMovingOrSizing()
 		self:SavePosition()
 		self.frame.isMoving = false
-		 if not InCombatLockdown() then	self:RestorePosition() end
+		if not InCombatLockdown() then self:RestorePosition() end
 	end
 end
 
@@ -430,14 +428,18 @@ function Grid2Layout:PlaceHeaders()
 		frame:SetOrientation(horizontal)
 		frame:ClearAllPoints()
 		frame:SetParent(self.frame)
-		if i == 1 then
-			frame:SetPoint(anchor, self.frame, anchor, spacing * xMult1, spacing * yMult1)
+		if not frame.isDetached then
+			if prevFrame then
+				frame:SetPoint(anchor, prevFrame, relPoint, xMult2, yMult2 )
+			else
+				frame:SetPoint(anchor, self.frame, anchor, spacing * xMult1, spacing * yMult1)
+			end
+			frame:Show()
+			self:Debug("Placing group", i, frame:GetName(), anchor, prevFrame and prevFrame:GetName(), relPoint)
+			prevFrame = frame
 		else
-			frame:SetPoint(anchor, prevFrame, relPoint, xMult2, yMult2 )
+			self:RestoreHeaderPosition(frame, i)
 		end
-		frame:Show()
-		self:Debug("Placing group", groupNumber, frame:GetName(), anchor, prevFrame and prevFrame:GetName(), relPoint)
-		prevFrame = frame
 	end
 end
 
@@ -515,6 +517,7 @@ function Grid2Layout:AddHeader(layoutHeader, defaults)
 	self:SetHeaderAttributes(header, defaults)
 	self:SetHeaderAttributes(header, layoutHeader)
 	self:FixHeaderAttributes(header)
+	self:SetupDetachedHeader(header, #self.groupsUsed)
 end
 
 function Grid2Layout:GenerateHeaders(defaults)
@@ -538,6 +541,11 @@ end
 -- Apply defaults and some special cases for each header and apply workarounds to some blizzard bugs
 function Grid2Layout:FixHeaderAttributes(header)
 	local p = self.db.profile
+	-- detached header, only in insecure frames
+	local detachHeader = header:GetAttribute("detachHeader")
+	if detachHeader then -- we need a border to be able to drag the header using the mouse
+		header:SetAttribute( "frameSpacing", self.db.profile.Spacing )
+	end
 	-- fix unitsPerColumn
 	local unitsPerColumn = header:GetAttribute("unitsPerColumn")
 	if not unitsPerColumn then
@@ -660,10 +668,11 @@ end
 
 -- Grid2 uses UI Root coordinates to store the window position (always 768 pixels height) so these coordinates are
 -- independent of the UI Frame Scale Coordinates and monitor physical resolution (assuming the same aspect ratio).
-function Grid2Layout:SavePosition()
-	local f = self.frame
+function Grid2Layout:SavePosition(header)
+	local f = header or self.frame
 	if f:GetLeft() and f:GetWidth() then
-		local a = self.db.profile.anchor
+		local p = self.db.profile
+		local a = p.anchor
 		local s = f:GetEffectiveScale()
 		local t = UIParent:GetEffectiveScale()
 		local x = (a:find("LEFT")  and f:GetLeft()*s) or
@@ -672,18 +681,21 @@ function Grid2Layout:SavePosition()
 		local y = (a:find("BOTTOM") and f:GetBottom()*s) or
 				  (a:find("TOP")    and f:GetTop()*s-UIParent:GetHeight()*t) or
 				  (f:GetTop()-f:GetHeight()/2)*s-UIParent:GetHeight()/2*t
-		self.db.profile.PosX = x
-		self.db.profile.PosY = y
-		self:Debug("Saved Position", a, x, y)
+		if header then
+			p.Positions[header.headerKey] = { a, x, y }
+		else
+			p.PosX, p.PosY = x, y
+		end
+		self:Debug("Saved Position", a, x, y, f.headerKey)
 	end
 end
 
 -- Restores the Grid2 window position, the window is always placed in the same exact absolute screen position
 -- even if the WoW UI Scale or Grid2 window Scale was changed (assuming the screen aspect ratio has not changed).
 function Grid2Layout:RestorePosition()
-	local f = self.frame
-	local b = self.frameBack
 	local p = self.db.profile
+	-- foreground frame
+	local f = self.frame
 	f:SetScale(p.ScaleSize)
 	local s = f:GetEffectiveScale()
 	local x = p.PosX / s
@@ -691,6 +703,8 @@ function Grid2Layout:RestorePosition()
 	local a = p.anchor
 	f:ClearAllPoints()
 	f:SetPoint(a, x, y)
+	-- background frame
+	local b = self.frameBack
 	b:ClearAllPoints()
 	b:SetPoint(p.groupAnchor) -- Using groupAnchor instead of anchor, see ticket #442.
 	self:Debug("Restored Position", a, p.ScaleSize, x, y)
@@ -743,5 +757,62 @@ function Grid2Layout:AddCustomLayouts()
 	end
 end
 
+-- Detached headers management
+function Grid2Layout:RestoreHeaderPosition(header, index)
+	local settings = self.db.profile
+	if index then
+		header.headerKey = self.layoutName .. index
+	end
+	local pos = settings.Positions[header.headerKey]
+	if not pos then
+		local s = UIParent:GetEffectiveScale()
+		local x = UIParent:GetWidth() / 2 * s
+		local y = -UIParent:GetHeight() / 2 * s
+		pos = { 'TOPLEFT', x, y }
+		settings.Positions[header.headerKey] = pos
+	end
+	local s = header:GetEffectiveScale()
+	local a, x, y = pos[1], pos[2]/s, pos[3]/s
+	header:ClearAllPoints()
+	header:SetPoint(a, UIParent, a, x, y)
+	header:Show()
+	self:Debug("Placing detached group", header.headerKey, a, x, y)
+end
+
+function Grid2Layout:SaveHeaderPosition(header)
+	self:SavePosition(header)
+end
+
+function Grid2Layout:StartMoveHeader(button)
+	if not Grid2Layout.db.profile.FrameLock and button == "LeftButton" then
+		self:StartMoving()
+		self.isMoving = true
+	end
+end
+
+function Grid2Layout:StopMoveHeader()
+	if self.isMoving then
+		self:StopMovingOrSizing()
+		self.isMoving = nil
+		Grid2Layout:SaveHeaderPosition(self)
+		if not InCombatLockdown() then
+			Grid2Layout:RestoreHeaderPosition(self)
+		end
+	end
+end
+
+function Grid2Layout:SetupDetachedHeader(header, index)
+	if header.isInsecure then
+		local isDetached = (header:GetAttribute("detachHeader") and index>1) or nil
+		if isDetached ~= header.isDetached then
+			header.isDetached = isDetached
+			header:SetMovable( isDetached )
+			header:SetScript("OnMouseUp",   isDetached and self.StopMoveHeader  or nil)
+			header:SetScript("OnHide",      isDetached and self.StopMoveHeader  or nil)
+			header:SetScript("OnMouseDown", isDetached and self.StartMoveHeader or nil)
+		end
+	end
+end
 --}}}
+
 _G.Grid2Layout = Grid2Layout

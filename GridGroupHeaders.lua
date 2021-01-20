@@ -309,6 +309,7 @@ end
 
 -- display unit frame buttons on screen
 local function DisplayButtons(self, unitTable)
+	local frameSpacing = self:GetAttribute('frameSpacing') or 0
 	local unitWatch = not not self:GetAttribute('hideEmptyUnits')
 	local startingIndex = self:GetAttribute("startingIndex") or 1
 	local maxColumns = self:GetAttribute("maxColumns") or 1
@@ -346,8 +347,8 @@ local function DisplayButtons(self, unitTable)
 		local unitButton = self[buttonNum]
 		unitButton:ClearAllPoints()
 		if buttonNum==1 then
-			unitButton:SetPoint(point, curAnchor, point, 0, 0)
-			if colAnchorPoint then unitButton:SetPoint(colAnchorPoint, curAnchor, colAnchorPoint, 0, 0) end
+			unitButton:SetPoint(point, curAnchor, point, xOffMult*frameSpacing, yOffMult*frameSpacing)
+			if colAnchorPoint then unitButton:SetPoint(colAnchorPoint, curAnchor, colAnchorPoint, colxMult*frameSpacing, colyMult*frameSpacing) end
 		elseif colUnitCount==1 then
 			unitButton:SetPoint(colAnchorPoint, self[buttonNum-unitsPerColumn], colRelPoint, colxMult*colSpacing, colyMult*colSpacing)
 		else
@@ -376,8 +377,8 @@ local function DisplayButtons(self, unitTable)
 	if numDisplayed>0 then
 		local width  = buttonWidth  + (unitsPerColumn-1) * (xMult*buttonWidth  + xOffMult*xOffset)
 		local height = buttonHeight + (unitsPerColumn-1) * (yMult*buttonHeight + yOffMult*yOffset)
-		self:SetWidth ( width  + (numColumns-1) * (colxMultA or 0) * (width +colSpacing) )
-		self:SetHeight( height + (numColumns-1) * (colyMultA or 0) * (height+colSpacing) )
+		self:SetWidth ( width  + (numColumns-1) * (colxMultA or 0) * (width +colSpacing) + frameSpacing*2 )
+		self:SetHeight( height + (numColumns-1) * (colyMultA or 0) * (height+colSpacing) + frameSpacing*2 )
 	else
 		self:SetWidth ( max(self:GetAttribute("minWidth")  or yMult*buttonWidth, 0.1) )
 		self:SetHeight( max(self:GetAttribute("minHeight") or xMult*buttonHeight,0.1) )
