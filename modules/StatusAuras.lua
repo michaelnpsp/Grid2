@@ -113,16 +113,20 @@ end
 local MakeStatusFilter
 do
 	local UnitClass = UnitClass
-	local UnitCanAssist = UnitCanAssist
+	local UnitExists = UnitExists
+	local UnitIsFriend = UnitIsFriend
 	local filter_mt = {	__index = function(t,u)
-		local load, r = t.source
-		if load.unitReaction then
-			r = not UnitCanAssist('player', u)
-			if load.unitReaction.hostile then r = not r end
-		end
-		if not r and load.unitClass then
-			local _,class = UnitClass(u)
-			r = not load.unitClass[class]
+		local r = true
+		if UnitExists(u) then
+			local load = t.source
+			if load.unitReaction then
+				r = not UnitIsFriend('player',u)
+				if load.unitReaction.hostile then r = not r end
+			end
+			if not r and load.unitClass then
+				local _,class = UnitClass(u)
+				r = not load.unitClass[class]
+			end
 		end
 		t[u] = r
 		return r
@@ -151,7 +155,7 @@ do
 		end
 	end
 	local function UpdateAurasOfUnit(_, unit, joined)
-		if not joined then ClearAurasOfUnit(nil, unit) end -- we need to clear auras here due to special headers (a unit frame of a non-existent unit could be visible if hideEmptyUnits=false).
+		ClearAurasOfUnit(nil, unit)
 		AuraFrame_OnEvent(nil, nil, unit)
 	end
 	Grid2.RegisterMessage( Statuses, "Grid_UnitLeft", ClearAurasOfUnit )
