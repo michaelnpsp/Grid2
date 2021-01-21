@@ -50,4 +50,3 @@ Delete Icon from IcoCentre: <https://www.shareicon.net/delete-remove-cross-92993
 License: Free for commercial use.
 
 ------------------------------------------------------------------------
-
