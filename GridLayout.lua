@@ -66,14 +66,14 @@ local GridLayoutHeaderClass = {
 	end,
 }
 
--- "hideEmptyUnits"&"unitsFilter" are extra attributes used only by Grid2 Special Group Header
 local HeaderAttributes = {
 	"nameList", "groupFilter", "roleFilter", "strictFiltering",
 	"sortDir", "groupBy", "groupingOrder", "maxColumns", "unitsPerColumn",
 	"startingIndex", "columnSpacing", "columnAnchorPoint",
 	"useOwnerUnit", "filterOnPet", "unitsuffix", "sortMethod",
 	"toggleForVehicle", "showSolo", "showPlayer", "showParty", "showRaid",
-	"hideEmptyUnits", "unitsFilter"
+	-- extra attributes used only by Grid2 Special Group Header
+	"hideEmptyUnits", "unitsFilter", "detachHeader", "frameSpacing",
 }
 
 function GridLayoutHeaderClass.prototype:Reset()
@@ -759,8 +759,9 @@ function Grid2Layout:AddCustomLayouts()
 	end
 end
 
--- Detached headers management
+--{{{ Detached headers management
 function Grid2Layout:RestoreHeaderPosition(header, index)
+	if InCombatLockdown() then return end
 	local settings = self.db.profile
 	if index then
 		header.headerKey = self.layoutName .. index
@@ -820,7 +821,7 @@ do
 	end
 end
 
--- function Grid2Layout:MODIFIER_STATE_CHANGED(key,down)
+-- Grid2Layout:HeadersHighlightEnabled(enable)
 do
 	local LCG = LibStub("LibCustomGlow-1.0")
 	local function HighlightFrame(frame, enable, force)
@@ -832,20 +833,20 @@ do
 			end
 		end
 	end
+	function Grid2Layout:MODIFIER_STATE_CHANGED(_, key,down)
+		if key=='LALT' or key=='RALT' then
+			self:HeadersHighlightEnabled( down == 1 )
+		end
+	end
 	function Grid2Layout:HeadersHighlightEnabled(enable)
 		HighlightFrame(self.frame, enable, true)
 		for _, frame in ipairs(self.groupsUsed) do
 			HighlightFrame(frame, enable)
 		end
 	end
-	function Grid2Layout:MODIFIER_STATE_CHANGED(_, key,down)
-		if key=='LALT' or key=='RALT' then
-			self:HeadersHighlightEnabled( down == 1 )
-		end
-	end
 end
 
-function Grid2Layout:StartMoveHeader(button) -- called from header frame event so: self ~= Grid2Layout
+function Grid2Layout:StartMoveHeader(button) -- called from header frame event so: self~=Grid2Layout
 	if not Grid2Layout.db.profile.FrameLock and button == "LeftButton" then
 		self:StartMoving()
 		self.isMoving = true
@@ -854,15 +855,13 @@ function Grid2Layout:StartMoveHeader(button) -- called from header frame event s
 	end
 end
 
-function Grid2Layout:StopMoveHeader() -- called from header frame event so: self ~= Grid2Layout
+function Grid2Layout:StopMoveHeader() -- called from header frame event so: self~=Grid2Layout
 	if self.isMoving then
 		self:StopMovingOrSizing()
 		self.isMoving = nil
 		Grid2Layout:AdjustHeaderPosition(self)
 		Grid2Layout:SaveHeaderPosition(self)
-		if not InCombatLockdown() then
-			Grid2Layout:RestoreHeaderPosition(self)
-		end
+		Grid2Layout:RestoreHeaderPosition(self)
 		Grid2Layout:UnregisterEvent('MODIFIER_STATE_CHANGED')
 		Grid2Layout:HeadersHighlightEnabled(false)
 	end

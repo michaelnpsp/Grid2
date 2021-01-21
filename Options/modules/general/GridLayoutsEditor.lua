@@ -398,7 +398,7 @@ headerOptions = {
 		end,
 		set = function(info, value)
 			editedHeader.detachHeader = value or nil
-			RefreshLayout()
+			RefreshLayout(true)
 		end,
 		disabled = function() return editedHeaderIndex==1 end,
 		hidden = false,
