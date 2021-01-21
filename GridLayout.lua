@@ -428,7 +428,9 @@ function Grid2Layout:PlaceHeaders()
 		frame:SetOrientation(horizontal)
 		frame:ClearAllPoints()
 		frame:SetParent(self.frame)
-		if not frame.isDetached then
+		if frame.isDetached then
+			self:RestoreHeaderPosition(frame, i)
+		else
 			if prevFrame then
 				frame:SetPoint(anchor, prevFrame, relPoint, xMult2, yMult2 )
 			else
@@ -437,8 +439,6 @@ function Grid2Layout:PlaceHeaders()
 			frame:Show()
 			self:Debug("Placing group", i, frame:GetName(), anchor, prevFrame and prevFrame:GetName(), relPoint)
 			prevFrame = frame
-		else
-			self:RestoreHeaderPosition(frame, i)
 		end
 	end
 end
@@ -627,11 +627,13 @@ function Grid2Layout:UpdateSize()
 	local mcol,mrow,curCol,maxRow,remSize = "GetWidth","GetHeight",0,0,0
 	if p.horizontal then mcol,mrow = mrow,mcol end
 	for _,g in ipairs(self.groupsUsed) do
-		local row = g[mrow](g)
-		if maxRow<row then maxRow = row end
-		local col = g[mcol](g) + p.Padding
-		curCol = curCol + col
-		remSize = (g.headerType=='special' or (g[1] and g[1]:IsVisible())) and 0 or remSize + col
+		if not g.isDetached then
+			local row = g[mrow](g)
+			if maxRow<row then maxRow = row end
+			local col = g[mcol](g) + p.Padding
+			curCol = curCol + col
+			remSize = (g.headerType=='special' or (g[1] and g[1]:IsVisible())) and 0 or remSize + col
+		end
 	end
 	local col = math.max( curCol - remSize + p.Spacing*2 - p.Padding, 1 )
 	local row = math.max( maxRow + p.Spacing*2, 1 )
@@ -783,21 +785,86 @@ function Grid2Layout:SaveHeaderPosition(header)
 	self:SavePosition(header)
 end
 
-function Grid2Layout:StartMoveHeader(button)
-	if not Grid2Layout.db.profile.FrameLock and button == "LeftButton" then
-		self:StartMoving()
-		self.isMoving = true
+-- function Grid2Layout:AdjustHeaderPosition(header)
+do
+	local header,x1,x2,y1,y2
+	local function Check(a1,a2,x1,y1,x2,y2)
+		if a1~=a2 and (x2-x1)^2+(y2-y1)^2<512 then
+			header:ClearAllPoints()
+			header:SetPoint(a1, UIParent, 'BOTTOMLEFT', x2, y2)
+			return true
+		end
+	end
+	local function CheckPoint(a, x, y)
+		return Check("TOPLEFT",a,x1,y1,x,y) or Check("TOPRIGHT",a,x2,y1,x,y) or Check("BOTTOMLEFT",a,x1,y2,x,y) or Check("BOTTOMRIGHT",a,x2,y2,x,y)
+	end
+	local function CheckFrame(frame, force)
+		if header~=frame and (frame.isDetached or force) then
+			local xx1, xx2, yy1, yy2 = frame:GetLeft(), frame:GetRight(), frame:GetTop(), frame:GetBottom()
+			if CheckPoint("TOPLEFT",xx1,yy1) or CheckPoint("TOPRIGHT",xx2,yy1) or CheckPoint("BOTTOMLEFT",xx1,yy2) or CheckPoint("BOTTOMRIGHT",xx2,yy2) then
+				return true
+			end
+		end
+	end
+	function Grid2Layout:AdjustHeaderPosition(group)
+		if IsAltKeyDown() then
+			header, x1, x2, y1, y2 = group, group:GetLeft(), group:GetRight(), group:GetTop(), group:GetBottom()
+			if not CheckFrame(self.frameBack, true) then
+				for _,frame in ipairs(self.groupsUsed) do
+					if CheckFrame(frame) then
+						return
+					end
+				end
+			end
+		end
 	end
 end
 
-function Grid2Layout:StopMoveHeader()
+-- function Grid2Layout:MODIFIER_STATE_CHANGED(key,down)
+do
+	local LCG = LibStub("LibCustomGlow-1.0")
+	local function HighlightFrame(frame, enable, force)
+		if force or frame.isDetached then
+			if enable then
+				LCG.PixelGlow_Start( frame, {1,1,0,.7}, 8, .2, nil, 1, 0,0, false, 'Grid2DragHighlight' )
+			else
+				LCG.PixelGlow_Stop( frame, 'Grid2DragHighlight' )
+			end
+		end
+	end
+	function Grid2Layout:HeadersHighlightEnabled(enable)
+		HighlightFrame(self.frame, enable, true)
+		for _, frame in ipairs(self.groupsUsed) do
+			HighlightFrame(frame, enable)
+		end
+	end
+	function Grid2Layout:MODIFIER_STATE_CHANGED(_, key,down)
+		if key=='LALT' or key=='RALT' then
+			self:HeadersHighlightEnabled( down == 1 )
+		end
+	end
+end
+
+function Grid2Layout:StartMoveHeader(button) -- called from header frame event so: self ~= Grid2Layout
+	if not Grid2Layout.db.profile.FrameLock and button == "LeftButton" then
+		self:StartMoving()
+		self.isMoving = true
+		Grid2Layout:RegisterEvent('MODIFIER_STATE_CHANGED')
+		Grid2Layout:HeadersHighlightEnabled(IsAltKeyDown())
+	end
+end
+
+function Grid2Layout:StopMoveHeader() -- called from header frame event so: self ~= Grid2Layout
 	if self.isMoving then
 		self:StopMovingOrSizing()
 		self.isMoving = nil
+		Grid2Layout:AdjustHeaderPosition(self)
 		Grid2Layout:SaveHeaderPosition(self)
 		if not InCombatLockdown() then
 			Grid2Layout:RestoreHeaderPosition(self)
 		end
+		Grid2Layout:UnregisterEvent('MODIFIER_STATE_CHANGED')
+		Grid2Layout:HeadersHighlightEnabled(false)
 	end
 end
 
