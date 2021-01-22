@@ -721,45 +721,20 @@ function Grid2Layout:ResetPosition()
 	self:SavePosition()
 end
 
-function Grid2Layout:AddLayout(layoutName, layout)
-	self.layoutSettings[layoutName] = layout
-end
-
--- Fix non existent layouts for a theme
-function Grid2Layout:FixLayoutsTable(db)
-	local defaults = self.defaultDB.profile.layouts
-	for groupType,layoutName in pairs(db) do
-		if not self.layoutSettings[layoutName] then
-			db[groupType] = defaults[groupType] or defaults['raid'] or "By Group"
-		end
-	end
-end
-
--- Fix non existent layouts for all themes
-function Grid2Layout:FixLayouts()
-	self:FixLayoutsTable(self.dba.profile.layouts)
-	for _,theme in ipairs(self.dba.profile.extraThemes or {}) do
-		self:FixLayoutsTable(theme.layouts)
-	end
-end
-
--- Register user defined layouts (called from Grid2Options do not remove)
-function Grid2Layout:AddCustomLayouts()
-	self.customLayouts = self.db.global.customLayouts
-	if self.customLayouts then
-		for n,l in pairs(self.customLayouts) do
-			for _,h in ipairs(l) do
-				h.type = (h.type=='special' and 'special') or strmatch(h.type or '', 'pet') -- conversion from old format
-				if Grid2.isClassic and h.groupBy == 'ASSIGNEDROLE' then -- convert non existant roles in classic
-					h.groupBy, h.groupingOrder = 'ROLE', 'MAINTANK,MAINASSIST,NONE'
-				end
-			end
-			self:AddLayout(n,l)
-		end
-	end
-end
-
 --{{{ Detached headers management
+function Grid2Layout:SetupDetachedHeader(header, index)
+	if header.isInsecure then
+		local isDetached = (header:GetAttribute("detachHeader") and index>1) or nil
+		if isDetached ~= header.isDetached then
+			header.isDetached = isDetached
+			header:SetMovable( isDetached )
+			header:SetScript("OnMouseUp",   isDetached and self.StopMoveHeader  or nil)
+			header:SetScript("OnHide",      isDetached and self.StopMoveHeader  or nil)
+			header:SetScript("OnMouseDown", isDetached and self.StartMoveHeader or nil)
+		end
+	end
+end
+
 function Grid2Layout:RestoreHeaderPosition(header, index)
 	if InCombatLockdown() then return end
 	local settings = self.db.profile
@@ -788,11 +763,20 @@ end
 
 -- function Grid2Layout:AdjustHeaderPosition(header)
 do
-	local header,x1,x2,y1,y2
-	local function Check(a1,a2,x1,y1,x2,y2)
-		if a1~=a2 and (x2-x1)^2+(y2-y1)^2<512 then
+	local header,x1,x2,y1,y2, xx1, xx2, yy1, yy2
+	local function Check(a1,a2,xxx1,yyy1,xxx2,yyy2)
+		if a1~=a2 and (xxx2-xxx1)^2+(yyy2-yyy1)^2<512 then
+			if not (x1>=xx2 or xx1>=x2 or y1<=yy2 or yy1<=y2) then
+				local sp = Grid2Layout.db.profile.Padding - Grid2Layout.db.profile.Spacing*2
+				if not strfind(a1,'LEFT') ~= not strfind(a2,'LEFT') then
+					xxx2 = xxx2 + sp * Grid2Layout.relativePoints.xMult[a1]
+				end
+				if not strfind(a1,'TOP') ~= not strfind(a2,'TOP') then
+					yyy2 = yyy2 + sp * Grid2Layout.relativePoints.yMult[a1]
+				end
+			end
 			header:ClearAllPoints()
-			header:SetPoint(a1, UIParent, 'BOTTOMLEFT', x2, y2)
+			header:SetPoint(a1, UIParent, 'BOTTOMLEFT', xxx2, yyy2)
 			return true
 		end
 	end
@@ -801,7 +785,7 @@ do
 	end
 	local function CheckFrame(frame, force)
 		if header~=frame and (frame.isDetached or force) then
-			local xx1, xx2, yy1, yy2 = frame:GetLeft(), frame:GetRight(), frame:GetTop(), frame:GetBottom()
+			xx1, xx2, yy1, yy2 = frame:GetLeft(), frame:GetRight(), frame:GetTop(), frame:GetBottom()
 			if CheckPoint("TOPLEFT",xx1,yy1) or CheckPoint("TOPRIGHT",xx2,yy1) or CheckPoint("BOTTOMLEFT",xx1,yy2) or CheckPoint("BOTTOMRIGHT",xx2,yy2) then
 				return true
 			end
@@ -827,7 +811,7 @@ do
 	local function HighlightFrame(frame, enable, force)
 		if force or frame.isDetached then
 			if enable then
-				LCG.PixelGlow_Start( frame, {1,1,0,.7}, 8, .2, nil, 1, 0,0, false, 'Grid2DragHighlight' )
+				LCG.PixelGlow_Start( frame, {1,1,0,1}, 8, .2, nil, 1, 0,0, false, 'Grid2DragHighlight' )
 			else
 				LCG.PixelGlow_Stop( frame, 'Grid2DragHighlight' )
 			end
@@ -867,15 +851,43 @@ function Grid2Layout:StopMoveHeader() -- called from header frame event so: self
 	end
 end
 
-function Grid2Layout:SetupDetachedHeader(header, index)
-	if header.isInsecure then
-		local isDetached = (header:GetAttribute("detachHeader") and index>1) or nil
-		if isDetached ~= header.isDetached then
-			header.isDetached = isDetached
-			header:SetMovable( isDetached )
-			header:SetScript("OnMouseUp",   isDetached and self.StopMoveHeader  or nil)
-			header:SetScript("OnHide",      isDetached and self.StopMoveHeader  or nil)
-			header:SetScript("OnMouseDown", isDetached and self.StartMoveHeader or nil)
+--}}}
+
+--{{{ Layouts registration
+function Grid2Layout:AddLayout(layoutName, layout)
+	self.layoutSettings[layoutName] = layout
+end
+
+-- Fix non existent layouts for a theme
+function Grid2Layout:FixLayoutsTable(db)
+	local defaults = self.defaultDB.profile.layouts
+	for groupType,layoutName in pairs(db) do
+		if not self.layoutSettings[layoutName] then
+			db[groupType] = defaults[groupType] or defaults['raid'] or "By Group"
+		end
+	end
+end
+
+-- Fix non existent layouts for all themes
+function Grid2Layout:FixLayouts()
+	self:FixLayoutsTable(self.dba.profile.layouts)
+	for _,theme in ipairs(self.dba.profile.extraThemes or {}) do
+		self:FixLayoutsTable(theme.layouts)
+	end
+end
+
+-- Register user defined layouts (called from Grid2Options do not remove)
+function Grid2Layout:AddCustomLayouts()
+	self.customLayouts = self.db.global.customLayouts
+	if self.customLayouts then
+		for n,l in pairs(self.customLayouts) do
+			for _,h in ipairs(l) do
+				h.type = (h.type=='special' and 'special') or strmatch(h.type or '', 'pet') -- conversion from old format
+				if Grid2.isClassic and h.groupBy == 'ASSIGNEDROLE' then -- convert non existant roles in classic
+					h.groupBy, h.groupingOrder = 'ROLE', 'MAINTANK,MAINASSIST,NONE'
+				end
+			end
+			self:AddLayout(n,l)
 		end
 	end
 end
