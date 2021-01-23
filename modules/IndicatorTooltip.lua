@@ -31,13 +31,13 @@ local function OnFrameEnter(frame)
 				Tooltip:Display(unit, status or Tooltip)
 			end
 		end
-	end	
+	end
 	tooltipFrame = frame
 end
 
 local function OnFrameLeave()
 	Tooltip:Hide()
-	tooltipFrame = nil 
+	tooltipFrame = nil
 end
 
 -- Special case to get unit info without linking "name" status to the indicator
@@ -48,11 +48,11 @@ end
 function Tooltip:Display(unit, status)
 	local anchor = self.dbx.tooltipAnchor
 	if anchor then
-		GameTooltip:SetOwner(Grid2Layout.frameBack, anchor)
+		GameTooltip:SetOwner(Grid2Layout.frame.frameBack, anchor)
 	else
 		GameTooltip_SetDefaultAnchor(GameTooltip, UIParent)
 	end
-	status:GetTooltip(unit, GameTooltip)	
+	status:GetTooltip(unit, GameTooltip)
 	GameTooltip:Show()
 	tooltipDisplayed = true
 end
@@ -71,7 +71,7 @@ function Tooltip:OnUpdate(parent, unit, status)
 		else
 			Tooltip:Hide()
 		end
-	end	
+	end
 end
 
 function Tooltip:OnSuspend()
