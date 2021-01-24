@@ -399,9 +399,9 @@ function Grid2Layout:SetClamp()
 end
 
 function Grid2Layout:ResetHeaders()
-	self.layoutHasSpecial = nil
-	self.layoutHasFilter  = nil
-	self.layoutHasAuto    = nil
+	self.layoutHasAuto     = nil
+	self.layoutHasSpecial  = nil
+	self.layoutHasDetached = nil
 	for type, headers in pairs(self.groups) do
 		for i=self.indexes[type],1,-1 do
 			headers[i]:Reset()
@@ -423,14 +423,14 @@ function Grid2Layout:PlaceHeaders()
 	local yMult1     = self.relativePoints.yMult[anchor]
 	local xMult2 	 = vertical   and xMult1*padding or 0
 	local yMult2 	 = horizontal and yMult1*padding or 0
+	local xMult3     = xMult2 + (vertical   and xMult1*spacing*2 or 0)
+	local yMult3     = yMult2 + (horizontal and yMult1*spacing*2 or 0)
 	local prevFrame
-	for i, frame in ipairs(self.groupsUsed) do
+	for i, frame in ipairs(self.groupsUsed) do -- non detached headers
 		frame:SetOrientation(horizontal)
 		frame:ClearAllPoints()
 		frame:SetParent(self.frame)
-		if frame.isDetached then
-			self:RestoreHeaderPosition(frame, i)
-		else
+		if not frame.isDetached then
 			if prevFrame then
 				frame:SetPoint(anchor, prevFrame, relPoint, xMult2, yMult2 )
 			else
@@ -439,6 +439,18 @@ function Grid2Layout:PlaceHeaders()
 			frame:Show()
 			self:Debug("Placing group", i, frame:GetName(), anchor, prevFrame and prevFrame:GetName(), relPoint)
 			prevFrame = frame
+		end
+	end
+	for index, frame in self:IterateDetachedHeaders() do -- detached headers
+		if not self:RestoreHeaderPosition(frame) then
+			prevFrame = self.groupsUsed[index-1] or self.frame
+			frame:ClearAllPoints()
+			frame:SetPoint(anchor, prevFrame, relPoint, xMult3, yMult3)
+			frame:Show()
+			C_Timer.After(0, function()
+				self:SaveHeaderPosition(frame)
+				self:RestoreHeaderPosition(frame)
+			end)
 		end
 	end
 end
@@ -648,10 +660,8 @@ function Grid2Layout:UpdateTextures()
 	local p = self.db.profile
 	local backdrop = Grid2:GetBackdropTable( Grid2:MediaFetch("border", p.BorderTexture), 16, Grid2:MediaFetch("background", p.BackgroundTexture), false, nil, 4 )
 	Grid2:SetFrameBackdrop(	self.frame.frameBack, backdrop )
-	for _,g in ipairs(self.groupsUsed) do
-		if g.isDetached and g.frameBack then
-			Grid2:SetFrameBackdrop( g.frameBack, backdrop )
-		end
+	for _, frame in self:IterateDetachedHeaders() do
+		Grid2:SetFrameBackdrop( frame.frameBack, backdrop )
 	end
 end
 
@@ -661,11 +671,9 @@ function Grid2Layout:UpdateColor()
 	frame:SetBackdropBorderColor(settings.BorderR, settings.BorderG, settings.BorderB, settings.BorderA)
 	frame:SetBackdropColor(settings.BackgroundR, settings.BackgroundG, settings.BackgroundB, settings.BackgroundA)
 	frame:SetShown( settings.BorderA~=0 or settings.BackgroundA~=0 )
-	for _,g in ipairs(self.groupsUsed) do
-		if g.isDetached and g.frameBack then
-			g.frameBack:SetBackdropBorderColor(settings.BorderR, settings.BorderG, settings.BorderB, settings.BorderA)
-			g.frameBack:SetBackdropColor(settings.BackgroundR, settings.BackgroundG, settings.BackgroundB, settings.BackgroundA)
-		end
+	for _, frame in self:IterateDetachedHeaders() do
+		frame.frameBack:SetBackdropBorderColor(settings.BorderR, settings.BorderG, settings.BorderB, settings.BorderA)
+		frame.frameBack:SetBackdropColor(settings.BackgroundR, settings.BackgroundG, settings.BackgroundB, settings.BackgroundA)
 	end
 end
 
@@ -731,88 +739,90 @@ function Grid2Layout:ResetPosition()
 	self.db.profile.anchor = "TOPLEFT"
 	self:RestorePosition()
 	self:SavePosition()
+	if self.layoutHasDetached then
+		local Positions = self.db.profile.Positions
+		for _,header in self:IterateDetachedHeaders() do
+			Positions[header.headerKey] = nil
+		end
+		self:ReloadLayout(true)
+	end
 end
 
 --{{{ Detached headers management
 function Grid2Layout:SetupDetachedHeader(header, index)
-	local isDetached = (index>1 and header:GetAttribute("detachHeader")) or nil
+	local isDetached = (index>1 and (self.db.global.detachHeaders or header:GetAttribute("detachHeader"))) or nil
 	if isDetached ~= header.isDetached then
+		local frameBack = header.frameBack
 		header.isDetached = isDetached
 		header:SetMovable(isDetached)
 		if isDetached then
-			header.frameBack = header.frameBack or CreateFrame("Frame", nil, self.frame, BackdropTemplateMixin and "BackdropTemplate" or nil)
-			header.frameBack.header = header
-			header.frameBack:SetScript("OnMouseUp",   isDetached and self.StopMoveHeader  or nil)
-			header.frameBack:SetScript("OnHide",      isDetached and self.StopMoveHeader  or nil)
-			header.frameBack:SetScript("OnMouseDown", isDetached and self.StartMoveHeader or nil)
-			header.frameBack:Show()
-		elseif header.frameBack then
-			header.frameBack:ClearAllPoints()
-			header.frameBack:Hide()
+			local Spacing = self.db.profile.Spacing
+			frameBack = frameBack or CreateFrame("Frame", nil, header, BackdropTemplateMixin and "BackdropTemplate" or nil)
+			frameBack.header = header
+			frameBack:SetScript("OnMouseUp",   isDetached and self.StopMoveHeader  or nil)
+			frameBack:SetScript("OnHide",      isDetached and self.StopMoveHeader  or nil)
+			frameBack:SetScript("OnMouseDown", isDetached and self.StartMoveHeader or nil)
+			frameBack:ClearAllPoints()
+			frameBack:SetPoint('TOPLEFT', header, 'TOPLEFT', -Spacing, Spacing )
+			frameBack:SetPoint('BOTTOMRIGHT', header, 'BOTTOMRIGHT', Spacing, -Spacing )
+			frameBack:Show()
+			header.frameBack = frameBack
+			header.headerKey = self.layoutName..index
+		elseif frameBack then
+			frameBack:ClearAllPoints()
+			frameBack:Hide()
 		end
 	end
-end
-
-function Grid2Layout:RestoreHeaderPosition(header, index)
-	if InCombatLockdown() then return end
-	local settings = self.db.profile
-	if index then
-		header.headerKey = self.layoutName .. index
-	end
-	local pos = settings.Positions[header.headerKey]
-	if not pos then
-		local s = UIParent:GetEffectiveScale()
-		local x = UIParent:GetWidth() / 2 * s
-		local y = -UIParent:GetHeight() / 2 * s
-		pos = { 'TOPLEFT', x, y }
-		settings.Positions[header.headerKey] = pos
-	end
-	local s = header:GetEffectiveScale()
-	local a, x, y = pos[1], pos[2]/s, pos[3]/s
-	header:ClearAllPoints()
-	header:SetPoint(a, UIParent, a, x, y)
-	header:Show()
-	header.frameBack:ClearAllPoints()
-	header.frameBack:SetPoint('TOPLEFT', header, 'TOPLEFT', -settings.Spacing, settings.Spacing )
-	header.frameBack:SetPoint('BOTTOMRIGHT', header, 'BOTTOMRIGHT', settings.Spacing, -settings.Spacing )
-	header.frameBack:Show()
-	self:Debug("Placing detached group", header.headerKey, a, x, y)
+	self.layoutHasDetached = isDetached or self.layoutHasDetached
 end
 
 function Grid2Layout:SaveHeaderPosition(header)
 	self:SavePosition(header)
 end
 
+function Grid2Layout:RestoreHeaderPosition(header)
+	if InCombatLockdown() then return end
+	local settings = self.db.profile
+	local pos = settings.Positions[header.headerKey]
+	if pos then
+		local s = header:GetEffectiveScale()
+		local a, x, y = pos[1], pos[2]/s, pos[3]/s
+		header:ClearAllPoints()
+		header:SetPoint(a, UIParent, a, x, y)
+		header:Show()
+		self:Debug("Placing detached group", header.headerKey, a, x, y)
+		return true
+	end
+end
+
+function Grid2Layout:SnapHeaderToPoint(a1, header1, a2, x2, y2, intersect)
+	local p  = self.db.profile
+	local xm = self.relativePoints.xMult[a1]
+	local ym = self.relativePoints.yMult[a1]
+	local x  = x2 + p.Spacing * xm
+	local y  = y2 + p.Spacing * ym
+	if intersect then -- intersect, substract border
+		local sp = p.Padding - p.Spacing*2
+		x = x + sp * xm * (not strfind(a1,'LEFT')~=not strfind(a2,'LEFT') and 1 or 0)
+		y = y + sp * ym * (not strfind(a1,'TOP') ~=not strfind(a2,'TOP')  and 1 or 0)
+	end
+	header1:ClearAllPoints()
+	header1:SetPoint(a1, UIParent, 'BOTTOMLEFT', x, y)
+end
+
 function Grid2Layout:SearchSnapToNearestHeader(header, adjust)
-	if not IsShiftKeyDown() then return end
+	if IsShiftKeyDown() then return end
 	header = header.frameBack
 	local x1, x2, y1, y2, xx1, xx2, yy1, yy2, intersect = header:GetLeft(), header:GetRight(), header:GetTop(), header:GetBottom()
-	local function Check(a1,a2,xxx1,yyy1,xxx2,yyy2)
+	local function Check(a1,xxx1,yyy1,a2,xxx2,yyy2)
 		if a1~=a2 and (xxx2-xxx1)^2+(yyy2-yyy1)^2<512 then
-			intersect = not (x1>=xx2 or xx1>=x2 or y1<=yy2 or yy1<=y2) -- intersect
-			if adjust then
-				local p   = self.db.profile
-				local xm  = self.relativePoints.xMult[a1]
-				local ym  = self.relativePoints.yMult[a1]
-				xxx2 = xxx2 + p.Spacing * xm
-				yyy2 = yyy2 + p.Spacing * ym
-				if intersect then -- intersect, ignore border
-					local sp = p.Padding - p.Spacing*2
-					if not strfind(a1,'LEFT') ~= not strfind(a2,'LEFT') then
-						xxx2 = xxx2 + sp * xm
-					end
-					if not strfind(a1,'TOP') ~= not strfind(a2,'TOP') then
-						yyy2 = yyy2 + sp * ym
-					end
-				end
-				header.header:ClearAllPoints()
-				header.header:SetPoint(a1, UIParent, 'BOTTOMLEFT', xxx2, yyy2)
-			end
+			intersect = not (x1>=xx2 or xx1>=x2 or y1<=yy2 or yy1<=y2)
+			if adjust then self:SnapHeaderToPoint(a1, header.header, a2, xxx2, yyy2, intersect) end
 			return true
 		end
 	end
 	local function CheckPoint(a, x, y)
-		return Check("TOPLEFT",a,x1,y1,x,y) or Check("TOPRIGHT",a,x2,y1,x,y) or Check("BOTTOMLEFT",a,x1,y2,x,y) or Check("BOTTOMRIGHT",a,x2,y2,x,y)
+		return Check("TOPLEFT",x1,y1,a,x,y) or Check("TOPRIGHT",x2,y1,a,x,y) or Check("BOTTOMLEFT",x1,y2,a,x,y) or Check("BOTTOMRIGHT",x2,y2,a,x,y)
 	end
 	local function CheckFrame(frame, force)
 		if header~=frame.frameBack and (frame.isDetached or force) then -- check only main frame and detached headers
@@ -831,10 +841,21 @@ function Grid2Layout:SearchSnapToNearestHeader(header, adjust)
 	return result, intersect
 end
 
+function Grid2Layout:IterateDetachedHeaders()
+	local i, t = 1, self.groupsUsed
+	return self.layoutHasDetached and function()
+		repeat
+			i = i + 1
+			if i>#t then return end
+		until t[i].isDetached
+		return i, t[i]
+	end or Grid2.Dummy
+end
+
 -- Dragging management
 do
 	local LCG = LibStub("LibCustomGlow-1.0")
-	local colors = { [false] = {1,1,0,1}, [true] = {1,.6,0,1} }
+	local colors = { [false] = {1,1,0,1}, [true] = {1,0,0,1} }
 	local trackedHeader, nearestHeader, nearestOverlap
 
 	local function HighlightHeader(header, enable, overlap)
@@ -853,7 +874,7 @@ do
 		if header then
 			trackedHeader, nearestHeader = header, nil
 		end
-		if trackedHeader.isMoving and IsShiftKeyDown() then
+		if trackedHeader.isMoving and not IsShiftKeyDown() then
 			newHeader, newOverlap = Grid2Layout:SearchSnapToNearestHeader(trackedHeader)
 		end
 		if newHeader~=nearestHeader or newOverlap~=nearestOverlap then

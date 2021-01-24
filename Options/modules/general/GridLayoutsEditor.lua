@@ -636,6 +636,21 @@ generalOptions = {
 		end,
 	},
 
+	detachedHeaders = {
+		order = 1.5,
+		type = "toggle",
+		name = "|cffffd200".. L["Detach headers & groups"] .."|r",
+		desc = L["Enable this option to independent place the unit frame groups."],
+		width = "full",
+		get = function(info)
+			return Grid2Layout.db.global.detachHeaders
+		end,
+		set = function(info,v)
+			Grid2Layout.db.global.detachHeaders = v or nil
+			RefreshLayout(true)
+		end,
+	},
+
 	allGroups = {
 		order = 2,
 		type = "toggle",
