@@ -341,12 +341,14 @@ function Grid2Layout:StartMoveFrame(button)
 	if not self.db.profile.FrameLock and button == "LeftButton" then
 		self.frame:StartMoving()
 		self.frame.isMoving = true
+		self:StartHeaderTracking(self.frame)
 	end
 end
 
 function Grid2Layout:StopMoveFrame()
 	if self.frame.isMoving then
 		self.frame:StopMovingOrSizing()
+		self:SearchSnapToNearestHeader(self.frame, true)
 		self:SavePosition()
 		self.frame.isMoving = false
 		if not InCombatLockdown() then self:RestorePosition() end
@@ -797,10 +799,11 @@ end
 
 function Grid2Layout:SnapHeaderToPoint(a1, header1, a2, x2, y2, intersect)
 	local p  = self.db.profile
+	local mf = header1 == self.frame and 0 or 1
 	local xm = self.relativePoints.xMult[a1]
 	local ym = self.relativePoints.yMult[a1]
-	local x  = x2 + p.Spacing * xm
-	local y  = y2 + p.Spacing * ym
+	local x  = x2 + p.Spacing * xm * mf
+	local y  = y2 + p.Spacing * ym * mf
 	if intersect then -- intersect, substract border
 		local sp = p.Padding - p.Spacing*2
 		x = x + sp * xm * (not strfind(a1,'LEFT')~=not strfind(a2,'LEFT') and 1 or 0)
@@ -811,13 +814,13 @@ function Grid2Layout:SnapHeaderToPoint(a1, header1, a2, x2, y2, intersect)
 end
 
 function Grid2Layout:SearchSnapToNearestHeader(header, adjust)
-	if IsShiftKeyDown() then return end
-	header = header.frameBack
-	local x1, x2, y1, y2, xx1, xx2, yy1, yy2, intersect = header:GetLeft(), header:GetRight(), header:GetTop(), header:GetBottom()
+	if IsShiftKeyDown() or not self.layoutHasDetached then return end
+	local frameBack = header.frameBack
+	local x1, x2, y1, y2, xx1, xx2, yy1, yy2, intersect = frameBack:GetLeft(), frameBack:GetRight(), frameBack:GetTop(), frameBack:GetBottom()
 	local function Check(a1,xxx1,yyy1,a2,xxx2,yyy2)
 		if a1~=a2 and (xxx2-xxx1)^2+(yyy2-yyy1)^2<512 then
 			intersect = not (x1>=xx2 or xx1>=x2 or y1<=yy2 or yy1<=y2)
-			if adjust then self:SnapHeaderToPoint(a1, header.header, a2, xxx2, yyy2, intersect) end
+			if adjust then self:SnapHeaderToPoint(a1, header, a2, xxx2, yyy2, intersect) end
 			return true
 		end
 	end
@@ -825,7 +828,7 @@ function Grid2Layout:SearchSnapToNearestHeader(header, adjust)
 		return Check("TOPLEFT",x1,y1,a,x,y) or Check("TOPRIGHT",x2,y1,a,x,y) or Check("BOTTOMLEFT",x1,y2,a,x,y) or Check("BOTTOMRIGHT",x2,y2,a,x,y)
 	end
 	local function CheckFrame(frame, force)
-		if header~=frame.frameBack and (frame.isDetached or force) then -- check only main frame and detached headers
+		if header~=frame and (frame.isDetached or force) then -- check only main frame and detached headers
 			local frameBack = frame.frameBack
 			xx1, xx2, yy1, yy2 = frameBack:GetLeft(), frameBack:GetRight(), frameBack:GetTop(), frameBack:GetBottom()
 			return (CheckPoint("TOPLEFT",xx1,yy1) or CheckPoint("TOPRIGHT",xx2,yy1) or CheckPoint("BOTTOMLEFT",xx1,yy2) or CheckPoint("BOTTOMRIGHT",xx2,yy2)) and frame
@@ -869,11 +872,8 @@ do
 		end
 	end
 
-	local function TrackHeader(header)
+	local function TrackHeader()
 		local newHeader, newOverlap
-		if header then
-			trackedHeader, nearestHeader = header, nil
-		end
 		if trackedHeader.isMoving and not IsShiftKeyDown() then
 			newHeader, newOverlap = Grid2Layout:SearchSnapToNearestHeader(trackedHeader)
 		end
@@ -888,11 +888,18 @@ do
 		end
 	end
 
+	function Grid2Layout:StartHeaderTracking(header)
+		if self.layoutHasDetached then
+			trackedHeader, nearestHeader = header, nil
+			TrackHeader()
+		end
+	end
+
 	function Grid2Layout:StartMoveHeader(button) -- called from frame event so: self == header.frameBack ~= Grid2Layout
 		if not Grid2Layout.db.profile.FrameLock and button == "LeftButton" then
 			self.header:StartMoving()
 			self.header.isMoving = true
-			TrackHeader(self.header)
+			Grid2Layout:StartHeaderTracking(self.header)
 		end
 	end
 
