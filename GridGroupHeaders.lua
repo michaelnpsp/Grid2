@@ -489,7 +489,7 @@ do
 	end
 
 	local function RegisterEvents(self, unitTable)
-		local bossUnits, normalUnits
+		local bossUnits, arenaUnits, normalUnits
 		self.buttonTarget, self.buttonFocus = nil, nil
 		for i, unit in ipairs(unitTable) do
 			if unit=='target' then
@@ -498,6 +498,8 @@ do
 				self.buttonFocus = self[i]
 			elseif strfind(unit,"^boss") then
 				bossUnits = true
+			elseif strfind(unit,"^arena") then
+				arenaUnits = true
 			else
 				normalUnits = true
 			end
@@ -506,6 +508,7 @@ do
 		SetRegisterEvent( self, self.buttonFocus, 'PLAYER_FOCUS_CHANGED' )
 		SetRegisterEvent( self, self.buttonTarget or self.buttonFocus, 'PLAYER_ENTERING_WORLD' )
 		SetRegisterEvent( self, bossUnits, 'INSTANCE_ENCOUNTER_ENGAGE_UNIT' )
+		SetRegisterEvent( self, arenaUnits, 'ARENA_OPPONENT_UPDATE' )
 		SetRegisterEvent( self, normalUnits,'GROUP_ROSTER_UPDATE' )
 	end
 
@@ -534,6 +537,7 @@ do
 		SetRegisterEvent( self, false, 'INSTANCE_ENCOUNTER_ENGAGE_UNIT' )
 		SetRegisterEvent( self, false, 'PLAYER_REGEN_ENABLED' )
 		SetRegisterEvent( self, false, 'PLAYER_ENTERING_WORLD' )
+		SetRegisterEvent( self, false, 'ARENA_OPPONENT_UPDATE' )
 	end
 
 	local function OnAttributeChanged(self, name, value)
@@ -552,6 +556,8 @@ do
 			RefreshButtons(self, "^boss")
 		elseif event=='PLAYER_REGEN_ENABLED' then
 			RefreshButtons(self, "^boss")
+		elseif event=='ARENA_OPPONENT_UPDATE' then
+			RefreshButtons(self, "^arena")
 		elseif event=='PLAYER_ENTERING_WORLD' then
 			if self.buttonTarget then self.buttonTarget:OnUnitStateChanged() end
 			if self.buttonFocus  then self.buttonFocus:OnUnitStateChanged() end

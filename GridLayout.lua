@@ -348,9 +348,9 @@ end
 function Grid2Layout:StopMoveFrame()
 	if self.frame.isMoving then
 		self.frame:StopMovingOrSizing()
+		self.frame.isMoving = false
 		self:SearchSnapToNearestHeader(self.frame, true)
 		self:SavePosition()
-		self.frame.isMoving = false
 		if not InCombatLockdown() then self:RestorePosition() end
 	end
 end
@@ -428,7 +428,7 @@ function Grid2Layout:PlaceHeaders()
 	local xMult3     = xMult2 + (vertical   and xMult1*spacing*2 or 0)
 	local yMult3     = yMult2 + (horizontal and yMult1*spacing*2 or 0)
 	local prevFrame
-	for _, frame in self:IterateHeaders(false) do -- non detached headers
+	for i, frame in self:IterateHeaders(false) do -- non detached headers
 		frame:SetOrientation(horizontal)
 		frame:ClearAllPoints()
 		frame:SetParent(self.frame)
@@ -440,12 +440,12 @@ function Grid2Layout:PlaceHeaders()
 		frame:Show()
 		prevFrame = frame
 	end
-	for index, frame in self:IterateHeaders(true) do -- detached headers
+	for i, frame in self:IterateHeaders(true) do -- detached headers
 		frame:SetOrientation(horizontal)
 		frame:SetParent(self.frame)
 		if not self:RestoreHeaderPosition(frame) then
 			frame:ClearAllPoints()
-			frame:SetPoint(anchor, self.groupsUsed[index-1] or self.frame, relPoint, xMult3, yMult3)
+			frame:SetPoint(anchor, self.groupsUsed[i-1] or self.frame, relPoint, xMult3, yMult3)
 			frame:Show()
 			C_Timer.After(0, function()
 				self:SaveHeaderPosition(frame)
