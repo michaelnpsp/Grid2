@@ -59,7 +59,7 @@ Grid2Options:RegisterStatusOptions("summon", "misc", nil, {
 	titleIconCoords = {0.5890625, 0.7390625, 0.115625,  0.415625},
 })
 
-Grid2Options:RegisterStatusOptions("monk-stagger", "misc", nil, {
+Grid2Options:RegisterStatusOptions("monk-stagger", "combat", nil, {
 	color1 = L["High stagger"],
 	color2 = L["Medium stagger"],
 	color3 = L["Low stagger"],

@@ -424,6 +424,7 @@ L["Adjust background color and alpha."] = "Ajustar plano de fundo e transparenci
 -- L["icons"] = ""
 -- L["multibar"] = ""
 -- L["portrait"] = ""
+-- L["glowborder"] = ""
 
 -- indicators
 -- L["corner-top-left"] = ""
@@ -587,6 +588,7 @@ L["Adjust background color and alpha."] = "Ajustar plano de fundo e transparenci
 -- L["border"] = ""
 -- L["heals"] = ""
 -- L["health"] = ""
+-- L["overhealing"] = ""
 -- L["charmed"] = ""
 -- L["afk"] = ""
 -- L["death"] = ""
@@ -619,6 +621,7 @@ L["Adjust background color and alpha."] = "Ajustar plano de fundo e transparenci
 -- L["direction"] = ""
 -- L["resurrection"] = ""
 -- L["self"] = ""
+-- L["monk-stagger"] = ""
 
 -- L["Curse"] = ""
 -- L["Poison"] = ""

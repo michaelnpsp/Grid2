@@ -424,6 +424,7 @@ L["bar"] = true
 L["icons"] = true
 L["multibar"] = true
 L["portrait"] = true
+L["glowborder"] = true
 
 -- indicators
 L["corner-top-left"]= true
@@ -587,6 +588,7 @@ L["alpha"] = true
 L["border"] = true
 L["heals"] = true
 L["health"] = true
+L["overhealing"] = true
 L["charmed"] = true
 L["afk"] = true
 L["death"] = true
@@ -619,6 +621,7 @@ L["pvp"] = true
 L["direction"] = true
 L["resurrection"] = true
 L["self"] = true
+L["monk-stagger"] = true
 
 L["Curse"] = true
 L["Poison"] = true

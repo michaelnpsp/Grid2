@@ -4,9 +4,9 @@ local options = {}
 
 Grid2Options:MakeTitleOptions( options, Grid2.versionstring, L["GRID2_WELCOME"], nil, "Interface\\Addons\\Grid2\\media\\icon" )
 
-options.description = { type = "description", order = 1, fontSize = "medium", name = L["GRID2_DESC"] .. "\n" }
+options.description = { type = "description", order = 1, fontSize = "medium", name = "\n" .. L["GRID2_DESC"] .. "\n" }
 
-options.debug = { type = "header", order = 2, name = L["Debug"] } 
+options.debug = { type = "header", order = 2, name = L["Debug"] }
 do
 	local function AddModuleDebugMenu(name, module, options)
 		options[name]= {
@@ -28,7 +28,7 @@ do
 	end
 end
 
-options.separator = { type = "description", order = 100, name = "" } 
+options.separator = { type = "description", order = 100, name = "" }
 options.resetpost = {
 	type = "execute",
 	order = 110,
