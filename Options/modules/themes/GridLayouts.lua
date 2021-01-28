@@ -5,7 +5,21 @@
 local L = Grid2Options.L
 local LG = Grid2Options.LG
 
-local theme = Grid2Options.editedTheme 
+local theme = Grid2Options.editedTheme
+
+-- reload theme&layout in test mode
+local function TestMode(info)
+	local layouts, layoutName, maxPlayers = theme.layout.layouts
+	if info.handler[1] then
+		maxPlayers = info.handler[1]
+		layoutName = layouts[maxPlayers] or layouts[ (maxPlayers==1 and "solo") or (maxPlayers==5 and "party") or "raid" ]
+	else
+		maxPlayers = strfind(info.arg,"raid") and 40 or 5
+		layoutName = layouts[info.arg] or layouts["raid"]
+	end
+	local enabled = (not Grid2.testMaxPlayers) or (theme.index~=Grid2.testThemeIndex or layoutName~=Grid2Layout.testLayoutName or maxPlayers~=Grid2.testMaxPlayers)
+	Grid2Layout:SetTestMode( enabled, theme.index, layoutName, maxPlayers)
+end
 
 -- MakeLayoutsOptions()
 local MakeLayoutsOptions
@@ -25,10 +39,7 @@ do
 		theme.layout.layouts[info.arg] = (v~="default") and v or nil
 		Grid2Layout:ReloadLayout()
 	end
-	local function TestMode(info)
-		local maxPlayers = (info.arg=="solo" and 1) or (info.arg=="party" and 5) or (info.arg=="arena" and 5) or 40
-		Grid2Options:LayoutTestEnable( theme.layout.layouts[info.arg] or theme.layout.layouts["raid"], nil,nil, maxPlayers )
-	end
+
 	function MakeLayoutsOptions(advanced)
 		local options = {}
 		local order = 10
@@ -61,11 +72,11 @@ do
 				disabled = InCombatLockdown,
 				arg      = raidType,
 			}
-			
+
 			options[raidType.."sep"] = { type = "description",  name = "",  order = order + 99 }
 			order = order + 100
 		end
-		
+
 		options.title = {
 			order = 1,
 			type = "description",
@@ -163,16 +174,8 @@ do
 			name = L["Test"],
 			desc = L["Test"],
 			disabled = InCombatLockdown,
-			func = function(info)
-				local v = info.handler[1]
-				Grid2Options:LayoutTestEnable(
-					theme.layout.layouts[v] or theme.layout.layouts[ (v==1 and "solo") or (v==5 and "party") or "raid" ],
-					theme.frame.frameWidths[v],
-					theme.frame.frameHeights[v],
-					v
-				)
-			end,
-			hidden = false,						
+			func = TestMode,
+			hidden = false,
 		},
 		delete = {
 			type = "execute",
@@ -192,7 +195,7 @@ do
 				end
 			end,
 			confirm = function() return L["Are you sure?"] end,
-			hidden = false,						
+			hidden = false,
 		},
 	}
 
@@ -202,13 +205,13 @@ do
 			type = "description",
 			name = L["A Layout defines which unit frames will be displayed and the way in which they are arranged. Here you can set different layouts for each instance size."],
 			hidden = function()
-				-- To detect if edited theme has changed 
+				-- To detect if edited theme has changed
 				if theme.layout ~= layout then
 					layout = theme.layout
 					wipe(new_sizes)
 				end
 			end,
-		},		
+		},
 		add ={
 			type   = 'select',
 			order  = 500,
@@ -227,7 +230,7 @@ do
 		local size = info.handler[1]
 		return not ( theme.layout.layouts[size] or theme.frame.frameWidths[size] or theme.frame.frameHeights[size] or new_sizes[size] )
 	end
-	
+
 	for _,m in pairs(size_values) do
 		options['instance'..m] = {
 			type  = "group",
@@ -239,7 +242,7 @@ do
 			hidden = IsHidden,
 		}
 	end
-	
+
 	MakeFrameSizesOptions = function() return options end
 end
 

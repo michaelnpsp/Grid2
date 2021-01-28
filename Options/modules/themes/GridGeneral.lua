@@ -23,7 +23,6 @@ local layoutOptions =  { mainheader = {
 		set = function ()
 			theme.layout.horizontal = not theme.layout.horizontal
 			Grid2Layout:RefreshLayout()
-			Grid2Options:LayoutTestRefresh()
 		 end,
 }, lock = {
 		type = "toggle",
@@ -102,7 +101,6 @@ local layoutOptions =  { mainheader = {
 			theme.layout.BackgroundTexture = v
 			Grid2Layout:UpdateTextures()
 			Grid2Layout:UpdateColor()
-			Grid2Options:LayoutTestRefresh()
 		end,
 		values = AceGUIWidgetLSMlists.background,
 }, borderTexture = {
@@ -115,7 +113,6 @@ local layoutOptions =  { mainheader = {
 			theme.layout.BorderTexture = v
 			Grid2Layout:UpdateTextures()
 			Grid2Layout:UpdateColor()
-			Grid2Options:LayoutTestRefresh()
 		end,
 		values = AceGUIWidgetLSMlists.border,
 }, backColor = {
@@ -131,7 +128,6 @@ local layoutOptions =  { mainheader = {
 				  local settings = theme.layout
 				  settings.BackgroundR, settings.BackgroundG, settings.BackgroundB, settings.BackgroundA = r, g, b, a
 				  Grid2Layout:UpdateColor()
-				  Grid2Options:LayoutTestRefresh()
 			  end,
 		hasAlpha = true,
 }, borderColor = {
@@ -147,7 +143,6 @@ local layoutOptions =  { mainheader = {
 				  local settings = theme.layout
 				  settings.BorderR, settings.BorderG, settings.BorderB, settings.BorderA = r, g, b, a
 				  Grid2Layout:UpdateColor()
-				  Grid2Options:LayoutTestRefresh()
 			  end,
 		hasAlpha = true,
 }, spacing = {
@@ -162,7 +157,6 @@ local layoutOptions =  { mainheader = {
 		set = function (_, v)
 				theme.layout.Spacing = v
 				Grid2Layout:RefreshLayout()
-				Grid2Options:LayoutTestRefresh()
 			  end,
 }, padding = {
 		type = "range",
@@ -178,7 +172,6 @@ local layoutOptions =  { mainheader = {
 		set = function (_, v)
 				  theme.layout.Padding = v
 				  Grid2Layout:RefreshLayout()
-				  Grid2Options:LayoutTestRefresh()
 			  end,
 }, scale = {
 		type = "range",
@@ -195,7 +188,6 @@ local layoutOptions =  { mainheader = {
 		set = function (_, v)
 				  theme.layout.ScaleSize = v
 				  Grid2Layout:RestorePosition()
-				  Grid2Options:LayoutTestRefresh()
 			  end,
 }, anchorheader = {
 		type = "header",
@@ -222,7 +214,6 @@ local layoutOptions =  { mainheader = {
 		set = function (_, v)
 			theme.layout.groupAnchor = v
 			Grid2Layout:RefreshLayout()
-			Grid2Options:LayoutTestRefresh()
 		end,
 		values={["TOPLEFT"] = L["TOPLEFT"], ["TOPRIGHT"] = L["TOPRIGHT"], ["BOTTOMLEFT"] = L["BOTTOMLEFT"], ["BOTTOMRIGHT"] = L["BOTTOMRIGHT"] },
 }, positionx = {
@@ -242,7 +233,6 @@ local layoutOptions =  { mainheader = {
 			theme.layout.PosX = v / (screen_w / (UIParent:GetWidth()*UIParent:GetEffectiveScale()))
 			Grid2Layout:RestorePosition()
 			Grid2Layout:SavePosition()
-			Grid2Options:LayoutTestRefresh()
 		end,
 }, positiony = {
 		type = "range",
@@ -261,7 +251,6 @@ local layoutOptions =  { mainheader = {
 			theme.layout.PosY = v / (screen_h / (UIParent:GetHeight()*UIParent:GetEffectiveScale()))
 			Grid2Layout:RestorePosition()
 			Grid2Layout:SavePosition()
-			Grid2Options:LayoutTestRefresh()
 		end,
 } }
 
@@ -281,7 +270,6 @@ local frameOptions = { framewidth = {
 		set = function (_, v)
 			theme.frame.frameWidth = v
 			Grid2Layout:UpdateDisplay()
-			Grid2Options:LayoutTestRefresh()
 		end,
 		disabled = InCombatLockdown,
 }, frameheight = {
@@ -298,7 +286,6 @@ local frameOptions = { framewidth = {
 		set = function (_, v)
 			theme.frame.frameHeight = v
 			Grid2Layout:UpdateDisplay()
-			Grid2Options:LayoutTestRefresh()
 		end,
 		disabled = InCombatLockdown,
 }, headerback = {

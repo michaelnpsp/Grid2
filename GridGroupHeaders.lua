@@ -61,6 +61,20 @@ do
 	end
 end
 
+-- generate test units table
+local GetTestUnits
+do
+	local units
+	function GetTestUnits(self)
+		local maxPlayers = self:GetAttribute('testMode')
+		if units==nil or #units~=maxPlayers then
+			units = units or {}; wipe(units)
+			for i=1,maxPlayers do units[i] = 'player'; end
+		end
+		return units
+	end
+end
+
 -- misc table functions
 local function fillArrayTable(tbl, ...) -- fill indexed table
 	for i=1, select("#",...) do
@@ -309,6 +323,7 @@ end
 
 -- display unit frame buttons on screen
 local function DisplayButtons(self, unitTable)
+	if self:GetAttribute('testMode') then unitTable = GetTestUnits(self) end
 	local frameSpacing = self:GetAttribute('frameSpacing') or 0
 	local unitWatch = not not self:GetAttribute('hideEmptyUnits')
 	local startingIndex = self:GetAttribute("startingIndex") or 1

@@ -313,7 +313,7 @@ end
 
 function Grid2Frame:GetFrameSize()
 	local p = self.db.profile
-	local m = Grid2.instMaxPlayers
+	local m = Grid2.testMaxPlayers or Grid2.instMaxPlayers
 	return p.frameWidths[m] or p.frameWidth, p.frameHeights[m] or p.frameHeight
 end
 

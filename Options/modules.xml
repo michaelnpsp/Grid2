@@ -10,7 +10,6 @@
 <Script file="modules\themes\GridGeneral.lua"/>
 <Script file="modules\themes\GridIndicators.lua"/>
 <Script file="modules\themes\GridLayouts.lua"/>
-<Script file="modules\themes\GridTestLayout.lua"/>
 
 <Script file="modules\statuses\Status.lua"/>
 <Script file="modules\statuses\StatusAura.lua"/>

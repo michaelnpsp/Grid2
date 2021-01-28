@@ -373,6 +373,18 @@ function Grid2Layout:FrameVisibility(display)
 	self:UpdateVisibility()
 end
 
+-- enable layout test mode
+function Grid2Layout:SetTestMode(enabled, themeIndex, layoutName, maxPlayers)
+	if enabled then
+		Grid2.testThemeIndex, Grid2.testMaxPlayers, self.testLayoutName = themeIndex, maxPlayers, layoutName
+	else
+		Grid2.testThemeIndex, Grid2.testMaxPlayers, self.testLayoutName = nil, nil, nil
+	end
+	if not Grid2:ReloadTheme() then
+		self:ReloadLayout(true)
+	end
+end
+
 --{{{ ConfigMode support
 CONFIGMODE_CALLBACKS = CONFIGMODE_CALLBACKS or {}
 CONFIGMODE_CALLBACKS["Grid2"] = function(action)
@@ -472,7 +484,7 @@ function Grid2Layout:ReloadLayout(force)
 	if not UnitExists('player') then self:Debug("ReloadLayout Ignored because player unit does not exist"); return end
 	local p = self.db.profile
 	local partyType, instType, maxPlayers = Grid2:GetGroupType()
-	local layoutName = p.layouts[maxPlayers] or p.layouts[partyType.."@"..instType] or p.layouts[partyType]
+	local layoutName = self.testLayoutName or p.layouts[maxPlayers] or p.layouts[partyType.."@"..instType] or p.layouts[partyType]
 	if layoutName ~= self.layoutName or (self.layoutHasAuto and maxPlayers ~= self.instMaxPlayers) or force or self.forceReload then
 		self.forceReload = force
 		if not Grid2:RunSecure(3, self, "ReloadLayout") then
@@ -512,7 +524,7 @@ end
 
 --{{ Header management
 function Grid2Layout:AddHeader(layoutHeader, defaults)
-	local template = self.layoutHeaderClass:template(layoutHeader, self.db.global.useInsecureHeaders)
+	local template = self.layoutHeaderClass:template(layoutHeader, self.db.global.useInsecureHeaders or self.testLayoutName)
 	local index    = self.indexes[template] + 1
 	local headers  = self.groups[template]
 	local header   = headers[index]
@@ -533,9 +545,15 @@ function Grid2Layout:AddHeader(layoutHeader, defaults)
 end
 
 function Grid2Layout:GenerateHeaders(defaults)
-	self.layoutHasAuto = not self.db.global.displayAllGroups or nil
-	local m = self.layoutHasAuto and self.instMaxGroups or 8
-	for i=1,m do
+	local maxGroups
+	if Grid2.testMaxPlayers then
+		self.layoutHasAuto = nil
+		maxGroups = math.ceil( Grid2.testMaxPlayers/5 )
+	else
+		self.layoutHasAuto = not self.db.global.displayAllGroups or nil
+		maxGroups = self.layoutHasAuto and self.instMaxGroups or 8
+	end
+	for i=1,maxGroups do
 		self:AddHeader(self.groupFilters[i], defaults)
 	end
 end
@@ -553,11 +571,10 @@ end
 -- Apply defaults and some special cases for each header and apply workarounds to some blizzard bugs
 function Grid2Layout:FixHeaderAttributes(header)
 	local p = self.db.profile
-	-- detached header, only in insecure frames
-	-- local detachHeader = header:GetAttribute("detachHeader")
-	-- if detachHeader then -- we need a border to be able to drag the header using the mouse
-	-- header:SetAttribute( "frameSpacing", self.db.profile.Spacing )
-	-- end
+	-- testMode (only works for insecure frames)
+	if self.testLayoutName then
+		header:SetAttribute("testMode", Grid2.testMaxPlayers)
+	end
 	-- fix unitsPerColumn
 	local unitsPerColumn = header:GetAttribute("unitsPerColumn")
 	if not unitsPerColumn then

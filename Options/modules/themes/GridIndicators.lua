@@ -1,11 +1,11 @@
 local Grid2Options = Grid2Options
 local L = Grid2Options.L
 
-local theme = Grid2Options.editedTheme 
+local theme = Grid2Options.editedTheme
 
 local indicators = {}
 
-Grid2Options:AddThemeOptions( "indicators", "indicators" , { 
+Grid2Options:AddThemeOptions( "indicators", "indicators" , {
 
 --=============================================================================
 
@@ -24,7 +24,7 @@ orientation = {
 			Grid2Options:UpdateIndicators()
 		end,
 		values={["VERTICAL"] = L["VERTICAL"], ["HORIZONTAL"] = L["HORIZONTAL"]}
-}, 
+},
 
 bartexture = {
 		type = "select", dialogControl = "LSM30_Statusbar",
@@ -35,10 +35,9 @@ bartexture = {
 		set = function (info, v)
 			theme.frame.barTexture = v
 			Grid2Options:UpdateIndicators()
-			Grid2Options:LayoutTestRefresh()
 		end,
 		values = AceGUIWidgetLSMlists.statusbar,
-}, 
+},
 
 font = {
 		type = "select", dialogControl = "LSM30_Font",
@@ -51,7 +50,7 @@ font = {
 			Grid2Options:UpdateIndicators('text')
 		end,
 		values = AceGUIWidgetLSMlists.font,
-}, 
+},
 
 fontFlagsShadow = {
 		type = "select",
@@ -59,7 +58,7 @@ fontFlagsShadow = {
 		name = L["Default Font Border"],
 		desc = L["Set the default border type for fonts."],
 		get = function ()
-			return (theme.frame.shadowDisabled and '0;' or '1;') .. (theme.frame.fontFlags or "NONE") 
+			return (theme.frame.shadowDisabled and '0;' or '1;') .. (theme.frame.fontFlags or "NONE")
 		end,
 		set = function (_, v)
 			local shadow, flags = strsplit(";",v)
@@ -83,7 +82,7 @@ fontsize = {
 			theme.frame.fontSize = v
 			Grid2Options:UpdateIndicators()
 		end,
-}, 
+},
 
 iconsize = {
 		type = "range",
@@ -98,7 +97,7 @@ iconsize = {
 			theme.frame.iconSize =v
 			Grid2Options:UpdateIndicators()
 		end,
-}, 
+},
 
 } },
 
@@ -118,7 +117,7 @@ indicators = {
 					indicators[baseKey] = Grid2Options:LocalizeIndicator( indicator, true )
 				end
 			end
-		end			
+		end
 		return indicators
 	end,
 	get = function(info, key)
@@ -129,6 +128,6 @@ indicators = {
 		Grid2:RefreshTheme()
 	end,
 },
-	
+
 } )
 

@@ -228,7 +228,7 @@ function Grid2:CheckTheme()
 	local kSGI = fmt("%s@%s@%s", kS, groupType, instType)
 	local kSG  = fmt("%s@%s",    kS, groupType)
 	local kGI  = fmt("%s@%s",    groupType, instType)
-	theme = enabled[kSM] or enabled[kSGI] or enabled[kSG] or enabled[kS] or enabled[kC] or enabled[kM] or enabled[kGI] or enabled[groupType] or theme
+	theme = self.testThemeIndex or enabled[kSM] or enabled[kSGI] or enabled[kSG] or enabled[kS] or enabled[kC] or enabled[kM] or enabled[kGI] or enabled[groupType] or theme
 	theme = themes.names[theme] and theme or 0
 	return theme, themes.indicators[theme] or {}
 end
@@ -246,10 +246,11 @@ function Grid2:RefreshTheme()
 end
 
 function Grid2:ReloadTheme(force)
-	local theme = self:CheckTheme()
+	local theme, indicators = self:CheckTheme()
 	if theme ~= self.currentTheme or force then
 		if not self:RunSecure(2, self, "ReloadTheme") then
 			self.currentTheme = theme
+			self.suspendedIndicators = indicators
 			self:UpdateTheme()
 			self:RefreshTheme()
 			self:SendMessage("Grid_ThemeChanged", theme)
