@@ -224,6 +224,19 @@ local function Text_OnUpdate(self, parent, unit, status)
 	end
 end
 
+local function Text_OnUpdateTest(self, parent, unit, status)
+	local Text = parent[self.name].Text
+	if status and status.name=='name' then
+		local header = parent:GetParent()
+		if header.typeHeader then
+			Text:SetText( string.format("%s(%s)", header.typeHeader, header:GetAttribute('testIndex') or '') )
+			Text:Show()
+			return
+		end
+	end
+	Text:Hide()
+end
+
 local function Text_Disable(self, parent)
 	local f = parent[self.name]
 	f:Hide()
@@ -262,7 +275,9 @@ local function Text_LoadDB(self)
 		self.shadowAlpha = theme.shadowDisabled and 0 or 1
 		self.fontFlags   = theme.fontFlags
 	end
-	if dbx.duration or dbx.elapsed then
+	if Grid2.testThemeIndex then -- check layout test mode
+		self.OnUpdate = Text_OnUpdateTest
+	elseif dbx.duration or dbx.elapsed then
 		self.stack = dbx.stack
 		self.elapsed = dbx.elapsed
 		if dbx.stack then

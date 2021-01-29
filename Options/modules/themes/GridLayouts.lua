@@ -7,7 +7,7 @@ local LG = Grid2Options.LG
 
 local theme = Grid2Options.editedTheme
 
--- reload theme&layout in test mode
+-- enable test mode
 local function TestMode(info)
 	local layouts, layoutName, maxPlayers = theme.layout.layouts
 	if info.handler[1] then

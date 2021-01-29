@@ -28,7 +28,8 @@ local UNKNOWN = UNKNOWNOBJECT or "Unknown"
 local InjectMixins
 do
 	local callMethod = function(self, name, ...) self[name](self, ...); end
-	function InjectMixins(self)
+	function InjectMixins(self, headerType)
+		self.typeHeader   = headerType
 		self.isInsecure  = true
 		self.CallMethod  = callMethod
 		self.GetFrameRef = dummyFunc
@@ -61,17 +62,14 @@ do
 	end
 end
 
--- generate test units table
-local GetTestUnits
-do
-	local units
-	function GetTestUnits(self)
-		local maxPlayers = self:GetAttribute('testMode')
-		if units==nil or #units~=maxPlayers then
-			units = units or {}; wipe(units)
-			for i=1,maxPlayers do units[i] = 'player'; end
+-- fill test units table
+local function SetupTestMode(self, units)
+	local maxPlayers = self:GetAttribute('testMode')
+	if maxPlayers then
+		local unit = self.typeHeader~='pet' and 'player' or 'pet'
+		for i=#units+1,maxPlayers do
+			units[i] = unit
 		end
-		return units
 	end
 end
 
@@ -323,7 +321,7 @@ end
 
 -- display unit frame buttons on screen
 local function DisplayButtons(self, unitTable)
-	if self:GetAttribute('testMode') then unitTable = GetTestUnits(self) end
+	SetupTestMode(self, unitTable)
 	local frameSpacing = self:GetAttribute('frameSpacing') or 0
 	local unitWatch = not not self:GetAttribute('hideEmptyUnits')
 	local startingIndex = self:GetAttribute("startingIndex") or 1
@@ -437,7 +435,7 @@ do
 			wipe(srtTable)
 			local raid, start, stop = GetGroupType(self)
 			if raid~=nil then
-				if self.isPetHeader then
+				if self.typeHeader == 'pet' then
 					ApplyPetsFilter(self, raid, start, stop)
 				else
 					ApplyPlayersFilter(self, raid, start, stop)
@@ -456,19 +454,18 @@ do
 	local function Show(self)
 		self:RegisterEvent("GROUP_ROSTER_UPDATE")
 		self:RegisterEvent("UNIT_NAME_UPDATE")
-		if self.isPetHeader then self:RegisterEvent("UNIT_PET") end
+		if self.typeHeader == 'pet' then self:RegisterEvent("UNIT_PET") end
 		Update(self)
 	end
 
 	local function Hide(self)
 		self:UnregisterEvent("GROUP_ROSTER_UPDATE")
 		self:UnregisterEvent("UNIT_NAME_UPDATE")
-		if self.isPetHeader then self:UnregisterEvent("UNIT_PET") end
+		if self.typeHeader == 'pet' then self:UnregisterEvent("UNIT_PET") end
 	end
 
 	function Grid2InsecureGroupHeader_OnLoad(self, isPet)
-		InjectMixins(self)
-		self.isPetHeader = isPet
+		InjectMixins(self, isPet and 'pet' or 'player')
 		self:SetScript('OnAttributeChanged', AttributeChanged)
 		self:SetScript('OnShow', Show)
 		self:SetScript('OnHide', Hide)
@@ -583,7 +580,7 @@ do
 
 	-- header load
 	function Grid2InsecureGroupSpecialHeader_OnLoad(self)
-		InjectMixins(self)
+		InjectMixins(self, 'special')
 		self:SetScript('OnAttributeChanged', OnAttributeChanged)
 		self:SetScript('OnShow', Update)
 		self:SetScript('OnHide', OnHide)

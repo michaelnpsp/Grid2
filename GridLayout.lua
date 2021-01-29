@@ -73,7 +73,7 @@ local HeaderAttributes = {
 	"useOwnerUnit", "filterOnPet", "unitsuffix", "sortMethod",
 	"toggleForVehicle", "showSolo", "showPlayer", "showParty", "showRaid",
 	-- extra attributes used only by Grid2 Special Group Header
-	"hideEmptyUnits", "unitsFilter", "detachHeader", "frameSpacing",
+	"hideEmptyUnits", "unitsFilter", "detachHeader", "frameSpacing", "testMode"
 }
 
 function GridLayoutHeaderClass.prototype:Reset()
@@ -373,6 +373,13 @@ function Grid2Layout:FrameVisibility(display)
 	self:UpdateVisibility()
 end
 
+-- reload text indicators db (because text indicators have a special testMode to display header index)
+function Grid2Layout:ReloadTextIndicatorsDB()
+	for _,indicator in Grid2:IterateIndicators('text') do
+		indicator:LoadDB()
+	end
+end
+
 -- enable layout test mode
 function Grid2Layout:SetTestMode(enabled, themeIndex, layoutName, maxPlayers)
 	if enabled then
@@ -381,6 +388,7 @@ function Grid2Layout:SetTestMode(enabled, themeIndex, layoutName, maxPlayers)
 		Grid2.testThemeIndex, Grid2.testMaxPlayers, self.testLayoutName = nil, nil, nil
 	end
 	if not Grid2:ReloadTheme() then
+		self:ReloadTextIndicatorsDB()
 		self:ReloadLayout(true)
 	end
 end
@@ -457,11 +465,13 @@ function Grid2Layout:PlaceHeaders()
 		frame:SetParent(self.frame)
 		if not self:RestoreHeaderPosition(frame) then
 			frame:ClearAllPoints()
+			frame:SetClampedToScreen(true)
 			frame:SetPoint(anchor, self.groupsUsed[i-1] or self.frame, relPoint, xMult3, yMult3)
 			frame:Show()
 			C_Timer.After(0, function()
 				self:SaveHeaderPosition(frame)
 				self:RestoreHeaderPosition(frame)
+				frame:SetClampedToScreen(false)
 			end)
 		end
 	end
@@ -540,7 +550,7 @@ function Grid2Layout:AddHeader(layoutHeader, defaults)
 	self.groupsUsed[#self.groupsUsed+1] = header
 	self:SetHeaderAttributes(header, defaults)
 	self:SetHeaderAttributes(header, layoutHeader)
-	self:FixHeaderAttributes(header)
+	self:FixHeaderAttributes(header, #self.groupsUsed)
 	self:SetupDetachedHeader(header, #self.groupsUsed)
 end
 
@@ -569,11 +579,12 @@ function Grid2Layout:SetHeaderAttributes(header, layoutHeader)
 end
 
 -- Apply defaults and some special cases for each header and apply workarounds to some blizzard bugs
-function Grid2Layout:FixHeaderAttributes(header)
+function Grid2Layout:FixHeaderAttributes(header, index)
 	local p = self.db.profile
 	-- testMode (only works for insecure frames)
 	if self.testLayoutName then
 		header:SetAttribute("testMode", Grid2.testMaxPlayers)
+		header:SetAttribute("testIndex", index)
 	end
 	-- fix unitsPerColumn
 	local unitsPerColumn = header:GetAttribute("unitsPerColumn")
