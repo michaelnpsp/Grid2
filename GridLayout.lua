@@ -804,7 +804,7 @@ function Grid2Layout:SetupDetachedHeader(header, index)
 		frameBack:SetPoint('TOPLEFT', header, 'TOPLEFT', -Spacing, Spacing )
 		frameBack:SetPoint('BOTTOMRIGHT', header, 'BOTTOMRIGHT', Spacing, -Spacing )
 		frameBack:Show()
-		header.headerKey = self:GenerateHeaderKey(index)
+		header.headerKey = self.layoutName..index -- theme not needed in key because each theme stores a different Positions table.
 		self.layoutHasDetached = true
 	end
 end
@@ -873,11 +873,6 @@ function Grid2Layout:SearchSnapToNearestHeader(header, adjust)
 		end
 	end
 	return result, intersect
-end
-
-function Grid2Layout:GenerateHeaderKey(index)
-	local _, themeName = Grid2:GetCurrentTheme()
-	return string.format( "%s-%s-%d", themeName, self.layoutName, index )
 end
 
 function Grid2Layout:IterateHeaders(detached) -- true = detached headers; false|nil = non-detached headers
