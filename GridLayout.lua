@@ -730,6 +730,7 @@ function Grid2Layout:SavePosition(header)
 				  (a:find("TOP")    and f:GetTop()*s-UIParent:GetHeight()*t) or
 				  (f:GetTop()-f:GetHeight()/2)*s-UIParent:GetHeight()/2*t
 		if header then
+			p.Positions = p.Positions or {}
 			p.Positions[header.headerKey] = { a, x, y }
 		else
 			p.PosX, p.PosY = x, y
@@ -759,15 +760,17 @@ function Grid2Layout:RestorePosition()
 end
 
 function Grid2Layout:ResetPosition()
-	local s = UIParent:GetEffectiveScale()
-	self.db.profile.PosX =   UIParent:GetWidth()  / 2 * s
-	self.db.profile.PosY = - UIParent:GetHeight() / 2 * s
-	self.db.profile.anchor = "TOPLEFT"
+	local p  = self.db.profile
+	local s  = UIParent:GetEffectiveScale()
+	p.PosX   =   UIParent:GetWidth()  / 2 * s
+	p.PosY   = - UIParent:GetHeight() / 2 * s
+	p.anchor = "TOPLEFT"
 	self:RestorePosition()
 	self:SavePosition()
 	if self.layoutHasDetached then
+		p.Positions = p.Positions or {}
 		for _,header in self:IterateHeaders(true) do
-			self.db.profile.Positions[header.headerKey] = nil
+			p.Positions[header.headerKey] = nil
 		end
 		self:ReloadLayout(true)
 	end
@@ -787,7 +790,6 @@ function Grid2Layout:SetupDetachedHeader(header, index)
 			frameBack:SetScript("OnHide",      self.StopMoveHeader )
 			frameBack:SetScript("OnMouseDown", self.StartMoveHeader)
 			header.frameBack = frameBack
-			header.headerKey = self.layoutName..index
 		elseif frameBack then
 			frameBack:Hide()
 			frameBack:ClearAllPoints()
@@ -802,6 +804,7 @@ function Grid2Layout:SetupDetachedHeader(header, index)
 		frameBack:SetPoint('TOPLEFT', header, 'TOPLEFT', -Spacing, Spacing )
 		frameBack:SetPoint('BOTTOMRIGHT', header, 'BOTTOMRIGHT', Spacing, -Spacing )
 		frameBack:Show()
+		header.headerKey = self:GenerateHeaderKey(index)
 		self.layoutHasDetached = true
 	end
 end
@@ -812,8 +815,8 @@ end
 
 function Grid2Layout:RestoreHeaderPosition(header)
 	if InCombatLockdown() then return end
-	local settings = self.db.profile
-	local pos = settings.Positions[header.headerKey]
+	local p = self.db.profile
+	local pos = p.Positions and p.Positions[header.headerKey]
 	if pos then
 		local s = header:GetEffectiveScale()
 		local a, x, y = pos[1], pos[2]/s, pos[3]/s
@@ -870,6 +873,11 @@ function Grid2Layout:SearchSnapToNearestHeader(header, adjust)
 		end
 	end
 	return result, intersect
+end
+
+function Grid2Layout:GenerateHeaderKey(index)
+	local _, themeName = Grid2:GetCurrentTheme()
+	return string.format( "%s-%s-%d", themeName, self.layoutName, index )
 end
 
 function Grid2Layout:IterateHeaders(detached) -- true = detached headers; false|nil = non-detached headers

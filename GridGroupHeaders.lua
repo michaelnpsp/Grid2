@@ -65,7 +65,7 @@ end
 -- fill test units table
 local function SetupTestMode(self, units)
 	local maxPlayers = self:GetAttribute('testMode')
-	if maxPlayers then
+	if maxPlayers and self.typeHeader~='special' then
 		local unit = self.typeHeader~='pet' and 'player' or 'pet'
 		for i=#units+1,maxPlayers do
 			units[i] = unit

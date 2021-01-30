@@ -229,7 +229,8 @@ local function Text_OnUpdateTest(self, parent, unit, status)
 	if status and status.name=='name' then
 		local header = parent:GetParent()
 		if header.typeHeader then
-			Text:SetText( string.format("%s(%s)", header.typeHeader, header:GetAttribute('testIndex') or '') )
+			local str = string_cut(status:GetText(unit) or header.typeHeader, self.textlength)
+			Text:SetText( string.format("%s(%s)", str, header:GetAttribute('testIndex') or '') )
 			Text:Show()
 			return
 		end
