@@ -253,11 +253,17 @@ function Grid2Layout:UpdateTheme()
 	self.db.profile = themes and themes[Grid2.currentTheme] or self.dba.profile
 	self.db.shared = self.dba.profile
 	self.frameWidth, self.frameHeight = nil, nil
+	self:UpgradeThemeDB()
 end
 
 function Grid2Layout:RefreshTheme()
 	self:UpdateFrame()
 	self:ReloadLayout(true)
+end
+
+function Grid2Layout:UpgradeThemeDB()
+	local p = self.db.profile
+	p.Positions = p.Positions or {}
 end
 
 --{{{ Event handlers
@@ -448,6 +454,7 @@ function Grid2Layout:PlaceHeaders()
 	local xMult3     = xMult2 + (vertical   and xMult1*spacing*2 or 0)
 	local yMult3     = yMult2 + (horizontal and yMult1*spacing*2 or 0)
 	local prevFrame
+	self:RestorePosition()
 	for i, frame in self:IterateHeaders(false) do -- non detached headers
 		frame:SetOrientation(horizontal)
 		frame:ClearAllPoints()
@@ -514,7 +521,6 @@ function Grid2Layout:LoadLayout(layoutName)
 	if layout then
 		self:Debug("LoadLayout", layoutName)
 		self.layoutName = layoutName
-		self:RestorePosition()
 		self:ResetHeaders()
 		if layout[1] then
 			for _, layoutHeader in ipairs(layout) do
@@ -527,6 +533,7 @@ function Grid2Layout:LoadLayout(layoutName)
 		elseif not layout.empty then
 			self:GenerateHeaders(layout.defaults)
 		end
+		self.frame.headerKey = self.layoutHasDetached and layoutName or nil
 		self:PlaceHeaders()
 		self:UpdateDisplay()
 	end
@@ -729,13 +736,12 @@ function Grid2Layout:SavePosition(header)
 		local y = (a:find("BOTTOM") and f:GetBottom()*s) or
 				  (a:find("TOP")    and f:GetTop()*s-UIParent:GetHeight()*t) or
 				  (f:GetTop()-f:GetHeight()/2)*s-UIParent:GetHeight()/2*t
-		if header then
-			p.Positions = p.Positions or {}
-			p.Positions[header.headerKey] = { a, x, y }
+		if f.headerKey then
+			p.Positions[f.headerKey] = { a, x, y }
 		else
 			p.PosX, p.PosY = x, y
 		end
-		self:Debug("Saved Position", a, x, y, f.headerKey)
+		self:Debug("Saved Position", a, x, y, k)
 	end
 end
 
@@ -746,14 +752,12 @@ function Grid2Layout:RestorePosition()
 	-- foreground frame
 	local f = self.frame
 	f:SetScale(p.ScaleSize)
-	local s = f:GetEffectiveScale()
-	local x = p.PosX / s
-	local y = p.PosY / s
-	local a = p.anchor
+	local a, x, y = self:GetFramePosition(f)
 	f:ClearAllPoints()
 	f:SetPoint(a, x, y)
 	-- background frame
 	local b = f.frameBack
+	b:SetScale(p.ScaleSize)
 	b:ClearAllPoints()
 	b:SetPoint(p.groupAnchor) -- Using groupAnchor instead of anchor, see ticket #442.
 	self:Debug("Restored Position", a, p.ScaleSize, x, y)
@@ -768,7 +772,6 @@ function Grid2Layout:ResetPosition()
 	self:RestorePosition()
 	self:SavePosition()
 	if self.layoutHasDetached then
-		p.Positions = p.Positions or {}
 		for _,header in self:IterateHeaders(true) do
 			p.Positions[header.headerKey] = nil
 		end
@@ -778,7 +781,8 @@ end
 
 --{{{ Detached headers management
 function Grid2Layout:SetupDetachedHeader(header, index)
-	local isDetached = (index>1 and (self.db.global.detachHeaders or header:GetAttribute("detachHeader"))) or nil
+	if index<=1 then return end
+	local isDetached = self.db.global.detachHeaders or header:GetAttribute("detachHeader")
 	if isDetached ~= header.isDetached then
 		local frameBack = header.frameBack
 		header.isDetached = isDetached
@@ -816,7 +820,7 @@ end
 function Grid2Layout:RestoreHeaderPosition(header)
 	if InCombatLockdown() then return end
 	local p = self.db.profile
-	local pos = p.Positions and p.Positions[header.headerKey]
+	local pos = p.Positions[header.headerKey]
 	if pos then
 		local s = header:GetEffectiveScale()
 		local a, x, y = pos[1], pos[2]/s, pos[3]/s
@@ -826,6 +830,17 @@ function Grid2Layout:RestoreHeaderPosition(header)
 		self:Debug("Placing detached group", header.headerKey, a, x, y)
 		return true
 	end
+end
+
+function Grid2Layout:GetFramePosition(f)
+	local p = self.db.profile
+	local s = f:GetEffectiveScale()
+	if f.headerKey then
+		local pos = p.Positions[f.headerKey]
+		if pos then	return pos[1], pos[2]/s, pos[3]/s end
+		p.Positions[f.headerKey] = { p.anchor, p.PosX, p.PosY }
+	end
+	return p.anchor, p.PosX/s, p.PosY/s
 end
 
 function Grid2Layout:SnapHeaderToPoint(a1, header1, a2, x2, y2, intersect)
