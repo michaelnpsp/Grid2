@@ -793,6 +793,7 @@ function Grid2Layout:SetupDetachedHeader(header, index)
 			frameBack:SetScript("OnMouseUp",   self.StopMoveHeader )
 			frameBack:SetScript("OnHide",      self.StopMoveHeader )
 			frameBack:SetScript("OnMouseDown", self.StartMoveHeader)
+			frameBack:SetScript("OnSizeChanged", self.UpdateDetachedVisibility)
 			header.frameBack = frameBack
 		elseif frameBack then
 			frameBack:Hide()
@@ -803,11 +804,11 @@ function Grid2Layout:SetupDetachedHeader(header, index)
 		end
 	end
 	if isDetached then
-		local frameBack, Spacing = header.frameBack, self.db.profile.Spacing
+		local frameBack, Spacing, button = header.frameBack, self.db.profile.Spacing, header[1]
 		frameBack:ClearAllPoints()
 		frameBack:SetPoint('TOPLEFT', header, 'TOPLEFT', -Spacing, Spacing )
 		frameBack:SetPoint('BOTTOMRIGHT', header, 'BOTTOMRIGHT', Spacing, -Spacing )
-		frameBack:Show()
+		frameBack:SetShown( button and button:IsShown() )
 		header.headerKey = self.layoutName..index -- theme not needed in key because each theme stores a different Positions table.
 		self.layoutHasDetached = true
 	end
@@ -830,6 +831,11 @@ function Grid2Layout:RestoreHeaderPosition(header)
 		self:Debug("Placing detached group", header.headerKey, a, x, y)
 		return true
 	end
+end
+
+function Grid2Layout:UpdateDetachedVisibility() -- self~=Grid2Layout
+	local button = self.header[1]
+	self:SetShown( button and button:IsVisible() )
 end
 
 function Grid2Layout:GetFramePosition(f)
