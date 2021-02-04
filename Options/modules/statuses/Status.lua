@@ -303,22 +303,5 @@ function Grid2Options:MakeStatusThresholdOptions(status, options, optionParams, 
 	}
 end
 
--- Grid2Options:MakeStatusToggleOptions()
-function Grid2Options:MakeStatusToggleOptions(status, options, optionParams, toggleKey)
-	local name = optionParams and optionParams[toggleKey] or L[toggleKey] or toggleKey
-	options[toggleKey] = {
-		type = "toggle",
-		name = name,
-		tristate = false,
-		width = optionParams and optionParams.width or nil,
-		get = function () return status.dbx[toggleKey] end,
-		set = function (_, v)
-			status.dbx[toggleKey] = v or nil
-			status:UpdateDB()
-			status:UpdateAllUnits()
-		end,
-	}
-end
-
 -- Grid2Options:MakeStatusStandardOptions()
 Grid2Options.MakeStatusStandardOptions = Grid2Options.MakeStatusColorOptions

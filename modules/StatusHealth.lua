@@ -23,6 +23,7 @@ local UnitExists = UnitExists
 local UnitHealth = UnitHealth
 local UnitIsDead = UnitIsDead
 local UnitIsGhost = UnitIsGhost
+local UnitIsFriend = UnitIsFriend
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitIsFeignDeath = UnitIsFeignDeath
 local UnitHealthMax = UnitHealthMax
@@ -191,10 +192,6 @@ end
 HealthCurrent.OnEnable  = Health_Enable
 HealthCurrent.OnDisable = Health_Disable
 HealthCurrent.IsActive  = Grid2.statusLibrary.IsActive
-
---function HealthCurrent:IsActive(unit)
---	return UnitExists(unit)
---end
 
 function HealthCurrent_GetPercent(self,unit)
 	local m = UnitHealthMax(unit)
@@ -372,6 +369,14 @@ else
 		return fmt("%.1fk", (UnitHealth(unit) - UnitHealthMax(unit)  + heals_cache[unit]) / 1000)
 	end
 end
+function HealthDeficit:GetTextEnemy(unit) -- special case, we display health current percent for enemy units
+	if UnitIsFriend('player', unit) then
+		return self:GetTextFriend(unit)
+	else
+		local m = UnitHealthMax(unit)
+		return fmt( "%d%%", m == 0 and 0 or UnitHealth(unit) * 100 / m )
+	end
+end
 HealthDeficit.GetText = HealthDeficit.GetText1
 
 function HealthDeficit:GetPercent1(unit)
@@ -395,6 +400,10 @@ function HealthDeficit:UpdateDB()
 	else
 		self.GetPercent = HealthDeficit.GetPercent1
 		self.GetText = self.dbx.displayRawNumbers and self.GetText2 or self.GetText1
+	end
+	if self.dbx.displayPercentEnemies then
+		self.GetTextFriend = self.GetText
+		self.GetText = self.GetTextEnemy
 	end
 end
 

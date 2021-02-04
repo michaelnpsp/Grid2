@@ -69,7 +69,7 @@ Grid2Options:RegisterStatusOptions("health-current", "health", function(self, st
 			type = "toggle",
 			tristate = false,
 			width = "full",
-			order = 350,
+			order = 50,
 			name = L["Shorten Health Numbers"],
 			desc = L["Shorten Health Numbers"],
 			get = function () return not status.dbx.displayRawNumbers end,
@@ -80,15 +80,25 @@ Grid2Options:RegisterStatusOptions("health-current", "health", function(self, st
 			end,
 		}
 	end
-	self:MakeStatusToggleOptions(status, options, optionParams, "deadAsFullHealth")
+	options.deadAsFullHealth = {
+		type = "toggle",
+		tristate = false,
+		width = "full",
+		order = 70,
+		name = L["Show dead as having Full Health"],
+		get = function () return status.dbx.deadAsFullHealth end,
+		set = function (_, v)
+			status.dbx.deadAsFullHealth = v or nil
+			status:UpdateDB()
+			status:UpdateAllUnits()
+		end,
+	}
 end, {
-	deadAsFullHealth = L["Show dead as having Full Health"],
-	quickHealth = L["Instant Updates"],
+	width = "full",
 	color1 = L["Full Health"],
 	color2 = L["Medium Health"],
 	color3 = L["Low Health"],
-	width = "full",
-	titleIcon = "Interface\\Icons\\Inv_potion_51"
+	titleIcon = "Interface\\Icons\\Inv_potion_51",
 })
 
 Grid2Options:RegisterStatusOptions("heals-incoming", "health", function(self, status, options, optionParams)
@@ -259,6 +269,20 @@ end, {
 
 Grid2Options:RegisterStatusOptions("health-deficit", "health", function(self, status, options, optionParams)
 	Grid2Options:MakeStatusColorThresholdOptions(status, options, optionParams)
+	options.addIncomingHeals = {
+		type = "toggle",
+		order = 99,
+		width = "full",
+		name = L["Add Incoming Heals"],
+		desc = L["Add incoming heals to health deficit."],
+		tristate = false,
+		get = function () return status.dbx.addIncomingHeals end,
+		set = function (_, v)
+			if status.enabled then status:OnDisable() end
+			status.dbx.addIncomingHeals = v or nil
+			if status.enabled then status:OnEnable() end
+		end,
+	}
 	if Grid2.isClassic then
 		options.healthShorten = {
 			type = "toggle",
@@ -275,18 +299,18 @@ Grid2Options:RegisterStatusOptions("health-deficit", "health", function(self, st
 			end,
 		}
 	end
-	options.addIncomingHeals = {
+	options.displayPercent = {
 		type = "toggle",
-		order = 99,
-		width = "full",
-		name = L["Add Incoming Heals"],
-		desc = L["Add incoming heals to health deficit."],
 		tristate = false,
-		get = function () return status.dbx.addIncomingHeals end,
+		width = "full",
+		order = 110,
+		name = L["Display health percent text for enemies"],
+		desc = L["Display health percent text instead of health deficit for non friendly units."],
+		get = function () return status.dbx.displayPercentEnemies end,
 		set = function (_, v)
-			if status.enabled then status:OnDisable() end
-			status.dbx.addIncomingHeals = v or nil
-			if status.enabled then status:OnEnable() end
+			status.dbx.displayPercentEnemies = v or nil
+			status:UpdateDB()
+			status:UpdateAllUnits()
 		end,
 	}
 end, {
