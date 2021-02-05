@@ -4,27 +4,19 @@ local Phased = Grid2.statusPrototype:new("phased")
 
 local Grid2 = Grid2
 local IsInInstance = IsInInstance
-local UnitInPhase = UnitInPhase
-local UnitIsWarModePhased = UnitIsWarModePhased
+local UnitPhaseReason = UnitPhaseReason
 local UnitDistanceSquared = UnitDistanceSquared
 
 local timer
 local range = {}
 local cache = {}
 
-local UnitOutOfPhase
-if Grid2.isWoW90 then
-	UnitOutOfPhase = UnitPhaseReason
-else
-	UnitOutOfPhase = function(unit) return UnitIsWarModePhased(unit) or not UnitInPhase(unit); end
-end
-
 local function ResetUnit(_, unit)
 	cache[unit], range[unit] = nil, nil
 end
 
 local function UpdateUnit(_, unit)
-	local phased = range[unit] and UnitOutOfPhase(unit)
+	local phased = UnitPhaseReason(unit)
 	if phased~=cache[unit] then
 		cache[unit] = phased
 		Phased:UpdateIndicators(unit)
@@ -34,7 +26,7 @@ end
 local function UpdateUnits()
 	for unit in Grid2:IterateGroupedPlayers() do
 		local distance, valid = UnitDistanceSquared(unit)
-		local inrange = valid and distance<62500 -- UnitInPhase() only works if distance squared<250*250
+		local inrange = valid and distance<62500 -- UnitPhaseReason() only works if distance squared<250*250
 		if inrange~=range[unit] then
 			range[unit] = inrange
 			UpdateUnit(nil, unit)
@@ -82,9 +74,10 @@ function Phased:IsActive(unit)
 end
 
 Phased.GetColor = Grid2.statusLibrary.GetColor
+Phased.GetPercent = Grid2.statusLibrary.GetPercent
 
 Grid2.setupFunc["phased"] = function(baseKey, dbx)
-	Grid2:RegisterStatus(Phased, {"icon", "color"}, baseKey, dbx)
+	Grid2:RegisterStatus(Phased, {"icon", "color", "percent"}, baseKey, dbx)
 	return Phased
 end
 
