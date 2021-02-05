@@ -7,7 +7,7 @@ local next = next
 -- local variables
 local indicators = {} -- indicators marked for update
 local registered = {} -- registered messages
-local statuses   = { playerSpec = {}, groupInstType = {} }
+local statuses   = { playerSpec = {}, groupInstType = {}, instNameID = {} }
 
 -- local functions
 local function RegisterMessage(message, enabled)
@@ -23,9 +23,11 @@ end
 
 local function UpdateMessages(status, load)
 	statuses.playerSpec[status] = load and load.playerSpec~=nil or nil
+	statuses.instNameID[status] = load and load.instNameID~=nil or nil
 	statuses.groupInstType[status] = load and (load.groupType~=nil or load.instType~=nil) or nil
 	RegisterMessage( "Grid_GroupTypeChanged",  next(statuses.groupInstType) )
 	RegisterMessage( "Grid_PlayerSpecChanged", next(statuses.playerSpec) )
+	RegisterMessage( "Grid_ZoneChangedNewArea", next(statuses.instNameID) )
 end
 
 local function RegisterIndicators(self)
@@ -51,6 +53,11 @@ local function UpdateIndicators()
 	wipe(indicators)
 end
 
+local function CheckZoneFilter(filter)
+	local instanceName,_,_,_,_,_,_,instanceID = GetInstanceInfo()
+	return filter[instanceName] or filter[instanceID]
+end
+
 local function UpdateStatus(self)
 	local prev = self.suspended
 	local load = self.dbx.load
@@ -59,7 +66,8 @@ local function UpdateStatus(self)
 			( load.disabled ) or
 			( load.playerClassSpec and not load.playerClassSpec[ Grid2.playerClassSpec ] ) or
 			( load.groupType       and not load.groupType[ Grid2.groupType ]             ) or
-			( load.instType        and not load.instType[ Grid2.instType ]               ) or nil
+			( load.instType        and not load.instType[ Grid2.instType ]               ) or
+			( load.instNameID      and not CheckZoneFilter(load.instNameID)              ) or nil
 		return self.suspended ~= prev
 	else
 		self.suspended = nil
@@ -91,6 +99,10 @@ end
 
 function Grid2:Grid_PlayerSpecChanged()
 	RefreshStatuses('playerSpec')
+end
+
+function Grid2:Grid_ZoneChangedNewArea()
+	RefreshStatuses('instNameID')
 end
 
 -- status methods

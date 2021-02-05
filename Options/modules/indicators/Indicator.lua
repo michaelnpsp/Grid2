@@ -203,11 +203,12 @@ do
 				return self:GetAvailableIndicatorValues(status)
 			end,
 			get = function(info,key)
-				return Grid2.indicators[key]:GetStatusIndex(status)~=nil
+				local dbx = Grid2:DbGetValue("statusMap", key)
+				return dbx and dbx[status.name]~=nil
 			end,
 			set = function(info,key,value)
 				local indicator = Grid2.indicators[key]
-				if indicator.dbx.type ~= 'multibar' then
+				if indicator.dbx.type~='multibar' then
 					RegisterIndicatorStatus(indicator, status, value)
 					self:RefreshIndicatorOptions(indicator)
 				end
@@ -215,7 +216,6 @@ do
 			confirm = function(info,key)
 				return Grid2.indicators[key].dbx.type == 'multibar' and L['This indicator cannot be changed from here: go to indicators section to assign/unassign statuses to this indicator.']
 			end,
-			disabled = function() return status.suspended end,
 		}
 		return options
 	end

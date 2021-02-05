@@ -79,7 +79,7 @@ do
 			order = order,
 			get = function(info) return filter end,
 			set = function(info)
-				if multi or (isSingle and filter)then
+				if multi or (isSingle and filter) then
 					multi, filter, dbx.load[key] = nil, nil, nil
 					if not next(dbx.load) then dbx.load = nil end
 				elseif filter and not isSingle then
@@ -106,7 +106,6 @@ do
 			disabled = function() return not filter or dbx.load.disabled end,
 			hidden   = function() return multi end,
 			values   = values,
-
 		}
 		options[key..'2'] = {
 			type = "multiselect",
@@ -120,6 +119,88 @@ do
 			hidden = function() return not multi end,
 			disabled = function() return dbx.load and dbx.load.disabled end,
 			values = values,
+		}
+		options[key.."3"] = {
+			type = "description",
+			name = "",
+			order = order+3,
+		}
+	end
+
+	local function GetFilterZoneText(filter)
+		if filter then
+			local lines = ""
+			for line in pairs(filter) do
+				lines = lines .. line .. "\n"
+			end
+			return lines
+		end
+	end
+
+	local function SetFilterZoneText(status, filter, text)
+		wipe(filter)
+		local count = 0
+		for _,zone in pairs( { strsplit("\n,", strtrim(text)) } ) do
+			zone = strtrim(zone)
+			if #zone>0 then
+				filter[zone], count = zone, count + 1
+			end
+		end
+		if count==0 then
+			filter[zone] = GetInstanceInfo()
+		end
+		RefreshStatus(status)
+		return count>1
+	end
+
+	local function GetZoneDescription()
+		local name,_,_,_,_,_,_,id = GetInstanceInfo()
+		return string.format( L["Supports multiple names or IDs separated by commas or newlines.\n\nCurrent Instance:\n%s(%d)"], name, id )
+	end
+
+	local function SetFilterZoneOptions(status, options, order, key)
+		local dbx    = status.dbx
+		local filter = dbx.load and dbx.load[key]
+		local multi  = filter and next(filter, next(filter))~=nil
+		options[key] = {
+			type = "toggle",
+			name = L["Instance Name/ID"],
+			desc = GetZoneDescription,
+			order = order,
+			get = function(info) return filter end,
+			set = function(info)
+				if multi then
+					multi, filter, dbx.load[key] = nil, nil, nil
+					if not next(dbx.load) then dbx.load = nil end
+				elseif filter then
+					multi = true
+				else
+					dbx.load = dbx.load or {}
+					filter = { [ (GetInstanceInfo()) ] = true }
+					dbx.load[key] = filter
+				end
+				RefreshStatus(status)
+			end,
+		}
+		options[key..'1'] = {
+			type = "input",
+			name = L["Instance Name/ID"],
+			order = order+1,
+			get = function() return GetFilterZoneText(filter) end,
+			set = function(_,v) multi = SetFilterZoneText(status, filter,v) end,
+			disabled = function() return not filter or dbx.load.disabled end,
+			hidden   = function() return multi end,
+		}
+		options[key..'2'] = {
+			type = "input",
+			name = L["Instance Name/ID"],
+			order = order+1,
+			width = "full",
+			multiline = 3,
+			get = function() return GetFilterZoneText(filter) end,
+			set = function(_,v) multi = SetFilterZoneText(status,filter,v) end,
+			hidden = function() return not multi end,
+			disabled = function() return dbx.load and dbx.load.disabled end,
 		}
 		options[key.."3"] = {
 			type = "description",
@@ -177,6 +258,7 @@ do
 			L["Instance Type"],
 			L["Load the status only if you are in the specified instance type."]
 		)
+		SetFilterZoneOptions(status, options, 55, 'instNameID')
 		if status.handlerType then -- hackish to detect buff/debuff type statuses
 			SetFilterOptions( status, options, 60,
 				'unitReaction',

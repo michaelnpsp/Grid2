@@ -239,6 +239,11 @@ do
 		self.groupType, updateCount = nil, 0
 		self:GroupChanged('PLAYER_ENTERING_WORLD')
 	end
+	-- message registered by status filter code (GridStatusLoad.lua)
+	function Grid2:ZONE_CHANGED_NEW_AREA(event)
+		self:GroupChanged(event)
+		self:SendMessage("Grid_ZoneChangedNewArea")
+	end
 	-- partyTypes = solo party arena raid / instTypes = none pvp lfr flex mythic other
 	function Grid2:GroupChanged(event)
 		local newGroupType

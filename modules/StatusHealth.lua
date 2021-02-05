@@ -617,6 +617,29 @@ HealsUpdateEvent = function(unit)
 	end
 end
 
+local function ClearUnitHealCache(_, unit)
+	heals_cache[unit] = nil
+	myheals_cache[unit] = nil
+end
+
+local function RegisterHealEvents(bitmask)
+	if heals_required==0 then
+		RegisterEvent("UNIT_HEAL_PREDICTION", HealsUpdateEvent)
+		Grid2.RegisterMessage( Heals, "Grid_UnitLeft", ClearUnitHealCache )
+		Grid2.RegisterMessage( Heals, "Grid_UnitUpdated", ClearUnitHealCache )
+	end
+	heals_required = bit.bor(heals_required,bitmask) -- set specified bit
+end
+
+local function UnregisterHealEvents(bitmask)
+	heals_required = bit.band(heals_required,7-bitmask) -- clear specified bit
+	if heals_required==0 then
+		UnregisterEvent("UNIT_HEAL_PREDICTION")
+		Grid2.UnregisterMessage( Heals, "Grid_UnitLeft")
+		Grid2.UnregisterMessage( Heals, "Grid_UnitUpdated")
+	end
+end
+
 function Heals:UpdateDB()
 	local m = self.dbx.flags
 	heals_minimum = (m and m>1 and m ) or 1
@@ -635,27 +658,21 @@ end
 
 function Heals:OnEnable()
 	self:UpdateDB()
-	if heals_required==0 then
-		RegisterEvent("UNIT_HEAL_PREDICTION", HealsUpdateEvent)
-	end
+	RegisterHealEvents(1) -- set bit1
 	if self.dbx.includeHealAbsorbs and not Grid2.isClassic then
 		RegisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", HealsUpdateEvent)
 	end
 	if not self.dbx.includePlayerHeals and not Grid2.isClassic then -- in classic we do not need to substract player heals
-		myheal_required = bit.bor(myheal_required,1)
+		myheal_required = bit.bor(myheal_required,1) -- set bit1
 	end
-	heals_required = bit.bor(heals_required,1) -- set bit1
 	heals_enabled = true
 end
 
 function Heals:OnDisable()
+	UnregisterHealEvents(1)
 	wipe(heals_cache)
 	heals_enabled = false
-	heals_required = bit.band(heals_required,7-1) -- clear bit1
 	myheal_required = bit.band(myheal_required,2) -- clear bit1
-	if heals_required==0 then
-		UnregisterEvent("UNIT_HEAL_PREDICTION")
-	end
 	if self.dbx.includeHealAbsorbs and not Grid2.isClassic then
 		UnregisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED")
 	end
@@ -706,16 +723,14 @@ end
 function OverHeals:OnEnable()
 	self:UpdateDB()
 	Health_Enable(self)
-	if heals_required==0 then RegisterEvent("UNIT_HEAL_PREDICTION", HealsUpdateEvent) end
-	heals_required = bit.bor(heals_required,4) -- set bit3
+	RegisterHealEvents(4) -- set bit3
 	overheals_enabled = true
 end
 
 function OverHeals:OnDisable()
 	Health_Disable(self)
 	overheals_enabled = false
-	heals_required = bit.band(heals_required,7-4) -- clear bit3
-	if heals_required==0 then UnregisterEvent("UNIT_HEAL_PREDICTION") end
+	UnregisterHealEvents(4) -- clear bit3
 end
 
 function OverHeals:IsActive(unit)
@@ -766,18 +781,16 @@ end
 
 function MyHeals:OnEnable()
 	self:UpdateDB()
-	if heals_required==0 then RegisterEvent("UNIT_HEAL_PREDICTION", HealsUpdateEvent) end
+	RegisterHealEvents(2) -- set bit2
 	myheal_required = bit.bor(myheal_required,2) -- set bit2
-	heals_required  = bit.bor(heals_required,2)   -- set bit2
 	myheals_enabled = true
 end
 
 function MyHeals:OnDisable()
+	UnregisterHealEvents(2) -- clear bit2
 	wipe(myheals_cache)
 	myheals_enabled = false
 	myheal_required = bit.band(myheal_required,1) -- clear bit2
-	heals_required = bit.band(heals_required,7-2) -- clear bit2
-	if heals_required==0 then UnregisterEvent("UNIT_HEAL_PREDICTION") end
 end
 
 function MyHeals:IsActive(unit)
