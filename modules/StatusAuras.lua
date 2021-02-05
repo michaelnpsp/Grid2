@@ -116,9 +116,8 @@ do
 	local UnitExists = UnitExists
 	local UnitIsFriend = UnitIsFriend
 	local filter_mt = {	__index = function(t,u)
-		local r = true
 		if UnitExists(u) then
-			local load = t.source
+			local load, r = t.source
 			if load.unitReaction then
 				r = not UnitIsFriend('player',u)
 				if load.unitReaction.hostile then r = not r end
@@ -127,9 +126,11 @@ do
 				local _,class = UnitClass(u)
 				r = not load.unitClass[class]
 			end
+			t[u] = r
+			return r
 		end
-		t[u] = r
-		return r
+		t[u] = true
+		return true
 	end }
 	MakeStatusFilter = function(status)
 		local load = status.dbx.load
