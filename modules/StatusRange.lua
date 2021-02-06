@@ -10,6 +10,7 @@ local tostring = tostring
 local UnitIsUnit = UnitIsUnit
 local UnitInRange = UnitInRange
 local IsSpellInRange = IsSpellInRange
+local UnitPhaseReason = UnitPhaseReason
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local CheckInteractDistance = CheckInteractDistance
 
@@ -45,11 +46,23 @@ end
 local rezSpell = ({DRUID=20484,PRIEST=2006,PALADIN=7328,SHAMAN=2008,MONK=115178,DEATHKNIGHT=61999,WARLOCK=20707})[playerClass]
 if rezSpell then
 	rezSpell = GetSpellInfo(rezSpell)
-	UnitIsInRange = function(unit)
-		if UnitIsDeadOrGhost(unit) then
-			return UnitIsUnit(unit,"player") or IsSpellInRange(rezSpell,unit) == 1
-		else
-			return UnitRangeCheck(unit)
+	if Grid2.isClassic then -- classic check
+		UnitIsInRange = function(unit)
+			if UnitIsDeadOrGhost(unit) then
+				return UnitIsUnit(unit,"player") or IsSpellInRange(rezSpell,unit) == 1
+			else
+				return UnitRangeCheck(unit)
+			end
+		end
+	else -- retail check
+		UnitIsInRange = function(unit)
+			if UnitPhaseReason(unit) then
+				return
+			elseif UnitIsDeadOrGhost(unit) then
+				return UnitIsUnit(unit,"player") or IsSpellInRange(rezSpell,unit) == 1
+			else
+				return UnitRangeCheck(unit)
+			end
 		end
 	end
 end
