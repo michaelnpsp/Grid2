@@ -12,6 +12,7 @@ local UnitInRange = UnitInRange
 local UnitCanAttack = UnitCanAttack
 local UnitCanAssist = UnitCanAssist
 local IsSpellInRange = IsSpellInRange
+local UnitPhaseReason = UnitPhaseReason
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local CheckInteractDistance = CheckInteractDistance
 
@@ -59,13 +60,15 @@ local Ranges= {
 		end
 	end,
 	["heal"] = function(unit)
-		if UnitCanAssist("player", unit) then
+		if UnitPhaseReason(unit) then
+			return
+		elseif UnitCanAssist("player", unit) then
 			if UnitIsUnit(unit,'player') then
 				return true
 			elseif UnitIsDeadOrGhost(unit) then
-				return IsSpellInRange(rezSpell, unit)==1
+				return IsSpellInRange(rezSpell,unit)==1
 			else
-				return IsSpellInRange(rangeSpell, unit)==1
+				return IsSpellInRange(rangeSpell,unit)==1
 			end
 		else
 			return CheckInteractDistance(unit,4) -- 28y for enemies
