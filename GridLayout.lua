@@ -523,15 +523,15 @@ function Grid2Layout:LoadLayout(layoutName)
 		self.layoutName = layoutName
 		self:ResetHeaders()
 		if layout[1] then
-			for _, layoutHeader in ipairs(layout) do
+			for index, layoutHeader in ipairs(layout) do
 				if layoutHeader=="auto" then
-					self:GenerateHeaders(layout.defaults)
+					self:GenerateHeaders(layout.defaults, index)
 				else
-					self:AddHeader(layoutHeader, layout.defaults)
+					self:AddHeader(layoutHeader, layout.defaults, index)
 				end
 			end
 		elseif not layout.empty then
-			self:GenerateHeaders(layout.defaults)
+			self:GenerateHeaders(layout.defaults, 1)
 		end
 		self.frame.headerKey = self.layoutHasDetached and layoutName or nil
 		self:PlaceHeaders()
@@ -540,7 +540,7 @@ function Grid2Layout:LoadLayout(layoutName)
 end
 
 --{{ Header management
-function Grid2Layout:AddHeader(layoutHeader, defaults)
+function Grid2Layout:AddHeader(layoutHeader, defaults, setupIndex)
 	local template = self.layoutHeaderClass:template(layoutHeader, self.db.global.useInsecureHeaders or self.testLayoutName)
 	local index    = self.indexes[template] + 1
 	local headers  = self.groups[template]
@@ -558,10 +558,10 @@ function Grid2Layout:AddHeader(layoutHeader, defaults)
 	self:SetHeaderAttributes(header, defaults)
 	self:SetHeaderAttributes(header, layoutHeader)
 	self:FixHeaderAttributes(header, #self.groupsUsed)
-	self:SetupDetachedHeader(header, #self.groupsUsed)
+	self:SetupDetachedHeader(header, setupIndex)
 end
 
-function Grid2Layout:GenerateHeaders(defaults)
+function Grid2Layout:GenerateHeaders(defaults, setupIndex)
 	local maxGroups
 	if Grid2.testMaxPlayers then
 		self.layoutHasAuto = nil
@@ -571,7 +571,7 @@ function Grid2Layout:GenerateHeaders(defaults)
 		maxGroups = self.layoutHasAuto and self.instMaxGroups or 8
 	end
 	for i=1,maxGroups do
-		self:AddHeader(self.groupFilters[i], defaults)
+		self:AddHeader(self.groupFilters[i], defaults, setupIndex)
 	end
 end
 
@@ -780,9 +780,8 @@ function Grid2Layout:ResetPosition()
 end
 
 --{{{ Detached headers management
-function Grid2Layout:SetupDetachedHeader(header, index)
-	if index<=1 then return end
-	local isDetached = self.db.global.detachHeaders or header:GetAttribute("detachHeader")
+function Grid2Layout:SetupDetachedHeader(header, setupIndex)
+	local isDetached = setupIndex>1 and (self.db.global.detachHeaders or header:GetAttribute("detachHeader")) or nil
 	if isDetached ~= header.isDetached then
 		local frameBack = header.frameBack
 		header.isDetached = isDetached
@@ -809,7 +808,7 @@ function Grid2Layout:SetupDetachedHeader(header, index)
 		frameBack:SetPoint('TOPLEFT', header, 'TOPLEFT', -Spacing, Spacing )
 		frameBack:SetPoint('BOTTOMRIGHT', header, 'BOTTOMRIGHT', Spacing, -Spacing )
 		frameBack:SetShown( button and button:IsShown() )
-		header.headerKey = self.layoutName..index -- theme not needed in key because each theme stores a different Positions table.
+		header.headerKey = self.layoutName..setupIndex -- theme not needed in key because each theme stores a different Positions table.
 		self.layoutHasDetached = true
 	end
 end

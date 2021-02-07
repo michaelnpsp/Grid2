@@ -12,9 +12,9 @@ local UnitInRange = UnitInRange
 local UnitCanAttack = UnitCanAttack
 local UnitCanAssist = UnitCanAssist
 local IsSpellInRange = IsSpellInRange
-local UnitPhaseReason = UnitPhaseReason
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local CheckInteractDistance = CheckInteractDistance
+local UnitPhaseReason = UnitPhaseReason or Grid2.Dummy
 
 local timer
 local curAlpha
