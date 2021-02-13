@@ -1,5 +1,5 @@
 --[[
---  Grid2InsecureGroupHeader, Grid2InsecureGroupPetHeader, Grid2InsecureGroupSpecialHeader
+--  Grid2InsecureGroupHeader, Grid2InsecureGroupPetHeader, Grid2InsecureGroupCustomHeader
 --]]
 local dummyFunc = function() end
 local select = select
@@ -29,7 +29,7 @@ local InjectMixins
 do
 	local callMethod = function(self, name, ...) self[name](self, ...); end
 	function InjectMixins(self, headerType)
-		self.typeHeader   = headerType
+		self.headerType   = headerType
 		self.isInsecure  = true
 		self.CallMethod  = callMethod
 		self.GetFrameRef = dummyFunc
@@ -51,8 +51,8 @@ do
 		end
 		wipe(frames)
 	end )
-	function RunSecure(func, self, special)
-		if special and (self:GetAttribute("startingIndex") or 1)<=0 then return end-- ignore frames precreation trick for special headers.
+	function RunSecure(func, self, custom)
+		if custom and (self:GetAttribute("startingIndex") or 1)<=0 then return end-- ignore frames precreation trick for custom headers.
 		if InCombatLockdown() then
 			if not next(frames) then frameEvent:RegisterEvent('PLAYER_REGEN_ENABLED') end
 			frames[self] = func
@@ -65,8 +65,8 @@ end
 -- fill test units table
 local function SetupTestMode(self, units)
 	local maxPlayers = self:GetAttribute('testMode')
-	if maxPlayers and self.typeHeader~='special' then
-		local unit = self.typeHeader~='pet' and 'player' or 'pet'
+	if maxPlayers and self.headerType~='custom' then
+		local unit = self.headerType~='pet' and 'player' or 'pet'
 		for i=#units+1,maxPlayers do
 			units[i] = unit
 		end
@@ -435,7 +435,7 @@ do
 			wipe(srtTable)
 			local raid, start, stop = GetGroupType(self)
 			if raid~=nil then
-				if self.typeHeader == 'pet' then
+				if self.headerType == 'pet' then
 					ApplyPetsFilter(self, raid, start, stop)
 				else
 					ApplyPlayersFilter(self, raid, start, stop)
@@ -454,14 +454,14 @@ do
 	local function Show(self)
 		self:RegisterEvent("GROUP_ROSTER_UPDATE")
 		self:RegisterEvent("UNIT_NAME_UPDATE")
-		if self.typeHeader == 'pet' then self:RegisterEvent("UNIT_PET") end
+		if self.headerType == 'pet' then self:RegisterEvent("UNIT_PET") end
 		Update(self)
 	end
 
 	local function Hide(self)
 		self:UnregisterEvent("GROUP_ROSTER_UPDATE")
 		self:UnregisterEvent("UNIT_NAME_UPDATE")
-		if self.typeHeader == 'pet' then self:UnregisterEvent("UNIT_PET") end
+		if self.headerType == 'pet' then self:UnregisterEvent("UNIT_PET") end
 	end
 
 	function Grid2InsecureGroupHeader_OnLoad(self, isPet)
@@ -473,7 +473,7 @@ do
 	end
 end
 
---[[ Grid2InsecureGroupSpecialHeader
+--[[ Grid2InsecureGroupCustomHeader
 unitsFilter = "target, focus, player, party1, boss1, boss2, boss3, arena1, arena2, arena3, .."
 hideEmptyUnits = true|nil
 --]]
@@ -579,8 +579,8 @@ do
 	end
 
 	-- header load
-	function Grid2InsecureGroupSpecialHeader_OnLoad(self)
-		InjectMixins(self, 'special')
+	function Grid2InsecureGroupCustomHeader_OnLoad(self)
+		InjectMixins(self, 'custom')
 		self:SetScript('OnAttributeChanged', OnAttributeChanged)
 		self:SetScript('OnShow', Update)
 		self:SetScript('OnHide', OnHide)

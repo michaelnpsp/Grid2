@@ -123,6 +123,7 @@ function Grid2:OnInitialize()
 	media:Register("statusbar", "Grid2 GlowH", "Interface\\Addons\\Grid2\\media\\glowh")
 	media:Register("statusbar", "Grid2 GlowV", "Interface\\Addons\\Grid2\\media\\glowv")
 	media:Register("border", "Grid2 Flat", "Interface\\Addons\\Grid2\\media\\white16x16")
+	media:Register("border", "Grid2 Pixel", "Interface\\Addons\\Grid2\\media\\border1px")
 	media:Register("background", "Blizzard Quest Title Highlight", "Interface\\QuestFrame\\UI-QuestTitleHighlight")
 	media:Register("background", "Blizzard ChatFrame Background", "Interface\\ChatFrame\\ChatFrameBackground")
 

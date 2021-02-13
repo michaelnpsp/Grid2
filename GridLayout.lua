@@ -55,13 +55,13 @@ local GridLayoutHeaderClass = {
 		frame:SetOrientation()
 		return frame
 	end,
-	template = function(self, header, insecure)
-		if header.type=='special' then
-			return 'Grid2InsecureGroupSpecialHeaderTemplate'
-		elseif insecure or header.detachHeader or (header.nameList and (header.roleFilter or header.groupFilter)) then
-			return header.type=='pet' and 'Grid2InsecureGroupPetHeaderTemplate' or 'Grid2InsecureGroupHeaderTemplate'
+	template = function(self, layoutHeader, insecure)
+		if layoutHeader.type=='custom' then
+			return 'Grid2InsecureGroupCustomHeaderTemplate'
+		elseif insecure or layoutHeader.detachHeader or (layoutHeader.nameList and (layoutHeader.roleFilter or layoutHeader.groupFilter)) then
+			return layoutHeader.type=='pet' and 'Grid2InsecureGroupPetHeaderTemplate' or 'Grid2InsecureGroupHeaderTemplate'
 		else
-			return header.type=='pet' and 'SecureGroupPetHeaderTemplate' or 'SecureGroupHeaderTemplate'
+			return layoutHeader.type=='pet' and 'SecureGroupPetHeaderTemplate' or 'SecureGroupHeaderTemplate'
 		end
 	end,
 }
@@ -90,6 +90,7 @@ function GridLayoutHeaderClass.prototype:Reset()
 	for _, attr in ipairs(HeaderAttributes) do
 		self:SetAttribute(attr, defaults[attr] or nil  )
 	end
+	self.dbx = nil
 end
 
 local anchorPoints = {
@@ -428,7 +429,6 @@ end
 
 function Grid2Layout:ResetHeaders()
 	self.layoutHasAuto     = nil
-	self.layoutHasSpecial  = nil
 	self.layoutHasDetached = nil
 	for type, headers in pairs(self.groups) do
 		for i=self.indexes[type],1,-1 do
@@ -549,10 +549,7 @@ function Grid2Layout:AddHeader(layoutHeader, defaults, setupIndex)
 		header = self.layoutHeaderClass:new(template)
 		headers[index] = header
 	end
-	if layoutHeader.type=='special' then
-		self.layoutHasSpecial = true
-	end
-	header.headerType = layoutHeader.type
+	header.dbx = layoutHeader
 	self.indexes[template] = index
 	self.groupsUsed[#self.groupsUsed+1] = header
 	self:SetHeaderAttributes(header, defaults)
@@ -562,14 +559,9 @@ function Grid2Layout:AddHeader(layoutHeader, defaults, setupIndex)
 end
 
 function Grid2Layout:GenerateHeaders(defaults, setupIndex)
-	local maxGroups
-	if Grid2.testMaxPlayers then
-		self.layoutHasAuto = nil
-		maxGroups = math.ceil( Grid2.testMaxPlayers/5 )
-	else
-		self.layoutHasAuto = not self.db.global.displayAllGroups or nil
-		maxGroups = self.layoutHasAuto and self.instMaxGroups or 8
-	end
+	local testPlayers = Grid2.testMaxPlayers
+	self.layoutHasAuto = not (testPlayers or self.db.global.displayAllGroups) or nil
+	local maxGroups = (testPlayers and math.ceil(testPlayers/5)) or (self.layoutHasAuto and self.instMaxGroups) or 8
 	for i=1,maxGroups do
 		self:AddHeader(self.groupFilters[i], defaults, setupIndex)
 	end
@@ -621,7 +613,7 @@ function Grid2Layout:FixHeaderAttributes(header, index)
 		end
 	end
 	-- workaround to blizzard pet bug
-	if header.headerType == 'pet' then -- force these so that the bug in SecureGroupPetHeader_Update doesn't trigger
+	if header.dbx.type == 'pet' then -- force these so that the bug in SecureGroupPetHeader_Update doesn't trigger
 		header:SetAttribute("filterOnPet", true)
 		header:SetAttribute("useOwnerUnit", false)
 		header:SetAttribute("unitsuffix", nil)
@@ -678,7 +670,7 @@ function Grid2Layout:UpdateSize()
 		if maxRow<row then maxRow = row end
 		local col = g[mcol](g) + p.Padding
 		curCol = curCol + col
-		remSize = (g.headerType=='special' or (g[1] and g[1]:IsVisible())) and 0 or remSize + col
+		remSize = (g.dbx.type=='custom' or (g[1] and g[1]:IsVisible())) and 0 or remSize + col
 	end
 	local col = math.max( curCol - remSize + p.Spacing*2 - p.Padding, 1 )
 	local row = math.max( maxRow + p.Spacing*2, 1 )
@@ -995,7 +987,7 @@ function Grid2Layout:AddCustomLayouts()
 	if self.customLayouts then
 		for n,l in pairs(self.customLayouts) do
 			for _,h in ipairs(l) do
-				h.type = (h.type=='special' and 'special') or strmatch(h.type or '', 'pet') -- conversion from old format
+				h.type = strmatch(h.type or '', 'pet') or h.type -- conversion from old format
 				if Grid2.isClassic and h.groupBy == 'ASSIGNEDROLE' then -- convert non existant roles in classic
 					h.groupBy, h.groupingOrder = 'ROLE', 'MAINTANK,MAINASSIST,NONE'
 				end

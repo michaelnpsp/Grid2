@@ -92,7 +92,7 @@ local function GetHeaderName(info)
 		if index then
 			local layout = editedLayout[index]
 			if layout then
-				return string.format( "%s(%d)", (layout.type=='pet' and L['pets']) or (layout.type=='special' and L['special']) or L['players'], index )
+				return string.format( "%s(%d)", (layout.type=='pet' and L['pets']) or (layout.type=='custom' and L['custom']) or L['players'], index )
 			end
 		end
 	end
@@ -107,7 +107,7 @@ local function CreateHeader(info, index)
 		table.insert( editedLayout, index+1, Grid2.CopyTable(editedLayout[index]) )
 		index = index + 1
 	else
-		table.insert( editedLayout, { type = (index=="pet" and "pet") or (index=="special" and "special") or nil, unitsPerColumn = 5, maxColumns = 1 } )
+		table.insert( editedLayout, { type = (index=="pet" and "pet") or (index=="custom" and "custom") or nil, unitsPerColumn = 5, maxColumns = 1 } )
 		index= #editedLayout
 	end
 	RefreshLayout()
@@ -175,7 +175,7 @@ local function FilterSet(info,value)
 end
 
 local function IsOptionHidden()
-	return editedHeader.type=='special'
+	return editedHeader.type=='custom'
 end
 
 -- Used by Profile Export/Import module
@@ -330,7 +330,7 @@ headerOptions = {
 			editedHeader.unitsFilter = table.concat( t, "," )
 			RefreshLayout()
 		end,
-		hidden = function() return editedHeader.type~='special' end,
+		hidden = function() return editedHeader.type~='custom' end,
 	},
 
 	vehicle = {
@@ -384,7 +384,7 @@ headerOptions = {
 			editedHeader.hideEmptyUnits = value or nil
 			RefreshLayout()
 		end,
-		hidden = function() return editedHeader.type~='special' end,
+		hidden = function() return editedHeader.type~='custom' end,
 	},
 
 	detachHeader = {
@@ -575,7 +575,7 @@ layoutOptions = {
 				desc   = L["Select what kind of units you want to display on the new header and click the create button."],
 				get    = function(info)	return layoutOptions.new.args.type.arg end,
 				set    = function(info,v) layoutOptions.new.args.type.arg = v end,
-				values = { player = L["players"], pet = L["pets"], special = L["special"] },
+				values = { player = L["players"], pet = L["pets"], custom = L["custom"] },
 				arg    = "player",
 				hidden = false,
 			},
@@ -639,8 +639,8 @@ generalOptions = {
 	detachedHeaders = {
 		order = 1.5,
 		type = "toggle",
-		name = "|cffffd200".. L["Detach headers & groups"] .."|r",
-		desc = L["Enable this option to independent place the unit frame groups."],
+		name = "|cffffd200".. L["Detach pets groups"] .."|r",
+		desc = L["Enable this option to independent place the unit frame pets group."],
 		width = "full",
 		get = function(info)
 			return Grid2Layout.db.global.detachHeaders
