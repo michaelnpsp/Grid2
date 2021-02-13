@@ -40,7 +40,7 @@ do
 		Grid2Layout:ReloadLayout()
 	end
 
-	function MakeLayoutsOptions(advanced)
+	function MakeLayoutsOptions()
 		local options = {}
 		local order = 10
 		local function MakeSeparatorOption(description)
@@ -82,21 +82,28 @@ do
 			type = "description",
 			name = L["A Layout defines which unit frames will be displayed and the way in which they are arranged. Here you can set different layouts for each group or raid type."]
 		}
+
 		-- partyTypes = solo party arena raid
+		MakeLayoutOptions( "solo"       , "Solo"  )
+		MakeLayoutOptions( "arena"      , "Arena" )
+		MakeLayoutOptions( "party"      , "Party" )
+		MakeLayoutOptions( "raid"       , "Raid"  )
+
 		-- instTypes  = none pvp lfr flex mythic other
-		if advanced then
-			MakeLayoutOptions( "raid@pvp"   , "PvP Instances (BGs)" )
-			MakeLayoutOptions( "raid@lfr"   , "LFR Instances" )
-			MakeLayoutOptions( "raid@flex"  , "Flexible raid Instances (normal/heroic)" )
-			MakeLayoutOptions( "raid@mythic", "Mythic raids Instances" )
-			MakeLayoutOptions( "raid@other" , "Other raids Instances" )
-			MakeLayoutOptions( "raid@none"  , "In World" )
-		else
-			MakeLayoutOptions( "solo"       , "Solo"  )
-			MakeLayoutOptions( "party"      , "Party" )
-			MakeLayoutOptions( "raid"       , "Raid"  )
-			MakeLayoutOptions( "arena"      , "Arena" )
-		end
+		options.titleraid = {
+			order = order + 10,
+			type = "description",
+			name = "\n" .. L["Select layouts for different Raid types."]
+		}
+		order = order + 10
+
+		MakeLayoutOptions( "raid@pvp"   , "PvP Instances (BGs)" )
+		MakeLayoutOptions( "raid@lfr"   , "LFR Instances" )
+		MakeLayoutOptions( "raid@flex"  , "Flexible raid Instances (normal/heroic)" )
+		MakeLayoutOptions( "raid@mythic", "Mythic raids Instances" )
+		MakeLayoutOptions( "raid@other" , "Other raids Instances" )
+		MakeLayoutOptions( "raid@none"  , "In World" )
+
 		return options
 	end
 end
@@ -248,20 +255,144 @@ end
 
 --===================================================================================================
 
+local generalOptions = {
+
+	desc = {
+		order = 0,
+		type = "description",
+		name = L["Default settings applied to all user defined layouts and some built-in layouts."] .. "\n"
+	},
+
+	insecureHeaders = {
+		order = 1,
+		type = "toggle",
+		name = "|cffffd200".. L["Use Blizzard Unit Frames"] .."|r",
+		desc = L["Disable this option to use custom unit frames instead of blizzard frames. This fixes some bugs in blizzard code, but units cannot join/leave the roster while in combat."],
+		width = "full",
+		get = function(info)
+			return not Grid2Layout.db.global.useInsecureHeaders
+		end,
+		set = function(info,v)
+			Grid2Layout.db.global.useInsecureHeaders= (not v) or nil
+			Grid2Layout:RefreshLayout()
+		end,
+	},
+
+	sortMethod = {
+		order = 2,
+		type = "toggle",
+		name = "|cffffd200".. L["Sort units by name"] .."|r",
+		desc = L["Sort the units by player name, if unchecked the units will be displayed in raid order. Not all layouts will obey this setting."],
+		width = "full",
+		get = function()
+			return Grid2Layout.customDefaults.sortMethod=="NAME"
+		end,
+		set = function(info,v)
+			Grid2Layout.customDefaults.sortMethod = (v and "NAME") or nil
+			Grid2Layout:RefreshLayout()
+		end,
+	},
+
+	vehicle = {
+		order = 3,
+		type = "toggle",
+		name = "|cffffd200".. L["Toggle for vehicle"] .."|r",
+		desc = L["When the player is in a vehicle replace the player frame with the vehicle frame."],
+		width = "full",
+		get = function()
+			return Grid2Layout.customDefaults.toggleForVehicle
+		end,
+		set = function(info,v)
+			Grid2Layout.customDefaults.toggleForVehicle = v
+			Grid2Layout:RefreshLayout()
+		end,
+	},
+
+	allGroups = {
+		order = 4,
+		type = "toggle",
+		name = "|cffffd200".. L["Display all groups"] .."|r",
+		desc = L["Display all raid groups, if unchecked the groups will by filtered according to the instance size. Not all layouts will obey this setting."],
+		width = "full",
+		get = function(info)
+			return Grid2Layout.db.global.displayAllGroups
+		end,
+		set = function(info,v)
+			Grid2Layout.db.global.displayAllGroups= v or nil
+			Grid2Layout:RefreshLayout()
+		end,
+	},
+
+	detachedHeaders = {
+		order = 5,
+		type = "toggle",
+		name = "|cffffd200".. L["Detach pets groups"] .."|r",
+		desc = L["Enable this option to independent place the unit frame pets group."],
+		width = "full",
+		get = function(info)
+			return Grid2Layout.db.global.detachHeaders
+		end,
+		set = function(info,v)
+			Grid2Layout.db.global.detachHeaders = v or nil
+			Grid2Layout:RefreshLayout()
+		end,
+	},
+
+	displayTarget = {
+		order = 6,
+		type = "toggle",
+		name = "|cffffd200".. L["Display Target unit"] .."|r",
+		desc = L["Enable this option to display the target unit."],
+		width = "full",
+		get = function(info)
+		end,
+		set = function(info,v)
+		end,
+	},
+
+	displayFocus = {
+		order = 7,
+		type = "toggle",
+		name = "|cffffd200".. L["Display Focus unit"] .."|r",
+		desc = L["Enable this option to display the target unit."],
+		width = "full",
+		get = function(info)
+		end,
+		set = function(info,v)
+		end,
+		hidden = function() return Grid2.isClassic end,
+	},
+
+	displayBosses = {
+		order = 8,
+		type = "toggle",
+		name = "|cffffd200".. L["Display Bosses units"] .."|r",
+		desc = L["Enable this option to display bosses units."],
+		width = "full",
+		get = function(info)
+		end,
+		set = function(info,v)
+		end,
+	},
+
+}
+
+--===================================================================================================
+
 Grid2Options:AddThemeOptions( "layouts", "Layouts" , {
+
+general = {
+	type = "group",
+	order= 200,
+	name = L["General"],
+	args = generalOptions,
+},
 
 bygroup = {
 	type = "group",
-	order= 200,
-	name = L["By Group Type"],
-	args = MakeLayoutsOptions(false),
-},
-
-byraid = {
-	type = "group",
 	order= 201,
-	name = L["By Raid Type"],
-	args = MakeLayoutsOptions(true),
+	name = L["By Group Type"],
+	args = MakeLayoutsOptions()
 },
 
 frameSizes = {

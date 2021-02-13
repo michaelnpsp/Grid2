@@ -615,87 +615,6 @@ end
 
 generalOptions = {
 
-	desc = {
-		order = 0,
-		type = "description",
-		name = L["Default settings applied to all user defined layouts and some built-in layouts."] .. "\n"
-	},
-
-	insecureHeaders = {
-		order = 1,
-		type = "toggle",
-		name = "|cffffd200".. L["Use Blizzard Unit Frames"] .."|r",
-		desc = L["Disable this option to use custom unit frames instead of blizzard frames. This fixes some bugs in blizzard code, but units cannot join/leave the roster while in combat."],
-		width = "full",
-		get = function(info)
-			return not Grid2Layout.db.global.useInsecureHeaders
-		end,
-		set = function(info,v)
-			Grid2Layout.db.global.useInsecureHeaders= (not v) or nil
-			RefreshLayout(true)
-		end,
-	},
-
-	detachedHeaders = {
-		order = 1.5,
-		type = "toggle",
-		name = "|cffffd200".. L["Detach pets groups"] .."|r",
-		desc = L["Enable this option to independent place the unit frame pets group."],
-		width = "full",
-		get = function(info)
-			return Grid2Layout.db.global.detachHeaders
-		end,
-		set = function(info,v)
-			Grid2Layout.db.global.detachHeaders = v or nil
-			RefreshLayout(true)
-		end,
-	},
-
-	allGroups = {
-		order = 2,
-		type = "toggle",
-		name = "|cffffd200".. L["Display all groups"] .."|r",
-		desc = L["Display all raid groups, if unchecked the groups will by filtered according to the instance size. Not all layouts will obey this setting."],
-		width = "full",
-		get = function(info)
-			return Grid2Layout.db.global.displayAllGroups
-		end,
-		set = function(info,v)
-			Grid2Layout.db.global.displayAllGroups= v or nil
-			RefreshLayout(true)
-		end,
-	},
-
-	sortMethod = {
-		order = 3,
-		type = "toggle",
-		name = "|cffffd200".. L["Sort units by name"] .."|r",
-		desc = L["Sort the units by player name, if unchecked the units will be displayed in raid order. Not all layouts will obey this setting."],
-		width = "full",
-		get = function()
-			return Grid2Layout.customDefaults.sortMethod=="NAME"
-		end,
-		set = function(info,v)
-			Grid2Layout.customDefaults.sortMethod = (v and "NAME") or nil
-			RefreshLayout(true)
-		end,
-	},
-
-	vehicle = {
-		order = 4,
-		type = "toggle",
-		name = "|cffffd200".. L["Toggle for vehicle"] .."|r",
-		desc = L["When the player is in a vehicle replace the player frame with the vehicle frame."],
-		width = "full",
-		get = function()
-			return Grid2Layout.customDefaults.toggleForVehicle
-		end,
-		set = function(info,v)
-			Grid2Layout.customDefaults.toggleForVehicle = v
-			RefreshLayout(true)
-		end,
-	},
-
 	createdesc = {
 		order = 10,
 		type = "description",
@@ -741,7 +660,6 @@ generalOptions = {
 
 }
 
-
 --=====================================================================================
 
 editorOptions = {}
@@ -763,17 +681,6 @@ editorOptions.__general = {
 
 --=====================================================================================
 
--- Editor is displayed in two different places, option when Themes are enabled: General -> LayoutEditor
-Grid2Options:AddGeneralOptions( "LayoutEditor", nil, {
-	type   = "group",
-	name   = L["Layouts"],
-	childGroups = "select",
-	args = editorOptions,
-	arg  = EDITOR_IDENTIFIER, -- To locate the editor options in SelectGroup()
-	hidden = function() return Grid2Frame.dba.profile.extraThemes == nil end,
-} )
-
--- Editor is displayed in two different places, option when Themes are disabled: General -> Layouts -> Editor
 local editorLayouts = {
 	order = 500,
 	type   = "group",
@@ -781,7 +688,6 @@ local editorLayouts = {
 	childGroups = "select",
 	args = editorOptions,
 	arg  = EDITOR_IDENTIFIER, -- To locate the editor options in SelectGroup()
-	hidden = function() return Grid2Frame.dba.profile.extraThemes ~= nil end,
 }
 function Grid2Options:GetLayoutsEditorOptions()
 	return editorLayouts
