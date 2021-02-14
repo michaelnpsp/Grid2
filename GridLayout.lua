@@ -221,7 +221,6 @@ function Grid2Layout:OnModuleEnable()
 	self:RegisterMessage("Grid_RosterUpdate")
 	self:RegisterMessage("Grid_GroupTypeChanged")
 	self:RegisterMessage("Grid_UpdateLayoutSize")
-	self:RegisterEvent("UI_SCALE_CHANGED")
 	if not Grid2.isClassic then
 		self:RegisterEvent("PET_BATTLE_OPENING_START", "PetBattleTransition")
 		self:RegisterEvent("PET_BATTLE_CLOSE", "PetBattleTransition")
@@ -297,12 +296,6 @@ function Grid2Layout:UNIT_TARGETABLE_CHANGED(_,unit)
 			self:UpdateHeaders()
 		end
 	end
-end
-
--- Maintain Grid2 window on the same position if the screen scale is changed.
-function Grid2Layout:UI_SCALE_CHANGED()
-	self:RestorePosition()
-	self:Debug("UI Scale Change detected: main frame position restored:", GetCVar("uiScale") )
 end
 
 -- We delay UpdateSize() call to avoid calculating the wrong window size, because when "Grid_UpdateLayoutSize"
@@ -533,6 +526,7 @@ function Grid2Layout:LoadLayout(layoutName)
 		elseif not layout.empty then
 			self:GenerateHeaders(layout.defaults, 1)
 		end
+		self:AddSpecialHeaders()
 		self.frame.headerKey = self.layoutHasDetached and layoutName or nil
 		self:PlaceHeaders()
 		self:UpdateDisplay()
@@ -574,6 +568,22 @@ function Grid2Layout:SetHeaderAttributes(header, layoutHeader)
 				header:SetAttribute(attr, value)
 			end
 		end
+	end
+end
+
+-- Display special units
+do
+	local template = { type = 'custom', detachHeader = true }
+	local function AddHeader(self, key, units, setupIndex)
+		if self.db.profile[key] then
+			template.unitsFilter = units
+			self:AddHeader( template, nil, setupIndex)
+		end
+	end
+	function Grid2Layout:AddSpecialHeaders()
+		AddHeader( self, 'displayHeaderTarget', 'target', 1000 )
+		AddHeader( self, 'displayHeaderFocus',  'focus',  1001 )
+		AddHeader( self, 'displayHeaderBosses', 'boss1,boss2,boss3,boss4,boss5', 1002 )
 	end
 end
 

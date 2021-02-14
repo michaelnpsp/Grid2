@@ -257,7 +257,7 @@ end
 
 local generalOptions = {
 
-	desc = {
+	desc1 = {
 		order = 0,
 		type = "description",
 		name = L["Default settings applied to all user defined layouts and some built-in layouts."] .. "\n"
@@ -338,41 +338,57 @@ local generalOptions = {
 		end,
 	},
 
+	desc2 = {
+		order = 9,
+		type = "description",
+		name = L["Special units headers visibility."] .. "\n"
+	},
+
 	displayTarget = {
-		order = 6,
+		order = 10,
 		type = "toggle",
 		name = "|cffffd200".. L["Display Target unit"] .."|r",
 		desc = L["Enable this option to display the target unit."],
 		width = "full",
 		get = function(info)
+			return theme.layout.displayHeaderTarget
 		end,
 		set = function(info,v)
+			theme.layout.displayHeaderTarget = v or nil
+			Grid2Layout:RefreshLayout()
 		end,
 	},
 
 	displayFocus = {
-		order = 7,
+		order = 11,
 		type = "toggle",
 		name = "|cffffd200".. L["Display Focus unit"] .."|r",
-		desc = L["Enable this option to display the target unit."],
+		desc = L["Enable this option to display the focus unit."],
 		width = "full",
 		get = function(info)
+			return theme.layout.displayHeaderFocus
 		end,
 		set = function(info,v)
+			theme.layout.displayHeaderFocus = v or nil
+			Grid2Layout:RefreshLayout()
 		end,
 		hidden = function() return Grid2.isClassic end,
 	},
 
 	displayBosses = {
-		order = 8,
+		order = 12,
 		type = "toggle",
 		name = "|cffffd200".. L["Display Bosses units"] .."|r",
 		desc = L["Enable this option to display bosses units."],
 		width = "full",
 		get = function(info)
+			return theme.layout.displayHeaderBosses
 		end,
 		set = function(info,v)
+			theme.layout.displayHeaderBosses = v or nil
+			Grid2Layout:RefreshLayout()
 		end,
+		hidden = function() return Grid2.isClassic end,
 	},
 
 }
