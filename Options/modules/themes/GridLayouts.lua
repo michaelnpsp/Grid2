@@ -21,6 +21,19 @@ local function TestMode(info)
 	Grid2Layout:SetTestMode( enabled, theme.index, layoutName, maxPlayers)
 end
 
+-- special header setup
+local function SetupSpecialHeader(key, enabled)
+	theme.layout[key] = enabled or nil
+	if enabled then
+		local dbx = Grid2.db.profile.statuses.name
+		if dbx and not dbx.defaultName then
+			dbx.defaultName = 1
+			Grid2:GetStatusByName('name'):UpdateDB()
+		end
+	end
+	Grid2Layout:RefreshLayout()
+end
+
 -- MakeLayoutsOptions()
 local MakeLayoutsOptions
 do
@@ -354,8 +367,7 @@ local generalOptions = {
 			return theme.layout.displayHeaderTarget
 		end,
 		set = function(info,v)
-			theme.layout.displayHeaderTarget = v or nil
-			Grid2Layout:RefreshLayout()
+			SetupSpecialHeader('displayHeaderTarget', v)
 		end,
 	},
 
@@ -369,8 +381,7 @@ local generalOptions = {
 			return theme.layout.displayHeaderFocus
 		end,
 		set = function(info,v)
-			theme.layout.displayHeaderFocus = v or nil
-			Grid2Layout:RefreshLayout()
+			SetupSpecialHeader('displayHeaderFocus', v)
 		end,
 		hidden = function() return Grid2.isClassic end,
 	},
@@ -385,8 +396,7 @@ local generalOptions = {
 			return theme.layout.displayHeaderBosses
 		end,
 		set = function(info,v)
-			theme.layout.displayHeaderBosses = v or nil
-			Grid2Layout:RefreshLayout()
+			SetupSpecialHeader('displayHeaderBosses', v)
 		end,
 		hidden = function() return Grid2.isClassic end,
 	},

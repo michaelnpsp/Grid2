@@ -338,7 +338,7 @@ function Grid2Layout:FixRoster()
 end
 
 function Grid2Layout:StartMoveFrame(button)
-	if not self.db.profile.FrameLock and button == "LeftButton" then
+	if button == "LeftButton" and (self.testLayoutName or not self.db.profile.FrameLock)  then
 		self.frame:StartMoving()
 		self.frame.isMoving = true
 		self:StartHeaderTracking(self.frame)
@@ -355,6 +355,13 @@ function Grid2Layout:StopMoveFrame()
 	end
 end
 
+function Grid2Layout:EnableMouse(enabled)
+	self.frame:EnableMouse(enabled)
+	for _, frame in self:IterateHeaders(true) do -- detached headers
+		frame:EnableMouse(enabled)
+	end
+end
+
 -- nil:toggle, false:disable movement, true:enable movement
 function Grid2Layout:FrameLock(locked)
 	local p = self.db.profile
@@ -363,7 +370,7 @@ function Grid2Layout:FrameLock(locked)
 	else
 		p.FrameLock = locked
 	end
-	self.frame:EnableMouse(not p.FrameLock)
+	self:EnableMouse(not p.FrameLock)
 end
 
 -- display: Never, Always, Grouped, Raid, false|nil = toggle Never/Always
@@ -391,6 +398,7 @@ function Grid2Layout:SetTestMode(enabled, themeIndex, layoutName, maxPlayers)
 		self:ReloadTextIndicatorsDB()
 		self:ReloadLayout(true)
 	end
+	self:EnableMouse( enabled or not self.db.profile.FrameLock )
 end
 
 --{{{ ConfigMode support
@@ -410,10 +418,10 @@ function Grid2Layout:UpdateFrame()
 	f:SetClampedToScreen(p.clamp)
 	f:SetFrameStrata( p.FrameStrata or "MEDIUM")
 	f:SetFrameLevel(1)
-	f:EnableMouse(not p.FrameLock)
 	local b = f.frameBack
 	b:SetFrameStrata( p.FrameStrata or "MEDIUM")
 	b:SetFrameLevel(0)
+	self:EnableMouse(not p.FrameLock)
 end
 
 function Grid2Layout:SetClamp()
@@ -791,10 +799,10 @@ function Grid2Layout:SetupDetachedHeader(header, setupIndex)
 		if isDetached then
 			frameBack = frameBack or CreateFrame("Frame", nil, header, BackdropTemplateMixin and "BackdropTemplate" or nil)
 			frameBack.header = header
-			frameBack:SetScript("OnMouseUp",   self.StopMoveHeader )
-			frameBack:SetScript("OnHide",      self.StopMoveHeader )
+			frameBack:SetScript("OnMouseUp", self.StopMoveHeader )
+			frameBack:SetScript("OnHide", self.StopMoveHeader )
 			frameBack:SetScript("OnMouseDown", self.StartMoveHeader)
-			frameBack:SetScript("OnSizeChanged", self.UpdateDetachedVisibility)
+			header:SetScript("OnSizeChanged", self.UpdateDetachedVisibility)
 			header.frameBack = frameBack
 		elseif frameBack then
 			frameBack:Hide()
@@ -802,6 +810,7 @@ function Grid2Layout:SetupDetachedHeader(header, setupIndex)
 			frameBack:SetScript("OnMouseUp",   nil)
 			frameBack:SetScript("OnHide",      nil)
 			frameBack:SetScript("OnMouseDown", nil)
+			header:SetScript("OnSizeChanged", nil)
 		end
 	end
 	if isDetached then
@@ -835,8 +844,8 @@ function Grid2Layout:RestoreHeaderPosition(header)
 end
 
 function Grid2Layout:UpdateDetachedVisibility() -- self~=Grid2Layout
-	local button = self.header[1]
-	self:SetShown( button and button:IsVisible() )
+	local button = self[1] -- self.header[1]
+	self.frameBack:SetShown( button and button:IsVisible() )
 end
 
 function Grid2Layout:GetFramePosition(f)
@@ -949,7 +958,7 @@ do
 	end
 
 	function Grid2Layout:StartMoveHeader(button) -- called from frame event so: self == header.frameBack ~= Grid2Layout
-		if not Grid2Layout.db.profile.FrameLock and button == "LeftButton" then
+		if button == "LeftButton" and (Grid2Layout.testLayoutName or not Grid2Layout.db.profile.FrameLock)  then
 			self.header:StartMoving()
 			self.header.isMoving = true
 			Grid2Layout:StartHeaderTracking(self.header)

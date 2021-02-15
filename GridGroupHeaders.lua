@@ -146,7 +146,7 @@ local function GetPartyUnitInfo(index)
 	local name, class, role, arole, server, _
 	local unit = index>0 and "party"..index or "player"
 	if UnitExists(unit) then
-		name, server = UnitName(unit);
+		name, server = UnitName(unit)
 		if server and server~='' then name = name.."-"..server; end
 		_, class = UnitClass(unit)
 		arole = UnitGroupRolesAssigned(unit)

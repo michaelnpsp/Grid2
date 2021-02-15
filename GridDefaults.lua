@@ -5,7 +5,7 @@ Created by Michael, based on Grid2Options\GridDefaults.lua from original Grid2 a
 local Grid2 = Grid2
 
 -- Latest database profile version
-local DB_VERSION = 8
+local DB_VERSION = 9
 
 -- Database manipulation functions
 function Grid2:DbSetStatusDefaultValue(name, value)
@@ -108,6 +108,15 @@ function Grid2:UpdateDefaults()
 						dbx[i], dbx['bar'..i] = bar, nil
 					end
 					dbx.barCount, dbx.opacity, dbx.backMainAnchor = nil, nil, nil
+				end
+			end
+		end
+		if version<9 then
+			-- upgrade class filter
+			for _,dbx in pairs(self.db.profile.statuses) do
+				if dbx.playerClass then
+					dbx.load = { playerClass = { [dbx.playerClass] = true } }
+					dbx.playerClass = nil
 				end
 			end
 		end
