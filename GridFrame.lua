@@ -17,10 +17,19 @@ local unit_of_frame = {}
 function Grid2:SetFrameUnit(frame, unit)
 	local prev_unit = unit_of_frame[frame]
 	if prev_unit then
-		frames_of_unit[prev_unit][frame] = nil
+		local frames = frames_of_unit[prev_unit]
+		frames[frame] = nil
+		if not next(frames) then
+			frames_of_unit[prev_unit] = nil
+			Grid2:RosterUnregisterUnit(prev_unit)
+		end
 	end
 	if unit then
-		frames_of_unit[unit][frame] = true
+		local frames = frames_of_unit[unit]
+		if not next(frames) then
+			Grid2:RosterRegisterUnit(unit)
+		end
+		frames[frame] = true
 	end
 	unit_of_frame[frame] = unit
 end
@@ -64,23 +73,13 @@ function GridFrameEvents:OnAttributeChanged(name, value)
 			if old_unit ~= unit then
 				Grid2Frame:Debug("updated", self:GetName(), name, value, unit, '<=', old_unit)
 				self.unit = unit
-				if not next(frames_of_unit[unit]) then
-					Grid2:RosterRegisterUnit(unit)
-				end
 				Grid2:SetFrameUnit(self, unit)
-				if old_unit and not next(frames_of_unit[old_unit]) then
-					Grid2:RosterUnregisterUnit(old_unit)
-					frames_of_unit[old_unit] = nil
-				end
 				self:UpdateIndicators()
 			end
 		elseif old_unit then
 			Grid2Frame:Debug("removed", self:GetName(), name, old_unit)
 			self.unit = nil
 			Grid2:SetFrameUnit(self, nil)
-			if not next(frames_of_unit[old_unit]) then
-				Grid2:RosterUnregisterUnit(old_unit)
-			end
 		end
 	end
 end

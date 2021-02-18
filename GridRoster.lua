@@ -129,7 +129,7 @@ do
 	function Grid2:UNIT_PET(_, owner)
 		local unit = pet_of_unit[owner]
 		if roster_guids[unit] then
-			UpdateUnit(unit)
+			self:RosterRefreshUnit(unit)
 			self:UpdateFramesOfUnit(unit)
 		end
 	end
