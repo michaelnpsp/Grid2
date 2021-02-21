@@ -22,7 +22,7 @@ local function CompileUpdateStateFilter(status)
 	if status.filterLong  ~=nil then t[#t+1] = string.format( "%s (duration>=300)", status.filterLong and 'not' or '') end
 	if status.filterBoss  ~=nil then t[#t+1] = string.format( "%s boss",          status.filterBoss and 'not' or '') end
 	if status.filterCaster~=nil then t[#t+1] = string.format( "%s (caster=='player' or caster=='pet' or caster=='vehicle')", status.filterCaster and 'not' or '') end
-	if status.filterTypes ~=nil then t[#t+1] = string.format( "%s (type=='Typeless')",  status.filterTypes and 'not' or '') end
+	if status.filterTyped ~=nil then t[#t+1] = string.format( "%s (type=='Typeless')",  status.filterTyped and 'not' or '') end
 	local source = "return function(self, unit, name, duration, caster, boss, typ) return " .. table.concat(t,' and ') .. ' end'
 	return assert(loadstring(source))()
 end
