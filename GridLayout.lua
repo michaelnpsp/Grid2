@@ -564,8 +564,10 @@ function Grid2Layout:GenerateHeaders(defaults, setupIndex)
 	local testPlayers = Grid2.testMaxPlayers
 	self.layoutHasAuto = not (testPlayers or self.db.global.displayAllGroups) or nil
 	local maxGroups = (testPlayers and math.ceil(testPlayers/5)) or (self.layoutHasAuto and self.instMaxGroups) or 8
+	local firstIndex = setupIndex==1 and 1
 	for i=1,maxGroups do
-		self:AddHeader(self.groupFilters[i], defaults, setupIndex)
+		self:AddHeader(self.groupFilters[i], defaults, firstIndex or setupIndex*100+i)
+		firstIndex = nil
 	end
 end
 
@@ -791,7 +793,7 @@ end
 
 --{{{ Detached headers management
 function Grid2Layout:SetupDetachedHeader(header, setupIndex)
-	local isDetached = setupIndex>1 and (self.db.global.detachHeaders or header:GetAttribute("detachHeader")) or nil
+	local isDetached = setupIndex>1 and (self.db.global.detachHeaders or header:GetAttribute("detachHeader") or  (self.db.global.detachPetHeaders and header.dbx.type=='pet') ) or nil
 	if isDetached ~= header.isDetached then
 		local frameBack = header.frameBack
 		header.isDetached = isDetached

@@ -339,8 +339,8 @@ local generalOptions = {
 	detachedHeaders = {
 		order = 5,
 		type = "toggle",
-		name = "|cffffd200".. L["Detach pets groups"] .."|r",
-		desc = L["Enable this option to independent place the unit frame pets group."],
+		name = "|cffffd200".. L["Detach all groups"] .."|r",
+		desc = L["Enable this option to detach unit frame groups, allowing to move each group individually."],
 		width = "full",
 		get = function(info)
 			return Grid2Layout.db.global.detachHeaders
@@ -349,6 +349,22 @@ local generalOptions = {
 			Grid2Layout.db.global.detachHeaders = v or nil
 			Grid2Layout:RefreshLayout()
 		end,
+	},
+
+	detachedPetHeaders = {
+		order = 6,
+		type = "toggle",
+		name = "|cffffd200".. L["Detach pets groups"] .."|r",
+		desc = L["Enable this option detach the pets group, allowing to move pets group individually,"],
+		width = "full",
+		get = function(info)
+			return Grid2Layout.db.global.detachPetHeaders
+		end,
+		set = function(info,v)
+			Grid2Layout.db.global.detachPetHeaders = v or nil
+			Grid2Layout:RefreshLayout()
+		end,
+		hidden = function() return Grid2Layout.db.global.detachHeaders end,
 	},
 
 	desc2 = {
