@@ -289,6 +289,7 @@ local generalOptions = {
 			Grid2Layout.db.global.useInsecureHeaders= (not v) or nil
 			Grid2Layout:RefreshLayout()
 		end,
+		hidden = function() return not Grid2.debugging end,
 	},
 
 	sortMethod = {
@@ -340,7 +341,7 @@ local generalOptions = {
 		order = 5,
 		type = "toggle",
 		name = "|cffffd200".. L["Detach all groups"] .."|r",
-		desc = L["Enable this option to detach unit frame groups, allowing to move each group individually."],
+		desc = L["Enable this option to detach unit frame groups, so each group can be moved individually."],
 		width = "full",
 		get = function(info)
 			return Grid2Layout.db.global.detachHeaders
@@ -355,7 +356,7 @@ local generalOptions = {
 		order = 6,
 		type = "toggle",
 		name = "|cffffd200".. L["Detach pets groups"] .."|r",
-		desc = L["Enable this option detach the pets group, allowing to move pets group individually,"],
+		desc = L["Enable this option detach the pets group, so pets group can be moved individually."],
 		width = "full",
 		get = function(info)
 			return Grid2Layout.db.global.detachPetHeaders
