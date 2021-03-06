@@ -93,7 +93,7 @@ Grid2:DbSetStatusDefaultValue( "shields", { type = "shields", thresholdMedium = 
 local Overflow = Grid2.statusPrototype:new("shields-overflow")
 
 local overflow_cache = {}
-local unit_is_valid = Grid2.unit_is_valid
+local unit_is_valid = Grid2.roster_guids
 
 Overflow.GetColor = Grid2.statusLibrary.GetColor
 
