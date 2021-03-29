@@ -1,6 +1,7 @@
 -- Raid Debuffs general options
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
+local GSRD = Grid2:GetModule("Grid2RaidDebuffs")
 local RDO = Grid2Options.RDO
 
 local options = {}
@@ -15,31 +16,52 @@ options.separator0 = { type = "description", order = 9, name = "\n" }
 
 -- raid-debuffs statuses
 do
-	local statusColor = {
-		type = "color",
-		width = "full",
-		name = function(info)
-			return RDO.statusesNames[info.arg]
-		end,
-		hasAlpha = true,
-		get = function(info)
-			local c = RDO.statuses[info.arg].dbx.color1
-			return c.r, c.g, c.b, c.a
-		end,
-		set = function(info, r,g,b,a)
-			local c = RDO.statuses[info.arg].dbx.color1
-			c.r, c.g, c.b, c.a = r, g, b, a
-		 end,
-		hidden = function(info)
-			return info.arg>#RDO.statuses
-		end
-	}
-	local meta = { __index = statusColor }
-	options.status1 = setmetatable( { order = 10 , arg=1 }, meta )
-	options.status2 = setmetatable( { order = 11 , arg=2 }, meta )
-	options.status3 = setmetatable( { order = 12 , arg=3 }, meta )
-	options.status4 = setmetatable( { order = 13 , arg=4 }, meta )
-	options.status5 = setmetatable( { order = 14 , arg=5 }, meta )
+	local statusOptions = {
+		type = 'group', inline = true,
+		name   = function(info) return RDO.statusesNames[info.handler] end,
+		hidden = function(info) return info.handler>#RDO.statuses end,
+		args = {
+			color = {
+				type = "color",
+				order = 1,
+				width = "half",
+				name = L['color'],
+				hasAlpha = true,
+				get = function(info)
+					local c = RDO.statuses[info.handler].dbx.color1
+					return c.r, c.g, c.b, c.a
+				end,
+				set = function(info, r,g,b,a)
+					local c = RDO.statuses[info.handler].dbx.color1
+					c.r, c.g, c.b, c.a = r, g, b, a
+				 end,
+			},
+			icons = {
+				type = "toggle",
+				order = 2,
+				width = 1.5,
+				name = L["multiple icons support"],
+				desc = L["Enable multiple icons support for icons indicators."],
+				get = function(info)
+					return RDO.statuses[info.handler].dbx.enableIcons
+				end,
+				set = function(info, v)
+					local status = RDO.statuses[info.handler]
+					status.dbx.enableIcons = v or nil
+					if status.enabled then
+						status:OnDisable()
+						status:OnEnable()
+						GSRD:RefreshAuras()
+					end
+				end,
+			},
+	} }
+	local meta = { __index = statusOptions }
+	options.status1 = setmetatable( { order = 10 , handler=1 }, meta )
+	options.status2 = setmetatable( { order = 11 , handler=2 }, meta )
+	options.status3 = setmetatable( { order = 12 , handler=3 }, meta )
+	options.status4 = setmetatable( { order = 13 , handler=4 }, meta )
+	options.status5 = setmetatable( { order = 14 , handler=5 }, meta )
 end
 
 options.newStatus = {

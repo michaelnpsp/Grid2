@@ -65,7 +65,7 @@ end
 local unit_in_roster = Grid2.roster_guids
 
 -- GSRD
-frame:SetScript("OnEvent", function (self, event, unit)
+local function RefreshAuras(self, event, unit)
 	if unit_in_roster[unit] then
 		local index = 1
 		while true do
@@ -89,7 +89,14 @@ frame:SetScript("OnEvent", function (self, event, unit)
 			status:UpdateState(unit)
 		end
 	end
-end)
+end
+frame:SetScript("OnEvent", RefreshAuras)
+
+function GSRD:RefreshAuras()
+	for unit in Grid2:IterateRosterUnits() do
+		RefreshAuras(frame, nil, unit)
+	end
+end
 
 function GSRD:OnModuleEnable()
 	self:UpdateZoneSpells(true)
@@ -262,6 +269,23 @@ local class = {
 	GetTooltip        = function(self, unit, tip) tip:SetUnitDebuff(unit, self.states[unit]) end,
 }
 
+do
+	local textures, counts, expirations, durations, colors = {}, {}, {}, {}, {}
+	function class:GetIconsMultiple(unit, max)
+		local color, i, j, name, id, _ = self.dbx.color1, 1, 1
+		repeat
+			name, textures[j], counts[j], _, durations[j], expirations[j], _, _, _, id = UnitAura(unit, i, 'HARMFUL')
+			if not name then break end
+			if spells_status[name]==self or spells_status[id]==self then
+				colors[j] = color
+				j = j + 1
+			end
+			i = i + 1
+		until j>max
+		return j-1, textures, counts, expirations, durations, colors
+	end
+end
+
 function class:ClearAllIndicators()
 	local states = self.states
 	for unit in pairs(states) do
@@ -298,6 +322,8 @@ function class:OnEnable()
 		if not isClassic then GSRD:RegisterEvent("ZONE_CHANGED"); end
 	end
 	statuses[self] = true
+	self.GetIcons = self.dbx.enableIcons and self.GetIconsMultiple or nil
+	self.UpdateState = self.dbx.enableIcons and self.UpdateStateMultiple or self.UpdateStateSingle
 	self:LoadZoneSpells()
 	GSRD:UpdateEvents()
 end
@@ -325,7 +351,7 @@ function class:AddDebuff(order, te, co, ty, du, ex, index)
 	end
 end
 
-function class:UpdateState(unit)
+function class:UpdateStateSingle(unit)
 	if self.order<10000 then
 		if self.count==0 then self.count = 1 end
 		if	false           ~= not self.states[unit] or
@@ -348,6 +374,21 @@ function class:UpdateState(unit)
 		self.states[unit] = nil
 		self:UpdateIndicators(unit)
 	end
+end
+
+function class:UpdateStateMultiple(unit)
+	if self.order<10000 then
+		self.states[unit]      = self.index
+		self.counts[unit]      = self.count==0 and 1 or self.count
+		self.textures[unit]    = self.texture
+		self.types[unit]       = self.type
+		self.durations[unit]   = self.duration
+		self.expirations[unit] = self.expiration
+		self.order, self.count = 10000, 0
+	elseif self.states[unit] then
+		self.states[unit] = nil
+	end
+	self:UpdateIndicators(unit)
 end
 
 function class:ResetState(unit)
