@@ -289,7 +289,7 @@ local generalOptions = {
 			Grid2Layout.db.global.useInsecureHeaders= (not v) or nil
 			Grid2Layout:RefreshLayout()
 		end,
-		hidden = function() return not Grid2.debugging end,
+		-- hidden = function() return not Grid2.debugging end,
 	},
 
 	sortMethod = {
