@@ -107,7 +107,7 @@ local UpdateDS = _UpdateDS
 local function Text_Create(self, parent)
 	local f = self:CreateFrame("Frame", parent)
 	f:SetAllPoints()
-	if not Grid2.isWoW90 then f:SetBackdrop(nil) end
+	if f.SetBackdrop then f:SetBackdrop(nil) end
 	local Text = f.Text or f:CreateFontString(nil, "OVERLAY")
 	Text:SetFontObject(GameFontHighlightSmall)
 	f.Text = Text

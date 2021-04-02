@@ -14,8 +14,11 @@ Grid2 = LibStub("AceAddon-3.0"):NewAddon("Grid2", "AceEvent-3.0", "AceConsole-3.
 
 Grid2.versionstring = "Grid2 v"..GetAddOnMetadata("Grid2", "Version")
 
-Grid2.isClassic = select(4,GetBuildInfo())<20000
-Grid2.isWoW90   = select(4,GetBuildInfo())>=90000
+local tocVersion = select(4,GetBuildInfo())
+Grid2.isClassic = tocVersion<30000
+Grid2.isVanilla = tocVersion<20000
+Grid2.isTBC     = tocVersion>=20000 and tocVersion<30000
+Grid2.isWoW90   = tocVersion>=90000
 
 Grid2.groupType      = "solo"
 Grid2.instType       = "other"
@@ -115,7 +118,7 @@ function Grid2:OnInitialize()
 
 	self.debugging = self.db.global.debug
 
-	self.classicDurations = self.isClassic and not self.db.global.disableDurations or nil
+	self.classicDurations = self.isVanilla and not self.db.global.disableDurations or nil
 
 	local media = LibStub("LibSharedMedia-3.0", true)
 	media:Register("statusbar", "Gradient", "Interface\\Addons\\Grid2\\media\\gradient32x32")

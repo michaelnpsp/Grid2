@@ -8,7 +8,7 @@ local next = next
 local tinsert = table.insert
 local tremove = table.remove
 local tdelete = Grid2.TableRemoveByValue
-local isWoW90 = Grid2.isWoW90
+local BackdropTemplateMixin = BackdropTemplateMixin
 
 Grid2.indicators = {}
 Grid2.indicatorSorted = {}
@@ -33,7 +33,7 @@ end
 function indicator:CreateFrame(type, parent, template)
 	local f = parent[self.name]
 	if not (f and f:GetObjectType()==type and f.__template == template) then
-		f = CreateFrame(type, nil, parent, (isWoW90 or template~="BackdropTemplate") and template or nil)
+		f = CreateFrame(type, nil, parent, (BackdropTemplateMixin or template~="BackdropTemplate") and template or nil)
 		f.__template = template
 		parent[self.name] = f
 	end
