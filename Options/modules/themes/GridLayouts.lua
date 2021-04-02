@@ -400,7 +400,7 @@ local generalOptions = {
 		set = function(info,v)
 			SetupSpecialHeader('displayHeaderFocus', v)
 		end,
-		hidden = function() return Grid2.isClassic end,
+		hidden = function() return Grid2.isVanilla end,
 	},
 
 	displayBosses = {
