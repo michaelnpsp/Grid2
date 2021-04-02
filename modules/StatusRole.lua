@@ -256,7 +256,7 @@ function Leader:OnDisable()
 end
 
 function Leader:IsActive(unit)
-	return readLieader and UnitIsUnit( unit, raidLeader )
+	return raidLeader and UnitIsUnit( unit, raidLeader )
 end
 
 function Leader:GetIcon(unit)
