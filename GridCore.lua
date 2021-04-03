@@ -12,25 +12,25 @@ local GetSpecialization = GetSpecialization or function() end
 -- Initialization
 Grid2 = LibStub("AceAddon-3.0"):NewAddon("Grid2", "AceEvent-3.0", "AceConsole-3.0")
 
-Grid2.versionstring = "Grid2 v"..GetAddOnMetadata("Grid2", "Version")
+-- build/version tracking
+local versionToc = GetAddOnMetadata("Grid2","Version")
+local versionCli = select(4,GetBuildInfo())
+Grid2.isClassic = versionCli<30000 -- vanilla or tbc
+Grid2.isVanilla = versionCli<20000
+Grid2.isTBC     = versionCli>=20000 and versionCli<30000
+Grid2.isWoW90   = versionCli>=90000
+Grid2.versionstring = "Grid2 v"..versionToc
 
-local tocVersion = select(4,GetBuildInfo())
-Grid2.isClassic = tocVersion<30000
-Grid2.isVanilla = tocVersion<20000
-Grid2.isTBC     = tocVersion>=20000 and tocVersion<30000
-Grid2.isWoW90   = tocVersion>=90000
-
-Grid2.groupType      = "solo"
-Grid2.instType       = "other"
-Grid2.instMaxPlayers = 1
-Grid2.playerClass    = select(2, UnitClass("player"))
-
-if not strfind(Grid2.versionstring,'project') and (GetAddOnMetadata("Grid2", "X-WoW-Project")=='classic') ~= Grid2.isClassic then
-	Grid2.wrongVersionMessage = string.format("Error, this version of Grid2 was packaged for World of Warcraft %s. Please install the %s version instead.",
-								 Grid2.isClassic and 'Retail' or 'Classic', Grid2.isClassic and 'Classic' or 'Retail')
-	C_Timer.After(3, function() Grid2:Print(Grid2.wrongVersionMessage) end)
+-- build error check
+local isRetailBuild = true
+--[===[@non-retail@
+isRetailBuild = false
+--@end-non-retail@]===]
+if isRetailBuild~=(WOW_PROJECT_ID==WOW_PROJECT_MAINLINE) and versionToc~='@project-version@' then
+	C_Timer.After(3, function() Grid2:Print(string.format("Error, this version of Grid2 was packaged for World of Warcraft %s. Please install the correct version !!!", isRetailBuild and 'Retail' or 'Classic')) end)
 end
 
+-- debug messages
 Grid2.debugFrame = Grid2DebugFrame or ChatFrame1
 function Grid2:Debug(s, ...)
 	if self.debugging then
@@ -42,7 +42,19 @@ function Grid2:Debug(s, ...)
 	end
 end
 
+-- group/instance data initialization
+Grid2.groupType      = "solo"
+Grid2.instType       = "other"
+Grid2.instMaxPlayers = 1
+
+-- player class cache
+Grid2.playerClass    = select(2, UnitClass("player"))
+
+-- plugins can add functions to this table to add extra lines to the minimap popup menu
 Grid2.tooltipFunc = {}
+
+-- type setup functions for non-unique objects: "buff" statuses / "icon" indicators / etc.
+Grid2.setupFunc = {}
 
 -- AceDB defaults
 Grid2.defaults = {
@@ -54,9 +66,6 @@ Grid2.defaults = {
 		themes = { names = {}, indicators = {}, enabled = {} },
 	}
 }
-
--- Type setup functions for non-unique objects: "buff" statuses / "icon" indicators / etc.
-Grid2.setupFunc = {}
 
 -- Module prototype
 local modulePrototype = {}

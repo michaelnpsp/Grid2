@@ -1,11 +1,7 @@
-﻿#@retail@
-## Interface: 90005
-## X-WoW-Project: retail
-#@end-retail@
-#@non-retail@
-# ## Interface: 11306
-## X-WoW-Project: classic
-#@end-non-retail@
+﻿## Interface: 90005
+## Interface-Retail: 90005
+## Interface-Classic: 11306
+## Interface-BC: 20501
 ## Title: Grid2
 ## Author: Pastamancer & Maia, Jerry, Toadkiller
 ## Version: @project-version@

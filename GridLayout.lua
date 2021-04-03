@@ -56,9 +56,10 @@ local GridLayoutHeaderClass = {
 		return frame
 	end,
 	template = function(self, layoutHeader, insecure)
+		-- insecure headers for TBC beta, TODO: remove isTBC check when blizzard fix the bug in beta.
 		if layoutHeader.type=='custom' then
 			return 'Grid2InsecureGroupCustomHeaderTemplate'
-		elseif insecure or layoutHeader.detachHeader or (layoutHeader.nameList and (layoutHeader.roleFilter or layoutHeader.groupFilter)) then
+		elseif insecure or Grid2.isTBC or layoutHeader.detachHeader or (layoutHeader.nameList and (layoutHeader.roleFilter or layoutHeader.groupFilter)) then
 			return layoutHeader.type=='pet' and 'Grid2InsecureGroupPetHeaderTemplate' or 'Grid2InsecureGroupHeaderTemplate'
 		else
 			return layoutHeader.type=='pet' and 'SecureGroupPetHeaderTemplate' or 'SecureGroupHeaderTemplate'
