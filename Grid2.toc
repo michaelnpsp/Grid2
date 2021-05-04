@@ -15,6 +15,7 @@
 ## Notes-zhCN: 小巧的轻量级模块化队伍框架
 ## Notes-zhTW: 精簡的團隊框架功能
 ## X-Curse-Project-ID: 15226
+## X-Wago-ID: vEGPyeN1
 ## DefaultState: enabled
 ## LoadOnDemand: 0
 ## SavedVariables: Grid2DB
