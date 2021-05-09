@@ -42,6 +42,7 @@ GridGroupHeaders.xml
 # Grid2
 GridCore.lua
 GridUtils.lua
+GridUtilsCmd.lua
 GridRoster.lua
 GridFrame.lua
 GridLayout.lua

@@ -77,18 +77,11 @@ if not Grid2.isClassic then
 		descStyle = "inline",
 		order = 9,
 		width = "full",
-		get = function(info) return Grid2.profiles.char[1] and Grid2.profiles.char.enabled end,
+		get = function(info)
+			return Grid2.profiles.char[1] and Grid2.profiles.char.enabled
+		end,
 		set = function(info, value)
-			local db = Grid2.profiles.char
-			wipe(db)
-			db.enabled = value or nil
-			if value then
-				local pro = Grid2.db:GetCurrentProfile()
-				for i=1,GetNumSpecializations() or 0 do
-					db[i] = pro
-				end
-			end
-			Grid2:ReloadProfile()
+			Grid2:EnableProfilesPerSpec(value)
 		end,
 	}
 
