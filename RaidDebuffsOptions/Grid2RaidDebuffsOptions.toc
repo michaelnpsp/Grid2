@@ -24,5 +24,6 @@ RaidDebuffsShadowlands.lua
 
 #@non-retail@
 RaidDebuffsClassic.lua
+RaidDebuffsBC.lua
 #@end-non-retail@
 
