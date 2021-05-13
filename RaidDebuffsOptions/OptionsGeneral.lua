@@ -18,8 +18,8 @@ options.separator0 = { type = "description", order = 9, name = "\n" }
 do
 	local statusOptions = {
 		type = 'group', inline = true,
-		name   = function(info) return RDO.statusesNames[info.handler] end,
-		hidden = function(info) return info.handler>#RDO.statuses end,
+		name   = function(info) return RDO.statusesNames[info.handler[1]] end,
+		hidden = function(info) return info.handler[1]>#RDO.statuses end,
 		args = {
 			color = {
 				type = "color",
@@ -28,11 +28,11 @@ do
 				name = L['color'],
 				hasAlpha = true,
 				get = function(info)
-					local c = RDO.statuses[info.handler].dbx.color1
+					local c = RDO.statuses[info.handler[1]].dbx.color1
 					return c.r, c.g, c.b, c.a
 				end,
 				set = function(info, r,g,b,a)
-					local c = RDO.statuses[info.handler].dbx.color1
+					local c = RDO.statuses[info.handler[1]].dbx.color1
 					c.r, c.g, c.b, c.a = r, g, b, a
 				 end,
 			},
@@ -43,10 +43,10 @@ do
 				name = L["multiple icons support"],
 				desc = L["Enable multiple icons support for icons indicators."],
 				get = function(info)
-					return RDO.statuses[info.handler].dbx.enableIcons
+					return RDO.statuses[info.handler[1]].dbx.enableIcons
 				end,
 				set = function(info, v)
-					local status = RDO.statuses[info.handler]
+					local status = RDO.statuses[info.handler[1]]
 					status.dbx.enableIcons = v or nil
 					if status.enabled then
 						status:OnDisable()
@@ -57,11 +57,11 @@ do
 			},
 	} }
 	local meta = { __index = statusOptions }
-	options.status1 = setmetatable( { order = 10 , handler=1 }, meta )
-	options.status2 = setmetatable( { order = 11 , handler=2 }, meta )
-	options.status3 = setmetatable( { order = 12 , handler=3 }, meta )
-	options.status4 = setmetatable( { order = 13 , handler=4 }, meta )
-	options.status5 = setmetatable( { order = 14 , handler=5 }, meta )
+	options.status1 = setmetatable( { order = 10 , handler= {1} }, meta )
+	options.status2 = setmetatable( { order = 11 , handler= {2} }, meta )
+	options.status3 = setmetatable( { order = 12 , handler= {3} }, meta )
+	options.status4 = setmetatable( { order = 13 , handler= {4} }, meta )
+	options.status5 = setmetatable( { order = 14 , handler= {5} }, meta )
 end
 
 options.newStatus = {
