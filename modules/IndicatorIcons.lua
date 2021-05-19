@@ -6,7 +6,7 @@ local wipe = wipe
 local pairs = pairs
 local ipairs = ipairs
 local format = string.format
-local ICON_TEMPLATE = Grid2.isWoW90 and "BackdropTemplate" or nil
+local ICON_TEMPLATE = (not Grid2.isVanilla) and "BackdropTemplate" or nil
 
 local function Icon_Create(self, parent)
 	local f = self:CreateFrame("Frame", parent)
