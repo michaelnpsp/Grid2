@@ -769,7 +769,6 @@ function Grid2Layout:RestorePosition()
 	f:SetPoint(a, x, y)
 	-- background frame
 	local b = f.frameBack
-	b:SetScale(p.ScaleSize)
 	b:ClearAllPoints()
 	b:SetPoint(p.groupAnchor) -- Using groupAnchor instead of anchor, see ticket #442.
 	self:Debug("Restored Position", a, p.ScaleSize, x, y)

@@ -162,10 +162,10 @@ Grid2Options:AddGeneralOptions( "General", "Text Formatting", {
 		order = 7,
 		name = L["Seconds Format"],
 		desc = L["Examples:\n%ds\n%d seconds"],
-		get = function() 
-			return Grid2.db.profile.formatting.secondsElapsedFormat 
+		get = function()
+			return Grid2.db.profile.formatting.secondsElapsedFormat
 		end,
-		set = function(_,v)	
+		set = function(_,v)
 			string.format(v, 1) -- sanity check, crash if v is not a correct format mask
 			Grid2.db.profile.formatting.secondsElapsedFormat  = v
 			UpdateTextIndicators()
@@ -176,10 +176,10 @@ Grid2Options:AddGeneralOptions( "General", "Text Formatting", {
 		order = 8,
 		name = L["Minutes Format"],
 		desc = L["Examples:\n%dm\n%d minutes"],
-		get = function() 
-			return Grid2.db.profile.formatting.minutesElapsedFormat 
+		get = function()
+			return Grid2.db.profile.formatting.minutesElapsedFormat
 		end,
-		set = function(_,v)	
+		set = function(_,v)
 			string.format(v, 1) -- sanity check, crash if v is not a correct format mask
 			Grid2.db.profile.formatting.minutesElapsedFormat  = v
 			UpdateTextIndicators()
@@ -224,11 +224,11 @@ Grid2Options:AddGeneralOptions( "General", "blink", {
 			Grid2Frame.db.shared.blinkFrequency = v
 			for _,indicator in ipairs(Grid2:GetIndicatorsSorted()) do
 				if indicator.GetBlinkFrame then
-					Grid2Frame:WithAllFrames(function (f) 
+					Grid2Frame:WithAllFrames(function (f)
 						local anim = indicator:GetBlinkFrame(f).blinkAnim
 						if anim then anim.settings:SetDuration(1/v) end
 					end)
-				end	
+				end
 			end
 		end,
 	},
@@ -261,7 +261,7 @@ end
 -- Minimap
 --==========================================================================
 
-if Grid2Layout.minimapIcon then
+if Grid2Layout.minimapIcon then -- checks if Grid2LDB addon was loaded
 	Grid2Options:AddGeneralOptions( "General", "Minimap Icon", {
 		showMinimapIcon = {
 			type = "toggle",
