@@ -8,6 +8,7 @@ local ipairs = ipairs
 local tostring = tostring
 local fmt = string.format
 local GetSpecialization = GetSpecialization or function() end
+local UnitGroupRolesAssigned = UnitGroupRolesAssigned or function() end
 
 -- Initialization
 Grid2 = LibStub("AceAddon-3.0"):NewAddon("Grid2", "AceEvent-3.0", "AceConsole-3.0")
@@ -156,6 +157,7 @@ function Grid2:OnEnable()
 	end
 	if not self.isClassic then
 		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+		self:RegisterEvent("PLAYER_ROLES_ASSIGNED")
 	end
 
 	self.db.RegisterCallback(self, "OnProfileShutdown", "ProfileShutdown")
@@ -216,6 +218,10 @@ function Grid2:PLAYER_SPECIALIZATION_CHANGED(_,unit)
 	end
 end
 
+function Grid2:PLAYER_ROLES_ASSIGNED()
+	self:ReloadTheme()
+end
+
 -- Themes
 function Grid2:GetCurrentTheme()
 	local index  = self.currentTheme or 0
@@ -233,6 +239,7 @@ function Grid2:CheckTheme()
 	local enabled = themes.enabled
 	local theme   = enabled.default or 0
 	local spec    = GetSpecialization() or 0
+	local role    = UnitGroupRolesAssigned('player') or 0
 	local groupType, instType, maxPlayers = self:GetGroupType()
 	local kM   = tostring(maxPlayers)
 	local kC   = fmt("%s@0",     self.playerClass)
@@ -241,7 +248,7 @@ function Grid2:CheckTheme()
 	local kSGI = fmt("%s@%s@%s", kS, groupType, instType)
 	local kSG  = fmt("%s@%s",    kS, groupType)
 	local kGI  = fmt("%s@%s",    groupType, instType)
-	theme = self.testThemeIndex or enabled[kSM] or enabled[kSGI] or enabled[kSG] or enabled[kS] or enabled[kC] or enabled[kM] or enabled[kGI] or enabled[groupType] or theme
+	theme = self.testThemeIndex or enabled[kSM] or enabled[kSGI] or enabled[kSG] or enabled[kS] or enabled[kC] or enabled[kM] or enabled[kGI] or enabled[groupType] or enabled[role] or theme
 	theme = themes.names[theme] and theme or 0
 	return theme, themes.indicators[theme] or {}
 end
