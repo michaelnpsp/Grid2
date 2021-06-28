@@ -314,6 +314,33 @@ RDDB["Shadowlands"] = {
 		341291, -- Oscuridad desatada
 		},
 	},
+	[1194] = {
+		{ id = 1194, name = "Tazavesh, the Veiled Market" },
+		["Zo'phex the Sentinel"] = {
+		order = 1, ejid = 2437,
+		},
+		["The Grand Menagerie"] = {
+		order = 2, ejid = 2454,
+		},
+		["Mailroom Mayhem"] = {
+		order = 3, ejid = 2436,
+		},
+		["Myza's Oasis"] = {
+		order = 4, ejid = 2452,
+		},
+		["So'azmi"] = {
+		order = 5, ejid = 2451,
+		},
+		["Hylbrande"] = {
+		order = 6, ejid = 2448,
+		},
+		["Timecap'n Hooktail"] = {
+		order = 7, ejid = 2449,
+		},
+		["So'leah"] = {
+		order = 8, ejid = 2455,
+		},
+	},
 	-- World bosses
 	[102222] = { -- World Bosses
  		{ id = 1192, name = "Shadowlands", raid = true },
@@ -460,6 +487,108 @@ RDDB["Shadowlands"] = {
 		338686, --nathrian-hymn-duskhollow
 		338688, --nathrian-hymn-gloomveil
 		341366, --hollow-grasp
+		},
+	},
+	[1193] = {
+		{ id = 1193, name = "Sanctum of Domination", raid = true },
+		["The Tarragrue"] = {
+		order = 1, ejid = 2435,
+		347269, --chains-of-eternity
+		347286, --unshakeable-dread
+		347283, --predators-howl
+		346985, --overpower
+		346986, --crushed-armor
+		},
+		["The Eye of the Jailer"] = {
+		order = 2, ejid = 2442,
+		349979, --dragging-chains
+		348969, --immediate-extermination
+		351826, --suffering
+		350713, --slothful-corruption
+		},
+		["The Nine"] = {
+		order = 3, ejid = 2439,
+		350542, --fragments-of-destiny
+		350555, --shard-of-destiny
+		350202, --unending-strike
+		350039, --arthuras-crushing-gaze
+		350287, --song-of-dissolution
+		},
+		["Remnant of Ner'zhul"] = {
+		order = 4, ejid = 2444,
+		349890, --suffering
+		350469, --malevolence
+		350073, --torment
+		},
+		["Soulrender Dormazain"] = {
+		order = 5, ejid = 2445,
+		350217, --torment
+		348985, --warmonger-shackles
+		350650, --defiance
+		351946, --hellscream
+		350422, --ruinblade
+		},
+		["Painsmith Raznal"] = {
+		order = 6, ejid = 2443,
+		355568, --cruciform-axe
+		348508, --reverberating-hammer
+		355778, --dualblade-scythe
+		355786, --blackened-armor
+		356870, --flameclasp-eruption
+		348456, --flameclasp-trap
+		356472, --lingering-flames
+		},
+		["Guardian of the First Ones"] = {
+		order = 7, ejid = 2446,
+		352538, --purging-protocol
+		352394, --radiant-energy
+		352385, --energizing-link
+		350732, --sunder
+		347359, --suppression-field
+		},
+		["Fatescribe Roh-Kalo"] = {
+		order = 8, ejid = 2447,
+		350568, --call-of-eternity
+		350355, --fated-conjunction
+		353122, --darkest-destiny
+		353195, --extemporaneous-fate
+		351680, --invoke-destiny
+		353435, --overwhelming-burden
+		354964, --runic-affinity
+		354365, --grim-portent
+		353432, --burden-of-destiny
+		},
+		["Kel'Thuzad"] = {
+		order = 9, ejid = 2440,
+		354289, --sinister-miasma
+		348978, --soul-exhaustion
+		357298, --frozen-binds
+		355137, --shadow-pool
+		352051, --necrotic-surge
+		},
+		["Sylvanas Windrunner"] = {
+		order = 10, ejid = 2441,
+		347504, --windrunner
+		354147, --raze
+		347807, --barbed-arrow
+		349458, --domination-chains
+		356651, --woe
+		358704, --black-arrow
+		358711, --rage
+		351180, --lashing-wound
+		351117, --crushing-dread
+		351323, --detonation
+		351452, --lethargic-focus
+		351589, --filth
+		351562, --expulsion
+		353929, --banshees-bane
+		353642, --invigorating-field
+		},
+		["Trash"] = {
+		order = 11, ejid = nil,
+		337938, --lumbering-form
+		347988, --ten-of-towers
+		338733, --ever-beating-heart
 		},
 	},
 }
