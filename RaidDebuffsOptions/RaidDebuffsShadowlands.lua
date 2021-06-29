@@ -318,28 +318,62 @@ RDDB["Shadowlands"] = {
 		{ id = 1194, name = "Tazavesh, the Veiled Market" },
 		["Zo'phex the Sentinel"] = {
 		order = 1, ejid = 2437,
+		345598, --interrogation
+		345770, --impound-contraband
+		345990, --containment-cell
 		},
 		["The Grand Menagerie"] = {
 		order = 2, ejid = 2454,
+		349627, --gluttony
+		349954, --purification-protocol
+		350101, --chains-of-damnation
 		},
 		["Mailroom Mayhem"] = {
 		order = 3, ejid = 2436,
+		346844, --alchemical-residue
+		346962, --money-order
+		346297, --unstable-explosion
 		},
 		["Myza's Oasis"] = {
 		order = 4, ejid = 2452,
+		353835, --suppression
+		350919, --crowd-control
 		},
 		["So'azmi"] = {
 		order = 5, ejid = 2451,
+		347481, --shuri
+		347623, --quickblade
 		},
 		["Hylbrande"] = {
 		order = 6, ejid = 2448,
+		348437, --bypass-code-helvete
+		348447, --bypass-code-lys
+		348450, --bypass-code-fryse
+		348451, --bypass-code-morke
 		},
 		["Timecap'n Hooktail"] = {
 		order = 7, ejid = 2449,
+		352345, --anchor-shot
+		347149, --infinite-breath
+		347422, --deadly-seas
 		},
 		["So'leah"] = {
 		order = 8, ejid = 2455,
+		351119, --shuriken-blitz
+		350804, --collapsing-energy
 		},
+		["Trash"] = {
+		order = 9, ejid = nil,
+		356548, --radiant-pulse
+		355888, --hard-light-baton
+		356407, --ancient-dread
+		356408, --ground-stomp
+		355640, --phalanx-field
+		355479, --lethal-force
+		347716, --letter-opener
+		347775, --spam-filter
+		355641, --scintillate
+		}
 	},
 	-- World bosses
 	[102222] = { -- World Bosses
