@@ -358,7 +358,7 @@ end
 function Grid2Layout:EnableMouse(enabled)
 	self.frame:EnableMouse(enabled)
 	for _, frame in self:IterateHeaders(true) do -- detached headers
-		frame:EnableMouse(enabled)
+		frame.frameBack:EnableMouse(enabled)
 	end
 end
 
@@ -726,9 +726,11 @@ function Grid2Layout:UpdateVisibility()
 	if not Grid2:RunSecure(7, self, "UpdateVisibility") then
 		local fd, pt = self.db.profile.FrameDisplay, Grid2:GetGroupType()
 		self.frame:SetShown(
-			fd~='Never' and
-			( (fd == "Always") or (fd == "Grouped" and pt ~= "solo") or (fd == "Raid" and pt == "raid" ) ) and
-			not (self.db.profile.HideInPetBattle and self.inBattlePet)
+			self.testLayoutName~=nil or (
+				fd~='Never' and
+				( (fd == "Always") or (fd == "Grouped" and pt ~= "solo") or (fd == "Raid" and pt == "raid" ) ) and
+				not (self.db.profile.HideInPetBattle and self.inBattlePet)
+			)
 		)
 	end
 end
@@ -819,6 +821,7 @@ function Grid2Layout:SetupDetachedHeader(header, setupIndex)
 		frameBack:ClearAllPoints()
 		frameBack:SetPoint('TOPLEFT', header, 'TOPLEFT', -Spacing, Spacing )
 		frameBack:SetPoint('BOTTOMRIGHT', header, 'BOTTOMRIGHT', Spacing, -Spacing )
+		frameBack:SetFrameLevel( header:GetFrameLevel() - 1 )
 		frameBack:SetShown( button and button:IsShown() )
 		header.headerKey = self.layoutName..setupIndex -- theme not needed in key because each theme stores a different Positions table.
 		self.layoutHasDetached = true
