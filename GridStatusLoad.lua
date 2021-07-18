@@ -7,7 +7,7 @@ local next = next
 -- local variables
 local indicators = {} -- indicators marked for update
 local registered = {} -- registered messages
-local statuses   = { playerSpec = {}, groupInstType = {}, instNameID = {} }
+local statuses   = { playerClassSpec = {}, groupInstType = {}, instNameID = {} }
 
 -- local functions
 local function RegisterMessage(message, enabled)
@@ -22,11 +22,11 @@ local function RegisterMessage(message, enabled)
 end
 
 local function UpdateMessages(status, load)
-	statuses.playerSpec[status] = load and load.playerSpec~=nil or nil
+	statuses.playerClassSpec[status] = load and load.playerClassSpec~=nil or nil
 	statuses.instNameID[status] = load and load.instNameID~=nil or nil
 	statuses.groupInstType[status] = load and (load.groupType~=nil or load.instType~=nil) or nil
 	RegisterMessage( "Grid_GroupTypeChanged",  next(statuses.groupInstType) )
-	RegisterMessage( "Grid_PlayerSpecChanged", next(statuses.playerSpec) )
+	RegisterMessage( "Grid_PlayerSpecChanged", next(statuses.playerClassSpec) )
 	RegisterMessage( "Grid_ZoneChangedNewArea", next(statuses.instNameID) )
 end
 
@@ -85,12 +85,17 @@ local function RefreshStatus(self)
 end
 
 local function RefreshStatuses(filterType)
+	local notify
 	for status in pairs(statuses[filterType]) do
 		if UpdateStatus(status) then
 			RegisterIndicators(status)
+			notify = true
 		end
 	end
 	UpdateIndicators()
+	if notify then
+		Grid2:SendMessage("Grid_StatusLoadChanged")
+	end
 end
 
 -- message events
@@ -99,7 +104,7 @@ function Grid2:Grid_GroupTypeChanged()
 end
 
 function Grid2:Grid_PlayerSpecChanged()
-	RefreshStatuses('playerSpec')
+	RefreshStatuses('playerClassSpec')
 end
 
 function Grid2:Grid_ZoneChangedNewArea()

@@ -181,7 +181,7 @@ local function ImportProfile(sender, data, Hex, importCustomLayouts)
 			end
 		end
 		self:ProfileChanged()
-		LibStub("AceConfigRegistry-3.0"):NotifyChange("Grid2")
+		Grid2Options:NotifyChange()
 	end
 	Grid2.db:SetProfile(profileName)
 	if importCustomLayouts then

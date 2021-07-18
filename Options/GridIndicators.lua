@@ -185,7 +185,7 @@ do
 			if len>2 or len==0 then
 				Grid2Options.LI[name] = len>2 and text or nil
 				Grid2Options:MakeIndicatorOptions(Grid2.indicators[name])
-				LibStub("AceConfigRegistry-3.0"):NotifyChange("Grid2")
+				Grid2Options:NotifyChange()
 			end
 		end)
 	end

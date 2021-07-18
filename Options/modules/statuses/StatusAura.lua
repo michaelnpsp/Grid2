@@ -130,7 +130,7 @@ function Grid2Options:MakeStatusAuraUseSpellIdOptions(status, options, optionPar
 				status.dbx.useSpellId = (type(text)=="number") or nil
 				status:UpdateDB()
 				Grid2Options:MakeStatusOptions(status)
-				LibStub("AceConfigRegistry-3.0"):NotifyChange("Grid2")
+				Grid2Options:NotifyChange()
 			end
 		end,
 	}

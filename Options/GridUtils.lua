@@ -130,6 +130,11 @@ function Grid2Options:PackColor( r,g,b,a, dbx, key )
 	return { r=r, g=g, b=b, a=a }
 end
 
+-- Refresh AceConfig options window
+function Grid2Options:NotifyChange() -- do not use self variable inside this function (self can be nil or ~=Grid2Options)
+	LibStub("AceConfigRegistry-3.0"):NotifyChange("Grid2")
+end
+
 -- Grid2Options:EnableLoadOnDemand()
 -- Delays the creation of indicators and statuses options, until the user clicks on each option,
 -- reducing initial memory usage and load time. Instead of the real options, a "description" type option
@@ -153,7 +158,7 @@ do
 			else
 				methods[typ..'_']( Grid2Options, Grid2[typ][key] )
 			end
-			LibStub("AceConfigRegistry-3.0"):NotifyChange("Grid2")
+			Grid2Options:NotifyChange()
 		end
 	}
 	local function hook(self, options, extraOptions)

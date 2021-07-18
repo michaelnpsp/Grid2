@@ -241,7 +241,7 @@ do
 					db.extraThemes[index] = CopyTheme( itemp==0 and db or db.extraThemes[itemp] )
 				end
 				Grid2Options:MakeThemeOptions(index)
-				LibStub("AceConfigRegistry-3.0"):NotifyChange("Grid2")
+				Grid2Options:NotifyChange()
 			end)
 		end,
 		values = GetThemes,
@@ -257,7 +257,7 @@ do
 			local name = editedTheme.db.names[index] or L['Default']
 			Grid2Options:ShowEditDialog( L["Rename Theme:"], name, function(text)
 				editedTheme.db.names[index] = text
-				LibStub("AceConfigRegistry-3.0"):NotifyChange("Grid2")
+				Grid2Options:NotifyChange()
 			end)
 		end,
 		values = GetThemes,
@@ -356,7 +356,7 @@ function Grid2Options:MakeThemeOptions( index )
 	options[tostring(index)] = { type = "group", childGroups = "tab", order = index+300, name = GetThemeName, desc = "", arg = index, args = themeOptions }
 end
 
-Grid2:RegisterMessage("Grid_ThemeChanged", function() LibStub("AceConfigRegistry-3.0"):NotifyChange("Grid2") end)
+Grid2:RegisterMessage("Grid_ThemeChanged", Grid2Options.NotifyChange)
 
 --===========================================================================================
 

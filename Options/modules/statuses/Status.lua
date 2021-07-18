@@ -48,23 +48,11 @@ do
 		end
 	end
 
-	local function RefreshStatusOptions(status)
-		local name = Grid2Options.LocalizeStatus(status, true)
-		local group = Grid2Options:GetStatusGroup(status)
-		if status.suspended then
-			group.order = group.order - 500
-			group.name  = string.format('|cFF808080%s|r',name)
-		else
-			group.order = group.order + 500
-			group.name  = name
-		end
-	end
-
 	local function RefreshStatus(status, isUnitFilter)
 		if isUnitFilter then
 			status:Refresh(true)
 		elseif status:RefreshLoad() then
-			RefreshStatusOptions(status)
+			Grid2Options:NotifyChange()
 		end
 	end
 
@@ -279,6 +267,7 @@ do
 		end
 		return options
 	end
+	Grid2:RegisterMessage("Grid_StatusLoadChanged", Grid2Options.NotifyChange)
 end
 
 -- Grid2Options:MakeStatusDeleteOptions()

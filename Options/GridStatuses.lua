@@ -246,23 +246,24 @@ end
 function Grid2Options:MakeStatusOptions(status)
 	local catGroup, name, desc, icon, coords, deletable, params = self:GetStatusInfo(status)
 	if catGroup then
-		local order = params and params.groupOrder
-		local group = catGroup.args[status.name]
+		local gorder = params and params.groupOrder
+		local order  = (type(gorder)=='function' and gorder(status) or gorder) or (status.name==status.dbx.type and 100 or 200)
+		local group  = catGroup.args[status.name]
 		if group then
 			wipe(group.args)
 		else
 			group = { type = "group", args = {} }
 			catGroup.args[status.name] = group
 		end
-		group.name = name
 		group.desc = desc
 		group.icon = icon
 		group.iconCoords = coords
 		group.childGroups = params and params.childGroups or "tab"
-		group.order = (type(order)=='function' and order(status) or order) or (status.name==status.dbx.type and 100 or 200)
-		if status.suspended then
-			group.order = group.order+500
-			group.name  = string.format('|cFF808080%s|r',group.name)
+		group.order = function(info)
+			return status.suspended and order+500 or order
+		end
+		group.name = function(info)
+			return status.suspended and string.format('|cFF808080%s|r',name) or name
 		end
 		self:MakeStatusChildOptions(status, group.args)
 	end
