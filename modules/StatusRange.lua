@@ -9,6 +9,7 @@ local tonumber = tonumber
 local tostring = tostring
 local UnitIsUnit = UnitIsUnit
 local UnitInRange = UnitInRange
+local UnitIsFriend = UnitIsFriend
 local UnitCanAttack = UnitCanAttack
 local UnitCanAssist = UnitCanAssist
 local IsSpellInRange = IsSpellInRange
@@ -62,7 +63,7 @@ local Ranges= {
 	["heal"] = function(unit)
 		if UnitPhaseReason(unit) then
 			return
-		elseif UnitCanAssist("player", unit) then
+		elseif UnitIsFriend("player", unit) then
 			if UnitIsUnit(unit,'player') then
 				return true
 			elseif UnitIsDeadOrGhost(unit) then
