@@ -123,7 +123,7 @@ function status:RegisterLoad()
 end
 
 function status:UnregisterLoad()
-	if self.dbx.load then
+	if self.dbx and self.dbx.load then
 		UpdateMessages(self)
 	end
 end

@@ -59,21 +59,72 @@ function Grid2Options:MakeIndicatorAuraIconsSizeOptions(indicator, options, opti
 		end,
 		values={ VERTICAL = L["VERTICAL"], HORIZONTAL = L["HORIZONTAL"] }
 	}
-	options.disableIcons = {
-		type = "toggle",
-		name = L["Display Squares"],
-		desc = L["Display flat square textures instead of the icons provided by the statuses."],
+	options.iconSpacing = {
+		type = "range",
 		order = 12,
-		tristate = false,
-		get = function () return indicator.dbx.disableIcons end,
+		name = L["Icon Spacing"],
+		desc = L["Adjust the space between icons."],
+		softMin = 0,
+		max = 50,
+		step = 1,
+		get = function () return indicator.dbx.iconSpacing or 1 end,
 		set = function (_, v)
-			indicator.dbx.disableIcons = v or nil
+			indicator.dbx.iconSpacing = v
 			self:RefreshIndicator(indicator, "Layout")
 		end,
 	}
+	options.iconSizeSource = {
+		type = "select",
+		order = 13,
+		name = L["Icon Size"],
+		desc = L["Default:\nUse the size specified by the active theme.\nPixels:\nUser defined size in pixels.\nPercent:\nUser defined size as percent of the frame height."],
+		get = function (info) return (indicator.dbx.iconSize==nil and 1) or (indicator.dbx.iconSize>1 and 2) or 3 end,
+		set = function (info, v)
+			indicator.dbx.iconSize = (v==3 and .4) or (v==2 and 14) or nil
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		values = { L["Default"], L["Pixels"], L["Percent"] },
+	}
+	options.iconSizeAbsolute = {
+		type = "range",
+		order = 14,
+		name = L["Icon Size"],
+		desc = L["Adjust the size of the icon."],
+		min = 5,
+		softMax = 50,
+		step = 1,
+		get = function ()
+			return indicator.dbx.iconSize or Grid2Frame.db.profile.iconSize
+		end,
+		set = function (_, v)
+			indicator.dbx.iconSize = v
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		disabled = function() return indicator.dbx.iconSize==nil end,
+		hidden = function()	return (indicator.dbx.iconSize or Grid2Frame.db.profile.iconSize or 0)<=1 end,
+	}
+	options.iconSizeRelative = {
+		type = "range",
+		order = 15,
+		name = L["Icon Size"],
+		desc = L["Adjust the size of the icon."],
+		min = 0.01,
+		max = 1,
+		step = 0.01,
+		isPercent = true,
+		get = function ()
+			return indicator.dbx.iconSize or Grid2Frame.db.profile.iconSize
+		end,
+		set = function (_, v)
+			indicator.dbx.iconSize = v
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		disabled = function() return indicator.dbx.iconSize==nil end,
+		hidden = function() return (indicator.dbx.iconSize or Grid2Frame.db.profile.iconSize or 1)>1 end,
+	}
 	options.maxIcons = {
 		type = "range",
-		order = 13,
+		order = 16,
 		name = L["Max Icons"],
 		desc = L["Select maximum number of icons to display."],
 		min = 1,
@@ -87,7 +138,7 @@ function Grid2Options:MakeIndicatorAuraIconsSizeOptions(indicator, options, opti
 	}
 	options.maxIconsPerRow = {
 		type = "range",
-		order = 14,
+		order = 17,
 		name = L["Icons per row"],
 		desc = L["Select the number of icons per row."],
 		min = 1,
@@ -99,31 +150,15 @@ function Grid2Options:MakeIndicatorAuraIconsSizeOptions(indicator, options, opti
 			self:RefreshIndicator(indicator, "Layout")
 		end,
 	}
-	options.iconsize = {
-		type = "range",
-		order = 15,
-		name = L["Icon Size"],
-		desc = L["Adjust the size of the icons, select Zero to use the theme default icon size."],
-		min = 0,
-		max = 50,
-		step = 1,
-		get = function () return indicator.dbx.iconSize	end,
+	options.disableIcons = {
+		type = "toggle",
+		name = L["Display Squares"],
+		desc = L["Display flat square textures instead of the icons provided by the statuses."],
+		order = 18,
+		tristate = false,
+		get = function () return indicator.dbx.disableIcons end,
 		set = function (_, v)
-			indicator.dbx.iconSize = v>0 and v or nil
-			self:RefreshIndicator(indicator, "Layout")
-		end,
-	}
-	options.iconSpacing = {
-		type = "range",
-		order = 16,
-		name = L["Icon Spacing"],
-		desc = L["Adjust the space between icons."],
-		softMin = 0,
-		max = 50,
-		step = 1,
-		get = function () return indicator.dbx.iconSpacing or 1 end,
-		set = function (_, v)
-			indicator.dbx.iconSpacing = v
+			indicator.dbx.disableIcons = v or nil
 			self:RefreshIndicator(indicator, "Layout")
 		end,
 	}
