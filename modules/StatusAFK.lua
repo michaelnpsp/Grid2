@@ -16,7 +16,7 @@ AFK.GetColor = Grid2.statusLibrary.GetColor
 local function UpdateUnit(_, unit)
 	if unit then
 		if not UnitIsAFK(unit) then -- only clear cache, afk_cache is already assigned when metatable lookup fails in GetStartTime()
-			afk_cache[ UnitGUID(unit) ] = nil
+			afk_cache[ UnitGUID(unit) or 0 ] = nil
 		end
 		AFK:UpdateIndicators(unit)
 	end
