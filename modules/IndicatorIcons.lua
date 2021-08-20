@@ -6,7 +6,6 @@ local wipe = wipe
 local pairs = pairs
 local ipairs = ipairs
 local format = string.format
-local abs = math.abs
 local ICON_TEMPLATE = (not Grid2.isVanilla) and "BackdropTemplate" or nil
 
 local function Icon_Create(self, parent)
@@ -111,7 +110,7 @@ end
 
 local function Icon_Layout(self, parent)
 	local f = parent[self.name]
-	local x,y   = 0,0
+	local x,y = 0,0
 	local ux,uy = self.ux,self.uy
 	local vx,vy = self.vx,self.vy
 	local borderSize = self.borderSize
@@ -126,7 +125,7 @@ local function Icon_Layout(self, parent)
 	f:ClearAllPoints()
 	f:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
 	f:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
-	f:SetSize( size*abs(self.ux)*self.maxIconsPerRow, size*abs(self.vy)*self.maxRows )
+	f:SetSize( size*self.pw, size*self.ph )
 	local auras = f.auras
 	for i=1,self.maxIcons do
 		local frame = auras[i]
@@ -212,10 +211,12 @@ local function Icon_LoadDB(self)
 	self.vx 			= 0
 	self.ux 			= pointsX[self.anchorIcon]
 	self.vy 			= pointsY[self.anchorIcon]
+	self.pw             = math.abs(self.ux)*self.maxIconsPerRow
+	self.ph             = math.abs(self.vy)*self.maxRows
 	if self.orientation=="VERTICAL" then
 		self.ux, self.vx = self.vx, self.ux
 		self.uy, self.vy = self.vy, self.uy
-		self.width, self.height = self.height,self.width
+		self.pw, self.ph = self.ph, self.pw
 	end
 	self.showCooldown    = not dbx.disableCooldown
 	self.showStack       = not dbx.disableStack
