@@ -15,22 +15,6 @@ Grid2Options:RegisterStatusOptions("threat", "combat", function(self, status, op
 			status:UpdateDB()
 		end,
 	}
-	if Grid2.isClassic then
-		options.frequentUpdates = {
-			type = "toggle",
-			name = L["Frequent updates"],
-			desc = L["Update threat status more frequent."],
-			width = "full",
-			order = 34,
-			get = function () return status.dbx.frequentUpdates end,
-			set = function (_, v)
-				local enabled = status.enabled
-				if enabled then status:OnDisable() end
-				status.dbx.frequentUpdates = v or nil
-				if enabled then status:OnEnable() end
-			end,
-		}
-	end
 end, {
 		color1 = L["Not Tanking"],
 		colorDesc1 = L["Higher threat than tank."],

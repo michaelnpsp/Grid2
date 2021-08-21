@@ -19,18 +19,11 @@ function Threat:OnEnable()
 	self:UpdateDB()
 	self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", "UpdateUnit")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "UpdateAllUnits")
-	if Grid2.isClassic and self.dbx.frequentUpdates then
-		self:RegisterEvent("UNIT_HEALTH_FREQUENT", "UpdateUnit")
-	end
-
 end
 
 function Threat:OnDisable()
 	self:UnregisterEvent("UNIT_THREAT_SITUATION_UPDATE")
 	self:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
-	if Grid2.isClassic and self.dbx.frequentUpdates then
-		self:UnregisterEvent("UNIT_HEALTH_FREQUENT")
-	end
 end
 
 function Threat:UpdateDB()

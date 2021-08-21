@@ -73,19 +73,29 @@ local function TimerEvent()
 	wipe(tguids)
 end
 
+local function TimerEnable()
+	timer = timer or Grid2:CreateTimer( TimerEvent, BanzaiThreat.dbx.updateRate or 0.2 )
+end
+
+local function TimerDisable()
+	timer = Grid2:CancelTimer(timer)
+end
+
 local function CombatEnterEvent()
 	if Banzai and Banzai.enabled then
 		RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Banzai.CombatLogEvent)
 	end
-	timer = timer or Grid2:CreateTimer( TimerEvent, BanzaiThreat.dbx.updateRate or 0.2 )
+	TimerEnable()
 end
 
 local function CombatExitEvent()
-	if Banzai and Banzai.enabled then UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED") end
-	timer = Grid2:CancelTimer(timer)
+	if Banzai and Banzai.enabled then
+		UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+	end
 	for status in next,statuses do
 		status:ClearIndicators()
 	end
+	TimerDisable()
 end
 
 local function PlateAddedEvent(unit)
@@ -100,10 +110,14 @@ end
 
 local function status_OnEnable(self)
 	if not next(statuses) then
-		RegisterEvent("PLAYER_REGEN_ENABLED" , CombatExitEvent)
-		RegisterEvent("PLAYER_REGEN_DISABLED", CombatEnterEvent)
 		RegisterEvent("NAME_PLATE_UNIT_ADDED", PlateAddedEvent)
 		RegisterEvent("NAME_PLATE_UNIT_REMOVED", PlateRemovedEvent)
+		if Grid2.isClassic and BanzaiThreat.dbx.alwaysActive then
+			TimerEnable()
+		else
+			RegisterEvent("PLAYER_REGEN_ENABLED" , CombatExitEvent)
+			RegisterEvent("PLAYER_REGEN_DISABLED", CombatEnterEvent)
+		end
 	end
 	statuses[self] = true
 end
@@ -111,10 +125,14 @@ end
 local function status_OnDisable(self)
 	statuses[self] = nil
 	if not next(statuses) then
-		UnregisterEvent("PLAYER_REGEN_ENABLED")
-		UnregisterEvent("PLAYER_REGEN_DISABLED")
 		UnregisterEvent("NAME_PLATE_UNIT_ADDED")
 		UnregisterEvent("NAME_PLATE_UNIT_REMOVED")
+		if Grid2.isClassic and BanzaiThreat.dbx.alwaysActive then
+			TimerDisable()
+		else
+			UnregisterEvent("PLAYER_REGEN_ENABLED")
+			UnregisterEvent("PLAYER_REGEN_DISABLED")
+		end
 	end
 end
 
