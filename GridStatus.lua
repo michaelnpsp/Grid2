@@ -84,7 +84,7 @@ end
 function status:RegisterIndicator(indicator, priority, suspended)
 	if not self.indicators[indicator] then
 		self.priorities[indicator] = priority or indicator.priorities[self]
-		if not suspended then
+		if not suspended and not self.suspended then
 			local enabled = next(self.indicators)
 			self.indicators[indicator] = true
 			if not enabled then
