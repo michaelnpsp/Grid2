@@ -300,16 +300,22 @@ do
 			end
 		end
 	end
+	local function GetMultibarCheck(indicator) -- return max valid priority for the multibar indicator, sanity check to multibar priorities removing invalid status mapings
+		return (indicator.dbx and indicator.dbx.type == 'multibar' and -- is a multibar ?
+				indicator.parentName==nil and  -- ignore multibar-color indicators (they share same dbx than multibar)
+				#indicator.dbx+1)  -- #indicator.dbx+1 == number of statuses in statusMap[indicator-name] entry for the multibar indicator
+	end
 
 	local function CleanStatusMap(setup)
 		for baseKey, map in pairs(setup) do
 			local indicator = Grid2.indicators[baseKey]
 			if indicator then
+				local multibarCheck = GetMultibarCheck(indicator)
 				for statusKey, priority in pairs(map) do
 					local status = Grid2.statuses[statusKey]
-					if not( status and tonumber(priority) ) then
+					if (not ( status and tonumber(priority) )) or (multibarCheck and priority>multibarCheck) then
 						map[statusKey] = nil
-						msg( string.format( "Removed map for indicator=[%s] <=> status=[%s], reason: status does not exists or wrong priority.", baseKey, statusKey ) )
+						msg( string.format( "Removed map for indicator=[%s] <=> status=[%s], reason: status does not exist or wrong priority.", baseKey, statusKey ) )
 					end
 				end
 			else
@@ -368,20 +374,12 @@ end
 Grid2Options.AdvancedProfileOptions = { type = "group", order= 200, name = L["Import&Export"], desc = L["Options for %s."]:format(L["Import&Export"]), args = {
 	header1 ={
 		type = "header",
-		order = 60,
+		order = 10,
 		name = L["Profile import/export"],
-	},
-	incLayouts = {
-		type = "toggle",
-		order = 85,
-		name = L["Include Custom Layouts"],
-		width = "double",
-		get = function () return includeCustomLayouts end,
-		set = function () includeCustomLayouts = not includeCustomLayouts end,
 	},
 	import = {
 		type = "execute",
-		order = 70,
+		order = 11,
 		name = L["Import profile"],
 		func = function ()
 			ShowSerializeFrame(	L["Paste here a profile in text format"],
@@ -390,13 +388,21 @@ Grid2Options.AdvancedProfileOptions = { type = "group", order= 200, name = L["Im
 	},
 	export = {
 		type = "execute",
-		order = 80,
+		order = 12,
 		name = L["Export profile"],
 		func = function (info)
 			ShowSerializeFrame(	L["This is your current profile in text format"],
 								L["Press CTRL-C to copy the configuration to your clipboard"],
 								SerializeCurrentProfile(true, includeCustomLayouts) )
 		end,
+	},
+	incLayouts = {
+		type = "toggle",
+		order = 13,
+		name = L["Include Custom Layouts"],
+		width = "double",
+		get = function () return includeCustomLayouts end,
+		set = function () includeCustomLayouts = not includeCustomLayouts end,
 	},
 	header2 ={
 		type = "header",
