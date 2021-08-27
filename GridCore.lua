@@ -20,7 +20,7 @@ Grid2.isClassic = versionCli<30000 -- vanilla or tbc
 Grid2.isVanilla = versionCli<20000
 Grid2.isTBC     = versionCli>=20000 and versionCli<30000
 Grid2.isWoW90   = versionCli>=90000
-Grid2.versionstring = "Grid2 v"..versionToc
+Grid2.versionstring = "Grid2 v"..(versionToc=='@project-version@' and 'Dev' or versionToc)
 
 -- build error check
 local isRetailBuild = true

@@ -21,7 +21,7 @@ local Grid2LDB = DataBroker:NewDataObject("Grid2", {
 		end
 	end,
 	OnTooltipShow = function(tooltip)
-		tooltip:AddLine("Grid2")
+		tooltip:AddLine(Grid2.versionstring)
 		tooltip:AddDoubleLine( L["Profile"], Grid2.db:GetCurrentProfile(), 255,255,255, 255,255,0)
 		tooltip:AddDoubleLine( L["Theme"],   select(2,Grid2:GetCurrentTheme()) , 255,255,255, 255,255,0)
 		tooltip:AddDoubleLine( L["Layout"], L[Grid2Layout.layoutName or ""], 255,255,255, 255,255,0)
