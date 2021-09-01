@@ -1,7 +1,7 @@
 ## Interface: 90100
 ## Interface-Retail: 90100
 ## Interface-Classic: 11306
-## Interface-BCC: 20501
+## Interface-BCC: 20502
 ## Title: Grid2 |cd2ff7d0aRaidDebuffs Options|r
 ## Title-esES: Grid2 |cd2ff7d0aRaidDebuffs Opciones|r
 ## Notes: Load on demand Options for Grid2RaidDebuffs.
