@@ -34,7 +34,7 @@ do
 		pet_of_unit[unit] = pet
 		owner_of_unit[pet] = unit
 		if index then
-			indexes[unit], grouped_units[unit], grouped_players[unit], grouped_pets[pet] = index, index, index, index
+			indexes[unit], grouped_units[unit], grouped_players[unit], grouped_units[pet], grouped_pets[pet] = index, index, index, index, index
 		end
 	end
 	register_unit( "player", "pet", 0, party_indexes )

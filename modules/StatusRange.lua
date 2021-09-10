@@ -20,8 +20,9 @@ local UnitPhaseReason = UnitPhaseReason or Grid2.Dummy
 local timer
 local curAlpha
 local curRange
-local UnitRangeCheck
+local groupType
 local cache = {}
+local UnitRangeCheck
 local grouped_units = Grid2.grouped_units
 local playerClass = select(2, UnitClass("player"))
 
@@ -54,10 +55,10 @@ local Ranges= {
 		return CheckInteractDistance(unit,4)
 	end,
 	[38] = function(unit)
-		if grouped_units[unit] then
-			return unit=='player' or UnitInRange(unit)
+		if grouped_units[unit] and groupType~='solo' then
+			return UnitIsUnit(unit,"player") or UnitInRange(unit)
 		else
-			return CheckInteractDistance(unit,4) -- 28 yards for non grouped units: target/focus/bossX
+			return CheckInteractDistance(unit,4) -- 28 yards for non grouped units: target/focus/bossX or when solo (because UnitInRange() does not work for pet when solo)
 		end
 	end,
 	["heal"] = function(unit)
@@ -85,6 +86,10 @@ local function Update()
 			Range:UpdateIndicators(unit)
 		end
 	end
+end
+
+function Range:Grid_GroupTypeChanged(_, newGroupType)
+	groupType = newGroupType
 end
 
 function Range:Grid_PlayerSpecChanged()
@@ -118,6 +123,7 @@ function Range:OnEnable()
 	self:RegisterMessage("Grid_UnitUpdated")
 	self:RegisterMessage("Grid_UnitLeft")
 	self:RegisterMessage("Grid_PlayerSpecChanged")
+	self:RegisterMessage("Grid_GroupTypeChanged")
 	timer:Play()
 end
 
@@ -125,6 +131,7 @@ function Range:OnDisable()
 	self:UnregisterMessage("Grid_UnitUpdated")
 	self:UnregisterMessage("Grid_UnitLeft")
 	self:UnregisterMessage("Grid_PlayerSpecChanged")
+	self:UnregisterMessage("Grid_GroupTypeChanged")
 	timer:Stop()
 end
 
@@ -143,6 +150,7 @@ end
 Range.GetColor = Grid2.statusLibrary.GetColor
 
 local function Create(baseKey, dbx)
+	groupType = Grid2:GetGroupType()
 	Grid2:RegisterStatus(Range, {"percent", "color"}, baseKey, dbx)
 	return Range
 end
