@@ -29,7 +29,7 @@ Libs\AceLocale-3.0\AceLocale-3.0.xml
 Libs\LibSharedMedia-3.0\LibSharedMedia-3.0.lua
 Libs\LibCustomGlow-1.0\LibCustomGlow-1.0.lua
 #@non-retail@
-# Libs\LibHealComm-4.0\LibHealComm-4.0.xml
+# Libs\LibHealComm-4.0\LibHealComm-4.0.lua
 # Libs\LibClassicDurations\LibClassicDurations.xml
 #@end-non-retail@
 #@end-no-lib-strip@
