@@ -1,4 +1,6 @@
 .release/
+/LDB/Libs/
+/Options/Libs/
 /Libs/LibCustomGlow-1.0
 /Libs/LibSharedMedia-3.0
 /Libs/LibStub

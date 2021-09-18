@@ -10,6 +10,7 @@ Grid2 modifications, fixes and enhancements:
 * Michael, Potje
 
 ------------------------------------------------------------------------
+
 SOFTWARE LICENSE
 
 Copyright (c) 2011
@@ -32,6 +33,11 @@ misrepresented as being the original software.
 
 3. This notice may not be removed or altered from any source
 distribution.
+
+------------------------------------------------------------------------
+
+LibHealComm4 library source (under MIT License):
+https://github.com/EsreverWoW/ShestakUI_Classic
 
 ------------------------------------------------------------------------
 

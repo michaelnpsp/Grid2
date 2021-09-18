@@ -5,10 +5,12 @@ local BanzaiThreat
 
 local Grid2 = Grid2
 local next = next
+local type = type
 local GetTime = GetTime
 local UnitName = UnitName
 local UnitGUID = UnitGUID
 local UnitExists = UnitExists
+local GetSpellInfo = GetSpellInfo
 local UnitCanAttack = UnitCanAttack
 local roster_units = Grid2.roster_units
 
@@ -119,6 +121,9 @@ local function status_OnEnable(self)
 			RegisterEvent("PLAYER_REGEN_DISABLED", CombatEnterEvent)
 		end
 	end
+	if self.UpdateDB then
+		self:UpdateDB()
+	end
 	statuses[self] = true
 end
 
@@ -227,11 +232,12 @@ function Banzai:Update()
 			self:UpdateIndicators(unit)
 		end
 	end
+	local spells = self.spells
 	for g,func in next, bsrc do	-- Search new banzais
 		local unit = tguids[g]
 		if unit then
 			local name,_,ico,_,et,_,_,spellId2,spellId1 = func(sguids[g], g) -- Casting spellId1=9th, Channeling spellId2=8th
-			if name then
+			if name and (spells==nil or spells[name]) then
 				et         = et and et/1000 or ct+0.25
 				bgid[g]    = unit
 				bfun[g]    = func
@@ -293,13 +299,29 @@ function Banzai:GetIcon(unit)
 	return bico[unit]
 end
 
+function Banzai:GetText(unit)
+	local spell = bspl[unit]
+	return type(spell)=='number' and GetSpellInfo(spell) or spell
+end
+
+function Banzai:UpdateDB()
+	local spells
+	if self.dbx.spells then
+		spells = {}
+		for _,name in ipairs(self.dbx.spells) do
+			spells[name] = true
+		end
+	end
+	self.spells = spells
+end
+
 Banzai.SetUpdateRate = status_SetUpdateRate
 Banzai.GetColor      = Grid2.statusLibrary.GetColor
 Banzai.OnDisable     = status_OnDisable
 Banzai.OnEnable      = status_OnEnable
 
 Grid2.setupFunc["banzai"] = function(baseKey, dbx)
-	Grid2:RegisterStatus(Banzai, {"color", "percent", "icon", "tooltip" }, baseKey, dbx)
+	Grid2:RegisterStatus(Banzai, {"color", "text", "percent", "icon", "tooltip" }, baseKey, dbx)
 	return Banzai
 end
 
