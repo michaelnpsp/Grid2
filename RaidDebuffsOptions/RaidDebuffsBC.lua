@@ -7,16 +7,158 @@ local RDDB= Grid2Options:GetRaidDebuffsTable()
 RDDB["The Burning Crusade"] = {
 	[100532] = {
 		{ id = 100532, name = "Karazhan", raid = true },
-		["-"] = {
-		37066, -- Garrote
+		["Attumen the Huntsman"] = {
+		order = 1, ejid = nil,
+		29833, -- intangible-presence
+		},
+		["Moroes"] = {
+		order = 2, ejid = nil,
+		29425, -- gouge
+		37066, -- garrote
+		34694, -- blind
+		},
+		["Maiden of Virtue"] = {
+		order = 3, ejid = nil,
 		29522, -- Holy Fire
 		29511, -- Repentance
-		30753, -- Red Riding Hood
 		30115, -- Sacrifice
+		},
+		["The Big Bad Wolf, Opera"] = {
+		order = 4, ejid = nil,
+		30753, -- red-riding-hood
+		},
+		["Wizard of Oz, Opera"] = {
+		order = 5, ejid = nil,
+		31046, -- brain-bash
+		31069, -- brain-wipe
+		31041, -- mangle
+		29538, -- cyclone
+		},
+		["Romulo and Julianne, Opera"] = {
+		order = 6, ejid = nil,
+		30822, -- poisoned-thrust
+		30890, -- blinding-passion
+		30889, -- powerful-attraction
+		},
+		["The Curator"] = {
+		order = 7, ejid = nil,
+		},
+		["Terestian Illhoof"] = {
+		order = 8, ejid = nil,
+		30115, -- sacrifice
+		30053, -- amplify-flames
+		},
+		["Shade of Aran"] = {
+		order = 9, ejid = nil,
+		29991, -- chains-of-ice
+		29946, -- flame-wreath
+		29954, -- frostbolt
+		29951, -- blizzard
+		},
+		["Prince Malchezaar"] = {
+		order = 10, ejid = nil,
 		30843, -- Enfeeble
 		},
+		["Netherspite"] = {
+		order = 11, ejid = nil,
+		37014, --void-zone
+		30522, --nether-burn
+		},
+		["Nightbane"] = {
+		order = 12, ejid = nil,
+		37098, -- rain-of-bones
+		30130, -- distracting-ash
+		30129, -- charred-earth
+		25653, -- tail-sweep
+		30210, -- smoldering-breath
+		},
 	},
-	[100568] = {
+	[100548] = {
+		{ id = 100548, name = "Serpentshrine Cavern", raid = true },
+		["Hydross the Unstable"] = {
+		order = 1, ejid = nil,
+		38235, -- water bomb
+		38246, -- vlie sludge
+		},
+		["The Lurker Below"] = {
+		order = 2, ejid = nil,
+		},
+		["Leotheras the Blind"] = {
+		order = 3, ejid = nil,
+		37676, -- insidious whisper
+		37640, -- whirlwind
+		37749, -- consuming madness
+		},
+		["Fathom-Lord Karathress"] = {
+		order = 4, ejid = nil,
+		38234, -- frost-shock
+		39261, -- gusting-winds
+		38358, -- tidal-surge
+		},
+		["Morogrim Tidewalker"] = {
+		order = 5, ejid = nil,
+		38049, -- watery grave
+		},
+		["Lady Vashj"] = {
+		order = 6, ejid = nil,
+		38280, -- static charge
+		},
+		["Trash"] = {
+		order = 7, ejid = nil,
+		39042, -- Rampant Infection
+		39044, -- serpenthrine parasite
+		},
+	},
+	[100550] = {-- Tempest Keep, The Eye
+		{ id = 100550, name = "Tempest Keep, The Eye", raid = true },
+		["Al'ar"] = {
+		order = 1, ejid = nil,
+		35410, --melt-armor
+		35383, --flame-patch
+		},
+		["Void Reaver"] = {
+		order = 2, ejid = nil,
+		},
+		["High Astromancer Solarian"] = {
+		order = 3, ejid = nil,
+		42783, -- "Wrath of the Astromancer
+		},
+		["Kael'thas Sunstrider"] = {
+		order = 4, ejid = nil,
+		37027, -- Remote Toy
+		36798, -- Mind Control
+		},
+		["Trash"] = {
+		order = 5, ejid = nil,
+		35318, -- Sha Blade
+		37120, -- Fragmentation Bomb
+		37118, -- Shell Shock
+		},
+	},
+	[100534] = { -- Hyjal Summit
+		{ id = 100534, name = "The Battle for Mount Hyjal ", raid = true },
+		["Rage Winterchill"] = {
+		order = 1, ejid = nil,
+		31249, -- icebolt
+		},
+		["Anetheron"] = {
+		order = 2, ejid = nil,
+		31306, -- carrion swarm
+		31298, -- sleep
+		},
+		["Azgalor"] = {
+		order = 3, ejid = nil,
+		31347, -- doom
+		31344, --howl of azgalor
+		31341, -- unquenchable flames
+		},
+		["Archimonde"] = {
+		order = 4, ejid = nil,
+		31944, -- Doomfire
+		31972, -- Grip of the Legion
+		},
+	},
+	[100568] = { -- Zul'Aman
 		{ id = 100568, name = "Zul'Aman", raid = true },
 		["-"] = {
 		43657, -- Electrical Storm
@@ -28,32 +170,6 @@ RDDB["The Burning Crusade"] = {
 		43093, -- Girievous Throw
 		43095, -- Greeping Paralysis
 		43150, -- Claw Range
-		},
-	},
-	[100548] = {
-		{ id = 100548, name = "Serpentshrine Cavern", raid = true },
-		["-"] = {
-		39042, -- Rampant Infection
-		39044, -- Seprentshrine Parasite
-		38235, -- Water Tomb
-		38246, -- Vile Sludge
-		37850, -- Watery Grave
-		37676, -- Insidious Whisper
-		37641, -- Whirlwind
-		37749, -- Consuming Madness
-		38280, -- Static Charge
-		},
-	},
-	[100534] = {
-		{ id = 100534, name = "The Battle for Mount Hyjal", raid = true },
-		["-"] = {
-		31249, -- Icebolt
-		31306, -- Carrion Swarm
-		31347, -- Doom
-		31341, -- Unquenchable Flames
-		31344, -- Howl of Azgalor
-		31944, -- Doomfire
-		31972, -- Grip of the Legion
 		},
 	},
 	[100564] = {
