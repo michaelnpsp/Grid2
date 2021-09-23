@@ -160,47 +160,136 @@ RDDB["The Burning Crusade"] = {
 	},
 	[100568] = { -- Zul'Aman
 		{ id = 100568, name = "Zul'Aman", raid = true },
-		["-"] = {
-		43657, -- Electrical Storm
-		43622, -- Static Disruption
+		["Nalorakk"] = {
+		order = 1, ejid = nil,
+		44955, -- mangle
+		},
+		["Akil'zon"] = {
+		order = 2, ejid = nil,
+		43657, -- electrical storm
+		43622, -- static distruption
+		},
+		["Jan'alai"] = {
+		order = 3, ejid = nil,
 		43299, -- Flame Buffet
+		},
+		["Halazzi"] = {
+		order = 4, ejid = nil,
 		43303, -- Flame Shock
-		43613, -- Cold State
-		43501, -- Siphon Soul
-		43093, -- Girievous Throw
-		43095, -- Greeping Paralysis
-		43150, -- Claw Range
+		},
+		["Hex Lord Malacrass"] = {
+		order = 5, ejid = nil,
+		43613, -- Cold Stare
+		43501, -- Siphon soul
+		},
+		["Zul'jin"] = {
+		order = 6, ejid = nil,
+		43093, -- Girievous  Throw
+		43095, -- Greeping Paralyze
+		43150, -- Claw Rage
 		},
 	},
 	[100564] = {
 		{ id = 100564, name = "Black Temple", raid = true },
-		["-"] = {
-		34654, -- Blind
-		39674, -- Banish
-		41150, -- Fear
-		41168, -- Sonic Strike
-		39837, -- Impaling Spine
-		40239, -- Incinerate
-		40251, -- Shadow of Death
-		40604, -- Fel Rage
-		40481, -- Acidic Wound
-		40508, -- Fel-Acid Breath
-		42005, -- Bloodboil
-		41303, -- Sould Drain
-		41410, -- Deaden
-		41376, -- Spite
-		40860, -- Vile Beam
-		41001, -- Fatal Attraction
-		41485, -- Deadly Poison
-		41472, -- Divine Wrath
-		41914, -- Parasitic Shadowfiend
-		40585, -- Dark Barrage
-		40932, -- Agonizing Flames
+		["High Warlord Naj'entus"] = {
+		order = 1, ejid = nil,
+		39837, --Impaling Spine
+		},
+		["Supremus"] = {
+		order = 2, ejid = nil,
+		40253, -- molten-flame
+		},
+		["Shade of Akama"] = {
+		order = 3, ejid = nil,
+		41179, -- debilitating strike
+		41978, -- veneno-debilitador
+		42023, -- lluvia-de-fuego
+		},
+		["Teron Gorefiend"] = {
+		order = 4, ejid = nil,
+		40239, --Incinerate
+		40251, --Shadow of death
+		},
+		["Gurtogg Bloodboil"] = {
+		order = 5, ejid = nil,
+		40604, --FelRage
+		40481, --Acidic Wound
+		40508, --Fel-Acid Breath
+		42005, --bloodboil
+		},
+		["Reliquary of Souls"] = {
+		order = 6, ejid = nil,
+		41303, --soulDrain
+		41410, --Deaden
+		41376, --Spite
+		},
+		["Mother Shahraz"] = {
+		order = 7, ejid = nil,
+		40860, --Vile Beam
+		41001, --Attraction
+		},
+		["The Illidari Council"] = {
+		order = 8, ejid = nil,
+		41485, --Deadly Poison
+		41472, --Divine Wrath
+		},
+		["Illidan Stormrage"] = {
+		order = 9, ejid = nil,
+		41914, --Parasitic Shadowfiend
+		41917,
+		40585, --Dark Barrage
+		41032, --Shear
+		40932, --Agonizing Flames
+		},
+		["Trash"] = {
+		order = 10, ejid = nil,
+		34654, --Blind
+		39674, --Banish
+		41150, --Fear
+		41168, --Sonic Strike
 		},
 	},
 	[100580] = {
 		{ id = 100580, name = "Sunwell Plateau", raid = true },
-		["-"] = {
+		["Kalecgos"] = {
+		order = 1, ejid = nil,
+		45032, -- Curse of Boundless Agony
+		45018, -- Arcane Buffet
+		23410, -- wild-magic
+		},
+		["Brutallus"] = {
+		order = 2, ejid = nil,
+		45150, -- Meteor Slash
+		},
+		["Felmyst"] = {
+		order = 3, ejid = nil,
+		45855, -- Gas Nova
+		45662, -- Encapsulate
+		45402, -- Demonic Vapor
+		45717, -- Fog of Corruption
+		},
+		["Eredar Twins"] = {
+		order = 4, ejid = nil,
+		45256, -- Confounding Blow
+		45333, -- Conflagration
+		46771, -- Flame Sear
+		45270, -- Shadowfury
+		45347, -- Dark Touched
+		45348, -- Flame Touched
+		},
+		["M'uru"] = {
+		order = 5, ejid = nil,
+		45996, -- Darkness
+		},
+		["Kil'Jaeden"] = {
+		order = 6, ejid = nil,
+		45442, -- Soul Flay
+		45641, -- Fire Bloom
+		45885, -- Shadow Spike
+		45737, -- Flame Dart
+		},
+		["Trash"] = {
+		order = 7, ejid = nil,
 		46561, -- Fear
 		46562, -- Mind Flay
 		46266, -- Burn Mana
@@ -208,24 +297,6 @@ RDDB["The Burning Crusade"] = {
 		46560, -- Shadow Word:Pain
 		46543, -- Ignite Mana
 		46427, -- Domination
-		45032, -- Curse of Boundless Agony
-		45018, -- Arcane Buffet
-		45150, -- Meteor Slash
-		45855, -- Gas Nova
-		45662, -- Encapsulate
-		45402, -- Demonic Vapor
-		45717, -- Fog of Corruption
-		45256, -- Confounding Blow
-		45333, -- Conflagration
-		46771, -- Flame Sear
-		45270, -- Shadowfury
-		45347, -- Dark Touched
-		45348, -- Flame Touched
-		45996, -- Darkness
-		45442, -- Soul Flay
-		45641, -- Fire Bloom
-		45885, -- Shadow Spike
-		45737, -- Flame Dart
 		},
 	},
 }
