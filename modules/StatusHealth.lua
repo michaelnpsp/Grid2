@@ -511,24 +511,42 @@ Grid2.setupFunc["death"] = CreateDeath
 
 Grid2:DbSetStatusDefaultValue( "death", {type = "death", color1 = {r=1,g=1,b=1,a=1}})
 
--- heals-incoming status
-local HealComm = Grid2.isClassic and LibStub("LibHealComm-4.0",true)
-local HealsPlayer
-local HealsNoPlayer
-local HealsAbsorbNoPlayer
-local HealsAbsorbPlayer
+-- Heals Interfaces
+local APIHeals = {}
 local HealsUpdateEvent
-local UnitGetMyIncomingHeals
-local UnitGetIncomingHeals = UnitGetIncomingHeals
-local UnitGetTotalHealAbsorbs = UnitGetTotalHealAbsorbs
-local RegisterEvent = RegisterEvent     -- Do not remove this line because RegisterEvent is redefined if we are in Classic
-local UnregisterEvent = UnregisterEvent -- Do not remove this line because UnregisterEvent is redefined if we are in Classic
 
-if Grid2.isClassic then -- This code block can be safety be removed for retail
+-- Blizzard heals API
+do
+	local UnitGetIncomingHeals = UnitGetIncomingHeals
+	local UnitGetTotalHealAbsorbs = UnitGetTotalHealAbsorbs
+	APIHeals.Blizzard = UnitGetIncomingHeals and {
+		RegisterEvent = RegisterEvent,
+		UnregisterEvent = UnregisterEvent,
+		UnitGetMyIncomingHeals = UnitGetIncomingHeals,
+		HealsPlayer = function(unit)
+			return UnitGetIncomingHeals(unit) or 0
+		end,
+		HealsNoPlayer = function(unit, myheal)
+			return (UnitGetIncomingHeals(unit) or 0) - myheal
+		end,
+		HealsAbsorbPlayer = function(unit)
+			local v = (UnitGetIncomingHeals(unit) or 0) - (UnitGetTotalHealAbsorbs(unit) or 0)
+			return v>=0 and v or 0
+		end,
+		HealsAbsorbNoPlayer = function(unit, myheal)
+			local v = (UnitGetIncomingHeals(unit) or 0)  - myheal - (UnitGetTotalHealAbsorbs(unit) or 0)
+			return v>=0 and v or 0
+		end
+	}
+end
+
+-- LibHealComm-4 heals API
+if Grid2.isClassic then
+	local HealComm = LibStub("LibHealComm-4.0",true)
 	local UnitGUID = UnitGUID
-	local roster_units = Grid2.roster_units
 	local playerGUID = UnitGUID('player')
-	local function HealUpdated(event, casterGUID, spellID, healType, endTime, ... )
+	local roster_units = Grid2.roster_units
+	local function HealUpdated(event, casterGUID, spellID, healType, endTime, ...)
 		for i=select("#", ...),1,-1 do
 			HealsUpdateEvent( roster_units[select(i, ...)] )
 		end
@@ -536,59 +554,64 @@ if Grid2.isClassic then -- This code block can be safety be removed for retail
 	local function HealModifier(event, guid)
 		HealsUpdateEvent( roster_units[guid] )
 	end
-	UnitGetTotalHealAbsorbs = function()
-		return 0
-	end
-	UnitGetMyIncomingHeals = function(unit)
-		local guid = UnitGUID(unit)
-		return (HealComm:GetHealAmount(guid, myheals_bitflag, myheals_timeband and GetTime()+myheals_timeband, playerGUID) or 0) * (HealComm:GetHealModifier(guid) or 1)
-	end
-	RegisterEvent = function(event, func)
-		HealComm.RegisterCallback( Grid2, "HealComm_HealStarted", HealUpdated )
-		HealComm.RegisterCallback( Grid2, "HealComm_HealUpdated", HealUpdated )
-		HealComm.RegisterCallback( Grid2, "HealComm_HealStopped", HealUpdated )
-		HealComm.RegisterCallback( Grid2, "HealComm_HealDelayed", HealUpdated )
-		HealComm.RegisterCallback( Grid2, "HealComm_ModifierChanged", HealModifier)
-	end
-	UnregisterEvent = function(event)
-		HealComm.UnregisterCallback( Grid2, "HealComm_HealStarted" )
-		HealComm.UnregisterCallback( Grid2, "HealComm_HealUpdated" )
-		HealComm.UnregisterCallback( Grid2, "HealComm_HealStopped" )
-		HealComm.UnregisterCallback( Grid2, "HealComm_HealDelayed" )
-		HealComm.UnregisterCallback( Grid2, "HealComm_ModifierChanged")
-	end
-	function HealsPlayer(unit)
-		local guid = UnitGUID(unit)
-		return (HealComm:GetHealAmount(guid, heals_bitflag, heals_timeband and GetTime()+heals_timeband) or 0) * (HealComm:GetHealModifier(guid) or 1)
-	end
-	function HealsNoPlayer(unit)
-		local guid = UnitGUID(unit)
-		return (HealComm:GetOthersHealAmount(guid, heals_bitflag, heals_timeband and GetTime()+heals_timeband) or 0) * (HealComm:GetHealModifier(guid) or 1)
-	end
-	function HealsAbsorbPlayer(unit)
-		return 0
-	end
-	function HealsAbsorbNoPlayer(unit, myheal)
-		return 0
-	end
-else -- retail
-	UnitGetMyIncomingHeals = UnitGetIncomingHeals
-	function HealsPlayer(unit)
-		return UnitGetIncomingHeals(unit) or 0
-	end
-	function HealsNoPlayer(unit, myheal)
-		return (UnitGetIncomingHeals(unit) or 0) - myheal
-	end
-	function HealsAbsorbPlayer(unit)
-		local v = (UnitGetIncomingHeals(unit) or 0) - (UnitGetTotalHealAbsorbs(unit) or 0)
-		return v>=0 and v or 0
-	end
-	function HealsAbsorbNoPlayer(unit, myheal)
-		local v = (UnitGetIncomingHeals(unit) or 0)  - myheal - (UnitGetTotalHealAbsorbs(unit) or 0)
-		return v>=0 and v or 0
-	end
+	APIHeals.HealCom = HealComm and {
+		RegisterEvent = function(event, func)
+			HealComm.RegisterCallback( Grid2, "HealComm_HealStarted", HealUpdated )
+			HealComm.RegisterCallback( Grid2, "HealComm_HealUpdated", HealUpdated )
+			HealComm.RegisterCallback( Grid2, "HealComm_HealStopped", HealUpdated )
+			HealComm.RegisterCallback( Grid2, "HealComm_HealDelayed", HealUpdated )
+			HealComm.RegisterCallback( Grid2, "HealComm_ModifierChanged", HealModifier)
+		end,
+		UnregisterEvent = function(event)
+			HealComm.UnregisterCallback( Grid2, "HealComm_HealStarted" )
+			HealComm.UnregisterCallback( Grid2, "HealComm_HealUpdated" )
+			HealComm.UnregisterCallback( Grid2, "HealComm_HealStopped" )
+			HealComm.UnregisterCallback( Grid2, "HealComm_HealDelayed" )
+			HealComm.UnregisterCallback( Grid2, "HealComm_ModifierChanged")
+		end,
+		UnitGetMyIncomingHeals = function(unit)
+			local guid = UnitGUID(unit)
+			return (HealComm:GetHealAmount(guid, myheals_bitflag, myheals_timeband and GetTime()+myheals_timeband, playerGUID) or 0) * (HealComm:GetHealModifier(guid) or 1)
+		end,
+		HealsPlayer = function (unit)
+			local guid = UnitGUID(unit)
+			return (HealComm:GetHealAmount(guid, heals_bitflag, heals_timeband and GetTime()+heals_timeband) or 0) * (HealComm:GetHealModifier(guid) or 1)
+		end,
+		HealsNoPlayer = function(unit)
+			local guid = UnitGUID(unit)
+			return (HealComm:GetOthersHealAmount(guid, heals_bitflag, heals_timeband and GetTime()+heals_timeband) or 0) * (HealComm:GetHealModifier(guid) or 1)
+		end,
+		HealsAbsorbPlayer = function(unit)
+			return 0
+		end,
+		HealsAbsorbNoPlayer = function(unit, myheal)
+			return 0
+		end,
+	}
 end
-local HealsGetAmount = HealsNoPlayer
+
+-- heals-incoming status
+local HealsPlayer
+local HealsNoPlayer
+local HealsAbsorbNoPlayer
+local HealsAbsorbPlayer
+local HealsGetAmount
+local UnitGetMyIncomingHeals
+local RegisterEvent
+local UnregisterEvent
+
+local function HealsInitialize()
+	local API = (Grid2.db.global.HealsUseBlizAPI and APIHeals.Blizzard) or APIHeals.HealCom or APIHeals.Blizzard
+	RegisterEvent = API.RegisterEvent
+	UnregisterEvent = API.UnregisterEvent
+	UnitGetMyIncomingHeals = API.UnitGetMyIncomingHeals
+	HealsPlayer = API.HealsPlayer
+	HealsNoPlayer = API.HealsNoPlayer
+	HealsAbsorbPlayer = API.HealsAbsorbPlayer
+	HealsAbsorbNoPlayer = API.HealsAbsorbNoPlayer
+	HealsGetAmount = HealsNoPlayer
+	wipe(APIHeals)
+end
 
 HealsUpdateEvent = function(unit)
 	if unit then
@@ -650,7 +673,7 @@ function Heals:UpdateDB()
 		HealsGetAmount = self.dbx.includePlayerHeals and HealsPlayer or HealsNoPlayer
 	end
 	if Grid2.isClassic then
-		heals_bitflag  = self.dbx.healTypeFlags or HealComm.ALL_HEALS
+		heals_bitflag  = self.dbx.healTypeFlags or 0x17
 		heals_timeband = self.dbx.healTimeBand
 	end
 	self.GetText = self.dbx.displayRawNumbers and self.GetText2 or self.GetText1
@@ -705,6 +728,7 @@ end
 Heals.GetColor = Grid2.statusLibrary.GetColor
 
 local function Create(baseKey, dbx)
+	HealsInitialize()
 	Grid2:RegisterStatus(Heals, {"color", "text", "percent"}, baseKey, dbx)
 	return Heals
 end
@@ -773,7 +797,7 @@ function MyHeals:UpdateDB()
 	myheals_minimum = (m and m>1 and m ) or 1
 	myheals_multiplier = self.dbx.multiplier or 1
 	if Grid2.isClassic then
-		myheals_bitflag  = self.dbx.healTypeFlags or HealComm.ALL_HEALS
+		myheals_bitflag  = self.dbx.healTypeFlags or 0x17
 		myheals_timeband = self.dbx.healTimeBand
 	end
 	self.GetText = self.dbx.displayRawNumbers and self.GetText2 or self.GetText1

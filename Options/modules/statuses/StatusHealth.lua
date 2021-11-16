@@ -1,36 +1,39 @@
 local L = Grid2Options.L
 
 if Grid2.isClassic then
+	local APIS = { [0] = 'Blizzard API', [1] = 'LibHealComm-4' }
 	local TIME_VALUES = { [0] = L['None'] }
 	for i=1,15 do TIME_VALUES[i] = string.format(L["%d seconds"], i)	end
 	function Grid2Options:MakeStatusHealsClassicOptions(status, options)
 		local LHC = LibStub("LibHealComm-4.0")
-		options.classicTimeBand = {
-			type = "select",
-			name = L["Heals Time Band"],
-			desc = L["Show only heals that are going to land within the selected time period. Select None to display all heals."],
-			order = 290,
-			get = function() return status.dbx.healTimeBand or 0 end,
-			set = function(_, v)
-				status.dbx.healTimeBand = v~=0 and v or nil
-				status:UpdateDB()
-			end,
-			values = TIME_VALUES
-		}
-		options.classicHealTypes = {
-			type = "multiselect",
-			order = 300,
-			name = L["Heal Types"],
-			get = function(info, value)
-				return bit.band(status.dbx.healTypeFlags or LHC.ALL_HEALS, value) ~= 0
-			end,
-			set = function(info, value)
-				status.dbx.healTypeFlags = bit.bxor(status.dbx.healTypeFlags or LHC.ALL_HEALS, value)
-				if status.dbx.healTypeFlags == LHC.ALL_HEALS then status.dbx.healTypeFlags = nil end
-				status:UpdateDB()
-			end,
-			values = { [LHC.DIRECT_HEALS] = L['Casted'], [LHC.CHANNEL_HEALS] = L['Channeled'], [LHC.HOT_HEALS]=L['HOTs'], [LHC.BOMB_HEALS] = L['Bomb'] }
-		}
+		if not Grid2.db.global.HealsUseBlizAPI then
+			options.classicTimeBand = {
+				type = "select",
+				name = L["Heals Time Band"],
+				desc = L["Show only heals that are going to land within the selected time period. Select None to display all heals."],
+				order = 290,
+				get = function() return status.dbx.healTimeBand or 0 end,
+				set = function(_, v)
+					status.dbx.healTimeBand = v~=0 and v or nil
+					status:UpdateDB()
+				end,
+				values = TIME_VALUES
+			}
+			options.classicHealTypes = {
+				type = "multiselect",
+				order = 300,
+				name = L["Heal Types"],
+				get = function(info, value)
+					return bit.band(status.dbx.healTypeFlags or LHC.ALL_HEALS, value) ~= 0
+				end,
+				set = function(info, value)
+					status.dbx.healTypeFlags = bit.bxor(status.dbx.healTypeFlags or LHC.ALL_HEALS, value)
+					if status.dbx.healTypeFlags == LHC.ALL_HEALS then status.dbx.healTypeFlags = nil end
+					status:UpdateDB()
+				end,
+				values = { [LHC.DIRECT_HEALS] = L['Casted'], [LHC.CHANNEL_HEALS] = L['Channeled'], [LHC.HOT_HEALS]=L['HOTs'], [LHC.BOMB_HEALS] = L['Bomb'] }
+			}
+		end
 		options.shortenNumbers = {
 			type = "toggle",
 			tristate = false,
@@ -44,6 +47,22 @@ if Grid2.isClassic then
 				status:UpdateDB()
 				status:UpdateAllUnits()
 			end,
+		}
+		options.healsApiSep = { type = "header", order = 359,  name = "" }
+		options.healsApi = {
+			type = "select",
+			name = L["Heals API"],
+			desc = L["Select which API should be invoked to get the incoming heals."],
+			order = 360,
+			get = function()
+				return Grid2.db.global.HealsUseBlizAPI and 0 or 1
+			end,
+			set = function(_, v)
+				Grid2.db.global.HealsUseBlizAPI = (v==0) or nil
+				ReloadUI()
+			end,
+			values = APIS,
+			confirm = function() return L["UI will be reloaded to change this option. Are you sure?"] end,
 		}
 	end
 end
