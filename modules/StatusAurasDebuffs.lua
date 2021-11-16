@@ -30,7 +30,7 @@ local function CompileUpdateStateFilter(self, lazy)
 		t[#t+1] = string.format( "%s (caster=='player' or caster=='pet' or caster=='vehicle')", dbx.filterCaster and 'not' or '')
 	end
 	if dbx.filterTyped~=nil then
-		t[#t+1] = string.format( "%s (type=='Typeless')",  dbx.filterTyped and 'not' or '')
+		t[#t+1] = string.format( "%s typ",  dbx.filterTyped and 'not' or '')
 	end
 	local q -- special case for black/white lists because they are always strict (non lazy).
 	if dbx.useWhiteList then
