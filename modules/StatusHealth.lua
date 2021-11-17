@@ -591,6 +591,7 @@ if Grid2.isClassic then
 end
 
 -- heals-incoming status
+local HealsInitialize
 local HealsPlayer
 local HealsNoPlayer
 local HealsAbsorbNoPlayer
@@ -600,7 +601,7 @@ local UnitGetMyIncomingHeals
 local RegisterEvent
 local UnregisterEvent
 
-local function HealsInitialize()
+HealsInitialize = function()
 	local API = (Grid2.db.global.HealsUseBlizAPI and APIHeals.Blizzard) or APIHeals.HealCom or APIHeals.Blizzard
 	RegisterEvent = API.RegisterEvent
 	UnregisterEvent = API.UnregisterEvent
@@ -611,6 +612,7 @@ local function HealsInitialize()
 	HealsAbsorbNoPlayer = API.HealsAbsorbNoPlayer
 	HealsGetAmount = HealsNoPlayer
 	wipe(APIHeals)
+	HealsInitialize = nil
 end
 
 HealsUpdateEvent = function(unit)
@@ -728,7 +730,7 @@ end
 Heals.GetColor = Grid2.statusLibrary.GetColor
 
 local function Create(baseKey, dbx)
-	HealsInitialize()
+	if HealsInitialize then HealsInitialize() end
 	Grid2:RegisterStatus(Heals, {"color", "text", "percent"}, baseKey, dbx)
 	return Heals
 end
