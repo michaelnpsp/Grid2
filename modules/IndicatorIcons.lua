@@ -6,7 +6,6 @@ local wipe = wipe
 local pairs = pairs
 local ipairs = ipairs
 local format = string.format
-local ICON_TEMPLATE = (not Grid2.isVanilla) and "BackdropTemplate" or nil
 
 local function Icon_Create(self, parent)
 	local f = self:CreateFrame("Frame", parent)
@@ -130,7 +129,7 @@ local function Icon_Layout(self, parent)
 	for i=1,self.maxIcons do
 		local frame = auras[i]
 		if not frame then
-			frame = CreateFrame("Frame", nil, f, ICON_TEMPLATE)
+			frame = CreateFrame("Frame", nil, f, "BackdropTemplate")
 			frame.icon = frame:CreateTexture(nil, "ARTWORK")
 			auras[i] = frame
 		end
