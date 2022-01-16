@@ -266,7 +266,7 @@ do
 					newInstType = "flex"
 				else                              -- raid@other / Other instances: 5man/unknow instances
 					newInstType = "other"
-					if isClassic and (maxPlayers or 0)<=5 then
+					if isClassic and (maxPlayers or 0)<=5 and instMapID~=249 then -- 249=>ignore onyxia lair
 						maxPlayers = 10 -- classic, raid inside dungeons
 					end
 				end
