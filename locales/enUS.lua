@@ -94,4 +94,6 @@ L["By Group | 4x10"] = true
 L["By Group | 4x10 w/Pets"] = true
 L["By Role | 10x4"] = true
 L["Select Layout"] = true
-
+L["By Group & Class"] = true
+L["By Group & Class w/Pets"] = true
+L["By Group & Role w/Pets"] = true

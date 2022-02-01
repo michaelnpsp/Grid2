@@ -116,3 +116,14 @@ Grid2Layout:AddLayout("By Group & Role", {
 		sortMethod = "NAME",
 	},
 })
+
+Grid2Layout:AddLayout("By Group & Role w/Pets", {
+	meta = META_RAID,
+	defaults = {
+		groupBy = DEFAULT_ROLE,
+		groupingOrder = DEFAULT_ROLE_ORDER,
+		sortMethod = "NAME",
+	},
+	[1] = "auto",
+	[2] = PETS_GROUP,
+})
