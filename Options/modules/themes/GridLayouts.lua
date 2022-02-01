@@ -356,7 +356,7 @@ local generalOptions = {
 		order = 6,
 		type = "toggle",
 		name = "|cffffd200".. L["Detach pets groups"] .."|r",
-		desc = L["Enable this option detach the pets group, so pets group can be moved individually."],
+		desc = L["Enable this option to detach the pets group, so pets group can be moved individually."],
 		width = "full",
 		get = function(info)
 			return Grid2Layout.db.global.detachPetHeaders

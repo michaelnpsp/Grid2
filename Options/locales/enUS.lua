@@ -1321,3 +1321,52 @@ L["Delete last status"] = true
 L["Are your sure you want to delete %s status ?"] = true
 L["Assign autodetected raid debuffs to the specified status"] = true
 L["Default difficulty for Encounter Journal links"] = true
+L["multiple icons support"] = true
+L["Enable multiple icons support for icons indicators."] = true
+L["Battle for Azeroth"] = true
+L["Legion"] = true
+L["Shadowlands"] = true
+
+-- Extra translations
+L["tooltip"] = true
+L["background"] = true
+L["Typeless"] = true
+L["phased"] = true
+L["color"] = true
+
+L["Enable harmful spells Allowlist"] = true
+L["Display only the spells specified in a user defined list."] = true
+
+L["Load"] = true
+L["Indicators"] = true
+L["Display health percent text for enemies"] = true
+L["Display health percent text instead of health deficit for non friendly units."] = true
+L["Never load this status"] = true
+L["Player Class"] = true
+L["Load the status only if your toon belong to the specified class."] = true
+L["Player Class&Spec"] = true
+L["Load the status only if your toon has the specified class and specialization."] = true
+L["Instance Type"] = true
+L["Load the status only if you are in the specified instance type."] = true
+L["Load the status only if you are in the specified group type."] = true
+L["Instance Name/ID"] = true
+L["Supports multiple names or IDs separated by commas or newlines.\n\nCurrent Instance:\n%s(%d)"] = true
+L["Unit Reaction"] = true
+L["Load the status only if the unit has the specified reaction towards the player."] = true
+L["Unit Class"] = true
+L["Load the status only if the unit belong to the specified class."] = true
+
+L["Select layouts for different Raid types."] = true
+L["Use Blizzard Unit Frames"] = true
+L["Disable this option to use custom unit frames instead of blizzard frames. This fixes some bugs in blizzard code, but units cannot join/leave the roster while in combat."] = true
+L["Detach all groups"] = true
+L["Enable this option to detach unit frame groups, so each group can be moved individually."] = true
+L["Detach pets groups"] = true
+L["Enable this option to detach the pets group, so pets group can be moved individually."] = true
+L["Special units headers visibility."] = true
+L["Display Target unit"] = true
+L["Enable this option to display the target unit."] = true
+L["Display Focus unit"] = true
+L["Enable this option to display the focus unit."] = true
+L["Display Bosses units"] = true
+L["Enable this option to display the bosses unit."] = true

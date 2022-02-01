@@ -1321,15 +1321,18 @@ L["Delete last status"] = "마지막 상태 삭제"
 L["Are your sure you want to delete %s status ?"] = "정말 %s 상태를 삭제하시겠습니까?"
 L["Assign autodetected raid debuffs to the specified status"] = "자동 탐지된 공격대 디버프를 특정 상태로 연결"
 L["Default difficulty for Encounter Journal links"] = "모험 안내서 링크의 기본 난이도 설정"
+L["multiple icons support"] = "다중 아이콘 지원"
+L["Enable multiple icons support for icons indicators."] = "다중 아이콘 지시기를 위한 다중 아이콘 지원 활성화"
+L["Battle for Azeroth"] = "격전의 아제로스"
+L["Legion"] = "군단"
+L["Shadowlands"] = "어둠땅"
 
-
-
--- maybe missing
-
+-- Extra translations
 L["tooltip"] = "툴팁"
 L["background"] = "배경"
 L["Typeless"] = "비유형"
 L["phased"] = "위상"
+L["color"] = "색상"
 
 L["Enable harmful spells Allowlist"] = "위험 주문 허용 목록 사용"
 L["Display only the spells specified in a user defined list."] = "사용자 정의 목록의 주문만 표시"
@@ -1338,34 +1341,20 @@ L["Load"] = "불러오기"
 L["Indicators"] = "지시기"
 L["Display health percent text for enemies"] = "적대적 대상의 생명력 비율(%) 표시"
 L["Display health percent text instead of health deficit for non friendly units."] = "우호적 대상이 아닌 경우 결손 생명력 대신 생명력 비율(%) 표시"
-
 L["Never load this status"] = "절대 불러오지 않음"
-
 L["Player Class"] = "플레이어 직업"
 L["Load the status only if your toon belong to the specified class."] = "그룹에 해당 직업이 있는 경우만 불러오기"
 L["Player Class&Spec"] = "플레이어 직업&특성"
 L["Load the status only if your toon has the specified class and specialization."] = "그룹에 해당 직업&특성이 있는 경우만 불러오기"
 L["Instance Type"] = "인스턴스 유형"
 L["Load the status only if you are in the specified instance type."] = "해당 인스턴스 유형 내에 있는 경우만 불러오기"
-
 L["Load the status only if you are in the specified group type."] = "해당 그룹 유형에 속한 경우만 불러오기"
-
 L["Instance Name/ID"] = "인스턴스 이름/ID"
 L["Supports multiple names or IDs separated by commas or newlines.\n\nCurrent Instance:\n%s(%d)"] = "콤마나 새줄로 구분된 지역명 또는 지역ID\n\n현재 인스턴스:\n%s(%d)"
-
 L["Unit Reaction"] = "유닛 반응"
 L["Load the status only if the unit has the specified reaction towards the player."] = "해당 유닛 반응인 경우만 불러오기"
-
 L["Unit Class"] = "유닛 직업"
 L["Load the status only if the unit belong to the specified class."] = "해당 유닛 직업인 경우만 불러오기"
-
-L["Battle for Azeroth"] = "격전의 아제로스"
-L["Legion"] = "군단"
-L["Shadowlands"] = "어둠땅"
-
-L["color"] = "색상"
-L["multiple icons support"] = "다중 아이콘 지원"
-L["Enable multiple icons support for icons indicators."] = "다중 아이콘 지시기를 위한 다중 아이콘 지원 활성화"
 
 L["Select layouts for different Raid types."] = "공격대 유형에 따라 배치 선택"
 L["Use Blizzard Unit Frames"] = "Blizzard 유닛 프레임 사용"
@@ -1373,7 +1362,7 @@ L["Disable this option to use custom unit frames instead of blizzard frames. Thi
 L["Detach all groups"] = "모든 그룹 분리"
 L["Enable this option to detach unit frame groups, so each group can be moved individually."] = "활성화시 모든 그룹을 개별적으로 이동할 수 있습니다"
 L["Detach pets groups"] = "소환수 그룹 분리"
-L["Enable this option to detach the pets groups, so pets group can be moved individually."] = "활성화시 소환수 그룹을 개별적으로 이동할 수 있습니다"
+L["Enable this option to detach the pets group, so pets group can be moved individually."] = "활성화시 소환수 그룹을 개별적으로 이동할 수 있습니다"
 L["Special units headers visibility."] = "특수 유닛 소그룹 표시"
 L["Display Target unit"] = "대상 표시"
 L["Enable this option to display the target unit."] = "활성화시 대상 소그룹을 표시합니다"
@@ -1381,4 +1370,3 @@ L["Display Focus unit"] = "주시 대상 표시"
 L["Enable this option to display the focus unit."] = "활성화시 주시 대상 소그룹을 표시합니다"
 L["Display Bosses units"] = "우두머리 표시"
 L["Enable this option to display the bosses unit."] = "활성화시 우두머리 소그룹을 표시합니다"
-
