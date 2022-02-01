@@ -109,12 +109,16 @@ do
 	do
 		-- groups & raids
 		local CONDITIONS = {
-			'solo', 'party', 'arena', 'raid', 'raid@pvp' ,'raid@lfr', 'raid@flex', 'raid@mythic',
+			'solo', 'arena',
+			'party', 'party@normal', 'party@heroic', 'party@mythic',
+			'raid', 'raid@pvp' ,'raid@lfr', 'raid@flex', 'raid@mythic',
 			'10', '15', '20', '25', '30', '40',
 			'TANK', 'HEALER', 'DAMAGER', 'NONE',
 		}
 		local CONDITIONS_DESC = {
-			L['Solo'], L['Party'], L['Arena'], L['Raid'], L['Raid (PvP)'], L['Raid (LFR)'], L['Raid (N&H)'], L['Raid (Mythic)'],
+			L['Solo'], L['Arena'],
+			L['Party'], L['Party (Normal)'], L['Party (Heroic)'], L['Party (Mythic)'],
+			L['Raid'], L['Raid (PvP)'], L['Raid (LFR)'], L['Raid (N&H)'], L['Raid (Mythic)'],
 			L['10 man'], L['15 man'], L['20 man'], L['25 man'], L['30 man'], L['40 man'],
 			L['Tank (Role)'], L['Healer (Role)'], L['Damager (Role)'],	L['None (Role)'],
 		}

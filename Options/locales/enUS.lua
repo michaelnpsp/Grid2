@@ -1370,3 +1370,7 @@ L["Display Focus unit"] = true
 L["Enable this option to display the focus unit."] = true
 L["Display Bosses units"] = true
 L["Enable this option to display the bosses unit."] = true
+
+L['Party (Normal)'] = true
+L['Party (Heroic)'] = true
+L['Party (Mythic)'] = true

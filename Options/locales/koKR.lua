@@ -1370,3 +1370,8 @@ L["Display Focus unit"] = "주시 대상 표시"
 L["Enable this option to display the focus unit."] = "활성화시 주시 대상 소그룹을 표시합니다"
 L["Display Bosses units"] = "우두머리 표시"
 L["Enable this option to display the bosses unit."] = "활성화시 우두머리 소그룹을 표시합니다"
+
+-- L['Party (Normal)'] = ""
+-- L['Party (Heroic)'] = ""
+-- L['Party (Mythic)'] = ""
+

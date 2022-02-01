@@ -1370,3 +1370,7 @@ L["\"%s\" has sent you a profile configuration. Do you want to activate received
 -- L["Enable this option to display the focus unit."] = ""
 -- L["Display Bosses units"] = ""
 -- L["Enable this option to display the bosses unit."] = ""
+
+-- L['Party (Normal)'] = ""
+-- L['Party (Heroic)'] = ""
+-- L['Party (Mythic)'] = ""

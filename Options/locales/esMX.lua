@@ -1370,3 +1370,8 @@ L["Default difficulty for Encounter Journal links"] = "Dificultad predeterminada
 -- L["Enable this option to display the focus unit."] = ""
 -- L["Display Bosses units"] = ""
 -- L["Enable this option to display the bosses unit."] = ""
+
+-- L['Party (Normal)'] = ""
+-- L['Party (Heroic)'] = ""
+-- L['Party (Mythic)'] = ""
+

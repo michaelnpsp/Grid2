@@ -1370,3 +1370,7 @@ L["Display Focus unit"] = "Muestra unidad para el Foco"
 L["Enable this option to display the focus unit."] = "Activa esta opción para mostrar una unidad para el Foco."
 L["Display Bosses units"] = "Muestar unidades para los Jefes"
 L["Enable this option to display the bosses unit."] = "Activa esta opción para mostrar unidades para los Jefes."
+
+L['Party (Normal)'] = "Grupo (Normal)"
+L['Party (Heroic)'] = "Grupo (Heroica)"
+L['Party (Mythic)'] = "Grupo (Mitica)"
