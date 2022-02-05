@@ -10,6 +10,7 @@ local UnitGUID = UnitGUID
 local UnitExists = UnitExists
 local GetNumGroupMembers = GetNumGroupMembers
 local isClassic = Grid2.isClassic
+local isVanilla = Grid2.isVanilla
 
 -- helper tables to check units types/categories
 local party_indexes   = {} -- player=>0, party1=>1, ..
@@ -249,6 +250,9 @@ do
 		local newGroupType
 		local InInstance, newInstType = IsInInstance()
 		local instName, _, difficultyID, _, maxPlayers, _, _, instMapID = GetInstanceInfo()
+		if self.debugging then
+			self:Debug("GetInstanceInfo %s %s %s/%s/%s %s@%s(%s)", tostring(event), tostring(instName), tostring(instMapID), tostring(difficultyID), tostring(maxPlayers), tostring(self.groupType), tostring(self.instType), tostring(self.instMaxPlayers))
+		end
 		if newInstType == "arena" then
 			newGroupType = newInstType	-- arena@arena instances
 		elseif IsInRaid() then
@@ -264,10 +268,14 @@ do
 					newInstType = "mythic"
 				elseif maxPlayers == 30 then      -- raid@flex / Flexible instances normal/heroic (but no LFR)
 					newInstType = "flex"
-				else                              -- raid@other / Other instances: 5man/unknow instances
+				else                              -- raid@other / Other instances: 5man/unknow instances/classic instances
 					newInstType = "other"
-					if isClassic and (maxPlayers or 0)<=5 and instMapID~=249 then -- 249=>ignore onyxia lair
-						maxPlayers = 10 -- classic, raid inside dungeons
+					if isClassic then
+						if maxPlayers==5 then -- classic raid inside a dungeon
+							maxPlayers = 10
+						elseif maxPlayers==0 or maxPlayers==nil then -- classic bug sometimes GetInstanceInfo() returns 0/nil instead of instance maxPlayers
+							maxPlayers = isVanilla and 40 or 25 -- vanilla:40 tbc:25 not a perfect workaround, entering a vanilla instance (onyxia lair for example) from tbc client sets 25 instead of 40
+						end
 					end
 				end
 			else -- raid@none / In World Map or Garrison
