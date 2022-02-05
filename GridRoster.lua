@@ -274,7 +274,7 @@ do
 						if maxPlayers==5 then -- classic raid inside a dungeon
 							maxPlayers = 10
 						elseif maxPlayers==0 or maxPlayers==nil then -- classic bug sometimes GetInstanceInfo() returns 0/nil instead of instance maxPlayers
-							maxPlayers = isVanilla and 40 or 25 -- vanilla:40 tbc:25 not a perfect workaround, entering a vanilla instance (onyxia lair for example) from tbc client sets 25 instead of 40
+							maxPlayers = isVanilla and 40 or 25 -- vanilla:40 tbc:25 not a perfect workaround, entering a 40man vanilla instance (onyxia lair for example) from tbc client sets 25 instead of 40
 						end
 					end
 				end
