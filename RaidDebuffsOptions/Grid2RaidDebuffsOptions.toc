@@ -1,6 +1,6 @@
-## Interface: 90105
-## Interface-Retail: 90105
-## Interface-Classic: 11401
+## Interface: 90200
+## Interface-Retail: 90200
+## Interface-Classic: 11402
 ## Interface-BCC: 20502
 ## Title: Grid2 |cd2ff7d0aRaidDebuffs Options|r
 ## Title-esES: Grid2 |cd2ff7d0aRaidDebuffs Opciones|r
