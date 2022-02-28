@@ -625,4 +625,131 @@ RDDB["Shadowlands"] = {
 		338733, --ever-beating-heart
 		},
 	},
+	[1195] = {
+		{ id = 1195, name = "Sepulcher of the First Ones", raid = true },
+		["Vigilant Guardian"] = {
+		order = 1, ejid = 2458,
+		364447, -- dissonance
+		360202, -- spike-of-creation
+		367571, -- sear
+		360458, -- unstable-core
+		364881, -- matter-dissolution
+		364904, -- anti-matter
+		360414, -- pneumatic-impact
+		364843, -- fractured-core
+		364962, -- core-overload
+		},
+		["Skolex, the Insatiable Ravener"] = {
+		order = 2, ejid = 2465,
+		359778, -- ephemera-dust
+		360098, -- warp-sickness
+		366070, -- volatile-residue
+		364522, -- devouring-blood
+		359976, -- riftmaw
+		},
+		["Artificer Xy'mox"] = {
+		order = 3, ejid = 2470,
+		363413, -- genesis-rings
+		365752, -- ancient-exhaust
+		365801, -- relic-collapse
+		363114, -- genesis-supernova
+		365682, -- massive-blast
+		364030, -- debilitating-ray
+		},
+		["Dausegne, the Fallen Oracle"] = {
+		order = 4, ejid = 2459,
+		361966, -- infused-strikes
+		361751, -- disintegration-halo
+		},
+		["Prototype Pantheon"] = {
+		order = 5, ejid = 2460,
+		360687, -- runecarvers-deathtouch
+		360259, -- gloom-bolt
+		365041, -- windswept-wings
+		362352, -- pinned
+		361784, -- touch-of-the-night
+		362383, -- anima-bolt
+		361689, -- wracking-pain
+		361608, -- burden-of-sin
+		364867, -- sinful-projection
+		},
+		["Lihuvim, Principal Architect"] = {
+		order = 6, ejid = 2461,
+		360159, -- unstable-mote
+		363681, -- deconstructing-blast
+		368024, -- kinetic-resonance
+		368025, -- sundering-resonance
+		364092, -- degenerate
+		366012, -- terminal-mote
+		362447, -- instability
+		},
+		["Halondrus the Reclaimer"] = {
+		order = 7, ejid = 2463,
+		368961, -- charge-exposure
+		360114, -- ephemeral-fissure
+		361597, -- ephemeral-eruption
+		368529, -- eternity-overdrive
+		},
+		["Anduin Wrynn"] = {
+		order = 8, ejid = 2469,
+		368913, -- force-of-will
+		362055, -- lost-soul
+		365445, -- scarred-soul
+		364031, -- gloom
+		365293, -- befouled-barrier
+		366849, -- domination-word-pain
+		363024, -- necrotic-detonation
+		363020, -- necrotic-claws
+		364020, -- march-of-the-damned
+		362543, -- remorseless-winter
+		363028, -- unraveling-frenzy
+		368428, -- purging-light
+		},
+		["Lords of Dread"] = {
+		order = 9, ejid = 2457,
+		360300, -- swarm-of-decay
+		360304, -- swarm-of-darkness
+		362158, -- decay-mastery
+		364985, -- biting-wounds
+		360008, -- cloud-of-carrion
+		359963, -- opened-veins
+		360418, -- paranoia
+		360420, -- shatter-mind
+		362152, -- shadow-mastery
+		360148, -- bursting-dread
+		360241, -- unsettling-dreams
+		},
+		["Rygelon"] = {
+		order = 10, ejid = 2467,
+		361548, -- dark-eclipse
+		362273, -- quasar-radiation
+		362206, -- event-horizon
+		362081, -- cosmic-ejection
+		362088, -- cosmic-irregularity
+		366379, -- stellar-shroud
+		362172, -- corrupted-wound
+		363598, -- unstable-antimatter
+		364386, -- gravitational-collapse
+		},
+		["The Jailer"] = {
+		order = 11, ejid = 2464,
+		366381, -- arcane-vulnerability
+		366703, -- azerite-radiation
+		362075, -- domination
+		362631, -- chains-of-oppression
+		363893, -- martyrdom
+		363886, -- imprisonment
+		362194, -- suffering
+		362192, -- relentless-misery
+		366665, -- unholy-eruption
+		359868, -- shattering-blast
+		366777, -- consumed-azerite
+		360425, -- unholy-ground
+		366285, -- rune-of-compulsion
+		365153, -- dominating-will
+		365219, -- chains-of-anguish
+		365385, -- cry-of-loathing
+		365174, -- defile
+		},
+	},
 }
