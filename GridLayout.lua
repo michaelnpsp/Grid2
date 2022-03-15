@@ -593,7 +593,7 @@ do
 	function Grid2Layout:AddSpecialHeaders()
 		AddHeader( self, 'displayHeaderTarget', 'target', 10001 )
 		AddHeader( self, 'displayHeaderFocus',  'focus',  10002 )
-		AddHeader( self, 'displayHeaderBosses', 'boss1,boss2,boss3,boss4,boss5', 10003 )
+		AddHeader( self, 'displayHeaderBosses', 'boss1,boss2,boss3,boss4,boss5,boss6,boss7,boss8', 10003 )
 	end
 end
 
