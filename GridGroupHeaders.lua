@@ -17,6 +17,7 @@ local tinsert = table.insert
 local strsplit = strsplit
 local strtrim = strtrim
 local strfind = strfind
+local UnitExists = UnitExists
 local GetFrameHandle = GetFrameHandle
 local RegisterUnitWatch = RegisterUnitWatch
 local UnregisterUnitWatch = UnregisterUnitWatch
@@ -65,10 +66,16 @@ end
 -- fill test units table
 local function SetupTestMode(self, units)
 	local maxPlayers = self:GetAttribute('testMode')
-	if maxPlayers and self.headerType~='custom' then
-		local unit = self.headerType~='pet' and 'player' or 'pet'
-		for i=#units+1,maxPlayers do
-			units[i] = unit
+	if maxPlayers then
+		if self.headerType~='custom' then
+			local unit = self.headerType~='pet' and 'player' or 'pet'
+			for i=#units+1,maxPlayers do
+				units[i] = unit
+			end
+		elseif self:GetAttribute('hideEmptyUnits') then
+			for i=1,#units do
+				units[i] = 'player'
+			end
 		end
 	end
 end
@@ -478,12 +485,48 @@ unitsFilter = "target, focus, player, party1, boss1, boss2, boss3, arena1, arena
 hideEmptyUnits = true|nil
 --]]
 do
-	-- misc functions
+	-- notify grid2 roster for unit changes, OnUnitStateChanged() defined in Grid2Frame.lua
 	local function RefreshButtons(self, pattern)
 		local index, unitButton = 1, self[1]
-		while unitButton and unitButton:IsVisible() do
+		while unitButton and unitButton.unit do
 			if pattern==nil or strfind(unitButton.unit,pattern) then
 				unitButton:OnUnitStateChanged()
+			end
+			index = index + 1; unitButton = self[index]
+		end
+	end
+
+	-- blizzard forgot to trigger events for some boss units (boss6,boss7,boss8), so we have to update the broken units using a timer
+	local isBrokenUnit = { boss6 = true, boss7 = true, boss8 = true }
+	local function UpdateBrokenFrame(self)
+		local unitButton = self.parentButton
+		local unit = unitButton.unit
+		if unit and UnitExists(unit) then
+			unitButton:UpdateIndicators()
+		end
+	end
+	local function SetRegisterBroken(self)
+		local index, unitButton = 1, self[1]
+		while unitButton and unitButton.unit do
+			local isBroken = isBrokenUnit[unitButton.unit]
+			local timer = unitButton.grid2Timer
+			if timer then -- unit buttons are reusable if a broken unit became a normal unit (or viceversa) we need to disable/enable the timer
+				if not timer:IsPlaying() ~= not isBroken then
+					if isBroken then
+						timer:Play()
+					else
+						timer:Stop()
+					end
+				end
+			elseif isBroken then -- create and enable the timer if is a broken unit
+				timer = unitButton:CreateAnimationGroup()
+				timer.animation = timer:CreateAnimation()
+				timer.animation:SetDuration(0.5)
+				timer:SetLooping("REPEAT")
+				timer:SetScript("OnLoop", UpdateBrokenFrame)
+				timer:Play()
+				timer.parentButton = unitButton
+				unitButton.grid2Timer = timer
 			end
 			index = index + 1; unitButton = self[index]
 		end
@@ -521,7 +564,8 @@ do
 		SetRegisterEvent( self, self.buttonTarget or self.buttonFocus, 'PLAYER_ENTERING_WORLD' )
 		SetRegisterEvent( self, bossUnits, 'INSTANCE_ENCOUNTER_ENGAGE_UNIT' )
 		SetRegisterEvent( self, arenaUnits, 'ARENA_OPPONENT_UPDATE' )
-		SetRegisterEvent( self, normalUnits,'GROUP_ROSTER_UPDATE' )
+		SetRegisterEvent( self, normalUnits, 'GROUP_ROSTER_UPDATE' )
+		SetRegisterBroken( self )
 	end
 
 	local function ApplySpecialFilter(self)
@@ -538,6 +582,7 @@ do
 			ApplySpecialFilter( self )
 			DisplayButtons( self, srtTable )
 			RegisterEvents( self, srtTable )
+			RefreshButtons( self )
 		end
 	end
 

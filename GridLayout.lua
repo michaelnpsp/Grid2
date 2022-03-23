@@ -583,11 +583,11 @@ end
 
 -- Display special units
 do
-	local template = { type = 'custom', detachHeader = true }
+	local template = { type = 'custom', detachHeader = true, unitsPerColumn = 8 } -- TODO maybe deatchHeader and unitsPerColumn configurable in options
 	local function AddHeader(self, key, units, setupIndex)
 		if self.db.profile[key] then
 			template.unitsFilter = units
-			self:AddHeader( template, nil, setupIndex)
+			self:AddHeader( template, nil, setupIndex )
 		end
 	end
 	function Grid2Layout:AddSpecialHeaders()
