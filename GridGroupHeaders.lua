@@ -496,6 +496,7 @@ do
 		end
 	end
 
+	--[[ Removed this fix and added a different fix in StatusHealth.lua because this fix does not work with instant health updates due to the health_cache used.
 	-- blizzard forgot to trigger events for some boss units (boss6,boss7,boss8), so we have to update the broken units using a timer
 	local isBrokenUnit = { boss6 = true, boss7 = true, boss8 = true }
 	local function UpdateBrokenFrame(self)
@@ -531,6 +532,7 @@ do
 			index = index + 1; unitButton = self[index]
 		end
 	end
+	--]]
 
 	-- event register management
 	local function SetRegisterEvent(self, enabled, event)
@@ -565,7 +567,7 @@ do
 		SetRegisterEvent( self, bossUnits, 'INSTANCE_ENCOUNTER_ENGAGE_UNIT' )
 		SetRegisterEvent( self, arenaUnits, 'ARENA_OPPONENT_UPDATE' )
 		SetRegisterEvent( self, normalUnits, 'GROUP_ROSTER_UPDATE' )
-		SetRegisterBroken( self )
+		-- SetRegisterBroken( self )
 	end
 
 	local function ApplySpecialFilter(self)

@@ -1370,6 +1370,10 @@ L["Display Focus unit"] = true
 L["Enable this option to display the focus unit."] = true
 L["Display Bosses units"] = true
 L["Enable this option to display the bosses unit."] = true
+L["Units Per Column"] =  true
+L["Bosses units to display per column."] = true
+L['Hide Empty'] = true
+L["Hide empty bosses units."] = true
 
 L['Party (Normal)'] = true
 L['Party (Heroic)'] = true

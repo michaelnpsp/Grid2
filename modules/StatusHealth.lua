@@ -158,17 +158,67 @@ do
 	end
 end
 
+-- Fix for blizzard boss6,boss7,boss8 eventless units bug, github issue #44
+local EnableBrokenBossesFix, DisableBrokenBossesFix
+do
+	local timer, registererd
+	local rosterUnits = {}
+	local brokenUnits = { boss1 = true, boss6 = true, boss7 = true, boss8 = true }
+
+	local function Health_UpdateEvent()
+		for unit in next,rosterUnits do
+			UpdateIndicators(unit)
+		end
+	end
+
+	local function Health_UnitUpdated(_, unit)
+		if brokenUnits[unit] and not rosterUnits[unit] then
+			rosterUnits[unit] = true
+			if not timer then
+				timer = Grid2:CreateTimer( Health_UpdateEvent, 0.5 )
+			end
+		end
+	end
+
+	local function Health_UnitLeft(_, unit)
+		if rosterUnits[unit] then
+			rosterUnits[unit] = nil
+			if not next(rosterUnits) then
+				timer = Grid2:CancelTimer(timer)
+			end
+		end
+	end
+
+	function EnableBrokenBossesFix()
+		if not registered then
+			Grid2.RegisterMessage( HealthCurrent, "Grid_UnitLeft",  Health_UnitLeft )
+			Grid2.RegisterMessage( HealthCurrent, "Grid_UnitUpdated", Health_UnitUpdated )
+			registered = true
+		end
+	end
+
+	function DisableBrokenBossesFix()
+		if registered then
+			Grid2.UnregisterMessage( HealthCurrent, "Grid_UnitLeft",  Health_UnitLeft )
+			Grid2.UnregisterMessage( HealthCurrent, "Grid_UnitUpdated", Health_UnitUpdated )
+			registered = false
+		end
+	end
+end
+
 local function Health_RegisterEvents()
 	RegisterEvent("UNIT_HEALTH", UpdateIndicators )
 	RegisterEvent("UNIT_MAXHEALTH", UpdateIndicators )
 	RegisterEvent("UNIT_HEALTH_FREQUENT", UpdateIndicators )
 	RegisterEvent("UNIT_CONNECTION", UpdateIndicators )
 	EnableQuickHealth()
+	EnableBrokenBossesFix()
 end
 
 local function Health_UnregisterEvents()
 	UnregisterEvent( "UNIT_HEALTH", "UNIT_HEALTH_FREQUENT", "UNIT_MAXHEALTH", "UNIT_CONNECTION" )
 	DisableQuickHealth()
+	DisableBrokenBossesFix()
 end
 
 local function Health_UpdateStatuses()

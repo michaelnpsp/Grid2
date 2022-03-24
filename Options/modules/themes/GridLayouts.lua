@@ -418,6 +418,38 @@ local generalOptions = {
 		hidden = function() return Grid2.isClassic end,
 	},
 
+	displayBosses_UnitsPerColumn = {
+		order = 15,
+		type = "select",
+		width = 0.6,
+		name = L["Units Per Column"],
+		desc = L["Bosses units to display per column."],
+		get = function()
+			return theme.layout.BossesUnitsPerColumn or 8
+		end,
+		set = function(info,v)
+			theme.layout.BossesUnitsPerColumn = tonumber(v)
+			Grid2Layout:RefreshLayout()
+		end,
+		values = { '1', '2', '3', '4', '5', '6', '7', '8' },
+		hidden = function() return Grid2.isClassic or not theme.layout.displayHeaderBosses end,
+	},
+
+	displayBosses_HideEmpty = {
+		order = 16,
+		type = "toggle",
+		name = L['Hide Empty'],
+		desc = L["Hide empty bosses units."],
+		get = function(info)
+			return theme.layout.BossesHideEmpty
+		end,
+		set = function(info,v)
+			theme.layout.BossesHideEmpty = v or nil
+			Grid2Layout:RefreshLayout()
+		end,
+		hidden = function() return Grid2.isClassic or not theme.layout.displayHeaderBosses end,
+	},
+
 }
 
 --===================================================================================================
