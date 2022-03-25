@@ -163,7 +163,7 @@ local EnableBrokenBossesFix, DisableBrokenBossesFix
 do
 	local timer, registererd
 	local rosterUnits = {}
-	local brokenUnits = { boss1 = true, boss6 = true, boss7 = true, boss8 = true }
+	local brokenUnits = { boss6 = true, boss7 = true, boss8 = true }
 
 	local function Health_UpdateEvent()
 		for unit in next,rosterUnits do
