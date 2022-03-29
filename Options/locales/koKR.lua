@@ -859,7 +859,7 @@ L["Low absorb threshold"] = "낮은 흡수량 임계치"
 
 -- role related statuses
 L["Hide in combat"] = "전투시 숨김"
-L["Hide Damagers"] = "피해시 숨김"
+L["Hide Damagers"] = "공격 전담 숨김"
 
 -- combat status
 L["combat"] = "전투중"
