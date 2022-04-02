@@ -27,6 +27,8 @@ do
 		other  = L["Other"],
 	}
 
+	local COMBAT_TYPES = { L["Out of Combat"], L['In Combat'] }
+
 	local PLAYER_CLASSES = {}
 	for class, translation in pairs(LOCALIZED_CLASS_NAMES_MALE) do
 		local coord = CLASS_ICON_TCOORDS[class]
@@ -54,6 +56,51 @@ do
 		elseif status:RefreshLoad() then
 			Grid2Options:NotifyChange()
 		end
+	end
+
+	local function SetFilterCombatOptions( status, options, order )
+		if not status.handlerType then return end -- only for buffs/debuffs
+		local dbx = status.dbx
+		options.Combat1 = {
+			type = "toggle",
+			name = L["Combat"],
+			desc = L["Combat"],
+			order = order,
+			get = function(info) return dbx.load and dbx.load.combat~=nil end,
+			set = function(info, value)
+				if value then
+					dbx.load = dbx.load or {}
+					dbx.load.combat = true
+				elseif dbx.load then
+					dbx.load.combat = nil
+					if not next(dbx.load) then dbx.load = nil end
+				end
+				status:Refresh(true)
+			end,
+			disabled = function() return dbx.load and dbx.load.disabled end,
+		}
+		options.Combat2 = {
+			type = "select",
+			name = L["Combat"],
+			desc = L["Combat"],
+			order = order+1,
+			get = function()
+				if dbx.load and dbx.load.combat~=nil then
+					return dbx.load.combat and 2 or 1
+				end
+			end,
+			set = function(_,v)
+				dbx.load.combat = (v==2)
+				status:Refresh(true)
+			end,
+			disabled = function() return not dbx.load or dbx.load.disabled or dbx.load.combat==nil end,
+			values = COMBAT_TYPES,
+		}
+		options.Combat3 = {
+			type = "description",
+			name = "",
+			order = order+3,
+		}
 	end
 
 	local function SetFilterOptions( status, options, order, key, values, defValue, name, desc, isUnitFilter, isSingle )
@@ -169,6 +216,7 @@ do
 				end
 				RefreshStatus(status)
 			end,
+			disabled = function() return dbx.load and dbx.load.disabled end,
 		}
 		options[key..'1'] = {
 			type = "input",
@@ -216,6 +264,7 @@ do
 				RefreshStatus(status)
 			end,
 		}
+		SetFilterCombatOptions(status, options, 5)
 		SetFilterOptions( status, options, 10,
 			'playerClass',
 			PLAYER_CLASSES,
