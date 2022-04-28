@@ -259,6 +259,8 @@ RDDB["The Burning Crusade"] = {
 		},
 		["Brutallus"] = {
 		order = 2, ejid = nil,
+		46394, -- Burn
+		45185, -- Stomp
 		45150, -- Meteor Slash
 		},
 		["Felmyst"] = {
@@ -270,6 +272,7 @@ RDDB["The Burning Crusade"] = {
 		},
 		["Eredar Twins"] = {
 		order = 4, ejid = nil,
+		45230, -- Pyrogenics
 		45256, -- Confounding Blow
 		45333, -- Conflagration
 		46771, -- Flame Sear
