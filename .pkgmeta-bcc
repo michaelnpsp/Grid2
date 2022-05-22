@@ -1,0 +1,40 @@
+package-as: Grid2
+
+externals:
+ Libs/LibStub: svn://svn.wowace.com/wow/libstub/mainline/tags/1.0
+ Libs/CallbackHandler-1.0: svn://svn.wowace.com/wow/callbackhandler/mainline/trunk/CallbackHandler-1.0
+ Libs/AceAddon-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceAddon-3.0
+ Libs/AceConsole-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConsole-3.0
+ Libs/AceEvent-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceEvent-3.0
+ Libs/AceDB-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDB-3.0
+ Libs/AceLocale-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceLocale-3.0
+ Libs/LibSharedMedia-3.0: svn://svn.wowace.com/wow/libsharedmedia-3-0/mainline/trunk/LibSharedMedia-3.0
+ Libs/LibClassicDurations: https://repos.curseforge.com/wow/libclassicdurations
+ Libs/LibCustomGlow-1.0: https://github.com/Stanzilla/LibCustomGlow
+ Options/Libs/AceGUI-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceGUI-3.0
+ Options/Libs/AceGUI-3.0-SharedMediaWidgets: svn://svn.wowace.com/wow/ace-gui-3-0-shared-media-widgets/mainline/trunk/AceGUI-3.0-SharedMediaWidgets
+ Options/Libs/AceGUI-3.0-Search-EditBox: svn://svn.wowace.com/wow/acegui-3-0-search-editbox/mainline/trunk
+ Options/Libs/AceConfig-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConfig-3.0
+ Options/Libs/AceComm-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceComm-3.0
+ Options/Libs/AceSerializer-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceSerializer-3.0
+ Options/Libs/LibCompress: svn://svn.wowace.com/wow/libcompress/mainline/trunk
+ LDB/Libs/LibDBIcon-1.0: svn://svn.wowace.com/wow/libdbicon-1-0/mainline/trunk/LibDBIcon-1.0/
+ LDB/Libs/LibDataBroker-1.1: https://github.com/tekkub/libdatabroker-1-1
+
+ignore:
+ - GridDefaultsRetail.lua
+ - modules/StatusVehicle.lua
+ - modules/StatusShields.lua
+ - modules/StatusHealAbsorbs.lua
+ - modules/StatusSummon.lua
+ - modules/StatusPhased.lua
+ - modules/StatusStagger.lua
+ - RaidDebuffsOptions/RaidDebuffsBfA.lua
+ - RaidDebuffsOptions/RaidDebuffsLegion.lua
+ - RaidDebuffsOptions/RaidDebuffsShadowlands.lua
+
+move-folders:
+ Grid2/Options: Grid2Options
+ Grid2/RaidDebuffs: Grid2RaidDebuffs
+ Grid2/RaidDebuffsOptions: Grid2RaidDebuffsOptions
+ Grid2/LDB: Grid2LDB
