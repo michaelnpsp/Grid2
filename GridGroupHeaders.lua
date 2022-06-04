@@ -1,6 +1,8 @@
 --[[
 --  Grid2InsecureGroupHeader, Grid2InsecureGroupPetHeader, Grid2InsecureGroupCustomHeader
 --]]
+
+local isClassic = select(4,GetBuildInfo())<30000 -- vanilla or tbc
 local dummyFunc = function() end
 local select = select
 local unpack = unpack
@@ -144,8 +146,11 @@ local function GetGroupType(self)
 	end
 end
 
-local function GetRaidUnitInfo(index)
+function GetRaidUnitInfo(index)
 	local name, _, subgroup, _, _, class, _, _, _, role, _, arole = GetRaidRosterInfo(index)
+	if isClassic then
+		role, arole = role or 'NONE', 'UNUSED'
+	end
 	return "raid"..index, name or UNKNOWN, subgroup, class, role, arole
 end
 
@@ -156,8 +161,8 @@ local function GetPartyUnitInfo(index)
 		name, server = UnitName(unit)
 		if server and server~='' then name = name.."-"..server; end
 		_, class = UnitClass(unit)
-		arole = UnitGroupRolesAssigned(unit)
-		role = (GetPartyAssignment("MAINTANK",unit) and "MAINTANK") or (GetPartyAssignment("MAINASSIST",unit) and "MAINASSIST") or nil
+		arole = isClassic and 'UNUSED' or UnitGroupRolesAssigned(unit)
+		role = (GetPartyAssignment("MAINTANK",unit) and "MAINTANK") or (GetPartyAssignment("MAINASSIST",unit) and "MAINASSIST") or (isClassic and 'NONE') or nil
 	end
 	return unit, name, 1, class, role, arole
 end
