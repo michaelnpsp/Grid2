@@ -3,9 +3,24 @@ local L = Grid2Options.L
 Grid2Options:RegisterStatusOptions("combat", "combat", function(self, status, options)
 	self:MakeStatusStandardOptions(status, options)
 	self:MakeSpacerOptions(options, 30)
-	options.useEmptyIcon = {
+	options.enabledOOC = {
 		type = "toggle",
 		order = 150,
+		width = "full",
+		name = L["Active Out Of Combat"],
+		desc = L["Enable this option to invert the status so it will become activated when the player is Out Of Combat."],
+		get = function(info) return status.dbx.enabledOOC end,
+		set = function(info, v)
+			status.dbx.enabledOOC = v or nil
+			if status.enabled then
+				status:UpdateDB()
+				status:UpdateAllUnits()
+			end
+		end,
+	}
+	options.useEmptyIcon = {
+		type = "toggle",
+		order = 155,
 		width = "full",
 		name = L["Use Empty Icon"],
 		desc = L["Displays an invisible Icon."],
@@ -15,7 +30,7 @@ Grid2Options:RegisterStatusOptions("combat", "combat", function(self, status, op
 			if status.enabled then
 				status:UpdateDB()
 				status:UpdateAllUnits()
-			end	
+			end
 		end,
 	}
 end, {
@@ -26,9 +41,24 @@ end, {
 Grid2Options:RegisterStatusOptions("combat-mine", "combat", function(self, status, options)
 	self:MakeStatusStandardOptions(status, options)
 	self:MakeSpacerOptions(options, 30)
-	options.useEmptyIcon = {
+	options.enabledOOC = {
 		type = "toggle",
 		order = 150,
+		width = "full",
+		name = L["Active Out Of Combat"],
+		desc = L["Enable this option to invert the status so it will become activated when the player is Out Of Combat."],
+		get = function(info) return status.dbx.enabledOOC end,
+		set = function(info, v)
+			status.dbx.enabledOOC = v or nil
+			if status.enabled then
+				status:UpdateDB()
+				status:UpdateAllUnits()
+			end
+		end,
+	}
+	options.useEmptyIcon = {
+		type = "toggle",
+		order = 155,
 		width = "full",
 		name = L["Use Empty Icon"],
 		desc = L["Displays an invisible Icon."],
@@ -38,7 +68,7 @@ Grid2Options:RegisterStatusOptions("combat-mine", "combat", function(self, statu
 			if status.enabled then
 				status:UpdateDB()
 				status:UpdateAllUnits()
-			end	
+			end
 		end,
 	}
 end, {
