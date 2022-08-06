@@ -122,7 +122,7 @@ RDDB["Warlords of Draenor"] = {
 		["Oregorger"] = {
 		order = 2, ejid = 1202,
 		173471, -- Fauces acidas
-		156297, -- Torrente �cido
+		156297, -- Torrente acido
 		156374, -- Fragmento explosivo
 		},
 		["Beastlord Darmac"] = {
@@ -402,7 +402,7 @@ RDDB["Warlords of Draenor"] = {
 		},
 		["Skulloc"] = {
 		order = 4, ejid = 1238,
-		168398, -- Fijaci�n de objetivo de Fuego r�pido
+		168398, -- Fijacion de objetivo de Fuego rapido
 		168227, -- Machaque gronn
 		},
 		["Trash"] = {
@@ -432,7 +432,7 @@ RDDB["Warlords of Draenor"] = {
 		["Rukhran"] = {
 		order = 3, ejid = 967,
 		176544, -- Fijar
-		160149, -- D�bil
+		160149, -- Debil
 		},
 		["Trash"] = {
 		order = 100, ejid = nil,
@@ -444,7 +444,7 @@ RDDB["Warlords of Draenor"] = {
 		152838, -- Fijado
 		153001, -- Quemar
 		152999, -- Quemar
-		160303, -- Detonaci�n solar
+		160303, -- Detonacion solar
 		},
 	},
 	[101279] = { -- El Vergel Eterno
@@ -507,14 +507,14 @@ RDDB["Warlords of Draenor"] = {
 		161765, -- Hacha de hierro
 		155589, -- Nova de Escarcha
 		},
-		["Ala�ra el Indomable"] = {
+		["Alaira el Indomable"] = {
 		order = 4, ejid = 1229,
 		155056, -- Fuego envolvente
 		155065, -- Garra destripadora
 		},
-		["Se�ora de la guerra Zaela"] = {
+		["Señora de la guerra Zaela"] = {
 		order = 5, ejid = 1234,
-		155721, -- Cicl�n Hierro Umbr�o
+		155721, -- Ciclon Hierro Umbrio
 		},
 		["Son of the Beast"] = {
 		order = 50, ejid = nil,
@@ -525,8 +525,8 @@ RDDB["Warlords of Draenor"] = {
 		1604, -- Atontado
 		153832, -- Devastar
 		153897, -- Tajo desgarrador
-		153981, -- Ob�s incendiario
-		155037, -- Erupci�n
+		153981, -- Obus incendiario
+		155037, -- Erupcion
 		155586, -- Velo de Sombras
 		155581, -- Hender armadura
 		167259, -- Grito intimidador
@@ -573,7 +573,7 @@ RDDB["Warlords of Draenor"] = {
 		156856, -- Lluvia de Fuego
 		},
 	},
-	[101208] = { -- Terminal Malav�a
+	[101208] = { -- Terminal Malavia
 		{ id = 101208, name = "Grimrail Depot" },
 		["Chispahete y Borka"] = {
 		order = 1, ejid = 1138,
@@ -589,7 +589,7 @@ RDDB["Warlords of Draenor"] = {
 		order = 3, ejid = 1133,
 		162057, -- Lanza giratoria
 		163447, -- Marca del cazador
-		161588, -- Energ�a difusa
+		161588, -- Energia difusa
 		162065, -- Cepo congelante
 		},
 		["Trash"] = {
@@ -630,7 +630,7 @@ RDDB["Warlords of Draenor"] = {
 		order = 4, ejid = 889,
 		163802, -- Sacudida de llamas
 		164616, -- Canalizar llamas
-		150784, -- Erupci�n de magma
+		150784, -- Erupcion de magma
 		},
 		["Trash"] = {
 		order = 100, ejid = nil,
