@@ -17,6 +17,7 @@ OptionsAdvanced.lua
 OptionsLuaCode.lua
 
 #@retail@
+RaidDebuffsWoD.lua
 RaidDebuffsLegion.lua
 RaidDebuffsBfA.lua
 RaidDebuffsShadowlands.lua
