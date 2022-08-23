@@ -16,6 +16,7 @@ Grid2 = LibStub("AceAddon-3.0"):NewAddon("Grid2", "AceEvent-3.0", "AceConsole-3.
 -- build/version tracking
 local versionToc = GetAddOnMetadata("Grid2","Version")
 local versionCli = select(4,GetBuildInfo())
+Grid2.versionCli = versionCli
 Grid2.isClassic = versionCli<90000 -- not retail
 Grid2.isVanilla = versionCli<20000
 Grid2.isTBC     = versionCli>=20000 and versionCli<30000
