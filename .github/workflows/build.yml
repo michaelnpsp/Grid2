@@ -14,15 +14,6 @@ jobs:
         with:
           fetch-depth: 200
 
-      - name: Create Retail Package
-        uses: BigWigsMods/packager@master
-        with:
-          args: -g retail -m .pkgmeta-retail
-        env:
-          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
-          CF_API_KEY: ${{ secrets.CF_API_KEY }}
-          WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
-
       - name: Create Wrath Package
         uses: BigWigsMods/packager@master
         with:
@@ -32,20 +23,3 @@ jobs:
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
           WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
 
-      - name: Create BCC Package
-        uses: BigWigsMods/packager@master
-        with:
-          args: -g bcc -m .pkgmeta-classic
-        env:
-          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
-          CF_API_KEY: ${{ secrets.CF_API_KEY }}
-          WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
-
-      - name: Create Vanilla Package
-        uses: BigWigsMods/packager@master
-        with:
-          args: -g classic -m .pkgmeta-classic
-        env:
-          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
-          CF_API_KEY: ${{ secrets.CF_API_KEY }}
-          WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
