@@ -29,11 +29,16 @@ Libs\AceConsole-3.0\AceConsole-3.0.xml
 Libs\AceLocale-3.0\AceLocale-3.0.xml
 Libs\LibSharedMedia-3.0\LibSharedMedia-3.0.lua
 Libs\LibCustomGlow-1.0\LibCustomGlow-1.0.lua
-#@non-retail@
-# Libs\LibHealComm-4.0\ChatThrottleLib.lua
-# Libs\LibHealComm-4.0\LibHealComm-4.0.lua
-# Libs\LibClassicDurations\LibClassicDurations.xml
-#@end-non-retail@
+#@version-classic@
+Libs\LibHealComm-4.0\ChatThrottleLib.lua
+Libs\LibHealComm-4.0\LibHealComm-4.0.lua
+Libs\LibClassicDurations\LibClassicDurations.xml
+#@end-version-classic@
+#@version-bcc@
+Libs\LibHealComm-4.0\ChatThrottleLib.lua
+Libs\LibHealComm-4.0\LibHealComm-4.0.lua
+Libs\LibClassicDurations\LibClassicDurations.xml
+#@end-version-bcc@
 #@end-no-lib-strip@
 
 #Locales

@@ -39,7 +39,7 @@ jobs:
         if: ${{ inputs.wrath }}
         uses: BigWigsMods/packager@master
         with:
-          args: -g wrath -m .pkgmeta-classic
+          args: -g wrath -m .pkgmeta-wrath
         env:
           GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
@@ -49,7 +49,7 @@ jobs:
         if: ${{ inputs.bcc }}
         uses: BigWigsMods/packager@master
         with:
-          args: -g bcc -m .pkgmeta-classic
+          args: -g bcc -m .pkgmeta-bcc
         env:
           GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
           CF_API_KEY: ${{ secrets.CF_API_KEY }}

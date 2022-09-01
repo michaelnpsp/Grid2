@@ -1,12 +1,14 @@
 local L = Grid2Options.L
 
+local HealCommSupport = Grid2.versionCli<30000
+
 if Grid2.isClassic then
 	local APIS = { [0] = 'Blizzard API', [1] = 'LibHealComm-4' }
 	local TIME_VALUES = { [0] = L['None'] }
 	for i=1,15 do TIME_VALUES[i] = string.format(L["%d seconds"], i)	end
 	function Grid2Options:MakeStatusHealsClassicOptions(status, options)
 		local LHC = LibStub("LibHealComm-4.0")
-		if not Grid2.db.global.HealsUseBlizAPI then
+		if HealCommSupport and not Grid2.db.global.HealsUseBlizAPI then
 			options.classicTimeBand = {
 				type = "select",
 				name = L["Heals Time Band"],
@@ -48,22 +50,24 @@ if Grid2.isClassic then
 				status:UpdateAllUnits()
 			end,
 		}
-		options.healsApiSep = { type = "header", order = 359,  name = "" }
-		options.healsApi = {
-			type = "select",
-			name = L["Heals API"],
-			desc = L["Select which API should be invoked to get the incoming heals."],
-			order = 360,
-			get = function()
-				return Grid2.db.global.HealsUseBlizAPI and 0 or 1
-			end,
-			set = function(_, v)
-				Grid2.db.global.HealsUseBlizAPI = (v==0) or nil
-				ReloadUI()
-			end,
-			values = APIS,
-			confirm = function() return L["UI will be reloaded to change this option. Are you sure?"] end,
-		}
+		if HealCommSupport then
+			options.healsApiSep = { type = "header", order = 359,  name = "" }
+			options.healsApi = {
+				type = "select",
+				name = L["Heals API"],
+				desc = L["Select which API should be invoked to get the incoming heals."],
+				order = 360,
+				get = function()
+					return Grid2.db.global.HealsUseBlizAPI and 0 or 1
+				end,
+				set = function(_, v)
+					Grid2.db.global.HealsUseBlizAPI = (v==0) or nil
+					ReloadUI()
+				end,
+				values = APIS,
+				confirm = function() return L["UI will be reloaded to change this option. Are you sure?"] end,
+			}
+		end
 	end
 end
 
