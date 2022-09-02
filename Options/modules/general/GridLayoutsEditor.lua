@@ -9,7 +9,7 @@ local Grid2Layout = Grid2:GetModule("Grid2Layout")
 
 --=====================================================================================
 
-local RETAIL = not Grid2.isClassic
+local SUPPORT_ROLES = Grid2.versionCli>=30000
 
 local EDITOR_IDENTIFIER = "LayoutEditor"
 
@@ -23,7 +23,7 @@ local DEFAULT_PET_ORDER   = "HUNTER,WARLOCK,MAGE,DEATHKNIGHT,DRUID,PRIEST,SHAMAN
 
 local COLUMN_VALUES = {	["1"]="1", ["2"]="2", ["3"]="3", ["4"]="4", ["5"]="5", ["6"]="6", ["7"]="7", ["8"]="8" }
 
-local GROUPBY_VALUES ={ CLASS = L["Class"], GROUP = L["Group"], ASSIGNEDROLE = RETAIL and L["Role"] or nil, ROLE = L["Role(Raid)"], NONE = L["None"] }
+local GROUPBY_VALUES ={ CLASS = L["Class"], GROUP = L["Group"], ASSIGNEDROLE = SUPPORT_ROLES and L["Role"] or nil, ROLE = L["Role(Raid)"], NONE = L["None"] }
 
 local SORTBYN_VALUES= { INDEX = L["Index"], NAME = L["Name"], NAMELIST = L["List"],	NIL = L["Def."] }
 
@@ -435,7 +435,7 @@ headerOptions = {
 
 }
 
-if RETAIL then
+if SUPPORT_ROLES then
 	local roles  = { "TANK", "HEALER", "DAMAGER", "NONE", TANK=1, HEALER=2, DAMAGER=3, NONE=4 }
 	local values = { L["Tank"], L["Healer"], L["Damager"], L["None"] }
 	local function hidden()
@@ -510,7 +510,7 @@ end
 
 do
 	local roles, names, descs, widths
-	if RETAIL then
+	if SUPPORT_ROLES then
 		roles  = { "TANK", "HEALER", "DAMAGER", "NONE", "MAINTANK", "MAINASSIST" }
 		names  = { L["Tank"], L["Healer"], L["Dps"], L["None"], L["MT"], L["MA"] }
 		descs  = { L["Tank"], L["Healer"], L["Dps"], L["None"], L["MainTank"], L["MainAssist"] }
