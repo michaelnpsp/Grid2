@@ -448,20 +448,28 @@ do
 		order = 23,
 		width = "half",
 		name = L["Develop"],
-		desc = "Develop&Debug options:\ngen lua: Generate LUA Code for the current Module\n5man: Extract Encounter Journal 5man instances/bosses\nraids: Extract Encounter Journal raids/bosses",
+		desc = "Develop&Debug options:\ngen lua: Generate LUA Code for the current Module\n5man: Extract Encounter Journal 5man instances/bosses\nraids: Extract Encounter Journal raids/bosses\nreset: Remove all enabled debuffs!",
 		get = function() end,
 		set = function(_,v)
-			local lines
 			if v==1 then
-				lines = RDO:GenerateModuleLuaCode(visibleModule)
+				local lines = RDO:GenerateModuleLuaCode(visibleModule)
+				RDO:ExportData(lines)
 			elseif v==2 then
-				lines = RDO:GenerateEncounterJournalData(false)
+				local lines = RDO:GenerateEncounterJournalData(false)
+				RDO:ExportData(lines)
 			elseif v==3 then
-				lines = RDO:GenerateEncounterJournalData(true)
+				local lines = RDO:GenerateEncounterJournalData(true)
+				RDO:ExportData(lines)
+			elseif v==4 then
+				Grid2Options:ConfirmDialog( "Warning: Are you sure do you want to delete all enabled debuffs ?", function()
+					for _,status in ipairs(statuses) do
+						wipe(status.dbx.debuffs)
+					end
+					ReloadUI()
+				end )
 			end
-			RDO:ExportData(lines)
 		end,
-		values = { "gen lua", "5man", "raids" },
+		values = { "gen lua", "5man", "raids", "reset" },
 		hidden = function() return not GSRD.debugging end,
 	}
 

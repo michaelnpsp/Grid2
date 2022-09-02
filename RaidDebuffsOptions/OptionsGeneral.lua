@@ -16,6 +16,9 @@ options.separator0 = { type = "description", order = 9, name = "\n" }
 
 -- raid-debuffs statuses
 do
+	local function GetStatus(info)
+		return RDO.statuses[info.handler[1]]
+	end
 	local statusOptions = {
 		type = 'group', inline = true,
 		name   = function(info) return RDO.statusesNames[info.handler[1]] end,
@@ -28,29 +31,46 @@ do
 				name = L['color'],
 				hasAlpha = true,
 				get = function(info)
-					local c = RDO.statuses[info.handler[1]].dbx.color1
+					local c = GetStatus(info).dbx.color1
 					return c.r, c.g, c.b, c.a
 				end,
 				set = function(info, r,g,b,a)
-					local c = RDO.statuses[info.handler[1]].dbx.color1
+					local c = GetStatus(info).dbx.color1
 					c.r, c.g, c.b, c.a = r, g, b, a
 				 end,
 			},
-			icons = {
+			debuffTypeColor = {
 				type = "toggle",
 				order = 2,
-				width = 1.5,
+				width = 1,
+				name = L["Use debuff Type color"],
+				desc = L["Use the debuff Type color first. The specified color will be applied only if the debuff has no type."],
+				get = function(info)
+					return GetStatus(info).dbx.debuffTypeColorize
+				end,
+				set = function(info, v)
+					local status = GetStatus(info)
+					status.dbx.debuffTypeColorize = v or nil
+					if status.enabled then
+						status:UpdateDB()
+						GSRD:RefreshAuras()
+					end
+				end,
+			},
+			icons = {
+				type = "toggle",
+				order = 3,
+				width = 1,
 				name = L["multiple icons support"],
 				desc = L["Enable multiple icons support for icons indicators."],
 				get = function(info)
-					return RDO.statuses[info.handler[1]].dbx.enableIcons
+					return GetStatus(info).dbx.enableIcons
 				end,
 				set = function(info, v)
-					local status = RDO.statuses[info.handler[1]]
+					local status = GetStatus(info)
 					status.dbx.enableIcons = v or nil
 					if status.enabled then
-						status:OnDisable()
-						status:OnEnable()
+						status:UpdateDB()
 						GSRD:RefreshAuras()
 					end
 				end,

@@ -56,13 +56,16 @@ local bugged_maps = {
 
 -- LDB Tooltip
 Grid2.tooltipFunc['RaidDebuffsCount'] = function(tooltip)
-	if instance_map_name then
+	if instance_map_name and next(statuses) then
 		tooltip:AddDoubleLine( instance_map_name, string.format("|cffff0000%d|r %s",spells_count,L['debuffs']), 255,255,255, 255,255,0)
 	end
 end
 
 -- roster units
 local unit_in_roster = Grid2.roster_guids
+
+-- debuffs type colors table
+local debuffTypeColors = Grid2.debuffTypeColors
 
 -- GSRD
 local function RefreshAuras(self, event, unit)
@@ -99,7 +102,7 @@ function GSRD:RefreshAuras()
 end
 
 function GSRD:OnModuleEnable()
-	self:UpdateZoneSpells(true)
+	self:UpdateZoneSpells()
 	if Grid2.classicDurations then
 		UnitAura = LibStub("LibClassicDurations").UnitAuraDirect
 	end
@@ -141,9 +144,7 @@ function GSRD:ClearAllIndicators()
 end
 
 function GSRD:ResetZoneSpells()
-	instance_ej_id = nil
-	instance_map_id = nil
-	instance_map_name = nil
+    spells_count = 0
 	wipe(spells_order)
 	wipe(spells_status)
 end
@@ -272,12 +273,12 @@ local class = {
 do
 	local textures, counts, expirations, durations, colors = {}, {}, {}, {}, {}
 	function class:GetIconsMultiple(unit, max)
-		local color, i, j, name, id, _ = self.dbx.color1, 1, 1
+		local color, tc, i, j, name, id, dt, _ = self.dbx.color1, self.dbx.debuffTypeColorize, 1, 1
 		repeat
-			name, textures[j], counts[j], _, durations[j], expirations[j], _, _, _, id = UnitAura(unit, i, 'HARMFUL')
+			name, textures[j], counts[j], dt, durations[j], expirations[j], _, _, _, id = UnitAura(unit, i, 'HARMFUL')
 			if not name then break end
 			if spells_status[name]==self or spells_status[id]==self then
-				colors[j] = color
+				colors[j] = tc and debuffTypeColors[dt] or color
 				j = j + 1
 			end
 			i = i + 1
@@ -296,7 +297,7 @@ end
 
 function class:LoadZoneSpells()
 	if instance_map_id then
-		spells_count = 0
+		self.spells_count = 0
 		local debuffs = self.dbx.debuffs
 		local db = debuffs[instance_map_id] or debuffs[instance_ej_id]
 		if db then
@@ -305,14 +306,36 @@ function class:LoadZoneSpells()
 				if name and (not spells_order[name]) then
 					spells_order[name]  = index
 					spells_status[name] = self
-					spells_count = spells_count + 1
+					self.spells_count = self.spells_count + 1
 				end
 			end
 		end
+		spells_count = spells_count + self.spells_count
 		if GSRD.debugging then
 			GSRD:Debug("Zone[%s] C_MapID[%d] EjID[%d] mapID[%d] Status [%s]: %d raid debuffs loaded from [%d]", instance_map_name, instance_bmap_id, instance_ej_id, instance_map_id, self.name, spells_count, (debuffs[instance_map_id] and instance_map_id) or (debuffs[instance_ej_id] and instance_ej_id) )
 		end
 	end
+end
+
+function class:UpdateDB()
+	self.GetIcons = self.dbx.enableIcons and self.GetIconsMultiple or nil
+	self.UpdateState = self.dbx.enableIcons and self.UpdateStateMultiple or self.UpdateStateSingle
+	self.GetColor = self.dbx.debuffTypeColorize and self.GetDebuffTypeColor or Grid2.statusLibrary.GetColor
+end
+
+function class:UnloadZoneSpells()
+	if next(statuses) then
+		spells_count = spells_count - (self.spells_count or 0)
+		for name,status in next,spells_status do
+			if status==self then
+				spells_order[name] = nil
+				spells_status[name] = nil
+			end
+		end
+	else
+		GSRD:ResetZoneSpells()
+	end
+	self.spells_count = 0
 end
 
 function class:OnEnable()
@@ -322,19 +345,20 @@ function class:OnEnable()
 		if not isClassic then GSRD:RegisterEvent("ZONE_CHANGED"); end
 	end
 	statuses[self] = true
-	self.GetIcons = self.dbx.enableIcons and self.GetIconsMultiple or nil
-	self.UpdateState = self.dbx.enableIcons and self.UpdateStateMultiple or self.UpdateStateSingle
+	self:UpdateDB()
 	self:LoadZoneSpells()
 	GSRD:UpdateEvents()
 end
 
 function class:OnDisable()
+	wipe(self.states)
 	statuses[self] = nil
+	self:UnloadZoneSpells()
 	if not next(statuses) then
+	    GSRD:ResetZoneSpells()
 		GSRD:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
 		GSRD:UnregisterMessage("Grid_UnitLeft")
 		if not isClassic then GSRD:UnregisterEvent("ZONE_CHANGED"); end
-		GSRD:ResetZoneSpells()
 		GSRD:UpdateEvents()
 	end
 end
@@ -398,6 +422,11 @@ function class:ResetState(unit)
 	self.types[unit]       = nil
 	self.durations[unit]   = nil
 	self.expirations[unit] = nil
+end
+
+function class:GetDebuffTypeColor(unit)
+	local c = debuffTypeColors[ self.types[unit] ] or self.dbx.color1
+	return c.r, c.g, c.b, c.a
 end
 
 local function Create(baseKey, dbx)
