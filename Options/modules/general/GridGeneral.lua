@@ -238,7 +238,7 @@ Grid2Options:AddGeneralOptions( "General", "blink", {
 -- Classic Auras Duration
 --==========================================================================
 
-if Grid2.isClassic then
+if Grid2.isVanilla then
 	Grid2Options:AddGeneralOptions( "General", "Auras", {
 		classicDurations = {
 			type = "toggle",
