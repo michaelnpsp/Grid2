@@ -20,6 +20,7 @@ Grid2.versionCli = versionCli
 Grid2.isClassic = versionCli<90000 -- not retail
 Grid2.isVanilla = versionCli<20000
 Grid2.isTBC     = versionCli>=20000 and versionCli<30000
+Grid2.isWrath   = versionCli>=30000 and versionCli<40000
 Grid2.isWoW90   = versionCli>=90000
 Grid2.versionstring = "Grid2 v"..(versionToc=='@project-version@' and 'Dev' or versionToc)
 

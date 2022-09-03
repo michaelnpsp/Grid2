@@ -1,6 +1,6 @@
 -- Wow TBC raid debuffs
 -- Key&id = InstanceMapID (select(8,GetInstanceInfo())) + 100000
-if Grid2.isVanilla then return end
+if Grid2.versionCli<20000 then return end
 
 local RDDB= Grid2Options:GetRaidDebuffsTable()
 

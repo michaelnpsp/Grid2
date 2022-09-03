@@ -27,5 +27,6 @@ RaidDebuffsShadowlands.lua
 #@non-retail@
 RaidDebuffsClassic.lua
 RaidDebuffsBC.lua
+RaidDebuffsLichKing.lua
 #@end-non-retail@
 
