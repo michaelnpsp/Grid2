@@ -41,7 +41,9 @@ do
 				for s in next, statuses do
 					local mine = s.isMine
 					if mine==false or mine==myUnits[cas] then
-						if exp~=s.exp[u] or cnt~=s.cnt[u] or val[s.vId]~=s.val[u] then
+						if s.seen and s.combineStacks then
+							s.cnt[u] = s.cnt[u] + cnt
+						elseif exp~=s.exp[u] or cnt~=s.cnt[u] or val[s.vId]~=s.val[u] then
 							s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.typ[u], s.val[u], s.tkr[u] = 1, i, tex, cnt, dur, exp, typ, val[s.vId], 1
 						else
 							s.seen, s.idx[u] = -1, i
@@ -527,6 +529,11 @@ do
 		else
 			self.isMine = not not dbx.mine
 		end
+
+		if dbx.combineStacks then
+			self.combineStacks = dbx.combineStacks
+		end
+
 		if dbx.missing then
 			local spell = dbx.auras and dbx.auras[1] or dbx.spellName
 			self.missingTexture = spell and select(3,GetSpellInfo(spell)) or "Interface\\ICONS\\Achievement_General"

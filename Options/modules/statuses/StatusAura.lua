@@ -136,6 +136,22 @@ function Grid2Options:MakeStatusAuraUseSpellIdOptions(status, options, optionPar
 	}
 end
 
+function Grid2Options:MakeStatusAuraCombineStacksOptions(status, options, optionParams)
+	self:MakeHeaderOptions(options, "Misc")
+	options.combineStacks = {
+		type = "toggle",
+		name = L["Combine same debuff"],
+		width = "normal",
+		desc = string.format( "%s ", L["Multiple instances of the same debuff will be treated as multiple stacks of the same debuff"] ),
+		order = 120,
+		get = function () return status.dbx.combineStacks end,
+		set = function (_, v)
+			status.dbx.combineStacks = v or nil
+			status:UpdateDB()
+		end,
+	}
+end
+
 function Grid2Options:MakeStatusAuraCommonOptions(status, options, optionParams)
 	self:MakeHeaderOptions(options, "Colors")
 	if not status.dbx.missing then
@@ -385,6 +401,7 @@ Grid2Options:RegisterStatusOptions("buff", "buff", function(self, status, option
 	self:MakeStatusAuraEnableStacksOptions(status, options, optionParams)
 	self:MakeStatusAuraMissingOptions(status, options, optionParams)
 	self:MakeStatusAuraUseSpellIdOptions(status, options, optionParams)
+	self:MakeStatusAuraCombineStacksOptions(status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
 	self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
 	self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
@@ -399,6 +416,7 @@ Grid2Options:RegisterStatusOptions("debuff", "debuff", function(self, status, op
 	self:MakeStatusAuraDescriptionOptions(status, options, optionParams)
 	self:MakeStatusAuraCommonOptions(status, options, optionParams)
 	self:MakeStatusAuraUseSpellIdOptions(status, options, optionParams)
+	self:MakeStatusAuraCombineStacksOptions(status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
 	self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
 	self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
