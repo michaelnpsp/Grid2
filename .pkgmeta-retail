@@ -24,6 +24,8 @@ ignore:
  - Libs/LibHealComm-4.0
  - GridDefaultsClassic.lua
  - RaidDebuffsOptions/RaidDebuffsClassic.lua
+ - RaidDebuffsOptions/RaidDebuffsBC.lua
+ - RaidDebuffsOptions/RaidDebuffsLichKing.lua
 
 move-folders:
  Grid2/Options: Grid2Options
