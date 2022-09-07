@@ -564,6 +564,7 @@ Grid2:DbSetStatusDefaultValue( "death", {type = "death", color1 = {r=1,g=1,b=1,a
 -- Heals Interfaces
 local APIHeals = {}
 local HealsUpdateEvent
+local HealComEnabled
 
 -- Blizzard heals API
 do
@@ -653,6 +654,7 @@ local UnregisterEvent
 
 HealsInitialize = function()
 	local API = (Grid2.db.global.HealsUseBlizAPI and APIHeals.Blizzard) or APIHeals.HealCom or APIHeals.Blizzard
+	HealComEnabled = (API == APIHeals.HealCom)
 	RegisterEvent = API.RegisterEvent
 	UnregisterEvent = API.UnregisterEvent
 	UnitGetMyIncomingHeals = API.UnitGetMyIncomingHeals
@@ -737,7 +739,7 @@ function Heals:OnEnable()
 	if self.dbx.includeHealAbsorbs and not Grid2.isClassic then
 		RegisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", HealsUpdateEvent)
 	end
-	if not self.dbx.includePlayerHeals and not Grid2.isClassic then -- in classic we do not need to substract player heals
+	if not self.dbx.includePlayerHeals and not HealComEnabled then -- if using HealCom library we do not need to substract player heals
 		myheal_required = bit.bor(myheal_required,1) -- set bit1
 	end
 	heals_enabled = true
