@@ -22,7 +22,6 @@ externals:
  LDB/Libs/LibDataBroker-1.1: https://github.com/tekkub/libdatabroker-1-1
 
 ignore:
- - Libs/LibHealComm-4.0
  - GridDefaultsRetail.lua
  - modules/StatusVehicle.lua
  - modules/StatusShields.lua
