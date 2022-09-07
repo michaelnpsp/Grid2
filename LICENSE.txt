@@ -23,8 +23,8 @@ distribution.
 
 ------------------------------------------------------------------------
 
-LibHealComm4 library source (under MIT License):
-https://github.com/EsreverWoW/ShestakUI_Classic
+LibHealComm-4.0 library used with permission of the author: Azilroka
+https://github.com/Azilroka/LibHealComm-4.0
 
 ------------------------------------------------------------------------
 

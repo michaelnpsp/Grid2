@@ -37,8 +37,11 @@ Libs\LibClassicDurations\LibClassicDurations.xml
 #@version-bcc@
 Libs\LibHealComm-4.0\ChatThrottleLib.lua
 Libs\LibHealComm-4.0\LibHealComm-4.0.lua
-Libs\LibClassicDurations\LibClassicDurations.xml
 #@end-version-bcc@
+#@version-wrath@
+Libs\LibHealComm-4.0\ChatThrottleLib.lua
+Libs\LibHealComm-4.0\LibHealComm-4.0.lua
+#@end-version-wrath@
 #@end-no-lib-strip@
 
 #Locales

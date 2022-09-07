@@ -1,14 +1,12 @@
 local L = Grid2Options.L
 
-local HealCommSupport = Grid2.versionCli<30000
-
 if Grid2.isClassic then
 	local APIS = { [0] = 'Blizzard API', [1] = 'LibHealComm-4' }
 	local TIME_VALUES = { [0] = L['None'] }
 	for i=1,15 do TIME_VALUES[i] = string.format(L["%d seconds"], i)	end
 	function Grid2Options:MakeStatusHealsClassicOptions(status, options)
 		local LHC = LibStub("LibHealComm-4.0")
-		if HealCommSupport and not Grid2.db.global.HealsUseBlizAPI then
+		if Grid2.HealCommSupport and not Grid2.db.global.HealsUseBlizAPI then
 			options.classicTimeBand = {
 				type = "select",
 				name = L["Heals Time Band"],
@@ -50,7 +48,7 @@ if Grid2.isClassic then
 				status:UpdateAllUnits()
 			end,
 		}
-		if HealCommSupport then
+		if Grid2.HealCommSupport then
 			options.healsApiSep = { type = "header", order = 359,  name = "" }
 			options.healsApi = {
 				type = "select",

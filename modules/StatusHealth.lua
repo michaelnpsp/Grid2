@@ -592,7 +592,8 @@ do
 end
 
 -- LibHealComm-4 heals API
-if Grid2.versionCli<30000 then -- HealComm only available for vanilla and burning crusade
+Grid2.HealCommSupport = Grid2.versionCli<40000
+if Grid2.HealCommSupport then -- HealComm only available for vanilla and burning crusade and wrath
 	local HealComm = LibStub("LibHealComm-4.0",true)
 	local UnitGUID = UnitGUID
 	local playerGUID = UnitGUID('player')
