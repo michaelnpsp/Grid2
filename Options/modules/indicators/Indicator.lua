@@ -437,7 +437,8 @@ function Grid2Options:MakeIndicatorBorderSizeOptions(indicator, options, optionP
 		desc = L["Adjust the border size of the indicator."],
 		min = 0,
 		max = 20,
-		step = 1,
+		step = 0.01,
+		bigStep = 1,
 		get = function () return indicator.dbx.borderSize or 0 end,
 		set = function (_, v)
 			if v == 0 then v = nil end

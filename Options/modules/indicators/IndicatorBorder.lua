@@ -27,7 +27,8 @@ function Grid2Options:MakeIndicatorBorderCustomOptions(indicator,options)
 		desc = L["Adjust the border of each unit's frame."],
 		min = 1,
 		max = 20,
-		step = 1,
+		step = 0.01,
+		bigStep = 1,
 		get = function () return Grid2Frame.db.profile.frameBorder end,
 		set = function (_, frameBorder)
 			Grid2Frame.db.profile.frameBorder = frameBorder
@@ -66,7 +67,8 @@ function Grid2Options:MakeIndicatorBorderCustomOptions(indicator,options)
 		desc = L["Sets the size of the inner border of each unit frame"],
 		min = -16,
 		max = 16,
-		step = 1,
+		step = 0.01,
+		bigStep = 1,
 		get = function ()
 			return Grid2Frame.db.profile.frameBorderDistance
 		end,
