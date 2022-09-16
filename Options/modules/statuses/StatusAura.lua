@@ -38,6 +38,7 @@ end
 
 function Grid2Options:MakeStatusAuraEnableStacksOptions(status, options, optionParams)
 	if not status.dbx.missing then
+		self:MakeHeaderOptions(options, "Stacks")
 		options.enableStacks = {
 			type = "range",
 			order = 5,
@@ -102,23 +103,9 @@ function Grid2Options:MakeStatusBlinkThresholdOptions(status, options, optionPar
 end
 
 function Grid2Options:MakeStatusAuraUseSpellIdOptions(status, options, optionParams)
-	self:MakeHeaderOptions(options, "Misc")
-	options.useSpellId = {
-		type = "toggle",
-		name = L["Track by SpellId"],
-		width = "normal",
-		desc = string.format( "%s (%d) ", L["Track by spellId instead of aura name"], status.dbx.spellName ),
-		order = 115,
-		get = function () return status.dbx.useSpellId end,
-		set = function (_, v)
-			status.dbx.useSpellId = v or nil
-			status:UpdateDB()
-		end,
-		hidden = function() return not tonumber(status.dbx.spellName) end,
-	}
 	options.changeSpell = {
 		type = "input",
-		order = 110,
+		order = 4,
 		name = L["Aura Name or Spell ID"],
 		desc = L["Change Buff/Debuff Name or Spell ID."],
 		width = "normal",
@@ -134,16 +121,28 @@ function Grid2Options:MakeStatusAuraUseSpellIdOptions(status, options, optionPar
 			end
 		end,
 	}
+	options.useSpellId = {
+		type = "toggle",
+		name = L["Track by SpellId"],
+		width = "normal",
+		desc = string.format( "%s (%d) ", L["Track by spellId instead of aura name"], status.dbx.spellName ),
+		order = 4.1,
+		get = function () return status.dbx.useSpellId end,
+		set = function (_, v)
+			status.dbx.useSpellId = v or nil
+			status:UpdateDB()
+		end,
+		hidden = function() return not tonumber(status.dbx.spellName) end,
+	}
 end
 
 function Grid2Options:MakeStatusAuraCombineStacksOptions(status, options, optionParams)
-	self:MakeHeaderOptions(options, "Misc")
 	options.combineStacks = {
 		type = "toggle",
-		name = L["Combine same debuff"],
+		name = L["Combine Stacks"],
 		width = "normal",
 		desc = string.format( "%s ", L["Multiple instances of the same debuff will be treated as multiple stacks of the same debuff"] ),
-		order = 120,
+		order = 9,
 		get = function () return status.dbx.combineStacks end,
 		set = function (_, v)
 			status.dbx.combineStacks = v or nil
@@ -252,24 +251,6 @@ function Grid2Options:MakeStatusAuraColorThresholdOptions(status, options, optio
 				end,
 			}
 		end
-	end
-end
-
-function Grid2Options:MakeStatusAuraDescriptionOptions(status, options, optionParams)
-	if status.dbx.auras or true then return end
-	local spellID = tonumber(status.dbx.spellName)
-	if not spellID then return end
-	local tip = Grid2Options.Tooltip
-	tip:ClearLines()
-	tip:SetHyperlink("spell:"..spellID)
-	local numLines = tip:NumLines()
-	if numLines>1 and numLines<=10 then
-		options.titleDesc = {
-			type        = "description",
-			order       = 1.2,
-			fontSize    = "small",
-			name        = tip[numLines]:GetText(),
-		}
 	end
 end
 
@@ -396,12 +377,10 @@ end
 
 -- {{ Register
 Grid2Options:RegisterStatusOptions("buff", "buff", function(self, status, options, optionParams)
-	self:MakeStatusAuraDescriptionOptions(status, options)
+	self:MakeStatusAuraUseSpellIdOptions(status, options, optionParams)
 	self:MakeStatusAuraCommonOptions(status, options, optionParams)
 	self:MakeStatusAuraEnableStacksOptions(status, options, optionParams)
 	self:MakeStatusAuraMissingOptions(status, options, optionParams)
-	self:MakeStatusAuraUseSpellIdOptions(status, options, optionParams)
-	self:MakeStatusAuraCombineStacksOptions(status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
 	self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
 	self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
@@ -412,10 +391,9 @@ end,{
 })
 
 Grid2Options:RegisterStatusOptions("debuff", "debuff", function(self, status, options, optionParams)
-	self:MakeStatusAuraEnableStacksOptions(status, options, optionParams)
-	self:MakeStatusAuraDescriptionOptions(status, options, optionParams)
-	self:MakeStatusAuraCommonOptions(status, options, optionParams)
 	self:MakeStatusAuraUseSpellIdOptions(status, options, optionParams)
+	self:MakeStatusAuraEnableStacksOptions(status, options, optionParams)
+	self:MakeStatusAuraCommonOptions(status, options, optionParams)
 	self:MakeStatusAuraCombineStacksOptions(status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
 	self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)

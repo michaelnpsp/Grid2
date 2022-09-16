@@ -212,6 +212,7 @@ do
 		Cooldown   = { type = "header", order = 125, name = L["Cooldown"]	},
 		Animation  = { type = "header", order = 150, name = L["Animations"]	},
 		-- statuses headers
+		Stacks	     = { type = "header", order = 4.9, name = L["Stacks"]      },
 		Colors	     = { type = "header", order = 10,  name = L["Colors"]      },
 		Thresholds   = { type = "header", order = 50,  name = L["Thresholds"], },
 		Value        = { type = "header", order = 90,  name = L["Value"] },

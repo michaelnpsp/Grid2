@@ -245,7 +245,6 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 end
 
 function Grid2Options:MakeStatusDebuffsGeneralOptions(status, options, optionParams)
-	self:MakeStatusAuraDescriptionOptions(status, options, optionParams)
 	self:MakeStatusAuraCommonOptions(status, options, optionParams)
 	self:MakeStatusAuraTextOptions(status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)

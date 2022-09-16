@@ -35,7 +35,6 @@ Grid2Options:RegisterStatusOptions("buffs", "buff", function(self, status, optio
 	if status.dbx.subType == 'blizzard' then
 		self:MakeStatusColorOptions(status, options, optionParams)
 	else
-		self:MakeStatusAuraDescriptionOptions(status, options)
 		self:MakeStatusBuffsListOptions(status, options, optionParams)
 		self:MakeStatusAuraCommonOptions(status, options, optionParams)
 		self:MakeStatusAuraMissingOptions(status, options, optionParams)
