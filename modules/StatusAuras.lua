@@ -19,6 +19,9 @@ local debuffDispelTypes = { Magic = true, Curse = true, Disease = true, Poison =
 local cache_tex, cache_cnt, cache_exp, cache_dur, cache_col = {}, {}, {}, {}, {}
 
 -- UNIT_AURA event management
+-- s.seen = nil aura was removed, linked indicators must be updated
+-- s.seen = 1   aura was changed, linked indicators must be updated
+-- s.seen = -1  aura was not changed, do nothing
 local AuraFrame_OnEvent
 do
 	local indicators = {}
@@ -41,12 +44,18 @@ do
 				for s in next, statuses do
 					local mine = s.isMine
 					if mine==false or mine==myUnits[cas] then
-						if s.seen and s.combineStacks then
-							s.cnt[u] = s.cnt[u] + cnt
-						elseif exp~=s.exp[u] or cnt~=s.cnt[u] or val[s.vId]~=s.val[u] then
-							s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.typ[u], s.val[u], s.tkr[u] = 1, i, tex, cnt, dur, exp, typ, val[s.vId], 1
-						else
-							s.seen, s.idx[u] = -1, i
+						if s.combineStacks then -- combine stacks debuffs
+							if s.seen then -- adding extra debuffs stacks
+								s.cnt[u] = s.cnt[u] + cnt
+							else -- debuff must be always marked to be updated (seen=1) and cnt must be initialized even if first debuff is not new and didn't change
+								s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.typ[u], s.val[u], s.tkr[u] = 1, i, tex, cnt, dur, exp, typ, val[s.vId], 1
+							end
+						else -- standard debuffs
+							if exp~=s.exp[u] or cnt~=s.cnt[u] or val[s.vId]~=s.val[u] then
+								s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.typ[u], s.val[u], s.tkr[u] = 1, i, tex, cnt, dur, exp, typ, val[s.vId], 1
+							else
+								s.seen, s.idx[u] = -1, i
+							end
 						end
 					end
 				end
