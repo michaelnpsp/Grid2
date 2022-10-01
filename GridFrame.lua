@@ -223,7 +223,7 @@ function Grid2Frame:OnModuleInitialize()
 end
 
 function Grid2Frame:OnModuleEnable()
-	if not Grid2.isClassic then
+	if Grid2.versionCli>=30000 then
 		self:RegisterEvent("UNIT_ENTERED_VEHICLE")
 		self:RegisterEvent("UNIT_EXITED_VEHICLE")
 	end
@@ -236,7 +236,7 @@ function Grid2Frame:OnModuleEnable()
 end
 
 function Grid2Frame:OnModuleDisable()
-	if not Grid2.isClassic then
+	if Grid2.versionCli>=30000 then
 		self:UnregisterEvent("UNIT_ENTERED_VEHICLE")
 		self:UnregisterEvent("UNIT_EXITED_VEHICLE")
 	end
