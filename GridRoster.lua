@@ -293,6 +293,8 @@ do
 		if maxPlayers == nil or maxPlayers == 0 then
 			maxPlayers = 40
 			self:FixGroupMaxPlayers(newInstType)
+		elseif maxPlayers>40 then -- In Wrath Wintergrasp GetInstanceInfo() may return more than 40 players.
+			maxPlayers = 40
 		end
 		if self.groupType ~= newGroupType or self.instType ~= newInstType or self.instMaxPlayers ~= maxPlayers then
 			self:Debug("GroupChanged", event, instName, instMapID, self.groupType, self.instType, self.instMaxPlayers, "=>", newGroupType, newInstType, maxPlayers)

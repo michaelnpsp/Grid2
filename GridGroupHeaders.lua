@@ -2,7 +2,9 @@
 --  Grid2InsecureGroupHeader, Grid2InsecureGroupPetHeader, Grid2InsecureGroupCustomHeader
 --]]
 
-local isClassic = select(4,GetBuildInfo())<30000 -- vanilla or tbc
+local versionCli = select(4,GetBuildInfo())
+local isClassic = versionCli<30000 -- vanilla or tbc
+local isWrath = versionCli>=30000 and versionCli<40000 -- wrath
 local dummyFunc = function() end
 local select = select
 local unpack = unpack
@@ -21,6 +23,7 @@ local strtrim = strtrim
 local strfind = strfind
 local UnitExists = UnitExists
 local GetFrameHandle = GetFrameHandle
+local UnitHasVehicleUI = UnitHasVehicleUI
 local RegisterUnitWatch = RegisterUnitWatch
 local UnregisterUnitWatch = UnregisterUnitWatch
 local UnitWatchRegistered = UnitWatchRegistered
@@ -80,6 +83,23 @@ local function SetupTestMode(self, units)
 			end
 		end
 	end
+end
+
+-- bugfix: https://github.com/Stanzilla/WoWUIBugs/issues/274
+local function FixToggleForVehicleBug(self, headerType, unit)
+	if unit and self:GetAttribute('toggleForVehicle') then
+		if headerType=='player' then
+			if UnitHasVehicleUI(unit) then
+				return unit=='player' and 'pet' or gsub(unit,"^([%a]+)([%d]+)", "%1pet%2")
+			end
+		elseif headerType=='pet' then
+			local ownerUnit = unit=='pet' and 'player' or gsub(unit,"pet(%d)","%1")
+			if UnitHasVehicleUI(ownerUnit) then
+				return ownerUnit
+			end
+		end
+	end
+	return unit
 end
 
 -- misc table functions
@@ -379,9 +399,10 @@ local function DisplayButtons(self, unitTable)
 		else
 			unitButton:SetPoint(point, curAnchor, relPoint, xMult*xOffset, yMult*yOffset)
 		end
-		unitButton:SetAttribute("unit", unitTable[i])
+		local unit = isWrath and FixToggleForVehicleBug(self, self.headerType, unitTable[i]) or unitTable[i]
+		unitButton:SetAttribute("unit", unit)
 		SetUnitWatch(unitButton, unitWatch)
-		if not unitWatch or UnitExists(unitTable[i]) then
+		if not unitWatch or UnitExists(unit) then
 			unitButton:Show()
 		end
 		colUnitCount = colUnitCount<unitsPerColumn and colUnitCount+1 or 1
@@ -466,14 +487,26 @@ do
 	local function Show(self)
 		self:RegisterEvent("GROUP_ROSTER_UPDATE")
 		self:RegisterEvent("UNIT_NAME_UPDATE")
-		if self.headerType == 'pet' then self:RegisterEvent("UNIT_PET") end
+		if self.headerType == 'pet' then
+			self:RegisterEvent("UNIT_PET")
+		end
+		if isWrath then -- bugfix see: FixToggleForVehicleBug()
+			self:RegisterEvent("UNIT_EXITED_VEHICLE")
+			self:RegisterEvent("UNIT_ENTERED_VEHICLE")
+		end
 		Update(self)
 	end
 
 	local function Hide(self)
 		self:UnregisterEvent("GROUP_ROSTER_UPDATE")
 		self:UnregisterEvent("UNIT_NAME_UPDATE")
-		if self.headerType == 'pet' then self:UnregisterEvent("UNIT_PET") end
+		if self.headerType == 'pet' then
+			self:UnregisterEvent("UNIT_PET")
+		end
+		if isWrath then -- bugfix see: FixToggleForVehicleBug()
+			self:UnregisterEvent("UNIT_EXITED_VEHICLE")
+			self:UnregisterEvent("UNIT_ENTERED_VEHICLE")
+		end
 	end
 
 	function Grid2InsecureGroupHeader_OnLoad(self, isPet)
@@ -500,44 +533,6 @@ do
 			index = index + 1; unitButton = self[index]
 		end
 	end
-
-	--[[ Removed this fix and added a different fix in StatusHealth.lua because this fix does not work with instant health updates due to the health_cache used.
-	-- blizzard forgot to trigger events for some boss units (boss6,boss7,boss8), so we have to update the broken units using a timer
-	local isBrokenUnit = { boss6 = true, boss7 = true, boss8 = true }
-	local function UpdateBrokenFrame(self)
-		local unitButton = self.parentButton
-		local unit = unitButton.unit
-		if unit and UnitExists(unit) then
-			unitButton:UpdateIndicators()
-		end
-	end
-	local function SetRegisterBroken(self)
-		local index, unitButton = 1, self[1]
-		while unitButton and unitButton.unit do
-			local isBroken = isBrokenUnit[unitButton.unit]
-			local timer = unitButton.grid2Timer
-			if timer then -- unit buttons are reusable if a broken unit became a normal unit (or viceversa) we need to disable/enable the timer
-				if not timer:IsPlaying() ~= not isBroken then
-					if isBroken then
-						timer:Play()
-					else
-						timer:Stop()
-					end
-				end
-			elseif isBroken then -- create and enable the timer if is a broken unit
-				timer = unitButton:CreateAnimationGroup()
-				timer.animation = timer:CreateAnimation()
-				timer.animation:SetDuration(0.5)
-				timer:SetLooping("REPEAT")
-				timer:SetScript("OnLoop", UpdateBrokenFrame)
-				timer:Play()
-				timer.parentButton = unitButton
-				unitButton.grid2Timer = timer
-			end
-			index = index + 1; unitButton = self[index]
-		end
-	end
-	--]]
 
 	-- event register management
 	local function SetRegisterEvent(self, enabled, event)
@@ -572,7 +567,6 @@ do
 		SetRegisterEvent( self, bossUnits, 'INSTANCE_ENCOUNTER_ENGAGE_UNIT' )
 		SetRegisterEvent( self, arenaUnits, 'ARENA_OPPONENT_UPDATE' )
 		SetRegisterEvent( self, normalUnits, 'GROUP_ROSTER_UPDATE' )
-		-- SetRegisterBroken( self )
 	end
 
 	local function ApplySpecialFilter(self)
