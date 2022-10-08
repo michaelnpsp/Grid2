@@ -5,19 +5,25 @@ local SecureButton_GetModifiedUnit = SecureButton_GetModifiedUnit
 local next = next
 local pairs = pairs
 local Grid2Frame
-local isWrath = Grid2.isWrath
 
 -- bugfix: wrath toggleForVehicle bug workaround
 -- https://github.com/Stanzilla/WoWUIBugs/issues/274
-local FixToggleForVehicleBugTargeting
-if isWrath then
+local fix_tfv_enabled, FixToggleForVehicleBugTargeting
+if Grid2.isWrath then
+	local vehicle_instances = {
+		[616] = true, -- malygos raid
+		[578] = true, -- oculus dungeon
+		-- [603] = true, -- ulduar, test
+		-- [571] = true, -- northend, test
+	}
 	local gsub = string.gsub
 	local format = string.format
 	local strfind = string.find
 	local UnitHasVehicleUI = UnitHasVehicleUI
+	local SecureButton_GetModifiedUnit_Orig = SecureButton_GetModifiedUnit
 	local SecureButton_GetModifiedAttribute = SecureButton_GetModifiedAttribute
 	-- this blizzard api function is bugged (it does not swap players with pets) so we have to replace it
-	function SecureButton_GetModifiedUnit(self)
+	local function SecureButton_GetModifiedUnit_Patched(self)
 		local unit = SecureButton_GetModifiedAttribute(self, 'unit')
 		if unit then
 			local hadPet = strfind(unit,'pet')
@@ -30,23 +36,39 @@ if isWrath then
 				if hadPet then
 					unit = noPet
 				elseif hadTarget == 0 or SecureButton_GetModifiedAttribute(self, 'allowVehicleTarget')  then
-					unit = gsub(unit, '^player', 'pet'):gsub('^([%a]+)([%d]+)', '%1pet%2')
+					unit = gsub( gsub(unit, '^player', 'pet'), '^([%a]+)([%d]+)', '%1pet%2')
 				end
 			end
 			return unit
 		end
 	end
 	-- we have to use a macro for targeting but only on players, because pets units can be created in combat and we cannot set macros while in combat
-	-- this ugly workaround should work in malygos because players are not targetable while mounted on the drakos, but this does not work on vehicles
-	-- world quests if the player is targetable while is mounted on the vehicle. The macro targets the player pet if the player is not targetable.
+	-- this ugly workaround should work in malygos because players are not targetable while mounted on the drakos, but this does not work on other
+	-- vehicles if the player is targetable while is mounted on the vehicle. The macro targets the player pet if the player is not targetable.
 	function FixToggleForVehicleBugTargeting(self, unit)
-		if not strfind(unit,'pet') then
-			if unit~=self.click_unit and SecureButton_GetModifiedAttribute(self,"toggleForVehicle") then
-			    local pet = unit=='player' and 'pet' or gsub(unit,'^([%a]+)([%d]+)','%1pet%2')
+		if unit then
+			if not strfind(unit,'pet') and unit~=self.click_unit and SecureButton_GetModifiedAttribute(self,"toggleForVehicle") then
+				local pet = unit=='player' and 'pet' or gsub(unit,'^([%a]+)([%d]+)','%1pet%2')
 				self:SetAttribute('*type1', 'macro')
-				self:SetAttribute( "*macrotext1", format("/tar [@%s,help][@%s,help][@%s]", unit, pet, unit) )
+				self:SetAttribute('*macrotext1', format('/tar [@%s,help][@%s,help][@%s]', unit, pet, unit) )
 				self.click_unit = unit
 			end
+		elseif self:GetAttribute('*macrotext1') then
+			self:SetAttribute('*type1', 'target')
+			self:SetAttribute('*macrotext1', nil)
+			self.click_unit = nil
+		end
+	end
+	-- Enable/Disable toggleForVehicle bug workaround, called from GridRoster.lua when zone changed
+	function Grid2:RefreshToggleForVehicleWorkaround(instID)
+	   local enabled = vehicle_instances[instID]
+		if enabled ~= fix_tfv_enabled then
+			SecureButton_GetModifiedUnit = enabled and SecureButton_GetModifiedUnit_Patched or SecureButton_GetModifiedUnit_Orig
+			Grid2Frame:WithAllFrames(function (f)
+				FixToggleForVehicleBugTargeting(f, enabled and f.unit or nil)
+			end)
+			fix_tfv_enabled = enabled
+			self:Debug( "WotLK ToggleForVehicle Bug Workaround:", enabled and "enabled!" or "disabled!" )
 		end
 	end
 end
@@ -116,16 +138,17 @@ function GridFrameEvents:OnAttributeChanged(name, value)
 		if value then
 			local unit = SecureButton_GetModifiedUnit(self)
 			if old_unit ~= unit then
-				if isWrath then FixToggleForVehicleBugTargeting(self,value) end
 				Grid2Frame:Debug("updated", self:GetName(), name, value, unit, '<=', old_unit)
 				self.unit = unit
 				Grid2:SetFrameUnit(self, unit)
 				self:UpdateIndicators()
+				if fix_tfv_enabled then FixToggleForVehicleBugTargeting(self,value) end
 			end
 		elseif old_unit then
 			Grid2Frame:Debug("removed", self:GetName(), name, old_unit)
 			self.unit = nil
 			Grid2:SetFrameUnit(self, nil)
+			if fix_tfv_enabled then FixToggleForVehicleBugTargeting(self) end
 		end
 	end
 end
@@ -414,7 +437,7 @@ function Grid2Frame:UNIT_ENTERED_VEHICLE(event, unit)
 			frame:UpdateIndicators()
 		end
 	end
-	if isWrath and event then -- Wrath toggleForVehicle bug fix
+	if fix_tfv_enabled and event then -- Wrath toggleForVehicle bug fix
 		local pet = Grid2.pet_of_unit[unit]
 		if pet then
 			self:UNIT_ENTERED_VEHICLE(nil,pet)

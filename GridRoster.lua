@@ -11,6 +11,7 @@ local UnitExists = UnitExists
 local GetNumGroupMembers = GetNumGroupMembers
 local isClassic = Grid2.isClassic
 local isVanilla = Grid2.isVanilla
+local isWrath   = Grid2.isWrath
 
 -- helper tables to check units types/categories
 local party_indexes   = {} -- player=>0, party1=>1, ..
@@ -252,6 +253,9 @@ do
 		local instName, _, difficultyID, _, maxPlayers, _, _, instMapID = GetInstanceInfo()
 		if self.debugging then
 			self:Debug("GetInstanceInfo %s %s %s/%s/%s %s@%s(%s)", tostring(event), tostring(instName), tostring(instMapID), tostring(difficultyID), tostring(maxPlayers), tostring(self.groupType), tostring(self.instType), tostring(self.instMaxPlayers))
+		end
+		if isWrath then
+			self:RefreshToggleForVehicleWorkaround(instMapID)
 		end
 		if newInstType == "arena" then
 			newGroupType = newInstType	-- arena@arena instances
