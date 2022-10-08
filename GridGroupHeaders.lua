@@ -4,7 +4,6 @@
 
 local versionCli = select(4,GetBuildInfo())
 local isClassic = versionCli<30000 -- vanilla or tbc
-local isWrath = versionCli>=30000 and versionCli<40000 -- wrath
 local dummyFunc = function() end
 local select = select
 local unpack = unpack
@@ -399,7 +398,7 @@ local function DisplayButtons(self, unitTable)
 		else
 			unitButton:SetPoint(point, curAnchor, relPoint, xMult*xOffset, yMult*yOffset)
 		end
-		local unit = isWrath and FixToggleForVehicleBug(self, self.headerType, unitTable[i]) or unitTable[i]
+		local unit = unitTable[i]
 		unitButton:SetAttribute("unit", unit)
 		SetUnitWatch(unitButton, unitWatch)
 		if not unitWatch or UnitExists(unit) then
@@ -490,10 +489,6 @@ do
 		if self.headerType == 'pet' then
 			self:RegisterEvent("UNIT_PET")
 		end
-		if isWrath then -- bugfix see: FixToggleForVehicleBug()
-			self:RegisterEvent("UNIT_EXITED_VEHICLE")
-			self:RegisterEvent("UNIT_ENTERED_VEHICLE")
-		end
 		Update(self)
 	end
 
@@ -502,10 +497,6 @@ do
 		self:UnregisterEvent("UNIT_NAME_UPDATE")
 		if self.headerType == 'pet' then
 			self:UnregisterEvent("UNIT_PET")
-		end
-		if isWrath then -- bugfix see: FixToggleForVehicleBug()
-			self:UnregisterEvent("UNIT_EXITED_VEHICLE")
-			self:UnregisterEvent("UNIT_ENTERED_VEHICLE")
 		end
 	end
 

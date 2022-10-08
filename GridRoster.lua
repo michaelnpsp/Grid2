@@ -356,6 +356,7 @@ Grid2.roster_players  = roster_players
 Grid2.roster_pets     = roster_pets
 Grid2.roster_names    = roster_names
 Grid2.owner_of_unit   = owner_of_unit
+Grid2.pet_of_unit     = pet_of_unit
 Grid2.roster_my_units = roster_my_units
 Grid2.grouped_units   = grouped_units
 Grid2.raid_indexes    = raid_indexes

@@ -5,6 +5,51 @@ local SecureButton_GetModifiedUnit = SecureButton_GetModifiedUnit
 local next = next
 local pairs = pairs
 local Grid2Frame
+local isWrath = Grid2.isWrath
+
+-- bugfix: wrath toggleForVehicle bug workaround
+-- https://github.com/Stanzilla/WoWUIBugs/issues/274
+local FixToggleForVehicleBugTargeting
+if isWrath then
+	local gsub = string.gsub
+	local format = string.format
+	local strfind = string.find
+	local UnitHasVehicleUI = UnitHasVehicleUI
+	local SecureButton_GetModifiedAttribute = SecureButton_GetModifiedAttribute
+	-- this blizzard api function is bugged (it does not swap players with pets) so we have to replace it
+	function SecureButton_GetModifiedUnit(self)
+		local unit = SecureButton_GetModifiedAttribute(self, 'unit')
+		if unit then
+			local hadPet = strfind(unit,'pet')
+			local noPet = (hadPet==nil and unit) or (unit=='pet' and 'player') or gsub(unit, 'pet(%d)', '%1')
+			local noPetNoTarget, hadTarget = gsub(noPet, 'target', '')
+			if UnitHasVehicleUI(noPetNoTarget) and
+			   SecureButton_GetModifiedAttribute(self, 'toggleForVehicle') and
+			   noPetNoTarget == gsub( gsub( gsub( noPetNoTarget,'^mouseover','' ), '^focus','' ) ,'^arena%d','' )
+			then
+				if hadPet then
+					unit = noPet
+				elseif hadTarget == 0 or SecureButton_GetModifiedAttribute(self, 'allowVehicleTarget')  then
+					unit = gsub(unit, '^player', 'pet'):gsub('^([%a]+)([%d]+)', '%1pet%2')
+				end
+			end
+			return unit
+		end
+	end
+	-- we have to use a macro for targeting but only on players, because pets units can be created in combat and we cannot set macros while in combat
+	-- this ugly workaround should work in malygos because players are not targetable while mounted on the drakos, but this does not work on vehicles
+	-- world quests if the player is targetable while is mounted on the vehicle. The macro targets the player pet if the player is not targetable.
+	function FixToggleForVehicleBugTargeting(self, unit)
+		if not strfind(unit,'pet') then
+			if unit~=self.click_unit and SecureButton_GetModifiedAttribute(self,"toggleForVehicle") then
+			    local pet = unit=='player' and 'pet' or gsub(unit,'^([%a]+)([%d]+)','%1pet%2')
+				self:SetAttribute('*type1', 'macro')
+				self:SetAttribute( "*macrotext1", format("/tar [@%s,help][@%s,help][@%s]", unit, pet, unit) )
+				self.click_unit = unit
+			end
+		end
+	end
+end
 
 --{{{ Registered unit frames tracking
 local frames_of_unit = setmetatable({}, { __index = function (self, key)
@@ -71,6 +116,7 @@ function GridFrameEvents:OnAttributeChanged(name, value)
 		if value then
 			local unit = SecureButton_GetModifiedUnit(self)
 			if old_unit ~= unit then
+				if isWrath then FixToggleForVehicleBugTargeting(self,value) end
 				Grid2Frame:Debug("updated", self:GetName(), name, value, unit, '<=', old_unit)
 				self.unit = unit
 				Grid2:SetFrameUnit(self, unit)
@@ -359,7 +405,7 @@ function Grid2Frame:UpdateFrameUnits()
 	end
 end
 
-function Grid2Frame:UNIT_ENTERED_VEHICLE(_, unit)
+function Grid2Frame:UNIT_ENTERED_VEHICLE(event, unit)
 	for frame in next, Grid2:GetUnitFrames(unit) do
 		local old, new = frame.unit, SecureButton_GetModifiedUnit(frame)
 		if old ~= new then
@@ -368,19 +414,16 @@ function Grid2Frame:UNIT_ENTERED_VEHICLE(_, unit)
 			frame:UpdateIndicators()
 		end
 	end
-end
-
-function Grid2Frame:UNIT_EXITED_VEHICLE(_, unit)
-	local pet = Grid2:GetPetOfUnit(unit) or unit
-	for frame in next, Grid2:GetUnitFrames(pet) do
-		local old, new = frame.unit, SecureButton_GetModifiedUnit(frame)
-		if old ~= new then
-			Grid2:SetFrameUnit(frame, new)
-			frame.unit = new
-			frame:UpdateIndicators()
+	if isWrath and event then -- Wrath toggleForVehicle bug fix
+		local pet = Grid2.pet_of_unit[unit]
+		if pet then
+			self:UNIT_ENTERED_VEHICLE(nil,pet)
 		end
 	end
 end
+
+Grid2Frame.UNIT_EXITED_VEHICLE = Grid2Frame.UNIT_ENTERED_VEHICLE
+
 --}}}
 
 _G.Grid2Frame = Grid2Frame
