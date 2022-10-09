@@ -201,16 +201,13 @@ function GridFramePrototype:Layout()
 	-- external border controlled by the border indicator
 	local r,g,b,a = self:GetBackdropBorderColor()
 	Grid2:SetFrameBackdrop( self, frameBackdrop )
-	self:SetBackdropBorderColor(r, g, b, a)
+	if r then self:SetBackdropBorderColor(r, g, b, a) end
 	-- inner border color (sure that is the inner border)
 	local cf = dbx.frameColor
 	self:SetBackdropColor( cf.r, cf.g, cf.b, cf.a )
 	-- visible background
 	local container= self.container
 	container:SetPoint("CENTER", self, "CENTER")
-	-- visible background color (commented because now this color is set by the background indicator)
-	-- local cb = dbx.frameContentColor
-	-- container:SetVertexColor(cb.r, cb.g, cb.b, cb.a)
 	-- shrink the background, showing part of the real frame background (that is behind) as a inner border.
 	local inset = (dbx.frameBorder+dbx.frameBorderDistance)*2
 	container:SetSize( w-inset, h-inset )
@@ -225,7 +222,7 @@ function GridFramePrototype:Layout()
 		local color = dbx.mouseoverColor
 		self:GetHighlightTexture():SetVertexColor(color.r, color.g, color.b, color.a)
 	else
-		self:SetHighlightTexture(nil)
+		self:SetHighlightTexture('')
 	end
 	-- Adjust indicators position to the new size
 	local indicators = Grid2:GetIndicatorsEnabled()

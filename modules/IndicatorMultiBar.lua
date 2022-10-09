@@ -225,7 +225,7 @@ local function Bar_LoadDB(self)
 	self.height        = dbx.height
 	self.direction     = dbx.reverseFill and -1 or 1
 	self.horizontal    = (orientation == "HORIZONTAL")
-	self.reverseFill   = dbx.reverseFill
+	self.reverseFill   = not not dbx.reverseFill
 	self.backAnchor    = dbx.backAnchor
 	self.reverse       = dbx.reverseMainBar
 	self.opacity       = dbx.textureColor.a

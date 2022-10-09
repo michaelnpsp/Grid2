@@ -43,11 +43,11 @@ local function Square_Layout(self, parent)
 		local r,g,b,a = Square:GetBackdropBorderColor()
 		Grid2:SetFrameBackdrop(Square, self.backdrop)
 		Square:SetBackdropColor( c.r, c.g, c.b, c.a )
-		Square:SetBackdropBorderColor( r,g,b,a )
+		if r then Square:SetBackdropBorderColor( r,g,b,a ) end
 	else
 		local r,g,b,a = Square:GetBackdropColor()
 		Grid2:SetFrameBackdrop(Square, self.backdrop)
-		Square:SetBackdropColor( r,g,b,a )
+		if r then Square:SetBackdropColor( r,g,b,a ) end
 		if self.borderSize then
 			local c = self.color
 			Square:SetBackdropBorderColor( c.r, c.g, c.b, c.a )

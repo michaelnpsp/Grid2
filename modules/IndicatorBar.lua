@@ -217,7 +217,7 @@ local function Bar_LoadDB(self)
 	self.offsety     = l.y
 	self.width       = dbx.width
 	self.height      = dbx.height
-	self.reverseFill = dbx.reverseFill
+	self.reverseFill = not not dbx.reverseFill
 	self.backColor   = dbx.backColor or (dbx.invertColor and defaultBackColor) or nil
 	if dbx.hideWhenInactive then
 		self.OnUpdate = (dbx.duration and Bar_OnUpdateD2) or (dbx.stack and Bar_OnUpdateS2) or Bar_OnUpdate2

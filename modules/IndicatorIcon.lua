@@ -122,7 +122,7 @@ local function Icon_Layout(self, parent)
 		Icon:SetAllPoints(f)
 	end
 	Grid2:SetFrameBackdrop(f, self.backdrop)
-	f:SetBackdropBorderColor(r, g, b, a)
+	if r then f:SetBackdropBorderColor(r, g, b, a) end
 	local size = self.iconSize
 	if size<=1 then
 		size = size * parent:GetHeight()
