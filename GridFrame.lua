@@ -8,7 +8,7 @@ local Grid2Frame
 
 -- bugfix: wrath toggleForVehicle bug workaround
 -- https://github.com/Stanzilla/WoWUIBugs/issues/274
-local fix_tfv_enabled, FixToggleForVehicleBugTargeting
+local fix_tfv_enabled, FixToggleForVehicleBugTargeting, FixToggleForVehicleBugPet
 if Grid2.isWrath then
 	local vehicle_instances = {
 		[616] = true, -- malygos raid
@@ -57,6 +57,24 @@ if Grid2.isWrath then
 			self:SetAttribute('*type1', 'target')
 			self:SetAttribute('*macrotext1', nil)
 			self.click_unit = nil
+		end
+	end
+	-- toggle pet swap, replace pet units with owner units
+	-- sometimes pet dont exist when UNIT_ENTERED_VEHICLE event is triggered so we have to wait a while before registering the unit
+	function FixToggleForVehicleBugPet(unit, event)
+		local pet = Grid2.pet_of_unit[unit]
+		if pet then
+			Grid2Frame:UNIT_ENTERED_VEHICLE(nil,pet)
+			if not UnitExists(pet) and event=='UNIT_ENTERED_VEHICLE' then
+				C_Timer.After(1.5, function()
+					if UnitExists(pet) then
+						Grid2:RosterRegisterUnit(pet)
+						for frame in next, Grid2:GetUnitFrames(pet) do
+							frame:UpdateIndicators()
+						end
+					end
+				end)
+			end
 		end
 	end
 	-- Enable/Disable toggleForVehicle bug workaround, called from GridRoster.lua when zone changed
@@ -435,10 +453,7 @@ function Grid2Frame:UNIT_ENTERED_VEHICLE(event, unit)
 		end
 	end
 	if fix_tfv_enabled and event then -- Wrath toggleForVehicle bug fix
-		local pet = Grid2.pet_of_unit[unit]
-		if pet then
-			self:UNIT_ENTERED_VEHICLE(nil,pet)
-		end
+		FixToggleForVehicleBugPet(unit, event)
 	end
 end
 

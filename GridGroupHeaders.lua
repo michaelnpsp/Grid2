@@ -84,23 +84,6 @@ local function SetupTestMode(self, units)
 	end
 end
 
--- bugfix: https://github.com/Stanzilla/WoWUIBugs/issues/274
-local function FixToggleForVehicleBug(self, headerType, unit)
-	if unit and self:GetAttribute('toggleForVehicle') then
-		if headerType=='player' then
-			if UnitHasVehicleUI(unit) then
-				return unit=='player' and 'pet' or gsub(unit,"^([%a]+)([%d]+)", "%1pet%2")
-			end
-		elseif headerType=='pet' then
-			local ownerUnit = unit=='pet' and 'player' or gsub(unit,"pet(%d)","%1")
-			if UnitHasVehicleUI(ownerUnit) then
-				return ownerUnit
-			end
-		end
-	end
-	return unit
-end
-
 -- misc table functions
 local function fillArrayTable(tbl, ...) -- fill indexed table
 	for i=1, select("#",...) do
