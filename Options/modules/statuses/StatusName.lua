@@ -31,9 +31,37 @@ Grid2Options:RegisterStatusOptions("name", "misc", function(self, status, option
 		end,
 		hidden = function() return type(status.dbx.defaultName)~='string' end,
 	}
-	options.transliterate = {
+	options.displayPetOwner = {
 		type  = "toggle",
 		order = 30,
+		width = "full",
+		name  = L["Display Pet's Owner"],
+		desc  = L["Display the pet's owner name instead of the pet name."],
+		get   = function ()	return status.dbx.displayPetOwner end,
+		set   = function (_, v)
+			status.dbx.displayPetOwner = v or nil
+			status:UpdateDB()
+			status:UpdateAllUnits()
+		end,
+	}
+	options.displayVehicleOwner = {
+		type  = "toggle",
+		order = 40,
+		width = "full",
+		name  = L["Display Vehicle's Owner"],
+		desc  = L["Display the vehicle's owner name instead of the vehicle name."],
+		get   = function ()	return status.dbx.displayVehicleOwner or status.dbx.displayPetOwner end,
+		set   = function (_, v)
+			status.dbx.displayVehicleOwner = v or nil
+			status:UpdateDB()
+			status:UpdateAllUnits()
+		end,
+		disabled = function() return status.dbx.displayPetOwner end,
+		hidden = function() return Grid2.versionCli<30000 end,
+	}
+	options.transliterate = {
+		type  = "toggle",
+		order = 50,
 		width = "full",
 		name  = L["Transliterate cyrillic letters"],
 		desc  = L["Convert cyrillic letters to latin alphabet."],
