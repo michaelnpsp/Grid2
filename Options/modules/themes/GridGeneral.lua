@@ -4,9 +4,9 @@ local theme = Grid2Options.editedTheme
 
 --=========================================================================================================
 
-local order_layout  = 40
-local order_display = 30
 local order_anchor  = 20
+local order_display = 30
+local order_layout  = 40
 
 local layoutOptions =  { mainheader = {
 		type = "header",
@@ -256,9 +256,13 @@ local layoutOptions =  { mainheader = {
 
 --===============================================================================================
 
-local frameOptions = { framewidth = {
+local frameOptions = { mainheader = {
+		type = "header",
+		order = 1,
+		name = L["Size of Frames"],
+}, framewidth = {
 		type = "range",
-		order = 10,
+		order = 2,
 		name = L["Frame Width"],
 		desc = L["Adjust the width of each unit's frame."],
 		min = 10,
@@ -274,7 +278,7 @@ local frameOptions = { framewidth = {
 		disabled = InCombatLockdown,
 }, frameheight = {
 		type = "range",
-		order = 20,
+		order = 3,
 		name = L["Frame Height"],
 		desc = L["Adjust the height of each unit's frame."],
 		min = 10,
@@ -440,11 +444,67 @@ local frameOptions = { framewidth = {
 		hidden = function() return not theme.frame.mouseoverHighlight end,
 }, }
 
+local function GenerateHeaderSizeSetup(options, key, desc, order, dbKey)
+--[[
+	options[key..1] = {
+		type = "header",
+		order = order,
+		name = L[desc],
+	}
+	--]]
+	options[key..2] = {
+		type = "range",
+		order = order+0.1,
+		name = L[desc] .. ' ' .. L['Width'],
+		desc = L["Adjust the width percent of each unit's frame."],
+		min = 0.01,
+		max = 5,
+		step = 0.001,
+		softMax = 1,
+		isPercent = true,
+		get = function ()
+			return theme.frame.frameWidths[key] or 1
+		end,
+		set = function (_, v)
+			theme.frame.frameWidths[key] = v~=1 and v or nil
+			Grid2Layout:UpdateDisplay()
+		end,
+		disabled = InCombatLockdown,
+		hidden = function() return dbKey and not theme.layout[dbKey] end,
+	}
+	options[key..3] = {
+		type = "range",
+		order = order+0.2,
+		name = L[desc] .. ' ' .. L['Height'],
+		desc = L["Adjust the height percent of each unit's frame."],
+		min = 0.01,
+		max = 5,
+		step = 0.001,
+		softMax = 1,
+		isPercent = true,
+		get = function ()
+			return theme.frame.frameHeights[key] or 1
+		end,
+		set = function (_, v)
+			theme.frame.frameHeights[key] = v~=1 and v or nil
+			Grid2Layout:UpdateDisplay()
+		end,
+		disabled = InCombatLockdown,
+		hidden = function() return dbKey and not theme.layout[dbKey] end,
+	}
+end
+
+GenerateHeaderSizeSetup(frameOptions, 'player', 'Players', 10)
+GenerateHeaderSizeSetup(frameOptions, 'pet',    'Pets',    11)
+GenerateHeaderSizeSetup(frameOptions, 'target', 'Target',  12, 'displayHeaderTarget' )
+GenerateHeaderSizeSetup(frameOptions, 'focus',  'Focus',   13, 'displayHeaderFocus' )
+GenerateHeaderSizeSetup(frameOptions, 'boss',   'Bosses',  14, 'displayHeaderBosses')
+
 --===============================================================================================
 
 local options = {
-	layout = { type = "group", inline = true, order = 1, name = L["Layout"], desc = L["Layout"], args = layoutOptions },
-	frame  = { type = "group", inline = true, order = 2, name = L["Frames"], desc = L["Frames"], args = frameOptions  },
+	layout = { type = "group", order = 1, name = L["Layout"], desc = L["Layout"], args = layoutOptions },
+	frame  = { type = "group", order = 2, name = L["Frames"], desc = L["Frames"], args = frameOptions  },
 }
 Grid2Options:AddThemeOptions( "appearance", "Appearance", options )
 

@@ -286,10 +286,12 @@ local generalOptions = {
 			return not Grid2Layout.db.global.useInsecureHeaders
 		end,
 		set = function(info,v)
-			Grid2Layout.db.global.useInsecureHeaders= (not v) or nil
+			v = (not v) or nil
+			Grid2Layout.db.global.useInsecureHeaders = v
+			Grid2Layout.useInsecureHeaders = v
 			Grid2Layout:RefreshLayout()
 		end,
-		-- hidden = function() return not Grid2.debugging end,
+		hidden = function() return not Grid2.isDevelop end,
 	},
 
 	sortMethod = {

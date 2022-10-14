@@ -208,6 +208,11 @@ local function GridFrame_Init(frame, width, height)
 	frame:Layout()
 end
 
+local function GridFrame_GetInitialSize(self)
+	local header = self:GetParent()
+	return header.frameWidth, header.frameHeight
+end
+
 function GridFramePrototype:OnUnitStateChanged()
 	Grid2:RosterRefreshUnit(self.unit)
 	self:UpdateIndicators() -- TODO maybe do not update if not visible and unit does not exist
@@ -215,7 +220,7 @@ end
 
 function GridFramePrototype:Layout()
 	local dbx = Grid2Frame.db.profile
-	local w, h = Grid2Frame:GetFrameSize()
+	local w,h = GridFrame_GetInitialSize(self)
 	-- external border controlled by the border indicator
 	local r,g,b,a = self:GetBackdropBorderColor()
 	Grid2:SetFrameBackdrop( self, frameBackdrop )
@@ -365,7 +370,7 @@ function Grid2Frame:RefreshIndicators(update)
 end
 
 function Grid2Frame:RegisterFrame(frame)
-	GridFrame_Init(frame, self:GetFrameSize())
+	GridFrame_Init(frame, GridFrame_GetInitialSize(frame))
 	self.registeredFrames[frame:GetName()] = frame
 end
 
@@ -388,22 +393,12 @@ end
 
 function Grid2Frame:LayoutFrames(notify)
 	self:UpdateBackdrop()
-	for name, frame in next, self.registeredFrames do
-		frame:Layout()
+	for _,header in ipairs(Grid2Layout.groupsUsed) do
+		for _,frame in ipairs(header) do
+			frame:Layout()
+		end
 	end
 	if notify then self:SendMessage("Grid_UpdateLayoutSize") end
-end
-
-function Grid2Frame:GetFrameSize()
-	local p = self.db.profile
-	local m = Grid2.testMaxPlayers or Grid2.instMaxPlayers
-	return p.frameWidths[m] or p.frameWidth, p.frameHeights[m] or p.frameHeight
-end
-
-function Grid2Frame:SetFrameSize(w, h)
-	self.db.profile.frameWidth  = w or self.db.profile.frameWidth
-	self.db.profile.frameHeight = h or self.db.profile.frameHeight
-	Grid2Layout:UpdateDisplay()
 end
 
 -- Grid2Frame:WithAllFrames()

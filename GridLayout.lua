@@ -209,6 +209,8 @@ function Grid2Layout:OnModuleInitialize()
 	self.frame.frameBack = CreateFrame("Frame", "Grid2LayoutFrameBack", self.frame, BackdropTemplateMixin and "BackdropTemplate" or nil)
 	-- custom defaults
 	self.customDefaults = self.db.global.customDefaults
+	-- avoid insecure headers in release versions
+	self.useInsecureHeaders = (Grid2.isDevelop and self.db.global.useInsecureHeaders) or nil
 	-- add custom layouts
 	self:AddCustomLayouts()
 end
@@ -277,7 +279,7 @@ function Grid2Layout:Grid_GroupTypeChanged(_, groupType, instType, maxPlayers)
 end
 
 function Grid2Layout:Grid_RosterUpdate(_, unknowns)
-	if unknowns and not self.db.global.useInsecureHeaders then
+	if unknowns and not self.useInsecureHeaders then
 		Grid2:RunThrottled(self, "FixRoster", .25)
 	end
 end
@@ -424,6 +426,14 @@ function Grid2Layout:UpdateFrame()
 	self:EnableMouse(not p.FrameLock)
 end
 
+function Grid2Layout:SetupMainFrame()
+	local frame = self.frame
+	frame.headerKey = self.layoutHasDetached and self.layoutName or nil -- used if there are detached headers to save/restore position in different place on db
+	if frame:GetWidth()==0 then
+		frame:SetSize(1,1) -- assign a default size, to make frame visible if we are in combat after a UI reload
+	end
+end
+
 function Grid2Layout:SetClamp()
 	self.frame:SetClampedToScreen(self.db.profile.clamp)
 end
@@ -535,15 +545,17 @@ function Grid2Layout:LoadLayout(layoutName)
 			self:GenerateHeaders(layout.defaults, 1)
 		end
 		self:AddSpecialHeaders()
-		self.frame.headerKey = self.layoutHasDetached and layoutName or nil
+		self:SetupMainFrame()
 		self:PlaceHeaders()
-		self:UpdateDisplay()
+		self:UpdateTextures()
+		self:UpdateColor()
+		self:UpdateVisibility()
 	end
 end
 
 --{{ Header management
-function Grid2Layout:AddHeader(layoutHeader, defaults, setupIndex)
-	local template = self.layoutHeaderClass:template(layoutHeader, self.db.global.useInsecureHeaders or self.testLayoutName)
+function Grid2Layout:AddHeader(layoutHeader, defaults, setupIndex, headerName)
+	local template = self.layoutHeaderClass:template(layoutHeader, self.useInsecureHeaders or self.testLayoutName)
 	local index    = self.indexes[template] + 1
 	local headers  = self.groups[template]
 	local header   = headers[index]
@@ -552,6 +564,7 @@ function Grid2Layout:AddHeader(layoutHeader, defaults, setupIndex)
 		headers[index] = header
 	end
 	header.dbx = layoutHeader
+	header.headerName = headerName or layoutHeader.type or 'player'
 	self.indexes[template] = index
 	self.groupsUsed[#self.groupsUsed+1] = header
 	self:SetHeaderAttributes(header, defaults)
@@ -584,7 +597,7 @@ end
 -- Display special units
 do
 	local template = { type = 'custom', detachHeader = true }
-	local function AddHeader(self, key, units, setupIndex)
+	local function AddHeader(self, name, key, units, setupIndex)
 		local db = self.db.profile
 		if db[key] then
 			if key=='displayHeaderBosses' then
@@ -597,13 +610,13 @@ do
 				template.hideEmptyUnits = nil
 			end
 			template.unitsFilter = units
-			self:AddHeader( template, nil, setupIndex )
+			self:AddHeader( template, nil, setupIndex, name)
 		end
 	end
 	function Grid2Layout:AddSpecialHeaders()
-		AddHeader( self, 'displayHeaderTarget', 'target', 10001 )
-		AddHeader( self, 'displayHeaderFocus',  'focus',  10002 )
-		AddHeader( self, 'displayHeaderBosses', 'boss1,boss2,boss3,boss4,boss5,boss6,boss7,boss8', 10003 )
+		AddHeader( self, 'target', 'displayHeaderTarget', 'target', 10001 )
+		AddHeader( self, 'focus',  'displayHeaderFocus',  'focus',  10002 )
+		AddHeader( self, 'boss',   'displayHeaderBosses', 'boss1,boss2,boss3,boss4,boss5,boss6,boss7,boss8', 10003 )
 	end
 end
 
@@ -648,6 +661,8 @@ function Grid2Layout:FixHeaderAttributes(header, index)
 		header:SetAttribute("useOwnerUnit", false)
 		header:SetAttribute("unitsuffix", nil)
 	end
+	-- setup frames size
+	self:UpdateFramesSizeForHeader(header)
 	-- workaround to blizzard bug
 	self:ForceFramesCreation(header)
 end
@@ -670,24 +685,41 @@ function Grid2Layout:ForceFramesCreation(header)
 	end
 end
 
+-- used only in options to update configuration changes
 function Grid2Layout:UpdateDisplay()
 	self:UpdateTextures()
 	self:UpdateColor()
 	self:UpdateVisibility()
 	self:UpdateFramesSize()
+	self:UpdateHeaders()
 end
 
 function Grid2Layout:UpdateFramesSize()
-	local nw,nh = Grid2Frame:GetFrameSize()
-	local ow,oh = self.frameWidth or nw, self.frameHeight or nh
-	self.frameWidth, self.frameHeight = nw, nh
-	if nw~=ow or nh~=oh then
-		Grid2Frame:LayoutFrames()
-		Grid2Frame:UpdateIndicators()
-		self:UpdateHeaders() -- Force headers size update because this triggers a "Grid_UpdateLayoutSize" message.
+	for _,header in ipairs(self.groupsUsed) do
+		self:UpdateFramesSizeForHeader(header)
 	end
-	if self.frame:GetWidth()==0 then
-		self.frame:SetSize(1,1) -- assign a default size, to make frame visible if we are in combat after a UI reload
+	Grid2Frame:UpdateIndicators()
+	Grid2:RunThrottled(self, "UpdateSize", 0.01)
+end
+
+function Grid2Layout:GetFramesSizeForHeader(header)
+	local m  = Grid2.testMaxPlayers or Grid2.instMaxPlayers
+	local p  = Grid2Frame.db.profile
+	local fw = p.frameWidths
+	local fh = p.frameHeights
+	local w  = (fw[m] or p.frameWidth)  * (fw[header.headerName] or 1)
+	local h  = (fh[m] or p.frameHeight) * (fh[header.headerName] or 1)
+	return w, h
+end
+
+function Grid2Layout:UpdateFramesSizeForHeader(header, update)
+	local w, h = self:GetFramesSizeForHeader(header)
+	if w~=header.frameWidth or h~=header.frameHeight then
+		header.frameWidth, header.frameHeight = w, h
+		for _,frame in ipairs(header) do
+			frame:Layout()
+		end
+		return true
 	end
 end
 
