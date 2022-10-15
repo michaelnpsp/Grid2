@@ -3,12 +3,84 @@ local L = Grid2Options.L
 local theme = Grid2Options.editedTheme
 
 --=========================================================================================================
+-- Layout position & anchor
+--=========================================================================================================
 
-local order_anchor  = 20
-local order_display = 30
-local order_layout  = 40
+local order_anchor  = 10
 
-local layoutOptions =  { mainheader = {
+local layoutOptions1 =  { anchorheader = {
+		type = "header",
+		order = order_anchor,
+		name = L["Position and Anchor"],
+}, layoutanchor = {
+		type = "select",
+		name = L["Layout Anchor"],
+		desc = L["Sets where Grid is anchored relative to the screen."],
+		order = order_anchor + 1,
+		get = function () return theme.layout.anchor end,
+		set = function (_, v)
+				  theme.layout.anchor = v
+				  Grid2Layout:SavePosition()
+				  Grid2Layout:RestorePosition()
+			  end,
+		values={["CENTER"] = L["CENTER"], ["TOP"] = L["TOP"], ["BOTTOM"] = L["BOTTOM"], ["LEFT"] = L["LEFT"], ["RIGHT"] = L["RIGHT"], ["TOPLEFT"] = L["TOPLEFT"], ["TOPRIGHT"] = L["TOPRIGHT"], ["BOTTOMLEFT"] = L["BOTTOMLEFT"], ["BOTTOMRIGHT"] = L["BOTTOMRIGHT"] },
+}, groupanchor = {
+		type = "select",
+		name = L["Group Anchor"],
+		desc = L["Sets where groups are anchored relative to the layout frame."],
+		order = order_anchor + 2,
+		get = function () return theme.layout.groupAnchor end,
+		set = function (_, v)
+			theme.layout.groupAnchor = v
+			Grid2Layout:RefreshLayout()
+		end,
+		values={["TOPLEFT"] = L["TOPLEFT"], ["TOPRIGHT"] = L["TOPRIGHT"], ["BOTTOMLEFT"] = L["BOTTOMLEFT"], ["BOTTOMRIGHT"] = L["BOTTOMRIGHT"] },
+}, positionx = {
+		type = "range",
+		name = L["Horizontal Position"],
+		desc = L["Adjust Grid2 horizontal position."],
+		order = order_anchor + 3,
+		softMin = -2048,
+		softMax = 2048,
+		step = 1,
+		get = function ()
+			local screen_w, screen_h = GetPhysicalScreenSize()
+			return math.floor( theme.layout.PosX * screen_w / (UIParent:GetWidth()*UIParent:GetEffectiveScale()) + 0.5 )
+		end,
+		set = function (_, v)
+			local screen_w, screen_h = GetPhysicalScreenSize()
+			theme.layout.PosX = v / (screen_w / (UIParent:GetWidth()*UIParent:GetEffectiveScale()))
+			Grid2Layout:RestorePosition()
+			Grid2Layout:SavePosition()
+		end,
+}, positiony = {
+		type = "range",
+		name = L["Vertical Position"],
+		desc = L["Adjust Grid2 vertical position."],
+		order = order_anchor + 4,
+		softMin = -2048,
+		softMax = 2048,
+		step = 1,
+		get = function ()
+			local screen_w, screen_h = GetPhysicalScreenSize()
+			return math.floor( theme.layout.PosY * screen_h / (UIParent:GetHeight()*UIParent:GetEffectiveScale()) + 0.5 )
+		end,
+		set = function (_, v)
+			local screen_w, screen_h = GetPhysicalScreenSize()
+			theme.layout.PosY = v / (screen_h / (UIParent:GetHeight()*UIParent:GetEffectiveScale()))
+			Grid2Layout:RestorePosition()
+			Grid2Layout:SavePosition()
+		end,
+} }
+
+--=========================================================================================================
+-- Layout Look&Feel
+--=========================================================================================================
+
+local order_display = 10
+local order_layout  = 20
+
+local layoutOptions2 =  { mainheader = {
 		type = "header",
 		order = order_layout + 1,
 		name = L["Misc"],
@@ -189,74 +261,13 @@ local layoutOptions =  { mainheader = {
 				  theme.layout.ScaleSize = v
 				  Grid2Layout:RestorePosition()
 			  end,
-}, anchorheader = {
-		type = "header",
-		order = order_anchor,
-		name = L["Position and Anchor"],
-}, layoutanchor = {
-		type = "select",
-		name = L["Layout Anchor"],
-		desc = L["Sets where Grid is anchored relative to the screen."],
-		order = order_anchor + 1,
-		get = function () return theme.layout.anchor end,
-		set = function (_, v)
-				  theme.layout.anchor = v
-				  Grid2Layout:SavePosition()
-				  Grid2Layout:RestorePosition()
-			  end,
-		values={["CENTER"] = L["CENTER"], ["TOP"] = L["TOP"], ["BOTTOM"] = L["BOTTOM"], ["LEFT"] = L["LEFT"], ["RIGHT"] = L["RIGHT"], ["TOPLEFT"] = L["TOPLEFT"], ["TOPRIGHT"] = L["TOPRIGHT"], ["BOTTOMLEFT"] = L["BOTTOMLEFT"], ["BOTTOMRIGHT"] = L["BOTTOMRIGHT"] },
-}, groupanchor = {
-		type = "select",
-		name = L["Group Anchor"],
-		desc = L["Sets where groups are anchored relative to the layout frame."],
-		order = order_anchor + 2,
-		get = function () return theme.layout.groupAnchor end,
-		set = function (_, v)
-			theme.layout.groupAnchor = v
-			Grid2Layout:RefreshLayout()
-		end,
-		values={["TOPLEFT"] = L["TOPLEFT"], ["TOPRIGHT"] = L["TOPRIGHT"], ["BOTTOMLEFT"] = L["BOTTOMLEFT"], ["BOTTOMRIGHT"] = L["BOTTOMRIGHT"] },
-}, positionx = {
-		type = "range",
-		name = L["Horizontal Position"],
-		desc = L["Adjust Grid2 horizontal position."],
-		order = order_anchor + 3,
-		softMin = -2048,
-		softMax = 2048,
-		step = 1,
-		get = function ()
-			local screen_w, screen_h = GetPhysicalScreenSize()
-			return math.floor( theme.layout.PosX * screen_w / (UIParent:GetWidth()*UIParent:GetEffectiveScale()) + 0.5 )
-		end,
-		set = function (_, v)
-			local screen_w, screen_h = GetPhysicalScreenSize()
-			theme.layout.PosX = v / (screen_w / (UIParent:GetWidth()*UIParent:GetEffectiveScale()))
-			Grid2Layout:RestorePosition()
-			Grid2Layout:SavePosition()
-		end,
-}, positiony = {
-		type = "range",
-		name = L["Vertical Position"],
-		desc = L["Adjust Grid2 vertical position."],
-		order = order_anchor + 4,
-		softMin = -2048,
-		softMax = 2048,
-		step = 1,
-		get = function ()
-			local screen_w, screen_h = GetPhysicalScreenSize()
-			return math.floor( theme.layout.PosY * screen_h / (UIParent:GetHeight()*UIParent:GetEffectiveScale()) + 0.5 )
-		end,
-		set = function (_, v)
-			local screen_w, screen_h = GetPhysicalScreenSize()
-			theme.layout.PosY = v / (screen_h / (UIParent:GetHeight()*UIParent:GetEffectiveScale()))
-			Grid2Layout:RestorePosition()
-			Grid2Layout:SavePosition()
-		end,
 } }
 
 --===============================================================================================
+-- Frames Sizes
+--===============================================================================================
 
-local frameOptions = { mainheader = {
+local frameOptions1 = { mainheader = {
 		type = "header",
 		order = 1,
 		name = L["Size of Frames"],
@@ -292,7 +303,62 @@ local frameOptions = { mainheader = {
 			Grid2Layout:UpdateDisplay()
 		end,
 		disabled = InCombatLockdown,
-}, headerback = {
+} }
+
+local function GenerateHeaderSizeSetup(options, key, desc, order, dbKey)
+	options[key..2] = {
+		type = "range",
+		order = order+0.1,
+		name = L[desc] .. ' ' .. L['Width'],
+		desc = L["Adjust the width percent of each unit's frame."],
+		min = 0.01,
+		max = 5,
+		step = 0.001,
+		softMax = 1,
+		isPercent = true,
+		get = function ()
+			return theme.frame.frameHeaderWidths[key] or 1
+		end,
+		set = function (_, v)
+			theme.frame.frameHeaderWidths[key] = v~=1 and v or nil
+			Grid2Layout:UpdateDisplay()
+		end,
+		disabled = InCombatLockdown,
+		hidden = function() return dbKey and not theme.layout[dbKey] end,
+	}
+	options[key..3] = {
+		type = "range",
+		order = order+0.2,
+		name = L[desc] .. ' ' .. L['Height'],
+		desc = L["Adjust the height percent of each unit's frame."],
+		min = 0.01,
+		max = 5,
+		step = 0.001,
+		softMax = 1,
+		isPercent = true,
+		get = function ()
+			return theme.frame.frameHeaderHeights[key] or 1
+		end,
+		set = function (_, v)
+			theme.frame.frameHeaderHeights[key] = v~=1 and v or nil
+			Grid2Layout:UpdateDisplay()
+		end,
+		disabled = InCombatLockdown,
+		hidden = function() return dbKey and not theme.layout[dbKey] end,
+	}
+end
+
+GenerateHeaderSizeSetup(frameOptions1, 'player', 'Players', 10)
+GenerateHeaderSizeSetup(frameOptions1, 'pet',    'Pets',    11)
+GenerateHeaderSizeSetup(frameOptions1, 'target', 'Target',  12, 'displayHeaderTarget' )
+GenerateHeaderSizeSetup(frameOptions1, 'focus',  'Focus',   13, 'displayHeaderFocus' )
+GenerateHeaderSizeSetup(frameOptions1, 'boss',   'Bosses',  14, 'displayHeaderBosses')
+
+--===============================================================================================
+-- Frames Look & Feel
+--===============================================================================================
+
+local frameOptions2 = { headerback = {
 		type = "header",
 		order = 21,
 		name = L["Background"],
@@ -444,60 +510,13 @@ local frameOptions = { mainheader = {
 		hidden = function() return not theme.frame.mouseoverHighlight end,
 }, }
 
-local function GenerateHeaderSizeSetup(options, key, desc, order, dbKey)
-	options[key..2] = {
-		type = "range",
-		order = order+0.1,
-		name = L[desc] .. ' ' .. L['Width'],
-		desc = L["Adjust the width percent of each unit's frame."],
-		min = 0.01,
-		max = 5,
-		step = 0.001,
-		softMax = 1,
-		isPercent = true,
-		get = function ()
-			return theme.frame.frameHeaderWidths[key] or 1
-		end,
-		set = function (_, v)
-			theme.frame.frameHeaderWidths[key] = v~=1 and v or nil
-			Grid2Layout:UpdateDisplay()
-		end,
-		disabled = InCombatLockdown,
-		hidden = function() return dbKey and not theme.layout[dbKey] end,
-	}
-	options[key..3] = {
-		type = "range",
-		order = order+0.2,
-		name = L[desc] .. ' ' .. L['Height'],
-		desc = L["Adjust the height percent of each unit's frame."],
-		min = 0.01,
-		max = 5,
-		step = 0.001,
-		softMax = 1,
-		isPercent = true,
-		get = function ()
-			return theme.frame.frameHeaderHeights[key] or 1
-		end,
-		set = function (_, v)
-			theme.frame.frameHeaderHeights[key] = v~=1 and v or nil
-			Grid2Layout:UpdateDisplay()
-		end,
-		disabled = InCombatLockdown,
-		hidden = function() return dbKey and not theme.layout[dbKey] end,
-	}
-end
-
-GenerateHeaderSizeSetup(frameOptions, 'player', 'Players', 10)
-GenerateHeaderSizeSetup(frameOptions, 'pet',    'Pets',    11)
-GenerateHeaderSizeSetup(frameOptions, 'target', 'Target',  12, 'displayHeaderTarget' )
-GenerateHeaderSizeSetup(frameOptions, 'focus',  'Focus',   13, 'displayHeaderFocus' )
-GenerateHeaderSizeSetup(frameOptions, 'boss',   'Bosses',  14, 'displayHeaderBosses')
-
 --===============================================================================================
 
 local options = {
-	layout = { type = "group", order = 1, name = L["Layout"], desc = L["Layout"], args = layoutOptions },
-	frame  = { type = "group", order = 2, name = L["Frames"], desc = L["Frames"], args = frameOptions  },
+	layout1 = { type = "group", order = 1, name = L["Layout Position"], desc = L["Layout"], args = layoutOptions1 },
+	layout2 = { type = "group", order = 2, name = L["Layout Look"],     desc = L["Layout"], args = layoutOptions2 },
+	frame1  = { type = "group", order = 3, name = L["Frames Size"],     desc = L["Frames"], args = frameOptions1  },
+	frame2  = { type = "group", order = 4, name = L["Frames Look"],     desc = L["Frames"], args = frameOptions2  },
 }
 Grid2Options:AddThemeOptions( "appearance", "Appearance", options )
 
