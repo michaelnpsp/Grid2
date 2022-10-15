@@ -445,13 +445,6 @@ local frameOptions = { mainheader = {
 }, }
 
 local function GenerateHeaderSizeSetup(options, key, desc, order, dbKey)
---[[
-	options[key..1] = {
-		type = "header",
-		order = order,
-		name = L[desc],
-	}
-	--]]
 	options[key..2] = {
 		type = "range",
 		order = order+0.1,
@@ -463,10 +456,10 @@ local function GenerateHeaderSizeSetup(options, key, desc, order, dbKey)
 		softMax = 1,
 		isPercent = true,
 		get = function ()
-			return theme.frame.frameWidths[key] or 1
+			return theme.frame.frameHeaderWidths[key] or 1
 		end,
 		set = function (_, v)
-			theme.frame.frameWidths[key] = v~=1 and v or nil
+			theme.frame.frameHeaderWidths[key] = v~=1 and v or nil
 			Grid2Layout:UpdateDisplay()
 		end,
 		disabled = InCombatLockdown,
@@ -483,10 +476,10 @@ local function GenerateHeaderSizeSetup(options, key, desc, order, dbKey)
 		softMax = 1,
 		isPercent = true,
 		get = function ()
-			return theme.frame.frameHeights[key] or 1
+			return theme.frame.frameHeaderHeights[key] or 1
 		end,
 		set = function (_, v)
-			theme.frame.frameHeights[key] = v~=1 and v or nil
+			theme.frame.frameHeaderHeights[key] = v~=1 and v or nil
 			Grid2Layout:UpdateDisplay()
 		end,
 		disabled = InCombatLockdown,

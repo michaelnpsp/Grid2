@@ -254,7 +254,6 @@ function Grid2Layout:UpdateTheme()
 	local themes = self.dba.profile.extraThemes
 	self.db.profile = themes and themes[Grid2.currentTheme] or self.dba.profile
 	self.db.shared = self.dba.profile
-	self.frameWidth, self.frameHeight = nil, nil
 	self:UpgradeThemeDB()
 end
 
@@ -273,6 +272,7 @@ function Grid2Layout:Grid_GroupTypeChanged(_, groupType, instType, maxPlayers)
 	self:Debug("GroupTypeChanged", groupType, instType, maxPlayers)
 	if not Grid2:ReloadTheme() then
 		if not self:ReloadLayout() then
+			self:UpdateFramesSizeByRaidSize()
 			self:UpdateVisibility()
 		end
 	end
@@ -685,34 +685,27 @@ function Grid2Layout:ForceFramesCreation(header)
 	end
 end
 
+function Grid2Layout:GetFramesSizeForHeader(header)
+	local m  = Grid2.testMaxPlayers or Grid2.instMaxPlayers
+	local p  = Grid2Frame.db.profile
+	local fw = p.frameWidths
+	local fh = p.frameHeights
+	local hw = p.frameHeaderWidths
+	local hh = p.frameHeaderHeights
+	local w  = (fw[m] or p.frameWidth)  * (hw[header.headerName] or 1)
+	local h  = (fh[m] or p.frameHeight) * (hh[header.headerName] or 1)
+	return w, h
+end
+
 -- used only in options to update configuration changes
 function Grid2Layout:UpdateDisplay()
 	self:UpdateTextures()
 	self:UpdateColor()
 	self:UpdateVisibility()
 	self:UpdateFramesSize()
-	self:UpdateHeaders()
 end
 
-function Grid2Layout:UpdateFramesSize()
-	for _,header in ipairs(self.groupsUsed) do
-		self:UpdateFramesSizeForHeader(header)
-	end
-	Grid2Frame:UpdateIndicators()
-	Grid2:RunThrottled(self, "UpdateSize", 0.01)
-end
-
-function Grid2Layout:GetFramesSizeForHeader(header)
-	local m  = Grid2.testMaxPlayers or Grid2.instMaxPlayers
-	local p  = Grid2Frame.db.profile
-	local fw = p.frameWidths
-	local fh = p.frameHeights
-	local w  = (fw[m] or p.frameWidth)  * (fw[header.headerName] or 1)
-	local h  = (fh[m] or p.frameHeight) * (fh[header.headerName] or 1)
-	return w, h
-end
-
-function Grid2Layout:UpdateFramesSizeForHeader(header, update)
+function Grid2Layout:UpdateFramesSizeForHeader(header)
 	local w, h = self:GetFramesSizeForHeader(header)
 	if w~=header.frameWidth or h~=header.frameHeight then
 		header.frameWidth, header.frameHeight = w, h
@@ -720,6 +713,26 @@ function Grid2Layout:UpdateFramesSizeForHeader(header, update)
 			frame:Layout()
 		end
 		return true
+	end
+end
+
+function Grid2Layout:UpdateFramesSize()
+	local modified
+	for _,header in ipairs(self.groupsUsed) do
+		modified = self:UpdateFramesSizeForHeader(header) or modified
+	end
+	if modified then
+		Grid2Frame:UpdateIndicators()
+		Grid2Layout:UpdateHeaders()
+		Grid2:RunThrottled(self, "UpdateSize", 0.01)
+	end
+	return modified
+end
+
+function Grid2Layout:UpdateFramesSizeByRaidSize()
+	local p = Grid2Frame.db.profile
+	if next(p.frameWidths) or next(p.frameHeights) then
+		self:UpdateFramesSize()
 	end
 end
 

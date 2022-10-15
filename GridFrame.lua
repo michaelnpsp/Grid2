@@ -293,6 +293,8 @@ Grid2Frame.defaultDB = {
 		mouseoverTexture = "Blizzard Quest Title Highlight",
 		frameWidths  = {},
 		frameHeights = {},
+		frameHeaderWidths = {},
+		frameHeaderHeights = {},
 		-- default values for indicators
 		orientation = "VERTICAL",
 		barTexture = "Gradient",
@@ -341,12 +343,21 @@ function Grid2Frame:UpdateTheme()
 	local themes = self.dba.profile.extraThemes
 	self.db.profile = themes and themes[Grid2.currentTheme] or self.dba.profile
 	self.db.shared = self.dba.profile
+	self:UpgradeThemeDB()
 end
 
 function Grid2Frame:RefreshTheme()
 	self:RefreshIndicators(true)
 	self:LayoutFrames()
 	self:UpdateIndicators()
+end
+
+function Grid2Frame:UpgradeThemeDB()
+	local p = self.db.profile
+	p.frameWidths  = p.frameWidths  or {}
+	p.frameHeights = p.frameHeights or {}
+	p.frameHeaderWidths = p.frameHeaderWidths or {}
+	p.frameHeaderHeights = p.frameHeaderHeights or {}
 end
 
 -- wakeup/suspend indicators according to the current theme
