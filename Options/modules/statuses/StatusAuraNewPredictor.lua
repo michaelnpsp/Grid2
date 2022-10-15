@@ -22,7 +22,7 @@ function AuraPredictor:Initialize()
 	classNames    = { [""] = "", ["MYTHIC+"] =  string.format(", |cfffe0000%s+|r ", PLAYER_DIFFICULTY6 or "Mythic") }
 	classNamesLoc = { [""] = "", ["MYTHIC+"] =  strupper(PLAYER_DIFFICULTY6) or "MYTHIC" }
 	for class,translation in pairs(LOCALIZED_CLASS_NAMES_MALE) do
-		local c = RAID_CLASS_COLORS[class]
+		local c = RAID_CLASS_COLORS[class] or Grid2.defaultColors.WHITE
 		classNames[class] = string.format(", |cff%.2x%.2x%.2x%s|r ", c.r*255, c.g*255, c.b*255, translation)
 		classNamesLoc[class] = strupper(translation)
 	end
@@ -58,7 +58,7 @@ function AuraPredictor:GetValues(text, values, max)
 						if max==0 then return end
 					end
 				end
-			end	
+			end
 		end
 		-- If no results, look for className/category
 		if max==12 then
