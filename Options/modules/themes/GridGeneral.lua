@@ -2,44 +2,32 @@ local L = Grid2Options.L
 
 local theme = Grid2Options.editedTheme
 
+local GetTableValue = Grid2Options.GetTableValueSafe
+local SetTableValue = Grid2Options.SetTableValueSafe
+
 --=========================================================================================================
 -- Layout position & anchor
 --=========================================================================================================
 
-local order_anchor  = 10
+local funcPositionHidden = function()
+	return Grid2Layout.db.global.detachHeaders or
+		   Grid2Layout.db.global.detachPetHeaders or
+		   theme.layout.displayHeaderBosses or
+		   theme.layout.displayHeaderFocus or
+		   theme.layout.displayHeaderTarget
+end
 
-local layoutOptions1 =  { anchorheader = {
+local layoutOptions1 =  { positionheader = {
 		type = "header",
-		order = order_anchor,
-		name = L["Position and Anchor"],
-}, layoutanchor = {
-		type = "select",
-		name = L["Layout Anchor"],
-		desc = L["Sets where Grid is anchored relative to the screen."],
-		order = order_anchor + 1,
-		get = function () return theme.layout.anchor end,
-		set = function (_, v)
-				  theme.layout.anchor = v
-				  Grid2Layout:SavePosition()
-				  Grid2Layout:RestorePosition()
-			  end,
-		values={["CENTER"] = L["CENTER"], ["TOP"] = L["TOP"], ["BOTTOM"] = L["BOTTOM"], ["LEFT"] = L["LEFT"], ["RIGHT"] = L["RIGHT"], ["TOPLEFT"] = L["TOPLEFT"], ["TOPRIGHT"] = L["TOPRIGHT"], ["BOTTOMLEFT"] = L["BOTTOMLEFT"], ["BOTTOMRIGHT"] = L["BOTTOMRIGHT"] },
-}, groupanchor = {
-		type = "select",
-		name = L["Group Anchor"],
-		desc = L["Sets where groups are anchored relative to the layout frame."],
-		order = order_anchor + 2,
-		get = function () return theme.layout.groupAnchor end,
-		set = function (_, v)
-			theme.layout.groupAnchor = v
-			Grid2Layout:RefreshLayout()
-		end,
-		values={["TOPLEFT"] = L["TOPLEFT"], ["TOPRIGHT"] = L["TOPRIGHT"], ["BOTTOMLEFT"] = L["BOTTOMLEFT"], ["BOTTOMRIGHT"] = L["BOTTOMRIGHT"] },
+		order = 1,
+		name = L["Grid2 Window Position"],
+		hidden = funcPositionHidden,
 }, positionx = {
 		type = "range",
 		name = L["Horizontal Position"],
 		desc = L["Adjust Grid2 horizontal position."],
-		order = order_anchor + 3,
+		order = 10,
+		width = 1.2,
 		softMin = -2048,
 		softMax = 2048,
 		step = 1,
@@ -53,11 +41,13 @@ local layoutOptions1 =  { anchorheader = {
 			Grid2Layout:RestorePosition()
 			Grid2Layout:SavePosition()
 		end,
+		hidden = funcPositionHidden,
 }, positiony = {
 		type = "range",
 		name = L["Vertical Position"],
 		desc = L["Adjust Grid2 vertical position."],
-		order = order_anchor + 4,
+		order = 20,
+		width = 1.2,
 		softMin = -2048,
 		softMax = 2048,
 		step = 1,
@@ -71,209 +61,52 @@ local layoutOptions1 =  { anchorheader = {
 			Grid2Layout:RestorePosition()
 			Grid2Layout:SavePosition()
 		end,
-} }
-
---=========================================================================================================
--- Layout Look&Feel
---=========================================================================================================
-
-local order_display = 10
-local order_layout  = 20
-
-local layoutOptions2 =  { mainheader = {
+		hidden = funcPositionHidden,
+}, anchorheader = {
 		type = "header",
-		order = order_layout + 1,
-		name = L["Misc"],
-}, horizontal = {
-		type = "toggle",
-		name = L["Horizontal groups"],
-		desc = L["Switch between horzontal/vertical groups."],
-		order = order_layout + 4,
-		get = function ()
-				  return theme.layout.horizontal
-			  end,
-		set = function ()
-			theme.layout.horizontal = not theme.layout.horizontal
-			Grid2Layout:RefreshLayout()
-		 end,
-}, lock = {
-		type = "toggle",
-		name = L["Frame lock"],
-		desc = L["Locks/unlocks the grid for movement."],
-		order = order_layout + 6,
-		get = function() return theme.layout.FrameLock end,
-		set = function()
-			theme.layout.FrameLock = not theme.layout.FrameLock
-			Grid2Layout:UpdateFrame()
-		end,
-}, rightClickMenu = {
-		type = "toggle",
-		name = L["Right Click Menu"],
-		desc = L["Display the standard unit menu when right clicking on a frame."],
-		order = order_layout + 8,
-		get = function () return not theme.frame.menuDisabled end,
-		set = function (_, v)
-			theme.frame.menuDisabled = (not v) or nil
-			Grid2Layout:UpdateMenu()
-		end,
-}, clamp = {
-		type = "toggle",
-		name = L["Clamped to screen"],
-		desc = L["Toggle whether to permit movement out of screen."],
-		order = order_layout + 9,
-		get = function ()
-				  return theme.layout.clamp
-			  end,
-		set = function ()
-				  theme.layout.clamp = not theme.layout.clamp
-				  Grid2Layout:SetClamp()
-			  end,
-}, displayheader = {
-		type = "header",
-		order = order_display,
-		name = L["Display"],
-}, display = {
+		order = 30,
+		name = L["Default Settings"],
+}, layoutanchor = {
 		type = "select",
-		name = L["Show Frame"],
-		desc = L["Sets when the Grid is visible: Choose 'Always', 'Grouped', or 'Raid'."],
-		order = order_display + 1,
-		get = function() return theme.layout.FrameDisplay~="Never" and theme.layout.FrameDisplay or "@Never" end,
-		set = function(_, v)
-			theme.layout.FrameDisplay = v~='@Never' and v or 'Never'
-			Grid2Layout:UpdateVisibility()
-		end,
-		values={["Always"] = L["Always"], ["Grouped"] = L["Grouped"], ["Raid"] = L["Raid"], ["@Never"] = L["Never"]},
-}, petBattle = {
-		type = "toggle",
-		name = L["Hide in Pet Battles"],
-		desc = L["Toggle to hide Grid2 window in Pet Battles"],
-		order = order_display + 7,
-		get = function () return theme.layout.HideInPetBattle end,
+		name = L["Layout Anchor"],
+		desc = L["Sets where Grid is anchored relative to the screen."],
+		order = 40,
+		width = 0.9,
+		get = function () return theme.layout.anchor end,
 		set = function (_, v)
-				  theme.layout.HideInPetBattle = v or nil
-				  Grid2Layout:UpdateVisibility()
-			  end,
-}, frameStrata = {
-		type = "select",
-		name = L["Frame Strata"],
-		desc = L["Sets the strata in which the layout frame should be layered."],
-		order = order_display + 2,
-		get = function() return theme.layout.FrameStrata or "MEDIUM" end,
-		set = function(_, v)
-			Grid2LayoutFrame:SetFrameStrata( v )
-			theme.layout.FrameStrata = (v~="MEDIUM") and v or nil
-		end,
-		values ={ BACKGROUND = L["BACKGROUND"], LOW = L["LOW"], MEDIUM = L["MEDIUM"], HIGH = L["HIGH"] },
-}, backTexture = {
-		type = 'select', dialogControl = 'LSM30_Background',
-		order = order_display + 3,
-		name = L['Background Texture'],
-		get = function (info) return theme.layout.BackgroundTexture or "Grid2 Flat" end,
-		set = function (info, v)
-			theme.layout.BackgroundTexture = v
-			Grid2Layout:UpdateTextures()
-			Grid2Layout:UpdateColor()
-		end,
-		values = AceGUIWidgetLSMlists.background,
-}, borderTexture = {
-		type = "select", dialogControl = "LSM30_Border",
-		order = order_display + 3.1,
-		name = L["Border Texture"],
-		desc = L["Adjust the border texture."],
-		get = function (info) return theme.layout.BorderTexture or "Grid2 Flat" end,
-		set = function (info, v)
-			theme.layout.BorderTexture = v
-			Grid2Layout:UpdateTextures()
-			Grid2Layout:UpdateColor()
-		end,
-		values = AceGUIWidgetLSMlists.border,
-}, backColor = {
-		type = "color",
-		name = L["Background Color"],
-		desc = L["Adjust background color and alpha."],
-		order = order_display + 3.2,
-		get = function ()
-				  local settings = theme.layout
-				  return settings.BackgroundR, settings.BackgroundG, settings.BackgroundB, settings.BackgroundA
-			  end,
-		set = function (_, r, g, b, a)
-				  local settings = theme.layout
-				  settings.BackgroundR, settings.BackgroundG, settings.BackgroundB, settings.BackgroundA = r, g, b, a
-				  Grid2Layout:UpdateColor()
-			  end,
-		hasAlpha = true,
-}, borderColor = {
-		type = "color",
-		name = L["Border Color"],
-		desc = L["Adjust border color and alpha."],
-		order = order_display + 3.3,
-		get = function ()
-				  local settings = theme.layout
-				  return settings.BorderR, settings.BorderG, settings.BorderB, settings.BorderA
-			  end,
-		set = function (_, r, g, b, a)
-				  local settings = theme.layout
-				  settings.BorderR, settings.BorderG, settings.BorderB, settings.BorderA = r, g, b, a
-				  Grid2Layout:UpdateColor()
-			  end,
-		hasAlpha = true,
-}, spacing = {
-		type = "range",
-		name = L["Spacing"],
-		desc = L["Adjust frame spacing."],
-		order = order_display + 4,
-		max = 25,
-		min = 0,
-		step = 1,
-		get = function () return theme.layout.Spacing end,
-		set = function (_, v)
-				theme.layout.Spacing = v
-				Grid2Layout:RefreshLayout()
-			  end,
-}, padding = {
-		type = "range",
-		name = L["Padding"],
-		desc = L["Adjust frame padding."],
-		order = order_display + 5,
-		max = 20,
-		softMin = 0,
-		step = 1,
-		get = function ()
-				  return theme.layout.Padding
-			  end,
-		set = function (_, v)
-				  theme.layout.Padding = v
-				  Grid2Layout:RefreshLayout()
-			  end,
-}, scale = {
-		type = "range",
-		name = L["Scale"],
-		desc = L["Adjust Grid scale."],
-		order = order_display + 6,
-		min = 0.5,
-		max = 2.0,
-		step = 0.05,
-		isPercent = true,
-		get = function ()
-				  return theme.layout.ScaleSize
-			  end,
-		set = function (_, v)
-				  theme.layout.ScaleSize = v
+				  theme.layout.anchor = v
+				  Grid2Layout:SavePosition()
 				  Grid2Layout:RestorePosition()
 			  end,
-} }
-
---===============================================================================================
--- Frames Sizes
---===============================================================================================
-
-local frameOptions1 = { mainheader = {
-		type = "header",
-		order = 1,
-		name = L["Size of Frames"],
+		values= {["CENTER"] = L["CENTER"], ["TOP"] = L["TOP"], ["BOTTOM"] = L["BOTTOM"], ["LEFT"] = L["LEFT"], ["RIGHT"] = L["RIGHT"], ["TOPLEFT"] = L["TOPLEFT"], ["TOPRIGHT"] = L["TOPRIGHT"], ["BOTTOMLEFT"] = L["BOTTOMLEFT"], ["BOTTOMRIGHT"] = L["BOTTOMRIGHT"] }
+}, groupanchor = {
+		type = "select",
+		name = L["Group Anchor"],
+		desc = L["Sets where groups are anchored relative to the layout frame."],
+		order = 50,
+		width = 0.9,
+		get = function () return theme.layout.groupAnchor end,
+		set = function (_, v)
+			theme.layout.groupAnchor = v
+			Grid2Layout:RefreshLayout()
+		end,
+		values= {["TOPLEFT"] = L["TOPLEFT"], ["TOPRIGHT"] = L["TOPRIGHT"], ["BOTTOMLEFT"] = L["BOTTOMLEFT"], ["BOTTOMRIGHT"] = L["BOTTOMRIGHT"] }
+}, groupHorizontal = {
+		type = "select",
+		name = L["Groups Orientation"],
+		desc = L["Switch between horzontal/vertical groups."],
+		order = 50,
+		width = 0.6,
+		get = function () return theme.layout.horizontal end,
+		set = function (_, v)
+			theme.layout.horizontal = v
+			Grid2Layout:RefreshLayout()
+		end,
+		values= { [true] = L['Horizontal'], [false] = L['Vertical'] }
 }, framewidth = {
 		type = "range",
-		order = 2,
+		order = 60,
+		width = 1.2,
 		name = L["Frame Width"],
 		desc = L["Adjust the width of each unit's frame."],
 		min = 10,
@@ -289,7 +122,8 @@ local frameOptions1 = { mainheader = {
 		disabled = InCombatLockdown,
 }, frameheight = {
 		type = "range",
-		order = 3,
+		order = 70,
+		width = 1.2,
 		name = L["Frame Height"],
 		desc = L["Adjust the height of each unit's frame."],
 		min = 10,
@@ -303,56 +137,349 @@ local frameOptions1 = { mainheader = {
 			Grid2Layout:UpdateDisplay()
 		end,
 		disabled = InCombatLockdown,
+}, positionfooter = {
+		type = "header",
+		order = 90,
+		name = L['By Header Type'],
 } }
 
-local function GenerateHeaderSizeSetup(options, key, desc, order, dbKey)
-	options[key..2] = {
-		type = "range",
-		order = order+0.1,
-		name = L[desc] .. ' ' .. L['Width'],
-		desc = L["Adjust the width percent of each unit's frame."],
-		min = 0.01,
-		max = 5,
-		step = 0.001,
-		softMax = 1,
-		isPercent = true,
-		get = function ()
-			return theme.frame.frameHeaderWidths[key] or 1
-		end,
-		set = function (_, v)
-			theme.frame.frameHeaderWidths[key] = v~=1 and v or nil
-			Grid2Layout:UpdateDisplay()
-		end,
-		disabled = InCombatLockdown,
-		hidden = function() return dbKey and not theme.layout[dbKey] end,
+do
+	local key, def
+	local headerAnchorPoints = { [''] = L['Default'], CENTER = L["CENTER"], TOP = L["TOP"], BOTTOM = L["BOTTOM"], LEFT = L["LEFT"], RIGHT = L["RIGHT"], TOPLEFT = L["TOPLEFT"], TOPRIGHT = L["TOPRIGHT"], BOTTOMLEFT = L["BOTTOMLEFT"], BOTTOMRIGHT = L["BOTTOMRIGHT"] }
+	local groupAnchorPoints  = { [''] = L['Default'], TOPLEFT = L["TOPLEFT"], TOPRIGHT = L["TOPRIGHT"], BOTTOMLEFT = L["BOTTOMLEFT"], BOTTOMRIGHT = L["BOTTOMRIGHT"] }
+	local groupSettings = {
+		player = { unitsPerColumn = 5 },
+		pet    = { displayAnchors = true, unitsPerColumn = 5 },
+		boss   = { displayAnchors = true, unitsPerColumn = 8, emptyUnits = 'BossesHideEmpty' },
+		target = { emptyUnits = 'TargetHideEmpty' },
+		focus  = { emptyUnits = 'FocusHideEmpty' },
 	}
-	options[key..3] = {
-		type = "range",
-		order = order+0.2,
-		name = L[desc] .. ' ' .. L['Height'],
-		desc = L["Adjust the height percent of each unit's frame."],
-		min = 0.01,
-		max = 5,
-		step = 0.001,
-		softMax = 1,
-		isPercent = true,
-		get = function ()
-			return theme.frame.frameHeaderHeights[key] or 1
-		end,
-		set = function (_, v)
-			theme.frame.frameHeaderHeights[key] = v~=1 and v or nil
-			Grid2Layout:UpdateDisplay()
-		end,
-		disabled = InCombatLockdown,
-		hidden = function() return dbKey and not theme.layout[dbKey] end,
+	local function funcHiddenAnchors()
+		return not def.displayAnchors or not funcPositionHidden()
+	end
+	local layoutAnchorOptions = {
+
+		__load = { type = "header", order = 0, name = "", hidden = function(info)
+			key = info[#info-1]
+			def = groupSettings[key]
+			return true
+		end },
+
+		anchor = {
+			type = "select",
+			name = L['Layout Anchor'],
+			order = 10,
+			width = 0.9,
+			get = function ()
+				return GetTableValue(theme.layout.anchors, key, '')
+			end,
+			set = function (_, v)
+				SetTableValue(theme.layout, 'anchors',  key, v~='' and v or nil)
+				Grid2Layout:RefreshLayout()
+			end,
+			values= headerAnchorPoints,
+			hidden = funcHiddenAnchors,
+		},
+
+		groupAnchor = {
+			type = "select",
+			name = L["Group Anchor"],
+			order = 20,
+			width = 0.9,
+			get = function ()
+				return GetTableValue(theme.layout.groupAnchors, key, '')
+			end,
+			set = function (_, v)
+				SetTableValue(theme.layout, 'groupAnchors',  key, v~='' and v or nil)
+				Grid2Layout:RefreshLayout()
+			 end,
+			values= groupAnchorPoints,
+			hidden = funcHiddenAnchors,
+		},
+
+		groupOrientation = {
+			type = "select",
+			name = L["Groups Orientation"],
+			desc = L["Switch between horzontal/vertical groups."],
+			order = 30,
+			width = 0.6,
+			get = function ()
+				return GetTableValue(theme.layout.groupHorizontals, key, '')
+			end,
+			set = function (_, v)
+				if v=='' then v = nil end
+				SetTableValue(theme.layout, 'groupHorizontals',  key, v)
+				Grid2Layout:RefreshLayout()
+			end,
+			values= { [''] = L['Default'], [true] = L['Horizontal'], [false] = L['Vertical'] },
+			hidden = funcHiddenAnchors,
+		},
+
+		frameWidth = {
+			type = "range",
+			order = 31,
+			width = 0.9,
+			name = L['Frame Width'],
+			desc = L["Adjust the width percent of each unit's frame."],
+			min = 0.01,
+			max = 5,
+			step = 0.001,
+			softMax = 1,
+			isPercent = true,
+			get = function ()
+				return GetTableValue( theme.frame.frameHeaderWidths, key, 1 )
+			end,
+			set = function (_, v)
+				SetTableValue( theme.frame, 'frameHeaderWidths', key, v~=1 and v or nil )
+				Grid2Layout:UpdateDisplay()
+			end,
+		},
+
+		frameHeight = {
+			type = "range",
+			order = 32,
+			width = 0.9,
+			name = L['Frame Height'],
+			desc = L["Adjust the height percent of each unit's frame."],
+			min = 0.01,
+			max = 5,
+			step = 0.001,
+			softMax = 1,
+			isPercent = true,
+			get = function ()
+				return GetTableValue( theme.frame.frameHeaderHeights, key, 1 )
+			end,
+			set = function (_, v)
+				SetTableValue( theme.frame, 'frameHeaderHeights', key, v~=1 and v or nil )
+				Grid2Layout:UpdateDisplay()
+			end,
+		},
+
+		unitsPerColumn = {
+			order = 40,
+			width = 0.6,
+			type = "range",
+			name = L["Units per Column"],
+			desc = L["Adjust the default units per column for this group type"],
+			min = 1,
+			max = 40,
+			softMax = 10,
+			step = 1,
+			get = function ()
+				return GetTableValue( theme.layout.unitsPerColumns, key, def.unitsPerColumn )
+			end,
+			set = function (_, v)
+				SetTableValue( theme.layout, 'unitsPerColumns', key, v~=def.unitsPerColumn and v or nil )
+				Grid2Layout:RefreshLayout()
+			end,
+			hidden = function() return not def.unitsPerColumn end,
+		},
+
+		hideEmptyUnits = {
+			order = 50,
+			type = "toggle",
+			name = L['Hide Empty Units'],
+			desc = L["Hide frames of non-existant units."],
+			get = function(info)
+				return theme.layout[ def.emptyUnits ]
+			end,
+			set = function(info,v)
+				theme.layout[ def.emptyUnits ] = v or nil
+				Grid2Layout:RefreshLayout()
+			end,
+			hidden = function() return not def.emptyUnits end,
+		},
+
 	}
+
+	layoutOptions1.player = {
+		type = "group", order = 1, name = 'Players',
+		args = layoutAnchorOptions,
+	}
+	layoutOptions1.pet    = {
+		type = "group", order = 2, name = 'Pets',
+		args = layoutAnchorOptions,
+	}
+	layoutOptions1.boss  = { type = "group", order = 3, name = 'Bosses',
+		args = layoutAnchorOptions,
+		disabled = function() return Grid2.isClassic or not theme.layout.displayHeaderBosses end
+	}
+	layoutOptions1.target = {
+	    type = "group", order = 4, name = 'Target',
+		args = layoutAnchorOptions,
+		disabled = function() return not theme.layout.displayHeaderTarget end,
+	}
+	layoutOptions1.focus  = { type = "group", order = 5, name = 'Focus',
+		args = layoutAnchorOptions,
+		disabled = function() return Grid2.isClassic or not theme.layout.displayHeaderFocus end
+	}
+
 end
 
-GenerateHeaderSizeSetup(frameOptions1, 'player', 'Players', 10)
-GenerateHeaderSizeSetup(frameOptions1, 'pet',    'Pets',    11)
-GenerateHeaderSizeSetup(frameOptions1, 'target', 'Target',  12, 'displayHeaderTarget' )
-GenerateHeaderSizeSetup(frameOptions1, 'focus',  'Focus',   13, 'displayHeaderFocus' )
-GenerateHeaderSizeSetup(frameOptions1, 'boss',   'Bosses',  14, 'displayHeaderBosses')
+--=========================================================================================================
+-- Layout Look&Feel
+--=========================================================================================================
+
+local layoutOptions2 =  { displayheader = {
+		type = "header",
+		order = 100,
+		name = L["Display"],
+}, display = {
+		type = "select",
+		name = L["Show Frame"],
+		desc = L["Sets when the Grid is visible: Choose 'Always', 'Grouped', or 'Raid'."],
+		order = 101,
+		get = function() return theme.layout.FrameDisplay~="Never" and theme.layout.FrameDisplay or "@Never" end,
+		set = function(_, v)
+			theme.layout.FrameDisplay = v~='@Never' and v or 'Never'
+			Grid2Layout:UpdateVisibility()
+		end,
+		values={["Always"] = L["Always"], ["Grouped"] = L["Grouped"], ["Raid"] = L["Raid"], ["@Never"] = L["Never"]},
+}, petBattle = {
+		type = "toggle",
+		name = L["Hide in Pet Battles"],
+		desc = L["Toggle to hide Grid2 window in Pet Battles"],
+		order = 107,
+		get = function () return theme.layout.HideInPetBattle end,
+		set = function (_, v)
+				  theme.layout.HideInPetBattle = v or nil
+				  Grid2Layout:UpdateVisibility()
+			  end,
+}, frameStrata = {
+		type = "select",
+		name = L["Frame Strata"],
+		desc = L["Sets the strata in which the layout frame should be layered."],
+		order = 102,
+		get = function() return theme.layout.FrameStrata or "MEDIUM" end,
+		set = function(_, v)
+			Grid2LayoutFrame:SetFrameStrata( v )
+			theme.layout.FrameStrata = (v~="MEDIUM") and v or nil
+		end,
+		values ={ BACKGROUND = L["BACKGROUND"], LOW = L["LOW"], MEDIUM = L["MEDIUM"], HIGH = L["HIGH"] },
+}, backTexture = {
+		type = 'select', dialogControl = 'LSM30_Background',
+		order = 103,
+		name = L['Background Texture'],
+		get = function (info) return theme.layout.BackgroundTexture or "Grid2 Flat" end,
+		set = function (info, v)
+			theme.layout.BackgroundTexture = v
+			Grid2Layout:UpdateTextures()
+			Grid2Layout:UpdateColor()
+		end,
+		values = AceGUIWidgetLSMlists.background,
+}, borderTexture = {
+		type = "select", dialogControl = "LSM30_Border",
+		order = 103.1,
+		name = L["Border Texture"],
+		desc = L["Adjust the border texture."],
+		get = function (info) return theme.layout.BorderTexture or "Grid2 Flat" end,
+		set = function (info, v)
+			theme.layout.BorderTexture = v
+			Grid2Layout:UpdateTextures()
+			Grid2Layout:UpdateColor()
+		end,
+		values = AceGUIWidgetLSMlists.border,
+}, backColor = {
+		type = "color",
+		name = L["Background Color"],
+		desc = L["Adjust background color and alpha."],
+		order = 103.2,
+		get = function ()
+				  local settings = theme.layout
+				  return settings.BackgroundR, settings.BackgroundG, settings.BackgroundB, settings.BackgroundA
+			  end,
+		set = function (_, r, g, b, a)
+				  local settings = theme.layout
+				  settings.BackgroundR, settings.BackgroundG, settings.BackgroundB, settings.BackgroundA = r, g, b, a
+				  Grid2Layout:UpdateColor()
+			  end,
+		hasAlpha = true,
+}, borderColor = {
+		type = "color",
+		name = L["Border Color"],
+		desc = L["Adjust border color and alpha."],
+		order = 103.3,
+		get = function ()
+				  local settings = theme.layout
+				  return settings.BorderR, settings.BorderG, settings.BorderB, settings.BorderA
+			  end,
+		set = function (_, r, g, b, a)
+				  local settings = theme.layout
+				  settings.BorderR, settings.BorderG, settings.BorderB, settings.BorderA = r, g, b, a
+				  Grid2Layout:UpdateColor()
+			  end,
+		hasAlpha = true,
+}, spacing = {
+		type = "range",
+		name = L["Spacing"],
+		desc = L["Adjust frame spacing."],
+		order = 104,
+		max = 25,
+		min = 0,
+		step = 1,
+		get = function () return theme.layout.Spacing end,
+		set = function (_, v)
+				theme.layout.Spacing = v
+				Grid2Layout:RefreshLayout()
+			  end,
+}, padding = {
+		type = "range",
+		name = L["Padding"],
+		desc = L["Adjust frame padding."],
+		order = 105,
+		max = 20,
+		softMin = 0,
+		step = 1,
+		get = function ()
+				  return theme.layout.Padding
+			  end,
+		set = function (_, v)
+				  theme.layout.Padding = v
+				  Grid2Layout:RefreshLayout()
+			  end,
+}, scale = {
+		type = "range",
+		name = L["Scale"],
+		desc = L["Adjust Grid scale."],
+		order = 106,
+		min = 0.5,
+		max = 2.0,
+		step = 0.05,
+		isPercent = true,
+		get = function ()
+				  return theme.layout.ScaleSize
+			  end,
+		set = function (_, v)
+				  theme.layout.ScaleSize = v
+				  Grid2Layout:RestorePosition()
+			  end,
+}, mischeader = {
+		type = "header",
+		order = 200,
+		name = L["Misc"],
+}, lock = {
+		type = "toggle",
+		name = L["Frame lock"],
+		desc = L["Locks/unlocks the grid for movement."],
+		order = 210,
+		get = function() return theme.layout.FrameLock end,
+		set = function()
+			theme.layout.FrameLock = not theme.layout.FrameLock
+			Grid2Layout:UpdateFrame()
+		end,
+}, clamp = {
+		type = "toggle",
+		name = L["Clamped to screen"],
+		desc = L["Toggle whether to permit movement out of screen."],
+		order = 220,
+		get = function ()
+				  return theme.layout.clamp
+			  end,
+		set = function ()
+				  theme.layout.clamp = not theme.layout.clamp
+				  Grid2Layout:SetClamp()
+			  end,
+} }
 
 --===============================================================================================
 -- Frames Look & Feel
@@ -508,15 +635,28 @@ local frameOptions2 = { headerback = {
 		end,
 		values = AceGUIWidgetLSMlists.background,
 		hidden = function() return not theme.frame.mouseoverHighlight end,
+}, mischeader = {
+		type = "header",
+		order = 100,
+		name = L["Misc"],
+}, rightClickMenu = {
+		type = "toggle",
+		name = L["Right Click Menu"],
+		desc = L["Display the standard unit menu when right clicking on a frame."],
+		order = 110,
+		get = function () return not theme.frame.menuDisabled end,
+		set = function (_, v)
+			theme.frame.menuDisabled = (not v) or nil
+			Grid2Layout:UpdateMenu()
+		end,
 }, }
 
 --===============================================================================================
 
 local options = {
-	layout1 = { type = "group", order = 1, name = L["Layout Position"], desc = L["Layout"], args = layoutOptions1 },
-	layout2 = { type = "group", order = 2, name = L["Layout Look"],     desc = L["Layout"], args = layoutOptions2 },
-	frame1  = { type = "group", order = 3, name = L["Frames Size"],     desc = L["Frames"], args = frameOptions1  },
-	frame2  = { type = "group", order = 4, name = L["Frames Look"],     desc = L["Frames"], args = frameOptions2  },
+	layout1 = { type = "group", order = 1, name = L["Layout Disposition"], desc = L["Layout"], args = layoutOptions1, childGroups = 'tab' },
+	layout2 = { type = "group", order = 2, name = L["Layout Look&Feel"],     desc = L["Layout"], args = layoutOptions2 },
+	frame2  = { type = "group", order = 4, name = L["Frames Look&Feel"],     desc = L["Frames"], args = frameOptions2  },
 }
 Grid2Options:AddThemeOptions( "appearance", "Appearance", options )
 

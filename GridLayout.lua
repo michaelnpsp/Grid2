@@ -5,6 +5,7 @@ Created by Grid2 original authors, modified by Michael
 local Grid2Layout = Grid2:NewModule("Grid2Layout")
 
 local Grid2 = Grid2
+local GetSetupValue = Grid2.GetSetupValue
 local pairs, ipairs, next, strmatch, strsplit = pairs, ipairs, next, strmatch, strsplit
 
 --{{{ Frame config function for secure headers
@@ -52,16 +53,15 @@ local GridLayoutHeaderClass = {
 		frame.initialConfigFunction = GridHeader_InitialConfigFunction
 		frame:SetAttribute("initialConfigFunction", SECURE_INIT)
 		frame:Reset()
-		frame:SetOrientation()
 		return frame
 	end,
-	template = function(self, layoutHeader, insecure)
-		if layoutHeader.type=='custom' then
+	template = function(self, dbx, insecure)
+		if dbx.type=='custom' then
 			return 'Grid2InsecureGroupCustomHeaderTemplate'
-		elseif insecure or layoutHeader.detachHeader or (layoutHeader.nameList and (layoutHeader.roleFilter or layoutHeader.groupFilter)) then
-			return layoutHeader.type=='pet' and 'Grid2InsecureGroupPetHeaderTemplate' or 'Grid2InsecureGroupHeaderTemplate'
+		elseif insecure or (dbx.nameList and (dbx.roleFilter or dbx.groupFilter)) then
+			return dbx.type=='pet' and 'Grid2InsecureGroupPetHeaderTemplate' or 'Grid2InsecureGroupHeaderTemplate'
 		else
-			return layoutHeader.type=='pet' and 'SecureGroupPetHeaderTemplate' or 'SecureGroupHeaderTemplate'
+			return dbx.type=='pet' and 'SecureGroupPetHeaderTemplate' or 'SecureGroupHeaderTemplate'
 		end
 	end,
 }
@@ -79,6 +79,7 @@ local HeaderAttributes = {
 function GridLayoutHeaderClass.prototype:Reset()
 	-- Hide the header before initializing attributes to avoid a lot of unnecesary SecureGroupHeader_Update() calls
 	self:Hide()
+	self:SetSize(1,1)
 	-- SecureGroupFrames code does not correctly resets all the buttons, we need to do it manually because
 	-- Grid2Frame relies on :OnAttributeChanged() event to add/delete units in roster and unit_frames tables.
 	for _,uframe in ipairs(self) do
@@ -90,6 +91,7 @@ function GridLayoutHeaderClass.prototype:Reset()
 	for _, attr in ipairs(HeaderAttributes) do
 		self:SetAttribute(attr, defaults[attr] or nil  )
 	end
+	--
 	self.dbx = nil
 end
 
@@ -101,10 +103,9 @@ local anchorPoints = {
 
 -- nil or false for vertical
 function GridLayoutHeaderClass.prototype:SetOrientation(horizontal)
-	if not self.initialConfigFunction then return end
 	local settings  = Grid2Layout.db.profile
 	local vertical  = not horizontal
-	local point     = anchorPoints[not vertical][settings.groupAnchor]
+	local point     = anchorPoints[not vertical][self.groupAnchor]
 	local direction = anchorPoints[point]
 	local xOffset   = horizontal and settings.Padding*direction or 0
 	local yOffset   = vertical   and settings.Padding*direction or 0
@@ -164,6 +165,10 @@ Grid2Layout.defaultDB = {
 		PosX = 500,
 		PosY = -200,
 		Positions = {},
+		anchors = {},
+		groupAnchors = {},
+		groupHorizontals = {},
+		unitsPerColumns = {},
 		-- profile options shared by all themes, but stored on default/first theme
 		minimapIcon = { hide = false },
 	},
@@ -265,6 +270,10 @@ end
 function Grid2Layout:UpgradeThemeDB()
 	local p = self.db.profile
 	p.Positions = p.Positions or {}
+	p.anchors = p.anchors or {}
+	p.groupAnchors =  p.groupAnchors or {}
+	p.groupHorizontals = p.groupHorizontals or {}
+	p.unitsPerColumns = p.unitsPerColumns or {}
 end
 
 --{{{ Event handlers
@@ -428,7 +437,7 @@ end
 
 function Grid2Layout:SetupMainFrame()
 	local frame = self.frame
-	frame.headerKey = self.layoutHasDetached and self.layoutName or nil -- used if there are detached headers to save/restore position in different place on db
+	frame.headerPosKey = self.layoutHasDetached and self.layoutName or nil -- used if there are detached headers to save/restore position in different place on db
 	if frame:GetWidth()==0 then
 		frame:SetSize(1,1) -- assign a default size, to make frame visible if we are in combat after a UI reload
 	end
@@ -479,18 +488,10 @@ function Grid2Layout:PlaceHeaders()
 		prevFrame = frame
 	end
 	for i, frame in self:IterateHeaders(true) do -- detached headers
-		frame:SetOrientation(horizontal)
+		frame:SetOrientation(frame.groupHorizontal)
 		frame:SetParent(self.frame)
 		if not self:RestoreHeaderPosition(frame) then
-			frame:ClearAllPoints()
-			frame:SetClampedToScreen(true)
-			frame:SetPoint(anchor, self.groupsUsed[i-1] or self.frame, relPoint, xMult3, yMult3)
-			frame:Show()
-			C_Timer.After(0, function()
-				self:SaveHeaderPosition(frame)
-				self:RestoreHeaderPosition(frame)
-				frame:SetClampedToScreen(false)
-			end)
+			self:SaveHeaderPositionForFirstTime( i, frame, anchor, relPoint, xMult3, yMult3 )
 		end
 	end
 end
@@ -554,8 +555,8 @@ function Grid2Layout:LoadLayout(layoutName)
 end
 
 --{{ Header management
-function Grid2Layout:AddHeader(layoutHeader, defaults, setupIndex, headerName)
-	local template = self.layoutHeaderClass:template(layoutHeader, self.useInsecureHeaders or self.testLayoutName)
+function Grid2Layout:AddHeader(dbx, defaults, setupIndex, headerName)
+	local template = self.layoutHeaderClass:template(dbx, self.useInsecureHeaders or self.testLayoutName)
 	local index    = self.indexes[template] + 1
 	local headers  = self.groups[template]
 	local header   = headers[index]
@@ -563,12 +564,11 @@ function Grid2Layout:AddHeader(layoutHeader, defaults, setupIndex, headerName)
 		header = self.layoutHeaderClass:new(template)
 		headers[index] = header
 	end
-	header.dbx = layoutHeader
-	header.headerName = headerName or layoutHeader.type or 'player'
 	self.indexes[template] = index
 	self.groupsUsed[#self.groupsUsed+1] = header
+	self:SetHeaderProperties(header, dbx, setupIndex, headerName)
 	self:SetHeaderAttributes(header, defaults)
-	self:SetHeaderAttributes(header, layoutHeader)
+	self:SetHeaderAttributes(header, dbx)
 	self:FixHeaderAttributes(header, #self.groupsUsed)
 	self:SetupDetachedHeader(header, setupIndex)
 end
@@ -600,14 +600,14 @@ do
 	local function AddHeader(self, name, key, units, setupIndex)
 		local db = self.db.profile
 		if db[key] then
-			if key=='displayHeaderBosses' then
-				template.unitsPerColumn = db.BossesUnitsPerColumn or 8
+			if name=='boss' then
+				template.unitsPerColumn = db.unitsPerColumns[name] or 8
 				template.maxColumns = math.ceil(8/template.unitsPerColumn)
 				template.hideEmptyUnits = db.BossesHideEmpty
 			else
 				template.unitsPerColumn = 1
 				template.maxColumns = 1
-				template.hideEmptyUnits = nil
+				template.hideEmptyUnits = db[ name=='target' and 'TargetHideEmpty' or 'FocusHideEmpty' ]
 			end
 			template.unitsFilter = units
 			self:AddHeader( template, nil, setupIndex, name)
@@ -618,6 +618,20 @@ do
 		AddHeader( self, 'focus',  'displayHeaderFocus',  'focus',  10002 )
 		AddHeader( self, 'boss',   'displayHeaderBosses', 'boss1,boss2,boss3,boss4,boss5,boss6,boss7,boss8', 10003 )
 	end
+end
+
+-- Calculate and store effective values for some header properties
+function Grid2Layout:SetHeaderProperties(header, dbx, setupIndex, headerName)
+	local p = self.db.profile
+	header.dbx = dbx
+	header.headerType = dbx.type or 'player' -- player, pet, custom
+	header.headerName = headerName or header.headerType -- player, pet, target, focus, boss, custom
+	header.wasDetached = header.isDetached
+	header.isDetached = setupIndex>1 and (self.db.global.detachHeaders or dbx.detachHeader or (self.db.global.detachPetHeaders and dbx.type=='pet') ) or nil
+	header.groupHorizontal = GetSetupValue( header.isDetached, p.groupHorizontals[header.headerName], p.horizontal )
+	header.groupAnchor = GetSetupValue( header.isDetached, p.groupAnchors[header.headerName], p.groupAnchor )
+	header.headerAnchor = GetSetupValue( header.isDetached, p.anchors[header.headerName], p.anchor )
+	header.headerPosKey = header.isDetached and self.layoutName..setupIndex or nil -- used as key to save positions when the layout has detached headers
 end
 
 -- Apply defaults and some special cases for each header and apply workarounds to some blizzard bugs
@@ -631,11 +645,12 @@ function Grid2Layout:FixHeaderAttributes(header, index)
 	-- fix unitsPerColumn
 	local unitsPerColumn = header:GetAttribute("unitsPerColumn")
 	if not unitsPerColumn then
-		header:SetAttribute("unitsPerColumn", 5)
-		unitsPerColumn = 5
+		unitsPerColumn = p.unitsPerColumns[header.headerName] or 5
+		header:SetAttribute("unitsPerColumn", unitsPerColumn)
 	end
+	-- fix anchors
 	header:SetAttribute("columnSpacing", p.Padding)
-	header:SetAttribute("columnAnchorPoint", anchorPoints[not p.horizontal][p.groupAnchor] or p.groupAnchor )
+	header:SetAttribute("columnAnchorPoint", anchorPoints[not header.groupHorizontal][header.groupAnchor] or header.groupAnchor)
 	-- fix maxColumns
 	local autoEnabled = not self.db.global.displayAllGroups or nil
 	if header:GetAttribute("maxColumns") == "auto" then
@@ -740,7 +755,7 @@ function Grid2Layout:UpdateSize()
 	local p = self.db.profile
 	local mcol,mrow,curCol,maxRow,remSize = "GetWidth","GetHeight",0,0,0
 	if p.horizontal then mcol,mrow = mrow,mcol end
-	for _,g in self:IterateHeaders(false) do
+	for _,g in self:IterateHeaders(false) do -- only non-detaches headers
 		local row = g[mrow](g)
 		if maxRow<row then maxRow = row end
 		local col = g[mcol](g) + p.Padding
@@ -760,7 +775,7 @@ function Grid2Layout:UpdateTextures()
 	local p = self.db.profile
 	local backdrop = Grid2:GetBackdropTable( Grid2:MediaFetch("border", p.BorderTexture), 16, Grid2:MediaFetch("background", p.BackgroundTexture), false, nil, 4 )
 	Grid2:SetFrameBackdrop(	self.frame.frameBack, backdrop )
-	for _, frame in self:IterateHeaders(true) do
+	for _, frame in self:IterateHeaders(true) do -- detached headers
 		Grid2:SetFrameBackdrop( frame.frameBack, backdrop )
 	end
 end
@@ -790,13 +805,13 @@ function Grid2Layout:UpdateVisibility()
 	end
 end
 
--- Grid2 uses UI Root coordinates to store the window position (always 768 pixels height) so these coordinates are
+-- Grid2 uses UI root coordinates to store the window position (always 768 pixels height) so these coordinates are
 -- independent of the UI Frame Scale Coordinates and monitor physical resolution (assuming the same aspect ratio).
 function Grid2Layout:SavePosition(header)
 	local f = header or self.frame
 	if f:GetLeft() and f:GetWidth() then
 		local p = self.db.profile
-		local a = p.anchor
+		local a = f.headerAnchor or p.anchor
 		local s = f:GetEffectiveScale()
 		local t = UIParent:GetEffectiveScale()
 		local x = (a:find("LEFT")  and f:GetLeft()*s) or
@@ -805,8 +820,8 @@ function Grid2Layout:SavePosition(header)
 		local y = (a:find("BOTTOM") and f:GetBottom()*s) or
 				  (a:find("TOP")    and f:GetTop()*s-UIParent:GetHeight()*t) or
 				  (f:GetTop()-f:GetHeight()/2)*s-UIParent:GetHeight()/2*t
-		if f.headerKey then
-			p.Positions[f.headerKey] = { a, x, y }
+		if f.headerPosKey then
+			p.Positions[f.headerPosKey] = { a, x, y }
 		else
 			p.PosX, p.PosY = x, y
 		end
@@ -841,7 +856,7 @@ function Grid2Layout:ResetPosition()
 	self:SavePosition()
 	if self.layoutHasDetached then
 		for _,header in self:IterateHeaders(true) do
-			p.Positions[header.headerKey] = nil
+			p.Positions[header.headerPosKey] = nil
 		end
 		self:ReloadLayout(true)
 	end
@@ -849,10 +864,10 @@ end
 
 --{{{ Detached headers management
 function Grid2Layout:SetupDetachedHeader(header, setupIndex)
-	local isDetached = setupIndex>1 and (self.db.global.detachHeaders or header:GetAttribute("detachHeader") or  (self.db.global.detachPetHeaders and header.dbx.type=='pet') ) or nil
-	if isDetached ~= header.isDetached then
+	local isDetached = header.isDetached
+	if isDetached ~= header.wasDetached then
 		local frameBack = header.frameBack
-		header.isDetached = isDetached
+		header.wasDetached = isDetached
 		header:SetMovable(isDetached)
 		if isDetached then
 			frameBack = frameBack or CreateFrame("Frame", nil, header, BackdropTemplateMixin and "BackdropTemplate" or nil)
@@ -877,8 +892,7 @@ function Grid2Layout:SetupDetachedHeader(header, setupIndex)
 		frameBack:SetPoint('TOPLEFT', header, 'TOPLEFT', -Spacing, Spacing )
 		frameBack:SetPoint('BOTTOMRIGHT', header, 'BOTTOMRIGHT', Spacing, -Spacing )
 		frameBack:SetFrameLevel( header:GetFrameLevel() - 1 )
-		frameBack:SetShown( button and button:IsShown() )
-		header.headerKey = self.layoutName..setupIndex -- theme not needed in key because each theme stores a different Positions table.
+		frameBack:Hide()
 		self.layoutHasDetached = true
 	end
 end
@@ -887,22 +901,37 @@ function Grid2Layout:SaveHeaderPosition(header)
 	self:SavePosition(header)
 end
 
+function Grid2Layout:SaveHeaderPositionForFirstTime(i, frame, anchor, relPoint, xMult3, yMult3)
+	frame:ClearAllPoints()
+	frame:SetClampedToScreen(true)
+	frame:SetPoint(anchor, self.groupsUsed[i-1] or self.frame, relPoint, xMult3, yMult3)
+	frame:Show()
+	C_Timer.After(0, function()
+		self:SaveHeaderPosition(frame)
+		self:RestoreHeaderPosition(frame)
+		frame:SetClampedToScreen(false)
+	end)
+end
+
 function Grid2Layout:RestoreHeaderPosition(header)
 	if InCombatLockdown() then return end
 	local p = self.db.profile
-	local pos = p.Positions[header.headerKey]
+	local pos = p.Positions[header.headerPosKey]
 	if pos then
 		local s = header:GetEffectiveScale()
 		local a, x, y = pos[1], pos[2]/s, pos[3]/s
 		header:ClearAllPoints()
 		header:SetPoint(a, UIParent, a, x, y)
 		header:Show()
-		self:Debug("Placing detached group", header.headerKey, a, x, y)
+		if a ~= header.headerAnchor then
+			self:SavePosition(header)
+		end
+		self:Debug("Placing detached group", header.headerPosKey, a, x, y)
 		return true
 	end
 end
 
-function Grid2Layout:UpdateDetachedVisibility() -- self~=Grid2Layout
+function Grid2Layout:UpdateDetachedVisibility(test) -- self~=Grid2Layout
 	local button = self[1] -- self.header[1]
 	self.frameBack:SetShown( button and button:IsVisible() )
 end
@@ -910,10 +939,10 @@ end
 function Grid2Layout:GetFramePosition(f)
 	local p = self.db.profile
 	local s = f:GetEffectiveScale()
-	if f.headerKey then
-		local pos = p.Positions[f.headerKey]
+	if f.headerPosKey then
+		local pos = p.Positions[f.headerPosKey]
 		if pos then	return pos[1], pos[2]/s, pos[3]/s end
-		p.Positions[f.headerKey] = { p.anchor, p.PosX, p.PosY }
+		p.Positions[f.headerPosKey] = { p.anchor, p.PosX, p.PosY }
 	end
 	return p.anchor, p.PosX/s, p.PosY/s
 end

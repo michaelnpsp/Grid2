@@ -7,6 +7,9 @@ local LG = Grid2Options.LG
 
 local theme = Grid2Options.editedTheme
 
+local GetTableValue = Grid2Options.GetTableValueSafe
+local SetTableValue = Grid2Options.SetTableValueSafe
+
 -- enable test mode
 local function TestMode(info)
 	local layouts, layoutName, maxPlayers = theme.layout.layouts
@@ -371,13 +374,13 @@ local generalOptions = {
 	},
 
 	desc2 = {
-		order = 9,
+		order = 99,
 		type = "description",
 		name = L["Special units headers visibility."] .. "\n"
 	},
 
 	displayTarget = {
-		order = 10,
+		order = 100,
 		type = "toggle",
 		name = "|cffffd200".. L["Display Target unit"] .."|r",
 		desc = L["Enable this option to display the target unit."],
@@ -391,7 +394,7 @@ local generalOptions = {
 	},
 
 	displayFocus = {
-		order = 11,
+		order = 110,
 		type = "toggle",
 		name = "|cffffd200".. L["Display Focus unit"] .."|r",
 		desc = L["Enable this option to display the focus unit."],
@@ -406,7 +409,7 @@ local generalOptions = {
 	},
 
 	displayBosses = {
-		order = 12,
+		order = 120,
 		type = "toggle",
 		name = "|cffffd200".. L["Display Bosses units"] .."|r",
 		desc = L["Enable this option to display bosses units."],
@@ -418,38 +421,6 @@ local generalOptions = {
 			SetupSpecialHeader('displayHeaderBosses', v)
 		end,
 		hidden = function() return Grid2.isClassic end,
-	},
-
-	displayBosses_UnitsPerColumn = {
-		order = 15,
-		type = "select",
-		width = 0.6,
-		name = L["Units Per Column"],
-		desc = L["Bosses units to display per column."],
-		get = function()
-			return theme.layout.BossesUnitsPerColumn or 8
-		end,
-		set = function(info,v)
-			theme.layout.BossesUnitsPerColumn = tonumber(v)
-			Grid2Layout:RefreshLayout()
-		end,
-		values = { '1', '2', '3', '4', '5', '6', '7', '8' },
-		hidden = function() return Grid2.isClassic or not theme.layout.displayHeaderBosses end,
-	},
-
-	displayBosses_HideEmpty = {
-		order = 16,
-		type = "toggle",
-		name = L['Hide Empty'],
-		desc = L["Hide empty bosses units."],
-		get = function(info)
-			return theme.layout.BossesHideEmpty
-		end,
-		set = function(info,v)
-			theme.layout.BossesHideEmpty = v or nil
-			Grid2Layout:RefreshLayout()
-		end,
-		hidden = function() return Grid2.isClassic or not theme.layout.displayHeaderBosses end,
 	},
 
 }

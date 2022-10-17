@@ -66,6 +66,15 @@ do
 	end
 end
 
+-- retrieve config value, falling back to default
+function Grid2.GetSetupValue(condition, value, default)
+	if condition and value~=nil then
+		return value
+	else
+		return default
+	end
+end
+
 -- UTF8 string truncate
 do
 	local strbyte = string.byte

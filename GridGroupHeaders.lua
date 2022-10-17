@@ -386,6 +386,8 @@ local function DisplayButtons(self, unitTable)
 		SetUnitWatch(unitButton, unitWatch)
 		if not unitWatch or UnitExists(unit) then
 			unitButton:Show()
+		else
+			unitButton:Hide()
 		end
 		colUnitCount = colUnitCount<unitsPerColumn and colUnitCount+1 or 1
 		buttonNum = buttonNum + 1
@@ -497,6 +499,15 @@ unitsFilter = "target, focus, player, party1, boss1, boss2, boss3, arena1, arena
 hideEmptyUnits = true|nil
 --]]
 do
+	--Forze size changed event to refresh decoration visibility
+	local function TriggerSizeChangedEvent(self)
+		if self:GetAttribute('hideEmptyUnits') then
+			local func = self:GetScript("OnSizeChanged")
+			if func then
+				C_Timer.After(0, function()	func(self) end)	end
+		end
+	end
+
 	-- notify grid2 roster for unit changes, OnUnitStateChanged() defined in Grid2Frame.lua
 	local function RefreshButtons(self, pattern)
 		local index, unitButton = 1, self[1]
@@ -506,6 +517,7 @@ do
 			end
 			index = index + 1; unitButton = self[index]
 		end
+		TriggerSizeChangedEvent(self)
 	end
 
 	-- event register management
@@ -581,8 +593,10 @@ do
 	local function OnEvent(self, event)
 		if event=='PLAYER_TARGET_CHANGED' then
 			self.buttonTarget:OnUnitStateChanged()
+			TriggerSizeChangedEvent(self)
 		elseif event=='PLAYER_FOCUS_CHANGED' then
 			self.buttonFocus:OnUnitStateChanged()
+			TriggerSizeChangedEvent(self)
 		elseif event=='INSTANCE_ENCOUNTER_ENGAGE_UNIT' then
 			self:RegisterEvent('PLAYER_REGEN_ENABLED')
 			RefreshButtons(self, "^boss")

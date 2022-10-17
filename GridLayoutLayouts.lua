@@ -17,7 +17,6 @@ local META_RAID  = { raid = true }
 
 local PETS_GROUP = {
 	type = "pet",
-	unitsPerColumn = 5,
 	maxColumns = "auto",
 	groupBy = "CLASS",
 	groupingOrder = DEFAULT_PET_ORDER,
