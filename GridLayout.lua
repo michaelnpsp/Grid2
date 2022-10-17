@@ -597,26 +597,24 @@ end
 -- Display special units
 do
 	local template = { type = 'custom', detachHeader = true }
-	local function AddHeader(self, name, key, units, setupIndex)
-		local db = self.db.profile
-		if db[key] then
-			if name=='boss' then
-				template.unitsPerColumn = db.unitsPerColumns[name] or 8
-				template.maxColumns = math.ceil(8/template.unitsPerColumn)
-				template.hideEmptyUnits = db.BossesHideEmpty
-			else
-				template.unitsPerColumn = 1
-				template.maxColumns = 1
-				template.hideEmptyUnits = db[ name=='target' and 'TargetHideEmpty' or 'FocusHideEmpty' ]
-			end
-			template.unitsFilter = units
-			self:AddHeader( template, nil, setupIndex, name)
-		end
-	end
+	local headers = { -- setupIndex, units/column, unitsFilter
+		target = { 10001, 1, 'target' },
+		focus  = { 10002, 1, 'focus' },
+		boss   = { 10003, 8, 'boss1,boss2,boss3,boss4,boss5,boss6,boss7,boss8' },
+	}
 	function Grid2Layout:AddSpecialHeaders()
-		AddHeader( self, 'target', 'displayHeaderTarget', 'target', 10001 )
-		AddHeader( self, 'focus',  'displayHeaderFocus',  'focus',  10002 )
-		AddHeader( self, 'boss',   'displayHeaderBosses', 'boss1,boss2,boss3,boss4,boss5,boss6,boss7,boss8', 10003 )
+		local specialHeaders = self.db.profile.specialHeaders
+		if specialHeaders then
+			local upc = self.db.profile.unitsPerColumns
+			for name, showEmpty in next,specialHeaders do
+				local settings = headers[name]
+				template.unitsFilter = settings[3]
+				template.unitsPerColumn = upc[name] or settings[2]
+				template.maxColumns = math.ceil(8/template.unitsPerColumn)
+				template.hideEmptyUnits = not showEmpty or nil
+				self:AddHeader( template, nil, settings[1], name )
+			end
+		end
 	end
 end
 
@@ -627,7 +625,7 @@ function Grid2Layout:SetHeaderProperties(header, dbx, setupIndex, headerName)
 	header.headerType = dbx.type or 'player' -- player, pet, custom
 	header.headerName = headerName or header.headerType -- player, pet, target, focus, boss, custom
 	header.wasDetached = header.isDetached
-	header.isDetached = setupIndex>1 and (self.db.global.detachHeaders or dbx.detachHeader or (self.db.global.detachPetHeaders and dbx.type=='pet') ) or nil
+	header.isDetached = setupIndex>1 and (dbx.detachHeader or p.detachedHeaders=='player' or p.detachedHeaders==dbx.type) or nil
 	header.groupHorizontal = GetSetupValue( header.isDetached, p.groupHorizontals[header.headerName], p.horizontal )
 	header.groupAnchor = GetSetupValue( header.isDetached, p.groupAnchors[header.headerName], p.groupAnchor )
 	header.headerAnchor = GetSetupValue( header.isDetached, p.anchors[header.headerName], p.anchor )
@@ -914,7 +912,6 @@ function Grid2Layout:SaveHeaderPositionForFirstTime(i, frame, anchor, relPoint, 
 end
 
 function Grid2Layout:RestoreHeaderPosition(header)
-	if InCombatLockdown() then return end
 	local p = self.db.profile
 	local pos = p.Positions[header.headerPosKey]
 	if pos then
@@ -925,6 +922,7 @@ function Grid2Layout:RestoreHeaderPosition(header)
 		header:Show()
 		if a ~= header.headerAnchor then
 			self:SavePosition(header)
+			return self:RestoreHeaderPosition(header)
 		end
 		self:Debug("Placing detached group", header.headerPosKey, a, x, y)
 		return true

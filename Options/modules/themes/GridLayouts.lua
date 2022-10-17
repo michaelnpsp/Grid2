@@ -26,13 +26,16 @@ end
 
 -- special header setup
 local function SetupSpecialHeader(key, enabled)
-	theme.layout[key] = enabled or nil
+	theme.layout.specialHeaders = theme.layout.specialHeaders or {}
+	theme.layout.specialHeaders[key] = enabled or nil
 	if enabled then
 		local dbx = Grid2.db.profile.statuses.name
 		if dbx and not dbx.defaultName then
 			dbx.defaultName = 1
 			Grid2:GetStatusByName('name'):UpdateDB()
 		end
+	elseif not next(theme.layout.specialHeaders) then
+		theme.layout.specialHeaders = nil
 	end
 	Grid2Layout:RefreshLayout()
 end
@@ -342,37 +345,6 @@ local generalOptions = {
 		end,
 	},
 
-	detachedHeaders = {
-		order = 5,
-		type = "toggle",
-		name = "|cffffd200".. L["Detach all groups"] .."|r",
-		desc = L["Enable this option to detach unit frame groups, so each group can be moved individually."],
-		width = "full",
-		get = function(info)
-			return Grid2Layout.db.global.detachHeaders
-		end,
-		set = function(info,v)
-			Grid2Layout.db.global.detachHeaders = v or nil
-			Grid2Layout:RefreshLayout()
-		end,
-	},
-
-	detachedPetHeaders = {
-		order = 6,
-		type = "toggle",
-		name = "|cffffd200".. L["Detach pets groups"] .."|r",
-		desc = L["Enable this option to detach the pets group, so pets group can be moved individually."],
-		width = "full",
-		get = function(info)
-			return Grid2Layout.db.global.detachPetHeaders
-		end,
-		set = function(info,v)
-			Grid2Layout.db.global.detachPetHeaders = v or nil
-			Grid2Layout:RefreshLayout()
-		end,
-		hidden = function() return Grid2Layout.db.global.detachHeaders end,
-	},
-
 	desc2 = {
 		order = 99,
 		type = "description",
@@ -386,10 +358,10 @@ local generalOptions = {
 		desc = L["Enable this option to display the target unit."],
 		width = "full",
 		get = function(info)
-			return theme.layout.displayHeaderTarget
+			return theme.layout.specialHeaders and theme.layout.specialHeaders.target~=nil
 		end,
 		set = function(info,v)
-			SetupSpecialHeader('displayHeaderTarget', v)
+			SetupSpecialHeader('target', v)
 		end,
 	},
 
@@ -400,10 +372,10 @@ local generalOptions = {
 		desc = L["Enable this option to display the focus unit."],
 		width = "full",
 		get = function(info)
-			return theme.layout.displayHeaderFocus
+			return theme.layout.specialHeaders and theme.layout.specialHeaders.focus~=nil
 		end,
 		set = function(info,v)
-			SetupSpecialHeader('displayHeaderFocus', v)
+			SetupSpecialHeader('focus', v)
 		end,
 		hidden = function() return Grid2.isVanilla end,
 	},
@@ -415,10 +387,10 @@ local generalOptions = {
 		desc = L["Enable this option to display bosses units."],
 		width = "full",
 		get = function(info)
-			return theme.layout.displayHeaderBosses
+			return theme.layout.specialHeaders and theme.layout.specialHeaders.boss~=nil
 		end,
 		set = function(info,v)
-			SetupSpecialHeader('displayHeaderBosses', v)
+			SetupSpecialHeader('boss', v)
 		end,
 		hidden = function() return Grid2.isClassic end,
 	},

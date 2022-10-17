@@ -10,11 +10,7 @@ local SetTableValue = Grid2Options.SetTableValueSafe
 --=========================================================================================================
 
 local funcPositionHidden = function()
-	return Grid2Layout.db.global.detachHeaders or
-		   Grid2Layout.db.global.detachPetHeaders or
-		   theme.layout.displayHeaderBosses or
-		   theme.layout.displayHeaderFocus or
-		   theme.layout.displayHeaderTarget
+	return theme.layout.detachedHeaders or theme.layout.specialHeaders
 end
 
 local layoutOptions1 =  { positionheader = {
@@ -140,28 +136,20 @@ local layoutOptions1 =  { positionheader = {
 }, positionfooter = {
 		type = "header",
 		order = 90,
-		name = L['By Header Type'],
+		name = L['Header Types'],
 } }
 
 do
 	local key, def
+	local defUPC = { player = 5, pet = 5, boss =  8 }
+	local specialHeaders = { boss = true, target = true, focus = true }
 	local headerAnchorPoints = { [''] = L['Default'], CENTER = L["CENTER"], TOP = L["TOP"], BOTTOM = L["BOTTOM"], LEFT = L["LEFT"], RIGHT = L["RIGHT"], TOPLEFT = L["TOPLEFT"], TOPRIGHT = L["TOPRIGHT"], BOTTOMLEFT = L["BOTTOMLEFT"], BOTTOMRIGHT = L["BOTTOMRIGHT"] }
 	local groupAnchorPoints  = { [''] = L['Default'], TOPLEFT = L["TOPLEFT"], TOPRIGHT = L["TOPRIGHT"], BOTTOMLEFT = L["BOTTOMLEFT"], BOTTOMRIGHT = L["BOTTOMRIGHT"] }
-	local groupSettings = {
-		player = { unitsPerColumn = 5 },
-		pet    = { displayAnchors = true, unitsPerColumn = 5 },
-		boss   = { displayAnchors = true, unitsPerColumn = 8, emptyUnits = 'BossesHideEmpty' },
-		target = { emptyUnits = 'TargetHideEmpty' },
-		focus  = { emptyUnits = 'FocusHideEmpty' },
-	}
-	local function funcHiddenAnchors()
-		return not def.displayAnchors or not funcPositionHidden()
-	end
+
 	local layoutAnchorOptions = {
 
 		__load = { type = "header", order = 0, name = "", hidden = function(info)
 			key = info[#info-1]
-			def = groupSettings[key]
 			return true
 		end },
 
@@ -177,8 +165,8 @@ do
 				SetTableValue(theme.layout, 'anchors',  key, v~='' and v or nil)
 				Grid2Layout:RefreshLayout()
 			end,
-			values= headerAnchorPoints,
-			hidden = funcHiddenAnchors,
+			values = headerAnchorPoints,
+			hidden = function() return specialHeaders[key]==nil and ( key=='player' or theme.layout.detachedHeaders==nil ) end,
 		},
 
 		groupAnchor = {
@@ -194,7 +182,8 @@ do
 				Grid2Layout:RefreshLayout()
 			 end,
 			values= groupAnchorPoints,
-			hidden = funcHiddenAnchors,
+			disabled = function() return defUPC[key]==nil end,
+			hidden = function() return specialHeaders[key]==nil and ( key=='player' or theme.layout.detachedHeaders==nil ) end,
 		},
 
 		groupOrientation = {
@@ -212,12 +201,13 @@ do
 				Grid2Layout:RefreshLayout()
 			end,
 			values= { [''] = L['Default'], [true] = L['Horizontal'], [false] = L['Vertical'] },
-			hidden = funcHiddenAnchors,
+			disabled = function() return defUPC[key]==nil end,
+			hidden = function()	return specialHeaders[key]==nil and ( key=='player' or theme.layout.detachedHeaders==nil ) end,
 		},
 
 		frameWidth = {
 			type = "range",
-			order = 31,
+			order = 35,
 			width = 0.9,
 			name = L['Frame Width'],
 			desc = L["Adjust the width percent of each unit's frame."],
@@ -237,7 +227,7 @@ do
 
 		frameHeight = {
 			type = "range",
-			order = 32,
+			order = 36,
 			width = 0.9,
 			name = L['Frame Height'],
 			desc = L["Adjust the height percent of each unit's frame."],
@@ -266,28 +256,61 @@ do
 			softMax = 10,
 			step = 1,
 			get = function ()
-				return GetTableValue( theme.layout.unitsPerColumns, key, def.unitsPerColumn )
+				return GetTableValue( theme.layout.unitsPerColumns, key, defUPC[key] or 1 )
 			end,
 			set = function (_, v)
-				SetTableValue( theme.layout, 'unitsPerColumns', key, v~=def.unitsPerColumn and v or nil )
+				SetTableValue( theme.layout, 'unitsPerColumns', key, v~=defUPC[key] and v or nil )
 				Grid2Layout:RefreshLayout()
 			end,
-			hidden = function() return not def.unitsPerColumn end,
+			disabled = function() return not defUPC[key] end,
+		},
+
+		detachedPlayerHeaders = {
+			order = 50,
+			type = "toggle",
+			width = 'full',
+			name = L['Detach all groups'],
+			desc = L["Enable this option to detach unit frame groups, so each group can be moved individually."],
+			get = function(info)
+				return theme.layout.detachedHeaders=='player'
+			end,
+			set = function(info,v)
+				theme.layout.detachedHeaders = v and 'player' or nil
+				Grid2Layout:RefreshLayout()
+			end,
+			hidden = function() return key~='player' end,
+		},
+
+		detachedPetHeaders = {
+			order = 50,
+			type = "toggle",
+			width = 'full',
+			name = L['Detach pets groups'],
+			desc = L["Enable this option to detach the pets group, so pets group can be moved individually."],
+			get = function(info)
+				return theme.layout.detachedHeaders~=nil
+			end,
+			set = function(info,v)
+				theme.layout.detachedHeaders = v and 'pet' or nil
+				Grid2Layout:RefreshLayout()
+			end,
+			disabled = function() return theme.layout.detachedHeaders=='player' end,
+			hidden = function() return key~='pet' end,
 		},
 
 		hideEmptyUnits = {
-			order = 50,
+			order = 60,
 			type = "toggle",
 			name = L['Hide Empty Units'],
 			desc = L["Hide frames of non-existant units."],
 			get = function(info)
-				return theme.layout[ def.emptyUnits ]
+				return not (theme.layout.specialHeaders and theme.layout.specialHeaders[key])
 			end,
-			set = function(info,v)
-				theme.layout[ def.emptyUnits ] = v or nil
+			set = function(info)
+				theme.layout.specialHeaders[key] = not theme.layout.specialHeaders[key]
 				Grid2Layout:RefreshLayout()
 			end,
-			hidden = function() return not def.emptyUnits end,
+			hidden = function() return not specialHeaders[key] end,
 		},
 
 	}
@@ -300,18 +323,20 @@ do
 		type = "group", order = 2, name = 'Pets',
 		args = layoutAnchorOptions,
 	}
-	layoutOptions1.boss  = { type = "group", order = 3, name = 'Bosses',
-		args = layoutAnchorOptions,
-		disabled = function() return Grid2.isClassic or not theme.layout.displayHeaderBosses end
-	}
 	layoutOptions1.target = {
-	    type = "group", order = 4, name = 'Target',
+	    type = "group", order = 3, name = 'Target',
 		args = layoutAnchorOptions,
-		disabled = function() return not theme.layout.displayHeaderTarget end,
+		disabled = function() return theme.layout.specialHeaders==nil or theme.layout.specialHeaders.target==nil end,
 	}
-	layoutOptions1.focus  = { type = "group", order = 5, name = 'Focus',
+	layoutOptions1.focus  = {
+		type = "group", order = 4, name = 'Focus',
 		args = layoutAnchorOptions,
-		disabled = function() return Grid2.isClassic or not theme.layout.displayHeaderFocus end
+		disabled = function() return Grid2.isVanilla or theme.layout.specialHeaders==nil or theme.layout.specialHeaders.focus==nil end
+	}
+	layoutOptions1.boss  = {
+		type = "group", order = 5, name = 'Bosses',
+		args = layoutAnchorOptions,
+		disabled = function() return Grid2.isClassic or theme.layout.specialHeaders==nil or theme.layout.specialHeaders.boss==nil end
 	}
 
 end
