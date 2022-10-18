@@ -597,22 +597,24 @@ end
 -- Display special units
 do
 	local template = { type = 'custom', detachHeader = true }
-	local headers = { -- setupIndex, units/column, unitsFilter
-		target = { 10001, 1, 'target' },
-		focus  = { 10002, 1, 'focus' },
-		boss   = { 10003, 8, 'boss1,boss2,boss3,boss4,boss5,boss6,boss7,boss8' },
+	local headers = { -- headerName, units/column, unitsFilter
+		{ 'target', 1, 'target' },
+		{ 'focus',  1, 'focus' },
+		{ 'boss',   8, 'boss1,boss2,boss3,boss4,boss5,boss6,boss7,boss8' },
 	}
 	function Grid2Layout:AddSpecialHeaders()
 		local specialHeaders = self.db.profile.specialHeaders
 		if specialHeaders then
-			local upc = self.db.profile.unitsPerColumns
-			for name, showEmpty in next,specialHeaders do
-				local settings = headers[name]
-				template.unitsFilter = settings[3]
-				template.unitsPerColumn = upc[name] or settings[2]
-				template.maxColumns = math.ceil(8/template.unitsPerColumn)
-				template.hideEmptyUnits = not showEmpty or nil
-				self:AddHeader( template, nil, settings[1], name )
+			for index, data in ipairs(headers) do
+				local name = data[1]
+				local showEmpty = specialHeaders[name]
+				if showEmpty ~= nil then
+					template.unitsFilter = data[3]
+					template.unitsPerColumn = self.db.profile.unitsPerColumns[name] or data[2]
+					template.maxColumns = math.ceil(8/template.unitsPerColumn)
+					template.hideEmptyUnits = not showEmpty or nil
+					self:AddHeader( template, nil, index+10000, name )
+				end
 			end
 		end
 	end
