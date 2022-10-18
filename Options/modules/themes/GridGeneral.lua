@@ -9,56 +9,7 @@ local SetTableValue = Grid2Options.SetTableValueSafe
 -- Layout position & anchor
 --=========================================================================================================
 
-local funcPositionHidden = function()
-	return theme.layout.detachedHeaders or theme.layout.specialHeaders
-end
-
-local layoutOptions1 =  { positionheader = {
-		type = "header",
-		order = 1,
-		name = L["Grid2 Window Position"],
-		hidden = funcPositionHidden,
-}, positionx = {
-		type = "range",
-		name = L["Horizontal Position"],
-		desc = L["Adjust Grid2 horizontal position."],
-		order = 10,
-		width = 1.2,
-		softMin = -2048,
-		softMax = 2048,
-		step = 1,
-		get = function ()
-			local screen_w, screen_h = GetPhysicalScreenSize()
-			return math.floor( theme.layout.PosX * screen_w / (UIParent:GetWidth()*UIParent:GetEffectiveScale()) + 0.5 )
-		end,
-		set = function (_, v)
-			local screen_w, screen_h = GetPhysicalScreenSize()
-			theme.layout.PosX = v / (screen_w / (UIParent:GetWidth()*UIParent:GetEffectiveScale()))
-			Grid2Layout:RestorePosition()
-			Grid2Layout:SavePosition()
-		end,
-		hidden = funcPositionHidden,
-}, positiony = {
-		type = "range",
-		name = L["Vertical Position"],
-		desc = L["Adjust Grid2 vertical position."],
-		order = 20,
-		width = 1.2,
-		softMin = -2048,
-		softMax = 2048,
-		step = 1,
-		get = function ()
-			local screen_w, screen_h = GetPhysicalScreenSize()
-			return math.floor( theme.layout.PosY * screen_h / (UIParent:GetHeight()*UIParent:GetEffectiveScale()) + 0.5 )
-		end,
-		set = function (_, v)
-			local screen_w, screen_h = GetPhysicalScreenSize()
-			theme.layout.PosY = v / (screen_h / (UIParent:GetHeight()*UIParent:GetEffectiveScale()))
-			Grid2Layout:RestorePosition()
-			Grid2Layout:SavePosition()
-		end,
-		hidden = funcPositionHidden,
-}, anchorheader = {
+local layoutOptions1 =  { anchorheader = {
 		type = "header",
 		order = 30,
 		name = L["Default Settings"],
@@ -152,6 +103,50 @@ do
 			key = info[#info-1]
 			return true
 		end },
+
+		posx = {
+			type = "range",
+			name = L["Horizontal Position"],
+			desc = L["Adjust Grid2 horizontal position."],
+			order = 1,
+			width = 1.2,
+			softMin = -2048,
+			softMax = 2048,
+			step = 1,
+			get = function ()
+				local screen_w, screen_h = GetPhysicalScreenSize()
+				return math.floor( theme.layout.PosX * screen_w / (UIParent:GetWidth()*UIParent:GetEffectiveScale()) + 0.5 )
+			end,
+			set = function (_, v)
+				local screen_w, screen_h = GetPhysicalScreenSize()
+				theme.layout.PosX = v / (screen_w / (UIParent:GetWidth()*UIParent:GetEffectiveScale()))
+				Grid2Layout:RestorePosition()
+				Grid2Layout:SavePosition()
+			end,
+			hidden = function() return key~='player' or theme.layout.detachedHeaders or theme.layout.specialHeaders end,
+		},
+
+		posy = {
+			type = "range",
+			name = L["Vertical Position"],
+			desc = L["Adjust Grid2 vertical position."],
+			order = 2,
+			width = 1.2,
+			softMin = -2048,
+			softMax = 2048,
+			step = 1,
+			get = function ()
+				local screen_w, screen_h = GetPhysicalScreenSize()
+				return math.floor( theme.layout.PosY * screen_h / (UIParent:GetHeight()*UIParent:GetEffectiveScale()) + 0.5 )
+			end,
+			set = function (_, v)
+				local screen_w, screen_h = GetPhysicalScreenSize()
+				theme.layout.PosY = v / (screen_h / (UIParent:GetHeight()*UIParent:GetEffectiveScale()))
+				Grid2Layout:RestorePosition()
+				Grid2Layout:SavePosition()
+			end,
+			hidden = function() return key~='player' or theme.layout.detachedHeaders or theme.layout.specialHeaders end,
+		},
 
 		anchor = {
 			type = "select",

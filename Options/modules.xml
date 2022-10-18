@@ -7,8 +7,8 @@
 <Script file="modules\general\GridProfile.lua"/>
 <Script file="modules\general\GridAbout.lua"/>
 
-<Script file="modules\themes\GridLayouts.lua"/>
 <Script file="modules\themes\GridGeneral.lua"/>
+<Script file="modules\themes\GridLayouts.lua"/>
 <Script file="modules\themes\GridIndicators.lua"/>
 
 <Script file="modules\statuses\Status.lua"/>
