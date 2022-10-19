@@ -575,7 +575,7 @@ end
 
 function Grid2Layout:GenerateHeaders(defaults, setupIndex)
 	local testPlayers = Grid2.testMaxPlayers
-	self.layoutHasAuto = not (testPlayers or self.db.global.displayAllGroups) or nil
+	self.layoutHasAuto = not (testPlayers or self.db.profile.displayAllGroups) or nil
 	local maxGroups = (testPlayers and math.ceil(testPlayers/5)) or (self.layoutHasAuto and self.instMaxGroups) or 8
 	local firstIndex = setupIndex==1 and 1
 	for i=1,maxGroups do
@@ -652,7 +652,7 @@ function Grid2Layout:FixHeaderAttributes(header, index)
 	header:SetAttribute("columnSpacing", p.Padding)
 	header:SetAttribute("columnAnchorPoint", anchorPoints[not header.groupHorizontal][header.groupAnchor] or header.groupAnchor)
 	-- fix maxColumns
-	local autoEnabled = not self.db.global.displayAllGroups or nil
+	local autoEnabled = not p.displayAllGroups or nil
 	if header:GetAttribute("maxColumns") == "auto" then
 		self.layoutHasAuto = autoEnabled
 		header:SetAttribute( "maxColumns", math.ceil((autoEnabled and self.instMaxPlayers or 40)/unitsPerColumn) )

@@ -66,6 +66,12 @@ do
 	end
 end
 
+-- iterate over a list of values example: for value in Grid2.IterateValues(4,2,7,1) do
+function Grid2.IterateValues(...)
+  local i, t = 0, {...}
+  return function() i = i + 1; return t[i] end
+end
+
 -- retrieve config value, falling back to default
 function Grid2.GetSetupValue(condition, value, default)
 	if condition and value~=nil then

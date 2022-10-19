@@ -337,10 +337,10 @@ local generalOptions = {
 		desc = L["Display all raid groups, if unchecked the groups will by filtered according to the instance size. Not all layouts will obey this setting."],
 		width = "full",
 		get = function(info)
-			return Grid2Layout.db.global.displayAllGroups
+			return theme.layout.displayAllGroups
 		end,
 		set = function(info,v)
-			Grid2Layout.db.global.displayAllGroups= v or nil
+			theme.layout.displayAllGroups= v or nil
 			Grid2Layout:RefreshLayout()
 		end,
 	},
