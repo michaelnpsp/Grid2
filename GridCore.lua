@@ -158,8 +158,10 @@ function Grid2:OnEnable()
 	if self.UpdatePlayerDispelTypes then
 		self:RegisterEvent("SPELLS_CHANGED", "UpdatePlayerDispelTypes")
 	end
-	if not self.isClassic then
+	if not self.isClassic then -- only retail
 		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+	end
+	if self.versionCli>=30000 then -- wotlk of superior
 		self:RegisterEvent("PLAYER_ROLES_ASSIGNED")
 	end
 
@@ -222,7 +224,10 @@ function Grid2:PLAYER_SPECIALIZATION_CHANGED(_,unit)
 end
 
 function Grid2:PLAYER_ROLES_ASSIGNED()
-	self:ReloadTheme()
+	self:RefreshAurasFilter('unitRole')
+	if not self:ReloadTheme() then
+		self:SendMessage("Grid_PlayerRolesAssigned")
+	end
 end
 
 -- Themes

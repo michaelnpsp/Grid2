@@ -9,7 +9,8 @@ local UnitAura = UnitAura
 local isClassic = Grid2.isClassic
 
 -- Local variables
-local Statuses = {}
+local Statuses, filteredStatuses = {}, {}
+
 local Buffs = {}
 local Debuffs = {}
 local DebuffTypes = {}
@@ -126,6 +127,7 @@ do
 	local UnitClass = UnitClass
 	local UnitExists = UnitExists
 	local UnitIsFriend = UnitIsFriend
+	local UnitGroupRolesAssigned = UnitGroupRolesAssigned
 	local filter_mt = {	__index = function(t,u)
 		if UnitExists(u) then
 			local load, r = t.source
@@ -137,6 +139,10 @@ do
 				local _,class = UnitClass(u)
 				r = not load.unitClass[class]
 			end
+			if not r and load.unitRole then
+				local role = UnitGroupRolesAssigned(u)
+				r = not load.unitRole[role]
+			end
 			t[u] = r
 			return r
 		end
@@ -145,7 +151,7 @@ do
 	end }
 	MakeStatusFilter = function(status)
 		local load = status.dbx.load
-		if load and (load.unitReaction or load.unitClass) then
+		if load and (load.unitReaction or load.unitClass or load.unitRole) then
 			if status.filtered then
 				wipe(status.filtered).source = load
 			else
@@ -174,11 +180,20 @@ do
 	Grid2.RegisterMessage( Statuses, "Grid_UnitUpdated", UpdateAurasOfUnit )
 end
 
+-- Refresh auras filter, currently only used to reset unitRole filter
+function Grid2:RefreshAurasFilter(filterName)
+	for status, filtered in next, filteredStatuses do
+		local load = filtered.source
+		wipe(filtered).source = load
+		status:UpdateAllUnits()
+	end
+end
+
 -- EnableAuraEvents() DisableAuraEvents()
 local EnableAuraEvents, DisableAuraEvents
 do
 	local frame
-	EnableAuraEvents = function()
+	EnableAuraEvents = function(status)
 		if not next(Statuses) then
 			if not frame then frame = CreateFrame("Frame", nil, Grid2LayoutFrame) end
 			frame:SetScript("OnEvent", AuraFrame_OnEvent)
@@ -188,14 +203,22 @@ do
 				UnitAura = LibStub("LibClassicDurations").UnitAuraDirect
 			end
 		end
+		local filtered = status.filtered
+		if filtered and filtered.source.unitRole then
+			filteredStatuses[status] = filtered
+		end
 	end
-	DisableAuraEvents = function()
+	DisableAuraEvents = function(status)
 		if not next(Statuses) then
 			frame:SetScript("OnEvent", nil)
 			frame:UnregisterEvent("UNIT_AURA")
 			if Grid2.classicDurations then
 				LibStub("LibClassicDurations"):Unregister(Grid2)
 			end
+		end
+		local filtered = status.filtered
+		if filtered and filtered.source.unitRole then
+			filteredStatuses[status] = nil
 		end
 	end
 end
@@ -291,7 +314,7 @@ do
 end
 
 local function RegisterStatusAura(status, auraType, spell)
-	EnableAuraEvents()
+	EnableAuraEvents(status)
 	if auraType=="debuffType" then
 		DebuffTypes[spell] = status
 	elseif not spell then
@@ -322,7 +345,7 @@ local function UnregisterStatusAura(status, auraType, subType)
 		DebuffTypes[subType] = nil
 	end
 	Statuses[status] = nil
-	DisableAuraEvents()
+	DisableAuraEvents(status)
 end
 
 -- MakeStatusColorHandler()

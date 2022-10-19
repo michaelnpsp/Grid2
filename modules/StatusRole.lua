@@ -363,14 +363,12 @@ DungeonRole.SetHideInCombat = SetHideInCombat
 function DungeonRole:OnEnable()
 	self:SetHideInCombat(self.dbx.hideInCombat)
 	self:UpdateDB()
-	self:RegisterMessage("Grid_RosterUpdate", "UpdateAllUnits")
-	self:RegisterEvent("PLAYER_ROLES_ASSIGNED", "UpdateAllUnits")
+	self:RegisterMessage("Grid_PlayerRolesAssigned", "UpdateAllUnits")
 end
 
 function DungeonRole:OnDisable()
 	self:SetHideInCombat()
-	self:UnregisterMessage("Grid_RosterUpdate")
-	self:UnregisterEvent("PLAYER_ROLES_ASSIGNED")
+	self:UnregisterMessage("Grid_PlayerRolesAssigned")
 end
 
 function DungeonRole:IsActive(unit)

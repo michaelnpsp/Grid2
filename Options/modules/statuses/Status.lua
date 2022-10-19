@@ -29,6 +29,8 @@ do
 
 	local COMBAT_TYPES = { L["Out of Combat"], L['In Combat'] }
 
+	local PLAYER_ROLES = { TANK = L['Tank'], HEALER = L['Healer'], DAMAGER = L['Damager'], NONE = L['None'] }
+
 	local PLAYER_CLASSES = {}
 	for class, translation in pairs(LOCALIZED_CLASS_NAMES_MALE) do
 		local coord = CLASS_ICON_TCOORDS[class]
@@ -313,6 +315,14 @@ do
 				select(2,UnitClass('player')),
 				L["Unit Class"],
 				L["Load the status only if the unit belong to the specified class."],
+				true
+			)
+			SetFilterOptions( status, options, 80,
+				'unitRole',
+				PLAYER_ROLES,
+				'NONE',
+				L["Unit Role"],
+				L["Load the status only if the unit has the specified role."],
 				true
 			)
 		end
