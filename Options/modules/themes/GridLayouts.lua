@@ -345,6 +345,37 @@ local generalOptions = {
 		end,
 	},
 
+	detachedAllHeaders = {
+		order = 5,
+		type = "toggle",
+		name = "|cffffd200".. L["Detach all groups"] .."|r",
+		desc = L["Enable this option to detach unit frame groups, so each group can be moved individually."],
+		width = "full",
+		get = function(info)
+			return theme.layout.detachedHeaders=='player'
+		end,
+		set = function(info,v)
+			theme.layout.detachedHeaders = v and 'player' or nil
+			Grid2Layout:RefreshLayout()
+		end,
+	},
+
+	detachedPetHeaders = {
+		order = 6,
+		type = "toggle",
+		name = "|cffffd200".. L["Detach pets groups"] .."|r",
+		desc = L["Enable this option to detach the pets group, so pets group can be moved individually."],
+		width = "full",
+		get = function(info)
+			return theme.layout.detachedHeaders~=nil
+		end,
+		set = function(info,v)
+			theme.layout.detachedHeaders = v and 'pet' or nil
+			Grid2Layout:RefreshLayout()
+		end,
+		disabled = function() return theme.layout.detachedHeaders=='player' end,
+	},
+
 	desc2 = {
 		order = 99,
 		type = "description",
