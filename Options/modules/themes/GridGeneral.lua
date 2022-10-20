@@ -2,29 +2,57 @@ local L = Grid2Options.L
 
 local theme = Grid2Options.editedTheme
 
+--=========================================================================================================
+-- Util functions to manage headers positions
+--=========================================================================================================
+
 local GetTableValue = Grid2Options.GetTableValueSafe
 local SetTableValue = Grid2Options.SetTableValueSafe
+
+local function GetHeaderPositionKey(headerName)
+	for _,frame in ipairs(Grid2Layout.groupsUsed) do
+		if headerName == frame.headerName then
+			return frame.headerPosKey or Grid2Layout.frame.headerPosKey
+		end
+	end
+end
+
+local function GetHeaderPositionData(headerName)
+	return theme.layout.Positions[ GetHeaderPositionKey(headerName) ] or {0, 0, 0}
+end
+
+local function GetPosAdjust(key, horizontal)
+	if key~=nil and key~='player' then
+		local anchor = GetTableValue(theme.layout.anchors, key, theme.layout.anchor)
+		if horizontal then
+			return (anchor:find("LEFT") or anchor:find('RIGHT')) and theme.layout.Spacing or 0
+		else
+			return (anchor:find("TOP") or anchor:find('BOTTOM')) and theme.layout.Spacing or 0
+		end
+	end
+	return 0
+end
 
 local function GetPhysicalPosX(posX, key)
 	local screen_w, screen_h = GetPhysicalScreenSize()
 	posX = math.floor( posX * screen_w / (UIParent:GetWidth()*UIParent:GetEffectiveScale()) + 0.5 )
-	return posX + ((key or 'player')~='player' and theme.layout.Spacing or 0)
+	return posX + GetPosAdjust(key, true)
+end
+
+local function GetVirtualPosX(posX, key)
+	posX = posX - GetPosAdjust(key, true)
+	local screen_w, screen_h = GetPhysicalScreenSize()
+	return posX / (screen_w / (UIParent:GetWidth()*UIParent:GetEffectiveScale()))
 end
 
 local function GetPhysicalPosY(posY, key)
 	local screen_w, screen_h = GetPhysicalScreenSize()
 	posY = math.floor( posY * screen_h / (UIParent:GetHeight()*UIParent:GetEffectiveScale()) + 0.5 )
-	return posY + ((key or 'player')~='player' and theme.layout.Spacing or 0)
-end
-
-local function GetVirtualPosX(posX, key)
-	posX = posX - ((key or 'player')~='player' and theme.layout.Spacing or 0)
-	local screen_w, screen_h = GetPhysicalScreenSize()
-	return posX / (screen_w / (UIParent:GetWidth()*UIParent:GetEffectiveScale()))
+	return posY + GetPosAdjust(key, false)
 end
 
 local function GetVirtualPosY(posY, key)
-	posY = posY - ( ((key or 'player')~='player') and theme.layout.Spacing or 0)
+	posY = posY - GetPosAdjust(key, false)
 	local screen_w, screen_h = GetPhysicalScreenSize()
 	return posY / (screen_h / (UIParent:GetHeight()*UIParent:GetEffectiveScale()))
 end
@@ -89,6 +117,7 @@ local layoutOptions1 =  { positionheader = {
 				  theme.layout.anchor = v
 				  Grid2Layout:SavePosition()
 				  Grid2Layout:RestorePosition()
+				  Grid2Layout:RefreshLayout()
 			  end,
 		values= {["CENTER"] = L["CENTER"], ["TOP"] = L["TOP"], ["BOTTOM"] = L["BOTTOM"], ["LEFT"] = L["LEFT"], ["RIGHT"] = L["RIGHT"], ["TOPLEFT"] = L["TOPLEFT"], ["TOPRIGHT"] = L["TOPRIGHT"], ["BOTTOMLEFT"] = L["BOTTOMLEFT"], ["BOTTOMRIGHT"] = L["BOTTOMRIGHT"] }
 }, groupanchor = {
@@ -155,24 +184,16 @@ local layoutOptions1 =  { positionheader = {
 		name = L['Header Types'],
 } }
 
+--=========================================================================================================
+-- Layout position & anchor by Header Type
+--=========================================================================================================
+
 do
 	local key, def
 	local defUPC = { player = 5, pet = 5, boss =  8 }
 	local specialHeaders = { boss = true, target = true, focus = true }
 	local headerAnchorPoints = { [''] = L['Default'], CENTER = L["CENTER"], TOP = L["TOP"], BOTTOM = L["BOTTOM"], LEFT = L["LEFT"], RIGHT = L["RIGHT"], TOPLEFT = L["TOPLEFT"], TOPRIGHT = L["TOPRIGHT"], BOTTOMLEFT = L["BOTTOMLEFT"], BOTTOMRIGHT = L["BOTTOMRIGHT"] }
 	local groupAnchorPoints  = { [''] = L['Default'], TOPLEFT = L["TOPLEFT"], TOPRIGHT = L["TOPRIGHT"], BOTTOMLEFT = L["BOTTOMLEFT"], BOTTOMRIGHT = L["BOTTOMRIGHT"] }
-
-	local function GetHeaderPositionKey(headerName)
-		for _,frame in ipairs(Grid2Layout.groupsUsed) do
-			if headerName == frame.headerName then
-				return frame.headerPosKey or Grid2Layout.frame.headerPosKey
-			end
-		end
-	end
-
-	local function GetHeaderPositionData(headerName)
-		return theme.layout.Positions[ GetHeaderPositionKey(headerName) ] or {0, 0, 0}
-	end
 
 	local layoutAnchorOptions = {
 
