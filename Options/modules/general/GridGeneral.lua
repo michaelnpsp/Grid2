@@ -29,6 +29,28 @@ Grid2Options:AddGeneralOptions( "General", "Themes", {
 }, nil)
 
 --==========================================================================
+-- Icons Zoom
+--==========================================================================
+
+Grid2Options:AddGeneralOptions( "General", "Icons Zoom", {
+	displayZoomedIcons = {
+		type = "toggle",
+		name = L["Zoom In buffs/debuffs Icons"],
+		desc = L["Enable this option to completelly hide the default blizzard border of buffs and debuffs Icons."],
+		width = "full",
+		order = 10,
+		get = function ()
+			return Grid2Frame.db.shared.displayZoomedIcons
+		end,
+		set = function (_, v)
+			Grid2Frame.db.shared.displayZoomedIcons = v or nil
+			Grid2:SetupStatusPrototype()
+			Grid2Options:UpdateIndicators()
+		end,
+	},
+})
+
+--==========================================================================
 -- Text formatting
 --==========================================================================
 
@@ -255,7 +277,6 @@ if Grid2.isVanilla then
 		},
 	})
 end
-
 
 --==========================================================================
 -- Minimap

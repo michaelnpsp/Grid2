@@ -24,10 +24,7 @@ end
 function status:GetVertexColor()
 	return 1,1,1,1
 end
--- texture coords: icon indicator
-function status:GetTexCoord()
-	return 0.05, 0.95, 0.05, 0.95
-end
+
 -- stacks: text, bar indicators
 function status:GetCount()
 	return 1
@@ -40,6 +37,8 @@ end
 function status:GetColor()
 	return 0,0,0,1
 end
+-- texture coords: icon indicator
+status.GetTexCoord = Grid2.statusLibrary.GetTexCoord
 -- returns~=nil to colorize icon border with status GetColor(): icon indicator
 status.GetBorder = Grid2.Dummy
 -- text indicator
@@ -152,4 +151,8 @@ end
 
 function Grid2:IterateStatuses(type)
 	return next, type and self.statusTypes[type] or self.statuses
+end
+
+function Grid2:SetupStatusPrototype()
+	status.GetTexCoord = Grid2Frame.db.shared.displayZoomedIcons and Grid2.statusLibrary.GetTexCoordZoomed or Grid2.statusLibrary.GetTexCoord
 end

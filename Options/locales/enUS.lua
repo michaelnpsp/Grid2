@@ -1355,6 +1355,8 @@ L["Unit Reaction"] = true
 L["Load the status only if the unit has the specified reaction towards the player."] = true
 L["Unit Class"] = true
 L["Load the status only if the unit belong to the specified class."] = true
+L["Unit Role"] = true
+L["Load the status only if the unit has the specified role."] = true
 
 L["Select layouts for different Raid types."] = true
 L["Use Blizzard Unit Frames"] = true

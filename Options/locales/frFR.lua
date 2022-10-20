@@ -1355,6 +1355,8 @@ L["\"%s\" has sent you a profile configuration. Do you want to activate received
 -- L["Load the status only if the unit has the specified reaction towards the player."] = ""
 -- L["Unit Class"] = ""
 -- L["Load the status only if the unit belong to the specified class."] = ""
+-- L["Unit Role"] = ""
+-- L["Load the status only if the unit has the specified role."] = ""
 --
 -- L["Select layouts for different Raid types."] = ""
 -- L["Use Blizzard Unit Frames"] = ""

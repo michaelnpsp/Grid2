@@ -5,6 +5,7 @@ Created by Grid2 original authors, modified by Michael
 local Grid2 = Grid2
 local pairs = pairs
 local ipairs = ipairs
+local tonumber = tonumber
 
 function Grid2:SetupShutdown()
 	-- remove indicators
@@ -74,6 +75,7 @@ end
 
 function Grid2:Setup()
    local db = Grid2.db.profile
+   Grid2:SetupStatusPrototype()
    Grid2:SetupIndicators(db.indicators)
    Grid2:SetupStatuses(db.statuses)
    Grid2:SetupStatusMap(db.statusMap)

@@ -115,6 +115,7 @@ local function Icon_Layout(self, parent)
 	local borderSize = self.borderSize
 	local iconSize = self.iconSize>1 and self.iconSize or self.iconSize * parent:GetHeight()
 	local size = iconSize + self.iconSpacing
+	local tc1,tc2,tc3,tc4 = Grid2.statusPrototype.GetTexCoord()
 	local frameName
 	if not self.dbx.disableOmniCC then
 		local i,j  = parent:GetName():match("Grid2LayoutHeader(%d+)UnitButton(%d+)")
@@ -170,7 +171,7 @@ local function Icon_Layout(self, parent)
 		-- icon texture
 		frame.icon:SetPoint("TOPLEFT",     frame ,"TOPLEFT",  borderSize, -borderSize)
 		frame.icon:SetPoint("BOTTOMRIGHT", frame ,"BOTTOMRIGHT", -borderSize, borderSize)
-		frame.icon:SetTexCoord(0.05, 0.95, 0.05, 0.95)
+		frame.icon:SetTexCoord(tc1, tc2, tc3, tc4)
 		--
 		frame:Hide()
 		x = x + 1

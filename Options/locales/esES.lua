@@ -1355,6 +1355,8 @@ L["Unit Reaction"] = "Unidad: Reacción"
 L["Load the status only if the unit has the specified reaction towards the player."] = "Carga el estado solo si la unidad reacciona de la manera indicada hacia el jugador."
 L["Unit Class"] = "Unidad: Clase"
 L["Load the status only if the unit belong to the specified class."] = "Carga el estado solo si la unidad pertenece a la clase indicada."
+L["Unit Role"] = "Unidad: Rol"
+L["Load the status only if the unit has the specified role."] = "Carga el estado solo si la unidad ejerce el rol indicado."
 
 L["Select layouts for different Raid types."] = "Elige los diseños para diferentes tipos de raid."
 L["Use Blizzard Unit Frames"] = "Usar Marcos de Unidades de Blizzard"

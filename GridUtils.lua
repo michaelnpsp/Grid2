@@ -166,6 +166,12 @@ Grid2.statusLibrary = {
 			self:UpdateIndicators(unit)
 		end
 	end,
+	GetTexCoord = function()
+		return 0.05, 0.95, 0.05, 0.95
+	end,
+	GetTexCoordZoomed = function()
+		return 0.08, 0.92, 0.08, 0.92
+	end,
 }
 
 -- Used by bar indicators

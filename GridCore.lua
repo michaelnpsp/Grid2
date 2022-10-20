@@ -52,7 +52,7 @@ Grid2.instType       = "other"
 Grid2.instMaxPlayers = 1
 
 -- player class cache
-Grid2.playerClass    = select(2, UnitClass("player"))
+Grid2.playerClass = select(2, UnitClass("player"))
 
 -- plugins can add functions to this table to add extra lines to the minimap popup menu
 Grid2.tooltipFunc = {}
