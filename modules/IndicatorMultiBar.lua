@@ -196,8 +196,10 @@ end
 local function Bar_Disable(self, parent)
 	local bar = parent[self.name]
 	local textures = bar.myTextures
-	for i=2,#textures do
-		textures[i]:Hide()
+	if textures then
+		for i=2,#textures do
+			textures[i]:Hide()
+		end
 	end
 	bar:Hide()
 	bar:SetParent(nil)
