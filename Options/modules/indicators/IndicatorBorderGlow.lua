@@ -14,14 +14,7 @@ local function CheckBlizzardGlowEffectNotUsed(indExcluded)
 	return true
 end
 
-Grid2Options:RegisterIndicatorOptions("glowborder", true, function(self, indicator)
-	local statuses, options = {}, {}
-	self:MakeIndicatorBorderGlowOptions(indicator, options)
-	self:MakeIndicatorStatusOptions(indicator, statuses)
-	self:AddIndicatorOptions(indicator, statuses, options)
-end)
-
-function Grid2Options:MakeIndicatorBorderGlowOptions(indicator,options)
+local function MakeBorderGlowOptions(self, indicator,options)
 	options.colorSource = {
 			type = "select",
 			order = 10,
@@ -190,3 +183,9 @@ function Grid2Options:MakeIndicatorBorderGlowOptions(indicator,options)
 	return options
 end
 
+Grid2Options:RegisterIndicatorOptions("glowborder", true, function(self, indicator)
+	local statuses, options = {}, {}
+	MakeBorderGlowOptions(self, indicator, options)
+	self:MakeIndicatorStatusOptions(indicator, statuses)
+	self:AddIndicatorOptions(indicator, statuses, options)
+end)

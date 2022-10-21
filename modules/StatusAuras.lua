@@ -397,7 +397,7 @@ do
 		self.idx[unit], self.exp[unit], self.val[unit] = nil, nil, nil
 		return true
 	end
-	-- with unit class/reaction filters
+	-- with unit class/reaction/role filters
 	local function IsActiveFilter(self, unit)
 		return not self.filtered[unit] and self.idx[unit]~=nil
 	end
@@ -412,13 +412,21 @@ do
 		if self.filtered[unit] or not (self.idx[unit] and self.cnt[unit]>=self.stacks) then return end
 		return self.tkr[unit]==1 or "blink"
 	end
+	local function IsActiveBlinkAFilter(self, unit)
+		if self.filtered[unit] or not self.idx[unit] then return end
+		return "blink"
+	end
+	local function IsActiveStacksBlinkAFilter(self, unit)
+		if self.filtered[unit] or not (self.idx[unit] and self.cnt[unit]>=self.stacks) then return end
+		return "blink"
+	end
 	local function IsInactiveFilter(self, unit)
 		return not self.filtered[unit] and not (self.idx[unit] or unit_is_pet[unit])
 	end
 	local function IsInactiveBlinkFilter(self, unit)
 		return not self.filtered[unit] and not self.idx[unit] and "blink"
 	end
-	-- no unit class/reaction filters
+	-- no unit class/reaction/role filters
 	local function IsActive(self, unit)
 		if self.idx[unit] then return true end
 	end
@@ -432,6 +440,14 @@ do
 	local function IsActiveStacksBlink(self, unit)
 		if not (self.idx[unit] and self.cnt[unit]>=self.stacks) then return end
 		return self.tkr[unit]==1 or "blink"
+	end
+	local function IsActiveBlinkA(self, unit)
+		if not self.idx[unit] then return end
+		return "blink"
+	end
+	local function IsActiveStacksBlinkA(self, unit)
+		if not (self.idx[unit] and self.cnt[unit]>=self.stacks) then return end
+		return "blink"
 	end
 	local function IsInactive(self, unit)
 		return not (self.idx[unit] or unit_is_pet[unit])
@@ -584,11 +600,20 @@ do
 			self.GetCount = GetCount
 			self.GetExpirationTime = GetExpirationTime
 			if blinkThreshold then
-				self.thresholds = { blinkThreshold }
-				if self.filtered then
-					self.IsActive = self.stacks and IsActiveStacksBlinkFilter or IsActiveBlinkFilter
-				else
-					self.IsActive = self.stacks and IsActiveStacksBlink or IsActiveBlink
+				if blinkThreshold>0 then -- blink/glow active after some time threshold
+					self.thresholds = { blinkThreshold }
+					if self.filtered then
+						self.IsActive = self.stacks and IsActiveStacksBlinkFilter or IsActiveBlinkFilter
+					else
+						self.IsActive = self.stacks and IsActiveStacksBlink or IsActiveBlink
+					end
+				else -- blink/glow always active, no timetracker is needed
+					self.thresholds = nil
+					if self.filtered then
+						self.IsActive = self.stacks and IsActiveStacksBlinkAFilter or IsActiveBlinkAFilter
+					else
+						self.IsActive = self.stacks and IsActiveStacksBlinkA or IsActiveBlinkA
+					end
 				end
 			else
 				self.thresholds = dbx.colorThreshold

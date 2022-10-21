@@ -627,7 +627,7 @@ function Grid2Layout:SetHeaderProperties(header, dbx, setupIndex, headerName)
 	header.headerType = dbx.type or 'player' -- player, pet, custom
 	header.headerName = headerName or header.headerType -- player, pet, target, focus, boss, custom
 	header.wasDetached = header.isDetached
-	header.isDetached = setupIndex>1 and (dbx.detachHeader or p.detachedHeaders=='player' or p.detachedHeaders==dbx.type) or nil
+	header.isDetached = setupIndex>1 and (dbx.detachHeader or p.detachedHeaders=='player' or p.detachedHeaders==header.headerType) or nil
 	header.groupHorizontal = GetSetupValue( header.isDetached, p.groupHorizontals[header.headerName], p.horizontal )
 	header.groupAnchor = GetSetupValue( header.isDetached, p.groupAnchors[header.headerName], p.groupAnchor )
 	header.headerAnchor = GetSetupValue( header.isDetached, p.anchors[header.headerName], p.anchor )

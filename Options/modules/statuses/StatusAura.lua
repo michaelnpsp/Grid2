@@ -78,27 +78,45 @@ function Grid2Options:MakeStatusAuraMissingOptions(status, options, optionParams
 end
 
 -- Grid2Options:MakeStatusBlinkThresholdOptions()
-function Grid2Options:MakeStatusBlinkThresholdOptions(status, options, optionParams)
-	if Grid2Frame.db.profile.blinkType ~= "None" and (not status.dbx.colorThreshold) then
-		self:MakeHeaderOptions(options, "Thresholds")
-		options.blinkThreshold = {
-			type = "range",
-			order = 51,
-			name = L["Blink"],
-			desc = L["Blink Threshold at which to start blinking the status."],
-			min = 0,
-			max = 30,
-			step = 0.1,
-			bigStep  = 1,
-			get = function ()
-				return status.dbx.blinkThreshold or 0
-			end,
-			set = function (_, v)
-				if v == 0 then v = nil end
-				status.dbx.blinkThreshold = v
-				status:UpdateDB()
-			end,
-		}
+do
+	local VALUES = { L["Never"], L["Always"], L["Threshold"] }
+	function Grid2Options:MakeStatusBlinkThresholdOptions(status, options, optionParams)
+		if Grid2Frame.db.profile.blinkType ~= "None" and (not status.dbx.colorThreshold) then
+			self:MakeHeaderOptions(options, "Highlights")
+			options.blinkEnabled = {
+				type = "select",
+				order = 51,
+				name = L["Highlight"],
+				desc = L["Select when to highlight the status."],
+				get = function()
+					return (status.dbx.blinkThreshold==nil and 1) or (status.dbx.blinkThreshold==0 and 2) or 3
+				end,
+				set = function(_,v)
+					status.dbx.blinkThreshold = (v==3 and 1) or (v==2 and 0) or nil
+					status:Refresh(true)
+					self:MakeStatusOptions(status)
+				end,
+				values = VALUES,
+			}
+			options.blinkThreshold = {
+				type = "range",
+				order = 52,
+				name = L["Remaining seconds"],
+				desc = L["Threshold in remaining seconds at which to highlight the status. The status will start blinking or glowing depending of the linked indicator configuration."],
+				min = 1,
+				softMax = 30,
+				step = 0.1,
+				bigStep  = 1,
+				get = function ()
+					return status.dbx.blinkThreshold
+				end,
+				set = function (_, v)
+					status.dbx.blinkThreshold = v
+					status:Refresh(true)
+				end,
+				hidden = function() return (status.dbx.blinkThreshold or 0)<=0 end,
+			}
+		end
 	end
 end
 

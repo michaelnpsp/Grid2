@@ -64,8 +64,8 @@ Grid2Options:RegisterStatusOptions("shields", "health", function(self, status, o
 		options.blinkThreshold = {
 			type = "range",
 			order = 35,
-			name = L["Blink Threshold"],
-			desc = L["Blink Threshold at which to start blinking the status."],
+			name = L["Highlight"],
+			desc = L["Threshold at which to highlight the status."],
 			min = 0,
 			softMax = 100000,
 			bigStep = 100,
