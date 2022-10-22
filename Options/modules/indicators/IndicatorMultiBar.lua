@@ -241,7 +241,11 @@ do
 			hasAlpha = true,
 			get = function()
 				local c = indicator.dbx.textureColor
-				if c.r then	return c.r, c.g, c.b, c.a end
+				if c.r then
+					return c.r, c.g, c.b, c.a
+				else
+					return 0,0,0,0
+				end
 			end,
 			set = function(info,r,g,b,a)
 				local c = indicator.dbx.textureColor

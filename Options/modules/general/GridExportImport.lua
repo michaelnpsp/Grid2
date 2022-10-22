@@ -444,7 +444,7 @@ Grid2Options.AdvancedProfileOptions = { type = "group", order= 200, name = L["Im
 	cleanDatabase = {
 		type = "execute",
 		order= 100,
-		width = "full",
+		width = 2,
 		name = L["Clean Current Profile"],
 		desc = L["Remove invalid or obsolete objects (indicators, statuses, etc) from the current profile database."],
 		func = function()
