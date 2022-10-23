@@ -29,26 +29,6 @@ Grid2Options:AddGeneralOptions( "General", "Themes", {
 }, nil)
 
 --==========================================================================
--- Highlight effects: Blink and Glowing Border
---==========================================================================
-
-Grid2Options:AddGeneralOptions( "General", "Highlight", {
-	effect = {
-		type = "toggle",
-		width = 'full',
-		name = L["Enable blink and glow border effects on indicators"],
-		desc = L["Enable this option to allow blink and glowing border effects on indicators. The effect activation is controlled by buffs and debuffs statuses."],
-		order = 10,
-		get = function () return Grid2Frame.db.shared.blinkType ~= 'None' end,
-		set = function (_, v)
-			Grid2Frame.db.shared.blinkType = v and 'Flash' or 'None'
-			ReloadUI()
-		end,
-		confirm = function() return L["UI will be reloaded to change this option. Are you sure?"] end,
-	}
-})
-
---==========================================================================
 -- Icons Zoom
 --==========================================================================
 

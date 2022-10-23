@@ -59,25 +59,22 @@ Grid2Options:RegisterStatusOptions("shields", "health", function(self, status, o
 			   status:UpdateDB()
 		end,
 	}
-	local Grid2Frame = Grid2:GetModule("Grid2Frame")
-	if Grid2Frame.db.profile.blinkType ~= "None" then
-		options.blinkThreshold = {
-			type = "range",
-			order = 35,
-			name = L["Highlight"],
-			desc = L["Threshold at which to highlight the status."],
-			min = 0,
-			softMax = 100000,
-			bigStep = 100,
-			step = 1,
-			get = function () return status.dbx.blinkThreshold or 0	end,
-			set = function (_, v)
-				if v == 0 then v = nil end
-				status.dbx.blinkThreshold = v
-				status:UpdateDB()
-			end,
-		}
-	end
+	options.blinkThreshold = {
+		type = "range",
+		order = 35,
+		name = L["Highlight"],
+		desc = L["Threshold at which to highlight the status."],
+		min = 0,
+		softMax = 100000,
+		bigStep = 100,
+		step = 1,
+		get = function () return status.dbx.blinkThreshold or 0	end,
+		set = function (_, v)
+			if v == 0 then v = nil end
+			status.dbx.blinkThreshold = v
+			status:UpdateDB()
+		end,
+	}
 end, {
 	title = L["display remaining amount of damage absorb shields"],
 	titleIcon = "Interface\\ICONS\\Spell_Holy_PowerWordShield"

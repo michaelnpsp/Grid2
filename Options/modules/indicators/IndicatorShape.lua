@@ -1,12 +1,12 @@
 local media = LibStub("LibSharedMedia-3.0", true)
 local L = Grid2Options.L
 
-local SHAPES_VALUES = { 
-	[0] = L["Square"], 
-	[1] = L["Rounded Square"], 	
-	[2] = L["Circle"], 
-	[3] = L["Diamond"], 
-	[4] = L["Triangle"], 
+local SHAPES_VALUES = {
+	[0] = L["Square"],
+	[1] = L["Rounded Square"],
+	[2] = L["Circle"],
+	[3] = L["Diamond"],
+	[4] = L["Triangle"],
 	[5] = L["Right Triangle"],
 	[6] = L["Semi Circle"],
 	[7] = L["Quarter Circle"],
@@ -18,7 +18,7 @@ Grid2Options:RegisterIndicatorOptions("shape", true, function(self, indicator)
 	local statuses, options =  {}, {}
 	self:MakeIndicatorTypeLevelOptions(indicator, options)
 	self:MakeIndicatorLocationOptions(indicator, options)
-	self:MakeIndicatorAnimationOptions(indicator, options)
+	self:MakeIndicatorHighlightEffectOptions(indicator, options)
 	self:MakeIndicatorShapeCustomOptions(indicator, options)
 	self:MakeIndicatorStatusOptions(indicator, statuses)
 	self:AddIndicatorOptions(indicator, statuses, options )
@@ -27,7 +27,7 @@ end)
 function Grid2Options:MakeIndicatorShapeCustomOptions(indicator, options)
 	self:MakeHeaderOptions( options, "Shape" )
 	options.shapeType = {
-		type = "select", 
+		type = "select",
 		order = 11,
 		name = L["Shape"],
 		desc = L["Select the shape to display"],
@@ -39,7 +39,7 @@ function Grid2Options:MakeIndicatorShapeCustomOptions(indicator, options)
 		values = SHAPES_VALUES,
 	}
 	options.shapeRotation = {
-		type = "select", 
+		type = "select",
 		order = 12,
 		name = L["Rotation"],
 		desc = L["Select the shape angle"],
@@ -66,7 +66,7 @@ function Grid2Options:MakeIndicatorShapeCustomOptions(indicator, options)
 			self:RefreshIndicator(indicator, "Layout")
 		end,
 	}
-	self:MakeHeaderOptions( options, "Shadow" )	
+	self:MakeHeaderOptions( options, "Shadow" )
 	options.shadowEnabled = {
 		type = "toggle",
 		name = L["Enable Shadow"],
@@ -78,7 +78,7 @@ function Grid2Options:MakeIndicatorShapeCustomOptions(indicator, options)
 			indicator.dbx.shadowEnabled = v or nil
 			self:RefreshIndicator(indicator, "Layout")
 		end,
-	}	
+	}
 	options.shadowSize = {
 		type = "range",
 		order = 32,
@@ -92,7 +92,7 @@ function Grid2Options:MakeIndicatorShapeCustomOptions(indicator, options)
 			indicator.dbx.shadowSize = v>0 and v or nil
 			self:RefreshIndicator(indicator, "Layout")
 		end,
-		hidden = function() return indicator.dbx.shadowEnabled==nil end,		
+		hidden = function() return indicator.dbx.shadowEnabled==nil end,
 	}
 	options.shadowX = {
 		type = "range",
@@ -105,7 +105,7 @@ function Grid2Options:MakeIndicatorShapeCustomOptions(indicator, options)
 			indicator.dbx.shadowX = v~=0 and v or nil
 			self:RefreshIndicator(indicator, "Layout")
 		end,
-		hidden = function() return indicator.dbx.shadowEnabled==nil end,		
+		hidden = function() return indicator.dbx.shadowEnabled==nil end,
 	}
 	options.shadowY = {
 		type = "range",
@@ -118,7 +118,7 @@ function Grid2Options:MakeIndicatorShapeCustomOptions(indicator, options)
 			indicator.dbx.shadowY = v~=0 and v or nil
 			self:RefreshIndicator(indicator, "Layout")
 		end,
-		hidden = function() return indicator.dbx.shadowEnabled==nil end,		
+		hidden = function() return indicator.dbx.shadowEnabled==nil end,
 	}
 	options.shadowColor = {
 		type = "color",

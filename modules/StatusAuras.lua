@@ -556,7 +556,7 @@ do
 	local function UpdateDB(self,dbx)
 		if self.enabled then self:OnDisable() end
 		local dbx = dbx or self.dbx
-		local blinkThreshold = Grid2Frame.db.shared.blinkType~="None" and dbx.blinkThreshold or nil
+		local blinkThreshold = dbx.blinkThreshold or nil
 		MakeStatusFilter(self)
 		self.vId = dbx.valueIndex or 0
 		self.valMax = dbx.valueMax

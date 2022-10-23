@@ -81,13 +81,13 @@ end
 do
 	local VALUES = { L["Never"], L["Always"], L["Threshold"] }
 	function Grid2Options:MakeStatusBlinkThresholdOptions(status, options, optionParams)
-		if Grid2Frame.db.profile.blinkType ~= "None" and (not status.dbx.colorThreshold) then
+		if not status.dbx.colorThreshold then
 			self:MakeHeaderOptions(options, "Highlights")
 			options.blinkEnabled = {
 				type = "select",
-				order = 51,
+				order = 111,
 				name = L["Highlight"],
-				desc = L["Select when to highlight the status."],
+				desc = L["Select when to highlight the status. Linked indicators must have a hightlight effect configured."],
 				get = function()
 					return (status.dbx.blinkThreshold==nil and 1) or (status.dbx.blinkThreshold==0 and 2) or 3
 				end,
@@ -100,9 +100,9 @@ do
 			}
 			options.blinkThreshold = {
 				type = "range",
-				order = 52,
+				order = 112,
 				name = L["Remaining seconds"],
-				desc = L["Threshold in remaining seconds at which to highlight the status. The status will start blinking or glowing depending of the linked indicator configuration."],
+				desc = L["Threshold in remaining seconds at which to highlight the status. The status will blink or glow depending of the linked indicator configuration."],
 				min = 1,
 				softMax = 30,
 				step = 0.1,
@@ -175,7 +175,6 @@ function Grid2Options:MakeStatusAuraCommonOptions(status, options, optionParams)
 		options.colorCount = {
 			type = "select",
 			order = 10.1,
-			width ="half",
 			name = L["Color count"],
 			desc = L["Select how many colors the status must provide."],
 			get = function() return status.dbx.colorCount or 1 end,
@@ -278,7 +277,6 @@ function Grid2Options:MakeStatusAuraValueOptions(status, options, optionParams)
 	options.trackValue = {
 		type = "select",
 		order = 91,
-		width ="half",
 		name = L["Value"],
 		desc = L["AURAVALUE_DESC"],
 		get = function() return status.dbx.valueIndex or 0 end,
