@@ -335,6 +335,13 @@ do
 				dispel.Disease = IsPlayerSpell(115450) or IsPlayerSpell(218164)
 				dispel.Poison  = IsPlayerSpell(115450) or IsPlayerSpell(218164)
 			end
+		elseif class == 'EVOKER' then
+			func = function()
+				dispel.Magic   = IsPlayerSpell(360823)
+				dispel.Curse   = IsPlayerSpell(374251)
+				dispel.Poison  = IsPlayerSpell(360823) or IsPlayerSpell(365585)
+				dispel.Disease = IsPlayerSpell(374251)
+			end
 		end
 	end
 	-- publish usefull tables and methods
