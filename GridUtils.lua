@@ -285,10 +285,14 @@ do
 				dispel.Disease = IsPlayerSpell(552) or IsPlayerSpell(528)
 			end
 		elseif class == 'SHAMAN' then
-			func = function()
+			func = Grid2.isWrath and (function()
+				dispel.Disease = IsPlayerSpell(2870) or IsPlayerSpell(526) or IsPlayerSpell(51886)
+				dispel.Poison  = IsPlayerSpell(526) or IsPlayerSpell(51886)
+				dispel.Curse   = IsPlayerSpell(51886)
+			end) or (function()
 				dispel.Disease = IsPlayerSpell(2870)
 				dispel.Poison  = IsPlayerSpell(526)
-			end
+			end)
 		elseif class == 'MAGE' then
 			func = function()
 				dispel.Curse = IsPlayerSpell(475)
