@@ -615,7 +615,7 @@ do
 						self.IsActive = self.stacks and IsActiveStacksBlinkA or IsActiveBlinkA
 					end
 				end
-			else
+			else -- blinkThreshold==0 => always active
 				self.thresholds = dbx.colorThreshold
 				if self.filtered then
 					self.IsActive = self.stacks and IsActiveStacksFilter or IsActiveFilter

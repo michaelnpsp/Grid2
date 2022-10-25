@@ -28,7 +28,7 @@ end
 
 function Threat:UpdateDB()
 	colors      = { self.dbx.color1, self.dbx.color2, self.dbx.color3 }
-	activeValue = self.dbx.disableBlink or "blink"
+	activeValue = self.dbx.blinkThreshold and "blink" or true
 end
 
 -- 1 = not tanking, higher threat than tank
@@ -58,4 +58,4 @@ end
 
 Grid2.setupFunc["threat"] = Create
 
-Grid2:DbSetStatusDefaultValue( "threat", {type = "threat", colorCount = 3, color1 = {r=1,g=0,b=0,a=1}, color2 = {r=.5,g=1,b=1,a=1}, color3 = {r=1,g=1,b=1,a=1}} )
+Grid2:DbSetStatusDefaultValue( "threat", {type = "threat", blinkThreshold = true, colorCount = 3, color1 = {r=1,g=0,b=0,a=1}, color2 = {r=.5,g=1,b=1,a=1}, color3 = {r=1,g=1,b=1,a=1}} )

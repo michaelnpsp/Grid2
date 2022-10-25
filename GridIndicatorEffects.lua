@@ -154,24 +154,32 @@ local function GetUpdate_Blink(indicator)
 	end
 end
 
--- Public method (overwriting the original UpdateDB defined in GridIndicator.lua)
+local function GetUpdate_Original(indicator)
+	return indicatorPrototype.Update
+end
+
 do
 	local updateFunctions = {
+		[-2] = GetUpdate_Blink,
 		[-1] = GetUpdate_Scale,
-		[ 0] = GetUpdate_Blink,
+		[ 0] = GetUpdate_Original,
 		[ 1] = GetUpdate_GlowPixel,
 		[ 2] = GetUpdate_GlowAutoCast,
 		[ 3] = GetUpdate_GlowButton,
 	}
-	function indicatorPrototype:UpdateDB()
-		if self.LoadDB then
-			self:LoadDB()
+	-- Called from indicator:RegisterStatus() inside GridIndicator.lua
+	function indicatorPrototype:RegisterHighlight(status)
+		if self.GetBlinkFrame and self.highlightType==nil then
+			if self.dbx.highlightAlways or (status.dbx and status.dbx.blinkThreshold) then
+				local typ = self.dbx.highlightType or -2 -- blink by default
+				self.highlightType = typ
+				self.Update = updateFunctions[typ](self)
+			end
 		end
-		if self.GetBlinkFrame then
-			local typ = self.dbx.highlightType
-			self.Update = typ and updateFunctions[typ](self) or indicatorPrototype.Update
-		elseif not rawget(self, "Update") then
-			self.Update = indicatorPrototype.Update -- speed optimization
-		end
+	end
+	-- Called from Grid2Options
+	function Grid2:RefreshHighlight(indicator)
+		indicator.highlightType = indicator.dbx.highlightType or -2 -- blink by default
+		indicator.Update = updateFunctions[indicator.highlightType](indicator)
 	end
 end

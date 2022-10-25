@@ -5,7 +5,7 @@ Created by Michael, based on Grid2Options\GridDefaults.lua from original Grid2 a
 local Grid2 = Grid2
 
 -- Latest database profile version
-local DB_VERSION = 10
+local DB_VERSION = 11
 
 -- Database manipulation functions
 function Grid2:DbSetStatusDefaultValue(name, value)
@@ -133,6 +133,11 @@ function Grid2:UpdateDefaults()
 				dbx.detachHeaders = nil
 				dbx.detachPetHeaders = nil
 			end
+		end
+		if version<11 then
+			local threat = self.db.profile.statuses.threat
+			threat.blinkThreshold = not threat.disableBlink
+			threat.disableBlink = nil
 		end
 	end
 	-- Set database version

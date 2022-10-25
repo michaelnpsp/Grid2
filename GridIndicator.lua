@@ -27,6 +27,7 @@ function indicator:new(name)
 	e.name = name
 	e.statuses = {}
 	e.prototype = self
+	e.Update = self.Update -- speed optimization
 	return e
 end
 
@@ -55,6 +56,7 @@ function indicator:RegisterStatus(status, priority)
 			self.statuses[#self.statuses + 1] = status
 			self.priorities[status] = priority
 			self:SortStatuses()
+			self:RegisterHighlight(status)
 		end
 		status:RegisterIndicator( self, priority, Grid2.suspendedIndicators[self.name] )
 	end
