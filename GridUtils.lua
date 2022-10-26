@@ -414,3 +414,25 @@ function Grid2:SetMinimapIcon(value)
 		Grid2Layout.minimapIcon:Show("Grid2")
 	end
 end
+
+-- Hide blizzard raid frames
+function Grid2:UpdateBlizzardFrames()
+	if self.isWoW90 and self.db.profile.hideBlizzardRaidFrames and CompactRaidFrameManager then
+		local function HideFrames()
+			CompactRaidFrameManager:UnregisterAllEvents()
+			CompactRaidFrameContainer:UnregisterAllEvents()
+			if not InCombatLockdown() then
+				CompactRaidFrameManager:Hide()
+				local shown = CompactRaidFrameManager_GetSetting('IsShown')
+				if shown and shown ~= '0' then
+					CompactRaidFrameManager_SetSetting('IsShown', '0')
+				end
+			end
+		end
+		hooksecurefunc('CompactRaidFrameManager_UpdateShown', HideFrames)
+		CompactRaidFrameManager:HookScript('OnShow', HideFrames)
+		CompactRaidFrameContainer:HookScript('OnShow', HideFrames)
+		HideFrames()
+	end
+	self.UpdateBlizzardFrames = Grid2.Dummy
+end

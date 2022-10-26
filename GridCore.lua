@@ -143,6 +143,8 @@ function Grid2:OnInitialize()
 	media:Register("background", "Blizzard Quest Title Highlight", "Interface\\QuestFrame\\UI-QuestTitleHighlight")
 	media:Register("background", "Blizzard ChatFrame Background", "Interface\\ChatFrame\\ChatFrameBackground")
 
+	self:UpdateBlizzardFrames()
+
 	self:InitializeOptions()
 
 	self.OnInitialize = nil

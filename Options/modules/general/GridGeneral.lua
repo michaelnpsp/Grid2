@@ -263,26 +263,43 @@ end
 --==========================================================================
 
 do
-	local addons = { "Blizzard_CompactRaidFrames", "Blizzard_CUFProfiles" }
-
-	Grid2Options:AddGeneralOptions( "General", "Blizzard Raid Frames", {
-		hideBlizzardRaidFrames = {
-			type = "toggle",
-			name = L["Hide Blizzard Raid Frames"],
-			desc = L["Hide Blizzard Raid Frames"],
-			width = "full",
-			order = 120,
-			get = function () return not IsAddOnLoaded( addons[1] ) end,
-			set = function (_, v)
-				local func = v and DisableAddOn or EnableAddOn
-				for _, v in pairs(addons) do
-					func(v)
-				end
-				ReloadUI()
-			end,
-			confirm = function() return "UI will be reloaded. Are your sure ?" end,
-		},
-	})
+	if Grid2.isWoW90 then -- retail
+		Grid2Options:AddGeneralOptions( "General", "Blizzard Raid Frames", {
+			hideBlizzardRaidFrames = {
+				type = "toggle",
+				name = L["Hide Blizzard Raid Frames"],
+				desc = L["Hide Blizzard Raid Frames"],
+				width = "full",
+				order = 120,
+				get = function () return Grid2.db.profile.hideBlizzardRaidFrames end,
+				set = function (_, v)
+					Grid2.db.profile.hideBlizzardRaidFrames = v or nil
+					ReloadUI()
+				end,
+				confirm = function() return "UI will be reloaded. Are your sure ?" end,
+			},
+		})
+	else -- classic
+		local addons = { "Blizzard_CompactRaidFrames", "Blizzard_CUFProfiles" }
+		Grid2Options:AddGeneralOptions( "General", "Blizzard Raid Frames", {
+			hideBlizzardRaidFrames = {
+				type = "toggle",
+				name = L["Hide Blizzard Raid Frames"],
+				desc = L["Hide Blizzard Raid Frames"],
+				width = "full",
+				order = 120,
+				get = function () return not IsAddOnLoaded( addons[1] ) end,
+				set = function (_, v)
+					local func = v and DisableAddOn or EnableAddOn
+					for _, v in pairs(addons) do
+						func(v)
+					end
+					ReloadUI()
+				end,
+				confirm = function() return "UI will be reloaded. Are your sure ?" end,
+			},
+		})
+	end
 end
 
 --==========================================================================
