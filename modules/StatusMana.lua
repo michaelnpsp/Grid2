@@ -81,7 +81,8 @@ function Mana:IsActiveHealer(unit)
 end
 
 function Mana:GetPercent(unit)
-	return UnitMana(unit) / UnitManaMax(unit)
+	local m = UnitManaMax(unit)
+	return m == 0 and 0 or UnitMana(unit) / m
 end
 
 function Mana:GetText(unit)
@@ -174,7 +175,8 @@ function Power:IsActive(unit)
 end
 
 function Power:GetPercent(unit)
-	return UnitPower(unit) / UnitPowerMax(unit)
+	local m = UnitPowerMax(unit)
+	return m == 0 and 0 or UnitPower(unit) / m
 end
 
 function Power:GetText(unit)
