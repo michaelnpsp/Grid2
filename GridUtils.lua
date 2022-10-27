@@ -434,5 +434,5 @@ function Grid2:UpdateBlizzardFrames()
 		CompactRaidFrameContainer:HookScript('OnShow', HideFrames)
 		HideFrames()
 	end
-	self.UpdateBlizzardFrames = Grid2.Dummy
+	self.UpdateBlizzardFrames = nil
 end

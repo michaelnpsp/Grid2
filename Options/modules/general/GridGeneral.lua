@@ -263,6 +263,13 @@ end
 --==========================================================================
 
 do
+	local addons = { "Blizzard_CompactRaidFrames", "Blizzard_CUFProfiles" }
+	local function RaidAddonsEnabled(enabled)
+		local func = enabled and EnableAddOn or DisableAddOn
+		for _, v in pairs(addons) do
+			func(v)
+		end
+	end
 	if Grid2.isWoW90 then -- retail
 		Grid2Options:AddGeneralOptions( "General", "Blizzard Raid Frames", {
 			hideBlizzardRaidFrames = {
@@ -271,16 +278,16 @@ do
 				desc = L["Hide Blizzard Raid Frames"],
 				width = "full",
 				order = 120,
-				get = function () return Grid2.db.profile.hideBlizzardRaidFrames end,
+				get = function () return Grid2.db.profile.hideBlizzardRaidFrames or not IsAddOnLoaded(addons[1]) end,
 				set = function (_, v)
 					Grid2.db.profile.hideBlizzardRaidFrames = v or nil
+					RaidAddonsEnabled(true) -- reenabling CompactRaidFrames addon because in dragonflight it cannot be disabled.
 					ReloadUI()
 				end,
 				confirm = function() return "UI will be reloaded. Are your sure ?" end,
 			},
 		})
 	else -- classic
-		local addons = { "Blizzard_CompactRaidFrames", "Blizzard_CUFProfiles" }
 		Grid2Options:AddGeneralOptions( "General", "Blizzard Raid Frames", {
 			hideBlizzardRaidFrames = {
 				type = "toggle",
@@ -288,12 +295,9 @@ do
 				desc = L["Hide Blizzard Raid Frames"],
 				width = "full",
 				order = 120,
-				get = function () return not IsAddOnLoaded( addons[1] ) end,
+				get = function () return not IsAddOnLoaded(addons[1]) end,
 				set = function (_, v)
-					local func = v and DisableAddOn or EnableAddOn
-					for _, v in pairs(addons) do
-						func(v)
-					end
+					RaidAddonsEnabled(not v)
 					ReloadUI()
 				end,
 				confirm = function() return "UI will be reloaded. Are your sure ?" end,
