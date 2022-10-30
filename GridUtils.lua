@@ -415,9 +415,51 @@ function Grid2:SetMinimapIcon(value)
 	end
 end
 
--- Hide blizzard raid frames
-function Grid2:UpdateBlizzardFrames()
-	if self.isWoW90 and self.db.profile.hideBlizzardRaidFrames and CompactRaidFrameManager then
+
+-- Hide blizzard raid & party frames
+do
+	local hiddenFrame = CreateFrame('Frame')
+
+	local function rehide(self)
+		if not InCombatLockdown() then self:Hide() end
+	end
+
+	local function unregister(f)
+		if f then f:UnregisterAllEvents() end
+	end
+
+	local function hideFrame(frame)
+		if frame then
+			UnregisterUnitWatch(frame)
+			frame:Hide()
+			frame:UnregisterAllEvents()
+			frame:SetParent(hiddenFrame)
+			frame:HookScript("OnShow", rehide)
+			unregister(frame.healthbar)
+			unregister(frame.manabar)
+			unregister(frame.powerBarAlt)
+			unregister(frame.spellbar)
+		end
+	end
+
+	-- party frames
+	local function HidePartyFrames()
+		if PartyFrame then
+			hideFrame(PartyFrame)
+			for frame in PartyFrame.PartyMemberFramePool:EnumerateActive() do
+				hideFrame(frame)
+				hideFrame(frame.HealthBar)
+				hideFrame(frame.ManaBar)
+			end
+			PartyFrame.PartyMemberFramePool:ReleaseAll()
+		end
+		hideFrame(CompactPartyFrame)
+		UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE") -- used by compact party frame
+	end
+
+	-- raid frames
+	local function HideRaidFrames()
+		if not CompactRaidFrameManager then return end
 		local function HideFrames()
 			CompactRaidFrameManager:UnregisterAllEvents()
 			CompactRaidFrameContainer:UnregisterAllEvents()
@@ -434,5 +476,16 @@ function Grid2:UpdateBlizzardFrames()
 		CompactRaidFrameContainer:HookScript('OnShow', HideFrames)
 		HideFrames()
 	end
-	self.UpdateBlizzardFrames = nil
+
+	-- Only for dragonflight, for classic compactRaidFrames addon is disabled from options
+	function Grid2:UpdateBlizzardFrames()
+		if self.isWoW90 and self.db.profile.hideBlizzardRaidFrames then
+			hiddenFrame = CreateFrame('Frame')
+			hiddenFrame:Hide()
+			HideRaidFrames()
+			HidePartyFrames()
+		end
+		self.UpdateBlizzardFrames = nil
+	end
 end
+
