@@ -124,6 +124,7 @@ end
 -- unit class/reaction filters
 local MakeStatusFilter
 do
+	local unit_is_pet = Grid2.owner_of_unit
 	local UnitClass = UnitClass
 	local UnitExists = UnitExists
 	local UnitIsFriend = UnitIsFriend
@@ -131,7 +132,11 @@ do
 	local filter_mt = {	__index = function(t,u)
 		if UnitExists(u) then
 			local load, r = t.source
-			if load.unitReaction then
+			if load.unitIsPet~=nil then
+				r = not unit_is_pet[u]
+				if not load.unitIsPet then r = not r end
+			end
+			if not r and load.unitReaction then
 				r = not UnitIsFriend('player',u)
 				if load.unitReaction.hostile then r = not r end
 			end
@@ -151,7 +156,7 @@ do
 	end }
 	MakeStatusFilter = function(status)
 		local load = status.dbx.load
-		if load and (load.unitReaction or load.unitClass or load.unitRole) then
+		if load and (load.unitIsPet~=nil or load.unitReaction or load.unitClass or load.unitRole) then
 			if status.filtered then
 				wipe(status.filtered).source = load
 			else

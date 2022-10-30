@@ -1357,7 +1357,10 @@ L["You can include a descriptive prefix using separators \"@#>\""] = "Puoi inclu
 -- L["Load the status only if the unit belong to the specified class."] = ""
 -- L["Unit Role"] = ""
 -- L["Load the status only if the unit has the specified role."] = ""
---
+-- L["Unit Is Pet"] = ""
+-- L["Yes"] = ""
+-- L["No"] = ""
+
 -- L["Select layouts for different Raid types."] = ""
 -- L["Use Blizzard Unit Frames"] = ""
 -- L["Disable this option to use custom unit frames instead of blizzard frames. This fixes some bugs in blizzard code, but units cannot join/leave the roster while in combat."] = ""

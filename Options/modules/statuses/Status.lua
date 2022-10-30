@@ -27,6 +27,8 @@ do
 		other  = L["Other"],
 	}
 
+	local NOYES_TYPES = { L["No"], L['Yes'] }
+
 	local COMBAT_TYPES = { L["Out of Combat"], L['In Combat'] }
 
 	local PLAYER_ROLES = { TANK = L['Tank'], HEALER = L['Healer'], DAMAGER = L['Damager'], NONE = L['None'] }
@@ -62,45 +64,45 @@ do
 		end
 	end
 
-	local function SetFilterCombatOptions( status, options, order )
+	local function SetFilterBooleanOptions( status, options, order, key, defValue, name, desc, values )
 		if not status.handlerType then return end -- only for buffs/debuffs
 		local dbx = status.dbx
-		options.Combat1 = {
+		options[key..'1'] = {
 			type = "toggle",
-			name = L["Combat"],
-			desc = L["Combat"],
+			name = name,
+			desc = desc,
 			order = order,
-			get = function(info) return dbx.load and dbx.load.combat~=nil end,
+			get = function(info) return dbx.load and dbx.load[key]~=nil end,
 			set = function(info, value)
 				if value then
 					dbx.load = dbx.load or {}
-					dbx.load.combat = true
+					dbx.load[key] = defValue
 				elseif dbx.load then
-					dbx.load.combat = nil
+					dbx.load[key] = nil
 					if not next(dbx.load) then dbx.load = nil end
 				end
 				status:Refresh(true)
 			end,
 			disabled = function() return dbx.load and dbx.load.disabled end,
 		}
-		options.Combat2 = {
+		options[key..'2'] = {
 			type = "select",
-			name = L["Combat"],
-			desc = L["Combat"],
+			name = name,
+			desc = desc,
 			order = order+1,
 			get = function()
-				if dbx.load and dbx.load.combat~=nil then
-					return dbx.load.combat and 2 or 1
+				if dbx.load and dbx.load[key]~=nil then
+					return dbx.load[key] and 2 or 1
 				end
 			end,
 			set = function(_,v)
-				dbx.load.combat = (v==2)
+				dbx.load[key] = (v==2)
 				status:Refresh(true)
 			end,
-			disabled = function() return not dbx.load or dbx.load.disabled or dbx.load.combat==nil end,
-			values = COMBAT_TYPES,
+			disabled = function() return not dbx.load or dbx.load.disabled or dbx.load[key]==nil end,
+			values = values,
 		}
-		options.Combat3 = {
+		options[key..'3'] = {
 			type = "description",
 			name = "",
 			order = order+3,
@@ -268,7 +270,13 @@ do
 				RefreshStatus(status)
 			end,
 		}
-		SetFilterCombatOptions(status, options, 5)
+		SetFilterBooleanOptions( status, options, 5,
+			'combat',
+			true,
+			L["Combat"],
+			L["Combat"],
+			COMBAT_TYPES
+		)
 		SetFilterOptions( status, options, 10,
 			'playerClass',
 			PLAYER_CLASSES,
@@ -324,6 +332,13 @@ do
 				L["Unit Role"],
 				L["Load the status only if the unit has the specified role."],
 				true
+			)
+			SetFilterBooleanOptions( status, options, 90,
+				'unitIsPet',
+				false,
+				L["Unit Is Pet"],
+				L["Unit Is Pet"],
+				NOYES_TYPES
 			)
 		end
 		return options
