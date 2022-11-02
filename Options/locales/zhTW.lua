@@ -96,6 +96,21 @@ L["Resets the layout frame's position and anchor."] = "重置佈局框架的位�
 -- L["MEDIUM"] = ""
 -- L["HIGH"] = ""
 
+-- L["Layout Disposition"] = ""
+-- L["Layout Look&Feel"] = ""
+-- L["Frames Look&Feel"] = ""
+-- L["Default Settings"] = ""
+-- L["Groups Orientation"] = ""
+-- L['Header Types'] = ""
+-- L["Players"] = ""
+-- L["Pets"] = ""
+-- L["Units per Column"] = ""
+-- L["Hide Empty Units"] = ""
+-- L["Hide frames of non-existant units."] = ""
+-- L["Adjust the width percent of each unit's frame."] = ""
+-- L["Adjust the height percent of each unit's frame."] = ""
+-- L["Adjust the default units per column for this group type."] = ""
+
 -- minimap icon
 -- L["Minimap Icon"] = ""
 -- L["Show Minimap Icon"] = ""

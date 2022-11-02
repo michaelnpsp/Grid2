@@ -337,7 +337,7 @@ do
 			width = 0.6,
 			type = "range",
 			name = L["Units per Column"],
-			desc = L["Adjust the default units per column for this group type"],
+			desc = L["Adjust the default units per column for this group type."],
 			min = 1,
 			max = 40,
 			softMax = 10,
@@ -403,25 +403,25 @@ do
 	}
 
 	layoutOptions1.player = {
-		type = "group", order = 1, name = 'Players',
+		type = "group", order = 1, name = L['Players'],
 		args = layoutAnchorOptions,
 	}
 	layoutOptions1.pet    = {
-		type = "group", order = 2, name = 'Pets',
+		type = "group", order = 2, name = L['Pets'],
 		args = layoutAnchorOptions,
 	}
 	layoutOptions1.target = {
-	    type = "group", order = 3, name = 'Target',
+	    type = "group", order = 3, name = L['Target'],
 		args = layoutAnchorOptions,
 		disabled = function() return theme.layout.specialHeaders==nil or theme.layout.specialHeaders.target==nil end,
 	}
 	layoutOptions1.focus  = {
-		type = "group", order = 4, name = 'Focus',
+		type = "group", order = 4, name = L['Focus'],
 		args = layoutAnchorOptions,
 		disabled = function() return Grid2.isVanilla or theme.layout.specialHeaders==nil or theme.layout.specialHeaders.focus==nil end
 	}
 	layoutOptions1.boss  = {
-		type = "group", order = 5, name = 'Bosses',
+		type = "group", order = 5, name = L['Bosses'],
 		args = layoutAnchorOptions,
 		disabled = function() return Grid2.isClassic or theme.layout.specialHeaders==nil or theme.layout.specialHeaders.boss==nil end
 	}
@@ -767,8 +767,8 @@ local frameOptions2 = { headerback = {
 
 local options = {
 	layout1 = { type = "group", order = 1, name = L["Layout Disposition"], desc = L["Layout"], args = layoutOptions1, childGroups = 'tab' },
-	layout2 = { type = "group", order = 2, name = L["Layout Look&Feel"],     desc = L["Layout"], args = layoutOptions2 },
-	frame2  = { type = "group", order = 4, name = L["Frames Look&Feel"],     desc = L["Frames"], args = frameOptions2  },
+	layout2 = { type = "group", order = 2, name = L["Layout Look&Feel"],   desc = L["Layout"], args = layoutOptions2 },
+	frame2  = { type = "group", order = 4, name = L["Frames Look&Feel"],   desc = L["Frames"], args = frameOptions2  },
 }
 Grid2Options:AddThemeOptions( "appearance", "Appearance", options )
 
