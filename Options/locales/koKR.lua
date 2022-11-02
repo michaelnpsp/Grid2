@@ -100,6 +100,11 @@ L["HIGH"] = "높음 (HIGH)"
 L["Minimap Icon"] = "미니맵 아이콘"
 L["Show Minimap Icon"] = "미니맵 아이콘 표시"
 
+-- icon textures zoom
+-- L["Icon Textures Zoom"] = ""
+-- L["Zoom In buffs and debuffs icon textures"] = ""
+-- L["Enable this option to hide the default blizzard border of buffs and debuffs Icons."] = ""
+
 --blink
 L["Misc"] = "기타"
 L["blink"] = "깜박임"
@@ -122,8 +127,8 @@ L["When duration<1sec"] = "지속시간이<1초일때"
 
 -- misc
 L["Blizzard Raid Frames"] = "블리자드 공격대 창"
-L["Hide Blizzard Raid Frames on Startup"] = "불러올때 블리자드 공격대 창 숨김"
 L["Hide Blizzard Raid Frames"] = "블리자드 공격대 창 숨김"
+-- L["Hide Blizzard Party Frames"] = ""
 
 -- debugging & maintenance
 L["debugging"] = "디버깅"

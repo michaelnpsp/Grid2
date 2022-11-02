@@ -100,6 +100,11 @@ L["HIGH"] = true
 L["Minimap Icon"] = true
 L["Show Minimap Icon"] = true
 
+-- icon textures zoom
+L["Icon Textures Zoom"] = true
+L["Zoom In buffs and debuffs icon textures"] = true
+L["Enable this option to hide the default blizzard border of buffs and debuffs Icons."] = true
+
 --blink
 L["Misc"] = true
 L["blink"] = true
@@ -122,8 +127,8 @@ L["When duration<1sec"] = true
 
 -- misc
 L["Blizzard Raid Frames"] = true
-L["Hide Blizzard Raid Frames on Startup"] = true
 L["Hide Blizzard Raid Frames"] = true
+L["Hide Blizzard Party Frames"] = true
 
 -- debugging & maintenance
 L["debugging"] = true

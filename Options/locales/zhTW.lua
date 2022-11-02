@@ -100,6 +100,11 @@ L["Resets the layout frame's position and anchor."] = "重置佈局框架的位�
 -- L["Minimap Icon"] = ""
 -- L["Show Minimap Icon"] = ""
 
+-- icon textures zoom
+-- L["Icon Textures Zoom"] = ""
+-- L["Zoom In buffs and debuffs icon textures"] = ""
+-- L["Enable this option to hide the default blizzard border of buffs and debuffs Icons."] = ""
+
 --blink
 L["Misc"] = "雜項"
 L["blink"] = "閃爍"
@@ -122,8 +127,8 @@ L["When duration<1sec"] = "當持續時間小於1秒"
 
 -- misc
 L["Blizzard Raid Frames"] = "暴風雪團隊框架"
-L["Hide Blizzard Raid Frames on Startup"] = "啟動後隱藏暴風雪團隊框架"
--- L["Hide Blizzard Raid Frames"] = ""
+L["Hide Blizzard Raid Frames"] = "啟動後隱藏暴風雪團隊框架"
+-- L["Hide Blizzard Party Frames"] = ""
 
 -- debugging & maintenance
 L["debugging"] = "除錯中"

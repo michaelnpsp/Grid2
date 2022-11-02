@@ -100,6 +100,11 @@ L["HIGH"] = "ALTO"
 L["Minimap Icon"] = "Minimapa Icono"
 L["Show Minimap Icon"] = "Mostrar Icono en el Minimap"
 
+-- icon textures zoom
+L["Icon Textures Zoom"] = "Ampliar texturas de los iconos"
+L["Zoom In buffs and debuffs icon textures"] = "Ampliar las texturas de los iconos de buffs y debuffs"
+L["Enable this option to hide the default blizzard border of buffs and debuffs Icons."] = "Activa estas opción para ocultar el borde predeterminado de los buffs y debuffs."
+
 --blink
 L["Misc"] = "Varios"
 L["blink"] = "Parpadeo"
@@ -122,8 +127,8 @@ L["When duration<1sec"] = "Si duracion < 1 segundo"
 
 -- misc
 L["Blizzard Raid Frames"] = "Marcos de banda de Blizzard"
-L["Hide Blizzard Raid Frames on Startup"] = "Ocultar marcos da banda de Blizzard al inicio"
 L["Hide Blizzard Raid Frames"] = "Ocultar marcos de banda de Blizzard"
+L["Hide Blizzard Party Frames"] = "Ocultar marcos de grupo de Blizzard"
 
 -- debugging & maintenance
 L["debugging"] = "debugging"

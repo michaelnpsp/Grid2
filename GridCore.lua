@@ -163,7 +163,7 @@ function Grid2:OnEnable()
 	if not self.isClassic then -- only retail
 		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	end
-	if self.versionCli>=30000 then -- wotlk of superior
+	if self.versionCli>=30000 then -- wotlk or superior
 		self:RegisterEvent("PLAYER_ROLES_ASSIGNED")
 	end
 

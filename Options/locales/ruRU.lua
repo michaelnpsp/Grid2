@@ -100,6 +100,11 @@ L["HIGH"] = "ВЫСОКИЙ"
 L["Minimap Icon"] = "Иконка миникарты"
 L["Show Minimap Icon"] = "Показать иконку мини-карты"
 
+-- icon textures zoom
+-- L["Icon Textures Zoom"] = ""
+-- L["Zoom In buffs and debuffs icon textures"] = ""
+-- L["Enable this option to hide the default blizzard border of buffs and debuffs Icons."] = ""
+
 --blink
 L["Misc"] = "Разное"
 L["blink"] = "мерцание"
@@ -122,8 +127,8 @@ L["When duration<1sec"] = "Когда  <1 сек"
 
 -- misc
 L["Blizzard Raid Frames"] = "Рамки рейда Blizzard "
--- L["Hide Blizzard Raid Frames on Startup"] = ""
 L["Hide Blizzard Raid Frames"] = "Скрыть профили рейда Blizzard"
+-- L["Hide Blizzard Party Frames"] = ""
 
 -- debugging & maintenance
 L["debugging"] = "Отладка"

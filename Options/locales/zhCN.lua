@@ -100,6 +100,11 @@ L["HIGH"] = "高"
 L["Minimap Icon"] = "小地图图标"
 L["Show Minimap Icon"] = "显示小地图图标"
 
+-- icon textures zoom
+-- L["Icon Textures Zoom"] = ""
+-- L["Zoom In buffs and debuffs icon textures"] = ""
+-- L["Enable this option to hide the default blizzard border of buffs and debuffs Icons."] = ""
+
 --blink
 L["Misc"] = "杂项"
 L["blink"] = "闪烁"
@@ -122,8 +127,8 @@ L["When duration<1sec"] = "当持续时间小于1秒"
 
 -- misc
 L["Blizzard Raid Frames"] = "暴雪团队框架"
--- L["Hide Blizzard Raid Frames on Startup"] = ""
 L["Hide Blizzard Raid Frames"] = "隐藏暴雪团队框架"
+-- L["Hide Blizzard Party Frames"] = ""
 
 -- debugging & maintenance
 L["debugging"] = "除错"

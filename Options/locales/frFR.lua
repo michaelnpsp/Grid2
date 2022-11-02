@@ -100,6 +100,11 @@ L["Resets the layout frame's position and anchor."] = "Réinitialise la position
 -- L["Minimap Icon"] = ""
 -- L["Show Minimap Icon"] = ""
 
+-- icon textures zoom
+-- L["Icon Textures Zoom"] = ""
+-- L["Zoom In buffs and debuffs icon textures"] = ""
+-- L["Enable this option to hide the default blizzard border of buffs and debuffs Icons."] = ""
+
 --blink
 L["Misc"] = "Divers"
 L["blink"] = "Clignotement"
@@ -122,8 +127,8 @@ L["Adjust the frequency of the Blink effect."] = "Ajuste la fréquence de cligno
 
 -- misc
 -- L["Blizzard Raid Frames"] = ""
--- L["Hide Blizzard Raid Frames on Startup"] = ""
 -- L["Hide Blizzard Raid Frames"] = ""
+-- L["Hide Blizzard Party Frames"] = ""
 
 -- debugging & maintenance
 L["debugging"] = "debugging"

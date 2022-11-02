@@ -122,8 +122,8 @@ L["When duration<1sec"] = "Si duracion < 1 segundo"
 
 -- misc
 L["Blizzard Raid Frames"] = "Marcos de banda de Blizzard"
-L["Hide Blizzard Raid Frames on Startup"] = "Ocultar marcos da banda de Blizzard al inicio"
 L["Hide Blizzard Raid Frames"] = "Ocultar marcos de banda de Blizzard"
+-- L["Hide Blizzard Party Frames"] = ""
 
 -- debugging & maintenance
 L["debugging"] = "debugging"

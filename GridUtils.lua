@@ -418,7 +418,7 @@ end
 
 -- Hide blizzard raid & party frames
 do
-	local hiddenFrame = CreateFrame('Frame')
+	local hiddenFrame
 
 	local function rehide(self)
 		if not InCombatLockdown() then self:Hide() end
@@ -444,6 +444,8 @@ do
 
 	-- party frames
 	local function HidePartyFrames()
+		hiddenFrame = hiddenFrame or CreateFrame('Frame')
+		hiddenFrame:Hide()
 		if PartyFrame then
 			hideFrame(PartyFrame)
 			for frame in PartyFrame.PartyMemberFramePool:EnumerateActive() do
@@ -471,6 +473,8 @@ do
 				end
 			end
 		end
+		hiddenFrame = hiddenFrame or CreateFrame('Frame')
+		hiddenFrame:Hide()
 		hooksecurefunc('CompactRaidFrameManager_UpdateShown', HideFrames)
 		CompactRaidFrameManager:HookScript('OnShow', HideFrames)
 		CompactRaidFrameContainer:HookScript('OnShow', HideFrames)
@@ -479,11 +483,14 @@ do
 
 	-- Only for dragonflight, for classic compactRaidFrames addon is disabled from options
 	function Grid2:UpdateBlizzardFrames()
-		if self.isWoW90 and self.db.profile.hideBlizzardRaidFrames then
-			hiddenFrame = CreateFrame('Frame')
-			hiddenFrame:Hide()
-			HideRaidFrames()
-			HidePartyFrames()
+		if self.isWoW90 then
+			local v = self.db.profile.hideBlizzardRaidFrames
+			if v==true or v==2 then
+				HideRaidFrames()
+			end
+			if v==true or v==1 then
+				HidePartyFrames()
+			end
 		end
 		self.UpdateBlizzardFrames = nil
 	end
