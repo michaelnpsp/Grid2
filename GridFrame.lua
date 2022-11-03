@@ -1,14 +1,19 @@
 --[[ Created by Grid2 original authors, modified by Michael --]]
 
 local Grid2 = Grid2
-local SecureButton_GetModifiedUnit = SecureButton_GetModifiedUnit
 local next = next
 local pairs = pairs
+local strfind = strfind
+local UnitGUID = UnitGUID
+local UnitExists = UnitExists
+local pet_of_unit = Grid2.pet_of_unit
+local C_Timer_After = C_Timer.After
+local SecureButton_GetModifiedUnit = SecureButton_GetModifiedUnit
 local Grid2Frame
 
 -- bugfix: wrath toggleForVehicle bug workaround
 -- https://github.com/Stanzilla/WoWUIBugs/issues/274
-local fix_tfv_enabled, FixToggleForVehicleBugTargeting, FixToggleForVehicleBugPet
+local fix_tfv_enabled, FixToggleForVehicleBugTargeting
 if Grid2.isWrath then
 	local vehicle_instances = {
 		[616] = true, -- malygos raid
@@ -18,7 +23,6 @@ if Grid2.isWrath then
 	}
 	local gsub = string.gsub
 	local format = string.format
-	local strfind = string.find
 	local UnitHasVehicleUI = UnitHasVehicleUI
 	local SecureButton_GetModifiedUnit_Orig = SecureButton_GetModifiedUnit
 	local SecureButton_GetModifiedAttribute = SecureButton_GetModifiedAttribute
@@ -57,24 +61,6 @@ if Grid2.isWrath then
 			self:SetAttribute('*type1', 'target')
 			self:SetAttribute('*macrotext1', nil)
 			self.click_unit = nil
-		end
-	end
-	-- toggle pet swap, replace pet units with owner units
-	-- sometimes pet dont exist when UNIT_ENTERED_VEHICLE event is triggered so we have to wait a while before registering the unit
-	function FixToggleForVehicleBugPet(unit, event)
-		local pet = Grid2.pet_of_unit[unit]
-		if pet then
-			Grid2Frame:UNIT_ENTERED_VEHICLE(nil,pet)
-			if not UnitExists(pet) and event=='UNIT_ENTERED_VEHICLE' then
-				C_Timer.After(1.5, function()
-					if UnitExists(pet) then
-						Grid2:RosterRegisterUnit(pet)
-						for frame in next, Grid2:GetUnitFrames(pet) do
-							frame:UpdateIndicators()
-						end
-					end
-				end)
-			end
 		end
 	end
 	-- Enable/Disable toggleForVehicle bug workaround, called from GridRoster.lua when zone changed
@@ -130,6 +116,13 @@ function Grid2:UpdateFramesOfUnit(unit)
 			Grid2:SetFrameUnit(frame, new)
 			frame.unit = new
 		end
+		frame:UpdateIndicators()
+	end
+end
+
+function Grid2:RefreshFramesOfUnit(unit)
+	Grid2:RosterRegisterUnit(unit)
+	for frame in next, frames_of_unit[unit] do
 		frame:UpdateIndicators()
 	end
 end
@@ -449,20 +442,26 @@ function Grid2Frame:UpdateFrameUnits()
 	end
 end
 
+-- Manage togleForVehicle owners/pets swap
+-- this event is fired when the vehicle pet unit does not exist yet, so we have to use a timer
+-- to delay frame updates if pet unit does not exist or exists but does not represent a vehicle yet.
 function Grid2Frame:UNIT_ENTERED_VEHICLE(event, unit)
-	for frame in next, Grid2:GetUnitFrames(unit) do
-		local old, new = frame.unit, SecureButton_GetModifiedUnit(frame)
-		if old ~= new then
-			Grid2:SetFrameUnit(frame, new)
-			frame.unit = new
-			frame:UpdateIndicators()
+	if unit then
+		for frame in next, frames_of_unit[unit] do
+			local old, new = frame.unit, SecureButton_GetModifiedUnit(frame)
+			if old ~= new then
+				Grid2:SetFrameUnit(frame, new)
+				frame.unit = new
+				if UnitExists(new) and (event==nil or strfind(UnitGUID(new),'^Vehicle')) then -- new is a player or is a vehicle pet
+					frame:UpdateIndicators()
+				else -- only for pets: pet unit does not exist or exists but is not a vehicle yet
+					C_Timer_After( 1, function() Grid2:RefreshFramesOfUnit(new) end )
+				end
+			end
 		end
-	end
-	if fix_tfv_enabled and event then -- Wrath toggleForVehicle bug fix
-		FixToggleForVehicleBugPet(unit, event)
+		self:UNIT_ENTERED_VEHICLE( nil, pet_of_unit[unit] ) -- event==nil => unit is a pet
 	end
 end
-
 Grid2Frame.UNIT_EXITED_VEHICLE = Grid2Frame.UNIT_ENTERED_VEHICLE
 
 --}}}
