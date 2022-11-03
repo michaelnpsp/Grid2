@@ -1,4 +1,4 @@
-if Grid2.isClassic then return end
+if Grid2.versionCli<30000 then return end
 
 local Vehicle = Grid2.statusPrototype:new("vehicle")
 
