@@ -201,7 +201,8 @@ end
 do
 	Grid2Options.GetSpecializationInfo = GetSpecializationInfo or function(index)
 		local name = index==2 and L['Secondary'] or L['Primary']
-		return index, name, name, ''
+		local icon = index==2 and "Interface\\Icons\\WoW_Token02" or "Interface\\Icons\\WoW_Token01"
+		return index, name, name, icon
 	end
 	Grid2Options.GetNumSpecializationsForClassID = GetNumSpecializationsForClassID or Grid2.GetNumSpecializations
 	Grid2Options.GetSpecializationInfoForClassID = GetSpecializationInfoForClassID or function(classID, index)
