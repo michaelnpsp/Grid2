@@ -62,7 +62,7 @@ options.reset = {
 }
 
 --==============
-if not Grid2.isClassic then
+if Grid2.versionCli>=30000 then
 
 	options.prodesc = {
 		order = 8,
@@ -85,10 +85,10 @@ if not Grid2.isClassic then
 		end,
 	}
 
-	for i=GetNumSpecializations(),1, -1 do
+	for i=Grid2.GetNumSpecializations(),1, -1 do
 		options['profile'..i] = {
 			type  = "select",
-			name  = select( 2, GetSpecializationInfo(i) ),
+			name  = select( 2, Grid2Options.GetSpecializationInfo(i) ),
 			desc  = "",
 			order = 10.5+i,
 			get = function() return Grid2.profiles.char[i] end,

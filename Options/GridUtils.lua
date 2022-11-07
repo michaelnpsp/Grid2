@@ -197,6 +197,21 @@ do
 	end
 end
 
+-- specialization helper functions
+do
+	Grid2Options.GetSpecializationInfo = GetSpecializationInfo or function(index)
+		local name = index==2 and L['Secondary'] or L['Primary']
+		return index, name, name, ''
+	end
+	Grid2Options.GetNumSpecializationsForClassID = GetNumSpecializationsForClassID or Grid2.GetNumSpecializations
+	Grid2Options.GetSpecializationInfoForClassID = GetSpecializationInfoForClassID or function(classID, index)
+		local _, name, _, icon = Grid2Options.GetSpecializationInfo(index)
+		local info = C_CreatureInfo.GetClassInfo(classID)
+		name = string.format("%s: %s", info and info.className or '', name)
+		return index, name, name, icon
+	end
+end
+
 -- Grid2Options.Tooltip generic tooltip to parse hyperlinks
 do
 	local tip

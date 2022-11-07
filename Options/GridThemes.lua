@@ -135,12 +135,12 @@ do
 		CONDITIONS_VALUES[classKey] = classDesc
 		CONDITIONS_NAMES[classKey]  = classDesc
 		-- current class + specs
-		if not Grid2.isClassic then
+		if Grid2.versionCli>=30000 then
 			local CONDITIONS_EXCLUDE = { TANK = true, HEALER = true, DAMAGER = true, NONE = true }
-			local count = GetNumSpecializations()
+			local count = Grid2.GetNumSpecializations()
 			for i=1,count do
 				local key = string.format("%d01;%s@%d",i, class, i)
-				local _, name, _, icon = GetSpecializationInfo(i)
+				local _, name, _, icon = Grid2Options.GetSpecializationInfo(i)
 				if strlen(name)<12 then
 					name = string.format("|T%s:0|t%s(%s)",icon, name, L['Spec'] )
 				else

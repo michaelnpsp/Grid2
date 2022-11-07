@@ -10,10 +10,6 @@ local pairs = pairs
 local tonumber = tonumber
 local tremove = table.remove
 
--- Dummy function
-function Grid2.Dummy()
-end
-
 -- Fetch LibSharedMedia resources
 function Grid2:MediaFetch(mediatype, key, def)
 	return (key and media:Fetch(mediatype, key)) or (def and media:Fetch(mediatype, def))
@@ -374,12 +370,12 @@ end
 -- Enable or disable profiles per specialization
 function Grid2:EnableProfilesPerSpec(enabled)
 	local db = self.profiles.char
-	if not enabled ~= not (db[1] and db.enabled) and not self.isClassic then
+	if not enabled ~= not (db[1] and db.enabled) and self.versionCli>=30000 then
 		wipe(db)
 		db.enabled = enabled or nil
 		if enabled then
 			local pro = self.db:GetCurrentProfile()
-			for i=1,GetNumSpecializations() or 0 do
+			for i=1,self.GetNumSpecializations() or 0 do
 				db[i] = pro
 			end
 		end

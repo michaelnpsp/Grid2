@@ -42,14 +42,14 @@ do
 	end
 
 	local CLASSES_SPECS = {}
-	if not Grid2.isClassic then
+	if Grid2.versionCli>=30000 then
 		for classID = 1, 30 do
 		  local info = C_CreatureInfo.GetClassInfo(classID)
 		  if info then
 			local class = info.classFile
 			local coord = CLASS_ICON_TCOORDS[class]
-			for index=GetNumSpecializationsForClassID(classID), 1,-1 do
-				local _, specName, _, specIcon = GetSpecializationInfoForClassID(classID, index)
+			for index=Grid2Options.GetNumSpecializationsForClassID(classID), 1,-1 do
+				local _, specName, _, specIcon = Grid2Options.GetSpecializationInfoForClassID(classID, index)
 				CLASSES_SPECS[class..index] = string.format("|TInterface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES:0:0:0:0:256:256:%f:%f:%f:%f:0|t|T%s:0|t%s",coord[1]*256,coord[2]*256,coord[3]*256,coord[4]*256,specIcon,specName)
 			end
 		  end
@@ -284,11 +284,11 @@ do
 			L["Player Class"],
 			L["Load the status only if your toon belong to the specified class."]
 		)
-		if not Grid2.isClassic then
+		if Grid2.versionCli>=30000 then
 			SetFilterOptions( status, options, 20,
 				'playerClassSpec',
 				CLASSES_SPECS,
-				Grid2.playerClass..GetSpecialization(),
+				Grid2.playerClass..Grid2.GetSpecialization(),
 				L["Player Class&Spec"],
 				L["Load the status only if your toon has the specified class and specialization."]
 			)

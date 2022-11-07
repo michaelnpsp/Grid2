@@ -2,16 +2,20 @@
 Created by Grid2 original authors, modified by Michael
 --]]
 
+Grid2 = LibStub("AceAddon-3.0"):NewAddon("Grid2", "AceEvent-3.0", "AceConsole-3.0")
+
+Grid2.Dummy = function() end
+Grid2.GetSpecialization = GetSpecialization or GetActiveTalentGroup or Grid2.Dummy
+Grid2.GetNumSpecializations = GetNumSpecializations or function() return 2 end
+Grid2.UnitGroupRolesAssigned = UnitGroupRolesAssigned or Grid2.Dummy
+
 local type = type
 local next = next
 local ipairs = ipairs
 local tostring = tostring
 local fmt = string.format
-local GetSpecialization = GetSpecialization or function() end
-local UnitGroupRolesAssigned = UnitGroupRolesAssigned or function() end
-
--- Initialization
-Grid2 = LibStub("AceAddon-3.0"):NewAddon("Grid2", "AceEvent-3.0", "AceConsole-3.0")
+local GetSpecialization = Grid2.GetSpecialization
+local UnitGroupRolesAssigned = Grid2.UnitGroupRolesAssigned
 
 -- build/version tracking
 local versionToc = GetAddOnMetadata("Grid2","Version")
@@ -160,11 +164,13 @@ function Grid2:OnEnable()
 	if self.UpdatePlayerDispelTypes then
 		self:RegisterEvent("SPELLS_CHANGED", "UpdatePlayerDispelTypes")
 	end
-	if not self.isClassic then -- only retail
-		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
-	end
 	if self.versionCli>=30000 then -- wotlk or superior
 		self:RegisterEvent("PLAYER_ROLES_ASSIGNED")
+	end
+	if self.isWoW90 then
+		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+	elseif self.versionCli>=30000 then
+		self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED", "PLAYER_SPECIALIZATION_CHANGED")
 	end
 
 	self.db.RegisterCallback(self, "OnProfileShutdown", "ProfileShutdown")
@@ -215,8 +221,8 @@ function Grid2:ReloadProfile()
 	end
 end
 
-function Grid2:PLAYER_SPECIALIZATION_CHANGED(_,unit)
-	if unit=='player' then
+function Grid2:PLAYER_SPECIALIZATION_CHANGED(event,unit)
+	if event == 'ACTIVE_TALENT_GROUP_CHANGED' or unit == 'player' then
 		self.playerClassSpec = self.playerClass .. (GetSpecialization() or 0)
 		if not Grid2:ReloadProfile() then
 			Grid2:ReloadTheme()
