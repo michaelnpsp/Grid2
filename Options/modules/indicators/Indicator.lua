@@ -897,3 +897,93 @@ do
 		return options
 	end
 end
+
+-- Grid2Options:MakeIndicatorLoadOptions(indicator, options)
+do
+	local PLAYER_CLASSES = {}
+	for class, translation in pairs(LOCALIZED_CLASS_NAMES_MALE) do
+		local coord = CLASS_ICON_TCOORDS[class]
+		if coord then
+			PLAYER_CLASSES[class] =	string.format("|TInterface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES:0:0:0:0:256:256:%f:%f:%f:%f:0|t%s",coord[1]*256,coord[2]*256,coord[3]*256,coord[4]*256,translation)
+		end
+	end
+
+	local HEADER_TYPES = { player = L['Players'], pet = L['Pets'], boss = L['Bosses'], target = L['Target'], focus = L['Focus'] }
+
+	local function SetFilterOptions( indicator, options, order, key, values, defValue, name, desc, isUnitFilter, isSingle )
+		local dbx    = indicator.dbx
+		local filter = dbx.load and dbx.load[key]
+		local multi  = filter and next(filter, next(filter))~=nil
+		options[key] = {
+			type = "toggle",
+			name = name,
+			desc = desc or name,
+			order = order,
+			get = function(info) return filter end,
+			set = function(info)
+				if multi or (isSingle and filter) then
+					multi, filter, dbx.load[key] = nil, nil, nil
+					if not next(dbx.load) then dbx.load = nil end
+				elseif filter and not isSingle then
+					multi = true
+				else
+					dbx.load = dbx.load or {}
+					filter = { [defValue] = true }
+					dbx.load[key] = filter
+				end
+				-- RefreshStatus(indicator, isUnitFilter)
+			end,
+			disabled = function() return dbx.load and dbx.load.disabled end,
+		}
+		options[key..'1'] = {
+			type = "select",
+			name = name,
+			desc = desc or name,
+			order = order+1,
+			get = function() return filter and next(filter) end,
+			set = function(_,v)
+				wipe(filter)[v] = true
+				-- RefreshStatus(indicator, isUnitFilter)
+			end,
+			disabled = function() return not filter or dbx.load.disabled end,
+			hidden   = function() return multi end,
+			values   = values,
+		}
+		options[key..'2'] = {
+			type = "multiselect",
+			order = order+2,
+			name = name,
+			get = function(info, value) return filter[value] end,
+			set = function(info, value)
+				filter[value] = (not filter[value]) or nil
+				-- RefreshStatus(indicator, isUnitFilter)
+			end,
+			hidden = function() return not multi end,
+			disabled = function() return dbx.load and dbx.load.disabled end,
+			values = values,
+		}
+		options[key.."3"] = {
+			type = "description",
+			name = "",
+			order = order+3,
+		}
+	end
+
+	function Grid2Options:MakeIndicatorLoadOptions(indicator, options)
+		SetFilterOptions( indicator, options, 20,
+			'playerClass',
+			PLAYER_CLASSES,
+			select(2,UnitClass('player')),
+			L["Player Class"],
+			L["Load the indicator only if your toon belong to the specified class."]
+		)
+		SetFilterOptions( indicator, options, 30,
+			'headerName',
+			HEADER_TYPES,
+			'player',
+			L["Header Type"],
+			L["Load the indicator only for the specified header types."]
+		)
+		return options
+	end
+end

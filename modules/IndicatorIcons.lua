@@ -104,6 +104,7 @@ end
 
 -- Warning: This is an overrided indicator:Update() NOT the standard indicator:OnUpdate()
 local function Icon_Update(self, parent)
+	if self.filtered and self.filtered[parent] then return end
 	updates[#updates+1] = parent[self.name]
 end
 
@@ -235,6 +236,8 @@ local function Icon_LoadDB(self)
 	self.font            = Grid2:MediaFetch("font", dbx.font or theme.font) or STANDARD_TEXT_FONT
 	-- backdrop
 	self.backdrop = self.borderSize>0 and Grid2:GetBackdropTable("Interface\\Addons\\Grid2\\media\\white16x16", self.borderSize) or nil
+	-- methods
+	self.Update = Icon_Update -- we need to reassign Update() because MakeIndicatorFilter() in UpdatedDB() overrides this method
 end
 
 Grid2.setupFunc["icons"] = function(indicatorKey, dbx)

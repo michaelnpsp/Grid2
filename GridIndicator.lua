@@ -5,8 +5,10 @@ Created by Grid2 original authors, modified by Michael
 local Grid2 = Grid2
 local Grid2Frame = Grid2Frame
 local next = next
+local wipe = wipe
 local tinsert = table.insert
 local tremove = table.remove
+local setmetatable = setmetatable
 local tdelete = Grid2.TableRemoveByValue
 local BackdropTemplateMixin = BackdropTemplateMixin
 
@@ -46,8 +48,35 @@ function indicator:Update(parent, unit)
 	self:OnUpdate(parent, unit, self:GetCurrentStatus(unit) )
 end
 
-function indicator:UpdateDB()
-	if self.LoadDB then self:LoadDB() end
+function indicator:UpdateFiltered(parent, unit)
+	if self.filtered[parent] then return end
+	self:OnUpdate(parent, unit, self:GetCurrentStatus(unit) )
+end
+
+do
+	local filter_mt = {	__index = function(t,f)
+		local r = not t.source[ f:GetParent().headerName ]
+		t[f] = r
+		return r
+	end }
+	local function MakeIndicatorFilter(self)
+		local load = self.dbx and self.dbx.load
+		if load and load.headerName then
+			if self.filtered then
+				wipe(self.filtered).source = load.headerName
+			else
+				self.filtered = setmetatable({source = load.headerName}, filter_mt)
+			end
+			self.Update = indicator.UpdateFiltered
+		elseif self.filtered then
+			self.filtered = nil
+			self.Update = indicator.Update
+		end
+	end
+	function indicator:UpdateDB()
+		MakeIndicatorFilter(self)
+		if self.LoadDB then self:LoadDB() end
+	end
 end
 
 function indicator:RegisterStatus(status, priority)

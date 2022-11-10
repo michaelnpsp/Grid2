@@ -17,6 +17,7 @@ local function GetUpdate_GlowPixel(indicator)
 	local thickness = dbx.glow_thickness or 2
 	local always = not not dbx.highlightAlways
 	return function(self, parent, unit)
+		local filtered = self.filtered; if filtered and filtered[parent] then return end
 		local status, state = funcStatus(self, unit)
 		local frame = funcFrame(self, parent)
 		local enabled = status and (always or state=="blink")
@@ -44,6 +45,7 @@ local function GetUpdate_GlowAutoCast(indicator)
 	local particlesScale = dbx.glow_particlesScale or 1
 	local always = not not dbx.highlightAlways
 	return function(self, parent, unit)
+		local filtered = self.filtered; if filtered and filtered[parent] then return end
 		local status, state = funcStatus(self, unit)
 		local frame = funcFrame(self, parent)
 		local enabled = status and (always or state=="blink")
@@ -69,6 +71,7 @@ local function GetUpdate_GlowButton(indicator)
 	local frequency = dbx.glow_frequency or 0.12
 	local always = not not dbx.highlightAlways
 	return function(self, parent, unit)
+		local filtered = self.filtered; if filtered and filtered[parent] then return end
 		local status, state = funcStatus(self, unit)
 		local frame = funcFrame(self, parent)
 		local enabled = status and (always or state=="blink")
@@ -109,6 +112,7 @@ local function GetUpdate_Scale(indicator)
 	local funcFrame  = indicator.GetBlinkFrame
 	local animOnEnabled = indicator.dbx.animOnEnabled
 	return function(self, parent, unit)
+		local filtered = self.filtered; if filtered and filtered[parent] then return end
 		local status, state = funcStatus(self, unit)
 		local frame = funcFrame(self, parent)
 		local anim = frame.scaleAnim
@@ -142,6 +146,7 @@ local function GetUpdate_Blink(indicator)
 	local funcFrame  = indicator.GetBlinkFrame
 	local always = not not indicator.dbx.highlightAlways
 	return function(self, parent, unit)
+		local filtered = self.filtered; if filtered and filtered[parent] then return end
 		local status, state = funcStatus(self, unit)
 		local frame = funcFrame(self, parent)
 		local anim = frame.blinkAnim
@@ -155,7 +160,7 @@ local function GetUpdate_Blink(indicator)
 end
 
 local function GetUpdate_Original(indicator)
-	return indicatorPrototype.Update
+	return indicator.filtered and indicatorPrototype.UpdateFiltered or indicatorPrototype.Update
 end
 
 do
