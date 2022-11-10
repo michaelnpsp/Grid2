@@ -459,6 +459,7 @@ do
 	local function HideRaidFrames()
 		if not CompactRaidFrameManager then return end
 		local function HideFrames()
+			CompactRaidFrameManager:SetAlpha(0)
 			CompactRaidFrameManager:UnregisterAllEvents()
 			CompactRaidFrameContainer:UnregisterAllEvents()
 			if not InCombatLockdown() then
