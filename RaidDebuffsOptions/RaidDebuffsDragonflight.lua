@@ -1,3 +1,5 @@
+if Grid2.isClassic then return end
+
 local RDDB = Grid2Options:GetRaidDebuffsTable()
 RDDB["Dragonflight"] = {
 	-- 5 man instances
@@ -142,27 +144,78 @@ RDDB["Dragonflight"] = {
 		{ id = 1200, name = "Vault of the Incarnates", raid = true },
 		["Eranog"] = {
 		order = 1, ejid = 2480,
+		370597, -- kill-order
+		371059, -- melting-armor
+		371955, -- rising-heat
+		370410, -- pulsing-flames
 		},
 		["Terros"] = {
 		order = 2, ejid = 2500,
+		376276, -- concussive-slam
+		382776, -- awakened-earth
+		381576, -- seismic-assault
 		},
 		["The Primal Council"] = {
 		order = 3, ejid = 2486,
+		371591, -- frost-tomb
+		371857, -- shivering-lance
+		371624, -- conductive-mark
+		372056, -- crush
+		374792, -- faultline
+		372027, -- slashing-blaze
 		},
 		["Sennarth, the Cold Breath"] = {
 		order = 4, ejid = 2482,
+		372736, -- permafrost
+		372648, -- pervasive-cold
+		373817, -- chilling-aura
+		372129, -- web-blast
+		372044, -- wrapped-in-webs
+		372082, -- enveloping-webs
+		371976, -- chilling-blast
+		372030, -- sticky-webbing
+		372055, -- icy-ground
 		},
 		["Dathea, Ascended"] = {
 		order = 5, ejid = 2502,
+		378095, -- crushing-atmosphere
+		377819, -- lingering-slash
+		374900, -- microburst
+		376802, -- razor-winds
+		375580, -- zephyr-slam
 		},
 		["Kurog Grimtotem"] = {
 		order = 6, ejid = 2491,
+		374864, -- primal-break
+		372158, -- sundering-strike
+		373681, -- biting-chill
+		373487, -- lightning-crash
+		372514, -- frost-bite
+		372517, -- frozen-solid
+		377780, -- skeletal-fractures
+		374623, -- frost-binds
+		374554, -- lava-pool
 		},
 		["Broodkeeper Diurna"] = {
 		order = 7, ejid = 2493,
+		378782, -- mortal-wounds
+		375829, -- clutchwatchers-rage
+		378787, -- crushing-stoneclaws
+		375871, -- wildfire
+		376266, -- burrowing-strike
+		375575, -- flame-sentry
+		375475, -- rending-bite
+		375457, -- chilling-tantrum
+		375653, -- static-jolt
+		376392, -- disoriented
+		375876, -- icy-shards
+		375430, -- sever-tendon
 		},
 		["Raszageth the Storm-Eater"] = {
 		order = 8, ejid = 2499,
+		381615, -- static-charge
+		377594, -- lightning-breath
+		381249, -- electrifying-presence
 		},
 	},
 }
