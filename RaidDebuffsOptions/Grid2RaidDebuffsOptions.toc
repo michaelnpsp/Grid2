@@ -22,6 +22,7 @@ RaidDebuffsWoD.lua
 RaidDebuffsLegion.lua
 RaidDebuffsBfA.lua
 RaidDebuffsShadowlands.lua
+RaidDebuffsDragonflight.lua
 #@end-retail@
 
 #@non-retail@
