@@ -49,23 +49,24 @@ function indicator:Update(parent, unit)
 end
 
 function indicator:UpdateFiltered(parent, unit)
-	if self.filtered[parent] then return end
-	self:OnUpdate(parent, unit, self:GetCurrentStatus(unit) )
+	self:OnUpdate(parent, unit, self.filtered[unit]==nil and self:GetCurrentStatus(unit))
 end
 
 do
-	local filter_mt = {	__index = function(t,f)
-		local r = not t.source[ f:GetParent().headerName ]
-		t[f] = r
+	local roster_types = Grid2.roster_types
+	local filter_mt = {	__index = function(t,u)
+		local r = not t.source[ roster_types[u] ]
+		t[u] = r
 		return r
 	end }
 	local function MakeIndicatorFilter(self)
+		if self.parentName then return end
 		local load = self.dbx and self.dbx.load
-		if load and load.headerName then
+		if load and load.unitType then
 			if self.filtered then
-				wipe(self.filtered).source = load.headerName
+				wipe(self.filtered).source = load.unitType
 			else
-				self.filtered = setmetatable({source = load.headerName}, filter_mt)
+				self.filtered = setmetatable({source = load.unitType}, filter_mt)
 			end
 			self.Update = indicator.UpdateFiltered
 		elseif self.filtered then
@@ -85,7 +86,7 @@ function indicator:RegisterStatus(status, priority)
 			self.statuses[#self.statuses + 1] = status
 			self.priorities[status] = priority
 			self:SortStatuses()
-			self:RegisterHighlight(status)
+			self:UpdateHighlight(status)
 		end
 		status:RegisterIndicator( self, priority, Grid2.suspendedIndicators[self.name] )
 	end

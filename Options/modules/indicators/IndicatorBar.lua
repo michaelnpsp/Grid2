@@ -4,13 +4,14 @@ local Grid2Options = Grid2Options
 local L = Grid2Options.L
 
 Grid2Options:RegisterIndicatorOptions("bar", true, function(self, indicator)
-	local colors, options, statuses  = {}, {}, {}
-	self:MakeIndicatorBarLocationOptions(indicator,options)
-	self:MakeIndicatorBarAppearanceOptions(indicator,options)
-	self:MakeIndicatorBarMiscOptions(indicator,options)
+	local colors, options, statuses, filter  = {}, {}, {}, {}
+	self:MakeIndicatorBarLocationOptions(indicator, options)
+	self:MakeIndicatorBarAppearanceOptions(indicator, options)
+	self:MakeIndicatorBarMiscOptions(indicator, options)
 	self:MakeIndicatorStatusOptions(indicator, statuses)
 	self:MakeIndicatorStatusOptions(indicator.sideKick, colors)
-	self:AddIndicatorOptions( indicator, statuses, options, colors )
+	self:MakeIndicatorLoadOptions(indicator, filter)
+	self:AddIndicatorOptions(indicator, statuses, options, colors, filter)
 end)
 
 local list = {}

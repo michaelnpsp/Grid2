@@ -659,7 +659,7 @@ do
 				func(frame); frame.__glowEnabled = nil
 			end
 		end)
-		Grid2:RefreshHighlight(indicator)
+		indicator:UpdatehHighlight()
 		Grid2Frame:WithAllFrames(function(f)
 			if f.unit then
 				indicator:Update(f, f.unit)
@@ -931,7 +931,7 @@ do
 					filter = { [defValue] = true }
 					dbx.load[key] = filter
 				end
-				-- RefreshStatus(indicator, isUnitFilter)
+				Grid2Options:RefreshIndicator(indicator)
 			end,
 			disabled = function() return dbx.load and dbx.load.disabled end,
 		}
@@ -943,7 +943,7 @@ do
 			get = function() return filter and next(filter) end,
 			set = function(_,v)
 				wipe(filter)[v] = true
-				-- RefreshStatus(indicator, isUnitFilter)
+				Grid2Options:RefreshIndicator(indicator)
 			end,
 			disabled = function() return not filter or dbx.load.disabled end,
 			hidden   = function() return multi end,
@@ -956,7 +956,7 @@ do
 			get = function(info, value) return filter[value] end,
 			set = function(info, value)
 				filter[value] = (not filter[value]) or nil
-				-- RefreshStatus(indicator, isUnitFilter)
+				Grid2Options:RefreshIndicator(indicator)
 			end,
 			hidden = function() return not multi end,
 			disabled = function() return dbx.load and dbx.load.disabled end,
@@ -978,11 +978,11 @@ do
 			L["Load the indicator only if your toon belong to the specified class."]
 		)
 		SetFilterOptions( indicator, options, 30,
-			'headerName',
+			'unitType',
 			HEADER_TYPES,
 			'player',
-			L["Header Type"],
-			L["Load the indicator only for the specified header types."]
+			L["Unit Type"],
+			L["Load the indicator only for the specified unit types."]
 		)
 		return options
 	end

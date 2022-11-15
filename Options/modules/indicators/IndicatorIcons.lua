@@ -2,14 +2,15 @@ local media = LibStub("LibSharedMedia-3.0", true)
 local L = Grid2Options.L
 
 Grid2Options:RegisterIndicatorOptions("icons", true, function(self, indicator)
-	local statuses, options =  {}, {}
+	local statuses, options, filter =  {}, {}, {}
 	self:MakeIndicatorTypeLevelOptions(indicator,options)
 	self:MakeIndicatorAuraIconsLocationOptions(indicator, options)
 	self:MakeIndicatorAuraIconsSizeOptions(indicator, options)
 	self:MakeIndicatorAuraIconsBorderOptions(indicator, options)
 	self:MakeIndicatorAuraIconsCustomOptions(indicator, options)
 	self:MakeIndicatorStatusOptions(indicator, statuses)
-	self:AddIndicatorOptions(indicator, statuses, options )
+	self:MakeIndicatorLoadOptions(indicator, filter)
+	self:AddIndicatorOptions(indicator, statuses, options, nil, filter)
 end)
 
 

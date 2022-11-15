@@ -1,11 +1,12 @@
 local L = Grid2Options.L
 
 Grid2Options:RegisterIndicatorOptions("portrait", true, function(self, indicator)
-	local layout = {}
+	local layout = {}, {}
 	self:MakeIndicatorLevelOptions(indicator, layout)
 	self:MakeIndicatorLocationOptions(indicator, layout)
 	self:MakeIndicatorPortraitOptions(indicator, layout)
-	self:AddIndicatorOptions(indicator, nil, layout )
+	self:MakeIndicatorLoadOptions(indicator, filter)
+	self:AddIndicatorOptions(indicator, nil, layout, nil, filter)
 end)
 
 function Grid2Options:MakeIndicatorPortraitOptions(indicator, options)
@@ -60,7 +61,7 @@ function Grid2Options:MakeIndicatorPortraitOptions(indicator, options)
 		set = function (_, v)
 			indicator.dbx.backColor = v and { r=0,g=0,b=0,a=1 } or nil
 			self:RefreshIndicator(indicator, "Create")
-		end,	
+		end,
 	}
 	options.backColor = {
 		type = "color",
@@ -91,5 +92,5 @@ function Grid2Options:MakeIndicatorPortraitOptions(indicator, options)
 			self:RefreshIndicator(indicator, "Layout")
 		end,
 		hidden = function() return not indicator.dbx.backColor end
-	}	
+	}
 end

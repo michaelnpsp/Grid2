@@ -1,10 +1,11 @@
 local L = Grid2Options.L
 
 Grid2Options:RegisterIndicatorOptions("alpha",  false, function(self, indicator)
-	local options, statuses = {}, {}
+	local options, statuses, filter = {}, {}, {}
 	self:MakeIndicatorAlphaOptions(indicator, options)
 	self:MakeIndicatorStatusOptions(indicator, statuses)
-	self:AddIndicatorOptions(indicator, statuses, options)
+	self:MakeIndicatorLoadOptions(indicator,filter)
+	self:AddIndicatorOptions(indicator, statuses, options, nil, filter)
 end)
 
 function Grid2Options:MakeIndicatorAlphaOptions(indicator,options)
@@ -19,8 +20,8 @@ function Grid2Options:MakeIndicatorAlphaOptions(indicator,options)
 		max = 1,
 		step = 0.01,
 		get = function () return indicator.dbx.defaultAlpha or 1 end,
-		set = function (_, v) 
-			indicator.dbx.defaultAlpha = v<.999 and v or nil	
+		set = function (_, v)
+			indicator.dbx.defaultAlpha = v<.999 and v or nil
 			self:RefreshIndicator(indicator, "Update")
 		end,
 	}
@@ -48,8 +49,8 @@ function Grid2Options:MakeIndicatorAlphaOptions(indicator,options)
 		max = 1,
 		step = 0.01,
 		get = function () return indicator.dbx.alpha or 0 end,
-		set = function (_, v) 
-			indicator.dbx.alpha = v	
+		set = function (_, v)
+			indicator.dbx.alpha = v
 			self:RefreshIndicator(indicator, "Update")
 		end,
 		disabled = function() return indicator.dbx.alpha==nil end,

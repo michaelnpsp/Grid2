@@ -8,6 +8,7 @@ local LCG = LibStub("LibCustomGlow-1.0")
 local function GetUpdate_GlowPixel(indicator)
 	local funcStatus = indicator.GetCurrentStatus
 	local funcFrame  = indicator.GetBlinkFrame
+	local funcUpdate = indicator.OnUpdate
 	local funcStart  = LCG.PixelGlow_Start
 	local funcStop   = LCG.PixelGlow_Stop
 	local dbx = indicator.dbx
@@ -17,7 +18,7 @@ local function GetUpdate_GlowPixel(indicator)
 	local thickness = dbx.glow_thickness or 2
 	local always = not not dbx.highlightAlways
 	return function(self, parent, unit)
-		local filtered = self.filtered; if filtered and filtered[parent] then return end
+		if self.filtered and self.filtered[unit] then funcUpdate(self, parent, unit); return end
 		local status, state = funcStatus(self, unit)
 		local frame = funcFrame(self, parent)
 		local enabled = status and (always or state=="blink")
@@ -29,13 +30,14 @@ local function GetUpdate_GlowPixel(indicator)
 				funcStop( frame )
 			end
 		end
-		self:OnUpdate(parent, unit, status)
+		funcUpdate(self, parent, unit, status)
 	end
 end
 
 local function GetUpdate_GlowAutoCast(indicator)
 	local funcStatus = indicator.GetCurrentStatus
 	local funcFrame  = indicator.GetBlinkFrame
+	local funcUpdate = indicator.OnUpdate
 	local funcStart  = LCG.AutoCastGlow_Start
 	local funcStop   = LCG.AutoCastGlow_Stop
 	local dbx = indicator.dbx
@@ -45,7 +47,7 @@ local function GetUpdate_GlowAutoCast(indicator)
 	local particlesScale = dbx.glow_particlesScale or 1
 	local always = not not dbx.highlightAlways
 	return function(self, parent, unit)
-		local filtered = self.filtered; if filtered and filtered[parent] then return end
+		if self.filtered and self.filtered[unit] then funcUpdate(self, parent, unit); return end
 		local status, state = funcStatus(self, unit)
 		local frame = funcFrame(self, parent)
 		local enabled = status and (always or state=="blink")
@@ -57,13 +59,14 @@ local function GetUpdate_GlowAutoCast(indicator)
 				funcStop( frame )
 			end
 		end
-		self:OnUpdate(parent, unit, status)
+		funcUpdate(self, parent, unit, status)
 	end
 end
 
 local function GetUpdate_GlowButton(indicator)
 	local funcStatus = indicator.GetCurrentStatus
 	local funcFrame  = indicator.GetBlinkFrame
+	local funcUpdate = indicator.OnUpdate
 	local funcStart  = LCG.ButtonGlow_Start
 	local funcStop   = LCG.ButtonGlow_Stop
 	local dbx = indicator.dbx
@@ -71,7 +74,7 @@ local function GetUpdate_GlowButton(indicator)
 	local frequency = dbx.glow_frequency or 0.12
 	local always = not not dbx.highlightAlways
 	return function(self, parent, unit)
-		local filtered = self.filtered; if filtered and filtered[parent] then return end
+		if self.filtered and self.filtered[unit] then funcUpdate(self, parent, unit); return end
 		local status, state = funcStatus(self, unit)
 		local frame = funcFrame(self, parent)
 		local enabled = status and (always or state=="blink")
@@ -83,7 +86,7 @@ local function GetUpdate_GlowButton(indicator)
 				funcStop( frame )
 			end
 		end
-		self:OnUpdate(parent, unit, status)
+		funcUpdate(self, parent, unit, status)
 	end
 end
 
@@ -110,9 +113,10 @@ end
 local function GetUpdate_Scale(indicator)
 	local funcStatus = indicator.GetCurrentStatus
 	local funcFrame  = indicator.GetBlinkFrame
+	local funcUpdate = indicator.OnUpdate
 	local animOnEnabled = indicator.dbx.animOnEnabled
 	return function(self, parent, unit)
-		local filtered = self.filtered; if filtered and filtered[parent] then return end
+		if self.filtered and self.filtered[unit] then funcUpdate(self, parent, unit); return end
 		local status, state = funcStatus(self, unit)
 		local frame = funcFrame(self, parent)
 		local anim = frame.scaleAnim
@@ -123,7 +127,7 @@ local function GetUpdate_Scale(indicator)
 		elseif anim then
 			anim:Stop()
 		end
-		self:OnUpdate(parent, unit, status)
+		funcUpdate(self, parent, unit, status)
 	end
 end
 
@@ -144,9 +148,10 @@ end
 local function GetUpdate_Blink(indicator)
 	local funcStatus = indicator.GetCurrentStatus
 	local funcFrame  = indicator.GetBlinkFrame
+	local funcUpdate = indicator.OnUpdate
 	local always = not not indicator.dbx.highlightAlways
 	return function(self, parent, unit)
-		local filtered = self.filtered; if filtered and filtered[parent] then return end
+		if self.filtered and self.filtered[unit] then funcUpdate(self, parent, unit); return end
 		local status, state = funcStatus(self, unit)
 		local frame = funcFrame(self, parent)
 		local anim = frame.blinkAnim
@@ -155,7 +160,7 @@ local function GetUpdate_Blink(indicator)
 		elseif anim then
 			anim:Stop()
 		end
-		self:OnUpdate(parent, unit, status)
+		funcUpdate(self, parent, unit, status)
 	end
 end
 
@@ -173,18 +178,11 @@ do
 		[ 3] = GetUpdate_GlowButton,
 	}
 	-- Called from indicator:RegisterStatus() inside GridIndicator.lua
-	function indicatorPrototype:RegisterHighlight(status)
-		if self.GetBlinkFrame and self.highlightType==nil then
-			if self.dbx.highlightAlways or (status.dbx and status.dbx.blinkThreshold) then
-				local typ = self.dbx.highlightType or -2 -- blink by default
-				self.highlightType = typ
-				self.Update = updateFunctions[typ](self)
-			end
+	function indicatorPrototype:UpdateHighlight(status)
+		if self.GetBlinkFrame and (status==nil or ( self.highlightType==nil and (self.dbx.highlightAlways or (status.dbx and status.dbx.blinkThreshold)) ) ) then
+			local typ = self.dbx.highlightType or -2 -- blink by default
+			self.highlightType = typ
+			self.Update = updateFunctions[typ](self)
 		end
-	end
-	-- Called from Grid2Options
-	function Grid2:RefreshHighlight(indicator)
-		indicator.highlightType = indicator.dbx.highlightType or -2 -- blink by default
-		indicator.Update = updateFunctions[indicator.highlightType](indicator)
 	end
 end

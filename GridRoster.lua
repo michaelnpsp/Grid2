@@ -21,6 +21,7 @@ local owner_of_unit   = {} -- partypet1=>party1, raidpet3=>raid3, arenapet1=>are
 local grouped_units   = {} -- party1=>1, raid1=>1 ; units in party or raid
 local grouped_players = {} -- party1=>1, raid1=>1 ; only party/raid player/owner units
 local grouped_pets    = {} -- partypet1=>!, raidpet2=>1 ; only party/raid pet units
+local roster_types    = { target = 'target', focus = 'focus' }
 local roster_my_units = { player = true, pet = true, vehicle = true }
 -- roster tables / storing only existing units
 local roster_names    = {} -- raid1=>name, ..
@@ -33,8 +34,10 @@ local roster_units    = {} -- guid=>raid1, ..
 -- populate unit tables
 do
 	local function register_unit(unit, pet, index, indexes)
-		pet_of_unit[unit] = pet
+		pet_of_unit[unit]  = pet
 		owner_of_unit[pet] = unit
+		roster_types[unit] = 'player'
+		roster_types[pet]  = 'pet'
 		if index then
 			indexes[unit], grouped_units[unit], grouped_players[unit], grouped_units[pet], grouped_pets[pet] = index, index, index, index, index
 		end
@@ -48,6 +51,9 @@ do
 	end
 	for i= 1, 5 do
 		register_unit( ("arena%d"):format(i), ("arenapet%d"):format(i) )
+	end
+	for i = 1, 8 do
+		roster_types['boss'..i] = 'boss'
 	end
 end
 
@@ -362,6 +368,7 @@ Grid2.roster_names    = roster_names
 Grid2.owner_of_unit   = owner_of_unit
 Grid2.pet_of_unit     = pet_of_unit
 Grid2.roster_my_units = roster_my_units
+Grid2.roster_types    = roster_types
 Grid2.grouped_units   = grouped_units
 Grid2.raid_indexes    = raid_indexes
 Grid2.party_indexes   = party_indexes

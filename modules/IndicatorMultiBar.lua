@@ -105,7 +105,6 @@ end
 -- StatusBar texture is not updated inmmediatly like the additional bars textures, generating a graphic glitch.
 local function Bar_Update(self, parent, unit, status)
 	if unit then
-		if self.filtered and self.filtered[parent] then return end
 		local bar = parent[self.name]
 		local values = bar.myValues
 		if status then

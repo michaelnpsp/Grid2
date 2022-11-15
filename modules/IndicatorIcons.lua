@@ -103,9 +103,18 @@ local EnableDelayedUpdates = function()
 end
 
 -- Warning: This is an overrided indicator:Update() NOT the standard indicator:OnUpdate()
-local function Icon_Update(self, parent)
-	if self.filtered and self.filtered[parent] then return end
+local function Icon_Update(self, parent, unit)
 	updates[#updates+1] = parent[self.name]
+end
+
+-- Warning: This is an overrided indicator:Update() NOT the standard indicator:OnUpdate()
+local function Icon_UpdateFiltered(self, parent, unit)
+	local f = parent[self.name]
+	if self.filtered and self.filtered[unit] then
+		f:Hide()
+	else
+		updates[#updates+1] = f
+	end
 end
 
 local function Icon_Layout(self, parent)
@@ -237,17 +246,16 @@ local function Icon_LoadDB(self)
 	-- backdrop
 	self.backdrop = self.borderSize>0 and Grid2:GetBackdropTable("Interface\\Addons\\Grid2\\media\\white16x16", self.borderSize) or nil
 	-- methods
-	self.Update = Icon_Update -- we need to reassign Update() because MakeIndicatorFilter() in UpdatedDB() overrides this method
+	self.Update = self.filtered and Icon_UpdateFiltered or Icon_Update
 end
 
 Grid2.setupFunc["icons"] = function(indicatorKey, dbx)
 	local indicator = Grid2.indicators[indicatorKey] or Grid2.indicatorPrototype:new(indicatorKey)
-	indicator.dbx      = dbx
-	indicator.Create   = Icon_Create
-	indicator.Layout   = Icon_Layout
-	indicator.Disable  = Icon_Disable
-	indicator.Update   = Icon_Update
-	indicator.LoadDB   = Icon_LoadDB
+	indicator.dbx       = dbx
+	indicator.Create    = Icon_Create
+	indicator.Layout    = Icon_Layout
+	indicator.Disable   = Icon_Disable
+	indicator.LoadDB    = Icon_LoadDB
 	EnableDelayedUpdates()
 	Grid2:RegisterIndicator(indicator, { "icon", "icons" })
 	return indicator

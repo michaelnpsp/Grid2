@@ -1,11 +1,15 @@
 local Grid2 = Grid2
 local next = next
 local pairs = pairs
+local select = select
+local UnitClass = UnitClass
+local UnitIsVisible = UnitIsVisible
+local UnitIsConnected = UnitIsConnected
 
 local Portraits = {}
 
-local function Portrait_Create(self, parent)		
-	local frame = self:CreateFrame("Frame", parent) 
+local function Portrait_Create(self, parent)
+	local frame = self:CreateFrame("Frame", parent)
 	if self.dbx.portraitType == '3D' then
 		frame.portraitModel = frame.portraitModel or CreateFrame("PlayerModel" , nil, frame)
 	else
@@ -14,28 +18,40 @@ local function Portrait_Create(self, parent)
 	if self.dbx.backColor then
 		frame.portraitBack = frame.portraitBack or frame:CreateTexture(nil, "BACKGROUND")
 		frame.portraitBack:SetAllPoints()
-	end	
-end
-
-local function Portrait_OnUpdateClass(self, parent, unit)
-	local Portrait = parent[self.name]
-	local class = select(2, UnitClass(unit))
-	if class then
-		Portrait.portraitTexture:SetTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes")
-		Portrait.portraitTexture:SetTexCoord(CLASS_ICON_TCOORDS[class][1], CLASS_ICON_TCOORDS[class][2], CLASS_ICON_TCOORDS[class][3], CLASS_ICON_TCOORDS[class][4])
-	else
-		Portrait.portraitTexture:SetTexture("")
 	end
 end
 
-local function Portrait_OnUpdate2D(self, parent, unit)
+local function Portrait_OnUpdateClass(self, parent, unit, status)
 	local Portrait = parent[self.name]
-	Portrait.portraitTexture:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-	SetPortraitTexture(Portrait.portraitTexture, unit)
+	if status~=false then
+		local class = select(2, UnitClass(unit))
+		if class then
+			Portrait.portraitTexture:SetTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes")
+			Portrait.portraitTexture:SetTexCoord(CLASS_ICON_TCOORDS[class][1], CLASS_ICON_TCOORDS[class][2], CLASS_ICON_TCOORDS[class][3], CLASS_ICON_TCOORDS[class][4])
+		else
+			Portrait.portraitTexture:SetTexture('')
+		end
+		Portrait:Show()
+	else
+		Portrait:Hide()
+	end
+end
+
+local function Portrait_OnUpdate2D(self, parent, unit, status)
+	local Portrait = parent[self.name]
+	if status~=false then
+		Portrait.portraitTexture:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+		SetPortraitTexture(Portrait.portraitTexture, unit)
+		Portrait:Show()
+	else
+		Portrait:Hide()
+	end
 end
 
 local function Portrait_OnUpdate3D(self, parent, unit, event)
-	local Portrait = parent[self.name].portraitModel
+	local Root = parent[self.name]
+	if status==false then Root:Hide(); return end
+	local Portrait = Root.portraitModel
 	if not UnitIsVisible(unit) or not UnitIsConnected(unit) then
 		Portrait:ClearModel()
 		Portrait:SetCamDistanceScale(0.25)
@@ -52,7 +68,7 @@ local function Portrait_OnUpdate3D(self, parent, unit, event)
 			Portrait:ClearModel()
 			Portrait:SetUnit(unit)
 			Portrait.guid = guid
-		end	
+		end
 	end
 end
 
@@ -83,7 +99,7 @@ local function Portrait_Layout(self, parent)
 	if c then
 		Portrait.portraitBack:SetColorTexture(c.r, c.g, c.b, c.a)
 		Portrait.portraitBack:Show()
-	end	
+	end
 	Portrait:Show()
 end
 
@@ -117,7 +133,7 @@ local function Portrait_LoadDB(self)
 	self.OnUpdate = (self.dbx.portraitType == '3D' and Portrait_OnUpdate3D) or
 					(self.dbx.portraitType == 'class' and Portrait_OnUpdateClass) or
 					Portrait_OnUpdate2D
-	if not next(Portraits) then 
+	if not next(Portraits) then
 		Grid2:RegisterEvent("UNIT_PORTRAIT_UPDATE", UpdatePortraits)
 		Grid2:RegisterEvent("UNIT_MODEL_CHANGED", UpdatePortraits)
 	end

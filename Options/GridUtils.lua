@@ -429,6 +429,7 @@ end
 function Grid2Options:UpdateIndicatorDB(indicator)
 	if indicator and indicator.UpdateDB then
 		indicator:UpdateDB()
+		indicator:UpdateHighlight()
 		self:UpdateIndicatorDB( indicator.sideKick )
 		self:UpdateIndicatorDB( Grid2:GetIndicatorByName(indicator.childName) )
 	end
