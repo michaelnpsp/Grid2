@@ -290,12 +290,7 @@ local function OpenJournal(info)
 	else
 		difficulty = RDO.db.profile.defaultEJ_difficulty or 14
 	end
-	if InterfaceOptionsFrame:IsShown() then
-		InterfaceOptionsFrameOkay:Click()
-		GameMenuButtonContinue:Click()
-	end
 	ShowUIPanel(EncounterJournal)
-	EJ_ContentTab_Select(EncounterJournal.instanceSelect.dungeonsTab.id)
 	EncounterJournal_DisplayInstance(instanceID)
 	EncounterJournal.lastInstance = instanceID
 	if not EJ_IsValidInstanceDifficulty(difficulty) then

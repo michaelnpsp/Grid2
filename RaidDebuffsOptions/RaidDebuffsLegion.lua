@@ -95,6 +95,29 @@ RDDB["Legion"] = {
 		224333, -- enveloping-winds
 		209628, -- piercing-gale
 		},
+		["Trash"] = {
+		order = 4, ejid = nil,
+		209027, -- Quelling Strike
+		209413, -- Suppress
+		209512, -- Disrupting Energy
+		209404, -- Seal Magic
+		209036, -- Throw Torch
+		209516, -- Mana Fang
+		211391, -- Felblaze Puddle
+		211464, -- Fel Detonation
+		209378, -- Whirling Blades
+		234965, -- Boorish Behavior
+		214688, -- Carrion Swarm
+		214690, -- Cripple
+		211473, -- Shadow Slash
+		211470, -- Bewitch
+		397907, -- Impending Doom
+		207981, -- Disintegration Beam
+		373552, -- Hypnosis Bat
+		373607, -- Shadowy Barrier
+		373570, -- Hypnosis
+		212773, -- Subdue
+		},
 	},
 	[101466] = { -- Darkheart Thicket (5man)
 		{ id = 762, name = "Darkheart Thicket" },
@@ -164,7 +187,9 @@ RDDB["Legion"] = {
 		order = 1, ejid = 1485,
 		193092, -- bloodletting-sweep
 		191284, -- horn-of-valor
-		193235, -- dancing-blade
+		193260, -- Static Field
+		193092, -- Bloodletting Sweep
+		193234, -- Dancing Blade
 		},
 		["Hyrja"] = {
 		order = 2, ejid = 1486,
@@ -182,13 +207,29 @@ RDDB["Legion"] = {
 		order = 4, ejid = 1488,
 		193826, -- ragnarok
 		193702, -- infernal-flames
+		193783, -- Aegis of Aggramar
+		193660, -- Felblaze Rush
 		},
 		["Odyn"] = {
 		order = 5, ejid = 1489,
 		198263, -- radiant-tempest
 		198072, -- spear-of-light
 		198088, -- glowing-fragment
+		197996, -- Branded
 		197961, -- runic-brand
+		},
+		["Trash"] = {
+		order = 6, ejid = nil,
+		215430, -- Thunderstrike
+		198959, -- Etch
+		192563, -- Cleansing Flames
+		198944, -- Breach Armor
+		199050, -- Mortal Hew
+		199652, -- Sever
+		199674, -- Wicked Dagger
+		199108, -- Frantic Gore
+		209027, -- Quelling Strike
+		199818, -- Crackle
 		},
 	},
 	[101492] = { -- Maw of Souls (5man)

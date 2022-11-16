@@ -648,12 +648,24 @@ RDDB["Warlords of Draenor"] = {
 	},
 	[101176] = { -- Cementerio de Sombraluna
 		{ id = 101176, name = "Shadowmoon Burial Grounds" },
+		["Sadana Bloodfury"] = {
+		order = 1, ejid = 1139,
+		153224, -- Shadow Burn
+		162652, -- Lunar Purity
+		},
 		["Nhallish"] = {
 		order = 2, ejid = 1168,
 		153070, -- Devastacion del vacio
 		153501, -- Explosion del Vacio
 		156776, -- Latigo del vacio sajador
 		152819, -- Palabra de las Sombras: flaqueza
+		152800, -- Void Vortex
+		152979, -- Soul Shred
+		},
+		["Bonemaw"] = {
+		order = 3, ejid = 1140,
+		158061, -- Blessed Waters of Purity
+		153692, -- Necrotic Pitch
 		},
 		["Ner'zhul"] = {
 		order = 4, ejid = 1160,
@@ -661,9 +673,13 @@ RDDB["Warlords of Draenor"] = {
 		154469, -- Ritual de huesos
 		},
 		["Trash"] = {
-		order = 100, ejid = nil,
-		1604, -- Atontado
+		order = 5, ejid = nil,
+		1604,   -- Atontado
 		153524, -- Flema de peste
+		398150, -- Domination
+		398154, -- Cry of Anguish
+		153524, -- Plague Spit
+		156776, -- Rending Voidlash
 		},
 	},
 }

@@ -3,21 +3,6 @@ if Grid2.isClassic then return end
 local RDDB = Grid2Options:GetRaidDebuffsTable()
 RDDB["Dragonflight"] = {
 	-- 5 man instances
-	[1201] = {
-		{ id = 1201, name = "Algeth'ar Academy" },
-		["Vexamus"] = {
-		order = 1, ejid = 2509,
-		},
-		["Overgrown Ancient"] = {
-		order = 2, ejid = 2512,
-		},
-		["Crawth"] = {
-		order = 3, ejid = 2495,
-		},
-		["Echo of Doragosa"] = {
-		order = 4, ejid = 2514,
-		},
-	},
 	[1196] = {
 		{ id = 1196, name = "Brackenhide Hollow" },
 		["Hackclaw's War-Band"] = {
@@ -41,19 +26,72 @@ RDDB["Dragonflight"] = {
 		373896, --withering-rot
 		},
 	},
-	[1204] = {
-		{ id = 1204, name = "Halls of Infusion" },
-		["Watcher Irideus"] = {
-		order = 1, ejid = 2504,
+	[1197] = {
+		{ id = 1197, name = "Uldaman: Legacy of Tyr" },
+		["The Lost Dwarves"] = {
+		order = 1, ejid = 2475,
+		377825, --burning-pitch
+		375286, --searing-cannonfire
 		},
-		["Gulping Goliath"] = {
-		order = 2, ejid = 2507,
+		["Bromach"] = {
+		order = 2, ejid = 2487,
+		369660, --tremor
 		},
-		["Khajin the Unyielding"] = {
-		order = 3, ejid = 2510,
+		["Sentinel Talondras"] = {
+		order = 3, ejid = 2484,
+		372652, --resonating-orb
 		},
-		["Primal Tsunami"] = {
-		order = 4, ejid = 2511,
+		["Emberon"] = {
+		order = 4, ejid = 2476,
+		369110, --unstable-embers
+		369025, --fire-wave
+		},
+		["Chrono-Lord Deios"] = {
+		order = 5, ejid = 2479,
+		376325, --eternity-zone
+		377405, --time-sink
+		},
+	},
+	[1198] = {
+		{ id = 1198, name = "The Nokhud Offensive" },
+		["The Raging Tempest"] = {
+		order = 2, ejid = 2497,
+		384185, -- Lightning Strike
+		386916, -- The Raging Tempest
+		382628, -- Surge of Power
+		},
+		["Teera and Maruuk"] = {
+		order = 3, ejid = 2478,
+		392151, -- Gale Arrow
+		395669, -- Aftershock
+		},
+		["Balakar Khan"] = {
+		order = 4, ejid = 2477,
+		375937, -- Rending Strike
+		376634, -- Iron Spear
+		393421, -- Quake
+		376730, -- Stormwinds
+		376827, -- Conductive Strike
+		376864, -- Static Spear
+		376894, -- Crackling Upheaval
+		376899, -- Crackling Cloud
+		},
+		["Trash"] = {
+		order = 5, ejid = nil,
+		384134, -- Pierce
+		381692, -- Swift Stab
+		334610, -- Hunt Prey
+		384336, -- War Stomp
+		384492, -- Hunter's Mark
+		386025, -- Tempest
+		386912, -- Stormsurge Cloud
+		388801, -- Mortal Strike
+		387615, -- Grasp of the Dead
+		387616, -- Grasp of the Dead
+		381530, -- Storm Shock
+		373395, -- Bloodcurdling Shout
+		387629, -- Rotting Wind
+		395035, -- Shatter Soul
 		},
 	},
 	[1199] = {
@@ -81,86 +119,142 @@ RDDB["Dragonflight"] = {
 		377542, --burning-ground
 		},
 	},
+	[1201] = {
+		{ id = 1201, name = "Algeth'ar Academy" },
+		["Vexamus"] = {
+		order = 1, ejid = 2509,
+		391977, -- Oversurge
+		386181, -- Mana Bomb
+		386201, -- Corrupted Mana
+		},
+		["Overgrown Ancient"] = {
+		order = 2, ejid = 2512,
+		388544, -- Barkbreaker
+		396716, -- Splinterbark
+		389033, -- Lasher Toxin
+		},
+		["Crawth"] = {
+		order = 3, ejid = 2495,
+		397210, -- Sonic Vulnerability
+		376449, -- Firestorm
+		376997, -- Savage Peck
+		},
+		["Echo of Doragosa"] = {
+		order = 4, ejid = 2514,
+		374350, -- Energy Bomb
+		},
+		["Trash"] = {
+		order = 5, ejid = nil,
+		390918, -- Seed Detonation
+		377344, -- Peck
+		388912, -- Severing Slash
+		388866, -- Mana Void
+		388984, -- Vicious Ambush
+		388392, -- Monotonous Lecture
+		387932, -- Astral Whirlwind
+		378011, -- Deadly Winds
+		387843, -- Astral Bomb
+		},
+	},
 	[1202] = {
 		{ id = 1202, name = "Ruby Life Pools" },
 		["Melidrussa Chillworn"] = {
 		order = 1, ejid = 2488,
-		373022, --frozen-solid
-		372682, --primal-chill
+		385518, -- Chillstorm
+		372963, -- Chillstorm
+		372682, -- Primal Chill
+		378968, -- Flame Patch
+		373022, -- Frozen Solid
 		},
 		["Kokia Blazehoof"] = {
 		order = 2, ejid = 2485,
-		372860, --searing-wounds
-		372820, --scorched-earth
-		372811, --molten-boulder
+		372860, -- Searing Wounds
+		372820, -- Scorched Earth
+		372811, -- Molten Boulder
+		384823, -- Inferno
 		},
 		["Kyrakka and Erkhart Stormvein"] = {
 		order = 3, ejid = 2503,
-		381512, --stormslam
-		381517, --winds-of-change
-		381525, --roaring-firebreath
-		381862, --infernocore
+		381526, -- Roaring Firebreath
+		381862, -- Infernocore
+		381515, -- Stormslam
+		381518, -- Winds of Change
+		384773, -- Flaming Embers
+		},
+		["Trash"] = {
+		order = 4, ejid = nil,
+		372697, -- Jagged Earth
+		372047, -- Steel Barrage
+		373869, -- Burning Touch
+		392641, -- Rolling Thunder
+		373693, -- Living Bomb
+		373692, -- Inferno
+		395292, -- Fire Maw
+		372796, -- Blazing Rush
+		392406, -- Thunderclap
+		392451, -- Flashfire
+		392924, -- Shock Blast
+		373589, -- Primal Chill
 		},
 	},
 	[1203] = {
 		{ id = 1203, name = "The Azure Vault" },
 		["Leymor"] = {
 		order = 1, ejid = 2492,
-		374789, --infused-strike
+		374789, -- Infused Strike
+		374523, -- Stinging Sap
+		374567, -- Explosive Brand
 		},
 		["Azureblade"] = {
 		order = 2, ejid = 2505,
 		},
 		["Telash Greywing"] = {
 		order = 3, ejid = 2483,
+		386881, -- Frost Bomb
+		387150, -- Frozen Ground
+		387151, -- Icy Devastator
+		388072, -- Vault Rune
+		396722, -- Absolute Zero
 		},
 		["Umbrelskul"] = {
 		order = 4, ejid = 2508,
+		388777, -- Oppressive Miasma
+		384978, -- Dragon Strike
+		385331, -- Fracture
+		385267, -- Crackling Vortex
+		},
+		["Trash"] = {
+		order = 5, ejid = nil,
+		387564, -- Mystic Vapors
+		370764, -- Piercing Shards
+		375596, -- Erratic Growth
+		375602, -- Erratic Growth
+		375649, -- Infused Ground
+		370766, -- Crystalline Rupture
+		371007, -- Splintering Shards
+		375591, -- Sappy Burst
+		395492, -- Scornful Haste
+		395532, -- Sluggish Adoration
+		390301, -- Hardening Scales
+		386549, -- Waking Bane
+		371352, -- Forbidden Knowledge
+		377488, -- Icy Bindings
+		386640, -- Tear Flesh
 		},
 	},
-	[1198] = {
-		{ id = 1198, name = "The Nokhud Offensive" },
-		["Granyth"] = {
-		order = 1, ejid = 2498,
+	[1204] = {
+		{ id = 1204, name = "Halls of Infusion" },
+		["Watcher Irideus"] = {
+		order = 1, ejid = 2504,
 		},
-		["The Raging Tempest"] = {
-		order = 2, ejid = 2497,
+		["Gulping Goliath"] = {
+		order = 2, ejid = 2507,
 		},
-		["Teera and Maruuk"] = {
-		order = 3, ejid = 2478,
+		["Khajin the Unyielding"] = {
+		order = 3, ejid = 2510,
 		},
-		["Balakar Khan"] = {
-		order = 4, ejid = 2477,
-		376634, --iron-spear
-		376827, --conductive-strike
-		376730, --stormwinds
-		375937, --rending-strike
-		},
-	},
-	[1197] = {
-		{ id = 1197, name = "Uldaman: Legacy of Tyr" },
-		["The Lost Dwarves"] = {
-		order = 1, ejid = 2475,
-		377825, --burning-pitch
-		375286, --searing-cannonfire
-		},
-		["Bromach"] = {
-		order = 2, ejid = 2487,
-		369660, --tremor
-		},
-		["Sentinel Talondras"] = {
-		order = 3, ejid = 2484,
-		372652, --resonating-orb
-		},
-		["Emberon"] = {
-		order = 4, ejid = 2476,
-		369110, --unstable-embers
-		369025, --fire-wave
-		},
-		["Chrono-Lord Deios"] = {
-		order = 5, ejid = 2479,
-		376325, --eternity-zone
-		377405, --time-sink
+		["Primal Tsunami"] = {
+		order = 4, ejid = 2511,
 		},
 	},
 	-- World Bosses
