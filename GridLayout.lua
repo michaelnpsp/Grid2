@@ -666,7 +666,7 @@ function Grid2Layout:FixHeaderAttributes(header, index)
 			header:SetAttribute("groupFilter", groupFilter)
 		end
 		if header:GetAttribute("strictFiltering") then
-			groupFilter = groupFilter .. ",DEATHKNIGHT,DEMONHUNTER,DRUID,HUNTER,MAGE,MONK,PALADIN,PRIEST,ROGUE,SHAMAN,WARLOCK,WARRIOR"
+			groupFilter = groupFilter .. ",DEATHKNIGHT,DEMONHUNTER,DRUID,HUNTER,MAGE,MONK,PALADIN,PRIEST,ROGUE,SHAMAN,WARLOCK,WARRIOR,EVOKER"
 			header:SetAttribute("groupFilter", groupFilter)
 		end
 	end
