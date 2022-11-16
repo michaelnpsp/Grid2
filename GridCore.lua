@@ -34,7 +34,7 @@ local isRetailBuild = true
 --[===[@non-retail@
 isRetailBuild = false
 --@end-non-retail@]===]
-if isRetailBuild~=(WOW_PROJECT_ID==WOW_PROJECT_MAINLINE) and versionToc~='@project-version@' then
+if isRetailBuild~=(WOW_PROJECT_ID==WOW_PROJECT_MAINLINE) and versionToc~='\@project-version\@' then
 	C_Timer.After(3, function() Grid2:Print(string.format("Error, this version of Grid2 was packaged for World of Warcraft %s. Please install the correct version !!!", isRetailBuild and 'Retail' or 'Classic')) end)
 end
 
