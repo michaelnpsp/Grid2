@@ -1,3 +1,5 @@
+if Grid2.isClassic then return end
+
 local RDDB = Grid2Options:GetRaidDebuffsTable()
 RDDB["Mists of Pandaria"] = {
 	-- 5 man instances
