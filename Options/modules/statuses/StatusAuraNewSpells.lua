@@ -46,6 +46,14 @@ Grid2Options.PlayerBuffs = {
 		23920,132404,18499,112048,2457,1134,156080,
 	},
 	["DEMONHUNTER"] = {	187827,131347,178740,188499,206491,196555,212800,},
+	["EVOKER"] = {
+		390386, --fury-of-the-aspects
+		364342, --blessing-of-the-bronze
+		364343, --echo
+		366155, --reversion
+		367364, --reversion-echoed
+		359816, --dream-flight
+	},
 }
 -- Grid2Options.PlayerDebuffs total: 229 generated: 02/01/15 14:07:35
 Grid2Options.PlayerDebuffs = {
@@ -68,12 +76,16 @@ Grid2Options.PlayerDebuffs = {
 	["WARRIOR"] = { 355,12809,96273,46968,1715,114198,115767,772,58567,7922,94009,12294,178857,1161,167105,64382,1160,82406,86346,132168,
 		18498,105771,12721,118895,46857,6343,
 	},
-	["MYTHIC+"] = { 
+	["MYTHIC+"] = {
 		209858, -- Necrotic
 		243237, -- Burst
 		240559, -- Grievous
 		221772, -- Overflow
 		240447, -- Quake
 		226512, -- Sanguine
+		396364, -- Mark of Wind
+		396369, -- Mark of Lightning
+		394873, -- Lightning Strike
+		396411, -- Primal Overload
 	},
 }

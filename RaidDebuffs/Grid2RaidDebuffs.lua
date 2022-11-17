@@ -455,7 +455,7 @@ function Grid2:UpdateDefaults()
 	local version = Grid2:DbGetValue("versions", "Grid2RaidDebuffs") or 0
 	if version >= 4 then return end
 	if version == 0 then
-		Grid2:DbSetMap( "icon-center", "raid-debuffs", 155)
+		Grid2:DbSetMap( "icon-center", "raid-debuffs", 145)
 	else -- Remove all enabled debuffs
 		for _,db in pairs(Grid2.db.profile.statuses) do
 			if db.type == "raid-debuffs" then
