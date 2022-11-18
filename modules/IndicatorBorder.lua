@@ -19,7 +19,7 @@ function Border:Disable(parent)
 	parent:SetBackdropBorderColor(0,0,0,0)
 end
 
-function Border:LoadDB()
+function Border:UpdateDB()
 	local c = Grid2:MakeColor(Grid2Frame.db.profile.frameBorderColor, 'TRANSPARENT')
 	cr, cg, cb, ca = c.r, c.g, c.b, c.a
 end

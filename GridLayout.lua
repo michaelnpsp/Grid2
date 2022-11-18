@@ -394,7 +394,7 @@ end
 -- reload text indicators db (because text indicators have a special testMode to display header index)
 function Grid2Layout:ReloadTextIndicatorsDB()
 	for _,indicator in Grid2:IterateIndicators('text') do
-		indicator:LoadDB()
+		indicator:UpdateDB()
 	end
 end
 

@@ -427,8 +427,9 @@ end
 
 -- Grid2Options:UpdateIndicatorDB()
 function Grid2Options:UpdateIndicatorDB(indicator)
-	if indicator and indicator.UpdateDB then
+	if indicator then
 		indicator:UpdateDB()
+		indicator:UpdateFilter()
 		indicator:UpdateHighlight()
 		self:UpdateIndicatorDB( indicator.sideKick )
 		self:UpdateIndicatorDB( Grid2:GetIndicatorByName(indicator.childName) )
@@ -443,12 +444,14 @@ end
 --  key > method defined inside indicator to be executed
 function Grid2Options:RefreshIndicator(indicator, method)
 	self:UpdateIndicatorDB(indicator)
-	if method == "Create" then
-		Grid2Frame:WithAllFrames(indicator, "Disable")
-		Grid2Frame:WithAllFrames(indicator, "Create")
-		Grid2Frame:WithAllFrames(indicator, 'Layout')
-	elseif method ~= 'Update' then
-		Grid2Frame:WithAllFrames(indicator, method)
+	if method then
+		if method == "Create" then
+			Grid2Frame:WithAllFrames(indicator, "Disable")
+			Grid2Frame:WithAllFrames(indicator, "Create")
+			Grid2Frame:WithAllFrames(indicator, 'Layout')
+		elseif method ~= 'Update' then
+			Grid2Frame:WithAllFrames(indicator, method)
+		end
 	end
 	Grid2Frame:UpdateIndicators()
 end

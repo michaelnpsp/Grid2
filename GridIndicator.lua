@@ -10,7 +10,14 @@ local tinsert = table.insert
 local tremove = table.remove
 local setmetatable = setmetatable
 local tdelete = Grid2.TableRemoveByValue
+local roster_types = Grid2.roster_types
 local BackdropTemplateMixin = BackdropTemplateMixin
+
+local filter_mt = {	__index = function(t,u)
+	local r = not t.source[ roster_types[u] ]
+	t[u] = r
+	return r
+end }
 
 Grid2.indicators = {}
 Grid2.indicatorSorted = {}
@@ -48,35 +55,27 @@ function indicator:Update(parent, unit)
 	self:OnUpdate(parent, unit, self:GetCurrentStatus(unit) )
 end
 
-function indicator:UpdateFiltered(parent, unit)
-	self:OnUpdate(parent, unit, self.filtered[unit]==nil and self:GetCurrentStatus(unit))
+function indicator:UpdateAllFrames()
+	for _, frame in next, Grid2Frame.registeredFrames do
+		local unit = frame.unit
+		if unit then self:Update(frame, unit) end
+	end
 end
 
-do
-	local roster_types = Grid2.roster_types
-	local filter_mt = {	__index = function(t,u)
-		local r = not t.source[ roster_types[u] ]
-		t[u] = r
-		return r
-	end }
-	local function MakeIndicatorFilter(self)
-		if self.parentName then return end
-		local load = self.dbx and self.dbx.load
-		if load and load.unitType then
-			if self.filtered then
-				wipe(self.filtered).source = load.unitType
-			else
-				self.filtered = setmetatable({source = load.unitType}, filter_mt)
-			end
-			self.Update = indicator.UpdateFiltered
-		elseif self.filtered then
-			self.filtered = nil
-			self.Update = indicator.Update
+function indicator:UpdateDB()
+end
+
+function indicator:UpdateFilter()
+	if self.parentName then return end
+	local load = self.dbx and self.dbx.load
+	if load and load.unitType then
+		if self.filtered then
+			wipe(self.filtered).source = load.unitType
+		else
+			self.filtered = setmetatable({source = load.unitType}, filter_mt)
 		end
-	end
-	function indicator:UpdateDB()
-		MakeIndicatorFilter(self)
-		if self.LoadDB then self:LoadDB() end
+	elseif self.filtered then
+		self.filtered = nil
 	end
 end
 
@@ -126,6 +125,8 @@ end
 
 function indicator:GetCurrentStatus(unit)
 	if unit then
+		local filtered = self.filtered
+		if filtered and filtered[unit] then return false end
 		local statuses= self.statuses
 		for i=1,#statuses do
 			local status= statuses[i]
@@ -193,6 +194,7 @@ function Grid2:RegisterIndicator(indicator, types)
 		t[name] = indicator
 	end
 	indicator:UpdateDB()
+	indicator:UpdateFilter()
 end
 
 function Grid2:UnregisterIndicator(indicator)

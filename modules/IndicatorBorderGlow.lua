@@ -30,7 +30,7 @@ local function BorderGlow_Disable(self, parent)
 	self.GlowStop(parent, self.name)
 end
 
-local function BorderGlow_LoadDB(self)
+local function BorderGlow_UpdateDB(self)
 	local dbx = self.dbx
 	local color = dbx.glowColor
 	self.color  = color and { color.r, color.g, color.b, color.a } or nil
@@ -53,7 +53,7 @@ local function Create(indicatorKey, dbx)
 	indicator.Layout = Grid2.Dummy
 	indicator.OnUpdate = BorderGlow_OnUpdate
 	indicator.Disable = BorderGlow_Disable
-	indicator.LoadDB = BorderGlow_LoadDB
+	indicator.UpdateDB = BorderGlow_UpdateDB
 	Grid2:RegisterIndicator(indicator, { "color" })
 	return indicator
 end

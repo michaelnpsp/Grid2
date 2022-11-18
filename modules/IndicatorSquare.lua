@@ -63,7 +63,7 @@ local function Square_Disable(self, parent)
 	f:ClearAllPoints()
 end
 
-local function Square_LoadDB(self)
+local function Square_UpdateDB(self)
 	local dbx = self.dbx
 	-- variables
 	local l = dbx.location
@@ -95,7 +95,7 @@ local function Create(indicatorKey, dbx)
 	indicator.Layout = Square_Layout
 	indicator.OnUpdate = Square_OnUpdate
 	indicator.Disable = Square_Disable
-	indicator.LoadDB = Square_LoadDB
+	indicator.UpdateDB = Square_UpdateDB
 	Grid2:RegisterIndicator(indicator, { "color" })
 	return indicator
 end

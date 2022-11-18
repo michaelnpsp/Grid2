@@ -18,7 +18,6 @@ local function GetUpdate_GlowPixel(indicator)
 	local thickness = dbx.glow_thickness or 2
 	local always = not not dbx.highlightAlways
 	return function(self, parent, unit)
-		if self.filtered and self.filtered[unit] then funcUpdate(self, parent, unit); return end
 		local status, state = funcStatus(self, unit)
 		local frame = funcFrame(self, parent)
 		local enabled = status and (always or state=="blink")
@@ -47,7 +46,6 @@ local function GetUpdate_GlowAutoCast(indicator)
 	local particlesScale = dbx.glow_particlesScale or 1
 	local always = not not dbx.highlightAlways
 	return function(self, parent, unit)
-		if self.filtered and self.filtered[unit] then funcUpdate(self, parent, unit); return end
 		local status, state = funcStatus(self, unit)
 		local frame = funcFrame(self, parent)
 		local enabled = status and (always or state=="blink")
@@ -74,7 +72,6 @@ local function GetUpdate_GlowButton(indicator)
 	local frequency = dbx.glow_frequency or 0.12
 	local always = not not dbx.highlightAlways
 	return function(self, parent, unit)
-		if self.filtered and self.filtered[unit] then funcUpdate(self, parent, unit); return end
 		local status, state = funcStatus(self, unit)
 		local frame = funcFrame(self, parent)
 		local enabled = status and (always or state=="blink")
@@ -116,7 +113,6 @@ local function GetUpdate_Scale(indicator)
 	local funcUpdate = indicator.OnUpdate
 	local animOnEnabled = indicator.dbx.animOnEnabled
 	return function(self, parent, unit)
-		if self.filtered and self.filtered[unit] then funcUpdate(self, parent, unit); return end
 		local status, state = funcStatus(self, unit)
 		local frame = funcFrame(self, parent)
 		local anim = frame.scaleAnim
@@ -165,7 +161,7 @@ local function GetUpdate_Blink(indicator)
 end
 
 local function GetUpdate_Original(indicator)
-	return indicator.filtered and indicatorPrototype.UpdateFiltered or indicatorPrototype.Update
+	return indicatorPrototype.Update
 end
 
 do

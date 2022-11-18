@@ -104,11 +104,6 @@ end
 
 -- Warning: This is an overrided indicator:Update() NOT the standard indicator:OnUpdate()
 local function Icon_Update(self, parent, unit)
-	updates[#updates+1] = parent[self.name]
-end
-
--- Warning: This is an overrided indicator:Update() NOT the standard indicator:OnUpdate()
-local function Icon_UpdateFiltered(self, parent, unit)
 	local f = parent[self.name]
 	if self.filtered and self.filtered[unit] then
 		f:Hide()
@@ -198,7 +193,7 @@ end
 
 local pointsX = { TOPLEFT =  1,	TOPRIGHT = -1, BOTTOMLEFT = 1, BOTTOMRIGHT = -1 }
 local pointsY = { TOPLEFT = -1, TOPRIGHT = -1, BOTTOMLEFT = 1, BOTTOMRIGHT =  1 }
-local function Icon_LoadDB(self)
+local function Icon_UpdateDB(self)
 	local dbx = self.dbx
 	local theme = Grid2Frame.db.profile
 	-- location
@@ -245,8 +240,6 @@ local function Icon_LoadDB(self)
 	self.font            = Grid2:MediaFetch("font", dbx.font or theme.font) or STANDARD_TEXT_FONT
 	-- backdrop
 	self.backdrop = self.borderSize>0 and Grid2:GetBackdropTable("Interface\\Addons\\Grid2\\media\\white16x16", self.borderSize) or nil
-	-- methods
-	self.Update = self.filtered and Icon_UpdateFiltered or Icon_Update
 end
 
 Grid2.setupFunc["icons"] = function(indicatorKey, dbx)
@@ -255,7 +248,8 @@ Grid2.setupFunc["icons"] = function(indicatorKey, dbx)
 	indicator.Create    = Icon_Create
 	indicator.Layout    = Icon_Layout
 	indicator.Disable   = Icon_Disable
-	indicator.LoadDB    = Icon_LoadDB
+	indicator.UpdateDB  = Icon_UpdateDB
+	indicator.Update    = Icon_Update
 	EnableDelayedUpdates()
 	Grid2:RegisterIndicator(indicator, { "icon", "icons" })
 	return indicator

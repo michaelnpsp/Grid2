@@ -206,7 +206,7 @@ local function Bar_Disable(self, parent)
 	bar:ClearAllPoints()
 end
 
-local function Bar_LoadDB(self)
+local function Bar_UpdateDB(self)
 	local dbx          = self.dbx
 	local l            = dbx.location
 	local theme        = Grid2Frame.db.profile
@@ -252,7 +252,6 @@ local function Bar_LoadDB(self)
 			sublayer = -1,
 		}
 	end
-	self.Update = Bar_Update -- we need to reassign Update() because MakeIndicatorFilter() in UpdatedDB() overrides this method
 end
 
 --{{ Bar Color indicator
@@ -282,7 +281,7 @@ local function BarColor_SetBarColorInverted(self, parent, r, g, b, a)
 	textures[#textures]:SetVertexColor(r, g, b, a)
 end
 
-local function BarColor_LoadDB(self)
+local function BarColor_UpdateDB(self)
 	local dbx = self.dbx
 	self.SetBarColor = dbx.invertColor and BarColor_SetBarColorInverted or BarColor_SetBarColor
 	self.OnUpdate = dbx.textureColor.r and Grid2.Dummy or BarColor_OnUpdate
@@ -301,7 +300,7 @@ local function Create(indicatorKey, dbx)
 	Bar.Disable        = Bar_Disable
 	Bar.Layout         = Bar_Layout
 	Bar.Update         = Bar_Update
-	Bar.LoadDB         = Bar_LoadDB
+	Bar.UpdateDB       = Bar_UpdateDB
 	Grid2:RegisterIndicator(Bar, { "percent" })
 	EnableDelayedUpdates()
 
@@ -311,7 +310,7 @@ local function Create(indicatorKey, dbx)
 	BarColor.parentName = indicatorKey
 	BarColor.Create     = Grid2.Dummy
 	BarColor.Layout     = Grid2.Dummy
-	BarColor.LoadDB     = BarColor_LoadDB
+	BarColor.UpdateDB   = BarColor_UpdateDB
 	Grid2:RegisterIndicator(BarColor, { "color" })
 	Bar.sideKick = BarColor
 

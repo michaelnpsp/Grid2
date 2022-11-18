@@ -6,7 +6,7 @@ local enabledAlpha = 0.5
 Alpha.Create = Grid2.Dummy
 Alpha.Layout = Grid2.Dummy
 
--- standard update, opacity value is provided by the active status 
+-- standard update, opacity value is provided by the active status
 local function Alpha_OnUpdate1(self, parent, unit, status)
 	parent:SetAlpha(status and status:GetPercent(unit) or defaultAlpha)
 end
@@ -20,7 +20,7 @@ function Alpha:Disable(parent)
 	parent:SetAlpha(1)
 end
 
-function Alpha:LoadDB()
+function Alpha:UpdateDB()
 	defaultAlpha = self.dbx.defaultAlpha or 1
 	enabledAlpha = self.dbx.alpha
 	self.OnUpdate = enabledAlpha and Alpha_OnUpdate2 or Alpha_OnUpdate1

@@ -50,7 +50,7 @@ end
 
 local function Portrait_OnUpdate3D(self, parent, unit, event)
 	local Root = parent[self.name]
-	if status==false then Root:Hide(); return end
+	if event==false then Root:Hide(); return end
 	local Portrait = Root.portraitModel
 	if not UnitIsVisible(unit) or not UnitIsConnected(unit) then
 		Portrait:ClearModel()
@@ -70,6 +70,7 @@ local function Portrait_OnUpdate3D(self, parent, unit, event)
 			Portrait.guid = guid
 		end
 	end
+	Root:Show()
 end
 
 local function Portrait_Layout(self, parent)
@@ -129,7 +130,7 @@ local function UpdatePortraits(event, unit)
 	end
 end
 
-local function Portrait_LoadDB(self)
+local function Portrait_UpdateDB(self)
 	self.OnUpdate = (self.dbx.portraitType == '3D' and Portrait_OnUpdate3D) or
 					(self.dbx.portraitType == 'class' and Portrait_OnUpdateClass) or
 					Portrait_OnUpdate2D
@@ -147,7 +148,7 @@ local function Create(indicatorKey, dbx)
 	indicator.Layout = Portrait_Layout
 	indicator.Disable = Portrait_Disable
 	indicator.OnSuspend = Portrait_OnSuspend
-	indicator.LoadDB = Portrait_LoadDB
+	indicator.UpdateDB = Portrait_UpdateDB
 	Grid2:RegisterIndicator(indicator, { "portrait" })
 	return indicator
 end

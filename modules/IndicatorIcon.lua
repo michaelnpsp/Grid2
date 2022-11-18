@@ -147,7 +147,7 @@ local function Icon_Disable(self, parent)
 	f:ClearAllPoints()
 end
 
-local function Icon_LoadDB(self)
+local function Icon_UpdateDB(self)
 	local dbx = self.dbx
 	local theme = Grid2Frame.db.profile
 	-- location
@@ -185,8 +185,7 @@ local function CreateIcon(indicatorKey, dbx)
 	indicator.Layout        = Icon_Layout
 	indicator.OnUpdate      = Icon_OnUpdate
 	indicator.Disable       = Icon_Disable
-	indicator.LoadDB        = Icon_LoadDB
-	indicator:UpdateDB()
+	indicator.UpdateDB      = Icon_UpdateDB
 	Grid2:RegisterIndicator(indicator, { "icon" })
 	return indicator
 end

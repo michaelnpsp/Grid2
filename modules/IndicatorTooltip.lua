@@ -79,7 +79,7 @@ function Tooltip:OnSuspend()
 	Grid2Frame:SetEventHook( 'OnLeave', OnFrameLeave, false )
 end
 
-function Tooltip:LoadDB()
+function Tooltip:UpdateDB()
 	local dbx  = self.dbx
 	tooltipOOC = dbx.displayUnitOOC
 	tooltipDefault = dbx.showDefault

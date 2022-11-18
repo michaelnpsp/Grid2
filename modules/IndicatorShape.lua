@@ -55,7 +55,7 @@ local function Shape_Disable(self, parent)
 	f:ClearAllPoints()
 end
 
-local function Shape_LoadDB(self)
+local function Shape_UpdateDB(self)
 	local dbx = self.dbx
 	-- location
 	local l = dbx.location
@@ -90,7 +90,7 @@ local function CreateShape(indicatorKey, dbx)
 	indicator.Layout        = Shape_Layout
 	indicator.OnUpdate      = Shape_OnUpdate
 	indicator.Disable       = Shape_Disable
-	indicator.LoadDB        = Shape_LoadDB
+	indicator.UpdateDB      = Shape_UpdateDB
 	Grid2:RegisterIndicator(indicator, { "color" })
 	return indicator
 end

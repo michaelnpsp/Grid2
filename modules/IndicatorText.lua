@@ -246,7 +246,7 @@ local function Text_Disable(self, parent)
 	f:ClearAllPoints()
 end
 
-local function Text_LoadDB(self)
+local function Text_UpdateDB(self)
 	-- text fmt
 	local fmt = Grid2.db.profile.formatting
 	FmtDE[true] = fmt.longDecimalFormat
@@ -312,7 +312,7 @@ local function Create(indicatorKey, dbx)
 	indicator.GetBlinkFrame = Text_GetBlinkFrame
 	indicator.Layout = Text_Layout
 	indicator.Disable = Text_Disable
-	indicator.LoadDB = Text_LoadDB
+	indicator.UpdateDB = Text_UpdateDB
 	Grid2:RegisterIndicator(indicator, { "text" })
 
 	local colorKey = indicatorKey .. "-color"

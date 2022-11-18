@@ -18,7 +18,7 @@ function Background:OnUpdate(parent, unit, status)
 	end
 end
 
-function Background:LoadDB()
+function Background:UpdateDB()
 	local c = Grid2Frame.db.profile.frameContentColor
 	cr, cg, cb, ca = c.r, c.g, c.b, c.a
 end

@@ -364,7 +364,7 @@ function Grid2Frame:RefreshIndicators(update)
 				else
 					Grid2:WakeUpIndicator(indicator)
 				end
-			elseif not s1 and update and indicator.UpdateDB then
+			elseif not s1 and update then
 				indicator:UpdateDB()
 			end
 		end
