@@ -10,14 +10,7 @@ local tinsert = table.insert
 local tremove = table.remove
 local setmetatable = setmetatable
 local tdelete = Grid2.TableRemoveByValue
-local roster_types = Grid2.roster_types
 local BackdropTemplateMixin = BackdropTemplateMixin
-
-local filter_mt = {	__index = function(t,u)
-	local r = not t.source[ roster_types[u] ]
-	t[u] = r
-	return r
-end }
 
 Grid2.indicators = {}
 Grid2.indicatorSorted = {}
@@ -63,20 +56,6 @@ function indicator:UpdateAllFrames()
 end
 
 function indicator:UpdateDB()
-end
-
-function indicator:UpdateFilter()
-	if self.parentName then return end
-	local load = self.dbx and self.dbx.load
-	if load and load.unitType then
-		if self.filtered then
-			wipe(self.filtered).source = load.unitType
-		else
-			self.filtered = setmetatable({source = load.unitType}, filter_mt)
-		end
-	elseif self.filtered then
-		self.filtered = nil
-	end
 end
 
 function indicator:RegisterStatus(status, priority)
@@ -125,8 +104,6 @@ end
 
 function indicator:GetCurrentStatus(unit)
 	if unit then
-		local filtered = self.filtered
-		if filtered and filtered[unit] then return false end
 		local statuses= self.statuses
 		for i=1,#statuses do
 			local status= statuses[i]
