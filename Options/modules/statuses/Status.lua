@@ -27,6 +27,8 @@ do
 		other  = L["Other"],
 	}
 
+	local HEADER_TYPES = { player = L['Players'], pet = L['Pets'], boss = L['Bosses'], target = L['Target'], focus = L['Focus'] }
+
 	local NOYES_TYPES = { L["No"], L['Yes'] }
 
 	local COMBAT_TYPES = { L["Out of Combat"], L['In Combat'] }
@@ -333,12 +335,13 @@ do
 				L["Load the status only if the unit has the specified role."],
 				true
 			)
-			SetFilterBooleanOptions( status, options, 90,
-				'unitIsPet',
-				false,
-				L["Unit Is Pet"],
-				L["Unit Is Pet"],
-				NOYES_TYPES
+			SetFilterOptions( status, options, 90,
+				'unitType',
+				HEADER_TYPES,
+				'player',
+				L["Unit Type"],
+				L["Load the status only for the specified unit types."],
+				true
 			)
 		end
 		return options
