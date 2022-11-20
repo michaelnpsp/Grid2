@@ -33,7 +33,8 @@ local rezSpellID = ({ -- classic has the same spellIDs
 		SHAMAN      = 2008,
 		MONK        = 115178,
 		DEATHKNIGHT = 61999,
-		WARLOCK     = 20707
+		WARLOCK     = 20707,
+		EVOKER      = 361227,
 	})[playerClass]
 local rezSpell = rezSpellID and GetSpellInfo(rezSpellID)
 
@@ -42,7 +43,8 @@ local rangeSpellID = ({
 		PALADIN = 19750,
 		PRIEST  = Grid2.isClassic and 2050  or 73325,
 		SHAMAN  = Grid2.isClassic and 25357 or 77472,
-		MONK    = 115450
+		MONK    = 115450,
+		EVOKER  = 361469,
 	})[playerClass]
 local rangeSpell = rangeSpellID and GetSpellInfo(rangeSpellID)
 
