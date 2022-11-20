@@ -87,7 +87,7 @@ do
 				if cnt==0 then cnt = 1 end
 				for s in next, statuses do
 					local mine = s.isMine
-					if mine==false or mine==myUnits[cas] then
+					if (mine==false or mine==myUnits[cas]) and s.seen~=1 then
 						if exp~=s.exp[u] or s.cnt[u]~=cnt or val[s.vId]~=s.val[u] or s.spells then
 							s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.val[u], s.tkr[u] = 1, i, tex, cnt, dur, exp, val[s.vId], 1
 						else
