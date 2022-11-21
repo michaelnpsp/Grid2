@@ -224,6 +224,7 @@ end
 
 function Grid2:PLAYER_ROLES_ASSIGNED()
 	self:RefreshAurasFilter('unitRole')
+	self:RefreshIndicatorsFilter('unitRole')
 	if not self:ReloadTheme() then
 		self:SendMessage("Grid_PlayerRolesAssigned")
 	end

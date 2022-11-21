@@ -910,6 +910,8 @@ do
 
 	local HEADER_TYPES = { player = L['Players'], pet = L['Pets'], boss = L['Bosses'], target = L['Target'], focus = L['Focus'] }
 
+	local PLAYER_ROLES = { TANK = L['Tank'], HEALER = L['Healer'], DAMAGER = L['Damager'], NONE = L['None'] }
+
 	local function SetFilterOptions( indicator, options, order, key, values, defValue, name, desc, isUnitFilter, isSingle )
 		local dbx    = indicator.dbx
 		local filter = dbx.load and dbx.load[key]
@@ -971,18 +973,28 @@ do
 
 	function Grid2Options:MakeIndicatorLoadOptions(indicator, options)
 		SetFilterOptions( indicator, options, 20,
-			'playerClass',
-			PLAYER_CLASSES,
-			select(2,UnitClass('player')),
-			L["Player Class"],
-			L["Load the indicator only if your toon belong to the specified class."]
-		)
-		SetFilterOptions( indicator, options, 30,
 			'unitType',
 			HEADER_TYPES,
 			'player',
 			L["Unit Type"],
-			L["Load the indicator only for the specified unit types."]
+			L["Load the indicator only for the specified unit types."],
+			true
+		)
+		SetFilterOptions( indicator, options, 30,
+			'unitClass',
+			PLAYER_CLASSES,
+			select(2,UnitClass('player')),
+			L["Unit Class"],
+			L["Load the indicator only if the unit belong to the specified class."],
+			true
+		)
+		SetFilterOptions( indicator, options, 40,
+			'unitRole',
+			PLAYER_ROLES,
+			'NONE',
+			L["Unit Role"],
+			L["Load the indicator only if the unit has the specified role."],
+			true
 		)
 		return options
 	end
