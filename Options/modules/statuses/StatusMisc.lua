@@ -15,11 +15,6 @@ Grid2Options:RegisterStatusOptions("offline", "misc", nil, {
 	titleIconCoords = {0.3,0.7,0.2,0.8},
 })
 
-Grid2Options:RegisterStatusOptions("vehicle", "misc", nil, {
-	titleIcon = "Interface\\Vehicles\\UI-Vehicles-Button-Exit-Up",
-	titleIconCoords = {0.2,0.8,0.2,0.8},
-})
-
 Grid2Options:RegisterStatusOptions("target", "target", nil, {
 	title = L["highlights your target"],
 	titleIcon = Grid2.isClassic and "Interface\\Icons\\Ability_Hunter_SniperShot" or "Interface\\Icons\\Ability_hunter_mastermarksman",
@@ -66,3 +61,25 @@ Grid2Options:RegisterStatusOptions("monk-stagger", "combat", nil, {
 	width = "full",
 	titleIcon = "463281",
 })
+
+Grid2Options:RegisterStatusOptions("vehicle", "misc", function(self, status, options, optionParams)
+	self:MakeStatusColorOptions(status, options, optionParams)
+	self:MakeSpacerOptions(options, 30)
+	options.classcolors = {
+		type = "toggle",
+		name = L["Use Owner/Vehicle Class Color"],
+		desc = L["Use Owner/Vehicle Class Color"],
+		width = "full",
+		order = 35,
+		get = function () return status.dbx.useClassColors end,
+		set = function (_, v)
+			status.dbx.useClassColors = v or nil
+			status:UpdateDB()
+			status:UpdateAllUnits()
+		end,
+	}
+end, {
+	titleIcon = "Interface\\Vehicles\\UI-Vehicles-Button-Exit-Up",
+	titleIconCoords = {0.2,0.8,0.2,0.8},
+})
+

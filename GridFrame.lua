@@ -453,7 +453,7 @@ function Grid2Frame:UNIT_ENTERED_VEHICLE(event, unit)
 				if UnitExists(new) and (event==nil or strfind(UnitGUID(new),'^Vehicle')) then -- new is a player or is a vehicle pet
 					frame:UpdateIndicators()
 				else -- only for pets: pet unit does not exist or exists but is not a vehicle yet
-					C_Timer_After( 1, function() Grid2:RefreshFramesOfUnit(new) end )
+					C_Timer_After( 1.5, function() Grid2:RefreshFramesOfUnit(new) end )
 				end
 			end
 		end

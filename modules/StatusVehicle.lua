@@ -7,6 +7,10 @@ local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 local Grid2 = Grid2
 local UnitName = UnitName
 local UnitHasVehicleUI = UnitHasVehicleUI
+local pet_of_unit = Grid2.pet_of_unit
+local owner_of_unit = Grid2.owner_of_unit
+
+local classcolors
 
 function Vehicle:UpdateUnit(_, unit)
 	self:UpdateIndicators(unit)
@@ -25,7 +29,7 @@ function Vehicle:OnDisable()
 end
 
 function Vehicle:IsActive(unit)
-	local owner = Grid2:GetOwnerOfUnit(unit)
+	local owner = owner_of_unit[unit]
 	if owner and UnitHasVehicleUI(owner) then
 		return true
 	else
@@ -39,7 +43,7 @@ end
 
 local text = L["vehicle"]
 function Vehicle:GetText(unit)
-	local owner = Grid2:GetOwnerOfUnit(unit)
+	local owner = owner_of_unit[unit]
 	if owner and UnitHasVehicleUI(owner) then
 		return UnitName(owner)
 	else
@@ -51,11 +55,20 @@ function Vehicle:GetPercent(unit)
 	return self.dbx.color1.a, text
 end
 
-Vehicle.GetColor = Grid2.statusLibrary.GetColor
+function Vehicle:GetClassColor(unit)
+	local _, class = UnitClass( owner_of_unit[unit] or pet_of_unit[unit] or unit )
+	local c = classcolors[class or ''] or self.dbx.color1
+	return c.r, c.g, c.b, c.a
+end
+
+function Vehicle:UpdateDB()
+	classcolors = self.dbx.useClassColors and Grid2:GetStatusByName('classcolor').dbx.colors or nil
+	self.GetColor =	classcolors and self.GetClassColor or Grid2.statusLibrary.GetColor
+end
 
 local function Create(baseKey, dbx)
 	Grid2:RegisterStatus(Vehicle, {"color", "icon", "percent", "text"}, baseKey, dbx)
-
+	Vehicle:UpdateDB()
 	return Vehicle
 end
 
