@@ -341,8 +341,6 @@ end
 
 function Grid2Frame:RefreshTheme()
 	self:RefreshIndicators(true)
-	self:LayoutFrames()
-	self:UpdateIndicators()
 end
 
 function Grid2Frame:UpgradeThemeDB()
