@@ -42,8 +42,7 @@ end
 -- Replaces indicator:GetCurrentStatus() method defined in GridIndicator.lua
 local function GetCurrentStatus(self, unit)
 	if unit then
-		local filtered = self.filtered
-		if filtered and filtered[unit] then return false end
+		if self.filtered[unit] then return false end -- false instead of nil, needed by portrait status
 		local statuses= self.statuses
 		for i=1,#statuses do
 			local status= statuses[i]
@@ -60,11 +59,11 @@ function indicatorPrototype:UpdateFilter()
 	if self.parentName then return end
 	local load = self.dbx and self.dbx.load
 	if load and (load.unitType or load.unitRole or load.unitClass) then
+		self.GetCurrentStatus = GetCurrentStatus
 		if self.filtered then
 			wipe(self.filtered).source = load
 		else
 			self.filtered = setmetatable({source = load}, filter_mt)
-			self.GetCurrentStatus = GetCurrentStatus
 		end
 		if load.unitRole or load.unitClass then
 			if not next(indicators) then
@@ -74,6 +73,7 @@ function indicatorPrototype:UpdateFilter()
 			indicators[self] = self.filtered
 		end
 	elseif self.filtered then
+		self.GetCurrentStatus = indicatorPrototype.GetCurrentStatus
 		self.filtered = nil
 		indicators[self] = nil
 		if not next(indicators) then
