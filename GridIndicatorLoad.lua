@@ -83,7 +83,7 @@ function indicatorPrototype:UpdateFilter()
 	end
 end
 
--- Refresh indicators filter, currently only used to reset unitRole filter
+-- Refresh indicators filter, currently only used to reset unitRole filter, see Grid2:PLAYER_ROLES_ASSIGNED()
 function Grid2:RefreshIndicatorsFilter(filterName)
 	for indicator, filtered in next, indicators do
 		local load = filtered.source

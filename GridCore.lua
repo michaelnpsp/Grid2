@@ -7,7 +7,7 @@ Grid2 = LibStub("AceAddon-3.0"):NewAddon("Grid2", "AceEvent-3.0", "AceConsole-3.
 Grid2.Dummy = function() end
 Grid2.GetSpecialization = GetSpecialization or GetActiveTalentGroup or Grid2.Dummy
 Grid2.GetNumSpecializations = GetNumSpecializations or function() return 2 end
-Grid2.UnitGroupRolesAssigned = UnitGroupRolesAssigned or Grid2.Dummy
+Grid2.UnitGroupRolesAssigned = UnitGroupRolesAssigned or function() return 'NONE' end
 
 local type = type
 local next = next
