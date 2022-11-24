@@ -6,9 +6,9 @@ local next = next
 local setmetatable = setmetatable
 local UnitClass = UnitClass
 local UnitExists = UnitExists
-local roster_types = Grid2.roster_types
 local indicatorPrototype = Grid2.indicatorPrototype
 local UnitGroupRolesAssigned = Grid2.UnitGroupRolesAssigned
+local roster_types = Grid2.roster_types
 
 local indicators = {} -- indicators filtered by unitRole
 
@@ -32,17 +32,19 @@ local filter_mt = {	__index = function(t,u)
 	return true
 end }
 
--- Reset filter of modified units
+-- Clear cached filter of modified units, called when a unit is added or updated
 local function ClearFilter(_, unit)
 	for _, filtered in next, indicators do
 		filtered[unit] = nil
 	end
+	if unit=='player' then ClearFilter(nil,'PLAYER') end
 end
 
 -- Replaces indicator:GetCurrentStatus() method defined in GridIndicator.lua
-local function GetCurrentStatus(self, unit)
+-- To detect and filter special player frame InsecureGroupHeaders code assigns PLAYER to frame.filteredUnit
+local function GetCurrentStatus(self, unit, frame)
 	if unit then
-		if self.filtered[unit] then return false end -- false instead of nil, needed by portrait status
+		if self.filtered[frame.filteredUnit or unit] then return false end -- false instead of nil, needed by portrait status
 		local statuses= self.statuses
 		for i=1,#statuses do
 			local status= statuses[i]
@@ -65,13 +67,11 @@ function indicatorPrototype:UpdateFilter()
 		else
 			self.filtered = setmetatable({source = load}, filter_mt)
 		end
-		if load.unitRole or load.unitClass then
-			if not next(indicators) then
-				Grid2.RegisterMessage( indicators, "Grid_UnitLeft", ClearFilter )
-				Grid2.RegisterMessage( indicators, "Grid_UnitUpdated", ClearFilter )
-			end
-			indicators[self] = self.filtered
+		if not next(indicators) then
+			Grid2.RegisterMessage( indicators, "Grid_UnitLeft", ClearFilter )
+			Grid2.RegisterMessage( indicators, "Grid_UnitUpdated", ClearFilter )
 		end
+		indicators[self] = self.filtered
 	elseif self.filtered then
 		self.GetCurrentStatus = indicatorPrototype.GetCurrentStatus
 		self.filtered = nil

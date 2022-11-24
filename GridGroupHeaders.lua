@@ -383,6 +383,7 @@ local function DisplayButtons(self, unitTable)
 		end
 		local unit = unitTable[i]
 		unitButton:SetAttribute("unit", unit)
+		unitButton.filteredUnit = self.filteredUnit
 		SetUnitWatch(unitButton, unitWatch)
 		if not unitWatch or UnitExists(unit) then
 			unitButton:Show()
@@ -400,6 +401,7 @@ local function DisplayButtons(self, unitTable)
 		unitButton:Hide()
 		unitButton:ClearAllPoints()
 		unitButton:SetAttribute("unit", nil)
+		unitButton.filteredUnit = nil
 		index = index + 1; unitButton = self[index]
 	end
 	-- calculate total header size
@@ -495,7 +497,7 @@ do
 end
 
 --[[ Grid2InsecureGroupCustomHeader
-unitsFilter = "target, focus, player, party1, boss1, boss2, boss3, arena1, arena2, arena3, .."
+unitsFilter = "PLAYER, player, target, focus, party1, boss1, boss2, boss3, arena1, arena2, arena3, .."
 hideEmptyUnits = true|nil
 --]]
 do
@@ -560,6 +562,7 @@ do
 		local unitsFilter = self:GetAttribute('unitsFilter')
 		if unitsFilter then
 			fillArrayTable( srtTable, strsplit(",",unitsFilter) )
+			self.filteredUnit = unitsFilter == 'player' and 'PLAYER' or nil -- hackish, to detect special PLAYER header, used in GridIndicatorLoad.lua
 		end
 	end
 

@@ -599,8 +599,9 @@ end
 do
 	local template = { type = 'custom', detachHeader = true }
 	local headers = { -- headerName, units/column, unitsFilter
+		{ 'self',   1, 'player' },
 		{ 'target', 1, 'target' },
-		{ 'focus',  1, 'focus' },
+		{ 'focus',  1, 'focus'  },
 		{ 'boss',   8, 'boss1,boss2,boss3,boss4,boss5,boss6,boss7,boss8' },
 	}
 	function Grid2Layout:AddSpecialHeaders()
@@ -626,7 +627,7 @@ function Grid2Layout:SetHeaderProperties(header, dbx, setupIndex, headerName)
 	local p = self.db.profile
 	header.dbx = dbx
 	header.headerType = dbx.type or 'player' -- player, pet, custom
-	header.headerName = headerName or header.headerType -- player, pet, target, focus, boss, custom
+	header.headerName = headerName or header.headerType -- player, pet, self, target, focus, boss, custom
 	header.wasDetached = header.isDetached
 	header.isDetached = setupIndex>1 and (dbx.detachHeader or p.detachedHeaders=='player' or p.detachedHeaders==header.headerType) or nil
 	header.groupHorizontal = GetSetupValue( header.isDetached, p.groupHorizontals[header.headerName], p.horizontal )

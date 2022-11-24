@@ -18,7 +18,7 @@ local function GetUpdate_GlowPixel(indicator)
 	local thickness = dbx.glow_thickness or 2
 	local always = not not dbx.highlightAlways
 	return function(self, parent, unit)
-		local status, state = funcStatus(self, unit)
+		local status, state = funcStatus(self, unit, parent)
 		local frame = funcFrame(self, parent)
 		local enabled = status and (always or state=="blink")
 		if enabled ~= frame.__glowEnabled then
@@ -46,7 +46,7 @@ local function GetUpdate_GlowAutoCast(indicator)
 	local particlesScale = dbx.glow_particlesScale or 1
 	local always = not not dbx.highlightAlways
 	return function(self, parent, unit)
-		local status, state = funcStatus(self, unit)
+		local status, state = funcStatus(self, unit, parent)
 		local frame = funcFrame(self, parent)
 		local enabled = status and (always or state=="blink")
 		if enabled ~= frame.__glowEnabled then
@@ -72,7 +72,7 @@ local function GetUpdate_GlowButton(indicator)
 	local frequency = dbx.glow_frequency or 0.12
 	local always = not not dbx.highlightAlways
 	return function(self, parent, unit)
-		local status, state = funcStatus(self, unit)
+		local status, state = funcStatus(self, unit, parent)
 		local frame = funcFrame(self, parent)
 		local enabled = status and (always or state=="blink")
 		if enabled ~= frame.__glowEnabled then
@@ -113,7 +113,7 @@ local function GetUpdate_Scale(indicator)
 	local funcUpdate = indicator.OnUpdate
 	local animOnEnabled = indicator.dbx.animOnEnabled
 	return function(self, parent, unit)
-		local status, state = funcStatus(self, unit)
+		local status, state = funcStatus(self, unit, parent)
 		local frame = funcFrame(self, parent)
 		local anim = frame.scaleAnim
 		if status then
@@ -148,7 +148,7 @@ local function GetUpdate_Blink(indicator)
 	local always = not not indicator.dbx.highlightAlways
 	return function(self, parent, unit)
 		if self.filtered and self.filtered[unit] then funcUpdate(self, parent, unit); return end
-		local status, state = funcStatus(self, unit)
+		local status, state = funcStatus(self, unit, parent)
 		local frame = funcFrame(self, parent)
 		local anim = frame.blinkAnim
 		if status and (always or state=="blink") then

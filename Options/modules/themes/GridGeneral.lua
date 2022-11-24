@@ -410,18 +410,23 @@ do
 		type = "group", order = 2, name = L['Pets'],
 		args = layoutAnchorOptions,
 	}
+	layoutOptions1.self  = {
+		type = "group", order = 3, name = L['Player'],
+		args = layoutAnchorOptions,
+		disabled = function() return theme.layout.specialHeaders==nil or theme.layout.specialHeaders.self==nil end
+	}
 	layoutOptions1.target = {
-	    type = "group", order = 3, name = L['Target'],
+	    type = "group", order = 4, name = L['Target'],
 		args = layoutAnchorOptions,
 		disabled = function() return theme.layout.specialHeaders==nil or theme.layout.specialHeaders.target==nil end,
 	}
 	layoutOptions1.focus  = {
-		type = "group", order = 4, name = L['Focus'],
+		type = "group", order = 5, name = L['Focus'],
 		args = layoutAnchorOptions,
 		disabled = function() return Grid2.isVanilla or theme.layout.specialHeaders==nil or theme.layout.specialHeaders.focus==nil end
 	}
 	layoutOptions1.boss  = {
-		type = "group", order = 5, name = L['Bosses'],
+		type = "group", order = 6, name = L['Bosses'],
 		args = layoutAnchorOptions,
 		disabled = function() return Grid2.isClassic or theme.layout.specialHeaders==nil or theme.layout.specialHeaders.boss==nil end
 	}

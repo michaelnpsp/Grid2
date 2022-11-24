@@ -908,7 +908,7 @@ do
 		end
 	end
 
-	local HEADER_TYPES = { player = L['Players'], pet = L['Pets'], boss = L['Bosses'], target = L['Target'], focus = L['Focus'] }
+	local HEADER_TYPES = { player = L['Players'], pet = L['Pets'], boss = L['Bosses'], target = L['Target'], focus = L['Focus'], self = L['Player'] }
 
 	local PLAYER_ROLES = { TANK = L['Tank'], HEALER = L['Healer'], DAMAGER = L['Damager'], NONE = L['None'] }
 

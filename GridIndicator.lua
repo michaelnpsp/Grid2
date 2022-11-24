@@ -45,7 +45,7 @@ function indicator:CreateFrame(type, parent, template)
 end
 
 function indicator:Update(parent, unit)
-	self:OnUpdate(parent, unit, self:GetCurrentStatus(unit) )
+	self:OnUpdate(parent, unit, self:GetCurrentStatus(unit, parent) )
 end
 
 function indicator:UpdateAllFrames()

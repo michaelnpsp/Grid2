@@ -382,8 +382,22 @@ local generalOptions = {
 		name = L["Special units headers visibility."] .. "\n"
 	},
 
-	displayTarget = {
+	displayPlayer = {
 		order = 100,
+		type = "toggle",
+		name = "|cffffd200".. L["Display Player unit"] .."|r",
+		desc = L["Enable this option to display the player unit."],
+		width = "full",
+		get = function(info)
+			return theme.layout.specialHeaders and theme.layout.specialHeaders.self~=nil
+		end,
+		set = function(info,v)
+			SetupSpecialHeader('self', v)
+		end,
+	},
+
+	displayTarget = {
+		order = 105,
 		type = "toggle",
 		name = "|cffffd200".. L["Display Target unit"] .."|r",
 		desc = L["Enable this option to display the target unit."],
