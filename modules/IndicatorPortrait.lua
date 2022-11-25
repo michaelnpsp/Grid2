@@ -123,9 +123,12 @@ local function Portrait_OnSuspend(self)
 end
 
 local function UpdatePortraits(event, unit)
-	for parent in next, Grid2:GetUnitFrames(unit) do
-		for indicator in pairs(Portraits) do
-			indicator:OnUpdate(parent, unit, event)
+	for indicator in pairs(Portraits) do
+		local filtered = indicator.filtered
+		for frame in next, Grid2:GetUnitFrames(unit) do
+			if not (filtered and filtered[frame]) then
+				indicator:OnUpdate(frame, unit, event)
+			end
 		end
 	end
 end

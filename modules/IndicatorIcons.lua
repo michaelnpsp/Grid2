@@ -105,7 +105,7 @@ end
 -- Warning: This is an overrided indicator:Update() NOT the standard indicator:OnUpdate()
 local function Icon_Update(self, parent, unit)
 	local f = parent[self.name]
-	if self.filtered and self.filtered[unit] then
+	if self.filtered and self.filtered[parent] then
 		f:Hide()
 	else
 		updates[#updates+1] = f

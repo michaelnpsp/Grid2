@@ -147,7 +147,6 @@ local function GetUpdate_Blink(indicator)
 	local funcUpdate = indicator.OnUpdate
 	local always = not not indicator.dbx.highlightAlways
 	return function(self, parent, unit)
-		if self.filtered and self.filtered[unit] then funcUpdate(self, parent, unit); return end
 		local status, state = funcStatus(self, unit, parent)
 		local frame = funcFrame(self, parent)
 		local anim = frame.blinkAnim

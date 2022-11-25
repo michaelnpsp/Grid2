@@ -8,15 +8,15 @@ local UnitClass = UnitClass
 local UnitExists = UnitExists
 local indicatorPrototype = Grid2.indicatorPrototype
 local UnitGroupRolesAssigned = Grid2.UnitGroupRolesAssigned
-local roster_types = Grid2.roster_types
 
-local indicators = {} -- indicators filtered by unitRole
+local indicators = {}
 
-local filter_mt = {	__index = function(t,u)
+local filter_mt = {	__index = function(t,f)
+	local u = f.unit
 	if UnitExists(u) then
 		local load, r = t.source
 		if load.unitType then
-			r = not load.unitType[ roster_types[u] ]
+			r = not load.unitType[ f:GetParent().headerName ]
 		end
 		if not r and load.unitRole then
 			r = not load.unitRole[ UnitGroupRolesAssigned(u) ]
@@ -25,26 +25,26 @@ local filter_mt = {	__index = function(t,u)
 			local _,class = UnitClass(u)
 			r = not load.unitClass[class]
 		end
-		t[u] = r
+		t[f] = r
 		return r
 	end
-	t[u] = true
+	t[f] = true
 	return true
 end }
 
 -- Clear cached filter of modified units, called when a unit is added or updated
 local function ClearFilter(_, unit)
-	for _, filtered in next, indicators do
-		filtered[unit] = nil
+	for frame in next, Grid2:GetUnitFrames(unit) do
+		for _, filtered in next, indicators do
+			filtered[frame] = nil
+		end
 	end
-	if unit=='player' then ClearFilter(nil,'PLAYER') end
 end
 
 -- Replaces indicator:GetCurrentStatus() method defined in GridIndicator.lua
--- To detect and filter special player frame InsecureGroupHeaders code assigns PLAYER to frame.filteredUnit
 local function GetCurrentStatus(self, unit, frame)
 	if unit then
-		if self.filtered[frame.filteredUnit or unit] then return false end -- false instead of nil, needed by portrait status
+		if self.filtered[frame] then return false end -- false instead of nil, needed by portrait status
 		local statuses= self.statuses
 		for i=1,#statuses do
 			local status= statuses[i]
