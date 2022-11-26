@@ -869,7 +869,7 @@ function Grid2Layout:SetupDetachedHeader(header, setupIndex)
 	if isDetached ~= header.wasDetached then
 		local frameBack = header.frameBack
 		header.wasDetached = isDetached
-		header:SetMovable(isDetached)
+		header:SetMovable(not not isDetached)
 		if isDetached then
 			frameBack = frameBack or CreateFrame("Frame", nil, header, BackdropTemplateMixin and "BackdropTemplate" or nil)
 			frameBack.header = header
