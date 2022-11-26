@@ -3,6 +3,7 @@
 local Grid2 = Grid2
 local wipe = wipe
 local next = next
+local select= select
 local setmetatable = setmetatable
 local UnitClass = UnitClass
 local UnitExists = UnitExists
@@ -12,24 +13,13 @@ local UnitGroupRolesAssigned = Grid2.UnitGroupRolesAssigned
 local indicators = {}
 
 local filter_mt = {	__index = function(t,f)
-	local u = f.unit
-	if UnitExists(u) then
-		local load, r = t.source
-		if load.unitType then
-			r = not load.unitType[ f:GetParent().headerName ]
-		end
-		if not r and load.unitRole then
-			r = not load.unitRole[ UnitGroupRolesAssigned(u) ]
-		end
-		if not r and load.unitClass then
-			local _,class = UnitClass(u)
-			r = not load.unitClass[class]
-		end
-		t[f] = r
-		return r
-	end
-	t[f] = true
-	return true
+	local load, u = t.source, f.unit
+	local r = ( load.unitType  and not load.unitType[ f:GetParent().headerName ]  ) or
+			  ( not (u and UnitExists(u))                                         ) or
+			  ( load.unitRole  and not load.unitRole[ UnitGroupRolesAssigned(u) ] ) or
+			  ( load.unitClass and not load.unitClass[ select(2,UnitClass(u)) ]   )
+	t[f] = r
+	return r
 end }
 
 -- Clear cached filter of modified units, called when a unit is added or updated
