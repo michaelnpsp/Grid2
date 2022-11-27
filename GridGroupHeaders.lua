@@ -495,7 +495,7 @@ do
 end
 
 --[[ Grid2InsecureGroupCustomHeader
-unitsFilter = "PLAYER, player, target, focus, party1, boss1, boss2, boss3, arena1, arena2, arena3, .."
+unitsFilter = "target, focus, player, party1, boss1, boss2, boss3, arena1, arena2, arena3, .."
 hideEmptyUnits = true|nil
 --]]
 do

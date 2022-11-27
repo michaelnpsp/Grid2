@@ -12,7 +12,7 @@ local SetSizeMethods = { HORIZONTAL = "SetWidth", VERTICAL = "SetHeight" }
 local GetSizeMethods = { HORIZONTAL = "GetWidth", VERTICAL = "GetHeight" }
 
 local function Bar_CreateHH(self, parent)
-	local bar = self:CreateFrame("StatusBar", parent)
+	local bar = self:Acquire("StatusBar", parent)
 	bar.myIndicator = self
 	bar.myValues = {}
 	bar:SetStatusBarColor(0,0,0,0)
@@ -293,7 +293,7 @@ end
 --- }}}
 
 local function Create(indicatorKey, dbx)
-	local Bar = Grid2.indicators[indicatorKey] or Grid2.indicatorPrototype:new(indicatorKey)
+	local Bar = Grid2.indicatorPrototype:new(indicatorKey)
 	Bar.dbx = dbx
 	-- Hack to caculate status index fast: statuses[priorities[status]] == status
 	Bar.sortStatuses    = function (a,b) return Bar.priorities[a] < Bar.priorities[b] end
@@ -306,8 +306,7 @@ local function Create(indicatorKey, dbx)
 	Grid2:RegisterIndicator(Bar, { "percent" })
 	EnableDelayedUpdates()
 
-	local colorKey      = indicatorKey .. "-color"
-	local BarColor      = Grid2.indicators[colorKey] or Grid2.indicatorPrototype:new(colorKey)
+	local BarColor      = Grid2.indicatorPrototype:new(indicatorKey.."-color")
 	BarColor.dbx        = dbx
 	BarColor.parentName = indicatorKey
 	BarColor.Create     = Grid2.Dummy

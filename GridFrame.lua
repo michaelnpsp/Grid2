@@ -243,7 +243,7 @@ function GridFramePrototype:Layout()
 	local indicators = Grid2:GetIndicatorsEnabled()
 	for i=1,#indicators do
 		local indicator = indicators[i]
-		if indicator:GetMainFrame(self) then
+		if indicator:GetFrame(self) then
 			indicator:Layout(self)
 		end
 	end
@@ -268,7 +268,6 @@ function GridFramePrototype:CreateIndicators()
 		end
 	end
 end
-
 --}}}
 
 --{{{ Grid2Frame

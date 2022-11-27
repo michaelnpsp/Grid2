@@ -12,6 +12,8 @@ local setmetatable = setmetatable
 local tdelete = Grid2.TableRemoveByValue
 local BackdropTemplateMixin = BackdropTemplateMixin
 
+local framePool = setmetatable( {}, {__index = function (t,k) local r = {}; t[k] = r; return r; end} )
+
 Grid2.indicators = {}
 Grid2.indicatorSorted = {}
 Grid2.indicatorEnabled = {}
@@ -32,41 +34,45 @@ function indicator:new(name)
 	return e
 end
 
-function indicator:CreateFrame(type, parent, template)
-	local f = parent[self.name]
-	if not (f and f:GetObjectType()==type and f.__template == template) then
-		f = CreateFrame(type, nil, parent, (BackdropTemplateMixin or template~="BackdropTemplate") and template or nil)
-		f.__template = template
-		parent[self.name] = f
-	end
+function indicator:Acquire(type, parent, template)
+	local f = tremove(framePool[self.dbx.type]) or CreateFrame(type, nil, parent, (BackdropTemplateMixin or template~="BackdropTemplate") and template or nil)
+	f:SetParent(parent)
 	f:Hide()
+	parent[self.name] = f
+	self.framesCreated = true
 	return f
 end
 
-function indicator:CanCreate(parent)
-	if self.parentName then return parent[self.parentName]~=nil end
-	local filtered = self.filtered
-	return not (filtered and filtered[parent]==0)
+function indicator:Release(parent)
+	local f = parent[self.name]
+	if f then
+		f:SetParent(nil)
+		f:ClearAllPoints()
+		f:Hide()
+		tinsert( framePool[self.dbx.type], f )
+		parent[self.name] = nil
+	end
 end
 
-function indicator:GetMainFrame(parent)
-	return parent[self.name]
+function indicator:ReleaseAllFrames()
+	if self.framesCreated then
+		local Release = self.Release
+		for _, frame in next, Grid2Frame.registeredFrames do
+			Release(self, frame)
+		end
+	end
 end
 
 function indicator:DisableAllFrames()
 	local Disable = self.Disable
 	if Disable then
-		local GetMainFrame = self.GetMainFrame
+		local GetFrame = self.GetFrame
 		for _, frame in next, Grid2Frame.registeredFrames do
-			if GetMainFrame(self, frame) then
+			if GetFrame(self, frame) then
 				Disable(self, frame)
 			end
 		end
 	end
-end
-
-function indicator:Update(parent, unit)
-	self:OnUpdate(parent, unit, self:GetCurrentStatus(unit, parent) )
 end
 
 function indicator:UpdateAllFrames()
@@ -74,6 +80,10 @@ function indicator:UpdateAllFrames()
 		local unit = frame.unit
 		if unit then self:Update(frame, unit) end
 	end
+end
+
+function indicator:Update(parent, unit)
+	self:OnUpdate(parent, unit, self:GetCurrentStatus(unit, parent) )
 end
 
 function indicator:UpdateDB()
@@ -143,7 +153,6 @@ function Grid2:WakeUpIndicator(indicator)
 	end
 	tinsert(self.indicatorEnabled, indicator)
 	indicator:UpdateDB()
-	indicator:WakeUpFilter()
 	indicator.suspended = nil
 	if indicator.sideKick then
 		self:WakeUpIndicator(indicator.sideKick)
@@ -169,7 +178,6 @@ function Grid2:SuspendIndicator(indicator)
 	end
 	tdelete(self.indicatorEnabled, indicator)
 	indicator:DisableAllFrames()
-	indicator:SuspendFilter()
 	indicator.suspended = true
 	if indicator.OnSuspend then
 		indicator:OnSuspend()
@@ -189,7 +197,6 @@ function Grid2:RegisterIndicator(indicator, types)
 		end
 		t[name] = indicator
 	end
-	indicator.Update = indicator.UpdateOverride or indicator.prototype.Update
 	indicator:UpdateDB()
 	indicator:UpdateFilter()
 end
@@ -199,7 +206,7 @@ function Grid2:UnregisterIndicator(indicator)
 	while #statuses>0 do
 		indicator:UnregisterStatus(statuses[#statuses])
 	end
-	indicator:DisableAllFrames()
+	indicator:ReleaseAllFrames()
 	local name = indicator.name
 	self.indicators[name] = nil
 	for type, t in pairs(self.indicatorTypes) do

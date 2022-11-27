@@ -5,7 +5,6 @@ Created by Grid2 original authors, modified by Michael
 Grid2 = LibStub("AceAddon-3.0"):NewAddon("Grid2", "AceEvent-3.0", "AceConsole-3.0")
 
 Grid2.Dummy = function() end
-Grid2.DummyTrue = function() return true end
 Grid2.GetSpecialization = GetSpecialization or GetActiveTalentGroup or Grid2.Dummy
 Grid2.GetNumSpecializations = GetNumSpecializations or function() return 2 end
 Grid2.UnitGroupRolesAssigned = UnitGroupRolesAssigned or function() return 'NONE' end
@@ -225,7 +224,6 @@ end
 
 function Grid2:PLAYER_ROLES_ASSIGNED()
 	self:RefreshAurasFilter('unitRole')
-	self:RefreshIndicatorsFilter('unitRole')
 	if not self:ReloadTheme() then
 		self:SendMessage("Grid_PlayerRolesAssigned")
 	end

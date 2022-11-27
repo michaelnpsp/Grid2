@@ -6,6 +6,10 @@ local Grid2 = Grid2
 
 local colorTable = {}
 
+local function BorderGlow_GetFrame(parent)
+	return parent
+end
+
 local function BorderGlow_OnUpdate(self, parent, unit, status)
 	if status then
 		local color = self.color
@@ -47,11 +51,11 @@ end
 
 
 local function Create(indicatorKey, dbx)
-	local indicator = Grid2.indicators[indicatorKey] or Grid2.indicatorPrototype:new(indicatorKey)
+	local indicator = Grid2.indicatorPrototype:new(indicatorKey)
 	indicator.dbx = dbx
 	indicator.Create = Grid2.Dummy
 	indicator.Layout = Grid2.Dummy
-	indicator.GetMainFrame = Grid2.DummyTrue
+	indicator.GetFrame = BorderGlow_GetFrame
 	indicator.OnUpdate = BorderGlow_OnUpdate
 	indicator.Disable = BorderGlow_Disable
 	indicator.UpdateDB = BorderGlow_UpdateDB

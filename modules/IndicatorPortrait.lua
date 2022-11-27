@@ -9,7 +9,7 @@ local UnitIsConnected = UnitIsConnected
 local Portraits = {}
 
 local function Portrait_Create(self, parent)
-	local frame = self:CreateFrame("Frame", parent)
+	local frame = self:Acquire("Frame", parent)
 	if self.dbx.portraitType == '3D' then
 		frame.portraitModel = frame.portraitModel or CreateFrame("PlayerModel" , nil, frame)
 	else
@@ -21,9 +21,9 @@ local function Portrait_Create(self, parent)
 	end
 end
 
-local function Portrait_OnUpdateClass(self, parent, unit, status)
+local function Portrait_OnUpdateClass(self, parent, unit)
 	local Portrait = parent[self.name]
-	if status~=false then
+	if Portrait then
 		local class = select(2, UnitClass(unit))
 		if class then
 			Portrait.portraitTexture:SetTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes")
@@ -32,45 +32,42 @@ local function Portrait_OnUpdateClass(self, parent, unit, status)
 			Portrait.portraitTexture:SetTexture('')
 		end
 		Portrait:Show()
-	else
-		Portrait:Hide()
 	end
 end
 
 local function Portrait_OnUpdate2D(self, parent, unit, status)
 	local Portrait = parent[self.name]
-	if status~=false then
+	if Portrait then
 		Portrait.portraitTexture:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 		SetPortraitTexture(Portrait.portraitTexture, unit)
 		Portrait:Show()
-	else
-		Portrait:Hide()
 	end
 end
 
 local function Portrait_OnUpdate3D(self, parent, unit, event)
 	local Root = parent[self.name]
-	if event==false then Root:Hide(); return end
-	local Portrait = Root.portraitModel
-	if not UnitIsVisible(unit) or not UnitIsConnected(unit) then
-		Portrait:ClearModel()
-		Portrait:SetCamDistanceScale(0.25)
-		Portrait:SetPortraitZoom(0)
-		Portrait:SetPosition(0, 0, 0.25)
-		Portrait:SetModel([[Interface\Buttons\TalkToMeQuestionMark.m2]])
-		Portrait.guid = nil
-	else
-		local guid = UnitGUID(unit)
-		if guid ~= Portrait.guid or event == 'UNIT_MODEL_CHANGED' then
-			Portrait:SetCamDistanceScale(1)
-			Portrait:SetPortraitZoom(1)
-			Portrait:SetPosition(0, 0, 0)
+	if Root then
+		local Portrait = Root.portraitModel
+		if not UnitIsVisible(unit) or not UnitIsConnected(unit) then
 			Portrait:ClearModel()
-			Portrait:SetUnit(unit)
-			Portrait.guid = guid
+			Portrait:SetCamDistanceScale(0.25)
+			Portrait:SetPortraitZoom(0)
+			Portrait:SetPosition(0, 0, 0.25)
+			Portrait:SetModel([[Interface\Buttons\TalkToMeQuestionMark.m2]])
+			Portrait.guid = nil
+		else
+			local guid = UnitGUID(unit)
+			if guid ~= Portrait.guid or event == 'UNIT_MODEL_CHANGED' then
+				Portrait:SetCamDistanceScale(1)
+				Portrait:SetPortraitZoom(1)
+				Portrait:SetPosition(0, 0, 0)
+				Portrait:ClearModel()
+				Portrait:SetUnit(unit)
+				Portrait.guid = guid
+			end
 		end
+		Root:Show()
 	end
-	Root:Show()
 end
 
 local function Portrait_Layout(self, parent)
@@ -145,7 +142,7 @@ local function Portrait_UpdateDB(self)
 end
 
 local function Create(indicatorKey, dbx)
-	local indicator = Grid2.indicators[indicatorKey] or Grid2.indicatorPrototype:new(indicatorKey)
+	local indicator = Grid2.indicatorPrototype:new(indicatorKey)
 	indicator.dbx = dbx
 	indicator.Create = Portrait_Create
 	indicator.Layout = Portrait_Layout

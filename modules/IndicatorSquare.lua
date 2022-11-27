@@ -3,11 +3,7 @@
 local Grid2 = Grid2
 
 local function Square_Create(self, parent)
-	self:CreateFrame("Frame", parent, "BackdropTemplate")
-end
-
-local function Square_GetBlinkFrame(self, parent)
-	return parent[self.name]
+	self:Acquire("Frame", parent, "BackdropTemplate")
 end
 
 local function Square_OnUpdate(self, parent, unit, status)
@@ -88,14 +84,14 @@ end
 
 
 local function Create(indicatorKey, dbx)
-	local indicator = Grid2.indicators[indicatorKey] or Grid2.indicatorPrototype:new(indicatorKey)
+	local indicator = Grid2.indicatorPrototype:new(indicatorKey)
 	indicator.dbx = dbx
 	indicator.Create = Square_Create
-	indicator.GetBlinkFrame = Square_GetBlinkFrame
 	indicator.Layout = Square_Layout
 	indicator.OnUpdate = Square_OnUpdate
 	indicator.Disable = Square_Disable
 	indicator.UpdateDB = Square_UpdateDB
+	indicator.GetBlinkFrame = indicator.GetFrame
 	Grid2:RegisterIndicator(indicator, { "color" })
 	return indicator
 end

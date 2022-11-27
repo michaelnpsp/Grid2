@@ -4,16 +4,12 @@ local Grid2 = Grid2
 local unpack = unpack
 
 local function Shape_Create(self, parent)
-	local f = self:CreateFrame("Frame", parent)
+	local f = self:Acquire("Frame", parent)
 	local Icon = f.Icon or f:CreateTexture(nil, "ARTWORK")
 	Icon:SetTexture("Interface\\Addons\\Grid2\\media\\shapes")
 	Icon:SetAllPoints()
 	Icon:Show()
 	f.Icon = Icon
-end
-
-local function Shape_GetBlinkFrame(self, parent)
-	return parent[self.name]
 end
 
 local function Shape_OnUpdate(self, parent, unit, status)
@@ -83,14 +79,14 @@ local function Shape_UpdateDB(self)
 end
 
 local function CreateShape(indicatorKey, dbx)
-	local indicator = Grid2.indicators[indicatorKey] or Grid2.indicatorPrototype:new(indicatorKey)
+	local indicator = Grid2.indicatorPrototype:new(indicatorKey)
 	indicator.dbx 			= dbx
 	indicator.Create        = Shape_Create
-	indicator.GetBlinkFrame = Shape_GetBlinkFrame
 	indicator.Layout        = Shape_Layout
 	indicator.OnUpdate      = Shape_OnUpdate
 	indicator.Disable       = Shape_Disable
 	indicator.UpdateDB      = Shape_UpdateDB
+	indicator.GetBlinkFrame = indicator.GetFrame
 	Grid2:RegisterIndicator(indicator, { "color" })
 	return indicator
 end

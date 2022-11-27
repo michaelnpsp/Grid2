@@ -11,7 +11,7 @@ local AlignPoints = Grid2.AlignPoints
 local defaultBackColor = { r=0, g=0, b=0, a=1 }
 
 local function Bar_CreateHH(self, parent)
-	local bar = self:CreateFrame("StatusBar", parent)
+	local bar = self:Acquire("StatusBar", parent)
 	bar.indicator = self
 	bar:SetStatusBarColor(0,0,0,0)
 	bar:SetMinMaxValues(0, 1)
@@ -19,6 +19,10 @@ local function Bar_CreateHH(self, parent)
 	if self.backColor then
 		bar.bgTex = bar.bgTex or bar:CreateTexture()
 	end
+end
+
+function Bar_CanCreateChild(self, parent)
+	return parent[self.parentName]~=nil
 end
 
 local function Bar_Layout(self, parent)
@@ -68,10 +72,6 @@ local function Bar_Layout(self, parent)
 		end
 	end
 	Bar:Show()
-end
-
-local function Bar_GetBlinkFrame(self, parent)
-	return parent[self.name]
 end
 
 local function Bar_SetValue(self, parent, value)
@@ -231,12 +231,14 @@ local function Bar_UpdateDB(self)
 		local barParent = Grid2.indicators[dbx.anchorTo]
 		barParent.childName = self.name
 		barParent.SetValue  = Bar_SetValueParent
-		self.parentName     = dbx.anchorTo
 		self.SetValue       = Bar_SetValueChild
+		self.CanCreate      = Bar_CanCreateChild
+		self.parentName     = dbx.anchorTo
 		self.reverseFill    = barParent.reverseFill
 		self.orientation    = barParent.orientation
 	else
 		self.SetValue = Bar_SetValue
+		self.CanCreate = self.prototype.CanCreate
 		self.parentName = nil
 	end
 end
@@ -278,19 +280,18 @@ local function BarColor_UpdateDB(self)
 end
 
 local function Create(indicatorKey, dbx)
-	local Bar = Grid2.indicators[indicatorKey] or Grid2.indicatorPrototype:new(indicatorKey)
+	local Bar = Grid2.indicatorPrototype:new(indicatorKey)
 	Bar.dbx            = dbx
 	Bar.Create         = Bar_CreateHH
-	Bar.GetBlinkFrame  = Bar_GetBlinkFrame
 	Bar.OnUpdate       = Bar_OnUpdate
 	Bar.SetOrientation = Bar_SetOrientation
 	Bar.Disable        = Bar_Disable
 	Bar.Layout         = Bar_Layout
 	Bar.UpdateDB       = Bar_UpdateDB
+	Bar.GetBlinkFrame  = Bar.GetFrame
 	Grid2:RegisterIndicator(Bar, { "percent" } )
 
-	local colorKey      = indicatorKey .. "-color"
-	local BarColor      = Grid2.indicators[colorKey] or Grid2.indicatorPrototype:new(colorKey)
+	local BarColor      = Grid2.indicatorPrototype:new(indicatorKey.."-color")
 	BarColor.dbx        = dbx
 	BarColor.parentName = indicatorKey
 	BarColor.Create     = Grid2.Dummy

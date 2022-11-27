@@ -129,7 +129,7 @@ do
 					width = 1.7,
 					name =  Grid2Options.LocalizeStatus(status),
 					desc = L["Select statuses to display with the indicator"],
-					get = Grid2.DummyTrue,
+					get = function() return true end,
 					set = SetIndicatorStatusCurrent,
 					arg = arg,
 				}
@@ -907,7 +907,21 @@ do
 
 	local HEADER_TYPES = { player = L['Players'], pet = L['Pets'], boss = L['Bosses'], target = L['Target'], focus = L['Focus'], self = L['Player'] }
 
-	local PLAYER_ROLES = { TANK = L['Tank'], HEALER = L['Healer'], DAMAGER = L['Damager'], NONE = L['None'] }
+	local function RefreshIndicator(indicator)
+		Grid2Options:UpdateIndicatorDB(indicator)
+		Grid2Frame:WithAllFrames(function (f)
+			local new = not not indicator:CanCreate(f)
+			local old = not not indicator:GetFrame(f)
+			if new~=old then
+				if new then
+					indicator:Create(f); indicator:Layout(f)
+				else
+					indicator:Release(f)
+				end
+			end
+		end)
+		Grid2Frame:UpdateIndicators()
+	end
 
 	local function SetFilterOptions( indicator, options, order, key, values, defValue, name, desc, isUnitFilter, isSingle )
 		local dbx    = indicator.dbx
@@ -930,9 +944,9 @@ do
 					filter = { [defValue] = true }
 					dbx.load[key] = filter
 				end
-				Grid2Options:RefreshIndicator(indicator)
+				RefreshIndicator(indicator)
 			end,
-			disabled = function() return dbx.load and dbx.load.disabled end,
+			disabled = function() return indicator.parentName~=nil end,
 		}
 		options[key..'1'] = {
 			type = "select",
@@ -942,9 +956,9 @@ do
 			get = function() return filter and next(filter) end,
 			set = function(_,v)
 				wipe(filter)[v] = true
-				Grid2Options:RefreshIndicator(indicator)
+				RefreshIndicator(indicator)
 			end,
-			disabled = function() return not filter or dbx.load.disabled end,
+			disabled = function() return not filter or indicator.parentName~=nil end,
 			hidden   = function() return multi end,
 			values   = values,
 		}
@@ -955,10 +969,10 @@ do
 			get = function(info, value) return filter[value] end,
 			set = function(info, value)
 				filter[value] = (not filter[value]) or nil
-				Grid2Options:RefreshIndicator(indicator)
+				RefreshIndicator(indicator)
 			end,
 			hidden = function() return not multi end,
-			disabled = function() return dbx.load and dbx.load.disabled end,
+			disabled = function() return not filter or indicator.parentName~=nil end,
 			values = values,
 		}
 		options[key.."3"] = {
@@ -970,27 +984,18 @@ do
 
 	function Grid2Options:MakeIndicatorLoadOptions(indicator, options)
 		SetFilterOptions( indicator, options, 20,
+			'playerClass',
+			PLAYER_CLASSES,
+			Grid2.playerClass,
+			L["Unit Class"],
+			L["Load the indicator only if your toon belong to the specified class."]
+		)
+		SetFilterOptions( indicator, options, 30,
 			'unitType',
 			HEADER_TYPES,
 			'player',
 			L["Unit Type"],
 			L["Load the indicator only for the specified unit types."],
-			true
-		)
-		SetFilterOptions( indicator, options, 30,
-			'unitClass',
-			PLAYER_CLASSES,
-			select(2,UnitClass('player')),
-			L["Unit Class"],
-			L["Load the indicator only if the unit belong to the specified class."],
-			true
-		)
-		SetFilterOptions( indicator, options, 40,
-			'unitRole',
-			PLAYER_ROLES,
-			'NONE',
-			L["Unit Role"],
-			L["Load the indicator only if the unit has the specified role."],
 			true
 		)
 		return options

@@ -105,7 +105,7 @@ local UpdateDS = _UpdateDS
 
 --{{ Indicator methods
 local function Text_Create(self, parent)
-	local f = self:CreateFrame("Frame", parent)
+	local f = self:Acquire("Frame", parent)
 	f:SetAllPoints()
 	if f.SetBackdrop then f:SetBackdrop(nil) end
 	local Text = f.Text or f:CreateFontString(nil, "OVERLAY")
@@ -131,10 +131,6 @@ local function Text_Layout(self, parent)
 	Text:SetShadowColor(0,0,0, self.shadowAlpha)
 	Text:Show()
 	Frame:Show()
-end
-
-local function Text_GetBlinkFrame(self, parent)
-	return parent[self.name]
 end
 
 local function Text_OnUpdateDE(self, parent, unit, status)
@@ -308,17 +304,16 @@ local function TextColor_OnUpdate(self, parent, unit, status)
 end
 
 local function Create(indicatorKey, dbx)
-	local indicator = Grid2.indicators[indicatorKey] or Grid2.indicatorPrototype:new(indicatorKey)
+	local indicator = Grid2.indicatorPrototype:new(indicatorKey)
 	indicator.dbx = dbx
 	indicator.Create = Text_Create
-	indicator.GetBlinkFrame = Text_GetBlinkFrame
 	indicator.Layout = Text_Layout
 	indicator.Disable = Text_Disable
 	indicator.UpdateDB = Text_UpdateDB
+	indicator.GetBlinkFrame = indicator.GetFrame
 	Grid2:RegisterIndicator(indicator, { "text" })
 
-	local colorKey = indicatorKey .. "-color"
-	local TextColor = Grid2.indicators[colorKey] or Grid2.indicatorPrototype:new(colorKey)
+	local TextColor = Grid2.indicatorPrototype:new(indicatorKey.."-color")
 	TextColor.dbx = dbx
 	TextColor.parentName = indicatorKey
 	TextColor.Create = Grid2.Dummy

@@ -5,7 +5,7 @@ local GetTime = GetTime
 local fmt = string.format
 
 local function Icon_Create(self, parent)
-	local f = self:CreateFrame("Frame", parent, "BackdropTemplate")
+	local f = self:Acquire("Frame", parent, "BackdropTemplate")
 	local Icon = f.Icon or f:CreateTexture(nil, "ARTWORK")
 	f.Icon = Icon
 	Icon:SetTexCoord(0.05, 0.95, 0.05, 0.95)
@@ -49,10 +49,6 @@ local function Icon_Create(self, parent)
 		CooldownText:Hide()
 		f.CooldownText = CooldownText
 	end
-end
-
-local function Icon_GetBlinkFrame(self, parent)
-	return parent[self.name]
 end
 
 local function Icon_OnUpdate(self, parent, unit, status)
@@ -178,14 +174,14 @@ end
 
 
 local function CreateIcon(indicatorKey, dbx)
-	local indicator = Grid2.indicators[indicatorKey] or Grid2.indicatorPrototype:new(indicatorKey)
+	local indicator = Grid2.indicatorPrototype:new(indicatorKey)
 	indicator.dbx 			= dbx
 	indicator.Create        = Icon_Create
-	indicator.GetBlinkFrame = Icon_GetBlinkFrame
 	indicator.Layout        = Icon_Layout
 	indicator.OnUpdate      = Icon_OnUpdate
 	indicator.Disable       = Icon_Disable
 	indicator.UpdateDB      = Icon_UpdateDB
+	indicator.GetBlinkFrame = indicator.GetFrame
 	Grid2:RegisterIndicator(indicator, { "icon" })
 	return indicator
 end

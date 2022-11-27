@@ -8,7 +8,7 @@ local ipairs = ipairs
 local format = string.format
 
 local function Icon_Create(self, parent)
-	local f = self:CreateFrame("Frame", parent)
+	local f = self:Acquire("Frame", parent)
 	f.myIndicator = self
 	f.myFrame = parent
 	f.auras = f.auras or {}
@@ -106,11 +106,7 @@ end
 local function Icon_Update(self, parent, unit)
 	local f = parent[self.name]
 	if f then
-		if self.filtered and self.filtered[parent] then
-			f:Hide()
-		else
-			updates[#updates+1] = f
-		end
+		updates[#updates+1] = f
 	end
 end
 
@@ -245,7 +241,7 @@ local function Icon_UpdateDB(self)
 end
 
 Grid2.setupFunc["icons"] = function(indicatorKey, dbx)
-	local indicator = Grid2.indicators[indicatorKey] or Grid2.indicatorPrototype:new(indicatorKey)
+	local indicator = Grid2.indicatorPrototype:new(indicatorKey)
 	indicator.dbx       = dbx
 	indicator.Create    = Icon_Create
 	indicator.Layout    = Icon_Layout
