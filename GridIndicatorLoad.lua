@@ -10,16 +10,15 @@ local UnitExists = UnitExists
 local indicatorPrototype = Grid2.indicatorPrototype
 local UnitGroupRolesAssigned = Grid2.UnitGroupRolesAssigned
 
-local indicators = {}
+local indicators = {} -- only for unitRole/unitClass filters
 
 local filter_mt = {	__index = function(t,f)
 	local load, u = t.source, f.unit
 	if load.unitType  and not load.unitType[ f:GetParent().headerName ] then
 		t[f] = 0
 		return 0
-	elseif u then
-		local r = ( not UnitExists(u) ) or
-		          ( load.unitRole  and not load.unitRole[ UnitGroupRolesAssigned(u) ] ) or
+	elseif u and UnitExists(u) then
+		local r = ( load.unitRole  and not load.unitRole[ UnitGroupRolesAssigned(u) ] ) or
 		          ( load.unitClass and not load.unitClass[ select(2,UnitClass(u)) ]   )
 		t[f] = r
 		return r
@@ -51,22 +50,24 @@ local function GetCurrentStatus(self, unit, frame)
 end
 
 local function MakeUpdateFunction(indicator)
-	local funcStatus = indicator.GetCurrentStatus
-	local funcFrame  = indicator.GetMainFrame
-	local funcUpdate = indicator.OnUpdate
+	local GetFrame = indicator.GetMainFrame
+	local Update   = indicator.OnUpdate
 	return function(self, parent, unit)
-		if funcFrame(self, parent) then
-			funcUpdate(self, parent, unit, (funcStatus(self, unit, parent)) )
+		if GetFrame(self, parent) then
+			Update(self, parent, unit, GetCurrentStatus(self, unit, parent) )
 		end
 	end
 end
 
 local function RegisterMessages(self)
-	if not next(indicators) then
-		Grid2.RegisterMessage( indicators, "Grid_UnitLeft", ClearFilter )
-		Grid2.RegisterMessage( indicators, "Grid_UnitUpdated", ClearFilter )
+	local filtered = self.filtered
+	if filtered and (filtered.source.unitRole or filtered.source.unitClass) then
+		if not next(indicators) then
+			Grid2.RegisterMessage( indicators, "Grid_UnitLeft", ClearFilter )
+			Grid2.RegisterMessage( indicators, "Grid_UnitUpdated", ClearFilter )
+		end
+		indicators[self] = filtered
 	end
-	indicators[self] = self.filtered
 end
 
 local function UnregisterMessages(self)
@@ -100,14 +101,12 @@ end
 
 -- Called from Grid2:WakeUpIndicator(indicator) in GridIndicator.lua
 function indicatorPrototype:WakeUpFilter()
-	if self.filtered then
-		RegisterMessages(self)
-	end
+	RegisterMessages(self)
 end
 
 -- Called from Grid2:SuspendIndicator(indicator) in GridIndicator.lua
 function indicatorPrototype:SuspendFilter()
-	if self.filtered then
+	if indicators[self] then
 		local source = self.filtered.source
 		wipe(self.filtered).source = source
 		UnregisterMessages(self)

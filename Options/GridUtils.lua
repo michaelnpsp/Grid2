@@ -453,6 +453,12 @@ function Grid2Options:RefreshIndicator(indicator, method)
 					indicator:Layout(f)
 				end
 			end)
+		elseif method == 'Layout' then
+			Grid2Frame:WithAllFrames(function (f)
+				if indicator:GetMainFrame(f) then
+					indicator:Layout(f)
+				end
+			end)
 		elseif method ~= 'Update' then
 			Grid2Frame:WithAllFrames(indicator, method)
 		end
