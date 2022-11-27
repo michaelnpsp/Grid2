@@ -129,7 +129,7 @@ do
 					width = 1.7,
 					name =  Grid2Options.LocalizeStatus(status),
 					desc = L["Select statuses to display with the indicator"],
-					get = function() return true end,
+					get = Grid2.DummyTrue,
 					set = SetIndicatorStatusCurrent,
 					arg = arg,
 				}
@@ -295,10 +295,7 @@ do
 		RegisterIndicatorStatusesFromDatabase(newIndicator)
 		RegisterIndicatorStatusesFromDatabase(newIndicator.sideKick)
 		-- Recreate indicators in frame units
-		Grid2Frame:WithAllFrames(function (f)
-			newIndicator:Create(f)
-			newIndicator:Layout(f)
-		end)
+		Grid2Options:CreateIndicatorFrames(newIndicator)
 		-- Delete or Create associated text-color indicator in database
 		if oldType=="text" then
 			Grid2:DbSetIndicator(colorKey, nil)

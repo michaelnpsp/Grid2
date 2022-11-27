@@ -5,6 +5,7 @@ local enabledAlpha = 0.5
 
 Alpha.Create = Grid2.Dummy
 Alpha.Layout = Grid2.Dummy
+Alpha.GetMainFrame = Grid2.DummyTrue
 
 -- standard update, opacity value is provided by the active status
 local function Alpha_OnUpdate1(self, parent, unit, status)

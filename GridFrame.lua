@@ -242,7 +242,10 @@ function GridFramePrototype:Layout()
 	-- Adjust indicators position to the new size
 	local indicators = Grid2:GetIndicatorsEnabled()
 	for i=1,#indicators do
-		indicators[i]:Layout(self)
+		local indicator = indicators[i]
+		if indicator:GetMainFrame(self) then
+			indicator:Layout(self)
+		end
 	end
 end
 
@@ -259,7 +262,10 @@ end
 function GridFramePrototype:CreateIndicators()
 	local indicators = Grid2:GetIndicatorsSorted()
 	for i=1,#indicators do
-		indicators[i]:Create(self)
+		local indicator = indicators[i]
+		if indicator:CanCreate(self) then
+			indicator:Create(self)
+		end
 	end
 end
 

@@ -6,6 +6,7 @@ local cr, cg, cb, ca = 0, 0, 0, 0
 
 Border.Create = Grid2.Dummy
 Border.Layout = Grid2.Dummy
+Border.GetMainFrame = Grid2.DummyTrue
 
 function Border:OnUpdate(parent, unit, status)
 	if status then

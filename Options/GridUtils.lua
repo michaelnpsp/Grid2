@@ -446,14 +446,28 @@ function Grid2Options:RefreshIndicator(indicator, method)
 	self:UpdateIndicatorDB(indicator)
 	if method then
 		if method == "Create" then
-			Grid2Frame:WithAllFrames(indicator, "Disable")
-			Grid2Frame:WithAllFrames(indicator, "Create")
-			Grid2Frame:WithAllFrames(indicator, 'Layout')
+			Grid2Frame:WithAllFrames(function (f)
+				if indicator:GetMainFrame(f) then
+					indicator:Disable(f)
+					indicator:Create(f)
+					indicator:Layout(f)
+				end
+			end)
 		elseif method ~= 'Update' then
 			Grid2Frame:WithAllFrames(indicator, method)
 		end
 	end
 	Grid2Frame:UpdateIndicators()
+end
+
+-- Create or recreate indicator
+function Grid2Options:CreateIndicatorFrames(indicator)
+	Grid2Frame:WithAllFrames(function (f)
+		if indicator:CanCreate(f) or indicator:GetMainFrame(f) then
+			indicator:Create(f)
+			indicator:Layout(f)
+		end
+	end)
 end
 
 -- Update & Layout all enabled indicators of all frames

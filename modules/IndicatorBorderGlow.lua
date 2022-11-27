@@ -51,6 +51,7 @@ local function Create(indicatorKey, dbx)
 	indicator.dbx = dbx
 	indicator.Create = Grid2.Dummy
 	indicator.Layout = Grid2.Dummy
+	indicator.GetMainFrame = Grid2.DummyTrue
 	indicator.OnUpdate = BorderGlow_OnUpdate
 	indicator.Disable = BorderGlow_Disable
 	indicator.UpdateDB = BorderGlow_UpdateDB

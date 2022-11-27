@@ -88,10 +88,13 @@ local function Bar_SetValueParent(self, parent, value)
 end
 
 local function Bar_SetValueChild(self, parent, value)
-	local barChild = parent[self.name]
-	local parentValue = parent[self.parentName]:GetValue()
-	barChild:SetValue(value+parentValue>1 and 1-parentValue or value)
-	barChild.realValue = value
+	local parentIndicator = parent[self.parentName]
+	if parentIndicator then
+		local parentValue = parentIndicator:GetValue()
+		local barChild = parent[self.name]
+		barChild:SetValue(value+parentValue>1 and 1-parentValue or value)
+		barChild.realValue = value
+	end
 end
 
 --{{{ Bar OnUpdate
@@ -239,34 +242,39 @@ local function Bar_UpdateDB(self)
 end
 
 local function BarColor_OnUpdate(self, parent, unit, status)
-	if status then
-		self:SetBarColor(parent, status:GetColor(unit))
-	else
-		self:SetBarColor(parent, 0, 0, 0, 0)
+	local bar = parent[self.parentName]
+	if bar then
+		if status then
+			local r, g, b, a = status:GetColor(unit)
+			bar:SetStatusBarColor(r, g, b, min(self.opacity, a or 1) )
+		else
+			bar:SetStatusBarColor(0,0,0,0)
+		end
 	end
 end
 
-local function BarColor_SetBarColor(self, parent, r, g, b, a)
-	parent[self.parentName]:SetStatusBarColor(r, g, b, min(self.opacity,a or 1) )
-end
-
-local function BarColor_SetBarColorInverted(self, parent, r, g, b, a)
-	local bar   = parent[self.parentName]
-	local color = self.backColor
-	bar:SetStatusBarColor(color.r, color.g, color.b, min(self.opacity, 0.8))
- 	if not self.dbx.anchorTo then
-		bar.bgTex:SetVertexColor(r, g, b, (a or 1)*color.a)
+local function BarColor_OnUpdateInverted(self, parent, unit, status)
+	local bar = parent[self.parentName]
+	if bar then
+		local r, g, b, a
+		if status then
+			r, g, b, a = status:GetColor(unit)
+		else
+			r, g, b, a = 0, 0, 0, 0
+		end
+		local c = self.backColor
+		bar:SetStatusBarColor(c.r, c.g, c.b, min(self.opacity, 0.8))
+		if not self.dbx.anchorTo then
+			bar.bgTex:SetVertexColor(r, g, b, (a or 1)*c.a)
+		end
 	end
 end
 
 local function BarColor_UpdateDB(self)
-	if self.dbx.invertColor then
-		self.backColor   = self.dbx.backColor or defaultBackColor
-		self.SetBarColor = BarColor_SetBarColorInverted
-	else
-		self.SetBarColor = BarColor_SetBarColor
-	end
-	self.opacity = self.dbx.opacity or 1
+	local dbx = self.dbx
+	self.OnUpdate  = dbx.invertColor and BarColor_OnUpdateInverted or BarColor_OnUpdate
+	self.backColor = dbx.backColor or defaultBackColor
+	self.opacity   = dbx.opacity or 1
 end
 
 local function Create(indicatorKey, dbx)

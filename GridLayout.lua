@@ -57,7 +57,10 @@ local GridLayoutHeaderClass = {
 	end,
 	template = function(self, dbx, insecure)
 		if dbx.type=='custom' then
-			return 'Grid2InsecureGroupCustomHeaderTemplate'
+			return  (dbx.unitsFilter=='player' and 'Grid2InsecureGroupPlayerHeaderTemplate' ) or
+				    (dbx.unitsFilter=='target' and 'Grid2InsecureGroupTargetHeaderTemplate' ) or
+				    (dbx.unitsFilter=='focus'  and 'Grid2InsecureGroupFocusHeaderTemplate'  ) or
+					'Grid2InsecureGroupCustomHeaderTemplate'
 		elseif insecure or (dbx.nameList and (dbx.roleFilter or dbx.groupFilter)) then
 			return dbx.type=='pet' and 'Grid2InsecureGroupPetHeaderTemplate' or 'Grid2InsecureGroupHeaderTemplate'
 		else

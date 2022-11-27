@@ -20,16 +20,18 @@ local function GetUpdate_GlowPixel(indicator)
 	return function(self, parent, unit)
 		local status, state = funcStatus(self, unit, parent)
 		local frame = funcFrame(self, parent)
-		local enabled = status and (always or state=="blink")
-		if enabled ~= frame.__glowEnabled then
-			frame.__glowEnabled = enabled
-			if enabled then
-				funcStart( frame, color, linesCount, frequency, nil, thickness, 0, 0, false )
-			else
-				funcStop( frame )
+		if frame then
+			local enabled = status and (always or state=="blink")
+			if enabled ~= frame.__glowEnabled then
+				frame.__glowEnabled = enabled
+				if enabled then
+					funcStart( frame, color, linesCount, frequency, nil, thickness, 0, 0, false )
+				else
+					funcStop( frame )
+				end
 			end
+			funcUpdate(self, parent, unit, status)
 		end
-		funcUpdate(self, parent, unit, status)
 	end
 end
 
@@ -48,16 +50,18 @@ local function GetUpdate_GlowAutoCast(indicator)
 	return function(self, parent, unit)
 		local status, state = funcStatus(self, unit, parent)
 		local frame = funcFrame(self, parent)
-		local enabled = status and (always or state=="blink")
-		if enabled ~= frame.__glowEnabled then
-			frame.__glowEnabled = enabled
-			if enabled then
-				funcStart( frame, color, particlesCount, frequency, particlesScale, 0 , 0 )
-			else
-				funcStop( frame )
+		if frame then
+			local enabled = status and (always or state=="blink")
+			if enabled ~= frame.__glowEnabled then
+				frame.__glowEnabled = enabled
+				if enabled then
+					funcStart( frame, color, particlesCount, frequency, particlesScale, 0 , 0 )
+				else
+					funcStop( frame )
+				end
 			end
+			funcUpdate(self, parent, unit, status)
 		end
-		funcUpdate(self, parent, unit, status)
 	end
 end
 
@@ -74,16 +78,18 @@ local function GetUpdate_GlowButton(indicator)
 	return function(self, parent, unit)
 		local status, state = funcStatus(self, unit, parent)
 		local frame = funcFrame(self, parent)
-		local enabled = status and (always or state=="blink")
-		if enabled ~= frame.__glowEnabled then
-			frame.__glowEnabled = enabled
-			if enabled then
-				funcStart( frame, color, frequency )
-			else
-				funcStop( frame )
+		if frame then
+			local enabled = status and (always or state=="blink")
+			if enabled ~= frame.__glowEnabled then
+				frame.__glowEnabled = enabled
+				if enabled then
+					funcStart( frame, color, frequency )
+				else
+					funcStop( frame )
+				end
 			end
+			funcUpdate(self, parent, unit, status)
 		end
-		funcUpdate(self, parent, unit, status)
 	end
 end
 
@@ -115,15 +121,17 @@ local function GetUpdate_Scale(indicator)
 	return function(self, parent, unit)
 		local status, state = funcStatus(self, unit, parent)
 		local frame = funcFrame(self, parent)
-		local anim = frame.scaleAnim
-		if status then
-			if not (anim and anim:IsPlaying()) and not (animOnEnabled and frame:IsVisible()) then
-				(anim or CreateScaleAnimation(frame, self.dbx)):Play()
+		if frame then
+			local anim = frame.scaleAnim
+			if status then
+				if not (anim and anim:IsPlaying()) and not (animOnEnabled and frame:IsVisible()) then
+					(anim or CreateScaleAnimation(frame, self.dbx)):Play()
+				end
+			elseif anim then
+				anim:Stop()
 			end
-		elseif anim then
-			anim:Stop()
+			funcUpdate(self, parent, unit, status)
 		end
-		funcUpdate(self, parent, unit, status)
 	end
 end
 
@@ -149,13 +157,15 @@ local function GetUpdate_Blink(indicator)
 	return function(self, parent, unit)
 		local status, state = funcStatus(self, unit, parent)
 		local frame = funcFrame(self, parent)
-		local anim = frame.blinkAnim
-		if status and (always or state=="blink") then
-			(anim or CreateBlinkAnimation(frame,self.dbx)):Play()
-		elseif anim then
-			anim:Stop()
+		if frame then
+			local anim = frame.blinkAnim
+			if status and (always or state=="blink") then
+				(anim or CreateBlinkAnimation(frame,self.dbx)):Play()
+			elseif anim then
+				anim:Stop()
+			end
+			funcUpdate(self, parent, unit, status)
 		end
-		funcUpdate(self, parent, unit, status)
 	end
 end
 
@@ -173,6 +183,8 @@ do
 		[ 3] = GetUpdate_GlowButton,
 	}
 	-- Called from indicator:RegisterStatus() inside GridIndicator.lua
+	-- Warning indicators that replace the Update method (like icons or multibar) cannot use these effects
+	-- so never add a GetBlinkFrame method to an indicator that overrides the default Update method.
 	function indicatorPrototype:UpdateHighlight(status)
 		if self.GetBlinkFrame and (status==nil or ( self.highlightType==nil and (self.dbx.highlightAlways or (status.dbx and status.dbx.blinkThreshold)) ) ) then
 			local typ = self.dbx.highlightType or -2 -- blink by default

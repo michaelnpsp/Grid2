@@ -58,7 +58,7 @@ do
 	local function DeleteIndicatorReal(indicator)
 		local name = indicator.name
 		Grid2Options.LI[name] = nil
-		Grid2Frame:WithAllFrames(indicator, "Disable")
+		indicator:DisableAllFrames()
 		Grid2:DbSetIndicator(name,nil)
 		if indicator.dbx.sideKick then
 			Grid2:DbSetIndicator(indicator.dbx.sideKick.name, nil)
@@ -138,10 +138,7 @@ do
 			-- Create runtime indicator
 			local setupFunc = Grid2.setupFunc[dbx.type]
 			local indicator = setupFunc(newIndicatorName, dbx)
-			Grid2Frame:WithAllFrames(function (f)
-				indicator:Create(f)
-				indicator:Layout(f)
-			end)
+			Grid2Options:CreateIndicatorFrames(indicator)
 			-- Create indicator options
 			newIndicatorValues.name = ""
 			Grid2Options:MakeIndicatorOptions(indicator)

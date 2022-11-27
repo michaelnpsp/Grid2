@@ -105,10 +105,12 @@ end
 -- Warning: This is an overrided indicator:Update() NOT the standard indicator:OnUpdate()
 local function Icon_Update(self, parent, unit)
 	local f = parent[self.name]
-	if self.filtered and self.filtered[parent] then
-		f:Hide()
-	else
-		updates[#updates+1] = f
+	if f then
+		if self.filtered and self.filtered[parent] then
+			f:Hide()
+		else
+			updates[#updates+1] = f
+		end
 	end
 end
 
@@ -249,7 +251,7 @@ Grid2.setupFunc["icons"] = function(indicatorKey, dbx)
 	indicator.Layout    = Icon_Layout
 	indicator.Disable   = Icon_Disable
 	indicator.UpdateDB  = Icon_UpdateDB
-	indicator.Update    = Icon_Update
+	indicator.UpdateOverride = Icon_Update -- special case used by multibar and icons indicator
 	EnableDelayedUpdates()
 	Grid2:RegisterIndicator(indicator, { "icon", "icons" })
 	return indicator

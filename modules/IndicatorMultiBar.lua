@@ -106,27 +106,29 @@ end
 local function Bar_Update(self, parent, unit, status)
 	if unit then
 		local bar = parent[self.name]
-		local values = bar.myValues
-		if status then
-			local index = self.priorities[status]
-			local value = status:GetPercent(unit) or 0
-			values[index] = value
-			if value>0 and index>bar.myMaxIndex then
-				bar.myMaxIndex = index -- Optimization to avoid updating bars with zero value
-			end
-			if index==1 then
-			   bar:SetMainBarValue(value)
-			end
-			if self.backAnchor or bar.myMaxIndex>1 then
+		if bar then
+			local values = bar.myValues
+			if status then
+				local index = self.priorities[status]
+				local value = status:GetPercent(unit) or 0
+				values[index] = value
+				if value>0 and index>bar.myMaxIndex then
+					bar.myMaxIndex = index -- Optimization to avoid updating bars with zero value
+				end
+				if index==1 then
+				   bar:SetMainBarValue(value)
+				end
+				if self.backAnchor or bar.myMaxIndex>1 then
+					updates[bar] = true
+				end
+			else -- update due a layout or groupType change not from a status notifying a change
+				for i, status in ipairs(self.statuses) do
+					values[i] = status:GetPercent(unit) or 0
+				end
+				bar.myMaxIndex = #self.statuses
+				bar:SetMainBarValue(values[1] or 0)
 				updates[bar] = true
 			end
-		else -- update due a layout or groupType change not from a status notifying a change
-			for i, status in ipairs(self.statuses) do
-				values[i] = status:GetPercent(unit) or 0
-			end
-			bar.myMaxIndex = #self.statuses
-			bar:SetMainBarValue(values[1] or 0)
-			updates[bar] = true
 		end
 	end
 end
@@ -294,13 +296,13 @@ local function Create(indicatorKey, dbx)
 	local Bar = Grid2.indicators[indicatorKey] or Grid2.indicatorPrototype:new(indicatorKey)
 	Bar.dbx = dbx
 	-- Hack to caculate status index fast: statuses[priorities[status]] == status
-	Bar.sortStatuses   = function (a,b) return Bar.priorities[a] < Bar.priorities[b] end
-	Bar.Create         = Bar_CreateHH
-	Bar.SetOrientation = Bar_SetOrientation
-	Bar.Disable        = Bar_Disable
-	Bar.Layout         = Bar_Layout
-	Bar.Update         = Bar_Update
-	Bar.UpdateDB       = Bar_UpdateDB
+	Bar.sortStatuses    = function (a,b) return Bar.priorities[a] < Bar.priorities[b] end
+	Bar.Create          = Bar_CreateHH
+	Bar.SetOrientation  = Bar_SetOrientation
+	Bar.Disable         = Bar_Disable
+	Bar.Layout          = Bar_Layout
+	Bar.UpdateDB        = Bar_UpdateDB
+	Bar.UpdateOverride  = Bar_Update -- special case used by multibar and icons indicator
 	Grid2:RegisterIndicator(Bar, { "percent" })
 	EnableDelayedUpdates()
 

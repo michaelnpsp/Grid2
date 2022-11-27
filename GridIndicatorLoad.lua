@@ -14,12 +14,16 @@ local indicators = {}
 
 local filter_mt = {	__index = function(t,f)
 	local load, u = t.source, f.unit
-	local r = ( load.unitType  and not load.unitType[ f:GetParent().headerName ]  ) or
-			  ( not (u and UnitExists(u))                                         ) or
-			  ( load.unitRole  and not load.unitRole[ UnitGroupRolesAssigned(u) ] ) or
-			  ( load.unitClass and not load.unitClass[ select(2,UnitClass(u)) ]   )
-	t[f] = r
-	return r
+	if load.unitType  and not load.unitType[ f:GetParent().headerName ] then
+		t[f] = 0
+		return 0
+	elseif u then
+		local r = ( not UnitExists(u) ) or
+		          ( load.unitRole  and not load.unitRole[ UnitGroupRolesAssigned(u) ] ) or
+		          ( load.unitClass and not load.unitClass[ select(2,UnitClass(u)) ]   )
+		t[f] = r
+		return r
+	end
 end }
 
 -- Clear cached filter of modified units, called when a unit is added or updated
@@ -46,30 +50,67 @@ local function GetCurrentStatus(self, unit, frame)
 	end
 end
 
--- Called from Grid2:RegisterIndicator() function in GridIndicator.lua
+local function MakeUpdateFunction(indicator)
+	local funcStatus = indicator.GetCurrentStatus
+	local funcFrame  = indicator.GetMainFrame
+	local funcUpdate = indicator.OnUpdate
+	return function(self, parent, unit)
+		if funcFrame(self, parent) then
+			funcUpdate(self, parent, unit, (funcStatus(self, unit, parent)) )
+		end
+	end
+end
+
+local function RegisterMessages(self)
+	if not next(indicators) then
+		Grid2.RegisterMessage( indicators, "Grid_UnitLeft", ClearFilter )
+		Grid2.RegisterMessage( indicators, "Grid_UnitUpdated", ClearFilter )
+	end
+	indicators[self] = self.filtered
+end
+
+local function UnregisterMessages(self)
+	indicators[self] = nil
+	if not next(indicators) then
+		Grid2.UnregisterMessage( indicators, "Grid_UnitLeft" )
+		Grid2.UnregisterMessage( indicators, "Grid_UnitUpdated" )
+	end
+end
+
+-- Called from Grid2:RegisterIndicator() in GridIndicator.lua
 function indicatorPrototype:UpdateFilter()
 	if self.parentName then return end
 	local load = self.dbx and self.dbx.load
 	if load and (load.unitType or load.unitRole or load.unitClass) then
 		self.GetCurrentStatus = GetCurrentStatus
+		self.Update = self.UpdateOverride or MakeUpdateFunction(self)
 		if self.filtered then
 			wipe(self.filtered).source = load
 		else
 			self.filtered = setmetatable({source = load}, filter_mt)
 		end
-		if not next(indicators) then
-			Grid2.RegisterMessage( indicators, "Grid_UnitLeft", ClearFilter )
-			Grid2.RegisterMessage( indicators, "Grid_UnitUpdated", ClearFilter )
-		end
-		indicators[self] = self.filtered
+		RegisterMessages(self)
 	elseif self.filtered then
 		self.GetCurrentStatus = indicatorPrototype.GetCurrentStatus
+		self.Update = self.UpdateOverride or indicatorPrototype.Update
 		self.filtered = nil
-		indicators[self] = nil
-		if not next(indicators) then
-			Grid2.UnregisterMessage( indicators, "Grid_UnitLeft" )
-			Grid2.UnregisterMessage( indicators, "Grid_UnitUpdated" )
-		end
+		UnregisterMessages(self)
+	end
+end
+
+-- Called from Grid2:WakeUpIndicator(indicator) in GridIndicator.lua
+function indicatorPrototype:WakeUpFilter()
+	if self.filtered then
+		RegisterMessages(self)
+	end
+end
+
+-- Called from Grid2:SuspendIndicator(indicator) in GridIndicator.lua
+function indicatorPrototype:SuspendFilter()
+	if self.filtered then
+		local source = self.filtered.source
+		wipe(self.filtered).source = source
+		UnregisterMessages(self)
 	end
 end
 

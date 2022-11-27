@@ -29,7 +29,6 @@ function indicator:new(name)
 	e.name = name
 	e.statuses = {}
 	e.prototype = self
-	e.Update = self.Update -- speed optimization
 	return e
 end
 
@@ -42,6 +41,28 @@ function indicator:CreateFrame(type, parent, template)
 	end
 	f:Hide()
 	return f
+end
+
+function indicator:CanCreate(parent)
+	if self.parentName then return parent[self.parentName]~=nil end
+	local filtered = self.filtered
+	return not (filtered and filtered[parent]==0)
+end
+
+function indicator:GetMainFrame(parent)
+	return parent[self.name]
+end
+
+function indicator:DisableAllFrames()
+	local Disable = self.Disable
+	if Disable then
+		local GetMainFrame = self.GetMainFrame
+		for _, frame in next, Grid2Frame.registeredFrames do
+			if GetMainFrame(self, frame) then
+				Disable(self, frame)
+			end
+		end
+	end
 end
 
 function indicator:Update(parent, unit)
@@ -121,9 +142,8 @@ function Grid2:WakeUpIndicator(indicator)
 		statuses[i]:RegisterIndicator(indicator)
 	end
 	tinsert(self.indicatorEnabled, indicator)
-	if indicator.UpdateDB then
-		indicator:UpdateDB()
-	end
+	indicator:UpdateDB()
+	indicator:WakeUpFilter()
 	indicator.suspended = nil
 	if indicator.sideKick then
 		self:WakeUpIndicator(indicator.sideKick)
@@ -148,9 +168,8 @@ function Grid2:SuspendIndicator(indicator)
 		statuses[i]:UnregisterIndicator(indicator)
 	end
 	tdelete(self.indicatorEnabled, indicator)
-	if indicator.Disable then
-		Grid2Frame:WithAllFrames(indicator, "Disable")
-	end
+	indicator:DisableAllFrames()
+	indicator:SuspendFilter()
 	indicator.suspended = true
 	if indicator.OnSuspend then
 		indicator:OnSuspend()
@@ -170,6 +189,7 @@ function Grid2:RegisterIndicator(indicator, types)
 		end
 		t[name] = indicator
 	end
+	indicator.Update = indicator.UpdateOverride or indicator.prototype.Update
 	indicator:UpdateDB()
 	indicator:UpdateFilter()
 end
@@ -179,9 +199,7 @@ function Grid2:UnregisterIndicator(indicator)
 	while #statuses>0 do
 		indicator:UnregisterStatus(statuses[#statuses])
 	end
-	if indicator.Disable then
-		Grid2Frame:WithAllFrames(indicator, "Disable")
-	end
+	indicator:DisableAllFrames()
 	local name = indicator.name
 	self.indicators[name] = nil
 	for type, t in pairs(self.indicatorTypes) do

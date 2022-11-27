@@ -297,11 +297,13 @@ local function Text_UpdateDB(self)
 end
 
 local function TextColor_OnUpdate(self, parent, unit, status)
-	local Text = parent[self.parentName].Text
-	if status then
-		Text:SetTextColor(status:GetColor(unit))
-	else
-		Text:SetTextColor(1, 1, 1, 1)
+	local frame = parent[self.parentName]
+	if frame then
+		if status then
+			frame.Text:SetTextColor(status:GetColor(unit))
+		else
+			frame.Text:SetTextColor(1, 1, 1, 1)
+		end
 	end
 end
 

@@ -5,6 +5,7 @@ local cr, cg, cb, ca = 0, 0, 0, 1
 
 Background.Create = Grid2.Dummy
 Background.Layout = Grid2.Dummy
+Background.GetMainFrame = Grid2.DummyTrue
 
 function Background:Disable(parent)
 	parent.container:SetVertexColor(0,0,0,0)
