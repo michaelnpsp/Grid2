@@ -668,6 +668,9 @@ do
 			end
 		end
 		indicator:UpdateHighlight()
+		if indicator.dbx.highlightType==0 then
+			indicator:UpdateFilter() -- none effect, we need to restore the Filter Update() function if exists
+		end
 		indicator:UpdateAllFrames()
 	end
 
