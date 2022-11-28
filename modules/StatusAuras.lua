@@ -29,8 +29,8 @@ do
 	local val = {0, 0, 0}
 	local pTypes   = Grid2.debuffPlayerDispelTypes
 	local myUnits  = Grid2.roster_my_units
-	local myFrames = Grid2.frames_of_unit
 	local roUnits  = Grid2.roster_guids
+	local myFrames = Grid2Frame.frames_of_unit
 	AuraFrame_OnEvent = function(_, event, u)
 		if not roUnits[u] then return end
 		-- Scan Debuffs, Debuff Types, Debuff Groups

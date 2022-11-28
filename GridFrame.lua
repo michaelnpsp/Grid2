@@ -83,10 +83,11 @@ local frames_of_unit = setmetatable({}, { __index = function (self, key)
 	self[key] = result
 	return result
 end})
-local unit_of_frame = {}
+local activatedFrames = {}  -- only frames assigned to an unit: activatedFrames[frame] = unit
+local registeredFrames = {} -- all frames created used and unused: registeredFrames[frameName] = frame
 
 function Grid2:SetFrameUnit(frame, unit)
-	local prev_unit = unit_of_frame[frame]
+	local prev_unit = activatedFrames[frame]
 	if prev_unit then
 		local frames = frames_of_unit[prev_unit]
 		frames[frame] = nil
@@ -102,7 +103,8 @@ function Grid2:SetFrameUnit(frame, unit)
 		end
 		frames[frame] = true
 	end
-	unit_of_frame[frame] = unit
+	activatedFrames[frame] = unit
+	frame.unit = unit
 end
 
 function Grid2:GetUnitFrames(unit)
@@ -114,7 +116,6 @@ function Grid2:UpdateFramesOfUnit(unit)
 		local old, new = frame.unit, SecureButton_GetModifiedUnit(frame)
 		if old ~= new then
 			Grid2:SetFrameUnit(frame, new)
-			frame.unit = new
 		end
 		frame:UpdateIndicators()
 	end
@@ -150,14 +151,12 @@ function GridFrameEvents:OnAttributeChanged(name, value)
 			local unit = SecureButton_GetModifiedUnit(self)
 			if old_unit ~= unit then
 				Grid2Frame:Debug("updated", self:GetName(), name, value, unit, '<=', old_unit)
-				self.unit = unit
 				Grid2:SetFrameUnit(self, unit)
 				self:UpdateIndicators()
 				if fix_tfv_enabled then FixToggleForVehicleBugTargeting(self,value) end
 			end
 		elseif old_unit then
 			Grid2Frame:Debug("removed", self:GetName(), name, old_unit)
-			self.unit = nil
 			Grid2:SetFrameUnit(self, nil)
 			if fix_tfv_enabled then FixToggleForVehicleBugTargeting(self) end
 		end
@@ -307,7 +306,6 @@ Grid2Frame.defaultDB = {
 function Grid2Frame:OnModuleInitialize()
 	self.dba = self.db
 	self.db = { global = self.dba.global, profile = self.dba.profile, shared = self.dba.profile }
-	self.registeredFrames = {}
 end
 
 function Grid2Frame:OnModuleEnable()
@@ -378,17 +376,17 @@ end
 
 function Grid2Frame:RegisterFrame(frame)
 	GridFrame_Init(frame, GridFrame_GetInitialSize(frame))
-	self.registeredFrames[frame:GetName()] = frame
+	registeredFrames[frame:GetName()] = frame
 end
 
 function Grid2Frame:CreateIndicators()
-	for _, frame in next, self.registeredFrames do
+	for _, frame in next, registeredFrames do
 		frame:CreateIndicators()
 	end
 end
 
 function Grid2Frame:UpdateIndicators()
-	for _, frame in next, self.registeredFrames do
+	for frame in next, activatedFrames do
 		frame:UpdateIndicators()
 	end
 end
@@ -413,12 +411,12 @@ do
 	local type, with = type, {}
 	with["table"] = function(self, object, func, ...)
 		if type(func) == "string" then func = object[func] end
-		for _, frame in next, self.registeredFrames do
+		for _, frame in next, registeredFrames do
 			func(object, frame, ...)
 		end
 	end
 	with["function"] = function(self, func, ...)
-		for _, frame in next, self.registeredFrames do
+		for _, frame in next, registeredFrames do
 			func(frame, ...)
 		end
 	end
@@ -434,12 +432,10 @@ end
 
 -- Event handlers
 function Grid2Frame:UpdateFrameUnits()
-	for _, frame in next, self.registeredFrames do
-		local old_unit = frame.unit
+	for frame, old_unit in next, activatedFrames do
 		local unit = SecureButton_GetModifiedUnit(frame)
 		if old_unit ~= unit then
 			Grid2:SetFrameUnit(frame, unit)
-			frame.unit = unit
 			frame:UpdateIndicators()
 		end
 	end
@@ -454,7 +450,6 @@ function Grid2Frame:UNIT_ENTERED_VEHICLE(event, unit)
 			local old, new = frame.unit, SecureButton_GetModifiedUnit(frame)
 			if old ~= new then
 				Grid2:SetFrameUnit(frame, new)
-				frame.unit = new
 				if UnitExists(new) and (event==nil or strfind(UnitGUID(new),'^Vehicle')) then -- new is a player or is a vehicle pet
 					frame:UpdateIndicators()
 				else -- only for pets: pet unit does not exist or exists but is not a vehicle yet
@@ -474,4 +469,6 @@ _G.Grid2Frame = Grid2Frame
 -- Allow other modules/addons to easily modify the grid unit frames
 Grid2Frame.Prototype = GridFramePrototype
 -- Allow other modules to access the variable for speed optimization
-Grid2.frames_of_unit = frames_of_unit
+Grid2Frame.frames_of_unit = frames_of_unit
+Grid2Frame.activatedFrames = activatedFrames
+Grid2Frame.registeredFrames = registeredFrames

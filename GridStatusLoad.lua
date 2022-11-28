@@ -42,12 +42,9 @@ local function RegisterIndicators(self)
 end
 
 local function UpdateIndicators()
-	for _, frame in next, Grid2Frame.registeredFrames do
-		local unit = frame.unit
-		if unit then
-			for indicator in next, indicators do
-				indicator:Update(frame, unit)
-			end
+	for frame, unit in next, Grid2Frame.activatedFrames do
+		for indicator in next, indicators do
+			indicator:Update(frame, unit)
 		end
 	end
 	wipe(indicators)

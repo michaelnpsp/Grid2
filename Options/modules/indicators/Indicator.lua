@@ -641,27 +641,34 @@ do
 		dbx.glow_particlesScale = nil
 	end
 
+	local function WithAllScaleAnimations( indicator, func )
+		for _,f in next, Grid2Frame.registeredFrames do
+			local frame = indicator:GetBlinkFrame(f)
+			local anim = frame and frame.scaleAnim
+			if anim then func(anim) end
+		end
+	end
+
 	local function RefreshBlinkFrequencies(indicator, freq)
-		Grid2Frame:WithAllFrames(function (f)
-			local anim = indicator:GetBlinkFrame(f).blinkAnim
+		for _,f in next, Grid2Frame.registeredFrames do
+			local frame = indicator:GetBlinkFrame(f)
+			local anim = frame and frame.blinkAnim
 			if anim then anim.settings:SetDuration(1/freq) end
-		end)
+		end
 	end
 
 	local function RefreshIndicator(indicator)
-		Grid2Frame:WithAllFrames(function (f)
+		for _,f in next, Grid2Frame.registeredFrames do
 			local frame = indicator:GetBlinkFrame(f)
-			if frame.blinkAnim then	frame.blinkAnim:Stop() end -- cancel blink
-			for _, func in pairs(LCG.stopList) do -- cancel glow
-				func(frame); frame.__glowEnabled = nil
+			if frame then
+				if frame.blinkAnim then frame.blinkAnim:Stop() end -- cancel blink
+				for _, func in pairs(LCG.stopList) do -- cancel glow
+					func(frame); frame.__glowEnabled = nil
+				end
 			end
-		end)
-		indicator:UpdatehHighlight()
-		Grid2Frame:WithAllFrames(function(f)
-			if f.unit then
-				indicator:Update(f, f.unit)
-			end
-		end)
+		end
+		indicator:UpdateHighlight()
+		indicator:UpdateAllFrames()
 	end
 
 	function Grid2Options:MakeIndicatorHighlightEffectOptions(indicator, options)
@@ -686,7 +693,7 @@ do
 			order = 325,
 			name = L["Activation"],
 			desc = L["Select when to activate the highlight effect."],
-			get = function ()
+			get = function()
 				return indicator.dbx.highlightAlways and 1 or 2
 			end,
 			set = function (_, v)
@@ -838,13 +845,7 @@ do
 			set = function(_, v)
 				local point = self.pointMap[v]
 				indicator.dbx.animOrigin = point~='CENTER' and point or nil
-				Grid2Frame:WithAllFrames( function (f)
-					local anim = indicator:GetBlinkFrame(f).scaleAnim
-					if anim then
-						anim.grow:SetOrigin(point,0,0)
-						anim.shrink:SetOrigin(point,0,0)
-					end
-				end)
+				WithAllScaleAnimations( indicator, function(a) a.grow:SetOrigin(point,0,0); a.shrink:SetOrigin(point,0,0); end)
 			end,
 			hidden = function() return indicator.dbx.highlightType ~= -1 end,
 		}
@@ -859,13 +860,7 @@ do
 			get = function () return indicator.dbx.animScale or 1.5	end,
 			set = function (_, v)
 				indicator.dbx.animScale = v
-				Grid2Frame:WithAllFrames( function (f)
-					local anim = indicator:GetBlinkFrame(f).scaleAnim
-					if anim then
-						anim.grow:SetScale(v,v)
-						anim.shrink:SetScale(1/v,1/v)
-					end
-				end)
+				WithAllScaleAnimations( indicator, function(a) a.grow:SetScale(v,v); a.shrink:SetScale(1/v,1/v); end)
 			end,
 			hidden = function() return indicator.dbx.highlightType ~= -1 end,
 		}
@@ -881,15 +876,9 @@ do
 			get = function () return indicator.dbx.animDuration or 0.7 end,
 			set = function (_, v)
 				indicator.dbx.animDuration = v
-				Grid2Frame:WithAllFrames( function (f)
-					local anim = indicator:GetBlinkFrame(f).scaleAnim
-					if anim then
-						anim.grow:SetDuration(v/2)
-						anim.shrink:SetDuration(v/2)
-					end
-				end)
+				WithAllScaleAnimations( indicator, function(a) a.grow:SetDuration(v/2);	a.shrink:SetDuration(v/2); end)
 			end,
-			hidden = function() return indicator.dbx.highlightType  ~= -1 end,
+			hidden = function() return indicator.dbx.highlightType ~= -1 end,
 		}
 		return options
 	end
@@ -909,7 +898,7 @@ do
 
 	local function RefreshIndicator(indicator)
 		Grid2Options:UpdateIndicatorDB(indicator)
-		Grid2Frame:WithAllFrames(function (f)
+		for _,f in next, Grid2Frame.registeredFrames do
 			local new = not not indicator:CanCreate(f)
 			local old = not not indicator:GetFrame(f)
 			if new~=old then
@@ -919,7 +908,7 @@ do
 					indicator:Release(f)
 				end
 			end
-		end)
+		end
 		Grid2Frame:UpdateIndicators()
 	end
 
@@ -987,7 +976,7 @@ do
 			'playerClass',
 			PLAYER_CLASSES,
 			Grid2.playerClass,
-			L["Unit Class"],
+			L["Player Class"],
 			L["Load the indicator only if your toon belong to the specified class."]
 		)
 		SetFilterOptions( indicator, options, 30,

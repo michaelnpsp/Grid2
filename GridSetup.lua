@@ -4,7 +4,6 @@ Created by Grid2 original authors, modified by Michael
 
 local Grid2 = Grid2
 local pairs = pairs
-local ipairs = ipairs
 local tonumber = tonumber
 
 function Grid2:SetupShutdown()
@@ -47,10 +46,10 @@ function Grid2:SetupStatuses(setup)
 	-- add new statuses
 	for baseKey, dbx in pairs(setup) do
 		local setupFunc = self.setupFunc[dbx.type]
-		if (setupFunc) then
+		if setupFunc then
 			setupFunc(baseKey, dbx)
         else
-			 Grid2:Debug("SetupStatuses setupFunc not found for status: ", dbx.type)
+			Grid2:Debug("SetupStatuses setupFunc not found for status: ", dbx.type)
 		end
 	end
 end

@@ -46,9 +46,9 @@ local function SetParent(info,v)
 	end
 	child.dbx.anchorTo = newParent and newParent.name or nil
 	child:UpdateDB()
-	if oldParent then Grid2Frame:WithAllFrames(oldParent, "Layout") end
-	if newParent then Grid2Frame:WithAllFrames(newParent, "Layout") end
-	Grid2Frame:WithAllFrames(child, "Layout")
+	if oldParent then oldParent:LayoutAllFrames() end
+	if newParent then newParent:LayoutAllFrames() end
+	child:LayoutAllFrames()
 	Grid2Frame:UpdateIndicators()
 	for _, indicator in Grid2:IterateIndicators() do
 		if indicator.dbx.type=="bar" and indicator.sideKick then
@@ -95,7 +95,7 @@ function Grid2Options:MakeIndicatorBarAppearanceOptions(indicator,options)
 		set = function (_, v)
 			if v=="DEFAULT" then v= nil	end
 			indicator:SetOrientation(v)
-			Grid2Frame:WithAllFrames(indicator, "Layout")
+			self:RefreshIndicator(indicator, "Layout")
 			if indicator.childName then
 				self:RefreshIndicator( Grid2.indicators[indicator.childName], "Layout" )
 			end

@@ -446,19 +446,15 @@ function Grid2Options:RefreshIndicator(indicator, method)
 	self:UpdateIndicatorDB(indicator)
 	if method then
 		if method == "Create" then
-			Grid2Frame:WithAllFrames(function (f)
+			for _,f in next, Grid2Frame.registeredFrames do
 				if indicator:GetFrame(f) then
 					indicator:Disable(f)
 					indicator:Create(f)
 					indicator:Layout(f)
 				end
-			end)
+			end
 		elseif method == 'Layout' then
-			Grid2Frame:WithAllFrames(function (f)
-				if indicator:GetFrame(f) then
-					indicator:Layout(f)
-				end
-			end)
+			indicator:LayoutAllFrames()
 		elseif method ~= 'Update' then
 			Grid2Frame:WithAllFrames(indicator, method)
 		end
@@ -468,12 +464,13 @@ end
 
 -- Create or recreate indicator
 function Grid2Options:CreateIndicatorFrames(indicator)
-	Grid2Frame:WithAllFrames(function (f)
+	for _,f in next, Grid2Frame.registeredFrames do
 		if indicator:CanCreate(f) then
+			indicator:Release(f)
 			indicator:Create(f)
 			indicator:Layout(f)
 		end
-	end)
+	end
 end
 
 -- Update & Layout all enabled indicators of all frames
@@ -481,9 +478,9 @@ function Grid2Options:UpdateIndicators(typ)
 	for _, indicator in ipairs(Grid2:GetIndicatorsEnabled()) do
 		if indicator.parentName==nil and ( typ==nil or indicator.dbx.type == typ ) then
 			self:UpdateIndicatorDB(indicator)
-			Grid2Frame:WithAllFrames(indicator, 'Layout')
+			indicator:LayoutAllFrames()
 			if indicator.childName then
-				Grid2Frame:WithAllFrames( Grid2:GetIndicatorByName(indicator.childName), 'Layout' )
+				Grid2:GetIndicatorByName(indicator.childName):LayoutAllFrames()
 			end
 		end
 	end

@@ -12,7 +12,7 @@ Grid2Options:RegisterStatusOptions("name", "misc", function(self, status, option
 		set   = function (_, v)
 			status.dbx.defaultName = (v==1 and 1) or (v==2 and L['N/A']) or nil
 			status:UpdateDB()
-			Grid2Frame:WithAllFrames( function(f) if f:IsVisible() then f:UpdateIndicators() end end )
+			Grid2Frame:UpdateIndicators()
 		end,
 		values= { L["Unit Tag"], L["Custom Text"], L["Nothing"] }
 	}
@@ -27,7 +27,7 @@ Grid2Options:RegisterStatusOptions("name", "misc", function(self, status, option
 		set = function (_, v)
 			status.dbx.defaultName = v
 			status:UpdateDB()
-			Grid2Frame:WithAllFrames( function(f) if f:IsVisible() then f:UpdateIndicators() end; end )
+			Grid2Frame:UpdateIndicators()
 		end,
 		hidden = function() return type(status.dbx.defaultName)~='string' end,
 	}

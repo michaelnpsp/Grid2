@@ -58,7 +58,7 @@ local function MakeBorderGlowOptions(self, indicator,options)
 			end,
 			set = function (_, v)
 				if v~=3 or CheckBlizzardGlowEffectNotUsed(indicator) then
-					Grid2Frame:WithAllFrames(function (f) indicator:Disable(f) end)
+					indicator:DisableAllFrames()
 					indicator.dbx.glowType = v
 					self:RefreshIndicator(indicator, "Update")
 				end

@@ -75,10 +75,19 @@ function indicator:DisableAllFrames()
 	end
 end
 
-function indicator:UpdateAllFrames()
+function indicator:LayoutAllFrames()
+	local Layout = self.Layout
+	local GetFrame = self.GetFrame
 	for _, frame in next, Grid2Frame.registeredFrames do
-		local unit = frame.unit
-		if unit then self:Update(frame, unit) end
+		if GetFrame(self,frame) then
+			Layout(self, frame)
+		end
+	end
+end
+
+function indicator:UpdateAllFrames()
+	for frame, unit in next, Grid2Frame.activatedFrames do
+		self:Update(frame, unit)
 	end
 end
 
