@@ -644,15 +644,11 @@ do
 		dbx.glow_particlesScale = nil
 	end
 
-	local function RefreshBlinkFrequencies(ind, freq)
-		for _,indicator in ipairs(Grid2:GetIndicatorsSorted()) do
-			if ind==indicator then
-				Grid2Frame:WithAllFrames(function (f)
-					local anim = indicator:GetBlinkFrame(f).blinkAnim
-					if anim then anim.settings:SetDuration(1/freq) end
-				end)
-			end
-		end
+	local function RefreshBlinkFrequencies(indicator, freq)
+		Grid2Frame:WithAllFrames(function (f)
+			local anim = indicator:GetBlinkFrame(f).blinkAnim
+			if anim then anim.settings:SetDuration(1/freq) end
+		end)
 	end
 
 	local function RefreshIndicator(indicator)
@@ -698,7 +694,6 @@ do
 			end,
 			set = function (_, v)
 				indicator.dbx.highlightAlways = v==1 or nil
-				ResetSettings(indicator.dbx)
 				RefreshIndicator(indicator)
 			end,
 			values = ACTIVATION1_VALUES,
