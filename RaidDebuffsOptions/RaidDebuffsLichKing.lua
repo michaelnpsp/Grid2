@@ -10,6 +10,9 @@ RDDB["Wrath of the Lich King"] = {
 		["Anub'Rekhan"]= {
 		order = 1, ejid = nil,
 		28786, --Locust Swarm (N, H)
+		28969, --acid-spit
+		28783, --impale
+		28991, --web
 		},
 		["Grand Widow Faerlina"]= {
 		order = 2, ejid = nil,
@@ -18,7 +21,8 @@ RDDB["Wrath of the Lich King"] = {
 		},
 		["Maexxna"]= {
 		order = 3, ejid = nil,
-		28622,--Web Wrap (NH)
+		28622, --Web Wrap (NH)
+		29484, --web-spray
 		54121, --Necrotic Poison (N, H)
 		},
 		["Noth the Plaguebringer"]= {
@@ -30,40 +34,71 @@ RDDB["Wrath of the Lich King"] = {
 		["Heigan the Unclean"]= {
 		order = 5, ejid = nil,
 		29998, --Decrepit Fever (N, H)
-		29310,--Spell Disruption (NH)
+		29310, --Spell Disruption (NH)
+		},
+		["Loatheb"] = {
+		order = 6, ejid = nil,
+		29232, --fungal-bloom
+		29865, --poison-aura
+		29185, --corrupted-mind
+		},
+		["Instructor Razuvious"]= {
+		order = 7, ejid = nil,
+		55550, --Jagged Knife (NH)
+		26613, --unbalancing-strike
+		},
+		["Gothik The Harvester"] = {
+		order = 8, ejid = nil,
+		5164,  --knockdown
+		30285, --eagle-claw
+		27825, --shadow-mark
+		17467, --unholy-aura
+		28679, --harvest-soul
+		},
+		["Four Horsemen"] = {
+		order = 9, ejid = nil,
+		28863, --void-zone
+		28882, --righteous-fire
+		28832, --mark-of-korthazz
+		28833, --mark-of-blaumeux
+		28835, --mark-of-zeliek
+		28834, --mark-of-mograine
+		},
+		["Patchwerk"] = {
+		order = 10, ejid = nil,
+		28311, --slime-bolt
 		},
 		["Grobbulus"]= {
-		order = 6, ejid = nil,
+		order = 11, ejid = nil,
 		28169,--Mutating Injection (NH)
 		},
 		["Gluth"]= {
-		order = 7, ejid = nil,
+		order = 12, ejid = nil,
 		54378,--Mortal Wound (NH)
 		29306,--Infected Wound (NH)
 		},
 		["Thaddius"]= {
-		order = 8, ejid = nil,
+		order = 13, ejid = nil,
 		28084, --Negative Charge (N, H)
 		28059, --Positive Charge (N, H)
 		},
-		["Instructor Razuvious"]= {
-		order = 9, ejid = nil,
-		55550, --Jagged Knife (NH)
-		},
 		["Sapphiron"]= {
-		order = 10, ejid = nil,
+		order = 14, ejid = nil,
 		28522, --Icebolt (NH)
 		28542, --Life Drain (N, H)
 		},
 		["Kel'Thuzad"]= {
-		order = 11, ejid = nil,
+		order = 15, ejid = nil,
 		28410,--Chains of Kel'Thuzad (H)
 		27819,--Detonate Mana (NH)
 		27808,--Frost Blast (NH)
 		},
 		["Trash"]= {
-		order = 12, ejid = nil,
+		order = 16, ejid = nil,
 		55314, --Strangulate
+		4283,  --stomp
+		13737, --mortal-strike
+		16145, --sunder-armor
 		},
 	},
 	[100603] = {
