@@ -1060,7 +1060,7 @@ do
 	end
 
 	function Grid2Options:MakeIndicatorLoadOptions(indicator, options)
-		SetFilterOptions( indicator, options, 20,
+		SetFilterOptions( indicator, options, 10,
 			'playerClass',
 			self.PLAYER_CLASSES,
 			Grid2.playerClass,
@@ -1069,6 +1069,7 @@ do
 			false,
 			RefreshIndicator
 		)
+		SetFilterThemeOptions( indicator, options, 20 )
 		SetFilterOptions( indicator, options, 30,
 			'unitType',
 			self.HEADER_TYPES,
@@ -1078,7 +1079,6 @@ do
 			false,
 			RefreshIndicator
 		)
-		SetFilterThemeOptions( indicator, options, 40 )
 		return options
 	end
 end
