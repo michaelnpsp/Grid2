@@ -60,7 +60,7 @@ end
 -- Initialize
 function Grid2Options:Initialize()
 	self.db = Grid2.db:RegisterNamespace("Grid2Options",  { profile = { L = { indicators = {} } } } )
-	self:EnableLoadOnDemand(not Grid2.db.global.LoadOnDemandDisabled)
+	self:EnableLoadOnDemand(true) -- (not Grid2.db.global.LoadOnDemandDisabled)
 	self:MakeOptions()
 	LibStub("AceConfig-3.0"):RegisterOptionsTable("Grid2", self.options)
 	LibStub("AceConfigDialog-3.0"):SetDefaultSize("Grid2", 735, 558)

@@ -27,6 +27,8 @@ do
 		other  = L["Other"],
 	}
 
+	local PLAYER_CLASSES = Grid2Options.PLAYER_CLASSES
+
 	local HEADER_TYPES = { player = L['Players'], pet = L['Pets'], boss = L['Bosses'], target = L['Target'], focus = L['Focus'] }
 
 	local NOYES_TYPES = { L["No"], L['Yes'] }
@@ -34,14 +36,6 @@ do
 	local COMBAT_TYPES = { L["Out of Combat"], L['In Combat'] }
 
 	local PLAYER_ROLES = { TANK = L['Tank'], HEALER = L['Healer'], DAMAGER = L['Damager'], NONE = L['None'] }
-
-	local PLAYER_CLASSES = {}
-	for class, translation in pairs(LOCALIZED_CLASS_NAMES_MALE) do
-		local coord = CLASS_ICON_TCOORDS[class]
-		if coord then
-			PLAYER_CLASSES[class] =	string.format("|TInterface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES:0:0:0:0:256:256:%f:%f:%f:%f:0|t%s",coord[1]*256,coord[2]*256,coord[3]*256,coord[4]*256,translation)
-		end
-	end
 
 	local CLASSES_SPECS = {}
 	if Grid2.versionCli>=30000 then

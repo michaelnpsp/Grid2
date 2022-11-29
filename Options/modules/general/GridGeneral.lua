@@ -362,7 +362,7 @@ end
 --==========================================================================
 -- Load on demand
 --==========================================================================
-
+--[[
 Grid2Options:AddGeneralOptions( "General", "Options management", {
 	loadOnDemand = {
 		type = "toggle",
@@ -376,3 +376,4 @@ Grid2Options:AddGeneralOptions( "General", "Options management", {
 		end,
 	},
 })
+--]]

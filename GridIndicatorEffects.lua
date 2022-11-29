@@ -170,7 +170,7 @@ local function GetUpdate_Blink(indicator)
 end
 
 local function GetUpdate_Original(indicator)
-	return indicatorPrototype.Update
+	return indicator.UpdateF or indicatorPrototype.Update
 end
 
 do

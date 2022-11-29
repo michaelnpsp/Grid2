@@ -27,11 +27,19 @@ function indicatorPrototype:GetFrame(parent)
 	return parent[self.name]
 end
 
-function indicatorPrototype:UpdateFilter() -- Called from Grid2:RegisterIndicator() in GridIndicator.lua
+-- If a Load filter is setup for an indicator, the default Update() function must be changed to check if
+-- the indicator frame exists for each unit frame, if the indicator does not exist do nothing.
+-- Called from Grid2:RegisterIndicator() in GridIndicator.lua
+function indicatorPrototype:UpdateFilter()
 	self.load = self.dbx.load
-	if not self.parentName and self.load then
-		self.Update = self.UpdateOverride or MakeUpdateFunction(self)
+	if self.UpdateO then -- Custom update function defined by multibar/icons indicators
+		self.Update  = self.UpdateO
+	    self.UpdateF = nil
+	elseif not self.parentName and self.load then
+		self.Update = MakeUpdateFunction(self)
+		self.UpdateF = self.Update
 	else
-		self.Update = self.UpdateOverride or indicatorPrototype.Update
+		self.Update = indicatorPrototype.Update
+	    self.UpdateF = nil
 	end
 end

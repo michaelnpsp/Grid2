@@ -302,7 +302,7 @@ local function Create(indicatorKey, dbx)
 	Bar.Disable         = Bar_Disable
 	Bar.Layout          = Bar_Layout
 	Bar.UpdateDB        = Bar_UpdateDB
-	Bar.UpdateOverride  = Bar_Update -- special case used by multibar and icons indicator
+	Bar.UpdateO         = Bar_Update -- special case used by multibar and icons indicator
 	Grid2:RegisterIndicator(Bar, { "percent" })
 	EnableDelayedUpdates()
 

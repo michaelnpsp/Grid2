@@ -247,7 +247,7 @@ Grid2.setupFunc["icons"] = function(indicatorKey, dbx)
 	indicator.Layout    = Icon_Layout
 	indicator.Disable   = Icon_Disable
 	indicator.UpdateDB  = Icon_UpdateDB
-	indicator.UpdateOverride = Icon_Update -- special case used by multibar and icons indicator
+	indicator.UpdateO   = Icon_Update -- special case used by multibar and icons indicator
 	EnableDelayedUpdates()
 	Grid2:RegisterIndicator(indicator, { "icon", "icons" })
 	return indicator

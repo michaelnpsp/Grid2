@@ -668,9 +668,6 @@ do
 			end
 		end
 		indicator:UpdateHighlight()
-		if indicator.dbx.highlightType==0 then
-			indicator:UpdateFilter() -- none effect, we need to restore the Filter Update() function if exists
-		end
 		indicator:UpdateAllFrames()
 	end
 
@@ -889,16 +886,6 @@ end
 
 -- Grid2Options:MakeIndicatorLoadOptions(indicator, options)
 do
-	local PLAYER_CLASSES = {}
-	for class, translation in pairs(LOCALIZED_CLASS_NAMES_MALE) do
-		local coord = CLASS_ICON_TCOORDS[class]
-		if coord then
-			PLAYER_CLASSES[class] =	string.format("|TInterface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES:0:0:0:0:256:256:%f:%f:%f:%f:0|t%s",coord[1]*256,coord[2]*256,coord[3]*256,coord[4]*256,translation)
-		end
-	end
-
-	local HEADER_TYPES = { player = L['Players'], pet = L['Pets'], boss = L['Bosses'], target = L['Target'], focus = L['Focus'], self = L['Player'] }
-
 	local function RefreshIndicator(indicator)
 		Grid2Options:UpdateIndicatorDB(indicator)
 		for _,f in next, Grid2Frame.registeredFrames do
@@ -915,7 +902,7 @@ do
 		Grid2Frame:UpdateIndicators()
 	end
 
-	local function SetFilterOptions( indicator, options, order, key, values, defValue, name, desc, isUnitFilter, isSingle )
+	local function SetFilterOptions( indicator, options, order, key, values, defValue, name, desc, isSingle, updateFunc )
 		local dbx    = indicator.dbx
 		local filter = dbx.load and dbx.load[key]
 		local multi  = filter and next(filter, next(filter))~=nil
@@ -936,19 +923,18 @@ do
 					filter = { [defValue] = true }
 					dbx.load[key] = filter
 				end
-				RefreshIndicator(indicator)
+				updateFunc(indicator)
 			end,
 			disabled = function() return indicator.parentName~=nil end,
 		}
 		options[key..'1'] = {
 			type = "select",
 			name = name,
-			desc = desc or name,
 			order = order+1,
 			get = function() return filter and next(filter) end,
 			set = function(_,v)
 				wipe(filter)[v] = true
-				RefreshIndicator(indicator)
+				updateFunc(indicator)
 			end,
 			disabled = function() return not filter or indicator.parentName~=nil end,
 			hidden   = function() return multi end,
@@ -961,7 +947,7 @@ do
 			get = function(info, value) return filter[value] end,
 			set = function(info, value)
 				filter[value] = (not filter[value]) or nil
-				RefreshIndicator(indicator)
+				updateFunc(indicator)
 			end,
 			hidden = function() return not multi end,
 			disabled = function() return not filter or indicator.parentName~=nil end,
@@ -974,22 +960,125 @@ do
 		}
 	end
 
+	local SetFilterThemeOptions
+	do
+		local themesTable = {}
+
+		local function GetFilterState(name, suspended)
+			local count = 0
+			for index in pairs(themesTable) do
+				if not suspended[index][name] then count = count + 1 end
+			end
+			return (count>#themesTable and 0) or (count>1 and 2) or 1
+		end
+
+		local function RefreshThemes(name, suspended)
+			local names = Grid2.db.profile.themes.names
+			wipe(themesTable)
+			for i=0,#names do
+				themesTable[i] = names[i] or L['Default']
+			end
+			return GetFilterState(name, suspended)
+		end
+
+		local function ClearFilter(name, suspended)
+			for index in pairs(themesTable) do
+				suspended[index][name] = nil
+			end
+		end
+
+		local function SetSingle(name, suspended, theme)
+			for index in pairs(themesTable) do
+				suspended[index][name] = (theme~=index) or nil
+			end
+		end
+
+		function SetFilterThemeOptions( indicator, options, order)
+			local name = indicator.name
+			local suspended = Grid2.db.profile.themes.indicators
+			local state = RefreshThemes(name, suspended)
+			options.theme = {
+				type = "toggle",
+				name = L['Active Theme'],
+				desc = L["Load the indicator only for the specified themes."],
+				order = order,
+				get = function(info)
+					return state~=0
+				end,
+				set = function(info)
+					state = state<2 and state+1 or 0
+					if state==0 then
+						ClearFilter(name, suspended)
+					elseif state==1 then
+						SetSingle(name, suspended, Grid2.currentTheme or 0)
+					end
+					Grid2:RefreshTheme()
+				end,
+				disabled = function() return indicator.parentName~=nil end,
+				hidden = function() return Grid2Frame.dba.profile.extraThemes==nil end,
+			}
+			options.theme1 = {
+				type = "select",
+				name = L['Active Theme'],
+				order = order+1,
+				get = function()
+					if state==1 then
+						local index = #themesTable
+						while index>=0 and suspended[index][name] do index = index - 1 end
+						return index
+					end
+				end,
+				set = function(_,v)
+					SetSingle(name, suspended, v)
+					Grid2:RefreshTheme()
+				end,
+				disabled = function() return indicator.parentName~=nil or state~=1 end,
+				hidden   = function() return state==2 or Grid2Frame.dba.profile.extraThemes==nil end,
+				values   = themesTable,
+			}
+			options.theme2 = {
+				type = "multiselect",
+				order = order+2,
+				name = L['Active Theme'],
+				get = function(info, theme)
+					return not suspended[theme][name]
+				end,
+				set = function(info, theme)
+					suspended[theme][name] = (not suspended[theme][name]) or nil
+					Grid2:RefreshTheme()
+				end,
+				disabled = function() return indicator.parentName~=nil end,
+				hidden = function() return state~=2 or Grid2Frame.dba.profile.extraThemes==nil  end,
+				values = themesTable,
+			}
+			options.theme3 = {
+				type = "description",
+				name = "",
+				order = order+3,
+			}
+		end
+	end
+
 	function Grid2Options:MakeIndicatorLoadOptions(indicator, options)
 		SetFilterOptions( indicator, options, 20,
 			'playerClass',
-			PLAYER_CLASSES,
+			self.PLAYER_CLASSES,
 			Grid2.playerClass,
 			L["Player Class"],
-			L["Load the indicator only if your toon belong to the specified class."]
+			L["Load the indicator only if your toon belong to the specified class."],
+			false,
+			RefreshIndicator
 		)
 		SetFilterOptions( indicator, options, 30,
 			'unitType',
-			HEADER_TYPES,
+			self.HEADER_TYPES,
 			'player',
 			L["Unit Type"],
 			L["Load the indicator only for the specified unit types."],
-			true
+			false,
+			RefreshIndicator
 		)
+		SetFilterThemeOptions( indicator, options, 40 )
 		return options
 	end
 end
