@@ -246,15 +246,36 @@ RDDB["Dragonflight"] = {
 		{ id = 1204, name = "Halls of Infusion" },
 		["Watcher Irideus"] = {
 		order = 1, ejid = 2504,
+		384524, -- titanic-fist
+		383935, -- spark-volley
+		389179, -- power-overload
+		389181, -- power-field
 		},
 		["Gulping Goliath"] = {
 		order = 2, ejid = 2507,
+		374389, -- gulp-swog-toxin
+		385551, -- gulp
+		385451, -- toxic-effluvia
 		},
 		["Khajin the Unyielding"] = {
 		order = 3, ejid = 2510,
+		385963, -- frost-shock
+		386741, -- polar-winds
 		},
 		["Primal Tsunami"] = {
 		order = 4, ejid = 2511,
+		387359, -- waterlogged
+		387571, -- focused-deluge
+		},
+		["Trash"] = {
+		order = 5, ejid = nil,
+		374020, -- containment-beam
+		393444, -- gushing-wound
+		374706, -- pyretic-burst
+		374149, -- tailwind
+		374615, -- cheap-shot
+		374563, -- dazzle
+		374724, -- molten-subduction
 		},
 	},
 	-- World Bosses
@@ -262,15 +283,23 @@ RDDB["Dragonflight"] = {
 		{ id = 1205, name = "Dragon Isles", raid = true },
 		["Strunraan, The Sky's Misery"] = {
 		order = 1, ejid = 2515,
+		387265, -- overcharge
 		},
 		["Basrikron, The Shale Wing"] = {
 		order = 2, ejid = 2506,
+		385137, -- shale-breath
 		},
 		["Bazual, The Dreaded Flame"] = {
 		order = 3, ejid = 2517,
+		389368, -- magma-eruption
+		391257, -- searing-heat
 		},
 		["Liskanoth, The Futurebane"] = {
 		order = 4, ejid = 2518,
+		388767, -- binding-ice
+		389287, -- glacial-storm
+		389762, -- deep-freeze
+		388924, -- biting-frost
 		},
 	},
 	-- Raid instances
