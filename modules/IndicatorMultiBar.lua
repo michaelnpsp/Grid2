@@ -268,19 +268,24 @@ end
 
 local function BarColor_SetBarColor(self, parent, r, g, b, a)
 	local bar = parent[self.parentName]
-	bar:SetStatusBarColor(r, g, b, min(self.opacity,a or 1) )
-	local textures = bar.myCTextures
-	if textures then
-		for i=#textures,1,-1 do
-			local tex = textures[i]
-			tex:SetVertexColor( r, g, b, min(tex.myOpacity, a) )
+	if bar then
+		bar:SetStatusBarColor(r, g, b, min(self.opacity,a or 1) )
+		local textures = bar.myCTextures
+		if textures then
+			for i=#textures,1,-1 do
+				local tex = textures[i]
+				tex:SetVertexColor( r, g, b, min(tex.myOpacity, a) )
+			end
 		end
 	end
 end
 
 local function BarColor_SetBarColorInverted(self, parent, r, g, b, a)
-	local textures = parent[self.parentName].myTextures
-	textures[#textures]:SetVertexColor(r, g, b, a)
+	local bar = parent[self.parentName]
+	if bar then
+		local textures = bar.myTextures
+		textures[#textures]:SetVertexColor(r, g, b, a)
+	end
 end
 
 local function BarColor_UpdateDB(self)

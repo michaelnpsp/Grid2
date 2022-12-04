@@ -4,15 +4,17 @@ local Grid2Options = Grid2Options
 local L = Grid2Options.L
 
 Grid2Options:RegisterIndicatorOptions("multibar", true, function(self, indicator)
-	local layout, bars  = {}, {}
+	local layout, bars, filter  = {}, {}, {}
 	self:MakeIndicatorTypeLevelOptions(indicator,layout)
 	self:MakeIndicatorLocationOptions(indicator,layout)
 	self:MakeIndicatorMultiBarAppearanceOptions(indicator,layout)
 	self:MakeIndicatorMultiBarTexturesOptions(indicator,bars)
+	self:MakeIndicatorLoadOptions(indicator, filter)
 	local options = Grid2Options.indicatorsOptions[indicator.name].args; wipe(options)
 	self:MakeIndicatorTitleOptions(options, indicator)
 	options["bars"]   = { type = "group", order = 10, name = L["Bars"], args = bars }
-	options["layout"] = { type = "group", order = 30, name = L["Layout"], args = layout }
+	options["load"]   = { type = "group", order = 30, name = L["Load"], args = filter }
+	options["layout"] = { type = "group", order = 40, name = L["Layout"], args = layout }
 	if indicator.dbx.textureColor.r==nil then
 		local colors = {}
 		self:MakeIndicatorStatusOptions(indicator.sideKick, colors)

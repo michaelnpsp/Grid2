@@ -899,7 +899,12 @@ do
 				end
 			end
 		end
-		Grid2Frame:UpdateIndicators()
+		if indicator.childName then
+			RefreshIndicator( Grid2:GetIndicatorByName(indicator.childName) )
+		end
+		if not indicator.parentName then
+			Grid2Frame:UpdateIndicators()
+		end
 	end
 
 	local function SetFilterOptions( indicator, options, order, key, values, defValue, name, desc, isSingle, updateFunc )
