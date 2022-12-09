@@ -892,7 +892,7 @@ function Grid2Layout:SetupDetachedHeader(header, setupIndex)
 		frameBack:ClearAllPoints()
 		frameBack:SetPoint('TOPLEFT', header, 'TOPLEFT', -Spacing, Spacing )
 		frameBack:SetPoint('BOTTOMRIGHT', header, 'BOTTOMRIGHT', Spacing, -Spacing )
-		frameBack:SetFrameLevel( header:GetFrameLevel() - 1 )
+		frameBack:SetFrameLevel(0)
 		frameBack:Hide()
 		self.layoutHasDetached = true
 	end
