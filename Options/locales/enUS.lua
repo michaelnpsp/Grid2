@@ -1398,6 +1398,9 @@ L["Bosses units to display per column."] = true
 L['Hide Empty'] = true
 L["Hide empty bosses units."] = true
 
-L['Party (Normal)'] = true
-L['Party (Heroic)'] = true
-L['Party (Mythic)'] = true
+L["Party (Normal)"] = true
+L["Party (Heroic)"] = true
+L["Party (Mythic)"] = true
+
+L["Click Targeting"] = true
+L["Trigger targeting on the down portion of the mouse click"] = true

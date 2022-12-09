@@ -1400,3 +1400,5 @@ L["A resurrection spell has been casted on the unit"] = "A magia reviver esta se
 -- L['Party (Heroic)'] = ""
 -- L['Party (Mythic)'] = ""
 
+-- L["Click Targeting"] = ""
+-- L["Trigger targeting on the down portion of the mouse click"] = ""

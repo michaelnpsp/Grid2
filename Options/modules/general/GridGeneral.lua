@@ -233,6 +233,29 @@ end
 
 
 --==========================================================================
+-- Target on mouse down
+--==========================================================================
+
+Grid2Options:AddGeneralOptions( "General", "Click Targeting", {
+	downClick = {
+		type = "toggle",
+		name = L["Trigger targeting on the down portion of the mouse click"],
+		desc = L["Trigger targeting on the down portion of the mouse click"],
+		width = "full",
+		order = 119,
+		get = function () return Grid2.db.global.clickOnMouseDown end,
+		set = function (_, v)
+			Grid2.db.global.clickOnMouseDown = v or nil
+			Grid2Frame.mouseClickType = v and "AnyDown" or "AnyUp"
+			for _, frame in next, Grid2Frame.registeredFrames do
+				frame:RegisterForClicks( Grid2Frame.mouseClickType )
+			end
+		end,
+		disabled = InCombatLockdown
+	},
+})
+
+--==========================================================================
 -- Minimap
 --==========================================================================
 

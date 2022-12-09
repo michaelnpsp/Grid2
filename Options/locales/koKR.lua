@@ -1400,3 +1400,6 @@ L['Party (Normal)'] = "파티 (일반)"
 L['Party (Heroic)'] = "파티 (영웅)"
 L['Party (Mythic)'] = "파티 (신화)"
 
+-- L["Click Targeting"] = ""
+-- L["Trigger targeting on the down portion of the mouse click"] = ""
+

@@ -1400,6 +1400,9 @@ L["Bosses units to display per column."] = "Unidades de jefes a mostrar por cada
 L['Hide Empty'] = "Ocultar Vacios"
 L["Hide empty bosses units."] = "Ocultar unidades de jefes vacías."
 
-L['Party (Normal)'] = "Grupo (Normal)"
-L['Party (Heroic)'] = "Grupo (Heroica)"
-L['Party (Mythic)'] = "Grupo (Mitica)"
+L["Party (Normal)"] = "Grupo (Normal)"
+L["Party (Heroic)"] = "Grupo (Heroica)"
+L["Party (Mythic)"] = "Grupo (Mitica)5"
+
+L["Click Targeting"] = "Click para Objetivo"
+L["Trigger targeting on the down portion of the mouse click"] = "Cambiar objetivo al presionar el botón del ratón (en lugar de soltarlo)."

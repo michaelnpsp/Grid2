@@ -193,9 +193,8 @@ local function GridFrame_Init(frame, width, height)
 		frame:SetAttribute("initial-width", width)
 		frame:SetAttribute("initial-height", height)
 	end
-	frame:RegisterForClicks("AnyUp")
+	frame:RegisterForClicks( Grid2Frame.mouseClickType or "AnyUp" )
 	if Clique then Clique:UpdateRegisteredClicks(frame) end
-	frame.menu = Grid2Frame.RightClickUnitMenu
 	frame.container = frame:CreateTexture()
 	frame:CreateIndicators()
 	frame:Layout()
@@ -307,6 +306,7 @@ function Grid2Frame:OnModuleInitialize()
 end
 
 function Grid2Frame:OnModuleEnable()
+	self.mouseClickType = Grid2.db.global.clickOnMouseDown and "AnyDown" or "AnyUp"
 	if Grid2.versionCli>=30000 then
 		self:RegisterEvent("UNIT_ENTERED_VEHICLE")
 		self:RegisterEvent("UNIT_EXITED_VEHICLE")
