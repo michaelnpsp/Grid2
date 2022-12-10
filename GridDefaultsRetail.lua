@@ -69,7 +69,7 @@ do
 	local class= select(2, UnitClass("player"))
 	if class=="SHAMAN" then Grid2.MakeDefaultsClass= function()
 		Grid2:DbSetValue( "statuses",  "buff-Riptide-mine", {type = "buff", spellName = 61295, mine = true, color1 = {r=.8,g=.6,b=1,a=1}})
-		Grid2:DbSetValue( "statuses",  "buff-Earthliving", {type = "buff", spellName = 51945, mine= true, color1 = {r=.8,g=1,b=.5,a=1}})
+		Grid2:DbSetValue( "statuses",  "buff-Earthliving", {type = "buff", spellName = 382024, mine= true, color1 = {r=.8,g=1,b=.5,a=1}})
 		Grid2:DbSetValue( "statuses",  "buff-EarthShield", {type = "buff", spellName = 974, color1 = {r=.8,g=.8,b=.2,a=1}})
 		Grid2:DbSetValue( "statuses",  "buff-EarthShield-mine", {type = "buff", spellName = 974, mine = true, colorCount = 2, color1 = {r=.9,g=.9,b=.4,a=1}, color2 = {r=.9,g=.9,b=.4,a=1} })
 		Grid2:DbSetValue( "indicators",  "corner-top-left", {type = "square", level = 9, location = Location("TOPLEFT"), size = 5,})
