@@ -1377,7 +1377,11 @@ L["Unit Class"] = true
 L["Load the status only if the unit belong to the specified class."] = true
 L["Unit Role"] = true
 L["Load the status only if the unit has the specified role."] = true
-L["Unit Is Pet"] = true
+L["Unit Type"] = true
+L["Load the status only for the specified unit types."] = true
+L["Load the indicator only for the specified unit types."] = true
+L["Active Theme"] = true
+L["Load the indicator only for the specified themes."] = true
 
 L["Select layouts for different Raid types."] = true
 L["Use Blizzard Unit Frames"] = true
