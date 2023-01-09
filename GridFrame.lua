@@ -215,7 +215,11 @@ function GridFramePrototype:Layout()
 	-- external border controlled by the border indicator
 	local r,g,b,a = self:GetBackdropBorderColor()
 	Grid2:SetFrameBackdrop( self, frameBackdrop )
-	if r then self:SetBackdropBorderColor(r, g, b, a) end
+	if r then
+		self:SetBackdropBorderColor(r, g, b, a)
+	else
+		self:SetBackdropBorderColor(0, 0, 0, 0)
+	end
 	-- inner border color (sure that is the inner border)
 	local cf = dbx.frameColor
 	self:SetBackdropColor( cf.r, cf.g, cf.b, cf.a )
