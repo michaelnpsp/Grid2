@@ -53,6 +53,7 @@ Grid2Options.PlayerBuffs = {
 		366155, --reversion
 		367364, --reversion-echoed
 		359816, --dream-flight
+		355936, --dream-breath
 	},
 }
 -- Grid2Options.PlayerDebuffs total: 229 generated: 02/01/15 14:07:35

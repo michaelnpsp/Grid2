@@ -90,7 +90,7 @@ function Mana:GetText(unit)
 end
 
 function Mana:UpdateDB()
-	Mana.IsActive        = self.dbx.showOnlyHealers and Mana.IsActiveHealer        or Mana.IsActiveStandard
+	Mana.IsActive = self.dbx.showOnlyHealers and Mana.IsActiveHealer or Mana.IsActiveStandard
 end
 
 Grid2.setupFunc["mana"] = function(baseKey, dbx)
