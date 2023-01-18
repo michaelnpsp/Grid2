@@ -260,9 +260,6 @@ do
 		if self.debugging then
 			self:Debug("GetInstanceInfo %s %s %s/%s/%s %s@%s(%s)", tostring(event), tostring(instName), tostring(instMapID), tostring(difficultyID), tostring(maxPlayers), tostring(self.groupType), tostring(self.instType), tostring(self.instMaxPlayers))
 		end
-		if isWrath then
-			self:RefreshToggleForVehicleWorkaround(instMapID)
-		end
 		if newInstType == "arena" then
 			newGroupType = newInstType	-- arena@arena instances
 		elseif IsInRaid() then
