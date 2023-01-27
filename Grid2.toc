@@ -16,7 +16,7 @@
 ## DefaultState: enabled
 ## LoadOnDemand: 0
 ## SavedVariables: Grid2DB
-## OptionalDeps: Ace3, Clique
+## OptionalDeps: Ace3, Clique, LibHealComm-4.0
 
 # Ace Libraries
 #@no-lib-strip@
@@ -30,17 +30,11 @@ Libs\AceLocale-3.0\AceLocale-3.0.xml
 Libs\LibSharedMedia-3.0\LibSharedMedia-3.0.lua
 Libs\LibCustomGlow-1.0\LibCustomGlow-1.0.lua
 #@version-classic@
-Libs\LibHealComm-4.0\ChatThrottleLib.lua
-Libs\LibHealComm-4.0\LibHealComm-4.0.lua
 Libs\LibClassicDurations\LibClassicDurations.xml
 #@end-version-classic@
 #@version-bcc@
-Libs\LibHealComm-4.0\ChatThrottleLib.lua
-Libs\LibHealComm-4.0\LibHealComm-4.0.lua
 #@end-version-bcc@
 #@version-wrath@
-Libs\LibHealComm-4.0\ChatThrottleLib.lua
-Libs\LibHealComm-4.0\LibHealComm-4.0.lua
 #@end-version-wrath@
 #@end-no-lib-strip@
 

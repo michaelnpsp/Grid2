@@ -4,9 +4,10 @@ if Grid2.isClassic then
 	local APIS = { [0] = 'Blizzard API', [1] = 'LibHealComm-4' }
 	local TIME_VALUES = { [0] = L['None'] }
 	for i=1,15 do TIME_VALUES[i] = string.format(L["%d seconds"], i)	end
+	local COMM_ERROR = L['|cFFe0e000\nWarning: LibHealComm-4 is not installed, Blizzard API will be used instead. You must install the LibHealComm-4.0 addon to enable LibHealComm-4 API.']
 	function Grid2Options:MakeStatusHealsClassicOptions(status, options)
-		local LHC = LibStub("LibHealComm-4.0")
-		if Grid2.HealCommSupport and not Grid2.db.global.HealsUseBlizAPI then
+		local LHC = LibStub("LibHealComm-4.0", true)
+		if Grid2.HealCommSupport and LHC and not Grid2.db.global.HealsUseBlizAPI then
 			options.classicTimeBand = {
 				type = "select",
 				name = L["Heals Time Band"],
@@ -59,11 +60,25 @@ if Grid2.isClassic then
 					return Grid2.db.global.HealsUseBlizAPI and 0 or 1
 				end,
 				set = function(_, v)
-					Grid2.db.global.HealsUseBlizAPI = (v==0) or nil
-					ReloadUI()
+					if v==0 then -- Blizzard API
+						Grid2.db.global.HealsUseBlizAPI = true
+					elseif LHC then -- LibHealComm
+						Grid2.db.global.HealsUseBlizAPI = nil
+					else
+						self:MessageDialog(COMM_ERROR)
+					end
+					if LHC then ReloadUI() end
 				end,
 				values = APIS,
-				confirm = function() return L["UI will be reloaded to change this option. Are you sure?"] end,
+				confirm = function() return LHC and L["UI will be reloaded to change this option. Are you sure?"] or nil end,
+			}
+			options.healsApiWarning = {
+				type = "description",
+				order = 365,
+				name = COMM_ERROR,
+				hidden = function()
+					return LHC~=nil or Grid2.db.global.HealsUseBlizAPI
+				end
 			}
 		end
 	end
