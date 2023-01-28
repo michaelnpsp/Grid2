@@ -571,7 +571,6 @@ Grid2:DbSetStatusDefaultValue( "death", {type = "death", color1 = {r=1,g=1,b=1,a
 -- Heals Interfaces
 local APIHeals = {}
 local HealsUpdateEvent
-local HealComEnabled
 
 -- Blizzard heals API
 do
@@ -599,9 +598,8 @@ do
 end
 
 -- LibHealComm-4 heals API
-Grid2.HealCommSupport = Grid2.versionCli<40000
-if Grid2.HealCommSupport then -- HealComm only available for vanilla and burning crusade and wrath
-	local HealComm = LibStub("LibHealComm-4.0",true)
+local HealComm
+if Grid2.versionCli<40000 then -- HealComm only available for vanilla and burning crusade and wrath
 	local UnitGUID = UnitGUID
 	local playerGUID = UnitGUID('player')
 	local roster_units = Grid2.roster_units
@@ -613,7 +611,13 @@ if Grid2.HealCommSupport then -- HealComm only available for vanilla and burning
 	local function HealModifier(event, guid)
 		HealsUpdateEvent( roster_units[guid] )
 	end
-	APIHeals.HealCom = HealComm and {
+	APIHeals.HealCom = {
+		Init = function(self)
+			if not Grid2.db.global.HealsUseBlizAPI then
+				HealComm = LibStub("LibHealComm-4.0",true)
+				return HealComm and self
+			end
+		end,
 		RegisterEvent = function(event, func)
 			HealComm.RegisterCallback( Grid2, "HealComm_HealStarted", HealUpdated )
 			HealComm.RegisterCallback( Grid2, "HealComm_HealUpdated", HealUpdated )
@@ -661,8 +665,7 @@ local RegisterEvent
 local UnregisterEvent
 
 HealsInitialize = function()
-	local API = (Grid2.db.global.HealsUseBlizAPI and APIHeals.Blizzard) or APIHeals.HealCom or APIHeals.Blizzard
-	HealComEnabled = (API == APIHeals.HealCom)
+	local API = APIHeals.HealCom and APIHeals.HealCom:Init() or APIHeals.Blizzard
 	RegisterEvent = API.RegisterEvent
 	UnregisterEvent = API.UnregisterEvent
 	UnitGetMyIncomingHeals = API.UnitGetMyIncomingHeals
@@ -747,7 +750,7 @@ function Heals:OnEnable()
 	if self.dbx.includeHealAbsorbs and not Grid2.isClassic then
 		RegisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", HealsUpdateEvent)
 	end
-	if not self.dbx.includePlayerHeals and not HealComEnabled then -- if using HealCom library we do not need to substract player heals
+	if not self.dbx.includePlayerHeals and not HealComm then -- if using HealCom library we do not need to substract player heals
 		myheal_required = bit.bor(myheal_required,1) -- set bit1
 	end
 	heals_enabled = true

@@ -7,7 +7,7 @@ if Grid2.isClassic then
 	local COMM_ERROR = L['|cFFe0e000\nWarning: LibHealComm-4 is not installed, Blizzard API will be used instead. You must install the LibHealComm-4.0 addon to enable LibHealComm-4 API.']
 	function Grid2Options:MakeStatusHealsClassicOptions(status, options)
 		local LHC = LibStub("LibHealComm-4.0", true)
-		if Grid2.HealCommSupport and LHC and not Grid2.db.global.HealsUseBlizAPI then
+		if LHC and not Grid2.db.global.HealsUseBlizAPI then
 			options.classicTimeBand = {
 				type = "select",
 				name = L["Heals Time Band"],
@@ -49,7 +49,7 @@ if Grid2.isClassic then
 				status:UpdateAllUnits()
 			end,
 		}
-		if Grid2.HealCommSupport then
+		if Grid2.versionCli<40000 then
 			options.healsApiSep = { type = "header", order = 359,  name = "" }
 			options.healsApi = {
 				type = "select",
