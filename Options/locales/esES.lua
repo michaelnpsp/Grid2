@@ -602,6 +602,7 @@ L["Maximum value"] = "Valor maximo"
 -- general statuses
 L["name"] = "nombre jugador"
 L["mana"] = "mana"
+L["manaalt"] = "mana alternativo"
 L["power"] = "poder"
 L["poweralt"] = "poder alternativo"
 L["alpha"] = "transparencia"

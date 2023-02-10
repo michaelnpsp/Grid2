@@ -602,6 +602,7 @@ L["Maximum value"] = true
 -- general statuses
 L["name"]= true
 L["mana"]= true
+L["manaalt"]= true
 L["power"]= true
 L["poweralt"]= true
 L["alpha"] = true

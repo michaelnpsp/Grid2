@@ -1,5 +1,10 @@
 local L = Grid2Options.L
 
+local CLASSES_MANA = { PRIEST = true, DRUID = true, MAGE = true,  WARLOCK = true, PALADIN = true, SHAMAN = true, MONK = true, EVOKER = true, HUNTER = Grid2.isClassic or nil }
+for class in pairs(CLASSES_MANA) do
+	CLASSES_MANA[class] = LOCALIZED_CLASS_NAMES_MALE[class]
+end
+
 Grid2Options:RegisterStatusOptions("lowmana",  "mana", Grid2Options.MakeStatusColorThresholdOptions, {
 	titleIcon = "Interface\\Icons\\Inv_potion_86"
 })
@@ -19,6 +24,37 @@ Grid2Options:RegisterStatusOptions("mana","mana",  function(self, status, option
 			status:UpdateAllUnits()
 		end,
 	}
+end, {
+	titleIcon = "Interface\\Icons\\Inv_potion_72"
+})
+
+Grid2Options:RegisterStatusOptions("manaalt", "mana",  function(self, status, options, optionParams)
+	self:MakeStatusStandardOptions(status, options, optionParams)
+	self:MakeHeaderOptions(options, "Display")	
+	options.classes = {
+		type = "multiselect",
+		order = 100,
+		name = L["Classes"],
+		get = function(info, value)
+			return status.dbx.classes[value]
+		end,
+		set = function(info, value)
+			status.dbx.classes[value] = not status.dbx.classes[value]
+			status:RefreshAllUnits()
+		end,
+		values = CLASSES_MANA
+	}	
+	options.display = {
+		type = "toggle",
+		order = 110,
+		width = 'full',
+		name = L['Display mana only when is not the default power type'],
+		get = function () return not status.dbx.showDefault end,
+		set = function ()
+			status.dbx.showDefault = not status.dbx.showDefault or nil
+			status:RefreshAllUnits()
+		end,
+	}	
 end, {
 	titleIcon = "Interface\\Icons\\Inv_potion_72"
 })

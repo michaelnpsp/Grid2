@@ -2,6 +2,7 @@
 
 local Mana = Grid2.statusPrototype:new("mana")
 local LowMana = Grid2.statusPrototype:new("lowmana",false)
+local ManaAlt = Grid2.statusPrototype:new("manaalt", false)
 local Power = Grid2.statusPrototype:new("power",false)
 local PowerAlt = Grid2.statusPrototype:new("poweralt",false)
 
@@ -15,6 +16,7 @@ local UnitPowerType = UnitPowerType
 local UnitPower = UnitPower
 local UnitPowerMax = UnitPowerMax
 local UnitIsPlayer = UnitIsPlayer
+local UnitClass = UnitClass
 local UnitGroupRolesAssigned = UnitGroupRolesAssigned or (function() return 'NONE' end)
 
 local statuses = {}  -- Enabled statuses
@@ -25,7 +27,7 @@ do
 	local frame
 	local function Frame_OnEvent(self, event, unit, powerType)
 		for status in next,statuses do
-			status:UpdateUnitPower(unit, powerType)
+			status:UpdateUnitPower(unit, powerType, event)
 		end
 	end
 	function status_OnEnable(status)
@@ -225,3 +227,72 @@ Grid2:DbSetStatusDefaultValue( "power", {type = "power", colorCount = 10,
 	color9 = {r=0.788, g=0.259, b=0.992, a=1}, -- fury
 	color10 = {r=1.00, g=0.61, b=0.00, a=1} -- pain
 })
+
+
+-- Mana Alt status
+ManaAlt.GetColor = Grid2.statusLibrary.GetColor
+
+local validClasses
+local validUnits = {}
+
+local function ManaAlt_UnitUpdated(_, unit)
+	local _, class = UnitClass(unit)
+	validUnits[unit] = validClasses[class]
+end
+
+function ManaAlt:RefreshAllUnits()
+	self:UpdateDB()
+	wipe(validUnits)
+	for unit in Grid2:IterateRosterUnits() do
+		ManaAlt_UnitUpdated(nil, unit)
+		self:UpdateIndicators(unit)
+	end
+end
+
+function ManaAlt:OnEnable()
+	status_OnEnable(self)
+	Grid2.RegisterMessage( validUnits, "Grid_UnitUpdated", ManaAlt_UnitUpdated )
+end
+
+function ManaAlt:OnDisable()
+	status_OnDisable(self)
+	Grid2.UnregisterMessage( validUnits, "Grid_UnitUpdated", ManaAlt_UnitUpdated )
+	wipe(validUnits)
+	validClasses = nil	
+end
+
+function ManaAlt:UpdateUnitPower(unit, powerType, event)
+	if event=='UNIT_DISPLAYPOWER' or (powerType=='MANA' and validUnits[unit]) then
+		self:UpdateIndicators(unit)
+	end	
+end
+
+function ManaAlt:IsActiveStandard(unit)
+	return validUnits[unit] and UnitPowerType(unit) ~= 0
+end
+
+function ManaAlt:IsActiveAlways(unit)
+	return validUnits[unit]
+end
+
+function ManaAlt:GetPercent(unit)
+	local m = UnitPowerMax(unit,0)
+	return m == 0 and 0 or UnitPower(unit,0) / m
+end
+
+function ManaAlt:GetText(unit)
+	return fmt("%.1fk", UnitPower(unit,0) / 1000)
+end
+
+function ManaAlt:UpdateDB()
+	validClasses = self.dbx.classes
+	self.IsActive = self.dbx.showDefault and self.IsActiveAlways or self.IsActiveStandard	
+end
+
+Grid2.setupFunc["manaalt"] = function(baseKey, dbx)
+	Grid2:RegisterStatus(ManaAlt, {"percent", "text", "color"}, baseKey, dbx)
+	ManaAlt:UpdateDB()
+	return ManaAlt
+end
+
+Grid2:DbSetStatusDefaultValue( "manaalt", {type = "manaalt", classes = {PRIEST=true}, color1={r=0,g=0,b=1,a=1}} )
