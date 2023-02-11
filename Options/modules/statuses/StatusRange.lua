@@ -101,13 +101,28 @@ Grid2Options:RegisterStatusOptions("range", "target", function(self, status, opt
 		end,
 		values = rangeList
 	}
-	options.customSpell = {
+	options.newline = {
+		order = 59,
+		type = "description",
+		name = "\n",
+	}
+	options.friendlySpell = {
 		type = "select",
 		order = 60,
-		name = L["Select a Spell"],
+		name = L["Spell for friendly units"],
 		desc = L["Spell to check the range of. The player must know the spell."],
-		get = function () return rangeDB.customSpellID;	end,	
-		set = function (_, v) rangeDB.customSpellID = v; status:UpdateDB(); end,
+		get = function () return rangeDB.friendlySpellID;	end,	
+		set = function (_, v) rangeDB.friendlySpellID = v; status:UpdateDB(); end,
+		values = GetPlayerSpells,
+		hidden = function() return rangeDB.range~='spell' end,
+	}
+	options.hostileSpell = {
+		type = "select",
+		order = 70,
+		name = L["Spell for hostile units"],
+		desc = L["Spell to check the range of. The player must know the spell."],
+		get = function () return rangeDB.hostileSpellID;	end,	
+		set = function (_, v) rangeDB.hostileSpellID = v; status:UpdateDB(); end,
 		values = GetPlayerSpells,
 		hidden = function() return rangeDB.range~='spell' end,
 	}

@@ -26,7 +26,8 @@ local UnitRangeCheck
 local grouped_units = Grid2.grouped_units
 local playerClass = Grid2.playerClass
 
-local customSpell -- possible custom spell configured by the user (spell name)
+local friendlySpell -- friendly spell configured by the user (spell name)
+local hostileSpell  -- friendly spell configured by the user (spell name)
 
 local rezSpellID = ({ -- classic has the same spellIDs
 		DRUID       = 20484,
@@ -87,16 +88,18 @@ local Ranges= {
 					return true
 				elseif rezSpell and UnitIsDeadOrGhost(unit) then
 					return IsSpellInRange(rezSpell,unit)==1
-				else
-					return IsSpellInRange(customSpell,unit)==1
+				elseif friendlySpell then
+					return IsSpellInRange(friendlySpell,unit)==1
 				end
-			else
-				local range = IsSpellInRange(customSpell,unit)
+			elseif hostileSpell then
+				local range = IsSpellInRange(hostileSpell,unit)
 				if range then
 					return range==1
 				else
 					return CheckInteractDistance(unit,4) -- 28y for enemies
 				end
+			else	
+				return CheckInteractDistance(unit,4) -- 28y for enemies
 			end
 		end
 	end,
@@ -166,8 +169,9 @@ end
 function Range:UpdateDB()
 	local dbx = self.dbx
 	local dbr = dbx.ranges and dbx.ranges[playerClass] or dbx
-	customSpell = dbr.customSpellID and GetSpellInfo(dbr.customSpellID)
-	curRange = tonumber(dbr.range) or (dbr.range=='spell' and customSpell and 'spell') or (rangeSpell and 'heal') or 38
+	friendlySpell = dbr.friendlySpellID and GetSpellInfo(dbr.friendlySpellID)
+	hostileSpell  = dbr.hostileSpellID  and GetSpellInfo(dbr.hostileSpellID)
+	curRange = tonumber(dbr.range) or (dbr.range=='spell' and 'spell') or (rangeSpell and 'heal') or 38
 	UnitRangeCheck = Ranges[curRange] or Ranges[38]
 	curAlpha = dbx.default or 0.25
 	timer = timer or Grid2:CreateTimer( Update )
