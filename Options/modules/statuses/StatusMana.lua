@@ -45,7 +45,7 @@ Grid2Options:RegisterStatusOptions("manaalt", "mana",  function(self, status, op
 	}	
 end, {
 	titleIcon = "Interface\\Icons\\Inv_potion_72",
-	unitFilter = true,	
+	unitFilter = true,
 })
 
 Grid2Options:RegisterStatusOptions("poweralt", "mana", Grid2Options.MakeStatusColorOptions, {
@@ -73,5 +73,6 @@ Grid2Options:RegisterStatusOptions("power",    "mana", Grid2Options.MakeStatusCo
 	color10 = L["Pain"],
 	colorDesc10 = L["Pain"],
 	width = "full",
-	titleIcon = "Interface\\Icons\\Inv_potion_33"
+	titleIcon = "Interface\\Icons\\Inv_potion_33",
+	unitFilter = true,
 })

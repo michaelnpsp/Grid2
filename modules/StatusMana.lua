@@ -163,8 +163,15 @@ Grid2:DbSetStatusDefaultValue( "poweralt", {type = "poweralt", color1= {r=1,g=0,
 -- Power status
 local powerColors= {}
 
-Power.OnEnable = status_OnEnable
-Power.OnDisable = status_OnDisable
+function Power:OnEnable()
+	self:EnableUnitFilter()
+	status_OnEnable(self)
+end
+
+function Power:OnDisable()
+	self:DisableUnitFilter()
+	status_OnDisable(self)
+end
 
 function Power:UpdateUnitPower(unit, powerType)
    if UnitIsPlayer(unit) and powerColors[ powerType ] then
@@ -172,8 +179,12 @@ function Power:UpdateUnitPower(unit, powerType)
 	end
 end
 
-function Power:IsActive(unit)
+function Power:IsActiveStandard(unit)
   return UnitIsPlayer(unit)
+end
+
+function Power:IsActiveFilter(unit)
+  return not self.filtered[unit] and UnitIsPlayer(unit)
 end
 
 function Power:GetPercent(unit)
@@ -207,6 +218,8 @@ function Power:UpdateDB()
 	powerColors["LUNAR_POWER"] = self.dbx.color8
 	powerColors["FURY"] = self.dbx.color9
 	powerColors["PAIN"] = self.dbx.color10
+	self:MakeUnitFilter()
+	self.IsActive = self.filtered and self.IsActiveFilter or self.IsActiveStandard
 end
 
 Grid2.setupFunc["power"] = function(baseKey, dbx)
@@ -233,13 +246,13 @@ Grid2:DbSetStatusDefaultValue( "power", {type = "power", colorCount = 10,
 ManaAlt.GetColor = Grid2.statusLibrary.GetColor
 
 function ManaAlt:OnEnable()
-	status_OnEnable(self)
 	self:EnableUnitFilter()
+	status_OnEnable(self)
 end
 
 function ManaAlt:OnDisable()
-	status_OnDisable(self)
 	self:DisableUnitFilter()
+	status_OnDisable(self)
 end
 
 function ManaAlt:UpdateUnitPower(unit, powerType, event)
