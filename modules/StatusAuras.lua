@@ -9,7 +9,7 @@ local UnitAura = UnitAura
 local isClassic = Grid2.isClassic
 
 -- Local variables
-local Statuses, filteredStatuses = {}, {}
+local Statuses = {}
 
 local Buffs = {}
 local Debuffs = {}
@@ -121,75 +121,18 @@ do
 	end
 end
 
--- unit class/reaction filters
-local MakeStatusFilter
-do
-	local UnitClass = UnitClass
-	local UnitExists = UnitExists
-	local UnitIsFriend = UnitIsFriend
-	local UnitGroupRolesAssigned = Grid2.UnitGroupRolesAssigned
-	local roster_types = Grid2.roster_types
-	local filter_mt = {	__index = function(t,u)
-		if UnitExists(u) then
-			local load, r = t.source
-			if load.unitType then
-				r = not load.unitType[ roster_types[u] ]
-			end
-			if not r and load.unitRole then
-				r = not load.unitRole[ UnitGroupRolesAssigned(u) ]
-			end
-			if not r and load.unitClass then
-				local _,class = UnitClass(u)
-				r = not load.unitClass[class]
-			end
-			if not r and load.unitReaction then
-				r = not UnitIsFriend('player',u)
-				if load.unitReaction.hostile then r = not r end
-			end
-			t[u] = r
-			return r
-		end
-		t[u] = true
-		return true
-	end }
-	MakeStatusFilter = function(status)
-		local load = status.dbx.load
-		if load and (load.unitType or load.unitReaction or load.unitClass or load.unitRole) then
-			if status.filtered then
-				wipe(status.filtered).source = load
-			else
-				status.filtered = setmetatable({source = load}, filter_mt)
-			end
-		else
-			status.filtered = nil
-		end
-	end
-end
-
 -- Clear/update auras when unit changes or leaves the roster.
 do
 	local function ClearAurasOfUnit(_, unit)
 		for status in next, Statuses do
-			local filtered = status.filtered
-			if filtered then filtered[unit] = nil end
 			status.idx[unit], status.exp[unit], status.val[unit] = nil, nil, nil
 		end
 	end
 	local function UpdateAurasOfUnit(_, unit, joined)
-		ClearAurasOfUnit(nil, unit)
 		AuraFrame_OnEvent(nil, nil, unit)
 	end
 	Grid2.RegisterMessage( Statuses, "Grid_UnitLeft", ClearAurasOfUnit )
 	Grid2.RegisterMessage( Statuses, "Grid_UnitUpdated", UpdateAurasOfUnit )
-end
-
--- Refresh auras filter, currently only used to reset unitRole filter
-function Grid2:RefreshAurasFilter(filterName)
-	for status, filtered in next, filteredStatuses do
-		local load = filtered.source
-		wipe(filtered).source = load
-		status:UpdateAllUnits()
-	end
 end
 
 -- EnableAuraEvents() DisableAuraEvents()
@@ -206,10 +149,7 @@ do
 				UnitAura = LibStub("LibClassicDurations").UnitAuraDirect
 			end
 		end
-		local filtered = status.filtered
-		if filtered and filtered.source.unitRole then
-			filteredStatuses[status] = filtered
-		end
+		status:EnableUnitFilter()
 	end
 	DisableAuraEvents = function(status)
 		if not next(Statuses) then
@@ -219,10 +159,7 @@ do
 				LibStub("LibClassicDurations"):Unregister(Grid2)
 			end
 		end
-		local filtered = status.filtered
-		if filtered and filtered.source.unitRole then
-			filteredStatuses[status] = nil
-		end
+		status:DisableUnitFilter()
 	end
 end
 
@@ -563,7 +500,7 @@ do
 		if self.enabled then self:OnDisable() end
 		local dbx = dbx or self.dbx
 		local blinkThreshold = dbx.blinkThreshold or nil
-		MakeStatusFilter(self)
+		self:MakeUnitFilter()
 		self.vId = dbx.valueIndex or 0
 		self.valMax = dbx.valueMax
 		self.GetPercent = dbx.valueIndex and (dbx.valueMax and GetPercentMax or GetPercentHealth) or Grid2.statusLibrary.GetPercent

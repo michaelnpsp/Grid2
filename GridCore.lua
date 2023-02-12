@@ -223,7 +223,7 @@ function Grid2:PLAYER_SPECIALIZATION_CHANGED(event,unit)
 end
 
 function Grid2:PLAYER_ROLES_ASSIGNED()
-	self:RefreshAurasFilter('unitRole')
+	self:RefreshStatusesFilter('unitRole')
 	if not self:ReloadTheme() then
 		self:SendMessage("Grid_PlayerRolesAssigned")
 	end

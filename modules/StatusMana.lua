@@ -232,47 +232,30 @@ Grid2:DbSetStatusDefaultValue( "power", {type = "power", colorCount = 10,
 -- Mana Alt status
 ManaAlt.GetColor = Grid2.statusLibrary.GetColor
 
-local validClasses
-local validUnits = {}
-
-local function ManaAlt_UnitUpdated(_, unit)
-	local _, class = UnitClass(unit)
-	validUnits[unit] = validClasses[class]
-end
-
-function ManaAlt:RefreshAllUnits()
-	self:UpdateDB()
-	wipe(validUnits)
-	for unit in Grid2:IterateRosterUnits() do
-		ManaAlt_UnitUpdated(nil, unit)
-		self:UpdateIndicators(unit)
-	end
-end
-
 function ManaAlt:OnEnable()
 	status_OnEnable(self)
-	Grid2.RegisterMessage( validUnits, "Grid_UnitUpdated", ManaAlt_UnitUpdated )
+	self:EnableUnitFilter()
 end
 
 function ManaAlt:OnDisable()
 	status_OnDisable(self)
-	Grid2.UnregisterMessage( validUnits, "Grid_UnitUpdated", ManaAlt_UnitUpdated )
-	wipe(validUnits)
-	validClasses = nil	
+	self:DisableUnitFilter()
 end
 
 function ManaAlt:UpdateUnitPower(unit, powerType, event)
-	if event=='UNIT_DISPLAYPOWER' or (powerType=='MANA' and validUnits[unit]) then
+	if not (self.filtered and self.filtered[unit]) and (event=='UNIT_DISPLAYPOWER' or powerType=='MANA') then
 		self:UpdateIndicators(unit)
 	end	
 end
 
 function ManaAlt:IsActiveStandard(unit)
-	return validUnits[unit] and UnitPowerType(unit) ~= 0
+	local filtered = self.filtered
+	return not (filtered and filtered[unit]) and UnitPowerType(unit) ~= 0
 end
 
 function ManaAlt:IsActiveAlways(unit)
-	return validUnits[unit]
+	local filtered = self.filtered
+	return not (filtered and filtered[unit])
 end
 
 function ManaAlt:GetPercent(unit)
@@ -285,7 +268,7 @@ function ManaAlt:GetText(unit)
 end
 
 function ManaAlt:UpdateDB()
-	validClasses = self.dbx.classes
+	self:MakeUnitFilter()
 	self.IsActive = self.dbx.showDefault and self.IsActiveAlways or self.IsActiveStandard	
 end
 

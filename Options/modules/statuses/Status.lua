@@ -304,7 +304,7 @@ do
 			L["Load the status only if you are in the specified instance type."]
 		)
 		SetFilterZoneOptions(status, options, 55, 'instNameID')
-		if status.handlerType then -- hackish to detect buff/debuff type statuses
+		if status.handlerType or (optionParams and optionParams.unitFilter) then -- hackish to detect buff/debuff type statuses
 			SetFilterOptions( status, options, 60,
 				'unitReaction',
 				UNIT_REACTIONS,

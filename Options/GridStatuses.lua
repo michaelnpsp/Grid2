@@ -205,7 +205,7 @@ function Grid2Options:MakeStatusChildOptions(status, options)
 			options.settings   = { type = "group", order = 100, name = L['General'], args = {} }
 			options.load       = { type = "group", order = 200, name = L['Load'], args = {} }
 			options.indicators = { type = "group", order = 300, name = L['Indicators'], args = {} }
-			self:MakeStatusLoadOptions( status, options.load.args )
+			self:MakeStatusLoadOptions( status, options.load.args, optionParams )
 			self:MakeStatusIndicatorsOptions( status, options.indicators.args )
 			options = options.settings.args
 		end

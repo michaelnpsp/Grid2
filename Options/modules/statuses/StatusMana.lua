@@ -31,19 +31,6 @@ end, {
 Grid2Options:RegisterStatusOptions("manaalt", "mana",  function(self, status, options, optionParams)
 	self:MakeStatusStandardOptions(status, options, optionParams)
 	self:MakeHeaderOptions(options, "Display")	
-	options.classes = {
-		type = "multiselect",
-		order = 100,
-		name = L["Classes"],
-		get = function(info, value)
-			return status.dbx.classes[value]
-		end,
-		set = function(info, value)
-			status.dbx.classes[value] = not status.dbx.classes[value]
-			status:RefreshAllUnits()
-		end,
-		values = CLASSES_MANA
-	}	
 	options.display = {
 		type = "toggle",
 		order = 110,
@@ -52,11 +39,13 @@ Grid2Options:RegisterStatusOptions("manaalt", "mana",  function(self, status, op
 		get = function () return not status.dbx.showDefault end,
 		set = function ()
 			status.dbx.showDefault = not status.dbx.showDefault or nil
-			status:RefreshAllUnits()
+			status:UpdateDB()
+			status:UpdateAllUnits()
 		end,
 	}	
 end, {
-	titleIcon = "Interface\\Icons\\Inv_potion_72"
+	titleIcon = "Interface\\Icons\\Inv_potion_72",
+	unitFilter = true,	
 })
 
 Grid2Options:RegisterStatusOptions("poweralt", "mana", Grid2Options.MakeStatusColorOptions, {
