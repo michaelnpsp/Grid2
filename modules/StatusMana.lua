@@ -17,7 +17,6 @@ local UnitPower = UnitPower
 local UnitPowerMax = UnitPowerMax
 local UnitIsPlayer = UnitIsPlayer
 local UnitClass = UnitClass
-local UnitGroupRolesAssigned = UnitGroupRolesAssigned or (function() return 'NONE' end)
 
 local statuses = {}  -- Enabled statuses
 
@@ -55,6 +54,7 @@ end
 Mana.GetColor = Grid2.statusLibrary.GetColor
 
 function Mana:OnEnable()
+	self:EnableUnitFilter()
 	status_OnEnable(self)
 	if self.dbx.showOnlyHealers then
 		self:RegisterEvent("PLAYER_ROLES_ASSIGNED", "UpdateAllUnits")
@@ -63,6 +63,7 @@ function Mana:OnEnable()
 end
 
 function Mana:OnDisable()
+	self:DisableUnitFilter()
 	status_OnDisable(self)
 	if self.rolesEvent then
 		self:UnregisterEvent("PLAYER_ROLES_ASSIGNED")
@@ -78,8 +79,8 @@ function Mana:IsActiveStandard(unit)
 	return UnitPowerType(unit) == 0
 end
 
-function Mana:IsActiveHealer(unit)
-	return UnitPowerType(unit) == 0 and (unit=="player" or UnitGroupRolesAssigned(unit) == "HEALER")
+function Mana:IsActiveFilter(unit)
+	return (unit=="player" or not self.filtered[unit]) and UnitPowerType(unit)==0
 end
 
 function Mana:GetPercent(unit)
@@ -92,7 +93,8 @@ function Mana:GetText(unit)
 end
 
 function Mana:UpdateDB()
-	Mana.IsActive = self.dbx.showOnlyHealers and Mana.IsActiveHealer or Mana.IsActiveStandard
+	self:MakeUnitFilter()
+	self.IsActive = self.filtered and self.IsActiveFilter or self.IsActiveStandard
 end
 
 Grid2.setupFunc["mana"] = function(baseKey, dbx)

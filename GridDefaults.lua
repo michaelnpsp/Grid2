@@ -5,7 +5,7 @@ Created by Michael, based on Grid2Options\GridDefaults.lua from original Grid2 a
 local Grid2 = Grid2
 
 -- Latest database profile version
-local DB_VERSION = 11
+local DB_VERSION = 12
 
 -- Database manipulation functions
 function Grid2:DbSetStatusDefaultValue(name, value)
@@ -138,6 +138,14 @@ function Grid2:UpdateDefaults()
 			local threat = self.db.profile.statuses.threat
 			threat.blinkThreshold = not threat.disableBlink
 			threat.disableBlink = nil
+		end
+		if version<12 then
+			local dbx = self.db.profile.statuses.mana
+			if dbx.showOnlyHealers then
+				dbx.load = dbx.load or {}
+				dbx.load.unitRole = { HEALER = true }
+				dbx.showOnlyHealers = nil
+			end	
 		end
 	end
 	-- Set database version

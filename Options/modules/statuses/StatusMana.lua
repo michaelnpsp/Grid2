@@ -10,22 +10,9 @@ Grid2Options:RegisterStatusOptions("lowmana",  "mana", Grid2Options.MakeStatusCo
 })
 Grid2Options:RegisterStatusOptions("mana","mana",  function(self, status, options, optionParams)
 	self:MakeStatusStandardOptions(status, options, optionParams)
-	self:MakeHeaderOptions(options, "Display")
-	options.showOnlyHealers = {
-		type = "toggle",
-		order = 200,
-		width= "full",
-		name = L["Hide mana of non healer players"],
-		tristate = false,
-		get = function () return status.dbx.showOnlyHealers end,
-		set = function (_, v)
-			status.dbx.showOnlyHealers = v or nil
-			status:UpdateDB()
-			status:UpdateAllUnits()
-		end,
-	}
 end, {
-	titleIcon = "Interface\\Icons\\Inv_potion_72"
+	titleIcon = "Interface\\Icons\\Inv_potion_72",
+	unitFilter = true,
 })
 
 Grid2Options:RegisterStatusOptions("manaalt", "mana",  function(self, status, options, optionParams)
