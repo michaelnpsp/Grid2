@@ -149,7 +149,6 @@ do
 				UnitAura = LibStub("LibClassicDurations").UnitAuraDirect
 			end
 		end
-		status:EnableUnitFilter()
 	end
 	DisableAuraEvents = function(status)
 		if not next(Statuses) then
@@ -159,7 +158,6 @@ do
 				LibStub("LibClassicDurations"):Unregister(Grid2)
 			end
 		end
-		status:DisableUnitFilter()
 	end
 end
 
@@ -318,18 +316,9 @@ do
 	local fmt = string.format
 	local UnitHealthMax = UnitHealthMax
 	local unit_is_pet   = Grid2.owner_of_unit
-	local function Refresh(self, full)
-		if full then
-			self:UpdateDB()
-		end
-		if self.filtered then
-			wipe(self.filtered).source = self.dbx.load
-		end
+	local function OnWakeUp(self)
 		for unit in Grid2:IterateRosterUnits() do
 			AuraFrame_OnEvent(nil,nil,unit)
-		end
-		if full then
-			self:UpdateAllUnits()
 		end
 	end
 	local function Reset(self, unit)
@@ -500,7 +489,6 @@ do
 		if self.enabled then self:OnDisable() end
 		local dbx = dbx or self.dbx
 		local blinkThreshold = dbx.blinkThreshold or nil
-		self:MakeUnitFilter()
 		self.vId = dbx.valueIndex or 0
 		self.valMax = dbx.valueMax
 		self.GetPercent = dbx.valueIndex and (dbx.valueMax and GetPercentMax or GetPercentHealth) or Grid2.statusLibrary.GetPercent
@@ -612,14 +600,13 @@ do
 		status.typ = {}
 		status.val = {}
 		status.tkr = {}
-		status.Refresh     = Refresh
 		status.Reset       = Reset
 		status.GetCountMax = GetCountMax
 		status.UpdateDB    = UpdateDB
 		status.OnEnable    = OnEnable
 		status.OnDisable   = OnDisable
+		status.OnWakeUp    = OnWakeUp
 		Grid2:RegisterStatus(status, statusTypes, baseKey, dbx)
-		status:UpdateDB()
 		return status
 	end
 end

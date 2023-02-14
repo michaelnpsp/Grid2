@@ -58,13 +58,9 @@ status.OnEnable = Grid2.Dummy
 -- all indicators
 status.OnDisable = Grid2.Dummy
 -- all indicators
-status.Refresh = Grid2.Dummy
+status.UpdateDB = Grid2.Dummy
 -- all indicators
 status.UpdateAllUnits = Grid2.statusLibrary.UpdateAllUnits
-
-function status:UpdateDB(dbx)
-	if dbx then	self.dbx = dbx end
-end
 
 function status:Inject(data)
 	for k,f in next, data do
@@ -87,7 +83,9 @@ function status:RegisterIndicator(indicator, priority, suspended)
 			local enabled = next(self.indicators)
 			self.indicators[indicator] = true
 			if not enabled then
-				self.enabled = true
+				self:UpdateDB() -- self.enabled must be false when calling UpdateDB()
+				self.enabled = true 
+				self:RegisterLoad()
 				self:OnEnable()
 			end
 		end
@@ -104,6 +102,7 @@ function status:UnregisterIndicator(indicator, priority)
 		if not enabled then
 			self.enabled = nil
 			self:OnDisable()
+			self:UnregisterLoad()
 		end
 	end
 end
@@ -120,7 +119,7 @@ function Grid2:RegisterStatus(status, types, baseKey, dbx)
 		t[#t+1] = status
 	end
 	status.dbx = dbx
-	status:RegisterLoad()
+	status:UpdateDB()
 end
 
 function Grid2:UnregisterStatus(status)
@@ -142,7 +141,6 @@ function Grid2:UnregisterStatus(status)
 			end
 		end
 	end
-	status:UnregisterLoad()
 end
 
 function Grid2:GetStatusByName(name)
