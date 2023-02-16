@@ -146,7 +146,6 @@ function Range:IsActive(unit)
 end
 
 function Range:OnEnable()
-	self:UpdateDB()
 	self:RegisterMessage("Grid_UnitUpdated")
 	self:RegisterMessage("Grid_UnitLeft")
 	self:RegisterMessage("Grid_PlayerSpecChanged")

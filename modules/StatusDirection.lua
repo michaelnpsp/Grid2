@@ -182,7 +182,6 @@ function Direction:UpdateDB()
 end
 
 function Direction:OnEnable()
-	self:UpdateDB()
 	self:SetTimer(true)
 	if guessDirections then
 		playerx = UIParent:GetWidth()  * UIParent:GetEffectiveScale() / 2

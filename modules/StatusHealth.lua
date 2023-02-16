@@ -298,7 +298,6 @@ end
 
 local function CreateHealthCurrent(baseKey, dbx)
 	Grid2:RegisterStatus(HealthCurrent, {"percent", "text", "color"}, baseKey, dbx)
-	HealthCurrent:UpdateDB()
 	return HealthCurrent
 end
 
@@ -325,7 +324,6 @@ end
 
 local function CreateHealthLow(baseKey, dbx)
 	Grid2:RegisterStatus(HealthLow, {"percent", "color"}, baseKey, dbx)
-	HealthLow:UpdateDB()
 	return HealthLow
 end
 
@@ -383,7 +381,6 @@ Grid2:DbSetStatusDefaultValue( "feign-death", {type = "feign-death", color1 = {r
 HealthDeficit.GetColor  = Grid2.statusLibrary.GetColor
 
 function HealthDeficit:OnEnable()
-	self:UpdateDB()
 	Health_Enable(self)
 	healthdeficit_enabled = self.dbx.addIncomingHeals~=nil
 	if healthdeficit_enabled and not Heals.enabled then
@@ -745,7 +742,6 @@ function Heals:UpdateDB()
 end
 
 function Heals:OnEnable()
-	self:UpdateDB()
 	RegisterHealEvents(1) -- set bit1
 	if self.dbx.includeHealAbsorbs and not Grid2.isClassic then
 		RegisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", HealsUpdateEvent)
@@ -810,7 +806,6 @@ function OverHeals:UpdateDB()
 end
 
 function OverHeals:OnEnable()
-	self:UpdateDB()
 	Health_Enable(self)
 	RegisterHealEvents(4) -- set bit3
 	overheals_enabled = true
@@ -869,7 +864,6 @@ function MyHeals:UpdateDB()
 end
 
 function MyHeals:OnEnable()
-	self:UpdateDB()
 	RegisterHealEvents(2) -- set bit2
 	myheal_required = bit.bor(myheal_required,2) -- set bit2
 	myheals_enabled = true

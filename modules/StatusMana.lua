@@ -52,35 +52,19 @@ end
 
 -- Mana status
 Mana.GetColor = Grid2.statusLibrary.GetColor
-
-function Mana:OnEnable()
-	self:EnableUnitFilter()
-	status_OnEnable(self)
-	if self.dbx.showOnlyHealers then
-		self:RegisterEvent("PLAYER_ROLES_ASSIGNED", "UpdateAllUnits")
-		self.rolesEvent = true
-	end
-end
-
-function Mana:OnDisable()
-	self:DisableUnitFilter()
-	status_OnDisable(self)
-	if self.rolesEvent then
-		self:UnregisterEvent("PLAYER_ROLES_ASSIGNED")
-		self.rolesEvent = nil
-	end
-end
+Mana.OnEnable  = status_OnEnable
+Mana.OnDisable = status_OnDisable
 
 function Mana:UpdateUnitPower(unit, powerType)
 	self:UpdateIndicators(unit)
 end
 
 function Mana:IsActiveStandard(unit)
-	return UnitPowerType(unit) == 0
+	return UnitPowerType(unit)==0
 end
 
 function Mana:IsActiveFilter(unit)
-	return (unit=="player" or not self.filtered[unit]) and UnitPowerType(unit)==0
+	return not self.filtered[unit] and UnitPowerType(unit)==0
 end
 
 function Mana:GetPercent(unit)
@@ -93,13 +77,11 @@ function Mana:GetText(unit)
 end
 
 function Mana:UpdateDB()
-	self:MakeUnitFilter()
 	self.IsActive = self.filtered and self.IsActiveFilter or self.IsActiveStandard
 end
 
 Grid2.setupFunc["mana"] = function(baseKey, dbx)
 	Grid2:RegisterStatus(Mana, {"percent", "text", "color"}, baseKey, dbx)
-	Mana:UpdateDB()
 	return Mana
 end
 
@@ -117,7 +99,7 @@ function LowMana:UpdateUnitPower(unit, powerType)
 end
 
 function LowMana:IsActive(unit)
-	return (UnitPowerType(unit) == 0) and (Mana:GetPercent(unit) < self.dbx.threshold)
+	return UnitPowerType(unit)==0 and Mana:GetPercent(unit)<self.dbx.threshold
 end
 
 Grid2.setupFunc["lowmana"] = function(baseKey, dbx)
@@ -165,15 +147,8 @@ Grid2:DbSetStatusDefaultValue( "poweralt", {type = "poweralt", color1= {r=1,g=0,
 -- Power status
 local powerColors= {}
 
-function Power:OnEnable()
-	self:EnableUnitFilter()
-	status_OnEnable(self)
-end
-
-function Power:OnDisable()
-	self:DisableUnitFilter()
-	status_OnDisable(self)
-end
+Power.OnEnable  = status_OnEnable
+Power.OnDisable = status_OnDisable
 
 function Power:UpdateUnitPower(unit, powerType)
    if UnitIsPlayer(unit) and powerColors[ powerType ] then
@@ -220,13 +195,11 @@ function Power:UpdateDB()
 	powerColors["LUNAR_POWER"] = self.dbx.color8
 	powerColors["FURY"] = self.dbx.color9
 	powerColors["PAIN"] = self.dbx.color10
-	self:MakeUnitFilter()
 	self.IsActive = self.filtered and self.IsActiveFilter or self.IsActiveStandard
 end
 
 Grid2.setupFunc["power"] = function(baseKey, dbx)
 	Grid2:RegisterStatus(Power, {"percent", "text", "color"}, baseKey, dbx)
-	Power:UpdateDB()
 	return Power
 end
 
@@ -246,16 +219,8 @@ Grid2:DbSetStatusDefaultValue( "power", {type = "power", colorCount = 10,
 
 -- Mana Alt status
 ManaAlt.GetColor = Grid2.statusLibrary.GetColor
-
-function ManaAlt:OnEnable()
-	self:EnableUnitFilter()
-	status_OnEnable(self)
-end
-
-function ManaAlt:OnDisable()
-	self:DisableUnitFilter()
-	status_OnDisable(self)
-end
+ManaAlt.OnEnable = status_OnEnable
+ManaAlt.OnDisable= status_OnDisable
 
 function ManaAlt:UpdateUnitPower(unit, powerType, event)
 	if not (self.filtered and self.filtered[unit]) and (event=='UNIT_DISPLAYPOWER' or powerType=='MANA') then
@@ -265,12 +230,12 @@ end
 
 function ManaAlt:IsActiveStandard(unit)
 	local filtered = self.filtered
-	return not (filtered and filtered[unit]) and UnitPowerType(unit) ~= 0
+	return not (filtered and filtered[unit]) and UnitPowerMax(unit,0)~=0 and UnitPowerType(unit)~=0
 end
 
 function ManaAlt:IsActiveAlways(unit)
 	local filtered = self.filtered
-	return not (filtered and filtered[unit])
+	return not (filtered and filtered[unit]) and UnitPowerMax(unit,0)~=0
 end
 
 function ManaAlt:GetPercent(unit)
@@ -283,14 +248,12 @@ function ManaAlt:GetText(unit)
 end
 
 function ManaAlt:UpdateDB()
-	self:MakeUnitFilter()
 	self.IsActive = self.dbx.showDefault and self.IsActiveAlways or self.IsActiveStandard	
 end
 
 Grid2.setupFunc["manaalt"] = function(baseKey, dbx)
 	Grid2:RegisterStatus(ManaAlt, {"percent", "text", "color"}, baseKey, dbx)
-	ManaAlt:UpdateDB()
 	return ManaAlt
 end
 
-Grid2:DbSetStatusDefaultValue( "manaalt", {type = "manaalt", classes = {PRIEST=true}, color1={r=0,g=0,b=1,a=1}} )
+Grid2:DbSetStatusDefaultValue( "manaalt", {type = "manaalt", color1={r=0,g=0,b=1,a=1}} )

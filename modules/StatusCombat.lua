@@ -49,7 +49,6 @@ local function UpdateUnits()
 end
 
 function Combat:OnEnable()
-	self:UpdateDB()
 	self:RegisterMessage("Grid_UnitUpdated")
 	self:RegisterMessage("Grid_UnitLeft")
 	timer:Play()
@@ -113,7 +112,6 @@ function MyCombat:_IsNotActive()
 end
 
 function MyCombat:OnEnable()
-	self:UpdateDB()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED",  "CombatChanged" )
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CombatChanged" )
 	inCombat = InCombatLockdown()

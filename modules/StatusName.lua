@@ -56,7 +56,6 @@ end
 
 local function Create(baseKey, dbx)
 	Grid2:RegisterStatus(Name, {"text","tooltip"}, baseKey, dbx)
-	Name:UpdateDB()
 	return Name
 end
 

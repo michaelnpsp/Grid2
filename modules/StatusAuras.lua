@@ -98,38 +98,51 @@ do
 			end
 			i = i + 1
 		end
-		-- Mark indicators that need updating
-		for s in next, Statuses do
-			local seen = s.seen
-			if (seen==1) or ((not seen) and s.idx[u] and s:Reset(u)) then
-				for indicator in next, s.indicators do
-					indicators[indicator] = true
-				end
-			end
-			s.seen = false
-		end
-		-- Update indicators that needs updating only once.
 		if event then
+			-- Mark indicators that need updating
+			for s in next, Statuses do
+				local seen = s.seen
+				if (seen==1) or ((not seen) and s.idx[u] and s:Reset(u)) then
+					for indicator in next, s.indicators do
+						indicators[indicator] = true
+					end
+				end
+				s.seen = false
+			end
+			-- Update indicators that needs updating only once.
 			local frames = myFrames[u]
 			for indicator in next, indicators do
 				for frame in next, frames do
 					indicator:Update(frame, u)
 				end
 			end
+			wipe(indicators)
+		else
+			for s in next, Statuses do
+				if not s.seen and s.idx[u] then
+					s.idx[u], s.exp[u], s.val[u] = nil, nil, nil
+				end
+				s.seen = false
+			end
 		end
-		wipe(indicators)
 	end
 end
 
 -- Clear/update auras when unit changes or leaves the roster.
+local UpdateAllAuras
 do
 	local function ClearAurasOfUnit(_, unit)
 		for status in next, Statuses do
 			status.idx[unit], status.exp[unit], status.val[unit] = nil, nil, nil
 		end
 	end
-	local function UpdateAurasOfUnit(_, unit, joined)
+	local function UpdateAurasOfUnit(_, unit)
 		AuraFrame_OnEvent(nil, nil, unit)
+	end
+	function UpdateAllAuras() -- TODO, very inefficient if several suspended buffs/debuffs are waked up, because it's executed for each status, and should be executed only once for all statuses.
+		for unit in Grid2:IterateRosterUnits() do
+			AuraFrame_OnEvent(nil,nil,unit)
+		end
 	end
 	Grid2.RegisterMessage( Statuses, "Grid_UnitLeft", ClearAurasOfUnit )
 	Grid2.RegisterMessage( Statuses, "Grid_UnitUpdated", UpdateAurasOfUnit )
@@ -316,11 +329,6 @@ do
 	local fmt = string.format
 	local UnitHealthMax = UnitHealthMax
 	local unit_is_pet   = Grid2.owner_of_unit
-	local function OnWakeUp(self)
-		for unit in Grid2:IterateRosterUnits() do
-			AuraFrame_OnEvent(nil,nil,unit)
-		end
-	end
 	local function Reset(self, unit)
 		-- multibar indicator needs val[unit]=nil because due to a speed optimization it does not check if status is active before calling GetPercent()
 		self.idx[unit], self.exp[unit], self.val[unit] = nil, nil, nil
@@ -478,6 +486,7 @@ do
 			RegisterTimeTrackerStatus(self, self.dbx.colorThresholdElapsed)
 		end
 		RegisterCombatFilter(self)
+		UpdateAllAuras()
 	end
 	local function OnDisable(self)
 		UnregisterCombatFilter(self)
@@ -605,7 +614,6 @@ do
 		status.UpdateDB    = UpdateDB
 		status.OnEnable    = OnEnable
 		status.OnDisable   = OnDisable
-		status.OnWakeUp    = OnWakeUp
 		Grid2:RegisterStatus(status, statusTypes, baseKey, dbx)
 		return status
 	end

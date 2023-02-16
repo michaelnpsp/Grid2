@@ -121,9 +121,6 @@ local function status_OnEnable(self)
 			RegisterEvent("PLAYER_REGEN_DISABLED", CombatEnterEvent)
 		end
 	end
-	if self.UpdateDB then
-		self:UpdateDB()
-	end
 	statuses[self] = true
 end
 

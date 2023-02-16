@@ -143,7 +143,6 @@ Grid2.setupFunc["aoe-heals"] = function(baseKey, dbx)
 	status.GetText = GetText
 	status.UpdateDB = UpdateDB
 	Grid2:RegisterStatus(status, {"color", "icon", "text"}, baseKey, dbx)
-	status:UpdateDB()	
 	return status
 end
 

@@ -436,6 +436,11 @@ function Grid2Options:UpdateIndicatorDB(indicator)
 	end
 end
 
+-- Grid2Options:RefreshStatus()
+function Grid2Options:RefreshStatus(status)
+	status:RefreshLoad()
+end
+
 -- Reload indicator database configuration and refresh the indicator frames.
 -- indicator:UpdateDB() is always called to reload indicator database config
 -- method = "Create" | "Update" | key | nil
