@@ -9,36 +9,33 @@ local UnitIsFriend = UnitIsFriend
 local UnitGroupRolesAssigned = Grid2.UnitGroupRolesAssigned
 local roster_types = Grid2.roster_types
 
------------------------------------------------------------------------
+-------------------------------------------------------------------------
+-- Register/Unregister filtered statuses
+-------------------------------------------------------------------------
+
+local statuses = { playerClassSpec = {}, groupInstType = {}, instNameID = {}, unitFilter = {}, unitRole = {} }
+
+local function RegisterFilter(status, filterType, message, func, enabled)
+	local registered = statuses[filterType]
+	if not enabled ~= not registered[status] then
+		if enabled then
+			if not next(registered) then Grid2.RegisterMessage(statuses, message, func) end
+			registered[status] = enabled
+		else
+			registered[status] = nil
+			if not next(registered) then Grid2.UnregisterMessage(statuses, message) end
+		end
+	end
+end
+
+-------------------------------------------------------------------------
 -- General filters: class/spec/zone/group type
 -- statuses are suspended&unregistered from indicators
------------------------------------------------------------------------
+-------------------------------------------------------------------------
 
 local FilterG_RegisterStatus, FilterG_UnregisterStatus, FilterG_RefreshStatus
 do
 	local indicators = {} -- indicators marked for update
-	local registered = {} -- registered messages
-	local statuses   = { playerClassSpec = {}, groupInstType = {}, instNameID = {} }
-
-	local function RegisterMessage(message, enabled)
-		if not enabled ~= not registered[message] then
-			registered[message] = not not enabled
-			if enabled then
-				Grid2:RegisterMessage(message)
-			else
-				Grid2:UnregisterMessage(message)
-			end
-		end
-	end
-
-	local function UpdateMessages(status, load)
-		statuses.playerClassSpec[status] = load and load.playerClassSpec~=nil or nil
-		statuses.instNameID[status] = load and load.instNameID~=nil or nil
-		statuses.groupInstType[status] = load and (load.groupType~=nil or load.instType~=nil) or nil
-		RegisterMessage( "Grid_GroupTypeChanged",  next(statuses.groupInstType) )
-		RegisterMessage( "Grid_PlayerSpecChanged", next(statuses.playerClassSpec) )
-		RegisterMessage( "Grid_ZoneChangedNewArea", next(statuses.instNameID) )
-	end
 
 	local function RegisterIndicators(self)
 		local method = self.suspended and "UnregisterStatus" or "RegisterStatus"
@@ -62,7 +59,7 @@ do
 		return filter[instanceName] or filter[instanceID]
 	end
 
-	local function UpdateStatus(self)
+	local function SuspendStatus(self)
 		local prev = self.suspended
 		local load = self.dbx.load
 		if load then
@@ -83,7 +80,7 @@ do
 	local function RefreshStatuses(filterType)
 		local notify
 		for status in pairs(statuses[filterType]) do
-			if UpdateStatus(status) then
+			if SuspendStatus(status) then
 				RegisterIndicators(status)
 				notify = true
 			end
@@ -95,47 +92,50 @@ do
 	end
 
 	-- message events
-	function Grid2:Grid_GroupTypeChanged()
+	local function GroupTypeEvent()
 		RefreshStatuses('groupInstType')
 	end
 
-	function Grid2:Grid_PlayerSpecChanged()
+	local function PlayerSpecEvent()
 		RefreshStatuses('playerClassSpec')
 	end
 
-	function Grid2:Grid_ZoneChangedNewArea()
+	local function ZoneChangedEvent()
 		RefreshStatuses('instNameID')
+	end
+
+	local function RegisterFilters(status, load)
+		RegisterFilter( status, "instNameID",      "Grid_ZoneChangedNewArea", ZoneChangedEvent, load and load.instNameID~=nil )
+		RegisterFilter( status, "playerClassSpec", "Grid_PlayerSpecChanged",  PlayerSpecEvent,  load and load.playerClassSpec~=nil )
+		RegisterFilter( status, "groupInstType",   "Grid_GroupTypeChanged",   GroupTypeEvent,   load and (load.groupType~=nil or load.instType~=nil) )
 	end
 	
 	-- public 
 	function FilterG_RegisterStatus(self, load)
-		UpdateMessages(self, load)
-		UpdateStatus(self)
+		RegisterFilters(self, load)
+		SuspendStatus(self)
 	end
 
 	function FilterG_UnregisterStatus(self)
-		UpdateMessages(self, nil)
+		RegisterFilters(self, nil)
 	end
 
 	function FilterG_RefreshStatus(self)
-		if UpdateStatus(self) then
+		if SuspendStatus(self) then
 			RegisterIndicators(self)
 			UpdateMarkedIndicators()
-			return true
 		end
 	end
 
 end
 
------------------------------------------------------------------------
+-------------------------------------------------------------------------
 -- Unit filters: type/class/role/reaction
--- code check in status:IsActive() method is necessary 
------------------------------------------------------------------------
+-- self.filtered[unit] check inside status:IsActive() method is necessary 
+-------------------------------------------------------------------------
 
 local FilterU_UpdateLoad, FilterU_RegisterStatus, FilterU_UnregisterStatus, FilterU_RefreshStatus
 do
-	local statuses = {}
-
 	local filter_mt = {	__index = function(t,u)
 		if UnitExists(u) then
 			local load, r = t.source
@@ -167,18 +167,15 @@ do
 	end }
 
 	local function ClearUnitFilters(_, unit)
-		for status in next, statuses do
-			status.filtered[unit] = nil
+		for status, filtered in next, statuses.unitFilter do
+			filtered[unit] = nil
 		end
 	end	
 	
-	function Grid2:RefreshStatusesFilter(filterName) -- Called from GridCore.lua PLAYER_ROLES_ASSIGNED event
-		for status, filtered in next, statuses do
-			local load = filtered.source
-			if load[filterName] then
-				wipe(filtered).source = load
-				status:UpdateAllUnits()
-			end	
+	local function RefreshRoleFilter() 
+		for status, filtered in next, statuses.roleFilter do
+			wipe(filtered).source = status.dbx.load
+			status:UpdateAllUnits()
 		end
 	end
 
@@ -197,21 +194,19 @@ do
 	end
 
 	function FilterU_RegisterStatus(self, load)
-		if self.filtered then
-			if not next(statuses) then
-				Grid2.RegisterMessage( statuses, "Grid_UnitUpdated", ClearUnitFilters )
-			end	
-			statuses[self] = self.filtered
+		local filtered = self.filtered
+		if filtered then
+			RegisterFilter( self, "unitFilter", "Grid_UnitUpdated",         ClearUnitFilters,  filtered )
+			RegisterFilter( self, "unitRole",   "Grid_PlayerRolesAssigned", RefreshRoleFilter, load.unitRole and filtered )
 		end
 	end
-	
+
 	function FilterU_UnregisterStatus(self, load)
-		if self.filtered then
-			wipe(self.filtered).source = load
-			statuses[self] = nil
-			if not next(statuses) then
-				Grid2.UnregisterMessage( statuses, "Grid_UnitUpdated" )
-			end
+		local filtered = self.filtered
+		if filtered then
+			RegisterFilter( self, "unitFilter", "Grid_UnitUpdated" )
+			RegisterFilter( self, "unitRole",   "Grid_PlayerRolesAssigned" )
+			wipe(filtered).source = load
 		end
 	end
 
@@ -232,7 +227,7 @@ end
 
 local status = Grid2.statusPrototype
 
-status.UpdateLoad = FilterU_UpdateLoad
+status.UpdateLoad = FilterU_UpdateLoad -- called from Grid2:RegisterStatus()
 
 function status:RegisterLoad() -- called from status:RegisterIndicator()
 	local load = self.dbx.load
