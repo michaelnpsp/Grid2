@@ -313,7 +313,7 @@ function status:UnregisterLoad() -- called from status:UnregisterIndicator()
 	if load then
 		FilterG_UnregisterStatus(self, load)
 		FilterU_UnregisterStatus(self, load)
-		FilterC_UnregisterSattus(self, load)
+		FilterC_UnregisterStatus(self, load)
 	end
 end
 

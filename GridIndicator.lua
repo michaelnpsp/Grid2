@@ -46,6 +46,8 @@ end
 function indicator:Release(parent)
 	local f = parent[self.name]
 	if f then
+		local Destroy = self.Destroy
+		if Destroy then Destroy(self, parent, f) end
 		f:SetParent(nil)
 		f:ClearAllPoints()
 		f:Hide()

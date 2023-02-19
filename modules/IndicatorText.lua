@@ -242,6 +242,11 @@ local function Text_Disable(self, parent)
 	f:ClearAllPoints()
 end
 
+local function Text_Destroy(self, parent, frame)
+	local Text = frame.Text
+	if timers[Text] then TimerStop(Text) end
+end
+
 local function Text_UpdateDB(self)
 	-- text fmt
 	local fmt = Grid2.db.profile.formatting
@@ -307,6 +312,7 @@ local function Create(indicatorKey, dbx)
 	local indicator = Grid2.indicatorPrototype:new(indicatorKey)
 	indicator.dbx = dbx
 	indicator.Create = Text_Create
+	indicator.Destroy = Text_Destroy
 	indicator.Layout = Text_Layout
 	indicator.Disable = Text_Disable
 	indicator.UpdateDB = Text_UpdateDB
