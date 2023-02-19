@@ -211,9 +211,16 @@ do
 	end
 
 	function FilterU_RefreshStatus(self, load)
+		local enabled = self.enabled
+		if enabled then 
+			self.enabled = nil
+			self:OnDisable() 
+		end
 		self:UpdateLoad()
 		self:UpdateDB()
-		if self.enabled then
+		if enabled then 
+			self.enabled = true
+			self:OnEnable() 
 			FilterU_RegisterStatus(self, load)
 			self:UpdateAllUnits()
 		end

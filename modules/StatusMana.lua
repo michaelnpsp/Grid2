@@ -24,8 +24,8 @@ local status_OnEnable, status_OnDisable
 do
 	local frame
 	local function Frame_OnEvent(self, event, unit, powerType)
-		for status in next,statuses do
-			status:UpdateUnitPower(unit, powerType, event)
+		for status, update in next, statuses do
+			update(status, unit, powerType, event)
 		end
 	end
 	function status_OnEnable(status)
@@ -36,7 +36,7 @@ do
 			frame:RegisterEvent("UNIT_MAXPOWER")
 			frame:RegisterEvent("UNIT_DISPLAYPOWER")
 		end
-		statuses[status] = true
+		statuses[status] = status.UpdateUnitPower
 	end
 	function status_OnDisable(status)
 		statuses[status] = nil
@@ -54,8 +54,16 @@ Mana.GetColor = Grid2.statusLibrary.GetColor
 Mana.OnEnable  = status_OnEnable
 Mana.OnDisable = status_OnDisable
 
-function Mana:UpdateUnitPower(unit, powerType)
-	self:UpdateIndicators(unit)
+function Mana:UpdateUnitPowerStandard(unit, powerType)
+	if powerType=="MANA" then
+		self:UpdateIndicators(unit)
+	end	
+end
+
+function Mana:UpdateUnitPowerFilter(unit, powerType)
+	if powerType=="MANA" and not self.filtered[unit] then
+		self:UpdateIndicators(unit)
+	end	
 end
 
 function Mana:IsActiveStandard(unit)
@@ -77,6 +85,7 @@ end
 
 function Mana:UpdateDB()
 	self.IsActive = self.filtered and self.IsActiveFilter or self.IsActiveStandard
+	self.UpdateUnitPower = self.filtered and self.UpdateUnitPowerFilter or self.UpdateUnitPowerStandard
 end
 
 Grid2.setupFunc["mana"] = function(baseKey, dbx)
@@ -149,8 +158,14 @@ local powerColors= {}
 Power.OnEnable  = status_OnEnable
 Power.OnDisable = status_OnDisable
 
-function Power:UpdateUnitPower(unit, powerType)
+function Power:UpdateUnitPowerStandard(unit, powerType)
    if powerColors[powerType] then
+		self:UpdateIndicators(unit)
+	end
+end
+
+function Power:UpdateUnitPowerFilter(unit, powerType)
+   if powerColors[powerType] and not self.filtered[unit] then
 		self:UpdateIndicators(unit)
 	end
 end
@@ -198,6 +213,7 @@ function Power:UpdateDB()
 	powerColors["POWER_TYPE_FOCUS"] = self.dbx.color3 	  -- Codes returned by UnitPowerType() in 
 	powerColors["POWER_TYPE_RED_POWER"] = self.dbx.color2 -- garrison proving grounds for friendly NPCs
 	self.IsActive = self.filtered and self.IsActiveFilter or self.IsActiveStandard
+	self.UpdateUnitPower = self.filtered and self.UpdateUnitPowerFilter or self.UpdateUnitPowerStandard
 end
 
 Grid2.setupFunc["power"] = function(baseKey, dbx)
@@ -224,8 +240,14 @@ ManaAlt.GetColor = Grid2.statusLibrary.GetColor
 ManaAlt.OnEnable = status_OnEnable
 ManaAlt.OnDisable= status_OnDisable
 
-function ManaAlt:UpdateUnitPower(unit, powerType, event)
-	if not (self.filtered and self.filtered[unit]) and (event=='UNIT_DISPLAYPOWER' or powerType=='MANA') then
+function ManaAlt:UpdateUnitPowerStandard(unit, powerType, event)
+	if powerType=='MANA' or event=='UNIT_DISPLAYPOWER' then
+		self:UpdateIndicators(unit)
+	end	
+end
+
+function ManaAlt:UpdateUnitPowerFilter(unit, powerType, event)
+	if not self.filtered[unit] and (powerType=='MANA' or event=='UNIT_DISPLAYPOWER') then
 		self:UpdateIndicators(unit)
 	end	
 end
@@ -251,6 +273,7 @@ end
 
 function ManaAlt:UpdateDB()
 	self.IsActive = self.dbx.showDefault and self.IsActiveAlways or self.IsActiveStandard	
+	self.UpdateUnitPower = self.filtered and self.UpdateUnitPowerFilter or self.UpdateUnitPowerStandard
 end
 
 Grid2.setupFunc["manaalt"] = function(baseKey, dbx)
