@@ -33,7 +33,7 @@ function Grid2Options:MakeIndicatorBorderCustomOptions(indicator,options)
 		get = function () return Grid2Frame.db.profile.frameBorder end,
 		set = function (_, frameBorder)
 			Grid2Frame.db.profile.frameBorder = frameBorder
-			Grid2Frame:LayoutFrames(true)
+			Grid2Options:LayoutFrames()
 		end,
 		disabled = InCombatLockdown,
 	}
@@ -45,7 +45,7 @@ function Grid2Options:MakeIndicatorBorderCustomOptions(indicator,options)
 		get = function (info) return Grid2Frame.db.profile.frameBorderTexture or "Grid2 Flat" end,
 		set = function (info, v)
 			Grid2Frame.db.profile.frameBorderTexture = v
-			Grid2Frame:LayoutFrames(true)
+			Grid2Options:LayoutFrames()			
 		end,
 		values = AceGUIWidgetLSMlists.border,
 	}
@@ -57,7 +57,7 @@ function Grid2Options:MakeIndicatorBorderCustomOptions(indicator,options)
 		get = function() return self:UnpackColor( Grid2Frame.db.profile.frameColor ) end,
 		set = function( info, r,g,b,a )
 			self:PackColor( r,g,b,a, Grid2Frame.db.profile, "frameColor" )
-			Grid2Frame:LayoutFrames(true)
+			Grid2Options:LayoutFrames()
 		 end,
 		hasAlpha = true,
 	}
@@ -75,7 +75,7 @@ function Grid2Options:MakeIndicatorBorderCustomOptions(indicator,options)
 		end,
 		set = function (_, v)
 			Grid2Frame.db.profile.frameBorderDistance = v
-			Grid2Frame:LayoutFrames(true)
+			Grid2Options:LayoutFrames()			
 		end,
 	}
 	options.message = {

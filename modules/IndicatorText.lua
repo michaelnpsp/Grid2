@@ -236,8 +236,10 @@ end
 
 local function Text_Disable(self, parent)
 	local f = parent[self.name]
+	local Text = f.Text
+	Text:Hide()
+	if timers[Text] then TimerStop(Tsext) end
 	f:Hide()
-	f.Text:Hide()
 	f:SetParent(nil)
 	f:ClearAllPoints()
 end
