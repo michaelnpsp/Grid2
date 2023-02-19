@@ -206,64 +206,6 @@ do
 	end
 end
 
--- RegisterCombatFilter() UnregisterCombatFilter()
-local RegisterCombatFilter,UnregisterCombatFilter
-do
-	local frame
-	local inCombat
-	local statuses = {}
-	local IsNotActive = Grid2.Dummy
-	local function CombatEvent(_,event)
-		inCombat = (event=='PLAYER_REGEN_DISABLED')
-		for status in next,statuses do
-			local IsActive = status._IsActive
-			local Update = status.UpdateIndicators
-			status.IsActive = status.dbx.load.combat == inCombat and IsActive or IsNotActive
-			for unit in Grid2:IterateGroupedPlayers() do
-				if IsActive(status,unit) then
-					Update(status,unit)
-				end
-			end
-		end
-	end
-	function RegisterCombatFilter(status)
-		local load = status.dbx.load
-		if load and load.combat~=nil then
-			frame = frame or CreateFrame("Frame", nil, Grid2LayoutFrame)
-			if not next(statuses) then
-				frame:SetScript("OnEvent", CombatEvent)
-				frame:RegisterEvent("PLAYER_REGEN_ENABLED")
-				frame:RegisterEvent("PLAYER_REGEN_DISABLED")
-				inCombat = not not InCombatLockdown()
-			end
-			statuses[status] = true
-			if not status._IsActive then
-				status._IsActive = status.IsActive
-			end
-			if load.combat ~= inCombat then
-				status.IsActive = IsNotActive
-			end
-		end
-	end
-	function UnregisterCombatFilter(status)
-		if statuses[status] then
-			statuses[status] = nil
-			if status._IsActive then
-				status.IsActive = status._IsActive
-				status._IsActive = nil
-			end
-			if not next(statuses) and frame then
-				frame:SetScript("OnEvent", nil)
-				frame:UnregisterEvent("PLAYER_REGEN_ENABLED")
-				frame:UnregisterEvent("PLAYER_REGEN_DISABLED")
-			end
-		end
-	end
-	-- publish register functions so other auras statuses can use the combat filter.
-	Grid2.RegisterStatusAuraCombatFilter = RegisterCombatFilter
-	Grid2.UnregisterStatusAuraCombatFilter = UnregisterCombatFilter
-end
-
 local function RegisterStatusAura(status, auraType, spell)
 	EnableAuraEvents(status)
 	if auraType=="debuffType" then
@@ -485,11 +427,9 @@ do
 		if self.thresholds and (not self.dbx.colorThresholdValue) then
 			RegisterTimeTrackerStatus(self, self.dbx.colorThresholdElapsed)
 		end
-		RegisterCombatFilter(self)
 		UpdateAllAuras()
 	end
 	local function OnDisable(self)
-		UnregisterCombatFilter(self)
 		UnregisterStatusAura(self, self.handlerType, self.dbx.subType)
 		UnregisterTimeTrackerStatus(self)
 		wipe(self.idx);	wipe(self.exp); wipe(self.val)

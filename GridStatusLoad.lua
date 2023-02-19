@@ -13,7 +13,7 @@ local roster_types = Grid2.roster_types
 -- Register/Unregister filtered statuses
 -------------------------------------------------------------------------
 
-local statuses = { playerClassSpec = {}, groupInstType = {}, instNameID = {}, unitFilter = {}, unitRole = {} }
+local statuses = { combat = {}, playerClassSpec = {}, groupInstType = {}, instNameID = {}, unitFilter = {}, unitRole = {} }
 
 local function RegisterFilter(status, filterType, message, func, enabled)
 	local registered = statuses[filterType]
@@ -221,6 +221,76 @@ do
 	
 end
 
+-------------------------------------------------------------------------
+-- Combat filter
+-------------------------------------------------------------------------
+
+local FilterC_RegisterStatus, FilterC_UnregisterStatus, FilterC_RefreshStatus
+do
+	local statuses = statuses.combat
+	local IsNotActive = Grid2.Dummy
+	local frame, inCombat
+	
+	local function CombatEvent(_,event)
+		inCombat = (event=='PLAYER_REGEN_DISABLED')
+		for status, load in next,statuses do
+			local IsActive = status._IsActive
+			local Update = status.UpdateIndicators
+			status.IsActive = load.combat == inCombat and IsActive or IsNotActive
+			for unit in Grid2:IterateGroupedPlayers() do
+				if IsActive(status,unit) then
+					Update(status,unit)
+				end
+			end
+		end
+	end
+	
+	-- public
+	function FilterC_RegisterStatus(status, load)
+		if load.combat~=nil then
+			frame = frame or CreateFrame("Frame", nil, Grid2LayoutFrame)
+			if not next(statuses) then
+				frame:SetScript("OnEvent", CombatEvent)
+				frame:RegisterEvent("PLAYER_REGEN_ENABLED")
+				frame:RegisterEvent("PLAYER_REGEN_DISABLED")
+				inCombat = not not InCombatLockdown()
+			end
+			statuses[status] = load
+			if not status._IsActive then
+				status._IsActive = status.IsActive
+			end
+			if load.combat ~= inCombat then
+				status.IsActive = IsNotActive
+			end
+		end
+	end
+	
+	function FilterC_UnregisterStatus(status)
+		if statuses[status] then
+			statuses[status] = nil
+			if status._IsActive then
+				status.IsActive = status._IsActive
+				status._IsActive = nil
+			end
+			if not next(statuses) and frame then
+				frame:SetScript("OnEvent", nil)
+				frame:UnregisterEvent("PLAYER_REGEN_ENABLED")
+				frame:UnregisterEvent("PLAYER_REGEN_DISABLED")
+			end
+		end
+	end
+	
+	function FilterC_RefreshStatus(status, load)
+		FilterC_UnregisterStatus(status, load)
+		status:UpdateDB()
+		if status.enabled and load then
+			FilterC_RegisterStatus(status, load) 
+		end
+		status:UpdateAllUnits()
+	end
+	
+end
+
 -----------------------------------------------------------------------
 -- status methods
 -----------------------------------------------------------------------
@@ -234,6 +304,7 @@ function status:RegisterLoad() -- called from status:RegisterIndicator()
 	if load then
 		FilterG_RegisterStatus(self, load)
 		FilterU_RegisterStatus(self, load)
+		FilterC_RegisterStatus(self, load)
 	end
 end
 
@@ -242,6 +313,7 @@ function status:UnregisterLoad() -- called from status:UnregisterIndicator()
 	if load then
 		FilterG_UnregisterStatus(self, load)
 		FilterU_UnregisterStatus(self, load)
+		FilterC_UnregisterSattus(self, load)
 	end
 end
 
@@ -249,4 +321,5 @@ function status:RefreshLoad() -- used by Grid2Options
 	local load = self.dbx.load
 	FilterG_RefreshStatus(self, load)
 	FilterU_RefreshStatus(self, load)
+	FilterC_RefreshStatus(self, load)
 end	

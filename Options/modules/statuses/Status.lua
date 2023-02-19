@@ -74,7 +74,7 @@ do
 					dbx.load[key] = nil
 					if not next(dbx.load) then dbx.load = nil end
 				end
-				self:RefreshStatus(status)				
+				RefreshStatus(status)				
 			end,
 			disabled = function() return dbx.load and dbx.load.disabled end,
 		}
@@ -90,7 +90,7 @@ do
 			end,
 			set = function(_,v)
 				dbx.load[key] = (v==2)
-				self:RefreshStatus(status)				
+				RefreshStatus(status)				
 			end,
 			disabled = function() return not dbx.load or dbx.load.disabled or dbx.load[key]==nil end,
 			values = values,
