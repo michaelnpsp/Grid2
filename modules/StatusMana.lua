@@ -15,7 +15,6 @@ local UnitManaMax = UnitPowerMax
 local UnitPowerType = UnitPowerType
 local UnitPower = UnitPower
 local UnitPowerMax = UnitPowerMax
-local UnitIsPlayer = UnitIsPlayer
 local UnitClass = UnitClass
 
 local statuses = {}  -- Enabled statuses
@@ -151,17 +150,17 @@ Power.OnEnable  = status_OnEnable
 Power.OnDisable = status_OnDisable
 
 function Power:UpdateUnitPower(unit, powerType)
-   if UnitIsPlayer(unit) and powerColors[ powerType ] then
+   if powerColors[powerType] then
 		self:UpdateIndicators(unit)
 	end
 end
 
 function Power:IsActiveStandard(unit)
-  return UnitIsPlayer(unit)
+  return true
 end
 
 function Power:IsActiveFilter(unit)
-  return not self.filtered[unit] and UnitIsPlayer(unit)
+  return not self.filtered[unit]
 end
 
 function Power:GetPercent(unit)
@@ -179,22 +178,25 @@ function Power:GetText(unit)
 end
 
 function Power:GetColor(unit)
-	local _,type= UnitPowerType(unit)
-	local c= powerColors[type] or powerColors["MANA"]
+	local _, type = UnitPowerType(unit)
+	local c = powerColors[type] or powerColors.MANA
 	return c.r, c.g, c.b, c.a
 end
 
 function Power:UpdateDB()
-	powerColors["MANA"] = self.dbx.color1
-	powerColors["RAGE"] = self.dbx.color2
-	powerColors["FOCUS"] = self.dbx.color3
-	powerColors["ENERGY"] = self.dbx.color4
-	powerColors["RUNIC_POWER"] = self.dbx.color5
-	powerColors["INSANITY"] = self.dbx.color6
-	powerColors["MAELSTROM"] = self.dbx.color7
-	powerColors["LUNAR_POWER"] = self.dbx.color8
-	powerColors["FURY"] = self.dbx.color9
-	powerColors["PAIN"] = self.dbx.color10
+	local dbx = self.dbx
+	powerColors["MANA"] = dbx.color1
+	powerColors["RAGE"] = dbx.color2
+	powerColors["FOCUS"] = dbx.color3
+	powerColors["ENERGY"] = dbx.color4
+	powerColors["RUNIC_POWER"] = dbx.color5
+	powerColors["INSANITY"] = dbx.color6
+	powerColors["MAELSTROM"] = dbx.color7
+	powerColors["LUNAR_POWER"] = dbx.color8
+	powerColors["FURY"] = dbx.color9
+	powerColors["PAIN"] = dbx.color10
+	powerColors["POWER_TYPE_FOCUS"] = self.dbx.color3 	  -- Codes returned by UnitPowerType() in 
+	powerColors["POWER_TYPE_RED_POWER"] = self.dbx.color2 -- garrison proving grounds for friendly NPCs
 	self.IsActive = self.filtered and self.IsActiveFilter or self.IsActiveStandard
 end
 
