@@ -10,12 +10,10 @@ local max = math.max
 local fmt = string.format
 local next = next
 local tostring = tostring
-local UnitMana = UnitPower
-local UnitManaMax = UnitPowerMax
 local UnitPowerType = UnitPowerType
 local UnitPower = UnitPower
 local UnitPowerMax = UnitPowerMax
-local UnitClass = UnitClass
+local unit_is_valid = Grid2.roster_guids
 
 local statuses = {}  -- Enabled statuses
 
@@ -24,9 +22,11 @@ local status_OnEnable, status_OnDisable
 do
 	local frame
 	local function Frame_OnEvent(self, event, unit, powerType)
-		for status, update in next, statuses do
-			update(status, unit, powerType, event)
-		end
+		if unit_is_valid[unit] then
+			for status, update in next, statuses do
+				update(status, unit, powerType, event)
+			end
+		end	
 	end
 	function status_OnEnable(status)
 		if not next(statuses) then
@@ -75,12 +75,12 @@ function Mana:IsActiveFilter(unit)
 end
 
 function Mana:GetPercent(unit)
-	local m = UnitManaMax(unit)
-	return m == 0 and 0 or UnitMana(unit) / m
+	local m = UnitPowerMax(unit)
+	return m == 0 and 0 or UnitPower(unit) / m
 end
 
 function Mana:GetText(unit)
-	return fmt("%.1fk", UnitMana(unit) / 1000)
+	return fmt("%.1fk", UnitPower(unit) / 1000)
 end
 
 function Mana:UpdateDB()
@@ -96,6 +96,8 @@ end
 Grid2:DbSetStatusDefaultValue( "mana", {type = "mana", color1= {r=0,g=0,b=1,a=1}} )
 
 -- Low Mana status
+local lowManaThreshold
+
 LowMana.GetColor  = Grid2.statusLibrary.GetColor
 LowMana.OnEnable  = status_OnEnable
 LowMana.OnDisable = status_OnDisable
@@ -107,7 +109,14 @@ function LowMana:UpdateUnitPower(unit, powerType)
 end
 
 function LowMana:IsActive(unit)
-	return UnitPowerType(unit)==0 and Mana:GetPercent(unit)<self.dbx.threshold
+	if UnitPowerType(unit)==0 then
+		local m = UnitPowerMax(unit)
+		return ( m==0 and 0 or UnitPower(unit)/m ) < lowManaThreshold
+	end
+end
+
+function LowMana:UpdateDB()
+	lowManaThreshold = self.dbx.threshold
 end
 
 Grid2.setupFunc["lowmana"] = function(baseKey, dbx)
@@ -153,7 +162,7 @@ end
 Grid2:DbSetStatusDefaultValue( "poweralt", {type = "poweralt", color1= {r=1,g=0,b=0.5,a=1}} )
 
 -- Power status
-local powerColors= {}
+local powerColors = {}
 
 Power.OnEnable  = status_OnEnable
 Power.OnDisable = status_OnDisable
