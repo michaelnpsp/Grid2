@@ -24,7 +24,7 @@ function Grid2Options:MakeStatusBuffsListOptions(status, options, optionParams)
 					table.insert(status.dbx.auras, tonumber(aura) or aura )
 				end
 			end
-			status:Refresh(true)
+			self:RefreshStatus(status)
 		end,
 		hidden = function() return status.dbx.auras==nil end
 	}

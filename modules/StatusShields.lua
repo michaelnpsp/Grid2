@@ -13,7 +13,6 @@ local UnitHealthMax = UnitHealthMax
 local Shields = Grid2.statusPrototype:new("shields")
 
 function Shields:OnEnable()
-	self:UpdateDB()
 	self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
 	self:RegisterEvent("UNIT_MAXHEALTH", "UNIT_ABSORB_AMOUNT_CHANGED")
 end

@@ -16,7 +16,6 @@ function Threat:UpdateUnit(_, unit)
 end
 
 function Threat:OnEnable()
-	self:UpdateDB()
 	self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", "UpdateUnit")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "UpdateAllUnits")
 end

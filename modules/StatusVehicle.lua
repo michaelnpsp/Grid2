@@ -68,7 +68,6 @@ end
 
 local function Create(baseKey, dbx)
 	Grid2:RegisterStatus(Vehicle, {"color", "icon", "percent", "text"}, baseKey, dbx)
-	Vehicle:UpdateDB()
 	return Vehicle
 end
 

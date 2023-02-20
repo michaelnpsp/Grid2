@@ -171,9 +171,11 @@ function GridFramePrototype:Layout()
 		self:SetHighlightTexture( Grid2:MediaFetch("background", dbx.mouseoverTexture, "Blizzard Quest Title Highlight") )
 		local color = dbx.mouseoverColor
 		self:GetHighlightTexture():SetVertexColor(color.r, color.g, color.b, color.a)
-	else
+	elseif self:GetHighlightTexture() then
 		self:SetHighlightTexture('')
+		self:GetHighlightTexture():SetVertexColor(0,0,0,0) 
 	end
+	-- self:GetHighlightTexture():SetVertexColor(0,0,0,0)
 	-- Adjust indicators position to the new size
 	local indicators = Grid2:GetIndicatorsEnabled()
 	for i=1,#indicators do

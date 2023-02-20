@@ -10,7 +10,6 @@ local UnitGetTotalHealAbsorbs = UnitGetTotalHealAbsorbs
 local UnitHealthMax = UnitHealthMax
 
 function Shields:OnEnable()
-	self:UpdateDB()
 	self:RegisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED")
 end
 

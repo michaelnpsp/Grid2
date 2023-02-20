@@ -204,6 +204,12 @@ local function Bar_Disable(self, parent)
 	bar:Hide()
 	bar:SetParent(nil)
 	bar:ClearAllPoints()
+	tdestroy(bar)	
+end
+
+local function Bar_Destroy(self, parent, bar)
+	tdestroy(bar)
+	bar.indicator = nil
 end
 
 local function Bar_UpdateDB(self)
@@ -283,6 +289,7 @@ local function Create(indicatorKey, dbx)
 	local Bar = Grid2.indicatorPrototype:new(indicatorKey)
 	Bar.dbx            = dbx
 	Bar.Create         = Bar_CreateHH
+	Bar.Destroy        = Bar_Destroy
 	Bar.OnUpdate       = Bar_OnUpdate
 	Bar.SetOrientation = Bar_SetOrientation
 	Bar.Disable        = Bar_Disable

@@ -53,11 +53,8 @@ do
 	end
 
 	local function RefreshStatus(status, isUnitFilter)
-		if isUnitFilter then
-			status:Refresh(true)
-		elseif status:RefreshLoad() then
-			Grid2Options:NotifyChange()
-		end
+		Grid2Options:RefreshStatus(status)
+		--Grid2Options:NotifyChange()
 	end
 
 	local function SetFilterBooleanOptions( status, options, order, key, defValue, name, desc, values )
@@ -77,7 +74,7 @@ do
 					dbx.load[key] = nil
 					if not next(dbx.load) then dbx.load = nil end
 				end
-				status:Refresh(true)
+				RefreshStatus(status)				
 			end,
 			disabled = function() return dbx.load and dbx.load.disabled end,
 		}
@@ -93,7 +90,7 @@ do
 			end,
 			set = function(_,v)
 				dbx.load[key] = (v==2)
-				status:Refresh(true)
+				RefreshStatus(status)				
 			end,
 			disabled = function() return not dbx.load or dbx.load.disabled or dbx.load[key]==nil end,
 			values = values,

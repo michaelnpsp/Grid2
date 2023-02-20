@@ -98,38 +98,51 @@ do
 			end
 			i = i + 1
 		end
-		-- Mark indicators that need updating
-		for s in next, Statuses do
-			local seen = s.seen
-			if (seen==1) or ((not seen) and s.idx[u] and s:Reset(u)) then
-				for indicator in next, s.indicators do
-					indicators[indicator] = true
-				end
-			end
-			s.seen = false
-		end
-		-- Update indicators that needs updating only once.
 		if event then
+			-- Mark indicators that need updating
+			for s in next, Statuses do
+				local seen = s.seen
+				if (seen==1) or ((not seen) and s.idx[u] and s:Reset(u)) then
+					for indicator in next, s.indicators do
+						indicators[indicator] = true
+					end
+				end
+				s.seen = false
+			end
+			-- Update indicators that needs updating only once.
 			local frames = myFrames[u]
 			for indicator in next, indicators do
 				for frame in next, frames do
 					indicator:Update(frame, u)
 				end
 			end
+			wipe(indicators)
+		else
+			for s in next, Statuses do
+				if not s.seen and s.idx[u] then
+					s.idx[u], s.exp[u], s.val[u] = nil, nil, nil
+				end
+				s.seen = false
+			end
 		end
-		wipe(indicators)
 	end
 end
 
 -- Clear/update auras when unit changes or leaves the roster.
+local UpdateAllAuras
 do
 	local function ClearAurasOfUnit(_, unit)
 		for status in next, Statuses do
 			status.idx[unit], status.exp[unit], status.val[unit] = nil, nil, nil
 		end
 	end
-	local function UpdateAurasOfUnit(_, unit, joined)
+	local function UpdateAurasOfUnit(_, unit)
 		AuraFrame_OnEvent(nil, nil, unit)
+	end
+	function UpdateAllAuras() -- TODO, very inefficient if several suspended buffs/debuffs are waked up, because it's executed for each status, and should be executed only once for all statuses.
+		for unit in Grid2:IterateRosterUnits() do
+			AuraFrame_OnEvent(nil,nil,unit)
+		end
 	end
 	Grid2.RegisterMessage( Statuses, "Grid_UnitLeft", ClearAurasOfUnit )
 	Grid2.RegisterMessage( Statuses, "Grid_UnitUpdated", UpdateAurasOfUnit )
@@ -149,7 +162,6 @@ do
 				UnitAura = LibStub("LibClassicDurations").UnitAuraDirect
 			end
 		end
-		status:EnableUnitFilter()
 	end
 	DisableAuraEvents = function(status)
 		if not next(Statuses) then
@@ -159,7 +171,6 @@ do
 				LibStub("LibClassicDurations"):Unregister(Grid2)
 			end
 		end
-		status:DisableUnitFilter()
 	end
 end
 
@@ -193,64 +204,6 @@ do
 		tracked[status] = nil
 		if (not next(tracked)) and timetracker then timetracker:Stop() end
 	end
-end
-
--- RegisterCombatFilter() UnregisterCombatFilter()
-local RegisterCombatFilter,UnregisterCombatFilter
-do
-	local frame
-	local inCombat
-	local statuses = {}
-	local IsNotActive = Grid2.Dummy
-	local function CombatEvent(_,event)
-		inCombat = (event=='PLAYER_REGEN_DISABLED')
-		for status in next,statuses do
-			local IsActive = status._IsActive
-			local Update = status.UpdateIndicators
-			status.IsActive = status.dbx.load.combat == inCombat and IsActive or IsNotActive
-			for unit in Grid2:IterateGroupedPlayers() do
-				if IsActive(status,unit) then
-					Update(status,unit)
-				end
-			end
-		end
-	end
-	function RegisterCombatFilter(status)
-		local load = status.dbx.load
-		if load and load.combat~=nil then
-			frame = frame or CreateFrame("Frame", nil, Grid2LayoutFrame)
-			if not next(statuses) then
-				frame:SetScript("OnEvent", CombatEvent)
-				frame:RegisterEvent("PLAYER_REGEN_ENABLED")
-				frame:RegisterEvent("PLAYER_REGEN_DISABLED")
-				inCombat = not not InCombatLockdown()
-			end
-			statuses[status] = true
-			if not status._IsActive then
-				status._IsActive = status.IsActive
-			end
-			if load.combat ~= inCombat then
-				status.IsActive = IsNotActive
-			end
-		end
-	end
-	function UnregisterCombatFilter(status)
-		if statuses[status] then
-			statuses[status] = nil
-			if status._IsActive then
-				status.IsActive = status._IsActive
-				status._IsActive = nil
-			end
-			if not next(statuses) and frame then
-				frame:SetScript("OnEvent", nil)
-				frame:UnregisterEvent("PLAYER_REGEN_ENABLED")
-				frame:UnregisterEvent("PLAYER_REGEN_DISABLED")
-			end
-		end
-	end
-	-- publish register functions so other auras statuses can use the combat filter.
-	Grid2.RegisterStatusAuraCombatFilter = RegisterCombatFilter
-	Grid2.UnregisterStatusAuraCombatFilter = UnregisterCombatFilter
 end
 
 local function RegisterStatusAura(status, auraType, spell)
@@ -318,20 +271,6 @@ do
 	local fmt = string.format
 	local UnitHealthMax = UnitHealthMax
 	local unit_is_pet   = Grid2.owner_of_unit
-	local function Refresh(self, full)
-		if full then
-			self:UpdateDB()
-		end
-		if self.filtered then
-			wipe(self.filtered).source = self.dbx.load
-		end
-		for unit in Grid2:IterateRosterUnits() do
-			AuraFrame_OnEvent(nil,nil,unit)
-		end
-		if full then
-			self:UpdateAllUnits()
-		end
-	end
 	local function Reset(self, unit)
 		-- multibar indicator needs val[unit]=nil because due to a speed optimization it does not check if status is active before calling GetPercent()
 		self.idx[unit], self.exp[unit], self.val[unit] = nil, nil, nil
@@ -488,10 +427,9 @@ do
 		if self.thresholds and (not self.dbx.colorThresholdValue) then
 			RegisterTimeTrackerStatus(self, self.dbx.colorThresholdElapsed)
 		end
-		RegisterCombatFilter(self)
+		UpdateAllAuras()
 	end
 	local function OnDisable(self)
-		UnregisterCombatFilter(self)
 		UnregisterStatusAura(self, self.handlerType, self.dbx.subType)
 		UnregisterTimeTrackerStatus(self)
 		wipe(self.idx);	wipe(self.exp); wipe(self.val)
@@ -500,7 +438,6 @@ do
 		if self.enabled then self:OnDisable() end
 		local dbx = dbx or self.dbx
 		local blinkThreshold = dbx.blinkThreshold or nil
-		self:MakeUnitFilter()
 		self.vId = dbx.valueIndex or 0
 		self.valMax = dbx.valueMax
 		self.GetPercent = dbx.valueIndex and (dbx.valueMax and GetPercentMax or GetPercentHealth) or Grid2.statusLibrary.GetPercent
@@ -612,14 +549,12 @@ do
 		status.typ = {}
 		status.val = {}
 		status.tkr = {}
-		status.Refresh     = Refresh
 		status.Reset       = Reset
 		status.GetCountMax = GetCountMax
 		status.UpdateDB    = UpdateDB
 		status.OnEnable    = OnEnable
 		status.OnDisable   = OnDisable
 		Grid2:RegisterStatus(status, statusTypes, baseKey, dbx)
-		status:UpdateDB()
 		return status
 	end
 end

@@ -5,34 +5,57 @@ for class in pairs(CLASSES_MANA) do
 	CLASSES_MANA[class] = LOCALIZED_CLASS_NAMES_MALE[class]
 end
 
-Grid2Options:RegisterStatusOptions("lowmana",  "mana", Grid2Options.MakeStatusColorThresholdOptions, {
-	titleIcon = "Interface\\Icons\\Inv_potion_86"
-})
-Grid2Options:RegisterStatusOptions("mana","mana",  function(self, status, options, optionParams)
-	self:MakeStatusStandardOptions(status, options, optionParams)
-end, {
-	titleIcon = "Interface\\Icons\\Inv_potion_72",
-	unitFilter = true,
-})
-
-Grid2Options:RegisterStatusOptions("manaalt", "mana",  function(self, status, options, optionParams)
+local function ManaOptions(self, status, options, optionParams)
 	self:MakeStatusStandardOptions(status, options, optionParams)
 	self:MakeHeaderOptions(options, "Display")	
-	options.display = {
+	options.display1 = {
 		type = "toggle",
 		order = 110,
 		width = 'full',
-		name = L['Display mana only when is not the default power type'],
-		get = function () return not status.dbx.showDefault end,
-		set = function ()
-			status.dbx.showDefault = not status.dbx.showDefault or nil
+		name = L['Primary Resource'],
+		desc = L["Mana visible when it is the primary resource."],
+		get = function () return (status.dbx.displayType or 0)~=2 end,
+		set = function (info, v)
+			if v then
+				status.dbx.displayType = 1
+			else
+				status.dbx.displayType = 2
+			end			
 			status:UpdateDB()
 			status:UpdateAllUnits()
 		end,
 	}	
-end, {
+	options.display2 = {
+		type = "toggle",
+		order = 120,
+		width = 'full',
+		name = L['Secondary Resource'],
+		desc = L["Mana visible when it is not the primary resource, for example: druids in bear form or shadow priests."],
+		get = function () return (status.dbx.displayType or 0)~=0 end,
+		set = function (info, v)
+			if v then
+				status.dbx.displayType = 1
+			else
+				status.dbx.displayType = false
+			end
+			status:UpdateDB()
+			status:UpdateAllUnits()
+		end,
+	}	
+end
+
+Grid2Options:RegisterStatusOptions("mana","mana",  ManaOptions, {
 	titleIcon = "Interface\\Icons\\Inv_potion_72",
 	unitFilter = true,
+})
+
+Grid2Options:RegisterStatusOptions("manaalt", "mana",  ManaOptions, {
+	titleIcon = "Interface\\Icons\\Inv_potion_72",
+	unitFilter = true,
+})
+
+Grid2Options:RegisterStatusOptions("lowmana",  "mana", Grid2Options.MakeStatusColorThresholdOptions, {
+	titleIcon = "Interface\\Icons\\Inv_potion_86"
 })
 
 Grid2Options:RegisterStatusOptions("poweralt", "mana", Grid2Options.MakeStatusColorOptions, {
