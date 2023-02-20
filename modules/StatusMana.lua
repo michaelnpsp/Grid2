@@ -121,14 +121,12 @@ local powerColors = {}
 Power.OnEnable  = status_OnEnable
 Power.OnDisable = status_OnDisable
 
-function Power:UpdateUnitPowerStandard(unit, powerType)
-   if powerColors[powerType] then
-		self:UpdateIndicators(unit)
-	end
+function Power:UpdateUnitPowerStandard(unit, powerType, event)
+	self:UpdateIndicators(unit)
 end
 
 function Power:UpdateUnitPowerFilter(unit, powerType)
-   if powerColors[powerType] and not self.filtered[unit] then
+	if not self.filtered[unit] then
 		self:UpdateIndicators(unit)
 	end
 end
@@ -198,14 +196,14 @@ Grid2:DbSetStatusDefaultValue( "power", {type = "power", colorCount = 10,
 })
 
 -- Mana, Manaalt statuses
-local function Mana_UpdateUnitPower(self, unit, powerType, event)
-	if powerType=='MANA' or event=='UNIT_DISPLAYPOWER' then
+local function Mana_UpdateUnitPower(self, unit, powerType)
+	if powerType=='MANA' or powerType==nil then -- powerType==nil => UNIT_DISPLAYPOWER event
 		self:UpdateIndicators(unit)
 	end	
 end
 
-local function Mana_UpdateUnitPowerF(self, unit, powerType, event)
-	if not self.filtered[unit] and (powerType=='MANA' or event=='UNIT_DISPLAYPOWER') then
+local function Mana_UpdateUnitPowerF(self, unit, powerType)
+	if not self.filtered[unit] and (powerType=='MANA' or powerType==nil) then
 		self:UpdateIndicators(unit)
 	end	
 end

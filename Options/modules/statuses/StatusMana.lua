@@ -30,7 +30,7 @@ local function ManaOptions(self, status, options, optionParams)
 		order = 120,
 		width = 'full',
 		name = L['Secondary Resource'],
-		desc = L["Mana visible when it is not the primary resource, for example: display mana for druids in bear form."],
+		desc = L["Mana visible when it is not the primary resource, for example: druids in bear form or shadow priests."],
 		get = function () return (status.dbx.displayType or 0)~=0 end,
 		set = function (info, v)
 			if v then
