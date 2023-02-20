@@ -764,6 +764,10 @@ L["Frequent Updates"] = "Mises à jour fréquentes"
 
 -- mana
 -- L["Hide mana of non healer players"] = ""
+-- L["Primary resource"] = ""
+-- L["Secondary resource"] = ""
+-- L["Mana visible when it is the primary resource."] = ""
+-- L["Mana visible when it is not the primary resource, for example: druids in bear form or shadow priests."] = ""
 
 -- range status
 L["Range"] = "Distance"

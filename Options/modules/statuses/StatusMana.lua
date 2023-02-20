@@ -12,7 +12,7 @@ local function ManaOptions(self, status, options, optionParams)
 		type = "toggle",
 		order = 110,
 		width = 'full',
-		name = L['Primary Resource'],
+		name = L['Primary resource'],
 		desc = L["Mana visible when it is the primary resource."],
 		get = function () return (status.dbx.displayType or 0)~=2 end,
 		set = function (info, v)
@@ -29,7 +29,7 @@ local function ManaOptions(self, status, options, optionParams)
 		type = "toggle",
 		order = 120,
 		width = 'full',
-		name = L['Secondary Resource'],
+		name = L['Secondary resource'],
 		desc = L["Mana visible when it is not the primary resource, for example: druids in bear form or shadow priests."],
 		get = function () return (status.dbx.displayType or 0)~=0 end,
 		set = function (info, v)

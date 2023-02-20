@@ -764,6 +764,10 @@ L["Use Health Percent"] = "使用生命值的百分比"
 
 -- mana
 L["Hide mana of non healer players"] = "隐藏非治疗玩家的法力条"
+-- L["Primary resource"] = ""
+-- L["Secondary resource"] = ""
+-- L["Mana visible when it is the primary resource."] = ""
+-- L["Mana visible when it is not the primary resource, for example: druids in bear form or shadow priests."] = ""
 
 -- range status
 L["Range"] = "距离"

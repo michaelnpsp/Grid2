@@ -765,6 +765,10 @@ L["Use Health Percent"] = true
 
 -- mana
 L["Hide mana of non healer players"] = true
+L["Primary resource"] = true
+L["Secondary resource"] = true
+L["Mana visible when it is the primary resource."] = true
+L["Mana visible when it is not the primary resource, for example: druids in bear form or shadow priests."] = true
 
 -- range status
 L["Range"] = true
