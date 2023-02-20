@@ -1,4 +1,4 @@
--- mana, lowmana, power, poweralt
+-- mana, manaalt, lowmana, power, poweralt
 
 local Mana = Grid2.statusPrototype:new("mana")
 local LowMana = Grid2.statusPrototype:new("lowmana",false)
@@ -48,52 +48,6 @@ do
 		end
 	end
 end
-
--- Mana status
-Mana.GetColor = Grid2.statusLibrary.GetColor
-Mana.OnEnable  = status_OnEnable
-Mana.OnDisable = status_OnDisable
-
-function Mana:UpdateUnitPowerStandard(unit, powerType)
-	if powerType=="MANA" then
-		self:UpdateIndicators(unit)
-	end	
-end
-
-function Mana:UpdateUnitPowerFilter(unit, powerType)
-	if powerType=="MANA" and not self.filtered[unit] then
-		self:UpdateIndicators(unit)
-	end	
-end
-
-function Mana:IsActiveStandard(unit)
-	return UnitPowerType(unit)==0
-end
-
-function Mana:IsActiveFilter(unit)
-	return not self.filtered[unit] and UnitPowerType(unit)==0
-end
-
-function Mana:GetPercent(unit)
-	local m = UnitPowerMax(unit)
-	return m == 0 and 0 or UnitPower(unit) / m
-end
-
-function Mana:GetText(unit)
-	return fmt("%.1fk", UnitPower(unit) / 1000)
-end
-
-function Mana:UpdateDB()
-	self.IsActive = self.filtered and self.IsActiveFilter or self.IsActiveStandard
-	self.UpdateUnitPower = self.filtered and self.UpdateUnitPowerFilter or self.UpdateUnitPowerStandard
-end
-
-Grid2.setupFunc["mana"] = function(baseKey, dbx)
-	Grid2:RegisterStatus(Mana, {"percent", "text", "color"}, baseKey, dbx)
-	return Mana
-end
-
-Grid2:DbSetStatusDefaultValue( "mana", {type = "mana", color1= {r=0,g=0,b=1,a=1}} )
 
 -- Low Mana status
 local lowManaThreshold
@@ -243,51 +197,89 @@ Grid2:DbSetStatusDefaultValue( "power", {type = "power", colorCount = 10,
 	color10 = {r=1.00, g=0.61, b=0.00, a=1} -- pain
 })
 
-
--- Mana Alt status
-ManaAlt.GetColor = Grid2.statusLibrary.GetColor
-ManaAlt.OnEnable = status_OnEnable
-ManaAlt.OnDisable= status_OnDisable
-
-function ManaAlt:UpdateUnitPowerStandard(unit, powerType, event)
+-- Mana, Manaalt statuses
+local function Mana_UpdateUnitPower(self, unit, powerType, event)
 	if powerType=='MANA' or event=='UNIT_DISPLAYPOWER' then
 		self:UpdateIndicators(unit)
 	end	
 end
 
-function ManaAlt:UpdateUnitPowerFilter(unit, powerType, event)
+local function Mana_UpdateUnitPowerF(self, unit, powerType, event)
 	if not self.filtered[unit] and (powerType=='MANA' or event=='UNIT_DISPLAYPOWER') then
 		self:UpdateIndicators(unit)
 	end	
 end
 
-function ManaAlt:IsActiveStandard(unit)
-	local filtered = self.filtered
-	return not (filtered and filtered[unit]) and UnitPowerMax(unit,0)~=0 and UnitPowerType(unit)~=0
+local function Mana_IsActiveAlways(self, unit)
+	return UnitPowerMax(unit,0)>0
 end
 
-function ManaAlt:IsActiveAlways(unit)
-	local filtered = self.filtered
-	return not (filtered and filtered[unit]) and UnitPowerMax(unit,0)~=0
+local function Mana_IsActiveAlwaysF(self, unit)
+	return not self.filtered[unit] and UnitPowerMax(unit,0)>0
 end
 
-function ManaAlt:GetPercent(unit)
+local function Mana_IsActivePrimary(self, unit)
+	return UnitPowerType(unit)==0
+end
+
+local function Mana_IsActivePrimaryF(self, unit)
+	return not self.filtered[unit] and UnitPowerType(unit)==0
+end
+
+local function Mana_IsActiveSecondary(self, unit)
+	return UnitPowerMax(unit,0)~=0 and UnitPowerType(unit)~=0
+end
+
+local function Mana_IsActiveSecondaryF(self, unit)
+	return not self.filtered[unit] and UnitPowerMax(unit,0)~=0 and UnitPowerType(unit)~=0
+end
+
+local function Mana_GetPercent(self, unit)
 	local m = UnitPowerMax(unit,0)
 	return m == 0 and 0 or UnitPower(unit,0) / m
 end
 
-function ManaAlt:GetText(unit)
+local function Mana_GetText(self, unit)
 	return fmt("%.1fk", UnitPower(unit,0) / 1000)
 end
 
-function ManaAlt:UpdateDB()
-	self.IsActive = self.dbx.showDefault and self.IsActiveAlways or self.IsActiveStandard	
-	self.UpdateUnitPower = self.filtered and self.UpdateUnitPowerFilter or self.UpdateUnitPowerStandard
+local function Mana_UpdateDB(self)
+	self.UpdateUnitPower = self.filtered and Mana_UpdateUnitPowerF or Mana_UpdateUnitPower
+	if not self.dbx.displayType then -- false|nil = display mana only when is primary resource (standard behaviour)
+		self.IsActive = self.filtered and Mana_IsActivePrimaryF or Mana_IsActivePrimary
+	elseif self.dbx.displayType==2 then -- 2 = display mana only when is secondary resource
+		self.IsActive = self.filtered and Mana_IsActiveSecondaryF or Mana_IsActiveSecondary
+	else -- 1 = display mana always  
+		self.IsActive = self.filtered and Mana_IsActiveAlwaysF or Mana_IsActiveAlways
+	end
 end
+
+-- Mana status
+Mana.GetColor   = Grid2.statusLibrary.GetColor
+Mana.OnEnable   = status_OnEnable
+Mana.OnDisable  = status_OnDisable
+Mana.GetPercent = Mana_GetPercent
+Mana.GetText    = Mana_GetText
+Mana.UpdateDB   = Mana_UpdateDB
+
+Grid2.setupFunc["mana"] = function(baseKey, dbx)
+	Grid2:RegisterStatus(Mana, {"percent", "text", "color"}, baseKey, dbx)
+	return Mana
+end
+
+Grid2:DbSetStatusDefaultValue( "mana", {type = "mana", color1= {r=0,g=0,b=1,a=1}} )
+
+-- Mana Alt status
+ManaAlt.GetColor   = Grid2.statusLibrary.GetColor
+ManaAlt.OnEnable   = status_OnEnable
+ManaAlt.OnDisable  = status_OnDisable
+ManaAlt.GetPercent = Mana_GetPercent
+ManaAlt.GetText    = Mana_GetText
+ManaAlt.UpdateDB   = Mana_UpdateDB
 
 Grid2.setupFunc["manaalt"] = function(baseKey, dbx)
 	Grid2:RegisterStatus(ManaAlt, {"percent", "text", "color"}, baseKey, dbx)
 	return ManaAlt
 end
 
-Grid2:DbSetStatusDefaultValue( "manaalt", {type = "manaalt", color1={r=0,g=0,b=1,a=1}} )
+Grid2:DbSetStatusDefaultValue( "manaalt", {type = "manaalt", displayType = 2, color1={r=0,g=0,b=1,a=1}} )
