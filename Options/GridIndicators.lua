@@ -224,10 +224,16 @@ do
 			Test.dbx = TestIcons -- Asigned to TestIcons to avoid creating a new table
 			Grid2:RegisterStatus( Test, {"text","color", "percent", "icon"}, "test" )
 			ToggleTestMode = function()
-				local method = Test.enabled and 'UnregisterStatus' or 'RegisterStatus'
+				local method, priority
+				if Test.enabled then
+					method, priority = 'UnregisterStatus', nil
+				else
+					method, priority = 'RegisterStatus', 1
+				end
+				local priority = not Test.enabled and 1 or nil
 				for _, indicator in Grid2:IterateIndicators() do
 					if not Exclude[indicator.dbx.type] then
-						indicator[method](indicator, Test, 1)
+						indicator[method](indicator, Test, priority)
 					end
 				end
 				Grid2Frame:UpdateIndicators()

@@ -40,7 +40,7 @@ do
 
 	local function RegisterIndicators(self)
 		local method = self.suspended and "UnregisterStatus" or "RegisterStatus"
-		for indicator, priority in pairs(self.priorities) do -- register/unregister indicators
+		for indicator, priority in pairs(self.priorities) do -- wakeup/suspend status from linked indicators
 			indicator[method](indicator, self, priority)
 			indicators[indicator] = true
 		end

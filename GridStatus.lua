@@ -76,7 +76,10 @@ function status:UpdateIndicators(unit)
 	end
 end
 
-function status:RegisterIndicator(indicator, priority, suspended)
+-- register or wakeup a previous registered status
+-- suspended => status is linked to the indicator but suspended
+-- priorities[] stores the linked indicators to be able to wakeup the statuses later
+function status:RegisterIndicator(indicator, priority, suspended) 
 	if not self.indicators[indicator] then
 		self.priorities[indicator] = priority or indicator.priorities[self]
 		if not suspended and not self.suspended then
@@ -90,12 +93,15 @@ function status:RegisterIndicator(indicator, priority, suspended)
 	end
 end
 
-function status:UnregisterIndicator(indicator, priority)
+-- unregister or suspend a status previous registered
+-- suspended => status becomes suspended and indicators are not removed from priorities[]
+-- to be able to easy wakeup the status later calling status:RegisterIndicator()
+function status:UnregisterIndicator(indicator, suspended)
+	if not suspended then
+		self.priorities[indicator] = nil
+	end
 	if self.indicators[indicator] then
 		self.indicators[indicator] = nil
-		if not priority then
-			self.priorities[indicator] = nil
-		end
 		if not next(self.indicators) then
 			self.enabled = nil
 			self:DisableLoad()

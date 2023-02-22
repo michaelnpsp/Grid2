@@ -54,7 +54,6 @@ do
 
 	local function RefreshStatus(status, isUnitFilter)
 		Grid2Options:RefreshStatus(status)
-		--Grid2Options:NotifyChange()
 	end
 
 	local function SetFilterBooleanOptions( status, options, order, key, defValue, name, desc, values )
