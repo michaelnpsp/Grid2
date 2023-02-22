@@ -34,8 +34,11 @@ local function Bar_Layout(self, parent)
 	Bar:SetParent(parent)
 	Bar:ClearAllPoints()
 	Bar:SetOrientation(orient)
-	Bar:SetStatusBarTexture(self.texture)
 	Bar:SetReverseFill(self.reverseFill)
+	Bar:SetStatusBarTexture(self.texture)
+	Bar:GetStatusBarTexture():SetVertTile( self.tileVer )
+	Bar:GetStatusBarTexture():SetHorizTile( self.tileHor )
+	Bar:SetStatusBarTexture(self.texture) 	
 	local parentName = self.parentName
 	if parentName then
 		local PBar = parent[parentName]
@@ -226,6 +229,8 @@ local function Bar_UpdateDB(self)
 	self.offsety     = l.y
 	self.width       = dbx.width
 	self.height      = dbx.height
+	self.tileVer     = not not dbx.tileVertical
+	self.tileHor     = not not dbx.tileHorizontal
 	self.reverseFill = not not dbx.reverseFill
 	self.backColor   = dbx.backColor or (dbx.invertColor and defaultBackColor) or nil
 	if dbx.hideWhenInactive then
