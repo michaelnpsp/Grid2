@@ -230,32 +230,6 @@ function Grid2Options:MakeIndicatorBarMiscOptions(indicator, options)
 		end,
 		values = self.GetStatusBarValues,
 	}
-	options.tileHorizontal = {
-		type = "toggle",
-		name = L["Horizontal Tile"],
-		desc = L["Tile the bar texture horizontally."],
-		order = 21,
-		get = function () return indicator.dbx.tileHorizontal end,
-		set = function (_, v)
-			SetBarTiling(indicator, 'tileHorizontal', v)
-		end,	
-	
-	}
-	options.tileVertical = {
-		type = "toggle",
-		name = L["Vertical Tile"],
-		desc = L["Tile the bar texture vertically."],
-		order = 22,
-		get = function () return indicator.dbx.tileVertical end,
-		set = function (_, v)
-			SetBarTiling(indicator, 'tileVertical', v)
-			indicator.dbx.tileVertical = v or nil
-			C_Timer.After(0, function()			
-			self:RefreshIndicator(indicator, "Layout")
-			end)			
-		end,	
-	
-	}
 	options.barOpacity = {
 		type = "range",
 		order = 43,
@@ -271,6 +245,22 @@ function Grid2Options:MakeIndicatorBarMiscOptions(indicator, options)
 			indicator.sideKick:UpdateDB()
 			Grid2Frame:UpdateIndicators()
 		end,
+	}
+	options.tileHorizontal = {
+		type = "toggle",
+		name = L["Horizontal Tile"],
+		desc = L["Tile the bar texture horizontally."],
+		order = 45,
+		get = function () return indicator.dbx.tileHorizontal end,
+		set = function (_, v) SetBarTiling(indicator, 'tileHorizontal', v) end,	
+		}
+	options.tileVertical = {
+		type = "toggle",
+		name = L["Vertical Tile"],
+		desc = L["Tile the bar texture vertically."],
+		order = 46,
+		get = function () return indicator.dbx.tileVertical end,
+		set = function (_, v) SetBarTiling(indicator, 'tileVertical', v) end,	
 	}
 	self:MakeHeaderOptions( options, "Special" )
 	options.inverColor= {
