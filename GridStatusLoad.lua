@@ -33,7 +33,7 @@ end
 -- statuses are suspended&unregistered from indicators
 -------------------------------------------------------------------------
 
-local FilterG_RegisterStatus, FilterG_UnregisterStatus, FilterG_RefreshStatus
+local FilterG_UpdateLoad, FilterG_RegisterStatus, FilterG_UnregisterStatus, FilterG_RefreshStatus
 do
 	local indicators = {} -- indicators marked for update
 
@@ -59,9 +59,8 @@ do
 		return filter[instanceName] or filter[instanceID]
 	end
 
-	local function SuspendStatus(self)
+	local function SuspendStatus(self, load)
 		local prev = self.suspended
-		local load = self.dbx.load
 		if load then
 			self.suspended =
 				( load.disabled ) or
@@ -79,8 +78,8 @@ do
 
 	local function RefreshStatuses(filterType)
 		local notify
-		for status in pairs(statuses[filterType]) do
-			if SuspendStatus(status) then
+		for status, load in pairs(statuses[filterType]) do
+			if SuspendStatus(status, load) then
 				RegisterIndicators(status)
 				notify = true
 			end
@@ -105,15 +104,22 @@ do
 	end
 
 	local function RegisterFilters(status, load)
-		RegisterFilter( status, "instNameID",      "Grid_ZoneChangedNewArea", ZoneChangedEvent, load and load.instNameID~=nil )
-		RegisterFilter( status, "playerClassSpec", "Grid_PlayerSpecChanged",  PlayerSpecEvent,  load and load.playerClassSpec~=nil )
-		RegisterFilter( status, "groupInstType",   "Grid_GroupTypeChanged",   GroupTypeEvent,   load and (load.groupType~=nil or load.instType~=nil) )
+		if load then
+			RegisterFilter( status, "instNameID",      "Grid_ZoneChangedNewArea", ZoneChangedEvent, load.instNameID and load )
+			RegisterFilter( status, "playerClassSpec", "Grid_PlayerSpecChanged",  PlayerSpecEvent,  load.playerClassSpec and load )
+			RegisterFilter( status, "groupInstType",   "Grid_GroupTypeChanged",   GroupTypeEvent,   (load.groupType or load.instType) and load )
+		else
+			RegisterFilter( status, "instNameID",      "Grid_ZoneChangedNewArea" )
+			RegisterFilter( status, "playerClassSpec", "Grid_PlayerSpecChanged" )
+			RegisterFilter( status, "groupInstType",   "Grid_GroupTypeChanged" )
+		end		
 	end
 	
 	-- public 
+	FilterG_UpdateLoad = SuspendStatus
+	
 	function FilterG_RegisterStatus(self, load)
 		RegisterFilters(self, load)
-		SuspendStatus(self)
 	end
 
 	function FilterG_UnregisterStatus(self)
@@ -121,7 +127,7 @@ do
 	end
 
 	function FilterG_RefreshStatus(self)
-		if SuspendStatus(self) then
+		if SuspendStatus(self, self.dbx.load) then
 			RegisterIndicators(self)
 			UpdateMarkedIndicators()
 		end
@@ -180,8 +186,7 @@ do
 	end
 
 	-- public
-	function FilterU_UpdateLoad(self)
-		local load = self.dbx.load
+	function FilterU_UpdateLoad(self, load)
 		if load and (load.unitType or load.unitReaction or load.unitClass or load.unitRole) then
 			if self.filtered then
 				wipe(self.filtered).source = load
@@ -304,7 +309,11 @@ end
 
 local status = Grid2.statusPrototype
 
-status.UpdateLoad = FilterU_UpdateLoad -- called from Grid2:RegisterStatus()
+function status:UpdateLoad() -- called from Grid2:RegisterStatus()
+	local load = self.dbx.load
+	FilterG_UpdateLoad(self, load)
+	FilterU_UpdateLoad(self, load)
+end
 
 function status:RegisterLoad() -- called from status:RegisterIndicator()
 	local load = self.dbx.load
