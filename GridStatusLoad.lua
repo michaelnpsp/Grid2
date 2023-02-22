@@ -8,6 +8,7 @@ local UnitExists = UnitExists
 local UnitIsFriend = UnitIsFriend
 local UnitGroupRolesAssigned = Grid2.UnitGroupRolesAssigned
 local roster_types = Grid2.roster_types
+local empty = {}
 
 -------------------------------------------------------------------------
 -- Register/Unregister filtered statuses
@@ -33,7 +34,7 @@ end
 -- statuses are suspended&unregistered from indicators
 -------------------------------------------------------------------------
 
-local FilterG_UpdateLoad, FilterG_RegisterStatus, FilterG_UnregisterStatus, FilterG_RefreshStatus
+local FilterG_Register, FilterG_Unregister, FilterG_Refresh
 do
 	local indicators = {} -- indicators marked for update
 
@@ -103,31 +104,22 @@ do
 		RefreshStatuses('instNameID')
 	end
 
-	local function RegisterFilters(status, load)
-		if load then
-			RegisterFilter( status, "instNameID",      "Grid_ZoneChangedNewArea", ZoneChangedEvent, load.instNameID and load )
-			RegisterFilter( status, "playerClassSpec", "Grid_PlayerSpecChanged",  PlayerSpecEvent,  load.playerClassSpec and load )
-			RegisterFilter( status, "groupInstType",   "Grid_GroupTypeChanged",   GroupTypeEvent,   (load.groupType or load.instType) and load )
-		else
-			RegisterFilter( status, "instNameID",      "Grid_ZoneChangedNewArea" )
-			RegisterFilter( status, "playerClassSpec", "Grid_PlayerSpecChanged" )
-			RegisterFilter( status, "groupInstType",   "Grid_GroupTypeChanged" )
-		end		
-	end
-	
 	-- public 
-	FilterG_UpdateLoad = SuspendStatus
-	
-	function FilterG_RegisterStatus(self, load)
-		RegisterFilters(self, load)
+	function FilterG_Register(self, load)
+		RegisterFilter( self, "instNameID",      "Grid_ZoneChangedNewArea", ZoneChangedEvent, load and load.instNameID and load )
+		RegisterFilter( self, "playerClassSpec", "Grid_PlayerSpecChanged",  PlayerSpecEvent,  load and load.playerClassSpec and load )
+		RegisterFilter( self, "groupInstType",   "Grid_GroupTypeChanged",   GroupTypeEvent,   load and (load.groupType or load.instType) and load )
+		return SuspendStatus(self, load)
 	end
 
-	function FilterG_UnregisterStatus(self)
-		RegisterFilters(self, nil)
+	function FilterG_Unregister(self)
+		RegisterFilter( self, "instNameID",      "Grid_ZoneChangedNewArea" )
+		RegisterFilter( self, "playerClassSpec", "Grid_PlayerSpecChanged" )
+		RegisterFilter( self, "groupInstType",   "Grid_GroupTypeChanged" )
 	end
 
-	function FilterG_RefreshStatus(self)
-		if SuspendStatus(self, self.dbx.load) then
+	function FilterG_Refresh(self, load)
+		if FilterG_Register(self, load or empty) then
 			RegisterIndicators(self)
 			UpdateMarkedIndicators()
 		end
@@ -140,7 +132,7 @@ end
 -- self.filtered[unit] check inside status:IsActive() method is necessary 
 -------------------------------------------------------------------------
 
-local FilterU_UpdateLoad, FilterU_RegisterStatus, FilterU_UnregisterStatus, FilterU_RefreshStatus
+local FilterU_Register, FilterU_Unregister, FilterU_Enable, FilterU_Disable, FilterU_Refresh
 do
 	local filter_mt = {	__index = function(t,u)
 		if UnitExists(u) then
@@ -186,19 +178,19 @@ do
 	end
 
 	-- public
-	function FilterU_UpdateLoad(self, load)
-		if load and (load.unitType or load.unitReaction or load.unitClass or load.unitRole) then
-			if self.filtered then
-				wipe(self.filtered).source = load
-			else
-				self.filtered = setmetatable({source = load}, filter_mt)
-			end
+	function FilterU_Register(self, load)
+		if load.unitType or load.unitReaction or load.unitClass or load.unitRole then
+			self.filtered = setmetatable({source = load}, filter_mt)
 		else
 			self.filtered = nil
 		end
 	end
 
-	function FilterU_RegisterStatus(self, load)
+	function FilterU_Unregister(self, load)
+		self.filtered = nil
+	end
+
+	function FilterU_Enable(self, load)
 		local filtered = self.filtered
 		if filtered then
 			RegisterFilter( self, "unitFilter", "Grid_UnitUpdated",         ClearUnitFilters,  filtered )
@@ -206,7 +198,7 @@ do
 		end
 	end
 
-	function FilterU_UnregisterStatus(self, load)
+	function FilterU_Disable(self, load)
 		local filtered = self.filtered
 		if filtered then
 			RegisterFilter( self, "unitFilter", "Grid_UnitUpdated" )
@@ -215,18 +207,12 @@ do
 		end
 	end
 
-	function FilterU_RefreshStatus(self, load)
-		local enabled = self.enabled
-		if enabled then 
-			self.enabled = nil
-			self:OnDisable() 
-		end
-		self:UpdateLoad()
+	function FilterU_Refresh(self, load)
+		FilterU_Disable(self, load)
+		FilterU_Register(self, load or empty)
 		self:UpdateDB()
-		if enabled then 
-			self.enabled = true
-			self:OnEnable() 
-			FilterU_RegisterStatus(self, load)
+		if self.enabled then 
+			FilterU_Enable(self, load or empty)
 			self:UpdateAllUnits()
 		end
 	end
@@ -237,7 +223,7 @@ end
 -- Combat filter
 -------------------------------------------------------------------------
 
-local FilterC_RegisterStatus, FilterC_UnregisterStatus, FilterC_RefreshStatus
+local FilterC_Enable, FilterC_Disable, FilterC_Refresh
 do
 	local statuses = statuses.combat
 	local IsNotActive = Grid2.Dummy
@@ -258,7 +244,7 @@ do
 	end
 	
 	-- public
-	function FilterC_RegisterStatus(status, load)
+	function FilterC_Enable(status, load)
 		if load.combat~=nil then
 			frame = frame or CreateFrame("Frame", nil, Grid2LayoutFrame)
 			if not next(statuses) then
@@ -277,7 +263,7 @@ do
 		end
 	end
 	
-	function FilterC_UnregisterStatus(status)
+	function FilterC_Disable(status)
 		if statuses[status] then
 			statuses[status] = nil
 			if status._IsActive then
@@ -292,13 +278,13 @@ do
 		end
 	end
 	
-	function FilterC_RefreshStatus(status, load)
-		FilterC_UnregisterStatus(status, load)
+	function FilterC_Refresh(status, load)
+		FilterC_Disable(status, load)
 		status:UpdateDB()
 		if status.enabled and load then
-			FilterC_RegisterStatus(status, load) 
+			FilterC_Enable(status, load) 
+			status:UpdateAllUnits()
 		end
-		status:UpdateAllUnits()
 	end
 	
 end
@@ -309,33 +295,41 @@ end
 
 local status = Grid2.statusPrototype
 
-function status:UpdateLoad() -- called from Grid2:RegisterStatus()
-	local load = self.dbx.load
-	FilterG_UpdateLoad(self, load)
-	FilterU_UpdateLoad(self, load)
-end
-
-function status:RegisterLoad() -- called from status:RegisterIndicator()
+function status:RegisterLoad() -- called from Grid2:RegisterStatus() in GridStatus.lua
 	local load = self.dbx.load
 	if load then
-		FilterG_RegisterStatus(self, load)
-		FilterU_RegisterStatus(self, load)
-		FilterC_RegisterStatus(self, load)
+		FilterG_Register(self, load)
+		FilterU_Register(self, load)
+	end	
+end
+
+function status:UnregisterLoad() -- called from Grid2:UnregisterStatus() in GridStatus.lua
+	local load = self.dbx.load
+	if load then
+		FilterG_Unregister(self, load)
+		FilterU_Unregister(self, load)
+	end	
+end
+
+function status:EnableLoad() -- called from status:RegisterIndicator() when the status is enabled
+	local load = self.dbx.load
+	if load then
+		FilterU_Enable(self, load)
+		FilterC_Enable(self, load)
 	end
 end
 
-function status:UnregisterLoad() -- called from status:UnregisterIndicator()
+function status:DisableLoad() -- called from status:UnregisterIndicator() when the status is disabled
 	local load = self.dbx.load
 	if load then
-		FilterG_UnregisterStatus(self, load)
-		FilterU_UnregisterStatus(self, load)
-		FilterC_UnregisterStatus(self, load)
+		FilterU_Disable(self, load)
+		FilterC_Disable(self, load)
 	end
 end
 
 function status:RefreshLoad() -- used by Grid2Options
 	local load = self.dbx.load
-	FilterG_RefreshStatus(self, load)
-	FilterU_RefreshStatus(self, load)
-	FilterC_RefreshStatus(self, load)
+	FilterG_Refresh(self, load)
+	FilterU_Refresh(self, load)
+	FilterC_Refresh(self, load)
 end	

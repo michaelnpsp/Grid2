@@ -78,14 +78,12 @@ end
 
 function status:RegisterIndicator(indicator, priority, suspended)
 	if not self.indicators[indicator] then
-		if not next(self.priorities) then
-			self:RegisterLoad()
-		end
 		self.priorities[indicator] = priority or indicator.priorities[self]
 		if not suspended and not self.suspended then
 			self.indicators[indicator] = true
 			if not self.enabled then
 				self.enabled = true
+				self:EnableLoad()
 				self:OnEnable()
 			end
 		end
@@ -98,11 +96,11 @@ function status:UnregisterIndicator(indicator, priority)
 		if not priority then
 			self.priorities[indicator] = nil
 		end
-		if self.enabled then
+		if not next(self.indicators) then
 			self.enabled = nil
+			self:DisableLoad()
 			self:OnDisable()
-			self:UnregisterLoad()
-		end
+		end		
 	end
 end
 
@@ -118,7 +116,7 @@ function Grid2:RegisterStatus(status, types, baseKey, dbx)
 		t[#t+1] = status
 	end
 	status.dbx = dbx or {}
-	status:UpdateLoad()
+	status:RegisterLoad()
 	status:UpdateDB()
 end
 
@@ -139,6 +137,7 @@ function Grid2:UnregisterStatus(status)
 			end
 		end
 	end
+	status:UnregisterLoad()
 end
 
 function Grid2:GetStatusByName(name)
