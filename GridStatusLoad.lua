@@ -171,7 +171,7 @@ do
 	end	
 	
 	local function RefreshRoleFilter() 
-		for status, filtered in next, statuses.roleFilter do
+		for status, filtered in next, statuses.unitRole do
 			wipe(filtered).source = status.dbx.load
 			status:UpdateAllUnits()
 		end
