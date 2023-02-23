@@ -57,15 +57,6 @@ local function SetParent(info,v)
 	end
 end
 
-local function SetBarTiling(indicator, key, value) -- we have to to this mess to avoid graphics glitchs when setting vertical tiling.
-	if indicator.dbx.tileHorizontal or indicator.dbx.tileVertical then 
-		indicator.tileVer, indicator.tileHor = nil, nil
-		indicator:LayoutAllFrames()
-	end
-	indicator.dbx[key] = value or nil			
-	C_Timer.After(0, function()	Grid2Options:RefreshIndicator(indicator, "Layout") end)
-end
-
 function Grid2Options:MakeIndicatorBarAnchorOptions(indicator,options)
 	options.parentBar = {
 		type   = "select",
@@ -245,22 +236,6 @@ function Grid2Options:MakeIndicatorBarMiscOptions(indicator, options)
 			indicator.sideKick:UpdateDB()
 			Grid2Frame:UpdateIndicators()
 		end,
-	}
-	options.tileHorizontal = {
-		type = "toggle",
-		name = L["Horizontal Tile"],
-		desc = L["Tile the bar texture horizontally."],
-		order = 45,
-		get = function () return indicator.dbx.tileHorizontal end,
-		set = function (_, v) SetBarTiling(indicator, 'tileHorizontal', v) end,	
-		}
-	options.tileVertical = {
-		type = "toggle",
-		name = L["Vertical Tile"],
-		desc = L["Tile the bar texture vertically."],
-		order = 46,
-		get = function () return indicator.dbx.tileVertical end,
-		set = function (_, v) SetBarTiling(indicator, 'tileVertical', v) end,	
 	}
 	self:MakeHeaderOptions( options, "Special" )
 	options.inverColor= {

@@ -137,9 +137,6 @@ function Grid2:OnInitialize()
 	media:Register("border", "Grid2 Pixel", "Interface\\Addons\\Grid2\\media\\border1px")
 	media:Register("background", "Blizzard Quest Title Highlight", "Interface\\QuestFrame\\UI-QuestTitleHighlight")
 	media:Register("background", "Blizzard ChatFrame Background", "Interface\\ChatFrame\\ChatFrameBackground")
-	if not Grid2.isClassic then
-		media:Register("statusbar", "Grid2 Shield", "Interface\\RaidFrame\\Shield-Overlay")
-	end	
 
 	self:InitializeOptions()
 
