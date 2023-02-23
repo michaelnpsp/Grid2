@@ -95,7 +95,8 @@ do
 	local DIRECTION_VALUES = { L['Normal'], L['Reverse'] }
 	local MAINBAR_COLOR_SOURCES  = { L["Status Color"], L["Custom Color"] }
 	local EXTRABAR_COLOR_SOURCES = { L["Main Bar Color"], L["Custom Color"] }
-
+	local TILE_VALUES = { [-2] = L["None"], [0] = L["Horizontal&Vertical"], [-1] = L["Horizontal"], [1] = L["Vertical"] }
+	
 	local function RegisterIndicatorStatus(indicator, status, index)
 		if status then
 			Grid2:DbSetMap(indicator.name, status.name, index)
@@ -380,6 +381,21 @@ do
 					self:RefreshIndicator(indicator, "Layout")
 				end,
 				disabled = function() return not indicator.dbx[i].color.r end,
+			}
+			options["barTile"..i] = {
+				type = "select",
+				order = 50+i*5+1.7,
+				width = 0.9,
+				name = L["Tile"],
+				desc = L["Select if you want to tile the bar texture vertically or horizontally."],
+				get = function()
+					return indicator.dbx[i].tileTex or -2
+				end,
+				set = function(_, v)
+					indicator.dbx[i].tileTex = (v>=-1) and v or nil
+					self:RefreshIndicator(indicator, "Layout")
+				end,
+				values = TILE_VALUES,
 			}
 		end
 		if indicator.dbx.backColor then

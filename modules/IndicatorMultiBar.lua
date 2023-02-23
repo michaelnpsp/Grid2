@@ -147,6 +147,12 @@ local function Bar_Layout(self, parent)
 	bar:SetStatusBarTexture(self.texture)
 	local barTexture = bar:GetStatusBarTexture()
 	barTexture:SetDrawLayer("ARTWORK", 0)
+	local tile = self.tileTex
+	if tile then
+		barTexture:SetHorizTile(tile<=0)
+		barTexture:SetVertTile(tile>=0)
+		bar:SetStatusBarTexture(self.texture)
+	end	
 	local color = self.foreColor
 	if color then bar:SetStatusBarColor(color.r, color.g, color.b, self.opacity) end
 	bar:SetSize(width, height)
@@ -166,8 +172,13 @@ local function Bar_Layout(self, parent)
 		texture.myReverse = setup.reverse
 		texture.myNoOverlap = setup.noOverlap
 		texture.myOpacity = setup.opacity
-		texture:SetTexture( setup.texture )
-	    texture:SetDrawLayer("ARTWORK", setup.sublayer)
+		if texture:GetTexture() then texture:SetTexture(nil) end
+		local h, v = (setup.tileTex or 1)<=0, (setup.tileTex or -1)>=0 
+		texture:SetTexCoord(0,1,0,1)
+		texture:SetTexture(setup.texture, h and 'MIRROR' or 'CLAMP', v and 'MIRROR' or 'CLAMP')
+		texture:SetHorizTile(h)
+		texture:SetVertTile(v)
+		texture:SetDrawLayer("ARTWORK", setup.sublayer)
 		local c = setup.color
 		if c then
 			texture:SetVertexColor( c.r, c.g, c.b, setup.opacity )
@@ -228,6 +239,7 @@ local function Bar_UpdateDB(self)
 	self.width         = dbx.width
 	self.height        = dbx.height
 	self.direction     = dbx.reverseFill and -1 or 1
+	self.tileTex       = dbx.tileTex
 	self.horizontal    = (orientation == "HORIZONTAL")
 	self.reverseFill   = not not dbx.reverseFill
 	self.backAnchor    = dbx.backAnchor
@@ -242,12 +254,14 @@ local function Bar_UpdateDB(self)
 			opacity   = setup.color.a,
 			color     = setup.color.r and setup.color or self.foreColor,
 			texture   = setup.texture and Grid2:MediaFetch("statusbar", setup.texture) or self.texture,
+			tileTex   = setup.tileTex,
 			sublayer  = i,
 		}
 	end
 	if backColor then
 	    self.bars[#self.bars+1] = {
 			texture = Grid2:MediaFetch("statusbar", dbx.backTexture or theme.barTexture, "Gradient") or self.texture,
+			tileTex = dbx.backTileTex,
 			color = dbx.invertColor and texColor or backColor,
 			opacity = backColor.a,
 			background = not self.backAnchor,
