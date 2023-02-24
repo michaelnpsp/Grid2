@@ -747,7 +747,7 @@ L["Demon"] = "Demonio"
 L["Humanoid"] = "Humanoide"
 L["Elemental"] = "Elemental"
 
--- heal-current status
+-- health-current status
 L["Full Health"] = "Vida llena"
 L["Medium Health"] = "Vida media"
 L["Low Health"] = "Vida baja"
@@ -759,6 +759,7 @@ L["Fast"] = "Rapido"
 L["Instant"] = "Instantaneo"
 L["Update frequency"] = "Frecuencia de actualizaciones"
 L["Select the health update frequency."] = "Elige la frequencia de actualización de las vidas."
+L["Add shields to health percent"] = "Añade escudos al porcentaje de vida"
 
 -- health-low status
 L["Use Health Percent"] = "Usar Porcentajes"
