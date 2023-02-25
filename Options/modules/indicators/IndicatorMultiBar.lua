@@ -4,17 +4,16 @@ local Grid2Options = Grid2Options
 local L = Grid2Options.L
 
 Grid2Options:RegisterIndicatorOptions("multibar", true, function(self, indicator)
-	local layout, bars, filter  = {}, {}, {}
+	local layout, filter = {}, {}, {}
 	self:MakeIndicatorTypeLevelOptions(indicator,layout)
 	self:MakeIndicatorLocationOptions(indicator,layout)
 	self:MakeIndicatorMultiBarAppearanceOptions(indicator,layout)
-	self:MakeIndicatorMultiBarTexturesOptions(indicator,bars)
 	self:MakeIndicatorLoadOptions(indicator, filter)
 	local options = Grid2Options.indicatorsOptions[indicator.name].args; wipe(options)
 	self:MakeIndicatorTitleOptions(options, indicator)
-	options["bars"]   = { type = "group", order = 10, name = L["Bars"], args = bars }
-	options["load"]   = { type = "group", order = 30, name = L["Load"], args = filter }
-	options["layout"] = { type = "group", order = 40, name = L["Layout"], args = layout }
+	options.bars   = { type = "group", order = 10, name = L["Bars"],   args = self:GetIndicatorMultiBarTexturesOptions(), childGroups = "tab" }
+	options.load   = { type = "group", order = 30, name = L["Load"],   args = filter }
+	options.layout = { type = "group", order = 40, name = L["Layout"], args = layout }
 	if indicator.dbx.textureColor.r==nil then
 		local colors = {}
 		self:MakeIndicatorStatusOptions(indicator.sideKick, colors)
@@ -88,87 +87,134 @@ function Grid2Options:MakeIndicatorMultiBarAppearanceOptions(indicator,options)
 	}
 end
 
--- Grid2Options:MakeIndicatorMultiBarTextures()
+-- Grid2Options:GetIndicatorMultiBarTextures()
 do
+	local emptyTable, tmpTable = {}, {}
 	local ANCHOR_VALUES = { L["Previous Bar"], L["Topmost Bar"], L["Prev. Bar & Reverse"] }
     local BANCHOR_VALUES =	{ [0]= L["Whole Background"], [1]= L["Main Bar"], [2]= L["Topmost Bar"] }
 	local DIRECTION_VALUES = { L['Normal'], L['Reverse'] }
 	local MAINBAR_COLOR_SOURCES  = { L["Status Color"], L["Custom Color"] }
 	local EXTRABAR_COLOR_SOURCES = { L["Main Bar Color"], L["Custom Color"] }
+	local TILE_MAIN_VALUES  = { L["None"], L["Repeat"] }
+	local TILE_EXTRA_VALUES = { L["None"], L["Repeat"], L["Mirror"] }
+	local tileTranslate = { [1] = nil, [2] = 'REPEAT', [3] = 'MIRROR', NONE = 1, REPEAT = 2, MIRROR = 3 }
 
-	local function RegisterIndicatorStatus(indicator, status, index)
-		if status then
-			Grid2:DbSetMap(indicator.name, status.name, index)
-			indicator:RegisterStatus(status, index)
-		end
-	end
-	local function UnregisterIndicatorStatus(indicator, status)
-		if status then
-			Grid2:DbSetMap(indicator.name, status.name, nil)
-			indicator:UnregisterStatus(status)
-		end
-	end
-	local function SetIndicatorStatusPriority(indicator, status, priority)
-		Grid2:DbSetMap( indicator.name, status.name, priority)
-		indicator:SetStatusPriority(status, priority)
-	end
-	local function UnregisterAllStatuses(indicator)
-		local statuses = indicator.statuses
-		while #statuses>0 do
-			UnregisterIndicatorStatus(indicator,statuses[#statuses])
-		end
-	end
-	local function SetIndicatorStatus(info, statusKey)
-		local indicator = info.arg.indicator
-		local index     = info.arg.index
-		local newStatus = Grid2:GetStatusByName(statusKey)
-		local oldStatus = indicator.statuses[index]
-		local oldIndex  = indicator.priorities[newStatus]
-		if oldStatus and oldIndex then
-			SetIndicatorStatusPriority(indicator, oldStatus, oldIndex)
-			SetIndicatorStatusPriority(indicator, newStatus, index)
-		else
-			UnregisterIndicatorStatus(indicator, oldStatus)
-			RegisterIndicatorStatus(indicator, newStatus , index)
-		end
-		Grid2Options:RefreshIndicator(indicator, "Layout")
-	end
-	local function GetAvailableStatusValues(info)
-		local indicator = info.arg.indicator
-		local index     = info.arg.index
-		local list      = {}
-		for statusKey, status in Grid2:IterateStatuses() do
-			if Grid2Options:IsCompatiblePair(indicator, status) and status.name~="test" and
-			  ( (not indicator.priorities[status]) or indicator.statuses[index] ) then
-				list[statusKey] = Grid2Options.LocalizeStatus(status)
-			end
-		end
-		return list
+	-- edited indicator & bar
+
+	local self, indicator, barIndex, barDbx = Grid2Options
+
+	-- support functions
+
+	local function SelectTab( key )
+		self:SelectGroup('indicators', indicator.name, 'bars', tostring(key) )
+	end	
+
+	local function GetIndicatorStatusMap(indicator)
+		return Grid2:DbGetValue('statusMap',indicator.name) or emptyTable
 	end
 
-	function Grid2Options:MakeIndicatorMultiBarTexturesOptions(indicator, options)
-		options.barSep = { type = "header", order = 50,  name = L["Main Bar"] }
-		options.barMainStatus = {
+	local function RegisterIndicatorStatus(indicator, statusName, priority)
+		if statusName then
+			assert( type(priority)=='number' )
+			Grid2:DbSetMap(indicator.name, statusName, priority)
+			local status = Grid2:GetStatusByName(statusName)
+			if status then indicator:RegisterStatus(status, priority) end
+		end
+	end
+	
+	local function UnregisterIndicatorStatus(indicator, statusName)
+		if statusName then
+			Grid2:DbSetMap(indicator.name, statusName, nil)
+			local status = Grid2:GetStatusByName(statusName)
+			if status then indicator:UnregisterStatus(status) end
+		end
+	end
+
+	local function UnregisterIndicatorAllStatuses(indicator)
+		for statusName in next, GetIndicatorStatusMap(indicator) do
+			UnregisterIndicatorStatus(indicator, statusName)
+		end	
+	end
+	
+	local function SetIndicatorStatusPriority(indicator, statusName, priority)
+		assert( type(priority)=='number' )
+		Grid2:DbSetMap( indicator.name, statusName, priority)
+		local status = Grid2:GetStatusByName(statusName)
+		if status then indicator:SetStatusPriority(status, priority) end
+	end
+	
+	local function GetIndicatorStatusPriority(indicator, statusName)
+		if statusName then
+			local map = Grid2:DbGetValue('statusMap', indicator.name)
+			return map and map[statusName]
+		end	
+	end
+	
+	local function GetIndicatorStatusName(indicator, priority)
+		for name, index in next, GetIndicatorStatusMap(indicator) do
+			if priority==index then
+				return name
+			end	
+		end
+	end
+
+	-- bar settings
+	
+	local barOptions = {
+
+		__load = { type = "header", order = 0, name = "", hidden = function(info)
+				barIndex  = tonumber( info[#info-1] )
+				barDbx    = indicator.dbx[barIndex] or indicator.dbx
+				return true
+		end },
+
+		-------------------------------------------------------------------------
+	
+		headerMain = { type = "header", order = 1,  name = function(info)
+			return (barIndex and barIndex>0) and L["Extra Bar "]..barIndex or L["Main Bar"]
+		end },
+	
+		barStatus = {
 			type = "select",
-			order = 50.5,
-			width = 0.9,
+			order = 2,
+			width = 1.6,
 			name = L["Status"],
-			desc = function()
-				local status = indicator.statuses[1]
-				return status and self.LocalizeStatus(status)
+			desc = L["Select the status to display in this bar."],
+			get = function()
+				return GetIndicatorStatusName(indicator, barIndex+1)
 			end,
-			get = function ()
-				local status = indicator.statuses[1]
-				return status and status.name or nil
+			set = function(_, newStatusName)
+				local newStatusIndex = barIndex + 1
+				local oldStatusName  = GetIndicatorStatusName(indicator, newStatusIndex)
+				local oldStatusIndex = GetIndicatorStatusPriority(indicator, newStatusName)
+				if oldStatusName and oldStatusIndex then
+					SetIndicatorStatusPriority(indicator, oldStatusName, oldStatusIndex)
+					SetIndicatorStatusPriority(indicator, newStatusName, newStatusIndex)
+				else
+					UnregisterIndicatorStatus(indicator, oldStatusName)
+					RegisterIndicatorStatus(indicator, newStatusName , newStatusIndex)
+				end
+				self:RefreshIndicator(indicator, "Layout")
 			end,
-			set = SetIndicatorStatus,
-			values = GetAvailableStatusValues,
-			arg = { indicator = indicator, index = 1 }
-		}
-		options.barMainDirection = {
+			values = function()
+				wipe(tmpTable)
+				local curStatusName = GetIndicatorStatusName(indicator, barIndex+1)
+				local usedStatuses  = GetIndicatorStatusMap(indicator)
+				for statusKey, status in Grid2:IterateStatuses() do
+					if self:IsCompatiblePair(indicator, status) and (curStatusName or not usedStatuses[statusKey])  then
+						tmpTable[statusKey] = self.LocalizeStatus(status)
+					end
+				end
+				return tmpTable
+			end,
+			disabled = function() return barIndex>0 and not GetIndicatorStatusName(indicator, barIndex) end,
+			hidden = false,
+		},
+		
+		barMainDirection = {
 			type = "select",
-			order = 50.7,
-			width = 0.9,
+			order = 3,
+			width = 0.95,
 			name = L["Direction"],
 			desc = L["Select the direction of the main bar."],
 			get = function ()
@@ -179,25 +225,35 @@ do
 				self:RefreshIndicator(indicator, "Layout" )
 			end,
 			values = DIRECTION_VALUES,
-		}
-		options.barMainTexture = {
-			type = "select", dialogControl = "LSM30_Statusbar",
-			order = 51,
-			width = 0.9,
-			name = L["Texture"],
-			desc = L["Select bar texture."],
-			get = function (info) return indicator.dbx.texture or self.MEDIA_VALUE_DEFAULT end,
-			set = function (info, v)
-				indicator.dbx.texture = v~=self.MEDIA_VALUE_DEFAULT and v or nil
+			hidden = function() return barIndex~=0 end,
+		},
+
+		barExtraDirection = {
+			type = "select",
+			order = 3,
+			width = 0.95,
+			name = L["Anchor & Direction"],
+			desc = L["Select where to anchor the bar and optional you can reverse the grow direction."],
+			get = function()
+				return (barDbx.reverse and 3) or (barDbx.noOverlap and 2) or 1
+			end,
+			set = function(_, v)
+				barDbx.reverse = (v==3) or nil
+				barDbx.noOverlap = (v==2) or nil
 				self:RefreshIndicator(indicator, "Layout")
 			end,
-			values = self.GetStatusBarValues,
-			disabled = function() return indicator.dbx.reverseMainBar end
-		}
-		options.barMainColorSource = {
+			values = ANCHOR_VALUES,
+			hidden = function() return barIndex==0 end,
+		},
+		
+		-------------------------------------------------------------------------
+		
+	    headerColor = { type = "header", order = 4,  name = L["Color"] },
+
+		barMainColorSource = {
 			type = "select",
-			order = 51.5,
-			width = 0.9,
+			order = 5,
+			width = 0.87,
 			name = L["Color Source"],
 			desc = L["Select howto colorize the main bar."],
 			get = function ()
@@ -206,20 +262,42 @@ do
 			set = function (_, v)
 				local color = indicator.dbx.textureColor
 				if v==1 then -- (1) colors from statuses
-					color.r, color.g, color.b = nil, nil, nil
-					RegisterIndicatorStatus(indicator.sideKick, Grid2:GetStatusByName('classcolor'), 50)
+					RegisterIndicatorStatus(indicator.sideKick, 'classcolor', 50)
+					color.r, color.g, color.b = nil, nil, nil										
 				else -- (2) custom color
-					color.r, color.g, color.b = 0, 0, 0
-					UnregisterAllStatuses(indicator.sideKick)
+					UnregisterIndicatorAllStatuses(indicator.sideKick)
+					color.r, color.g, color.b = 0, 0, 0					
 				end
 				self:RefreshIndicator(indicator, "Layout" )
 				self:MakeIndicatorOptions(indicator)
 			end,
 			values = MAINBAR_COLOR_SOURCES,
-		}
-		options.barMainOpacity = {
+			hidden = function() return barIndex~=0 end,
+		},
+
+		barExtraColorSource = {
+			type = "select",
+			order = 5,
+			width = 0.87,
+			name = L["Color Source"],
+			desc = L["Select howto colorize the bar."],
+			get = function() return barDbx.color.r and 2 or 1; end,
+			set = function(_, v)
+				local c = barDbx.color
+				if v==2 then -- Custom color
+					c.r, c.g, c.b = 0, 0, 0
+				else -- Main Bar Color
+					c.r, c.g, c.b = nil, nil, nil
+				end
+				self:RefreshIndicator(indicator, "Layout" )
+			end,
+			values = EXTRABAR_COLOR_SOURCES,
+			hidden = function() return barIndex==0 end,
+		},
+
+		barOpacity = {
 			type = "range",
-			order = 51.7,
+			order = 6,
 			width = 0.9,
 			name = L["Opacity"],
 			desc = L["Set the opacity."],
@@ -227,41 +305,42 @@ do
 			max = 1,
 			step = 0.01,
 			bigStep = 0.05,
-			get = function () return indicator.dbx.textureColor.a end,
-			set = function (_, v)
-				indicator.dbx.textureColor.a = v
+			get = function() 
+				return (barDbx.textureColor or barDbx.color).a or 1
+			end,
+			set = function(_, v)
+				(barDbx.textureColor or barDbx.color).a = v
 				self:RefreshIndicator(indicator, "Layout")
 			end,
-		}
-		options.barMainColor = {
+			hidden = false,			
+		},
+
+		barColor = {
 			type = "color",
 			hasAlpha = true,
-			order = 52,
+			order = 7,
 			width = 0.4,
 			name = L["Color"],
-			desc = L["Bar color"],
-			hasAlpha = true,
+			desc = L["Select bar color"],
 			get = function()
-				local c = indicator.dbx.textureColor
-				if c.r then
-					return c.r, c.g, c.b, c.a
-				else
-					return 0,0,0,0
-				end
+				local c = (barIndex>0 and barDbx.color.r and barDbx.color) or indicator.dbx.textureColor
+				return c.r or 0, c.g or 0, c.b or 0, c.a or 0
 			end,
-			set = function(info,r,g,b,a)
-				local c = indicator.dbx.textureColor
+			set = function( info, r,g,b,a )
+				local c = barDbx.color or barDbx.textureColor
 				c.r, c.g, c.b, c.a = r, g, b, a
 				self:RefreshIndicator(indicator, "Layout")
 			end,
-			disabled = function() return indicator.dbx.textureColor.r == nil end
-		}
-		options.invertMainColor= {
+			disabled = function() return (barDbx.textureColor or barDbx.color).r == nil end,
+			hidden = false,			
+		},
+
+		mainBarColorInvert = {
 			type = "toggle",
 			name = L["Invert"],
 			desc = L["Swap foreground/background colors on main bar."],
 			width = 0.4,
-			order = 53,
+			order = 8,
 			tristate = false,
 			get = function() return indicator.dbx.invertColor end,
 			set = function(_, v)
@@ -278,193 +357,127 @@ do
 				end
 				self:RefreshIndicator(indicator, "Layout")
 			end,
-		}
-		for i=1,#indicator.dbx do
-			options["barSep"..i] = { type = "header", order = 50+i*5,  name = L["Extra Bar"] .. " "..i }
-			options["Status"..i] = {
-				type = "select",
-				order = 50+i*5+1.0,
-				width = 0.9,
-				name = L["Status"],
-				desc = function()
-					local status = indicator.statuses[i+1]
-					return status and self.LocalizeStatus(status)
-				end,
-				get = function ()
-					local status = indicator.statuses[i+1]
-					return status and status.name or nil
-				end,
-				set = SetIndicatorStatus,
-				values = GetAvailableStatusValues,
-				disabled = function() return not indicator.statuses[i] end,
-				arg = { indicator = indicator, index = i+1},
-			}
-			options["barAnchorTo"..i] = {
-				type = "select",
-				order = 50+i*5+1.1,
-				width = 0.9,
-				name = L["Anchor & Direction"],
-				desc = L["Select where to anchor the bar and optional you can reverse the grow direction."],
-				get = function()
-					local bar = indicator.dbx[i]
-					return (bar.reverse and 3) or (bar.noOverlap and 2) or 1
-				end,
-				set = function(_, v)
-					indicator.dbx[i].reverse = (v==3) or nil
-					indicator.dbx[i].noOverlap = (v==2) or nil
-					self:RefreshIndicator(indicator, "Layout")
-				end,
-				values = ANCHOR_VALUES,
-			}
-			options["barTexture"..i] = {
-				type = "select", dialogControl = "LSM30_Statusbar",
-				order = 50+i*5+1.2,
-				width = 0.9,
-				name = L["Texture"],
-				desc = L["Select bar texture."],
-				get = function (info) return indicator.dbx[i].texture or indicator.dbx.texture or self.MEDIA_VALUE_DEFAULT end,
-				set = function (info, v)
-					indicator.dbx[i].texture = (v~=indicator.dbx.texture and v~=self.MEDIA_VALUE_DEFAULT) and v or nil
-					self:RefreshIndicator(indicator, "Layout")
-				end,
-				values = self.GetStatusBarValues,
-			}
-			options["barColorSource"..i] = {
-				type = "select",
-				order = 50+i*5+1.3,
-				width = 0.9,
-				name = L["Color Source"],
-				desc = L["Select howto colorize the bar."],
-				get = function() return indicator.dbx[i].color.r and 2 or 1; end,
-				set = function(_, v)
-					local c = indicator.dbx[i].color
-					if v==2 then -- Custom color
-						c.r, c.g, c.b = 0, 0, 0
-					else -- Main Bar Color
-						c.r, c.g, c.b = nil, nil, nil
-					end
-					self:RefreshIndicator(indicator, "Layout" )
-				end,
-				values = EXTRABAR_COLOR_SOURCES,
-			}
-			options["barOpacity"..i] = {
-				type = "range",
-				order = 50+i*5+1.5,
-				width = 0.9,
-				name = L["Opacity"],
-				desc = L["Set the opacity."],
-				min = 0,
-				max = 1,
-				step = 0.01,
-				bigStep = 0.05,
-				get = function() return indicator.dbx[i].color.a or 1; end,
-				set = function(_, v)
-					indicator.dbx[i].color.a = v
-					self:RefreshIndicator(indicator, "Layout")
-				end,
-			}
-			options["barColor"..i] = {
-				type = "color",
-				hasAlpha = true,
-				order = 50+i*5+1.6,
-				width = 0.9,
-				name = L["Color"],
-				desc = L["Select bar color"],
-				get = function()
-					local c = indicator.dbx[i].color.r and indicator.dbx[i].color or indicator.dbx.textureColor
-					return c.r or 0, c.g or 0, c.b or 0, c.a or 0
-				end,
-				set = function( info, r,g,b,a )
-					local c = indicator.dbx[i].color
-					c.r, c.g, c.b, c.a = r, g, b, a
-					self:RefreshIndicator(indicator, "Layout")
-				end,
-				disabled = function() return not indicator.dbx[i].color.r end,
-			}
-		end
-		if indicator.dbx.backColor then
-			options.barSepBack = { type = "header", order = 100,  name = L["Background"] }
-			options.backTexture = {
-				type = "select", dialogControl = "LSM30_Statusbar",
-				order = 101,
-				width = 0.9,
-				name = L["Texture"],
-				desc = L["Adjust the background texture."],
-				get = function (info) return indicator.dbx.backTexture or indicator.dbx.texture or self.MEDIA_VALUE_DEFAULT end,
-				set = function (info, v)
-					indicator.dbx.backTexture = v~=self.MEDIA_VALUE_DEFAULT and v or nil
-					self:RefreshIndicator(indicator, "Layout")
-				end,
-				values = self.GetStatusBarValues,
-				hidden = function() return not indicator.dbx.backColor end
-			}
-			options.backAnchor = {
-				type = "select",
-				order = 101.5,
-				width = 0.9,
-				name = L["Anchor"],
-				desc = L["Select howto anchor the background bar."],
-				get = function ()
-					return indicator.dbx.backAnchor or 0
-				end,
-				set = function (_, v)
-					indicator.dbx.backAnchor = v>0 and v or nil
-					self:RefreshIndicator(indicator, "Layout")
-				end,
-				values = BANCHOR_VALUES,
-			}
-			options.backColor = {
-				type = "color",
-				order = 102,
-				width = 0.9,
-				name = L["Color"],
-				desc = L["Background Color"],
-				hasAlpha = true,
-				get = function() return self:UnpackColor( indicator.dbx.backColor ) end,
-				set = function(info,r,g,b,a)
-					self:PackColor( r,g,b,a, indicator.dbx, "backColor" )
-					self:RefreshIndicator(indicator, "Layout")
-				end,
-				hidden = function() return not indicator.dbx.backColor end
-			}
-		end
-		options.changeBarSep = { type = "header", order = 150, name = "" }
-		options.addBar = {
+			disabled = function() return barIndex~=0 end,
+		},
+
+		-------------------------------------------------------------------------
+
+	    headerTexture = { type = "header", order = 10,  name = L["Texture"] },
+
+		barTexture = {
+			type = "select", dialogControl = "LSM30_Statusbar",
+			order = 11,
+			width = 1.15,
+			name = L["Texture"],
+			desc = L["Select bar texture."],
+			get = function (info) return barDbx.texture or indicator.dbx.texture or self.MEDIA_VALUE_DEFAULT end,
+			set = function (info, v)
+				barDbx.texture = (v~=indicator.dbx.texture and v~=self.MEDIA_VALUE_DEFAULT) and v or nil
+				self:RefreshIndicator(indicator, "Layout")
+			end,
+			values = self.GetStatusBarValues,
+			disabled = function() return barIndex==0 and indicator.dbx.reverseMainBar end,
+			hidden = false,			
+		},
+
+		barHorTile = {
+			type = "select",
+			order = 12,
+			width = 0.5,
+			name = L["Horizontal Tiles"],
+			desc = L["Select howto adjust the texture horizontally."],
+			get = function()
+				return tileTranslate[barDbx.horTile or 'NONE']
+			end,
+			set = function(_, v)
+				barDbx.horTile = tileTranslate[v]
+				self:RefreshIndicator(indicator, "Layout")
+			end,
+			values = function() return barIndex==0 and TILE_MAIN_VALUES or TILE_EXTRA_VALUES end,			
+			hidden = false,
+		},
+		
+		barVerTile = {
+			type = "select",
+			order = 13,
+			width = 0.5,
+			name = L["Vertical Tiles"],
+			desc = L["Select howto adjust the texture vertically."],
+			get = function()
+				return tileTranslate[barDbx.verTile or 'NONE']
+			end,
+			set = function(_, v)
+				barDbx.verTile = tileTranslate[v]
+				self:RefreshIndicator(indicator, "Layout")
+			end,
+			values = function() return barIndex==0 and TILE_MAIN_VALUES or TILE_EXTRA_VALUES end,						
+			hidden = false,
+		},
+
+		barTexAdjust = {
+			type = "toggle",
+			name = L["Adjust"],
+			desc = L["Change the texture coordinates to maintain the aspect ratio."],
+			width = 0.4,
+			order = 14,
+			get = function() return barIndex==0 or barDbx.adjustTex end,
+			set = function(_, v)
+				barDbx.adjustTex = v or nil
+				self:RefreshIndicator(indicator, "Layout")
+			end,
+			disabled = function() return barIndex==0 or (barDbx.horTile and barDbx.verTile) end,
+			hidden = false,
+		},
+
+		-------------------------------------------------------------------------
+
+		headerButtons = { type = "header", order = 150, name = "" },
+		
+		addBar = {
 			type = "execute",
 			order = 151,
 			name = L["Add Bar"],
-			width = 0.9,
+			width = 0.85,
 			desc = L["Add a new bar"],
 			func = function(info)
 				indicator.dbx[#indicator.dbx+1] = { color = {a=1} }
 				self:RefreshIndicator(indicator, "Layout")
-				self:MakeIndicatorOptions(indicator)
+				SelectTab( #indicator.dbx )
 			end,
-			disabled = function() return #indicator.dbx>=5 end
-		}
-		options.delBar = {
+			disabled = function() return #indicator.dbx>=5 end,
+			hidden = false,			
+		},
+		
+		delBar = {
 			type = "execute",
 			order = 152,
 			name = L["Delete Bar"],
-			width = 0.9,
-			desc = L["Delete last bar"],
+			width = 0.85,
+			desc = L["Delete this bar"],
 			func = function(info)
-				local index = #indicator.dbx
-				UnregisterIndicatorStatus(indicator, indicator.statuses[index+1])
-				if index>0 then
-					table.remove(indicator.dbx, index)
-				end
-				self:RefreshIndicator(indicator, "Layout")
-				self:MakeIndicatorOptions(indicator)
+				if barIndex>0 and barIndex<=#indicator.dbx then
+					local priority = barIndex+1
+					UnregisterIndicatorStatus( indicator, GetIndicatorStatusName(indicator, priority) )
+					table.remove(indicator.dbx, barIndex)
+					for statusName, index in next, GetIndicatorStatusMap(indicator) do
+						if index>priority then
+							SetIndicatorStatusPriority(indicator, statusName, index-1)
+						end
+					end
+					self:RefreshIndicator(indicator, "Layout")
+					SelectTab( barIndex<=#indicator.dbx and barIndex or barIndex-1 )
+				end	
 			end,
-			disabled = function() return #indicator.dbx>0 and indicator.statuses[1]==nil end,
+			disabled = function() return barIndex==0 end,
 			confirm = function() return L["This action cannot be undone. Are you sure?"] end,
-		}
-		options.enableBack = {
+			hidden = false,			
+		},
+		
+		enableBack = {
 			type = "execute",
-			name = indicator.dbx.backColor and L["Del Background"] or L["Add Background"],
+			name = function() return indicator.dbx.backColor and L["Del Background"] or L["Add Background"] end,
 			desc = L["Enable or disable the background texture"],
-			width = 0.9,
+			width = 0.85,
 			order = 153,
 			func = function(info)
 				indicator.dbx.invertColor = nil
@@ -472,10 +485,165 @@ do
 				indicator.dbx.backAnchor  = nil
 				indicator.dbx.backColor   = not indicator.dbx.backColor and { r=0,g=0,b=0,a=1 } or nil
 				self:RefreshIndicator(indicator, "Layout")
-				self:MakeIndicatorOptions(indicator)
+				SelectTab(indicator.dbx.backColor and 'background' or 0)
 			end,
 			confirm = function() return indicator.dbx.backColor~=nil and L["This action cannot be undone. Are you sure?"] end,
+			hidden = false,
+		},
+		
+	}
+
+	-- background settings
+	
+	local backOptions = {
+	
+		backHeader = { type = "header", order = 1,  name = L["Background"] },
+		
+		backAnchor = {
+			type = "select",
+			order = 3,
+			width = 1,
+			name = L["Anchor"],
+			desc = L["Select howto anchor the background texture."],
+			get = function ()
+				return indicator.dbx.backAnchor or 0
+			end,
+			set = function (_, v)
+				indicator.dbx.backAnchor = v>0 and v or nil
+				self:RefreshIndicator(indicator, "Layout")
+			end,
+			values = BANCHOR_VALUES,
+			hidden = false,			
+		},
+		
+		backColor = {
+			type = "color",
+			order = 4,
+			width = 0.4,
+			name = L["Color"],
+			desc = L["Background Color"],
+			hasAlpha = true,
+			get = function() return self:UnpackColor( indicator.dbx.backColor ) end,
+			set = function(info,r,g,b,a)
+				self:PackColor( r,g,b,a, indicator.dbx, "backColor" )
+				self:RefreshIndicator(indicator, "Layout")
+			end,
+			hidden = false,
+		},
+
+	    headerTexture = { type = "header", order = 10,  name = L["Texture"] },
+
+		backTexture = {
+			type = "select", dialogControl = "LSM30_Statusbar",
+			order = 11,
+			width = 1.5,
+			name = L["Texture"],
+			desc = L["Adjust the background texture."],
+			get = function (info) return indicator.dbx.backTexture or indicator.dbx.texture or self.MEDIA_VALUE_DEFAULT end,
+			set = function (info, v)
+				indicator.dbx.backTexture = v~=self.MEDIA_VALUE_DEFAULT and v or nil
+				self:RefreshIndicator(indicator, "Layout")
+			end,
+			values = self.GetStatusBarValues,
+			hidden = false,
+		},
+
+		backHorTile = {
+			type = "select",
+			order = 12,
+			width = 0.5,
+			name = L["Horizontal Tiles"],
+			desc = L["Select howto adjust the texture horizontally."],
+			get = function()
+				return tileTranslate[indicator.dbx.backHorTile or 'NONE']
+			end,
+			set = function(_, v)
+				indicator.dbx.backHorTile = tileTranslate[v]
+				self:RefreshIndicator(indicator, "Layout")
+			end,
+			values = TILE_MAIN_VALUES,
+			hidden = false,
+		},
+		
+		backVerTile = {
+			type = "select",
+			order = 13,
+			width = 0.5,
+			name = L["Vertical Tiles"],
+			desc = L["Select howto adjust the texture vertically."],
+			get = function()
+				return tileTranslate[indicator.dbx.backVerTile or 'NONE']
+			end,
+			set = function(_, v)
+				indicator.dbx.backVerTile = tileTranslate[v]
+				self:RefreshIndicator(indicator, "Layout")
+			end,
+			values = TILE_MAIN_VALUES,			
+			hidden = false,
+		},
+
+		headerButtons = { type = "header", order = 99, name = "" },
+
+		backRemove = {
+			type = "execute",
+			name = L["Del Background"],
+			desc = L["Del Background"],
+			width = 'full',
+			order = 100,
+			func = function(info)
+				indicator.dbx.invertColor = nil
+				indicator.dbx.backTexture = nil
+				indicator.dbx.backAnchor  = nil
+				indicator.dbx.backColor   =  nil
+				self:RefreshIndicator(indicator, "Layout")
+				SelectTab(0)
+			end,
+			confirm = function() return L["This action cannot be undone. Are you sure?"] end,
+			hidden = false,
+		},
+		
+	}
+
+	-- options/tabs for all bars
+
+	local options = {
+		__load = { type = "header", order = 0, name = "", hidden = function(info)
+				indicator = Grid2:GetIndicatorByName( info[#info-2] )
+				return true
+		end },
+	}	
+
+	-- add 5 extra bars tabs
+	local function isBarHidden(info)
+		local barIndex = tonumber(info[#info]) or 0
+		return barIndex>0 and not (indicator and indicator.dbx[barIndex])
+	end
+	
+	for i=0,6 do
+		options[tostring(i)] = {
+			type   = "group",
+			order  = i,
+			name   = i==0 and L['Main Bar'] or L['Bar']..i,
+			desc = "",
+			args   = barOptions,
+			hidden = isBarHidden, 
 		}
+	end
+
+	-- add background tab
+	options.background = {
+		type   = "group",
+		order  = 100,
+		name   = L["Back"],
+		desc = "",
+		args   = backOptions,
+		hidden = function() return indicator.dbx.backColor==nil end,
+	}
+
+	-- published return bars options
+	
+	function Grid2Options:GetIndicatorMultiBarTexturesOptions()
+		return options
 	end
 
 end

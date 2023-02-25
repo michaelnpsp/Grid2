@@ -58,7 +58,6 @@ do
 	local function DeleteIndicatorReal(indicator)
 		local name = indicator.name
 		Grid2Options.LI[name] = nil
-		indicator:DisableAllFrames()
 		Grid2:DbSetIndicator(name,nil)
 		if indicator.dbx.sideKick then
 			Grid2:DbSetIndicator(indicator.dbx.sideKick.name, nil)
@@ -214,13 +213,14 @@ do
 				TestAuras.col[i] = color
 			end
 			-- create test status
-			Test = Grid2.statusPrototype:new("test",false)
+			Test = Grid2.statusPrototype:new("/@@@test@@@/",false)
 			function Test:IsActive()    return true end
 			function Test:GetText()     return "99" end
 			function Test:GetColor()    return math.random(0,1),math.random(0,1),math.random(0,1),1 end
 			function Test:GetPercent()	return math.random() end
 			function Test:GetIcon()	    return TestIcons[ math.random(#TestIcons) ]	end
 			function Test:GetIcons(_,m) return math.min(m,#TestIcons), TestAuras.tex, TestAuras.cnt, TestAuras.exp, TestAuras.dur, TestAuras.col end
+			function Test:GetTooltip()  return end
 			Test.dbx = TestIcons -- Asigned to TestIcons to avoid creating a new table
 			Grid2:RegisterStatus( Test, {"text","color", "percent", "icon"}, "test" )
 			ToggleTestMode = function()
@@ -360,7 +360,7 @@ end
 
 --Check if the indicator is in use (and can not be safetly deleted).
 function Grid2Options:IndicatorIsInUse(indicator)
-	return indicator==nil or #indicator.statuses>0 or (indicator.sideKick and #indicator.sideKick.statuses>0) or indicator.parentName or indicator.childName
+	return indicator==nil or indicator.parentName or indicator.childName
 end
 
 -- Calculate icon type path

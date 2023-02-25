@@ -375,15 +375,17 @@ end
 
 -- checking that the status provides at least one of the required indicator types
 function Grid2Options:IsCompatiblePair(indicator, status)
-	for type, list in pairs(Grid2.indicatorTypes) do
-		if list[indicator.name] then
-			for _, s in Grid2:IterateStatuses(type) do
-				if s == status then
-					return type
+	if status.name~="/@@@test@@@/" then
+		for type, list in pairs(Grid2.indicatorTypes) do
+			if list[indicator.name] then
+				for _, s in Grid2:IterateStatuses(type) do
+					if s == status then
+						return type
+					end
 				end
 			end
 		end
-	end
+	end	
 end
 
 -- Grid2Options:GetAvailableStatusValues()
@@ -391,7 +393,7 @@ function Grid2Options:GetAvailableStatusValues(indicator, statusAvailable, statu
 	statusAvailable = statusAvailable or {}
 	wipe(statusAvailable)
 	for statusKey, status in Grid2:IterateStatuses() do
-		if self:IsCompatiblePair(indicator, status) and status.name~="test" and not status.priorities[indicator] and not indicator.priorities[status] then 
+		if self:IsCompatiblePair(indicator, status) and not status.priorities[indicator] and not indicator.priorities[status] then 
 			statusAvailable[statusKey] = self.LocalizeStatus(status)
 		end
 	end

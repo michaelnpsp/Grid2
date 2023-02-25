@@ -1331,6 +1331,11 @@ L["Select zero to use default Frame Height"] = "Elige cero para usar el valor pr
 L["Are you sure?"] = "Estás seguro?"
 L["A Layout defines which unit frames will be displayed and the way in which they are arranged. Here you can set different layouts for each instance size."] = "Un diseño define que y como se mostraran las unidades. Aqui puedes seleccionar diferentes diseños para cada tamaño de instancia."
 L["Add instance size"] = "Añade tamaño instancia"
+L["Bar"] = "Barra"
+L["Back"] = "Fondo"
+L["Adjust"] = "Ajusta"
+L["Horizontal Tiles"] = "Horizontal Tiles"
+L["Vertical Tiles"] = "Vertical Tiles"
 
 -- RaidDebuffsOptions
 L["[Custom Debuffs]"] = "[Debuffs Personalizados]"

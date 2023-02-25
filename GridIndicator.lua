@@ -132,15 +132,17 @@ function indicator:SortStatuses()
 end
 
 function indicator:SetStatusPriority(status, priority)
-	if not status.suspended then
-		self.priorities[status] = priority
-		self:SortStatuses()
-	end
-	status.priorities[self] = priority
+	if status then
+		if not status.suspended then
+			self.priorities[status] = priority
+			self:SortStatuses()
+		end
+		status.priorities[self] = priority
+	end	
 end
 
 function indicator:GetStatusPriority(status)
-	return status.priorities[self]
+	return status and status.priorities[self]
 end
 
 function indicator:GetCurrentStatus(unit)

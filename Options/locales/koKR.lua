@@ -1329,6 +1329,11 @@ L["Select zero to use default Frame Height"] = "0이면 기본 프레임 높이 
 L["Are you sure?"] = "확실한가요?"
 L["A Layout defines which unit frames will be displayed and the way in which they are arranged. Here you can set different layouts for each instance size."] = "배치는 유닛 프레임이 어떻게 정렬되고 표시되는지를 정의합니다. 이곳에서 각 인스턴스 크기별로 다른 배치를 설정할 수 있습니다"
 L["Add instance size"] = ""
+-- L["Bar"] = ""
+-- L["Back"] = ""
+-- L["Adjust"] = ""
+-- L["Horizontal Tiles"] = ""
+-- L["Vertical Tiles"] = ""
 
 -- RaidDebuffsOptions
 L["[Custom Debuffs]"] = "사용자 디버프"
