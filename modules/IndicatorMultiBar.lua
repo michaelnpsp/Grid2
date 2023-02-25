@@ -62,8 +62,10 @@ local function Bar_OnFrameUpdate(bar)
 			if size>0 then
 				if horizontal then
 					texture:SetPoint( points[1], bar, points[1], direction*offset*barSize, 0)
+					if texture.myAdjust then texture:SetTexCoord(0,size,0,1) end
 				else
 					texture:SetPoint( points[1], bar, points[1], 0, direction*offset*barSize)
+					if texture.myAdjust then texture:SetTexCoord(0,1,1-size,1) end
 				end
 				texture:mySetSize( size * barSize )
 				texture:Show()
@@ -147,12 +149,9 @@ local function Bar_Layout(self, parent)
 	bar:SetStatusBarTexture(self.texture)
 	local barTexture = bar:GetStatusBarTexture()
 	barTexture:SetDrawLayer("ARTWORK", 0)
-	local tile = self.tileTex
-	if tile then
-		barTexture:SetHorizTile(tile<=0)
-		barTexture:SetVertTile(tile>=0)
-		bar:SetStatusBarTexture(self.texture)
-	end	
+	barTexture:SetHorizTile(self.horTile)
+	barTexture:SetVertTile(self.verTile)
+	bar:SetStatusBarTexture(self.texture)
 	local color = self.foreColor
 	if color then bar:SetStatusBarColor(color.r, color.g, color.b, self.opacity) end
 	bar:SetSize(width, height)
@@ -172,12 +171,12 @@ local function Bar_Layout(self, parent)
 		texture.myReverse = setup.reverse
 		texture.myNoOverlap = setup.noOverlap
 		texture.myOpacity = setup.opacity
+		texture.myAdjust = setup.adjust
 		if texture:GetTexture() then texture:SetTexture(nil) end
-		local h, v = (setup.tileTex or 1)<=0, (setup.tileTex or -1)>=0 
 		texture:SetTexCoord(0,1,0,1)
-		texture:SetTexture(setup.texture, h and 'MIRROR' or 'CLAMP', v and 'MIRROR' or 'CLAMP')
-		texture:SetHorizTile(h)
-		texture:SetVertTile(v)
+		texture:SetTexture(setup.texture, setup.horWrap, setup.verWrap)
+		texture:SetHorizTile(setup.horWrap~='CLAMP')
+		texture:SetVertTile(setup.verWrap~='CLAMP')
 		texture:SetDrawLayer("ARTWORK", setup.sublayer)
 		local c = setup.color
 		if c then
@@ -239,13 +238,14 @@ local function Bar_UpdateDB(self)
 	self.width         = dbx.width
 	self.height        = dbx.height
 	self.direction     = dbx.reverseFill and -1 or 1
-	self.tileTex       = dbx.tileTex
 	self.horizontal    = (orientation == "HORIZONTAL")
 	self.reverseFill   = not not dbx.reverseFill
 	self.backAnchor    = dbx.backAnchor
 	self.reverse       = dbx.reverseMainBar
 	self.opacity       = dbx.textureColor.a
 	self.texture       = Grid2:MediaFetch("statusbar", dbx.texture or theme.barTexture, "Gradient")
+	self.horTile       = dbx.horTile~=nil
+	self.verTile       = dbx.verTile~=nil
 	self.bars          = {}
 	for i,setup in ipairs(dbx) do
 		self.bars[i] = {
@@ -254,14 +254,17 @@ local function Bar_UpdateDB(self)
 			opacity   = setup.color.a,
 			color     = setup.color.r and setup.color or self.foreColor,
 			texture   = setup.texture and Grid2:MediaFetch("statusbar", setup.texture) or self.texture,
-			tileTex   = setup.tileTex,
+			horWrap   = setup.horTile or 'CLAMP',
+			verWrap   = setup.verTile or 'CLAMP',
+			adjust    = setup.adjustTex,
 			sublayer  = i,
 		}
 	end
 	if backColor then
 	    self.bars[#self.bars+1] = {
 			texture = Grid2:MediaFetch("statusbar", dbx.backTexture or theme.barTexture, "Gradient") or self.texture,
-			tileTex = dbx.backTileTex,
+			horWrap   = dbx.backHorTile or 'CLAMP',
+			verWrap   = dbx.backVerTile or 'CLAMP',
 			color = dbx.invertColor and texColor or backColor,
 			opacity = backColor.a,
 			background = not self.backAnchor,

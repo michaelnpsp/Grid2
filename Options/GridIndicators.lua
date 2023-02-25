@@ -58,7 +58,6 @@ do
 	local function DeleteIndicatorReal(indicator)
 		local name = indicator.name
 		Grid2Options.LI[name] = nil
-		indicator:DisableAllFrames()
 		Grid2:DbSetIndicator(name,nil)
 		if indicator.dbx.sideKick then
 			Grid2:DbSetIndicator(indicator.dbx.sideKick.name, nil)
@@ -360,7 +359,7 @@ end
 
 --Check if the indicator is in use (and can not be safetly deleted).
 function Grid2Options:IndicatorIsInUse(indicator)
-	return indicator==nil or #indicator.statuses>0 or (indicator.sideKick and #indicator.sideKick.statuses>0) or indicator.parentName or indicator.childName
+	return indicator==nil or indicator.parentName or indicator.childName
 end
 
 -- Calculate icon type path

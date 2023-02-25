@@ -309,6 +309,7 @@ function status:UnregisterLoad() -- called from Grid2:UnregisterStatus() in Grid
 		FilterG_Unregister(self, load)
 		FilterU_Unregister(self, load)
 	end	
+	self.suspended = nil
 end
 
 function status:EnableLoad() -- called from status:RegisterIndicator() when the status is enabled

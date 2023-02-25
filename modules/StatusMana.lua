@@ -96,7 +96,8 @@ function PowerAlt:IsActive(unit)
 end
 
 function PowerAlt:GetPercent(unit)
-	return max(UnitPower(unit,10),0) / UnitPowerMax(unit,10)
+	local m = UnitPowerMax(unit,10)
+	return m==0 and 0 or max(UnitPower(unit,10),0) / UnitPowerMax(unit,10)
 end
 
 function PowerAlt:GetText(unit)
