@@ -1330,6 +1330,11 @@ L["Select zero to use default Frame Height"] = true
 L["Are you sure?"] = true
 L["A Layout defines which unit frames will be displayed and the way in which they are arranged. Here you can set different layouts for each instance size."] = true
 L["Add instance size"] = true
+L["Bar"] = true
+L["Back"] = true
+L["Adjust"] = true
+L["Horizontal Tiles"] = true
+L["Vertical Tiles"] = true
 
 -- RaidDebuffsOptions
 L["[Custom Debuffs]"] = true

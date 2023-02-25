@@ -1329,6 +1329,11 @@ L["You can include a descriptive prefix using separators \"@#>\""] = "你可以�
 -- L["Are you sure?"] = ""
 -- L["A Layout defines which unit frames will be displayed and the way in which they are arranged. Here you can set different layouts for each instance size."] = ""
 -- L["Add instance size"] = ""
+-- L["Bar"] = ""
+-- L["Back"] = ""
+-- L["Adjust"] = ""
+-- L["Horizontal Tiles"] = ""
+-- L["Vertical Tiles"] = ""
 
 -- RaidDebuffsOptions
 -- L["[Custom Debuffs]"] = ""

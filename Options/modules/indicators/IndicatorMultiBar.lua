@@ -384,7 +384,7 @@ do
 			type = "select",
 			order = 12,
 			width = 0.5,
-			name = L["Horizontal Tile"],
+			name = L["Horizontal Tiles"],
 			desc = L["Select howto adjust the texture horizontally."],
 			get = function()
 				return tileTranslate[barDbx.horTile or 'NONE']
@@ -401,7 +401,7 @@ do
 			type = "select",
 			order = 13,
 			width = 0.5,
-			name = L["Vertical Tile"],
+			name = L["Vertical Tiles"],
 			desc = L["Select howto adjust the texture vertically."],
 			get = function()
 				return tileTranslate[barDbx.verTile or 'NONE']
@@ -552,7 +552,7 @@ do
 			type = "select",
 			order = 12,
 			width = 0.5,
-			name = L["Horizontal Tile"],
+			name = L["Horizontal Tiles"],
 			desc = L["Select howto adjust the texture horizontally."],
 			get = function()
 				return tileTranslate[indicator.dbx.backHorTile or 'NONE']
@@ -569,7 +569,7 @@ do
 			type = "select",
 			order = 13,
 			width = 0.5,
-			name = L["Vertical Tile"],
+			name = L["Vertical Tiles"],
 			desc = L["Select howto adjust the texture vertically."],
 			get = function()
 				return tileTranslate[indicator.dbx.backVerTile or 'NONE']
@@ -586,8 +586,8 @@ do
 
 		backRemove = {
 			type = "execute",
-			name = L["Delete Background"],
-			desc = L["Delete Background"],
+			name = L["Del Background"],
+			desc = L["Del Background"],
 			width = 'full',
 			order = 100,
 			func = function(info)
