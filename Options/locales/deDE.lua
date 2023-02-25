@@ -756,6 +756,7 @@ L["Frequent Updates"] = "Häufigere Aktualisierungen"
 -- L["Instant"] = ""
 -- L["Update frequency"] = ""
 -- L["Select the health update frequency."] = ""
+-- L["Add shields to health percent"] = ""
 
 -- health-low status
 -- L["Use Health Percent"] = ""

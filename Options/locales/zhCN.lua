@@ -758,6 +758,7 @@ L["Fast"] = "快"
 L["Instant"] = "立刻"
 L["Update frequency"] = "更新的频率"
 L["Select the health update frequency."] = "选择生命值更新频率"
+-- L["Add shields to health percent"] = ""
 
 -- health-low status
 L["Use Health Percent"] = "使用生命值的百分比"
