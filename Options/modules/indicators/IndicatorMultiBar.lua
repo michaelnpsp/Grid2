@@ -201,7 +201,7 @@ do
 				local curStatusName = GetIndicatorStatusName(indicator, barIndex+1)
 				local usedStatuses  = GetIndicatorStatusMap(indicator)
 				for statusKey, status in Grid2:IterateStatuses() do
-					if self:IsCompatiblePair(indicator, status) and status.name~="test" and (curStatusName or not usedStatuses[statusKey])  then
+					if self:IsCompatiblePair(indicator, status) and (curStatusName or not usedStatuses[statusKey])  then
 						tmpTable[statusKey] = self.LocalizeStatus(status)
 					end
 				end
