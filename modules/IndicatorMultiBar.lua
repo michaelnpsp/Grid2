@@ -38,34 +38,35 @@ local function Bar_OnFrameUpdate(bar)
 	if self.reverse then
 		valueMax, valueTo = 0, -valueTo
 	end
+	local size, offset, offseu
 	for i=2,bar.myMaxIndex do
 		local texture = myTextures[i]
 		local value = myValues[i] or 0
 		if value>0 then
-			local size, offset
 			maxIndex = i
 			if texture.myReverse then
-				size    = min(value, valueTo)
-				offset  = valueTo - size
-				valueTo = valueTo - value
+			  offset  = valueTo - value
+			  offseu  = valueTo
+			  valueTo = offset
 			elseif texture.myNoOverlap then
-				size     = min(value, 1-valueMax)
-				offset   = valueMax
-				valueTo  = valueMax + value
-				valueMax = valueTo
+			  offset  = valueMax
+			  offseu  = valueMax+value
+			  valueTo = offseu
 			else
-				offset   = max(valueTo,0)
-				valueTo  = valueTo + value
-				size     = min(valueTo,1) - offset
-				valueMax = max(valueMax, valueTo)
+			  offset  = valueTo
+			  offseu  = valueTo+value
+			  valueTo = offseu
 			end
+			if offset<0 then offset = 0 end
+			if offseu>1 then offseu = 1 end
+			size = offseu - offset
 			if size>0 then
 				if horizontal then
 					texture:SetPoint( points[1], bar, points[1], direction*offset*barSize, 0)
-					if texture.myAdjust then texture:SetTexCoord(0,size,0,1) end
+					if texture.myHorAdjust then texture:SetTexCoord(0,size,0,1) end
 				else
 					texture:SetPoint( points[1], bar, points[1], 0, direction*offset*barSize)
-					if texture.myAdjust then texture:SetTexCoord(0,1,1-size,1) end
+					if texture.myVerAdjust then texture:SetTexCoord(0,1,1-size,1) end
 				end
 				texture:mySetSize( size * barSize )
 				texture:Show()
@@ -171,7 +172,8 @@ local function Bar_Layout(self, parent)
 		texture.myReverse = setup.reverse
 		texture.myNoOverlap = setup.noOverlap
 		texture.myOpacity = setup.opacity
-		texture.myAdjust = setup.adjust
+		texture.myHorAdjust = setup.horAdjust
+		texture.myVerAdjust = setup.verAdjust
 		if texture:GetTexture() then texture:SetTexture(nil) end
 		texture:SetTexCoord(0,1,0,1)
 		texture:SetTexture(setup.texture, setup.horWrap, setup.verWrap)
@@ -256,7 +258,8 @@ local function Bar_UpdateDB(self)
 			texture   = setup.texture and Grid2:MediaFetch("statusbar", setup.texture) or self.texture,
 			horWrap   = setup.horTile or 'CLAMP',
 			verWrap   = setup.verTile or 'CLAMP',
-			adjust    = setup.adjustTex,
+			horAdjust = setup.adjustTex and not setup.horTile,
+			verAdjust = setup.adjustTex and not setup.verTile,
 			sublayer  = i,
 		}
 	end

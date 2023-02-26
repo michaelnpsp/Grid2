@@ -420,7 +420,7 @@ do
 			desc = L["Change the texture coordinates to maintain the aspect ratio."],
 			width = 0.4,
 			order = 14,
-			get = function() return barIndex==0 or barDbx.adjustTex end,
+			get = function() return barIndex==0 or barDbx.adjustTex and not (barDbx.horTile and barDbx.verTile) end,
 			set = function(_, v)
 				barDbx.adjustTex = v or nil
 				self:RefreshIndicator(indicator, "Layout")

@@ -837,6 +837,16 @@ local function GetOverHealsNoPlayer(unit)
 	return heals_cache[unit]+myheals_cache[unit]+UnitHealth(unit)-UnitHealthMax(unit)
 end
 
+local function GetOverHealsPercentPlayer(self, unit)
+	local m = UnitHealthMax(unit)
+	return m>0 and ( heals_cache[unit]+UnitHealth(unit)-m ) / m or 0
+end
+
+local function GetOverHealsPercentNoPlayer(self, unit)
+	local m = UnitHealthMax(unit)
+	return m>0 and ( heals_cache[unit]+myheals_cache[unit]+UnitHealth(unit)-m ) / m or 0
+end
+
 function OverHeals:UpdateDB()
 	overheals_minimum = self.dbx.minimum or 1
 	self.GetText = self.dbx.displayRawNumbers and self.GetText2 or self.GetText1
@@ -846,6 +856,7 @@ function OverHeals:OnEnable()
 	Health_Enable(self)
 	RegisterHealEvents(4, not Heals.dbx.includePlayerHeals) -- set bit3
 	GetOverHeals = Heals.dbx.includePlayerHeals and GetOverHealsPlayer or GetOverHealsNoPlayer -- update setting here because OverHeals status can be created before Heals status
+	self.GetPercent = Heals.dbx.includePlayerHeals and GetOverHealsPercentPlayer or GetOverHealsPercentNoPlayer
 	overheals_enabled = true
 end
 
@@ -869,13 +880,8 @@ function OverHeals:GetText2(unit)
 end
 
 OverHeals.GetText = GetText1
-
+OverHeals.GetPercent = GetOverHealsPercentPlayer
 OverHeals.GetColor = Grid2.statusLibrary.GetColor
-
-function OverHeals:GetPercent(unit)
-	local m = UnitHealthMax(unit)
-	return m>0 and ( heals_cache[unit]+UnitHealth(unit)-m ) / m or 0
-end
 
 local function Create(baseKey, dbx)
 	Grid2:RegisterStatus(OverHeals, {"color", "text", "percent"}, baseKey, dbx)
