@@ -49,13 +49,15 @@ local function Bar_OnFrameUpdate(bar)
 			  offseu  = valueTo
 			  valueTo = offset
 			elseif texture.myNoOverlap then
-			  offset  = valueMax
-			  offseu  = valueMax+value
-			  valueTo = offseu
+			  offset   = valueMax
+			  offseu   = valueMax+value
+			  valueTo  = offseu
+			  valueMax = valueTo
 			else
-			  offset  = valueTo
-			  offseu  = valueTo+value
-			  valueTo = offseu
+			  offset   = valueTo
+			  offseu   = valueTo+value
+			  valueTo  = offseu
+			  valueMax = valueTo>valueMax and valueTo or valueMax
 			end
 			if offset<0 then offset = 0 end
 			if offseu>1 then offseu = 1 end
