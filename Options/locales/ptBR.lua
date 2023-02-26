@@ -1335,6 +1335,8 @@ L["A resurrection spell has been casted on the unit"] = "A magia reviver esta se
 -- L["Adjust"] = ""
 -- L["Horizontal Tiles"] = ""
 -- L["Vertical Tiles"] = ""
+-- L["Repeat"] = ""
+-- L["Mirror"] = ""
 
 -- RaidDebuffsOptions
 -- L["[Custom Debuffs]"] = ""

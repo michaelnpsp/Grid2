@@ -638,7 +638,7 @@ local frameOptions2 = { headerback = {
 		name = L["Borders"],
 }, borderIndicatorColor = {
 	type = "color",
-	order = 32,
+	order = 33,
 	name = L["Border Color"],
 	desc = L["Sets the default color for the border indicator."],
 	get = function()
@@ -654,7 +654,7 @@ local frameOptions2 = { headerback = {
 	hasAlpha = true,
 }, borderIndicatorSize = {
 	type = "range",
-	order = 33,
+	order = 32,
 	name = L["Border Size"],
 	desc = L["Adjust the border of each unit's frame."],
 	min = 1,
@@ -668,7 +668,7 @@ local frameOptions2 = { headerback = {
 	disabled = InCombatLockdown,
 }, innerBordercolor = {
 		type = "color",
-		order = 40,
+		order = 41,
 		name = L["Inner Border Color"],
 		desc = L["Sets the color of the inner border of each unit frame"],
 		get = function()
@@ -683,7 +683,7 @@ local frameOptions2 = { headerback = {
 		hasAlpha = true,
 }, innerBorderDistance= {
 		type = "range",
-		order = 41,
+		order = 40,
 		name = L["Inner Border Size"],
 		desc = L["Sets the size of the inner border of each unit frame"],
 		min = -16,
@@ -716,6 +716,7 @@ local frameOptions2 = { headerback = {
 		type = "toggle",
 		name = L["Mouseover Highlight"],
 		desc = L["Toggle mouseover highlight."],
+		width = "full",
 		order = 51,
 		get = function ()
 			return theme.frame.mouseoverHighlight
@@ -726,7 +727,7 @@ local frameOptions2 = { headerback = {
 		end,
 }, mouseoverColor = {
 		type = "color",
-		order = 55,
+		order = 53,
 		name = L["Highlight Color"],
 		desc = L["Sets the hightlight color of each unit frame"],
 		get = function()
@@ -742,7 +743,7 @@ local frameOptions2 = { headerback = {
 		hidden = function() return not theme.frame.mouseoverHighlight end,
 }, mouseoverTexture = {
 		type = "select", dialogControl = "LSM30_Background",
-		order = 80,
+		order = 52,
 		name = L["Highlight Texture"],
 		desc = L["Sets the highlight border texture of each unit frame"],
 		get = function (info) return theme.frame.mouseoverTexture or "Blizzard Quest Title Highlight" end,

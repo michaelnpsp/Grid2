@@ -1336,6 +1336,8 @@ L["Back"] = true
 L["Adjust"] = true
 L["Horizontal Tiles"] = true
 L["Vertical Tiles"] = true
+L["Repeat"] = true
+L["Mirror"] = true
 
 -- RaidDebuffsOptions
 L["[Custom Debuffs]"] = true

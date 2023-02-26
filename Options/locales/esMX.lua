@@ -1335,6 +1335,8 @@ L["Back"] = "Fondo"
 L["Adjust"] = "Ajusta"
 L["Horizontal Tiles"] = "Horizontal Tiles"
 L["Vertical Tiles"] = "Vertical Tiles"
+L["Repeat"] = "Repite"
+L["Mirror"] = "Espejo"
 
 -- RaidDebuffsOptions
 L["[Custom Debuffs]"] = "[Debuffs Personalizados]"

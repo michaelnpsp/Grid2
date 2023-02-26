@@ -1333,6 +1333,8 @@ L["\"%s\" has sent you a profile configuration. Do you want to activate received
 -- L["Adjust"] = ""
 -- L["Horizontal Tiles"] = ""
 -- L["Vertical Tiles"] = ""
+-- L["Repeat"] = ""
+-- L["Mirror"] = ""
 
 -- RaidDebuffsOptions
 -- L["[Custom Debuffs]"] = ""

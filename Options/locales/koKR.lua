@@ -1335,6 +1335,8 @@ L["Add instance size"] = ""
 -- L["Adjust"] = ""
 -- L["Horizontal Tiles"] = ""
 -- L["Vertical Tiles"] = ""
+-- L["Repeat"] = ""
+-- L["Mirror"] = ""
 
 -- RaidDebuffsOptions
 L["[Custom Debuffs]"] = "사용자 디버프"

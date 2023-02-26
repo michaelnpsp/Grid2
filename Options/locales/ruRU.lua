@@ -1335,6 +1335,8 @@ L["You can include a descriptive prefix using separators \"@#>\""] = "Вы мо�
 -- L["Adjust"] = ""
 -- L["Horizontal Tiles"] = ""
 -- L["Vertical Tiles"] = ""
+-- L["Repeat"] = ""
+-- L["Mirror"] = ""
 
 -- RaidDebuffsOptions
 -- L["[Custom Debuffs]"] = ""
