@@ -249,6 +249,8 @@ end
 -- health-current status
 HealthCurrent.IsActive  = Grid2.statusLibrary.IsActive
 
+local HealthCurrent_GetPercent
+
 local function HealthCurrent_ShieldUpdate(unit)
 	if unit_is_valid[unit] then
 		HealthCurrent:UpdateIndicators(unit)
@@ -319,6 +321,7 @@ function HealthCurrent:UpdateDB()
 	self.color1 = Grid2:MakeColor(self.dbx.color1)
 	self.color2 = Grid2:MakeColor(self.dbx.color2)
 	self.color3 = Grid2:MakeColor(self.dbx.color3)
+	HealthCurrent_GetPercent = self.GetPercent
 	Health_UpdateStatuses()
 end
 
@@ -336,16 +339,29 @@ HealthLow.OnEnable  = Health_Enable
 HealthLow.OnDisable = Health_Disable
 HealthLow.GetColor  = Grid2.statusLibrary.GetColor
 
+local healthlow_threshold
+
 function HealthLow:IsActive1(unit)
-	return UnitExists(unit) and HealthCurrent:GetPercent(unit) < self.dbx.threshold
+	return UnitExists(unit) and HealthCurrent_GetPercent(self, unit) < healthlow_threshold
 end
 
 function HealthLow:IsActive2(unit)
-	return UnitExists(unit) and UnitHealth(unit) < self.dbx.threshold
+	return UnitExists(unit) and UnitHealth(unit) < healthlow_threshold
+end
+
+function HealthLow:IsInactive1(unit)
+	return not UnitExists(unit) or HealthCurrent_GetPercent(self, unit) >= healthlow_threshold
+end
+
+function HealthLow:IsInactive2(unit)
+	return not UnitExists(unit) or UnitHealth(unit) >= healthlow_threshold
 end
 
 function HealthLow:UpdateDB()
-	self.IsActive = self.dbx.threshold<=1 and self.IsActive1 or self.IsActive2
+	healthlow_threshold = self.dbx.threshold
+	self.IsActive = self.dbx.invert and  
+					(healthlow_threshold<=1 and self.IsInactive1 or self.IsInactive2) or
+					(healthlow_threshold<=1 and self.IsActive1 or self.IsActive2)
 end
 
 local function CreateHealthLow(baseKey, dbx)

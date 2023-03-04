@@ -304,14 +304,26 @@ Grid2Options:RegisterStatusOptions("health-low", "health", function(self, status
 	options.useAbsoluteHealth = {
 		type = "toggle",
 		order = 110,
+		width = 'full',
 		name = L["Use Health Percent"],
 		desc = L["Use Health Percent"],
-		tristate = false,
 		get = function () return status.dbx.threshold<10 end,
 		set = function (_, v)
 			status.dbx.threshold = v and 0.4 or 10000
 			RefreshStatus(status)
 			self:MakeStatusOptions(status)
+		end,
+	}
+	options.invertActivation = {
+		type = "toggle",
+		order = 115,
+		width = 'full',
+		name = L["Invert status activation"],
+		desc = L["Invert status activation"],
+		get = function () return status.dbx.invert end,
+		set = function (_, v)
+			status.dbx.invert = v or nil
+			RefreshStatus(status)
 		end,
 	}
 end, {
