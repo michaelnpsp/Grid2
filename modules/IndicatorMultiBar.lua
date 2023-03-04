@@ -260,8 +260,8 @@ local function Bar_UpdateDB(self)
 			texture   = setup.texture and Grid2:MediaFetch("statusbar", setup.texture) or self.texture,
 			horWrap   = setup.horTile or 'CLAMP',
 			verWrap   = setup.verTile or 'CLAMP',
-			horAdjust = setup.adjustTex and not setup.horTile,
-			verAdjust = setup.adjustTex and not setup.verTile,
+			horAdjust = setup.horTile=='CLAMP',
+			verAdjust = setup.verTile=='CLAMP',
 			sublayer  = i,
 		}
 	end

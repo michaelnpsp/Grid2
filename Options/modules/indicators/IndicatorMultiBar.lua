@@ -93,12 +93,12 @@ do
 	local ANCHOR_VALUES = { L["Previous Bar"], L["Topmost Bar"], L["Prev. Bar & Reverse"] }
     local BANCHOR_VALUES =	{ [0]= L["Whole Background"], [1]= L["Main Bar"], [2]= L["Topmost Bar"] }
 	local DIRECTION_VALUES = { L['Normal'], L['Reverse'] }
-	local MAINBAR_COLOR_SOURCES  = { L["Status Color"], L["Custom Color"] }
+	local MAINBAR_COLOR_SOURCES = { L["Status Color"], L["Custom Color"] }
 	local EXTRABAR_COLOR_SOURCES = { L["Main Bar Color"], L["Custom Color"] }
-	local TILE_MAIN_VALUES  = { L["None"], L["Repeat"] }
-	local TILE_EXTRA_VALUES = { L["None"], L["Repeat"], L["Mirror"] }
-	local tileTranslate = { [1] = nil, [2] = 'REPEAT', [3] = 'MIRROR', NONE = 1, REPEAT = 2, MIRROR = 3 }
-
+	local TILE_MAIN_VALUES = { [1] = L["Fill"], [3] = L["Tile Repeat"] }
+	local TILE_EXTRA_VALUES = { [0] = L["Fill"], [1] = L["Stretch"], [3] = L["Tile Repeat"], [4] = L["Tile Mirror"] }
+	local tileTranslate = { [0] = 'CLAMP', [1] = nil,  [3] = 'REPEAT', [4] = 'MIRROR', CLAMP = 0, REPEAT = 3, MIRROR = 4 }
+	
 	-- edited indicator & bar
 
 	local self, indicator, barIndex, barDbx = Grid2Options
@@ -380,14 +380,14 @@ do
 			hidden = false,			
 		},
 
-		barHorTile = {
+		barHorTile= {
 			type = "select",
 			order = 12,
-			width = 0.5,
-			name = L["Horizontal Tiles"],
+			width = 0.7,
+			name = L["Horizontal Fit"],
 			desc = L["Select howto adjust the texture horizontally."],
 			get = function()
-				return tileTranslate[barDbx.horTile or 'NONE']
+				return tileTranslate[barDbx.horTile] or 1
 			end,
 			set = function(_, v)
 				barDbx.horTile = tileTranslate[v]
@@ -400,32 +400,17 @@ do
 		barVerTile = {
 			type = "select",
 			order = 13,
-			width = 0.5,
-			name = L["Vertical Tiles"],
+			width = 0.7,
+			name = L["Vertical Fit"],
 			desc = L["Select howto adjust the texture vertically."],
 			get = function()
-				return tileTranslate[barDbx.verTile or 'NONE']
+				return tileTranslate[barDbx.verTile] or 1
 			end,
 			set = function(_, v)
 				barDbx.verTile = tileTranslate[v]
 				self:RefreshIndicator(indicator, "Layout")
 			end,
 			values = function() return barIndex==0 and TILE_MAIN_VALUES or TILE_EXTRA_VALUES end,						
-			hidden = false,
-		},
-
-		barTexAdjust = {
-			type = "toggle",
-			name = L["Adjust"],
-			desc = L["Change the texture coordinates to maintain the aspect ratio."],
-			width = 0.4,
-			order = 14,
-			get = function() return barIndex==0 or barDbx.adjustTex and not (barDbx.horTile and barDbx.verTile) end,
-			set = function(_, v)
-				barDbx.adjustTex = v or nil
-				self:RefreshIndicator(indicator, "Layout")
-			end,
-			disabled = function() return barIndex==0 or (barDbx.horTile and barDbx.verTile) end,
 			hidden = false,
 		},
 
@@ -555,7 +540,7 @@ do
 			name = L["Horizontal Tiles"],
 			desc = L["Select howto adjust the texture horizontally."],
 			get = function()
-				return tileTranslate[indicator.dbx.backHorTile or 'NONE']
+				return tileTranslate[indicator.dbx.backHorTile]
 			end,
 			set = function(_, v)
 				indicator.dbx.backHorTile = tileTranslate[v]
@@ -572,7 +557,7 @@ do
 			name = L["Vertical Tiles"],
 			desc = L["Select howto adjust the texture vertically."],
 			get = function()
-				return tileTranslate[indicator.dbx.backVerTile or 'NONE']
+				return tileTranslate[indicator.dbx.backVerTile]
 			end,
 			set = function(_, v)
 				indicator.dbx.backVerTile = tileTranslate[v]
