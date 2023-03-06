@@ -762,6 +762,7 @@ L["Select the health update frequency."] = "Выберите частоту об
 
 -- health-low status
 L["Use Health Percent"] = "Использовать процент здоровья"
+-- L["Invert status activation"] = ""
 
 -- mana
 L["Hide mana of non healer players"] = "Скрыть ману игроков, не являющихся целителями"

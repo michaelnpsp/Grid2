@@ -762,6 +762,7 @@ L["Normal"] = "一般"
 
 -- health-low status
 -- L["Use Health Percent"] = ""
+-- L["Invert status activation"] = ""
 
 -- mana
 -- L["Hide mana of non healer players"] = ""

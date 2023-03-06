@@ -762,6 +762,7 @@ L["Frequent Updates"] = "Mises à jour fréquentes"
 
 -- health-low status
 -- L["Use Health Percent"] = ""
+-- L["Invert status activation"] = ""
 
 -- mana
 -- L["Hide mana of non healer players"] = ""

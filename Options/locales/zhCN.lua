@@ -762,6 +762,7 @@ L["Select the health update frequency."] = "选择生命值更新频率"
 
 -- health-low status
 L["Use Health Percent"] = "使用生命值的百分比"
+-- L["Invert status activation"] = ""
 
 -- mana
 L["Hide mana of non healer players"] = "隐藏非治疗玩家的法力条"

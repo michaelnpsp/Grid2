@@ -762,6 +762,7 @@ L["Select the health update frequency."] = "생명력 업데이트 빈도 선택
 
 -- health-low status
 L["Use Health Percent"] = "생명력 비율(%) 사용"
+-- L["Invert status activation"] = ""
 
 -- mana
 L["Hide mana of non healer players"] = "힐러가 아닌 경우 마나 숨김"

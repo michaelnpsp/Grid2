@@ -763,6 +763,7 @@ L["Add shields to health percent"] = "Añade escudos al porcentaje de vida"
 
 -- health-low status
 L["Use Health Percent"] = "Usar Porcentajes"
+L["Invert status activation"] = "Invertir activacion del estado"
 
 -- mana
 L["Hide mana of non healer players"] = "Ocultar mana de jugadores no sanadores"

@@ -763,6 +763,7 @@ L["Add shields to health percent"] = true
 
 -- health-low status
 L["Use Health Percent"] = true
+L["Invert status activation"] = true
 
 -- mana
 L["Hide mana of non healer players"] = true
