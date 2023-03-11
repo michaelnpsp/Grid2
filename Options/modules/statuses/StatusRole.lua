@@ -30,8 +30,7 @@ local function MakeStatusDungeonRoleOptions(self, status, options, optionParams)
 		get = function () return status.dbx.hideDamagers end,
 		set = function (_, v)
 			status.dbx.hideDamagers = v or nil
-			status:UpdateDB()
-			status:UpdateAllUnits()
+			status:Refresh()			
 		end,
 	}
 	options.useAlternateIcons = {
@@ -43,8 +42,7 @@ local function MakeStatusDungeonRoleOptions(self, status, options, optionParams)
 		get = function () return status.dbx.useAlternateIcons end,
 		set = function (_, v)
 			status.dbx.useAlternateIcons = v or nil
-			status:UpdateDB()
-			status:UpdateAllUnits()
+			status:Refresh()			
 		end,
 	}
 end

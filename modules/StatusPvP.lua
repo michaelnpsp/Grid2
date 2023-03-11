@@ -21,18 +21,16 @@ end
 
 function PvP:OnEnable()
 	self:RegisterEvent("UNIT_FACTION")
-	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "UpdateAllUnits")
+	if not self.displayAlways then
+		self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "UpdateAllUnits")
+	end	
 end
 
 function PvP:OnDisable()
 	self:UnregisterEvent("UNIT_FACTION")
-	self:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
-end
-
-function PvP:IsActive(unit)
-	if not IsInInstance() then
-		return UnitIsPVP(unit) or UnitIsPVPFreeForAll(unit)
-	end
+	if not self.displayAlways then
+		self:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
+	end	
 end
 
 function PvP:GetTexCoord(unit)
@@ -53,6 +51,23 @@ end
 
 function PvP:GetPercent(unit)
 	return self.dbx.color1.a, self:GetText(unit)
+end
+
+function PvP:IsActiveWorld(unit)
+	if not IsInInstance() then
+		return UnitIsPVP(unit) or UnitIsPVPFreeForAll(unit)
+	end
+end
+
+function PvP:IsActiveAlways(unit)
+	return UnitIsPVP(unit) or UnitIsPVPFreeForAll(unit)
+end
+
+PvP.IsActive = PvP.IsActiveWorld
+
+function PvP:UpdateDB()
+	self.displayAlways = self.dbx.displayAlways
+	self.IsActive = self.displayAlways and self.IsActiveAlways or self.IsActiveWorld
 end
 
 Grid2.setupFunc["pvp"] = function(baseKey, dbx)

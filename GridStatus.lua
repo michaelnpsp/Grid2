@@ -76,6 +76,15 @@ function status:UpdateIndicators(unit)
 	end
 end
 
+-- Used by Grid2Options to refresh settings
+function status:Refresh()
+	local enabled = self.enabled
+	if enabled then self.enabled = false; self:OnDisable() end
+	self:UpdateDB()
+	if enabled then self.enabled = true; self:OnEnable() end
+	self:UpdateAllUnits()
+end
+
 -- register or wakeup a previous registered status
 -- suspended => status is linked to the indicator but suspended
 -- priorities[] stores the linked indicators to be able to wakeup the statuses later

@@ -52,10 +52,6 @@ do
 		end
 	end
 
-	local function RefreshStatus(status, isUnitFilter)
-		Grid2Options:RefreshStatus(status)
-	end
-
 	local function SetFilterBooleanOptions( status, options, order, key, defValue, name, desc, values )
 		local dbx = status.dbx
 		options[key..'1'] = {
@@ -72,7 +68,7 @@ do
 					dbx.load[key] = nil
 					if not next(dbx.load) then dbx.load = nil end
 				end
-				RefreshStatus(status)				
+				status:RefreshLoad()
 			end,
 			disabled = function() return dbx.load and dbx.load.disabled end,
 		}
@@ -88,7 +84,7 @@ do
 			end,
 			set = function(_,v)
 				dbx.load[key] = (v==2)
-				RefreshStatus(status)				
+				status:RefreshLoad()				
 			end,
 			disabled = function() return not dbx.load or dbx.load.disabled or dbx.load[key]==nil end,
 			values = values,
@@ -121,7 +117,7 @@ do
 					filter = { [defValue] = true }
 					dbx.load[key] = filter
 				end
-				RefreshStatus(status, isUnitFilter)
+				status:RefreshLoad()
 			end,
 			disabled = function() return dbx.load and dbx.load.disabled end,
 		}
@@ -133,7 +129,7 @@ do
 			get = function() return filter and next(filter) end,
 			set = function(_,v)
 				wipe(filter)[v] = true
-				RefreshStatus(status, isUnitFilter)
+				status:RefreshLoad()
 			end,
 			disabled = function() return not filter or dbx.load.disabled end,
 			hidden   = function() return multi end,
@@ -146,7 +142,7 @@ do
 			get = function(info, value) return filter[value] end,
 			set = function(info, value)
 				filter[value] = (not filter[value]) or nil
-				RefreshStatus(status, isUnitFilter)
+				status:RefreshLoad()				
 			end,
 			hidden = function() return not multi end,
 			disabled = function() return dbx.load and dbx.load.disabled end,
@@ -181,7 +177,7 @@ do
 		if count==0 then
 			filter[zone] = GetInstanceInfo()
 		end
-		RefreshStatus(status)
+		status:RefreshLoad()
 		return count>1
 	end
 
@@ -211,7 +207,7 @@ do
 					filter = { [ (GetInstanceInfo()) ] = true }
 					dbx.load[key] = filter
 				end
-				RefreshStatus(status)
+				status:RefreshLoad()
 			end,
 			disabled = function() return dbx.load and dbx.load.disabled end,
 		}
@@ -258,7 +254,7 @@ do
 					status.dbx.load.disabled = nil
 					if not next(status.dbx.load) then status.dbx.load = nil end
 				end
-				RefreshStatus(status)
+				status:RefreshLoad()
 			end,
 		}
 		SetFilterBooleanOptions( status, options, 5,

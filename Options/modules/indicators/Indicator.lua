@@ -34,7 +34,6 @@ do
 			local priority = GetIndicatorNewPriority(indicator)
 			Grid2:DbSetMap(indicator.name, status.name, priority)
 			indicator:RegisterStatus(status, priority)
-			Grid2Options:RefreshStatus(status)
 		else
 			Grid2:DbSetMap(indicator.name, status.name, nil)
 			indicator:UnregisterStatus(status)

@@ -50,7 +50,7 @@ function Grid2Options:MakeStatusAuraEnableStacksOptions(status, options, optionP
 			end,
 			set = function (_, v)
 				status.dbx.enableStacks = v~=1 and v or nil
-				self:RefreshStatus(status)
+				status:Refresh()				
 			end,
 		}
 	end
@@ -71,7 +71,7 @@ function Grid2Options:MakeStatusAuraMissingOptions(status, options, optionParams
 				status.dbx.valueIndex = nil
 				status.dbx.enableStacks = nil
 			end
-			self:RefreshStatus(status)			
+			status:Refresh()			
 			self:MakeStatusOptions(status)
 		end,
 	}
@@ -93,7 +93,7 @@ do
 				end,
 				set = function(_,v)
 					status.dbx.blinkThreshold = (v==3 and 1) or (v==2 and 0) or nil
-					self:RefreshStatus(status)
+					status:Refresh()					
 					self:MakeStatusOptions(status)
 				end,
 				values = VALUES,
@@ -112,7 +112,7 @@ do
 				end,
 				set = function (_, v)
 					status.dbx.blinkThreshold = v
-					self:RefreshStatus(status)					
+					status:Refresh()					
 				end,
 				hidden = function() return (status.dbx.blinkThreshold or 0)<=0 end,
 			}

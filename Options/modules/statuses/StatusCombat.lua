@@ -12,10 +12,8 @@ Grid2Options:RegisterStatusOptions("combat", "combat", function(self, status, op
 		get = function(info) return status.dbx.enabledOOC end,
 		set = function(info, v)
 			status.dbx.enabledOOC = v or nil
-			if status.enabled then
-				status:UpdateDB()
-				status:UpdateAllUnits()
-			end
+			status:UpdateDB()
+			status:UpdateAllUnits()
 		end,
 	}
 	options.useEmptyIcon = {
@@ -27,10 +25,8 @@ Grid2Options:RegisterStatusOptions("combat", "combat", function(self, status, op
 		get = function(info) return status.dbx.useEmptyIcon end,
 		set = function(info, v)
 			status.dbx.useEmptyIcon = v or nil
-			if status.enabled then
-				status:UpdateDB()
-				status:UpdateAllUnits()
-			end
+			status:UpdateDB()
+			status:UpdateAllUnits()
 		end,
 	}
 end, {
@@ -50,10 +46,7 @@ Grid2Options:RegisterStatusOptions("combat-mine", "combat", function(self, statu
 		get = function(info) return status.dbx.enabledOOC end,
 		set = function(info, v)
 			status.dbx.enabledOOC = v or nil
-			if status.enabled then
-				status:UpdateDB()
-				status:UpdateAllUnits()
-			end
+			status:Refresh()
 		end,
 	}
 	options.useEmptyIcon = {
@@ -65,10 +58,7 @@ Grid2Options:RegisterStatusOptions("combat-mine", "combat", function(self, statu
 		get = function(info) return status.dbx.useEmptyIcon end,
 		set = function(info, v)
 			status.dbx.useEmptyIcon = v or nil
-			if status.enabled then
-				status:UpdateDB()
-				status:UpdateAllUnits()
-			end
+			status:Refresh()
 		end,
 	}
 end, {

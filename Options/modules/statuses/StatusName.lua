@@ -11,8 +11,7 @@ Grid2Options:RegisterStatusOptions("name", "misc", function(self, status, option
 		end,
 		set   = function (_, v)
 			status.dbx.defaultName = (v==1 and 1) or (v==2 and L['N/A']) or nil
-			status:UpdateDB()
-			Grid2Frame:UpdateIndicators()
+			status:Refresh()			
 		end,
 		values= { L["Unit Tag"], L["Custom Text"], L["Nothing"] }
 	}
@@ -26,8 +25,7 @@ Grid2Options:RegisterStatusOptions("name", "misc", function(self, status, option
 		end,
 		set = function (_, v)
 			status.dbx.defaultName = v
-			status:UpdateDB()
-			Grid2Frame:UpdateIndicators()
+			status:Refresh()
 		end,
 		hidden = function() return type(status.dbx.defaultName)~='string' end,
 	}
@@ -40,8 +38,7 @@ Grid2Options:RegisterStatusOptions("name", "misc", function(self, status, option
 		get   = function ()	return status.dbx.displayPetOwner end,
 		set   = function (_, v)
 			status.dbx.displayPetOwner = v or nil
-			status:UpdateDB()
-			status:UpdateAllUnits()
+			status:Refresh()			
 		end,
 	}
 	options.displayVehicleOwner = {
@@ -53,8 +50,7 @@ Grid2Options:RegisterStatusOptions("name", "misc", function(self, status, option
 		get   = function ()	return status.dbx.displayVehicleOwner or status.dbx.displayPetOwner end,
 		set   = function (_, v)
 			status.dbx.displayVehicleOwner = v or nil
-			status:UpdateDB()
-			status:UpdateAllUnits()
+			status:Refresh()			
 		end,
 		disabled = function() return status.dbx.displayPetOwner end,
 		hidden = function() return Grid2.versionCli<30000 end,
@@ -68,8 +64,7 @@ Grid2Options:RegisterStatusOptions("name", "misc", function(self, status, option
 		get   = function ()	return status.dbx.enableTransliterate end,
 		set   = function (_, v)
 			status.dbx.enableTransliterate = v or nil
-			status:UpdateDB()
-			status:UpdateAllUnits()
+			status:Refresh()			
 		end,
 	}
 end )

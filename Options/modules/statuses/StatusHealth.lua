@@ -1,11 +1,5 @@
 local L = Grid2Options.L
 
-local function RefreshStatus(status)
-	if status.enabled then status:OnDisable() end
-	status:UpdateDB()
-	if status.enabled then status:OnEnable(); status:UpdateAllUnits(); end
-end
-
 if Grid2.isClassic then
 	local APIS = { [0] = 'Blizzard API', [1] = 'LibHealComm-4' }
 	local TIME_VALUES = { [0] = L['None'] }
@@ -51,8 +45,7 @@ if Grid2.isClassic then
 			get = function () return not status.dbx.displayRawNumbers end,
 			set = function (_, v)
 				status.dbx.displayRawNumbers = not v or nil
-				status:UpdateDB()
-				status:UpdateAllUnits()
+				status:Refresh()				
 			end,
 		}
 		if Grid2.versionCli<40000 then
@@ -101,7 +94,7 @@ Grid2Options:RegisterStatusOptions("health-current", "health", function(self, st
 		get   = function ()	return status.dbx.quickHealth and "q" or "n" end,
 		set   = function (_, v)
 			status.dbx.quickHealth = (v=="q") or nil
-			RefreshStatus(status)
+			status:Refresh()
 		end,
 		values= { n = L["Normal"], q = L["Instant"] },
 	}
@@ -116,7 +109,7 @@ Grid2Options:RegisterStatusOptions("health-current", "health", function(self, st
 			get = function () return not status.dbx.displayRawNumbers end,
 			set = function (_, v)
 				status.dbx.displayRawNumbers = not v or nil
-				RefreshStatus(status)
+				status:Refresh()
 			end,
 		}
 	else
@@ -130,7 +123,7 @@ Grid2Options:RegisterStatusOptions("health-current", "health", function(self, st
 			get = function () return status.dbx.addPercentShield end,
 			set = function (_, v)
 				status.dbx.addPercentShield = v or nil
-				RefreshStatus(status)
+				status:Refresh()
 			end,
 		}	
 	end
@@ -143,7 +136,7 @@ Grid2Options:RegisterStatusOptions("health-current", "health", function(self, st
 		get = function () return status.dbx.deadAsFullHealth end,
 		set = function (_, v)
 			status.dbx.deadAsFullHealth = v or nil
-			RefreshStatus(status)
+			status:Refresh()
 		end,
 	}
 end, {
@@ -168,7 +161,7 @@ Grid2Options:RegisterStatusOptions("heals-incoming", "health", function(self, st
 			get = function () return status.dbx.includeHealAbsorbs end,
 			set = function (_, v)
 				status.dbx.includeHealAbsorbs = v or nil
-				RefreshStatus(status)
+				status:Refresh()
 			end,
 		}
 	end
@@ -181,8 +174,8 @@ Grid2Options:RegisterStatusOptions("heals-incoming", "health", function(self, st
 		get = function () return status.dbx.includePlayerHeals end,
 		set = function (_, v)
 			status.dbx.includePlayerHeals = v or nil
-			RefreshStatus(status)
-			RefreshStatus(Grid2:GetStatusByName('overhealing'))
+			status:Refresh()
+			Grid2:GetStatusByName('overhealing'):Refresh()
 		end,
 	}
 	options.minimumValue = {
@@ -196,7 +189,7 @@ Grid2Options:RegisterStatusOptions("heals-incoming", "health", function(self, st
 		end,
 		set = function (_, v)
 			status.dbx.flags = tonumber(v) or nil
-			RefreshStatus(status)			
+			status:Refresh()			
 		end,
 	}
 	options.multiplier = {
@@ -211,7 +204,7 @@ Grid2Options:RegisterStatusOptions("heals-incoming", "health", function(self, st
 		get = function () return status.dbx.multiplier	end,
 		set = function (_, v)
 			status.dbx.multiplier = tonumber(v) or 1
-			RefreshStatus(status)			
+			status:Refresh()			
 		end,
 	}
 end, {
@@ -231,7 +224,7 @@ Grid2Options:RegisterStatusOptions("my-heals-incoming", "health", function(self,
 		end,
 		set = function (_, v)
 			status.dbx.flags = tonumber(v) or nil
-			RefreshStatus(status)			
+			status:Refresh()			
 		end,
 	}
 	options.multiplier = {
@@ -246,7 +239,7 @@ Grid2Options:RegisterStatusOptions("my-heals-incoming", "health", function(self,
 		get = function () return status.dbx.multiplier	end,
 		set = function (_, v)
 			status.dbx.multiplier = tonumber(v) or 1
-			RefreshStatus(status)
+			status:Refresh()			
 		end,
 	}
 	if Grid2.isClassic then
@@ -270,7 +263,7 @@ Grid2Options:RegisterStatusOptions("overhealing", "health", function(self, statu
 		set = function (_, v)
 			v = tonumber(v) or 0
 			status.dbx.minimum = v>0 and v or nil
-			RefreshStatus(status)			
+			status:Refresh()			
 		end,
 	}
 	if Grid2.isClassic then
@@ -284,7 +277,7 @@ Grid2Options:RegisterStatusOptions("overhealing", "health", function(self, statu
 			get = function () return not status.dbx.displayRawNumbers end,
 			set = function (_, v)
 				status.dbx.displayRawNumbers = not v or nil
-				RefreshStatus(status)				
+				status:Refresh()				
 			end,
 		}
 	end
@@ -310,7 +303,7 @@ Grid2Options:RegisterStatusOptions("health-low", "health", function(self, status
 		get = function () return status.dbx.threshold<10 end,
 		set = function (_, v)
 			status.dbx.threshold = v and 0.4 or 10000
-			RefreshStatus(status)
+			status:Refresh()			
 			self:MakeStatusOptions(status)
 		end,
 	}
@@ -323,7 +316,7 @@ Grid2Options:RegisterStatusOptions("health-low", "health", function(self, status
 		get = function () return status.dbx.invert end,
 		set = function (_, v)
 			status.dbx.invert = v or nil
-			RefreshStatus(status)
+			status:Refresh()			
 		end,
 	}
 end, {
@@ -342,7 +335,7 @@ Grid2Options:RegisterStatusOptions("health-deficit", "health", function(self, st
 		get = function () return status.dbx.addIncomingHeals end,
 		set = function (_, v)
 			status.dbx.addIncomingHeals = v or nil
-			RefreshStatus(status)
+			status:Refresh()			
 		end,
 	}
 	if Grid2.isClassic then
@@ -356,7 +349,7 @@ Grid2Options:RegisterStatusOptions("health-deficit", "health", function(self, st
 			get = function () return not status.dbx.displayRawNumbers end,
 			set = function (_, v)
 				status.dbx.displayRawNumbers = not v or nil
-				RefreshStatus(status)				
+				status:Refresh()				
 			end,
 		}
 	end
@@ -370,7 +363,7 @@ Grid2Options:RegisterStatusOptions("health-deficit", "health", function(self, st
 		get = function () return status.dbx.displayPercentEnemies end,
 		set = function (_, v)
 			status.dbx.displayPercentEnemies = v or nil
-			RefreshStatus(status)			
+			status:Refresh()			
 		end,
 	}
 end, {

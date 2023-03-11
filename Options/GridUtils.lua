@@ -433,11 +433,6 @@ function Grid2Options:UpdateIndicatorDB(indicator)
 	end
 end
 
--- Grid2Options:RefreshStatus()
-function Grid2Options:RefreshStatus(status)
-	status:RefreshLoad()
-end
-
 -- Grid2Options:LayoutFrames()
 function Grid2Options:LayoutFrames()
 	Grid2Frame:LayoutFrames(true)
