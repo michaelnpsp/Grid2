@@ -97,6 +97,7 @@ do
 	local EXTRABAR_COLOR_SOURCES = { L["Main Bar Color"], L["Custom Color"] }
 	local TILE_MAIN_VALUES = { [1] = L["Fill"], [3] = L["Tile Repeat"] }
 	local TILE_EXTRA_VALUES = { [0] = L["Fill"], [1] = L["Stretch"], [3] = L["Tile Repeat"], [4] = L["Tile Mirror"] }
+	local TILE_BACK_VALUES = { [1] = L["Stretch"], [3] = L["Tile Repeat"] }	
 	local tileTranslate = { [0] = 'CLAMP', [1] = nil,  [3] = 'REPEAT', [4] = 'MIRROR', CLAMP = 0, REPEAT = 3, MIRROR = 4 }
 	
 	-- edited indicator & bar
@@ -521,12 +522,12 @@ do
 		backTexture = {
 			type = "select", dialogControl = "LSM30_Statusbar",
 			order = 11,
-			width = 1.5,
+			width = 1.15,
 			name = L["Texture"],
 			desc = L["Adjust the background texture."],
 			get = function (info) return indicator.dbx.backTexture or indicator.dbx.texture or self.MEDIA_VALUE_DEFAULT end,
 			set = function (info, v)
-				indicator.dbx.backTexture = v~=self.MEDIA_VALUE_DEFAULT and v or nil
+				indicator.dbx.backTexture = (v~=indicator.dbx.texture and v~=self.MEDIA_VALUE_DEFAULT) and v or nil
 				self:RefreshIndicator(indicator, "Layout")
 			end,
 			values = self.GetStatusBarValues,
@@ -536,34 +537,34 @@ do
 		backHorTile = {
 			type = "select",
 			order = 12,
-			width = 0.5,
-			name = L["Horizontal Tiles"],
+			width = 0.7,
+			name = L["Horizontal Fit"],
 			desc = L["Select howto adjust the texture horizontally."],
 			get = function()
-				return tileTranslate[indicator.dbx.backHorTile]
+				return tileTranslate[indicator.dbx.backHorTile] or 1
 			end,
 			set = function(_, v)
 				indicator.dbx.backHorTile = tileTranslate[v]
 				self:RefreshIndicator(indicator, "Layout")
 			end,
-			values = TILE_MAIN_VALUES,
+			values = TILE_BACK_VALUES,
 			hidden = false,
 		},
 		
 		backVerTile = {
 			type = "select",
 			order = 13,
-			width = 0.5,
-			name = L["Vertical Tiles"],
+			width = 0.7,
+			name = L["Vertical Fit"],
 			desc = L["Select howto adjust the texture vertically."],
 			get = function()
-				return tileTranslate[indicator.dbx.backVerTile]
+				return tileTranslate[indicator.dbx.backVerTile] or 1
 			end,
 			set = function(_, v)
 				indicator.dbx.backVerTile = tileTranslate[v]
 				self:RefreshIndicator(indicator, "Layout")
 			end,
-			values = TILE_MAIN_VALUES,			
+			values = TILE_BACK_VALUES,			
 			hidden = false,
 		},
 
@@ -579,7 +580,9 @@ do
 				indicator.dbx.invertColor = nil
 				indicator.dbx.backTexture = nil
 				indicator.dbx.backAnchor  = nil
-				indicator.dbx.backColor   =  nil
+				indicator.dbx.backColor   = nil
+				indicator.dbx.backHorTile = nil
+				indicator.dbx.backVerTile = nil
 				self:RefreshIndicator(indicator, "Layout")
 				SelectTab(0)
 			end,

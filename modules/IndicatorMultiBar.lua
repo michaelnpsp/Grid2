@@ -267,9 +267,9 @@ local function Bar_UpdateDB(self)
 	end
 	if backColor then
 	    self.bars[#self.bars+1] = {
-			texture = Grid2:MediaFetch("statusbar", dbx.backTexture or theme.barTexture, "Gradient") or self.texture,
-			horWrap   = dbx.backHorTile or 'CLAMP',
-			verWrap   = dbx.backVerTile or 'CLAMP',
+			texture = dbx.backTexture and Grid2:MediaFetch("statusbar", dbx.backTexture) or self.texture,
+			horWrap = dbx.backHorTile or 'CLAMP',
+			verWrap = dbx.backVerTile or 'CLAMP',
 			color = dbx.invertColor and texColor or backColor,
 			opacity = backColor.a,
 			background = not self.backAnchor,
