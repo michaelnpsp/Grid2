@@ -239,6 +239,7 @@ end
 -- Grid2:RunThrottled(object or arg1, method or func, delay)
 -- Delays and throttles the execution of a method or function
 do
+	local After = C_Timer.After
 	local counts = {}
 	function Grid2:RunThrottled(object, method, delay)
 		local func  = object[method] or method
@@ -250,12 +251,12 @@ do
 				if counts[func]>0 then
 					counts[func] = 0
 					func(object)
-					C_Timer.After(delay or 0.1, callback)
+					After(delay or 0.1, callback)
 				else
 					counts[func] = nil
 				end
 			end
-			C_Timer.After(delay or 0.1, callback)
+			After(delay or 0.1, callback)
 		end
 	end
 end

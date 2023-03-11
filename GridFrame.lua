@@ -129,6 +129,7 @@ local function GridFrame_Init(frame, width, height)
 	frame.container = frame:CreateTexture()
 	frame:CreateIndicators()
 	frame:Layout()
+	Grid2Frame:SendMessage("Grid_UpdateLayoutSize")
 end
 
 local function GridFrame_GetInitialSize(self)

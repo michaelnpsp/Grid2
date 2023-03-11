@@ -700,7 +700,7 @@ function Grid2Layout:ForceFramesCreation(header)
 		header:Show()
 		header:SetAttribute("startingIndex", 1-maxFrames )
 		header:SetAttribute("startingIndex", startingIndex)
-		header.FrameCount= maxFrames
+		header.FrameCount = maxFrames
 		header:Hide()
 	end
 end
