@@ -889,6 +889,11 @@ L["Hide Damagers"] = "Скрыть бойцов"
 
 -- combat status
 L["combat"] = "в бою"
+-- L["Active Out Of Combat"] = ""
+-- L["Enable this option to invert the status so it will become activated when the player is Out Of Combat."] = ""
+
+-- pvp status
+-- L["Hide inside Instances"] = ""
 
 -- summon status
 L["summon"] = "призыв"
@@ -1404,6 +1409,8 @@ L["You can include a descriptive prefix using separators \"@#>\""] = "Вы мо�
 -- L["Detach pets groups"] = ""
 -- L["Enable this option to detach the pets group, so pets group can be moved individually."] = ""
 -- L["Special units headers visibility."] = ""
+-- L["Display Player unit"] = ""
+-- L["Enable this option to display the player unit."] = ""
 -- L["Display Target unit"] = ""
 -- L["Enable this option to display the target unit."] = ""
 -- L["Display Focus unit"] = ""

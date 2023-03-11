@@ -889,6 +889,11 @@ L["Hide Damagers"] = "공격 전담 숨김"
 
 -- combat status
 L["combat"] = "전투중"
+-- L["Active Out Of Combat"] = ""
+-- L["Enable this option to invert the status so it will become activated when the player is Out Of Combat."] = ""
+
+-- pvp status
+-- L["Hide inside Instances"] = ""
 
 -- summon status
 L["summon"] = "소환"
@@ -1408,6 +1413,8 @@ L["Display Focus unit"] = "주시 대상 표시"
 L["Enable this option to display the focus unit."] = "활성화시 주시 대상 소그룹을 표시합니다"
 L["Display Bosses units"] = "우두머리 표시"
 L["Enable this option to display the bosses unit."] = "활성화시 우두머리 소그룹을 표시합니다"
+-- L["Display Player unit"] = ""
+-- L["Enable this option to display the player unit."] = ""
 
 L['Party (Normal)'] = "파티 (일반)"
 L['Party (Heroic)'] = "파티 (영웅)"

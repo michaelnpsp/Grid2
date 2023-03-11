@@ -890,6 +890,11 @@ L["Hide Damagers"] = "Ocultar rol de Daño"
 
 -- combat status
 L["combat"] = "combate"
+L["Active Out Of Combat"] = "Activar Fuera de Combate"
+L["Enable this option to invert the status so it will become activated when the player is Out Of Combat."] = "Activa estas opcion para invertir el estado de modo que sea activado fuera de combate."
+
+-- pvp status
+L["Hide inside Instances"] = "Ocultar en Instancias"
 
 -- summon status
 L["summon"] = "invocacion"
@@ -1405,6 +1410,8 @@ L["Enable this option to detach unit frame groups, so each group can be moved in
 L["Detach pets groups"] = "Separar grupos de mascotas"
 L["Enable this option to detach the pets group, so pets group can be moved individually."] = "Activa esta opción para separar el grupo de mascotas de modo que el grupo se pueda posicionar individualmente."
 L["Special units headers visibility."] = "Visibilidad de unidades especiales."
+L["Display Player unit"] = "Muestra unidad para el Jugador"
+L["Enable this option to display the player unit."] = "Activa esta opción para mostrar una unidad para el Jugador."
 L["Display Target unit"] = "Muestra unidad para el Objetivo"
 L["Enable this option to display the target unit."] = "Activa esta opción para mostrar una unidad para el Objetivo."
 L["Display Focus unit"] = "Muestra unidad para el Foco"

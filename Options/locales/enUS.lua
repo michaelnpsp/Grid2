@@ -890,6 +890,11 @@ L["Hide Damagers"] = true
 
 -- combat status
 L["combat"] = true
+L["Active Out Of Combat"] = true
+L["Enable this option to invert the status so it will become activated when the player is Out Of Combat."] = true
+
+-- pvp status
+L["Hide inside Instances"] = true 
 
 -- summon status
 L["summon"] = true
@@ -1405,6 +1410,8 @@ L["Enable this option to detach unit frame groups, so each group can be moved in
 L["Detach pets groups"] = true
 L["Enable this option to detach the pets group, so pets group can be moved individually."] = true
 L["Special units headers visibility."] = true
+L["Display Player unit"] = true
+L["Enable this option to display the player unit."] = true
 L["Display Target unit"] = true
 L["Enable this option to display the target unit."] = true
 L["Display Focus unit"] = true
