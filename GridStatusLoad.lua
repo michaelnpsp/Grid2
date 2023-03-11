@@ -254,7 +254,7 @@ do
 				inCombat = not not InCombatLockdown()
 			end
 			statuses[status] = load
-			if not status._IsActive then
+			if status.IsActive~=IsNotActive then
 				status._IsActive = status.IsActive
 			end
 			if load.combat ~= inCombat then

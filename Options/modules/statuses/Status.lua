@@ -57,7 +57,6 @@ do
 	end
 
 	local function SetFilterBooleanOptions( status, options, order, key, defValue, name, desc, values )
-		if not status.handlerType then return end -- only for buffs/debuffs
 		local dbx = status.dbx
 		options[key..'1'] = {
 			type = "toggle",

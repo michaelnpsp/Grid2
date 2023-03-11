@@ -86,8 +86,8 @@ function status:RegisterIndicator(indicator, priority, suspended)
 			self.indicators[indicator] = true
 			if not self.enabled then
 				self.enabled = true
-				self:EnableLoad()
 				self:OnEnable()
+				self:EnableLoad()				
 			end
 		end
 	end
