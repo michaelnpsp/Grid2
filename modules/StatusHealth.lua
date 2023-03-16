@@ -721,7 +721,7 @@ HealsUpdateEvent = function(unit)
 	if unit_is_valid[unit] then
 		local myheal = 0
 		if myheals_required>0 then
-			myheal = UnitGetMyIncomingHeals(unit, "player")
+			myheal = UnitGetMyIncomingHeals(unit, "player") or 0
 			local heal = myheal>=myheals_minimum and myheal*myheals_multiplier or 0
 			if myheals_cache[unit] ~= heal then
 				myheals_cache[unit] = heal
@@ -731,7 +731,7 @@ HealsUpdateEvent = function(unit)
 			end
 		end
 		if heals_enabled or overheals_enabled then
-			local heal = HealsGetAmount(unit, myheal)
+			local heal = HealsGetAmount(unit, myheal) or 0
 			heal = heal>=heals_minimum and heal*heals_multiplier or 0
 			if heals_cache[unit] ~= heal then
 				heals_cache[unit] = heal
