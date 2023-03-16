@@ -46,7 +46,7 @@ local rangeSpellID = ({
 		PALADIN = 19750,
 		PRIEST  = Grid2.isClassic and 2050  or 2061,
 		SHAMAN  = Grid2.isClassic and 25357 or 77472,
-		MONK    = 115450,
+		MONK    = 116670,
 		EVOKER  = 361469,
 	})[playerClass]
 local rangeSpell = rangeSpellID and GetSpellInfo(rangeSpellID)
