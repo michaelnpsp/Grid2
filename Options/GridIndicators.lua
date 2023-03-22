@@ -43,6 +43,7 @@ do
 		["TopRightCorner"] = true,
 		["BottomLeftCorner"] = true,
 		["BottomRightCorner"] = true,
+		["bar"] = true,
 	}
 	Grid2Options.indicatorBlacklistNames = indicator_name_blacklist
 
