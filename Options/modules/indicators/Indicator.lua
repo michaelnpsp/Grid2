@@ -225,20 +225,6 @@ do
 	local typeMorphValue  = {}
 	local typeMorphValues = { icon = L["icon"], square = L["square"], shape = L["shape"], text = L["text"] }
 
-	local function RegisterIndicatorStatusesFromDatabase(indicator)
-		if indicator then
-			local map= Grid2:DbGetValue("statusMap", indicator.name)
-			if map then
-				for statusKey, priority in pairs(map) do
-					local status = Grid2.statuses[statusKey]
-					if (status and tonumber(priority)) then
-						indicator:RegisterStatus(status, priority)
-					end
-				end
-			end
-		end
-	end
-
 	local function GetIndicatorTypeValues(info)
 		local typeKey = info.arg.dbx.type
 		if not typeMorphValues[typeKey] then
@@ -291,8 +277,8 @@ do
 			end
 		end
 		-- Register indicator statuses from database
-		RegisterIndicatorStatusesFromDatabase(newIndicator)
-		RegisterIndicatorStatusesFromDatabase(newIndicator.sideKick)
+		Grid2Options:RegisterIndicatorStatuses(newIndicator)
+		Grid2Options:RegisterIndicatorStatuses(newIndicator.sideKick)
 		-- Recreate indicators in frame units
 		Grid2Options:CreateIndicatorFrames(newIndicator)
 		-- Delete or Create associated text-color indicator in database

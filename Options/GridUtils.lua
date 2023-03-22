@@ -476,6 +476,21 @@ function Grid2Options:CreateIndicatorFrames(indicator)
 	end
 end
 
+-- Register indicator statuses from database
+function Grid2Options:RegisterIndicatorStatuses(indicator)
+	if indicator then
+		local map = Grid2:DbGetValue("statusMap", indicator.name)
+		if map then
+			for statusKey, priority in pairs(map) do
+				local status = Grid2.statuses[statusKey]
+				if (status and tonumber(priority)) then
+					indicator:RegisterStatus(status, priority)
+				end
+			end
+		end
+	end
+end
+
 -- Update & Layout all enabled indicators of all frames
 function Grid2Options:UpdateIndicators(typ)
 	for _, indicator in ipairs(Grid2:GetIndicatorsEnabled()) do

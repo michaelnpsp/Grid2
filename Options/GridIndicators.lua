@@ -145,8 +145,8 @@ do
 		end
 	end
 
-	local function NewIndicatorDisabled()
-		local name = Grid2Options:GetValidatedName(newIndicatorValues.name)
+	local function NewIndicatorDisabled(name_table)
+		local name = Grid2Options:GetValidatedName( type(name_table)=='string' and name_table or newIndicatorValues.name )
 		if name and name ~= "" and not Grid2.indicators[name] then
 			local _,frame = next(Grid2Frame.registeredFrames)
 			if frame then -- Check if the name is in use by any unit frame child object
@@ -176,13 +176,55 @@ do
 		return workTable
 	end
 
+	local function RenameIndicatorReal(old_name, new_name)
+		if not new_name then return end
+		local db = Grid2.db.profile
+		new_name = Grid2Options:GetValidatedName(new_name)
+		-- destroy old indicator
+		local old_indicator = Grid2.indicators[old_name]
+		local old_sideKick  = old_indicator.sideKick
+		Grid2:UnregisterIndicator(old_indicator)
+		-- rename database stuff
+		db.indicators[new_name] = db.indicators[old_name]
+		db.indicators[old_name] = nil
+		db.statusMap[new_name]  = db.statusMap[old_name]
+		db.statusMap[old_name]  = nil
+		-- rename possible disabled indicator from themes
+		for _,t in pairs(Grid2.db.profile.themes.indicators) do
+			if t[old_name] then
+				t[new_name] = t[old_name]
+				t[old_name] = nil
+			end	
+		end
+		-- create new indicator
+		local setupFunc = Grid2.setupFunc[old_indicator.dbx.type]
+		local new_indicator = setupFunc(new_name, old_indicator.dbx)
+		-- rename sidekick database stuff
+		if old_sideKick then
+			print(">>>>>>>>>>>", new_indicator.sideKick.name, old_sideKick.name)
+			db.statusMap[new_indicator.sideKick.name] = db.statusMap[old_sideKick.name]
+			db.statusMap[old_sideKick.name]  = nil
+		end
+		-- register statuses from database
+		Grid2Options:RegisterIndicatorStatuses(new_indicator)
+		Grid2Options:RegisterIndicatorStatuses(new_indicator.sideKick)
+		-- recreate indicators in frame units
+		Grid2Options:CreateIndicatorFrames(new_indicator)
+		Grid2Frame:UpdateIndicators()
+		-- refresh options
+		Grid2Options:DeleteIndicatorOptions(old_indicator)
+		Grid2Options:MakeIndicatorOptions(new_indicator)
+		Grid2Options:NotifyChange()
+	end
+
 	local function RenameIndicator(info, name)
 		Grid2Options:ShowEditDialog( "Rename Indicator:", Grid2Options.LI[name] or L[name], function(text)
 			local len = strlen(text)
 			if len>2 or len==0 then
-				Grid2Options.LI[name] = len>2 and text or nil
-				Grid2Options:MakeIndicatorOptions(Grid2.indicators[name])
-				Grid2Options:NotifyChange()
+				Grid2Options.LI[name] = nil -- remove status name from old faked rename table
+				if not NewIndicatorDisabled(text) then
+					RenameIndicatorReal(name, text)
+				end	
 			end
 		end)
 	end
