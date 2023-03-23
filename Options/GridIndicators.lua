@@ -201,7 +201,6 @@ do
 		local new_indicator = setupFunc(new_name, old_indicator.dbx)
 		-- rename sidekick database stuff
 		if old_sideKick then
-			print(">>>>>>>>>>>", new_indicator.sideKick.name, old_sideKick.name)
 			db.statusMap[new_indicator.sideKick.name] = db.statusMap[old_sideKick.name]
 			db.statusMap[old_sideKick.name]  = nil
 		end
