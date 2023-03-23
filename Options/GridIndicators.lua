@@ -81,6 +81,10 @@ do
 		end
 	end
 
+	local function DeleteIndicator(info, name)
+		Grid2Options:DeleteIndicatorConfirm( Grid2.indicators[name] )
+	end
+
 	-- new values
 	local newIndicatorValues = { name = "", type = "square", relPoint = "TOPLEFT" }
 
@@ -177,9 +181,9 @@ do
 	end
 
 	local function RenameIndicatorReal(old_name, new_name)
-		if not new_name then return end
 		local db = Grid2.db.profile
 		new_name = Grid2Options:GetValidatedName(new_name)
+		if not new_name then return end
 		-- destroy old indicator
 		local old_indicator = Grid2.indicators[old_name]
 		local old_sideKick  = old_indicator.sideKick
@@ -213,23 +217,27 @@ do
 		-- refresh options
 		Grid2Options:DeleteIndicatorOptions(old_indicator)
 		Grid2Options:MakeIndicatorOptions(new_indicator)
-		Grid2Options:NotifyChange()
+		Grid2Options:SelectGroup('indicators')
 	end
 
 	local function RenameIndicator(info, name)
-		Grid2Options:ShowEditDialog( "Rename Indicator:", Grid2Options.LI[name] or L[name], function(text)
-			local len = strlen(text)
-			if len>2 or len==0 then
-				Grid2Options.LI[name] = nil -- remove status name from old faked rename table
-				if not NewIndicatorDisabled(text) then
-					RenameIndicatorReal(name, text)
-				end	
-			end
-		end)
+		if Grid2Options:IndicatorIsInUse(name) then
+			Grid2Options:MessageDialog( L["This indicator cannot be renamed because is anchored to another indicator."] )
+		else
+			Grid2Options:ShowEditDialog( "Rename Indicator:", Grid2Options.LI[name] or L[name], function(text)
+				local len = strlen(text)
+				if len>2 or len==0 then
+					Grid2Options.LI[name] = nil -- remove status name from old faked rename table
+					if not NewIndicatorDisabled(text) then
+						RenameIndicatorReal(name, text)
+					end	
+				end
+			end)
+		end	
 	end
 
-	local function DeleteIndicator(info, name)
-		Grid2Options:DeleteIndicatorConfirm( Grid2.indicators[name] )
+	function Grid2Options:RenameIndicatorConfirm(name)
+		RenameIndicator(nil, name)
 	end
 
 	-- function ToggleTestMode()
@@ -402,6 +410,7 @@ end
 
 --Check if the indicator is in use (and can not be safetly deleted).
 function Grid2Options:IndicatorIsInUse(indicator)
+	indicator = type(indicator)~='string' and indicator or Grid2.indicators[indicator]
 	return indicator==nil or indicator.parentName or indicator.childName
 end
 
