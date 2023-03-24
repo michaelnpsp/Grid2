@@ -15,8 +15,10 @@ Grid2Options.indicatorTypes = {}
 Grid2Options.indicatorTypesOrder= { tooltip = 1, alpha = 2, background = 3, border = 4, glowborder = 5, multibar = 6, bar = 7, text = 8, square = 9, shape = 10, icon = 11, icons = 12, portrait = 13 }
 
 Grid2Options.indicatorTitleIconsOptions = {
-	size = 24, offsetx = -4, offsety = -2, anchor = 'TOPRIGHT',
-	{ image = "Interface\\AddOns\\Grid2Options\\media\\delete", tooltip = L["Delete this indicator"], func = function(info) Grid2Options:DeleteIndicatorConfirm( info.option.arg.indicator ) end },
+	size = 24, offsetx = -4, offsety = -3, anchor = 'TOPRIGHT', spacing = 5,
+	{ image = "Interface\\AddOns\\Grid2Options\\media\\delete", tooltip = L["Delete Indicator"], func = function(info) Grid2Options:DeleteIndicatorConfirm( info.option.arg.indicator ) end },
+	{ image = "Interface\\AddOns\\Grid2Options\\media\\rename", tooltip = L["Rename Indicator"], func = function(info) Grid2Options:RenameIndicatorConfirm( info.option.arg.indicator ) end },
+	{ image = "Interface\\AddOns\\Grid2Options\\media\\test",   tooltip = L["Test Indicator"],   func = function(info) Grid2Options:ToggleIndicatorTestMode( info.option.arg.indicator ) end },
 }
 
 do
@@ -217,7 +219,7 @@ do
 		-- refresh options
 		Grid2Options:DeleteIndicatorOptions(old_indicator)
 		Grid2Options:MakeIndicatorOptions(new_indicator)
-		Grid2Options:SelectGroup('indicators')
+		Grid2Options:SelectGroup('indicators') 
 	end
 
 	local function RenameIndicator(info, name)
@@ -236,8 +238,8 @@ do
 		end	
 	end
 
-	function Grid2Options:RenameIndicatorConfirm(name)
-		RenameIndicator(nil, name)
+	function Grid2Options:RenameIndicatorConfirm(indicator)
+		RenameIndicator(nil, indicator.name)
 	end
 
 	-- function ToggleTestMode()
@@ -247,7 +249,14 @@ do
 		local TestIcons = {}
 		local TestAuras = {	tex = {}, cnt = {}, exp = {}, dur = {}, col = {} }
 		local Exclude = { bar = true, multibar = true, alpha = true }
-		ToggleTestMode = function()
+		ToggleTestMode = function(indicator)
+			local function Iterate(indicator)
+				if indicator then
+					return function(_,n) return n==nil and indicator or nil, indicator end
+				else
+					return Grid2:IterateIndicators()
+				end
+			end
 			for _, category in pairs(Grid2Options.categories) do
 				if category.icon then TestIcons[#TestIcons+1] = category.icon end
 			end
@@ -273,7 +282,7 @@ do
 			function Test:GetTooltip()  return end
 			Test.dbx = TestIcons -- Asigned to TestIcons to avoid creating a new table
 			Grid2:RegisterStatus( Test, {"text","color", "percent", "icon"}, "test" )
-			ToggleTestMode = function()
+				ToggleTestMode = function(indicator)
 				local method, priority
 				if Test.enabled then
 					method, priority = 'UnregisterStatus', nil
@@ -281,15 +290,26 @@ do
 					method, priority = 'RegisterStatus', 1
 				end
 				local priority = not Test.enabled and 1 or nil
-				for _, indicator in Grid2:IterateIndicators() do
-					if not Exclude[indicator.dbx.type] then
-						indicator[method](indicator, Test, priority)
+				
+				if Test.enabled then
+					for ind in pairs(Test.indicators) do
+						ind:UnregisterStatus(Test)
 					end
-				end
+				else
+					for _, ind in Iterate(indicator) do
+						if not Exclude[ind.dbx.type] then
+							ind:RegisterStatus(Test, 1)
+						end
+					end
+				end	
 				Grid2Frame:UpdateIndicators()
 			end
-			ToggleTestMode()
+			ToggleTestMode(indicator)
 		end
+	end
+	
+	function Grid2Options:ToggleIndicatorTestMode(indicator)
+		ToggleTestMode(indicator)
 	end
 
 	--========================================================================================================================
