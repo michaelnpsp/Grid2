@@ -250,13 +250,6 @@ do
 		local TestAuras = {	tex = {}, cnt = {}, exp = {}, dur = {}, col = {} }
 		local Exclude = { bar = true, multibar = true, alpha = true }
 		ToggleTestMode = function(indicator)
-			local function Iterate(indicator)
-				if indicator then
-					return function(_,n) return n==nil and indicator or nil, indicator end
-				else
-					return Grid2:IterateIndicators()
-				end
-			end
 			for _, category in pairs(Grid2Options.categories) do
 				if category.icon then TestIcons[#TestIcons+1] = category.icon end
 			end
@@ -282,15 +275,16 @@ do
 			function Test:GetTooltip()  return end
 			Test.dbx = TestIcons -- Asigned to TestIcons to avoid creating a new table
 			Grid2:RegisterStatus( Test, {"text","color", "percent", "icon"}, "test" )
-				ToggleTestMode = function(indicator)
-				local method, priority
-				if Test.enabled then
-					method, priority = 'UnregisterStatus', nil
+			-- iterator generator
+			local function Iterate(indicator)
+				if indicator then
+					return function(_,n) return n==nil and indicator or nil, indicator end
 				else
-					method, priority = 'RegisterStatus', 1
+					return Grid2:IterateIndicators()
 				end
-				local priority = not Test.enabled and 1 or nil
-				
+			end
+			-- real test function
+			ToggleTestMode = function(indicator)
 				if Test.enabled then
 					for ind in pairs(Test.indicators) do
 						ind:UnregisterStatus(Test)
