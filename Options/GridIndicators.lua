@@ -16,9 +16,9 @@ Grid2Options.indicatorTypesOrder= { tooltip = 1, alpha = 2, background = 3, bord
 
 Grid2Options.indicatorTitleIconsOptions = {
 	size = 24, offsetx = -4, offsety = -3, anchor = 'TOPRIGHT', spacing = 5,
-	{ image = "Interface\\AddOns\\Grid2Options\\media\\delete", tooltip = L["Delete Indicator"], func = function(info) Grid2Options:DeleteIndicatorConfirm( info.option.arg.indicator ) end },
-	{ image = "Interface\\AddOns\\Grid2Options\\media\\rename", tooltip = L["Rename Indicator"], func = function(info) Grid2Options:RenameIndicatorConfirm( info.option.arg.indicator ) end },
-	{ image = "Interface\\AddOns\\Grid2Options\\media\\test",   tooltip = L["Test Indicator"],   func = function(info) Grid2Options:ToggleIndicatorTestMode( info.option.arg.indicator ) end },
+	{ image = "Interface\\AddOns\\Grid2Options\\media\\delete", tooltip = L["Delete Indicator"],    func = function(info) Grid2Options:DeleteIndicatorConfirm( info.option.arg.indicator )  end },
+	{ image = "Interface\\AddOns\\Grid2Options\\media\\rename", tooltip = L["Rename Indicator"],    func = function(info) Grid2Options:RenameIndicatorConfirm( info.option.arg.indicator )  end },
+	{ image = "Interface\\AddOns\\Grid2Options\\media\\test",   tooltip = L["Highlight Indicator"], func = function(info) Grid2Options:ToggleIndicatorTestMode( info.option.arg.indicator ) end },
 }
 
 do
@@ -243,20 +243,70 @@ do
 	end
 
 	-- function ToggleTestMode()
-	local ToggleTestMode
 	do
+		local LCG = LibStub("LibCustomGlow-1.0")
 		local Test -- Test indicator
 		local TestIcons = {}
 		local TestAuras = {	tex = {}, cnt = {}, exp = {}, dur = {}, col = {} }
 		local Exclude = { bar = true, multibar = true, alpha = true }
-		ToggleTestMode = function(indicator)
+		local ExcludeHigh = { glowborder = true, text = true }
+		local COLOR ={1,1,0,1}
+		local InitTestMode, testIndicator, highIndicator
+		local function HighlightStop()
+			if highIndicator then
+				for parent in next, Grid2Frame.activatedFrames do
+					local frame = highIndicator:GetFrame(parent)
+					if frame then 
+						LCG.ButtonGlow_Stop(frame)
+						LCG.PixelGlow_Stop( frame, 'Grid2IndicatorHighlight' )
+					end
+				end
+				highIndicator = nil
+			end
+		end
+		local function HighlightIndicator(indicator)
+			if indicator and not indicator.suspended then
+				if ExcludeHigh[indicator.dbx.type] then testIndicator = indicator; return true end
+				local active 
+				for parent in next, Grid2Frame.activatedFrames do
+					local frame = indicator:GetFrame(parent)
+					if frame then 
+						if indicator.dbx.type == 'icon' then
+							LCG.ButtonGlow_Start(frame, COLOR, 0.12)
+						else
+							LCG.PixelGlow_Start(frame, COLOR, 8, .3, nil, 1, 0,0, false, 'Grid2IndicatorHighlight')
+						end
+					end
+					active = active or frame
+				end
+				if active then
+					testIndicator, highIndicator = indicator, indicator
+					C_Timer.After(.7, HighlightStop)
+					return true
+				end	
+			end	
+		end
+		local function RegisterIndicator(indicator)
+			if not Exclude[indicator.dbx.type] then
+				indicator:RegisterStatus(Test, 10000)
+			end
+		end
+		local function RegisterIndicators()
+			for _, indicator in Grid2:IterateIndicators() do
+				RegisterIndicator(indicator)
+			end
+		end	
+		local function UnregisterIndicators()
+			for indicator in pairs(Test.indicators) do
+				indicator:UnregisterStatus(Test)
+			end
+			testIndicator = nil
+		end
+		function InitTestMode()
+			local time, color = GetTime(), { r=1,g=1,b=1,a=0.6 }
 			for _, category in pairs(Grid2Options.categories) do
 				if category.icon then TestIcons[#TestIcons+1] = category.icon end
 			end
-			for _, params in pairs(Grid2Options.optionParams) do
-				if params.titleIcon then TestIcons[#TestIcons+1] = params.titleIcon end
-			end
-			local time, color = GetTime(), { r=1,g=1,b=1,a=0.6 }
 			for i=1,#TestIcons do
 				TestAuras.tex[i] = TestIcons[i]
 				TestAuras.cnt[i] = math.random(1,3)
@@ -267,45 +317,44 @@ do
 			-- create test status
 			Test = Grid2.statusPrototype:new("/@@@test@@@/",false)
 			function Test:IsActive()    return true end
-			function Test:GetText()     return "99" end
+			function Test:GetText()     return "99999" end
 			function Test:GetColor()    return math.random(0,1),math.random(0,1),math.random(0,1),1 end
 			function Test:GetPercent()	return math.random() end
+			function Test:GetDuration() return 60 end
+			function Test:GetExpirationTime() return GetTime() + 60 end
 			function Test:GetIcon()	    return TestIcons[ math.random(#TestIcons) ]	end
 			function Test:GetIcons(_,m) return math.min(m,#TestIcons), TestAuras.tex, TestAuras.cnt, TestAuras.exp, TestAuras.dur, TestAuras.col end
+			function Test:GetBorder()	return 0 end
 			function Test:GetTooltip()  return end
 			Test.dbx = TestIcons -- Asigned to TestIcons to avoid creating a new table
 			Grid2:RegisterStatus( Test, {"text","color", "percent", "icon"}, "test" )
-			-- iterator generator
-			local function Iterate(indicator)
-				if indicator then
-					return function(_,n) return n==nil and indicator or nil, indicator end
-				else
-					return Grid2:IterateIndicators()
+			InitTestMode = Grid2.Dummy
+		end	
+		-- public test function
+		function Grid2Options:ToggleTestMode()
+			InitTestMode()
+			if Test.enabled then
+				UnregisterIndicators()
+			else
+				RegisterIndicators()
+			end
+			Grid2Frame:UpdateIndicators()			
+		end
+		function Grid2Options:ToggleIndicatorTestMode(indicator)
+			local enable = indicator~=testIndicator
+			InitTestMode()
+			HighlightStop()
+			UnregisterIndicators()
+			if enable then
+				RegisterIndicator(indicator)
+				if not HighlightIndicator(indicator) then
+					Grid2Options:MessageDialog(L["This indicator cannot be highlighted because is disabled for the current theme or layout."])
 				end
 			end
-			-- real test function
-			ToggleTestMode = function(indicator)
-				if Test.enabled then
-					for ind in pairs(Test.indicators) do
-						ind:UnregisterStatus(Test)
-					end
-				else
-					for _, ind in Iterate(indicator) do
-						if not Exclude[ind.dbx.type] then
-							ind:RegisterStatus(Test, 1)
-						end
-					end
-				end	
-				Grid2Frame:UpdateIndicators()
-			end
-			ToggleTestMode(indicator)
+			Grid2Frame:UpdateIndicators()
 		end
 	end
 	
-	function Grid2Options:ToggleIndicatorTestMode(indicator)
-		ToggleTestMode(indicator)
-	end
-
 	--========================================================================================================================
 	-- Indicators management options
 	--========================================================================================================================
@@ -397,7 +446,7 @@ do
 		name = L["Test"],
 		width = "half",
 		desc = L["Toggle test mode for indicators"],
-		func = function() ToggleTestMode() end,
+		func = function() Grid2Options:ToggleTestMode() end,
 	}
 
 	function Grid2Options:MakeIndicatorsManagementOptions()

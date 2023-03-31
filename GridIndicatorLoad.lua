@@ -23,10 +23,6 @@ function indicatorPrototype:CanCreate(parent)
 	) )
 end
 
-function indicatorPrototype:GetFrame(parent)
-	return parent[self.name]
-end
-
 -- If a Load filter is setup for an indicator, the default Update() function must be changed to check if
 -- the indicator frame exists for each unit frame, if the indicator does not exist do nothing.
 -- Called from Grid2:RegisterIndicator() in GridIndicator.lua
