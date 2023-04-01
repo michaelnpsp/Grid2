@@ -626,6 +626,7 @@ L["offline"] = true
 L["raid-icon-player"] = true
 L["raid-icon-target"] = true
 L["range"] = true
+L["rangealt"] = true
 L["ready-check"] = true
 L["role"] = true
 L["dungeon-role"] = true

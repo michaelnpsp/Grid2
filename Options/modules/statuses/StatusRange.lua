@@ -2,29 +2,36 @@ local L = Grid2Options.L
 
 local playerClass = Grid2.playerClass
 
-local customSpells = {}
-local function GetPlayerSpells()
-	wipe(customSpells)
-	for i=1,1000 do
-	   local type, spellID = GetSpellBookItemInfo(i,'spell')
-	   if not spellID then break end
-	   if type == 'SPELL' then
-		   local name, _, _, _, minRange, maxRange = GetSpellInfo(spellID)
-		   if maxRange>0 and maxRange<100 then
-				customSpells[spellID] = name
-		   end
+local GetPlayerSpells
+do
+	local customSpells = {}
+	function GetPlayerSpells()
+		wipe(customSpells)
+		for i=1,1000 do
+		   local type, spellID = GetSpellBookItemInfo(i,'spell')
+		   if not spellID then break end
+		   if type == 'SPELL' then
+			   local name, _, _, _, minRange, maxRange = GetSpellInfo(spellID)
+			   if maxRange>0 and maxRange<100 then
+					customSpells[spellID] = name
+			   end
+			end
 		end
+		return customSpells
 	end
-	return customSpells
 end
 
-local rangeList = {}
+local GetRangeList
 do
-	for range in pairs(Grid2:GetStatusByName('range').GetRanges()) do
+	local rangeList = {}
+	for range in pairs(Grid2:GetStatusByName('range'):GetRanges()) do
 		rangeList[range] = tonumber(range) and string.format(L["%d yards"],tonumber(range)) or nil
 	end
-	rangeList.heal  = L['Heal Range']
-	rangeList.spell = L['Spell Range']
+	rangeList.heal = L['Heal Range']
+	function GetRangeList(status)
+		rangeList.spell = (status.name=='range') and L['Spell Range'] or nil
+		return rangeList
+	end
 end
 
 local function ToggleByClass(status, enabled)
@@ -41,7 +48,7 @@ local function ToggleByClass(status, enabled)
 	return rangeDB
 end
 
-Grid2Options:RegisterStatusOptions("range", "target", function(self, status, options, optionParams)
+local function MakeRangeOptions(self, status, options, optionParams)
 	local rangeDB = status.dbx.ranges and status.dbx.ranges[playerClass] or status.dbx
 	self:MakeStatusColorOptions(status, options, {
 		width = "full",
@@ -99,7 +106,7 @@ Grid2Options:RegisterStatusOptions("range", "target", function(self, status, opt
 			rangeDB.range = v			
 			status:UpdateDB() 
 		end,
-		values = rangeList
+		values = function() return GetRangeList(status) end,
 	}
 	options.newline = {
 		order = 59,
@@ -140,4 +147,8 @@ Grid2Options:RegisterStatusOptions("range", "target", function(self, status, opt
 			status:UpdateDB()
 		end,
 	}	
-end )
+end
+
+Grid2Options:RegisterStatusOptions("range", "target", MakeRangeOptions, { groupOrder = 201 } )
+
+Grid2Options:RegisterStatusOptions("rangealt", "target", MakeRangeOptions, { groupOrder = 202, title = L["Alternative Range"] } )

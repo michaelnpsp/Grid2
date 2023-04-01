@@ -625,6 +625,7 @@ L["Adjust background color and alpha."] = "Ajustar plano de fundo e transparenci
 -- L["raid-icon-player"] = ""
 -- L["raid-icon-target"] = ""
 -- L["range"] = ""
+-- L["rangealt"] = ""
 -- L["ready-check"] = ""
 -- L["role"] = ""
 -- L["dungeon-role"] = ""

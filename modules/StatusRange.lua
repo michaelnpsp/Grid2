@@ -3,6 +3,7 @@ Created by Grid2 original authors, modified by Michael
 --]]
 
 local Range = Grid2.statusPrototype:new("range")
+local RangeAlt = Grid2.statusPrototype:new("rangealt")
 
 local Grid2 = Grid2
 local tonumber = tonumber
@@ -17,14 +18,29 @@ local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local CheckInteractDistance = CheckInteractDistance
 local UnitPhaseReason = UnitPhaseReason or Grid2.Dummy
 
-local timer
-local curAlpha
-local curRange
 local groupType
-local cache = {}
-local UnitRangeCheck
 local grouped_units = Grid2.grouped_units
 local playerClass = Grid2.playerClass
+
+-------------------------------------------------------------------------
+-- shared functions
+-------------------------------------------------------------------------
+
+local function Update(timer)
+	local self = timer.__range
+	local cache, UnitRangeCheck = self.cache, self.UnitRangeCheck
+	for unit in Grid2:IterateRosterUnits() do
+		local value = UnitRangeCheck(unit) and 1 or false
+		if value ~= cache[unit] then
+			cache[unit] = value
+			self:UpdateIndicators(unit)
+		end
+	end
+end
+
+-------------------------------------------------------------------------
+-- Range status
+-------------------------------------------------------------------------
 
 local friendlySpell -- friendly spell configured by the user (spell name)
 local hostileSpell  -- friendly spell configured by the user (spell name)
@@ -105,16 +121,6 @@ local Ranges= {
 	end,
 }
 
-local function Update()
-	for unit in Grid2:IterateRosterUnits() do
-		local value = UnitRangeCheck(unit) and 1 or false
-		if value ~= cache[unit] then
-			cache[unit] = value
-			Range:UpdateIndicators(unit)
-		end
-	end
-end
-
 function Range:Grid_GroupTypeChanged(_, newGroupType)
 	groupType = newGroupType
 end
@@ -126,31 +132,33 @@ function Range:Grid_PlayerSpecChanged()
 end
 
 function Range:Grid_UnitUpdated(_, unit)
-	cache[unit] = UnitRangeCheck(unit) and 1 or false
+	self.cache[unit] = self.UnitRangeCheck(unit) and 1 or false
 end
 
 function Range:Grid_UnitLeft(_, unit)
-	cache[unit] = nil
+	self.cache[unit] = nil
 end
 
 function Range:GetPercent(unit)
-	return cache[unit] or curAlpha
+	return self.cache[unit] or self.curAlpha
 end
 
 function Range:GetRanges()
-	return Ranges, curRange
+	return Ranges, self.curRange
 end
 
 function Range:IsActive(unit)
-	return not cache[unit]
+	return not self.cache[unit]
 end
 
 function Range:OnEnable()
+	groupType = Grid2:GetGroupType()
 	self:RegisterMessage("Grid_UnitUpdated")
 	self:RegisterMessage("Grid_UnitLeft")
 	self:RegisterMessage("Grid_PlayerSpecChanged")
 	self:RegisterMessage("Grid_GroupTypeChanged")
-	timer:Play()
+	self.timer = Grid2:CreateTimer( Update, self.dbx.elapsed or 0.25 )
+	self.timer.__range = self
 end
 
 function Range:OnDisable()
@@ -158,7 +166,8 @@ function Range:OnDisable()
 	self:UnregisterMessage("Grid_UnitLeft")
 	self:UnregisterMessage("Grid_PlayerSpecChanged")
 	self:UnregisterMessage("Grid_GroupTypeChanged")
-	timer:Stop()
+	self.timer.__range = nil
+	self.timer = Grid2:CancelTimer( self.timer )
 end
 
 -- Due to ancient code, configuration can store a heal spell name in status.dbx.range (Rejuv, Healing wave, etc), but this prevents
@@ -168,23 +177,51 @@ end
 function Range:UpdateDB()
 	local dbx = self.dbx
 	local dbr = dbx.ranges and dbx.ranges[playerClass] or dbx
-	friendlySpell = dbr.friendlySpellID and GetSpellInfo(dbr.friendlySpellID)
-	hostileSpell  = dbr.hostileSpellID  and GetSpellInfo(dbr.hostileSpellID)
-	curRange = tonumber(dbr.range) or (dbr.range=='spell' and 'spell') or (rangeSpell and 'heal') or 38
-	UnitRangeCheck = Ranges[curRange] or Ranges[38]
-	curAlpha = dbx.default or 0.25
-	timer = timer or Grid2:CreateTimer( Update )
-	timer:SetDuration(dbx.elapsed or 0.25)
+	if self.name == 'range' then
+		friendlySpell = dbr.friendlySpellID and GetSpellInfo(dbr.friendlySpellID)
+		hostileSpell  = dbr.hostileSpellID  and GetSpellInfo(dbr.hostileSpellID)
+	end	
+	self.curRange = tonumber(dbr.range) or (dbr.range=='spell' and 'spell') or (rangeSpell and 'heal') or 38
+	self.UnitRangeCheck = Ranges[self.curRange] or Ranges[38]
+	self.curAlpha = dbx.default or 0.25
+	self.timer = self.timer or Grid2:CreateTimer( Update )
+	if self.timer then
+		self.timer:SetDuration(dbx.elapsed or 0.25)
+	end	
 end
 
 Range.GetColor = Grid2.statusLibrary.GetColor
 
-local function Create(baseKey, dbx)
-	groupType = Grid2:GetGroupType()
-	Grid2:RegisterStatus(Range, {"percent", "color"}, baseKey, dbx)
+Range.cache = {}
+
+Grid2.setupFunc["range"] = function(baseKey, dbx)
+	Grid2:RegisterStatus( Range, {"percent", "color"}, baseKey, dbx)
 	return Range
 end
 
-Grid2.setupFunc["range"] = Create
-
 Grid2:DbSetStatusDefaultValue( "range", {type = "range", color1 = {r=1, g=0, b=0, a=1}, range=38, default = 0.25, elapsed = 0.5})
+
+-------------------------------------------------------------------------
+-- rangealt status
+-------------------------------------------------------------------------
+
+RangeAlt.Grid_GroupTypeChanged = Range.Grid_GroupTypeChanged
+RangeAlt.Grid_PlayerSpecChanged = Range.Grid_PlayerSpecChanged
+RangeAlt.Grid_UnitUpdated = Range.Grid_UnitUpdated
+RangeAlt.Grid_UnitLeft = Range.Grid_UnitLeft
+RangeAlt.UpdateDB = Range.UpdateDB
+RangeAlt.OnEnable = Range.OnEnable
+RangeAlt.OnDisable = Range.OnDisable
+RangeAlt.GetPercent = Range.GetPercent
+RangeAlt.IsActive = Range.IsActive
+RangeAlt.GetRangers = Range.GetRanges
+RangeAlt.GetColor = Range.GetColor
+RangeAlt.cache = {}
+
+Grid2.setupFunc["rangealt"] = function(baseKey, dbx)
+	Grid2:RegisterStatus( RangeAlt, {"percent", "color"}, baseKey, dbx)
+	return RangeAlt
+end
+
+Grid2:DbSetStatusDefaultValue( "rangealt", {type = "rangealt", color1 = {r=1, g=0, b=0, a=1}, range=28, default = 0.25, elapsed = 0.5})
+
