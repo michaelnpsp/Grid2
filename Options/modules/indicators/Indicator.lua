@@ -68,7 +68,8 @@ do
 		opt[key     ].order = 500  -priority
 		opt[key..'U'].order = 500.1-priority
 		opt[key..'D'].order = 500.2-priority
-		opt[key..'S'].order = 500.3-priority
+		opt[key..'T'].order = 500.3-priority
+		opt[key..'S'].order = 500.4-priority
 	end
 
 	local function StatusSwapPriorities(info, map, indicator, index1, index2)
@@ -114,6 +115,14 @@ do
 		return map
 	end
 
+	local function StatusOpenOptions(status)
+		Grid2Options:SelectGroup('statuses')
+		C_Timer.After(0,function()
+			Grid2Options:SelectGroup('statuses', Grid2Options:GetStatusCategory(status), status.name)
+			C_Timer.After(0,function() Grid2Options:NotifyChange() end )
+		end)
+	end
+
 	-- Grid2Options:MakeIndicatorCurrentStatusOptions(indicator, options)
 	function Grid2Options:MakeIndicatorCurrentStatusOptions(indicator, options)
 		if indicator.statuses then
@@ -141,7 +150,7 @@ do
 					imageHeight= 14,
 					name= "",
 					desc = L["Move the status higher in priority"],
-					func = function (info) StatusShiftUp(info, map, indicator, status) end,
+					func = function(info) StatusShiftUp(info, map, indicator, status) end,
 					arg = arg,
 					hidden = hide,
 				}
@@ -154,14 +163,26 @@ do
 					imageHeight= 14,
 					name= "",
 					desc = L["Move the status lower in priority"],
-					func = function (info) StatusShiftDown(info, map, indicator, status) end,
+					func = function(info) StatusShiftDown(info, map, indicator, status) end,
 					arg = arg,
 					hidden = hide,
+				}
+				options[status.name .. "T"] = {
+					type = "execute",
+					order = 500.3 - map[status],
+					width = 0.15,
+					image = "Interface\\Addons\\Grid2Options\\media\\test",
+					imageWidth= 16,
+					imageHeight= 14,
+					name= "",
+					desc = L["Status Settings"],
+					func = function() StatusOpenOptions(status) end,
+					arg = arg,
 				}
 				options[status.name .."S"] = {
 					type = "description",
 					name = "",
-					order = 500.3 - map[status],
+					order = 500.4 - map[status],
 					hidden = hide,
 				}
 			end

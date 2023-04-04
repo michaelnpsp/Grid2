@@ -67,7 +67,7 @@ local rangeSpellID = ({
 	})[playerClass]
 local rangeSpell = rangeSpellID and GetSpellInfo(rangeSpellID)
 
-local Ranges= {
+local Ranges = {
 	[99] = UnitIsVisible,
 	[10] = function(unit)
 		return CheckInteractDistance(unit,3)
@@ -224,4 +224,3 @@ Grid2.setupFunc["rangealt"] = function(baseKey, dbx)
 end
 
 Grid2:DbSetStatusDefaultValue( "rangealt", {type = "rangealt", color1 = {r=1, g=0, b=0, a=1}, range=28, default = 0.25, elapsed = 0.5})
-
