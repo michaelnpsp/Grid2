@@ -834,8 +834,9 @@ function Grid2Layout:SavePosition(header)
 	end
 end
 
--- Restores the Grid2 window position, the window is always placed in the same exact absolute screen position
+-- Restores the Grid2 main window position, the window is always placed in the same exact absolute screen position
 -- even if the WoW UI Scale or Grid2 window Scale was changed (assuming the screen aspect ratio has not changed).
+-- It does not restore detached headers positions, Grid2Layout:RestorePositions() can be used instead.
 function Grid2Layout:RestorePosition()
 	local p = self.db.profile
 	-- foreground frame
@@ -1007,6 +1008,14 @@ function Grid2Layout:IterateHeaders(detached) -- true = detached headers; false|
 			i = i + 1; if i>#t then return end
 		until d == t[i].isDetached
 		return i, t[i]
+	end
+end
+
+-- Restores the Grid2 main window position and all possible detached headers (for use by external code like macros or weakauras)
+function Grid2Layout:RestorePositions()
+	self:RestorePosition()
+	for _, frame in self:IterateHeaders(true) do -- detached headers
+		self:RestoreHeaderPosition(frame)
 	end
 end
 
