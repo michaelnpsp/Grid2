@@ -12,7 +12,7 @@ Grid2Options.indicatorIconPath = "Interface\\Addons\\Grid2Options\\media\\indica
 Grid2Options.indicatorTypes = {}
 
 -- Indicators sort order
-Grid2Options.indicatorTypesOrder= { tooltip = 1, alpha = 2, background = 3, border = 4, glowborder = 5, multibar = 6, bar = 7, text = 8, square = 9, shape = 10, icon = 11, icons = 12, portrait = 13 }
+Grid2Options.indicatorTypesOrder= { tooltip = 1, alpha = 2, background = 3, border = 4, glowborder = 5, multibar = 6, bar = 7, text = 8, square = 9, shape = 10, icon = 11, privateaura = 12, icons = 13, privateauras = 14, portrait = 15 }
 
 Grid2Options.indicatorTitleIconsOptions = {
 	size = 24, offsetx = -4, offsety = -3, anchor = 'TOPRIGHT', spacing = 5,
@@ -139,6 +139,13 @@ do
 			elseif (newIndicatorValues.type == "shape") then
 				dbx.level = 6
 				dbx.size = defaults.shape.size
+			elseif (newIndicatorValues.type == "privateaura") then
+				dbx.level = 8
+				dbx.load = { unitType = { self = true, player = true } }
+			elseif (newIndicatorValues.type == "privateauras") then
+				dbx.level = 8
+				dbx.maxIcons = 2
+				dbx.load = { unitType = { self = true, player = true } }
 			end
 			Grid2:DbSetIndicator(newIndicatorName,dbx)
 			-- Create runtime indicator
