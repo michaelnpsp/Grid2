@@ -381,4 +381,37 @@ RDDB["Dragonflight"] = {
 		381249, --electrifying-presence
 		},
 	},
+	[1208] = {
+		{ id = 1208, name = "Aberrus, the Shadowed Crucible", raid = true },
+		["Kazzara, the Hellforged"] = {
+		order = 1, ejid = 2522,
+		},
+		["The Amalgamation Chamber"] = {
+		order = 2, ejid = 2529,
+		},
+		["The Forgotten Experiments"] = {
+		order = 3, ejid = 2530,
+		},
+		["Assault of the Zaqali"] = {
+		order = 4, ejid = 2524,
+		},
+		["Rashok, the Elder"] = {
+		order = 5, ejid = 2525,
+		},
+		["The Vigilant Steward, Zskarn"] = {
+		order = 6, ejid = 2532,
+		},
+		["Magmorax"] = {
+		order = 7, ejid = 2527,
+		},
+		["Echo of Neltharion"] = {
+		order = 8, ejid = 2523,
+		},
+		["Scalecommander Sarkareth"] = {
+		order = 9, ejid = 2520,
+		},
+	},
 }
+
+
+
