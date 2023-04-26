@@ -8,6 +8,8 @@ local strmatch = strmatch
 local AddPrivateAuraAnchor = C_UnitAuras.AddPrivateAuraAnchor
 local RemovePrivateAuraAnchor = C_UnitAuras.RemovePrivateAuraAnchor
 
+if not AddPrivateAuraAnchor then return end
+
 local function ClearFrameAuraAnchors(f)
 	local auraHandles = f.auraHandles
 	for i=1,#auraHandles do

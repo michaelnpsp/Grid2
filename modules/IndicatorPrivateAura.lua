@@ -5,6 +5,8 @@ local Grid2 = Grid2
 local AddPrivateAuraAnchor = C_UnitAuras.AddPrivateAuraAnchor
 local RemovePrivateAuraAnchor = C_UnitAuras.RemovePrivateAuraAnchor
 
+if not AddPrivateAuraAnchor then return end
+
 local iconAnchor = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 0 }
 local durationAnchor = { point = "BOTTOM", relativePoint = "BOTTOM", offsetX = 0, offsetY = 0 }
 

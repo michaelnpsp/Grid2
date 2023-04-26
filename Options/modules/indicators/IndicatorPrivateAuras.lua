@@ -1,5 +1,7 @@
-local L = Grid2Options.L
+if not C_UnitAuras.AddPrivateAuraAnchor then return end
 
+local Grid2Options = Grid2Options
+local L = Grid2Options.L
 local indexValues = { 1, 2, 3, 4 }
 
 Grid2Options:RegisterIndicatorOptions("privateauras", true, function(self, indicator)
