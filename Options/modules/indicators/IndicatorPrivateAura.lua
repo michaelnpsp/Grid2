@@ -29,16 +29,27 @@ function Grid2Options:MakeIndicatorPrivateAuraCustomOptions( indicator, options 
 		values = indexValues,
 	}
 	self:MakeHeaderOptions( options, "Cooldown" )
-	options.disableCooldown = {
+	options.enableCooldown = {
 		type = "toggle",
 		order = 130,
-		name = L["Disable Cooldown"],
-		desc = L["Disable the Cooldown Frame"],
-		tristate = false,
-		get = function () return indicator.dbx.disableCooldown end,
+		name = L["Enable Cooldown"],
+		desc = L["Display a Cooldown Frame"],
+		get = function () return not indicator.dbx.disableCooldown end,
 		set = function (_, v)
-			indicator.dbx.disableCooldown = v or nil
+			indicator.dbx.disableCooldown = (not v) or nil
 			self:RefreshIndicator(indicator, "Layout")
 		end,
+	}
+	options.enableNumbers = { -- "Show numbers for cooldowns" setting must be enabled in blizzard options.
+		type = "toggle",
+		order = 135,
+		name = L["Enable Numbers"],
+		desc = L["Display Cooldown Numbers."],
+		get = function () return not indicator.dbx.disableCooldownNumbers end,
+		set = function (_, v)
+			indicator.dbx.disableCooldownNumbers = (not v) or nil
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		hidden = function() return indicator.dbx.disableCooldown end,
 	}
 end

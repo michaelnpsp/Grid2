@@ -64,7 +64,7 @@ local function Icon_UpdateDB(self)
 	local anchor = self.auraAnchor
 	anchor.auraIndex = dbx.auraIndex or 1
 	anchor.showCountdownFrame = not dbx.disableCooldown
-	anchor.showCountdownNumbers = not dbx.disableCooldown
+	anchor.showCountdownNumbers = not dbx.disableCooldownNumbers
 end
 
 Grid2.setupFunc["privateaura"]  = function(indicatorKey, dbx)

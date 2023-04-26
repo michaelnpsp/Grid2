@@ -78,6 +78,7 @@ local function Icon_UpdateDB(self)
 	self.auraIndex= dbx.auraIndex or 1
 	self.iconSize = dbx.iconSize or Grid2Frame.db.profile.iconSize or 14
 	self.auraAnchor.showCountdownFrame = not dbx.disableCooldown
+	self.auraAnchor.showCountdownNumbers = not dbx.disableCooldownNumbers
 	local anchor = self.iconAnchor
 	if dbx.orientation=='VERTICAL' then
 		anchor.point = strmatch(dbx.location.point,'BOTTOM') or 'TOP'
@@ -99,7 +100,7 @@ end
 Grid2.setupFunc["privateauras"] = function(indicatorKey, dbx)
 	local indicator = Grid2.indicatorPrototype:new(indicatorKey)
 	indicator.iconAnchor = {}
-	indicator.auraAnchor = { iconInfo = { iconAnchor = indicator.iconAnchor }, showCountdownNumbers = false }
+	indicator.auraAnchor = { iconInfo = { iconAnchor = indicator.iconAnchor } }
 	indicator.dbx       = dbx
 	indicator.Create    = Icon_Create
 	indicator.Layout    = Icon_Layout
