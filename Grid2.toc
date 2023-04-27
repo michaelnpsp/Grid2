@@ -80,7 +80,6 @@ modules\IndicatorTooltip.lua
 modules\IndicatorPortrait.lua
 modules\IndicatorShape.lua
 #@retail@
-modules\IndicatorPrivateAura.lua
 modules\IndicatorPrivateAuras.lua
 #@end-retail@
 
