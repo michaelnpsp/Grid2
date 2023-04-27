@@ -235,14 +235,15 @@ function Banzai:Update()
 		if unit then
 			local name,_,ico,_,et,_,_,spellId2,spellId1 = func(sguids[g], g) -- Casting spellId1=9th, Channeling spellId2=8th
 			if name and (spells==nil or spells[name]) then
+				local spellID = spellId1 or spellId2 or 0
 				et         = et and et/1000 or ct+0.25
 				bgid[g]    = unit
 				bfun[g]    = func
 				buni[unit] = g
-				bspl[unit] = spellId1 or spellId2 or name
 				bdur[unit] = et - ct
 				bexp[unit] = et
 				bico[unit] = ico or "Interface\\ICONS\\Ability_Creature_Cursed_02"
+				bspl[unit] = GetSpellInfo(spellID) and spellID or name				
 				self:UpdateIndicators(unit)
 			end
 		end
