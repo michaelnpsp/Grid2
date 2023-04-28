@@ -336,7 +336,7 @@ do
 	function Grid2Options:MakeIndicatorLevelOptions(indicator, options)
 		options.frameLevel = {
 			type = "select",
-			order = 1.99,
+			order = 1.92,
 			name = L["Frame Level"],
 			desc = L["Bars with higher numbers always show up on top of lower numbers."],
 			get = function ()
