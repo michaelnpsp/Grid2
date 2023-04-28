@@ -381,4 +381,103 @@ RDDB["Dragonflight"] = {
 		381249, --electrifying-presence
 		},
 	},
+	[1208] = {
+		{ id = 1208, name = "Aberrus, the Shadowed Crucible", raid = true },
+		["Kazzara, the Hellforged"] = {
+		order = 1, ejid = 2522,
+		400432, --hellbeam
+		403326, --wings-of-extinction
+		404744, --terror-claws
+		407196, --dread-rifts
+		},
+		["The Amalgamation Chamber"] = {
+		order = 2, ejid = 2529,
+		401809, -- corrupting-shadow
+		402617, -- blazing-heat
+		406780, -- shadowflame-contamination
+		405641, -- blistering-twilight
+		408219, -- convergent-eruption
+		405914, -- withering-vulnerability
+		405016, -- umbral-detonation
+		},
+		["The Forgotten Experiments"] = {
+		order = 3, ejid = 2530,
+		406358, --rending-charge
+		406305, --infused-strikes
+		405042, --unstable-essence
+		405383, --violent-eruption
+		407617, --temporal-anomaly
+		405391, --disintegrate
+		},
+		["Assault of the Zaqali"] = {
+		order = 4, ejid = 2524,
+		404687, --barrier-backfire
+		398938, --devastating-leap
+		401258, --heavy-cudgel
+		397383, --molten-barrier
+		401401, --blazing-spear
+		408624, --scorching-roar
+		401867, --volcanic-shield
+		404687, --barrier-backfire
+		},
+		["Rashok, the Elder"] = {
+		order = 5, ejid = 2525,
+		405316, --ancient-fury
+		406851, --doom-flames
+		403543, --lava-wave
+		401419, --elders-conduit
+		},
+		["The Vigilant Steward, Zskarn"] = {
+		order = 6, ejid = 2532,
+		405462, --dragonfire-traps
+		404955, --shrapnel-bomb
+		404007, --unstable-embers
+		403978, --blast-wave
+		404942, --searing-claws
+		},
+		["Magmorax"] = {
+		order = 7, ejid = 2527,
+		408359, --catastrophic-eruption
+		402989, --molten-spittle
+		409853, --igniting-roar
+		401348, --incinerating-maws
+		},
+		["Echo of Neltharion"] = {
+		order = 8, ejid = 2523,
+		401022, --calamitous-strike
+		403057, --surrender-to-corruption
+		407793, --sunder-shadow
+		407917, --ebon-destruction
+		401825, --shatter
+		410972, --corruption
+		},
+		["Scalecommander Sarkareth"] = {
+		order = 9, ejid = 2520,
+		401951, --oblivion
+		401215, --emptiness-between-stars
+		413070, --destabilize
+		407576, --astral-flare
+		401383, --oppressing-howl
+		410247, --echoing-howl
+		401819, --glittering-surge
+		401905, --dazzled
+		406989, --burning-ground
+		401525, --scorching-detonation
+		401718, --disintegrated
+		402051, --searing-breath
+		402052, --seared
+		402746, --drifting-embers
+		401325, --burning-claws
+		404154, --void-surge
+		404218, --void-fracture
+		404769, --empty-strike
+		404288, --infinite-duress
+		404269, --ebon-might
+		403497, --astral-formation
+		413106, --void-might
+		},
+	},
 }
+
+
+
