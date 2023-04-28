@@ -424,6 +424,7 @@ L["Adjust background color and alpha."] = "Ajustar plano de fundo e transparenci
 -- L["Create new indicator"] = ""
 -- L["Delete Indicator"] = ""
 -- L["Rename Indicator"] = ""
+-- L["Highlight Indicator"] = ""
 -- L["Indicator Type"] = ""
 -- L["Icon"] = ""
 -- L["Max Icons"] = ""
@@ -436,6 +437,15 @@ L["Adjust background color and alpha."] = "Ajustar plano de fundo e transparenci
 -- L["Enable Advanced Tooltips"] = ""
 -- L["Display default unit tooltip when Out of Combat"] = ""
 
+-- L["First Aura"] = ""
+-- L["Select the index of the first private aura to display."] = ""
+-- L["Last Aura"] = ""
+-- L["Select the index of the last private aura to display."] = ""
+-- L["Enable Cooldown"] = ""
+-- L["Display a cooldown animation."] = ""
+-- L["Enable Numbers"] = ""
+-- L["Display cooldown numbers."] = ""
+
 -- indicator types
 -- L["icon"] = ""
 -- L["square"] = ""
@@ -445,6 +455,7 @@ L["Adjust background color and alpha."] = "Ajustar plano de fundo e transparenci
 -- L["multibar"] = ""
 -- L["portrait"] = ""
 -- L["glowborder"] = ""
+-- L["privateauras"] = ""
 
 -- indicators
 -- L["corner-top-left"] = ""

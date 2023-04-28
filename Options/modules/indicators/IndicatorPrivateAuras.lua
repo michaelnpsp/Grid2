@@ -123,7 +123,7 @@ function Grid2Options:MakeIndicatorPrivateAurasCustomOptions( indicator, options
 		type = "toggle",
 		order = 130,
 		name = L["Enable Cooldown"],
-		desc = L["Display a Cooldown Frame"],
+		desc = L["Display a cooldown animation."],
 		get = function () return not indicator.dbx.disableCooldown end,
 		set = function (_, v)
 			indicator.dbx.disableCooldown = (not v) or nil
@@ -134,7 +134,7 @@ function Grid2Options:MakeIndicatorPrivateAurasCustomOptions( indicator, options
 		type = "toggle",
 		order = 135,
 		name = L["Enable Numbers"],
-		desc = L["Display Cooldown Numbers."],
+		desc = L["Display cooldown numbers."],
 		get = function () return not indicator.dbx.disableCooldownNumbers end,
 		set = function (_, v)
 			indicator.dbx.disableCooldownNumbers = (not v) or nil

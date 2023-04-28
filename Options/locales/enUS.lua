@@ -424,6 +424,7 @@ L["indicators management"] = true
 L["Create new indicator"] = true
 L["Delete Indicator"] = true
 L["Rename Indicator"] = true
+L["Highlight Indicator"] = true
 L["Indicator Type"] = true
 L["Icon"] = true
 L["Max Icons"] = true
@@ -436,6 +437,15 @@ L["Show Tooltip"] = true
 L["Enable Advanced Tooltips"] = true
 L["Display default unit tooltip when Out of Combat"] = true
 
+L["First Aura"] = true
+L["Select the index of the first private aura to display."] = true
+L["Last Aura"] = true
+L["Select the index of the last private aura to display."] = true
+L["Enable Cooldown"] = true
+L["Display a cooldown animation."] = true
+L["Enable Numbers"] = true
+L["Display cooldown numbers."] = true
+
 -- indicator types
 L["icon"] = true
 L["square"] = true
@@ -445,6 +455,7 @@ L["icons"] = true
 L["multibar"] = true
 L["portrait"] = true
 L["glowborder"] = true
+L["privateauras"] = true
 
 -- indicators
 L["corner-top-left"]= true
