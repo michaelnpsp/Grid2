@@ -256,10 +256,10 @@ do
 		Value         = { type = "header", order = 90,  name = L["Value"] },
 		Text          = { type = "header", order = 95,  name = L["Text"] },
 		Misc          = { type = "header", order = 100, name = L["Misc"]        },
-		Highlights    = { type = "header", order = 110,  name = L["Highlight"], },
+		Highlights    = { type = "header", order = 110, name = L["Highlight"], },
 		Auras	      = { type = "header", order = 150, name = L["Auras"]       },
 		DebuffFilter  = { type = "header", order = 175, name = L["Filtered debuffs"] },
-		AurasExpanded = { type = "header", order = 300,  name = L["Display"] },
+		AurasExpanded = { type = "header", order = 300, name = L["Display"] },
 	}
 	function Grid2Options:MakeHeaderOptions( options, key )
 		options[ "header"..key ] = headers[key]

@@ -79,6 +79,9 @@ modules\IndicatorSquare.lua
 modules\IndicatorTooltip.lua
 modules\IndicatorPortrait.lua
 modules\IndicatorShape.lua
+#@retail@
+modules\IndicatorPrivateAuras.lua
+#@end-retail@
 
 # Statuses
 modules\StatusHealth.lua
