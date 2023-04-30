@@ -5,9 +5,9 @@ local Grid2 = Grid2
 local wipe = wipe
 local strmatch = strmatch
 
+if not C_UnitAuras then return end
 local AddPrivateAuraAnchor = C_UnitAuras.AddPrivateAuraAnchor
 local RemovePrivateAuraAnchor = C_UnitAuras.RemovePrivateAuraAnchor
-
 if not AddPrivateAuraAnchor then return end
 
 local function ClearFrameAuraAnchors(f)

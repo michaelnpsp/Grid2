@@ -1,4 +1,4 @@
-if not C_UnitAuras.AddPrivateAuraAnchor then return end
+if not (C_UnitAuras and C_UnitAuras.AddPrivateAuraAnchor) then return end
 
 local Grid2Options = Grid2Options
 local L = Grid2Options.L

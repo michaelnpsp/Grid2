@@ -654,7 +654,10 @@ L["pvp"] = "pvp"
 L["direction"] = "direccion"
 L["resurrection"] = "resurreccion"
 L["self"] = "yo mismo"
-L["monk-stagger"] = "monje aplazamiento"
+L["boss-shields"] = "escudos de jefes"
+L["my-heals-incoming"] = "curas(mias)"
+L["boss-debuffs"] = "Debuffs de Jefes"
+L["unit-index"] = "indice unidad"
 
 L["Curse"] = "Maldicion"
 L["Poison"] = "Veneno"
@@ -666,12 +669,6 @@ L["raid-debuffs2"] = "Debuffs de Raid(2)"
 L["raid-debuffs3"] = "Debuffs de Raid(3)"
 L["raid-debuffs4"] = "Debuffs de Raid(4)"
 L["raid-debuffs5"] = "Debuffs de Raid(5)"
-
-L["boss-shields"] = "escudos de jefes"
-L["my-heals-incoming"] = "curas(mias)"
-L["boss-debuffs"] = "Debuffs de Jefes"
-
--- class specific buffs & debuffs statuses
 
 -- shaman
 L["EarthShield"] = "Escudo de tierra"
@@ -711,6 +708,7 @@ L["PrayerOfHealing"] = "Rezo de sanacion"
 L["EnvelopingMist"] = "Niebla envolvente"
 L["RenewingMist"] = "Niebla renovadora"
 L["LifeCocoon"] = "Crisalida vital"
+L["monk-stagger"] = "monje aplazamiento"
 
 -- mage
 L["FocusMagic"] = "Enfocar magia"
@@ -916,6 +914,12 @@ L["Summon Accepted"] = "Invocacion Aceptada"
 L["Player accepted the summon."] = "El jugador ha aceptado la invocacion."
 L["Summon Declined"] = "Invocacion Cancelada"
 L["Player declined the summon."] = "El jugador no ha aceptado la invocacion."
+
+-- unit-index status
+L["Enabled only for party units"] = "Activado solo para unidades de grupo"
+L["Raid indexes will not be displayed."] = "No se mostrarán los indices de unidades de raid."
+L["Enabled for player unit"] = "Activado para la unidad del jugador"
+L["Display a zero index for player unit while in party or raid."] = "Muestra un indice cero para la unidad del jugador mientras está en grupo o raid."
 
 -- status descriptions
 L["highlights your target"] = "resalta tu objetivo"

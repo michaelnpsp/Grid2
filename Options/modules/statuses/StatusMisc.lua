@@ -96,3 +96,32 @@ Grid2Options:RegisterStatusOptions("pvp", "combat", function(self, status, optio
 end, {
 	titleIcon = UnitFactionGroup("player") == "Horde" and  "Interface\\PVPFrame\\PVP-Currency-Horde" or "Interface\\PVPFrame\\PVP-Currency-Alliance"
 })
+
+Grid2Options:RegisterStatusOptions("unit-index", "misc", function(self, status, options, optionParams)
+	options.partyUnits = {
+		type = "toggle",
+		name = L["Enabled only for party units"],
+		desc = L["Raid indexes will not be displayed."],
+		width = "full",
+		order = 10,
+		get = function () return status.dbx.partyUnits end,
+		set = function (_, v)
+			status.dbx.partyUnits = v or nil
+			status:Refresh()
+		end,
+	}
+	options.playerUnit = {
+		type = "toggle",
+		name = L["Enabled for player unit"],
+		desc = L["Display a zero index for player unit while in party or raid."],
+		width = "full",
+		order = 30,
+		get = function () return status.dbx.playerUnit end,
+		set = function (_, v)
+			status.dbx.playerUnit = v or nil
+			status:Refresh()
+		end,
+	}
+end, {
+	titleIcon = "Interface\\BUTTONS\\UI-GuildButton-PublicNote-Up"
+})

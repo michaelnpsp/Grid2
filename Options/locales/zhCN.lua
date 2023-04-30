@@ -653,7 +653,10 @@ L["pvp"] = "玩家对玩家"
 L["direction"] = "方向"
 L["resurrection"] = "复活"
 L["self"] = "自己 "
--- L["monk-stagger"] = ""
+L["boss-shields"] = "Boss护盾"
+L["my-heals-incoming"] = "我的-治疗-预估"
+L["boss-debuffs"] = "Boss-减益"
+-- L["unit-index"] = ""
 
 L["Curse"] = "诅咒"
 L["Poison"] = "毒"
@@ -665,12 +668,6 @@ L["raid-debuffs2"] = "团队减益（2）"
 L["raid-debuffs3"] = "团队减益（3）"
 L["raid-debuffs4"] = "团队减益（4）"
 L["raid-debuffs5"] = "团队减益（5）"
-
-L["boss-shields"] = "Boss护盾"
-L["my-heals-incoming"] = "我的-治疗-预估"
-L["boss-debuffs"] = "Boss-减益"
-
--- class specific buffs & debuffs statuses
 
 -- shaman
 L["EarthShield"] = "大地之盾"
@@ -710,6 +707,7 @@ L["PrayerOfHealing"] = "治疗祷言"
 L["EnvelopingMist"] = "氤氲之雾"
 L["RenewingMist"] = "复苏之雾"
 L["LifeCocoon"] = "作茧缚命"
+-- L["monk-stagger"] = ""
 
 -- mage
 L["FocusMagic"] = "魔法凝聚"
@@ -915,6 +913,12 @@ L["Summon Accepted"] = "接受召唤"
 L["Player accepted the summon."] = "玩家接受召唤"
 L["Summon Declined"] = "拒绝召唤"
 L["Player declined the summon."] = "玩家拒绝召唤"
+
+-- unit-index status
+-- L["Enabled only for party units"] = ""
+-- L["Raid indexes will not be displayed."] = ""
+-- L["Enabled for player unit"] = ""
+-- L["Display a zero index for player unit while in party or raid."] = ""
 
 -- status descriptions
 L["highlights your target"] = "高亮你的目标"

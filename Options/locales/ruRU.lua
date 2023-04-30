@@ -653,7 +653,10 @@ L["pvp"] = "pvp"
 L["direction"] = "направление"
 L["resurrection"] = "воскрешение"
 L["self"] = "одиночный"
--- L["monk-stagger"] = ""
+L["boss-shields"] = "щит-босса"
+L["my-heals-incoming"] = "моё-входящие-исцеление"
+L["boss-debuffs"] = "дебаффы-босс"
+-- L["unit-index"] = ""
 
 L["Curse"] = "Проклятье"
 L["Poison"] = "Яд"
@@ -665,12 +668,6 @@ L["raid-debuffs2"] = "рейд-дебаффы2"
 L["raid-debuffs3"] = "рейд-дебаффы3"
 L["raid-debuffs4"] = "рейд-дебаффы4"
 L["raid-debuffs5"] = "рейд-дебаффы5"
-
-L["boss-shields"] = "щит-босса"
-L["my-heals-incoming"] = "моё-входящие-исцеление"
-L["boss-debuffs"] = "дебаффы-босс"
-
--- class specific buffs & debuffs statuses
 
 -- shaman
 L["EarthShield"] = "Щит земли"
@@ -710,6 +707,7 @@ L["PrayerOfHealing"] = "Молитва исцеления"
 L["EnvelopingMist"] = "Окутывающий туман"
 L["RenewingMist"] = "Заживляющий туман"
 L["LifeCocoon"] = "Исцеляющий кокон"
+-- L["monk-stagger"] = ""
 
 -- mage
 L["FocusMagic"] = "Магическая концентрация"
@@ -915,6 +913,12 @@ L["Summon Accepted"] = "Призыв (Summon) принят"
 L["Player accepted the summon."] = "Игрок принял призыв(summon)."
 L["Summon Declined"] = "Призыв(Summon) отклонен"
 L["Player declined the summon."] = "Игрок отклонил призыв(summon)."
+
+-- unit-index status
+-- L["Enabled only for party units"] = ""
+-- L["Raid indexes will not be displayed."] = ""
+-- L["Enabled for player unit"] = ""
+-- L["Display a zero index for player unit while in party or raid."] = ""
 
 -- status descriptions
 L["highlights your target"] = "подсветка вашей цели"

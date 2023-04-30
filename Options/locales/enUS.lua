@@ -654,7 +654,10 @@ L["pvp"] = true
 L["direction"] = true
 L["resurrection"] = true
 L["self"] = true
-L["monk-stagger"] = true
+L["boss-shields"] = true
+L["my-heals-incoming"] = true
+L["boss-debuffs"] = true
+L["unit-index"] = true
 
 L["Curse"] = true
 L["Poison"] = true
@@ -666,12 +669,6 @@ L["raid-debuffs2"] = "Raid Debuffs(2)"
 L["raid-debuffs3"] = "Raid Debuffs(3)"
 L["raid-debuffs4"] = "Raid Debuffs(4)"
 L["raid-debuffs5"] = "Raid Debuffs(5)"
-
-L["boss-shields"] = true
-L["my-heals-incoming"] = true
-L["boss-debuffs"] = true
-
--- class specific buffs & debuffs statuses
 
 -- shaman
 L["EarthShield"] = true
@@ -711,6 +708,7 @@ L["PrayerOfHealing"]= true
 L["EnvelopingMist"]= true
 L["RenewingMist"]= true
 L["LifeCocoon"]= true
+L["monk-stagger"] = true
 
 -- mage
 L["FocusMagic"]= true
@@ -916,6 +914,12 @@ L["Summon Accepted"] = true
 L["Player accepted the summon."] = true
 L["Summon Declined"] = true
 L["Player declined the summon."] = true
+
+-- unit-index status
+L["Enabled only for party units"] = true
+L["Raid indexes will not be displayed."] = true
+L["Enabled for player unit"] = true
+L["Display a zero index for player unit while in party or raid."] = true
 
 -- status descriptions
 L["highlights your target"] = true

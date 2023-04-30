@@ -107,6 +107,7 @@ modules\StatusAuras.lua
 modules\StatusAurasBuffs.lua
 modules\StatusAurasDebuffs.lua
 modules\StatusThreat.lua
+modules\StatusUnitIndex.lua
 #@retail@
 modules\StatusVehicle.lua
 modules\StatusShields.lua

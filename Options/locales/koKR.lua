@@ -653,7 +653,10 @@ L["pvp"] = "PvP"
 L["direction"] = "방향"
 L["resurrection"] = "부활"
 L["self"] = "자신"
-L["monk-stagger"] = "수도사-시간차"
+L["boss-shields"] = "우두머리-보호막들"
+L["my-heals-incoming"] = "내 치유"
+L["boss-debuffs"] = "우두머리-디버프"
+-- L["unit-index"] = ""
 
 L["Curse"] = "저주"
 L["Poison"] = "독"
@@ -665,12 +668,6 @@ L["raid-debuffs2"] = "공격대 디버프들(2)"
 L["raid-debuffs3"] = "공격대 디버프들(3)"
 L["raid-debuffs4"] = "공격대 디버프들(4)"
 L["raid-debuffs5"] = "공격대 디버프들(5)"
-
-L["boss-shields"] = "우두머리-보호막들"
-L["my-heals-incoming"] = "내 치유"
-L["boss-debuffs"] = "우두머리-디버프"
-
--- class specific buffs & debuffs statuses
 
 -- shaman
 L["EarthShield"] = "대지의 보호막"
@@ -710,6 +707,7 @@ L["PrayerOfHealing"] = "치유의 기원"
 L["EnvelopingMist"] = "위안의 안개"
 L["RenewingMist"] = "소생의 안개"
 L["LifeCocoon"] = "기의 고치"
+L["monk-stagger"] = "수도사-시간차"
 
 -- mage
 L["FocusMagic"] = "마법 집중"
@@ -915,6 +913,12 @@ L["Summon Accepted"] = "소환 수락됨"
 L["Player accepted the summon."] = "플레이어가 소환을 수락했습니다"
 L["Summon Declined"] = "소환 거절됨"
 L["Player declined the summon."] = "플레이어가 소환을 거절했습니다"
+
+-- unit-index status
+-- L["Enabled only for party units"] = ""
+-- L["Raid indexes will not be displayed."] = ""
+-- L["Enabled for player unit"] = ""
+-- L["Display a zero index for player unit while in party or raid."] = ""
 
 -- status descriptions
 L["highlights your target"] = "당신의 대상 강조"

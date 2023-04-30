@@ -653,7 +653,10 @@ L["pvp"] = "PvP"
 L["direction"] = "direzione"
 L["resurrection"] = "resurrezione"
 L["self"] = "io"
--- L["monk-stagger"] = ""
+L["boss-shields"] = "boss-scudi"
+-- L["my-heals-incoming"] = ""
+-- L["boss-debuffs"] = ""
+-- L["unit-index"] = ""
 
 L["Curse"] = "Curse"
 L["Poison"] = "Veleno"
@@ -665,12 +668,6 @@ L["raid-debuffs2"] = "Raid Debuffs(2)"
 L["raid-debuffs3"] = "Raid Debuffs(3)"
 L["raid-debuffs4"] = "Raid Debuffs(4)"
 L["raid-debuffs5"] = "Raid Debuffs(5)"
-
-L["boss-shields"] = "boss-scudi"
--- L["my-heals-incoming"] = ""
--- L["boss-debuffs"] = ""
-
--- class specific buffs & debuffs statuses
 
 -- shaman
 L["EarthShield"] = "EarthShield"
@@ -710,6 +707,7 @@ L["PrayerOfHealing"] = "PrayerOfHealing"
 -- L["EnvelopingMist"] = ""
 -- L["RenewingMist"] = ""
 -- L["LifeCocoon"] = ""
+-- L["monk-stagger"] = ""
 
 -- mage
 L["FocusMagic"] = "FocusMagic"
@@ -915,6 +913,12 @@ L["Hide Damagers"] = "Nascondi DPS"
 -- L["Player accepted the summon."] = ""
 -- L["Summon Declined"] = ""
 -- L["Player declined the summon."] = ""
+
+-- unit-index status
+-- L["Enabled only for party units"] = ""
+-- L["Raid indexes will not be displayed."] = ""
+-- L["Enabled for player unit"] = ""
+-- L["Display a zero index for player unit while in party or raid."] = ""
 
 -- status descriptions
 L["highlights your target"] = "Evidenzia il tuo obbiettivo"

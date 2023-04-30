@@ -653,6 +653,10 @@ L["pvp"] = "PvP"
 L["direction"] = "Richtung"
 -- L["resurrection"] = ""
 -- L["self"] = ""
+-- L["boss-shields"] = ""
+-- L["my-heals-incoming"] = ""
+-- L["boss-debuffs"] = ""
+-- L["unit-index"] = ""
 
 L["Curse"] = "Fluch"
 L["Poison"] = "Gift"
@@ -660,16 +664,10 @@ L["Disease"] = "Krankheit"
 L["Magic"] = "Magie"
 
 L["raid-debuffs"] = "Schlachtzug-Schwächungszauber"
--- L["raid-debuffs2"] = ""
--- L["raid-debuffs3"] = ""
--- L["raid-debuffs4"] = ""
--- L["raid-debuffs5"] = ""
-
--- L["boss-shields"] = ""
--- L["my-heals-incoming"] = ""
--- L["boss-debuffs"] = ""
-
--- class specific buffs & debuffs statuses
+L["raid-debuffs2"] = "Schlachtzug-Schwächungszauber2"
+L["raid-debuffs3"] = "Schlachtzug-Schwächungszauber3"
+L["raid-debuffs4"] = "Schlachtzug-Schwächungszauber4"
+L["raid-debuffs5"] = "Schlachtzug-Schwächungszauber5"
 
 -- shaman
 L["EarthShield"] = "Erdschild"
@@ -709,6 +707,7 @@ L["SpiritOfRedemption"] = "Geist der Erlösung"
 -- L["EnvelopingMist"] = ""
 -- L["RenewingMist"] = ""
 -- L["LifeCocoon"] = ""
+-- L["monk-stagger"] = ""
 
 -- mage
 L["FocusMagic"] = "Magie fokussieren"
@@ -914,6 +913,12 @@ L["Resurrected"] = "Wiederbelebt"
 -- L["Player accepted the summon."] = ""
 -- L["Summon Declined"] = ""
 -- L["Player declined the summon."] = ""
+
+-- unit-index status
+-- L["Enabled only for party units"] = ""
+-- L["Raid indexes will not be displayed."] = ""
+-- L["Enabled for player unit"] = ""
+-- L["Display a zero index for player unit while in party or raid."] = ""
 
 -- status descriptions
 -- L["highlights your target"] = ""
