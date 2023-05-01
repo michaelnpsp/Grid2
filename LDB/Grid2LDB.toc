@@ -10,7 +10,7 @@
 ## Dependencies: Grid2
 ## OptionalDeps: LibDataBroker-1.1
 ## Version: @project-version@
-## IconTexture: Interface/AddOns/Grid2/media/icon.tga
+## IconTexture: Interface/AddOns/Grid2/media/iconsmall.tga
 ## X-ReleaseDate: "$Date: 2011-04-14 23:42:17 -0700 (Tue, 14 Apr 2011) $"
 ## X-Category: Databroker
 ## X-Website: none

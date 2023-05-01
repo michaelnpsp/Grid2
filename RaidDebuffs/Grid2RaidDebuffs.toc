@@ -8,7 +8,7 @@
 ## Notes-esES: Muestra los debuffs de Bosses de Raid en el Grid2.
 ## Dependencies: Grid2
 ## Version:@project-version@
-## IconTexture: Interface/AddOns/Grid2/media/icon.tga
+## IconTexture: Interface/AddOns/Grid2/media/iconsmall.tga
 ## X-Category: UnitFrame
 ## X-Website: http://wowace.com/projects/grid2/
 

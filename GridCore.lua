@@ -290,7 +290,7 @@ function Grid2:InitializeCompartment()
 	if AddonCompartmentFrame and AddonCompartmentFrame.RegisterAddon then 
 		AddonCompartmentFrame:RegisterAddon({
 			text = Grid2.versionstring,
-			icon = "Interface\\AddOns\\Grid2\\media\\icon.tga",
+			icon = "Interface\\AddOns\\Grid2\\media\\iconsmall.tga",
 			registerForAnyClick = true,
 			func = function() Grid2:OpenGrid2Options(); end,	
 		})

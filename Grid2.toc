@@ -6,7 +6,7 @@
 ## Title: Grid2
 ## Author: Pastamancer & Maia, Jerry, Toadkiller
 ## Version: @project-version@
-## IconTexture: Interface/AddOns/Grid2/media/icon.tga
+## IconTexture: Interface/AddOns/Grid2/media/iconsmall.tga
 ## Notes: A modular, lightweight and screen-estate saving grid of party/raid unit frames
 ## Notes-esES: Marcos de unidades de raid compactos y ligeros.
 ## Notes-ruRU: Модульный, легкий, отображающий на экране область группы/рейда в виде сетки.
