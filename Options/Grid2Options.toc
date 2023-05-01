@@ -10,6 +10,7 @@
 ## LoadOnDemand: 1
 ## Dependencies: Grid2
 ## Version: @project-version@
+## IconTexture: Interface/AddOns/Grid2/media/icon.tga
 
 # Ace Libraries
 Libs\AceGUI-3.0\AceGUI-3.0.xml

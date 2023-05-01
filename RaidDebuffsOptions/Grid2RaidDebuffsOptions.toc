@@ -11,6 +11,7 @@
 ## Dependencies: Grid2, Grid2RaidDebuffs
 ## LoadOnDemand: 1
 ## Version: @project-version@
+## IconTexture: Interface/AddOns/Grid2/media/icon.tga
 
 Grid2RaidDebuffsOptions.lua
 OptionsGeneral.lua
