@@ -936,7 +936,7 @@ do
 				end
 				updateFunc(indicator)
 			end,
-			disabled = function() return indicator.parentName~=nil end,
+			disabled = function() return indicator.parentName~=nil or indicator.childName~=nil end,
 		}
 		options[key..'1'] = {
 			type = "select",
@@ -947,7 +947,7 @@ do
 				wipe(filter)[v] = true
 				updateFunc(indicator)
 			end,
-			disabled = function() return not filter or indicator.parentName~=nil end,
+			disabled = function() return not filter or indicator.parentName~=nil or indicator.childName~=nil end,
 			hidden   = function() return multi end,
 			values   = values,
 		}
@@ -961,7 +961,7 @@ do
 				updateFunc(indicator)
 			end,
 			hidden = function() return not multi end,
-			disabled = function() return not filter or indicator.parentName~=nil end,
+			disabled = function() return not filter or indicator.parentName~=nil or indicator.childName~=nil end,
 			values = values,
 		}
 		options[key.."3"] = {
@@ -1071,7 +1071,8 @@ do
 	end
 
 	function Grid2Options:MakeIndicatorLoadOptions(indicator, options)
-		SetFilterOptions( indicator, options, 10,
+		SetFilterThemeOptions( indicator, options, 10 )
+		SetFilterOptions( indicator, options, 20,
 			'playerClass',
 			self.PLAYER_CLASSES,
 			Grid2.playerClass,
@@ -1080,7 +1081,6 @@ do
 			false,
 			RefreshIndicator
 		)
-		SetFilterThemeOptions( indicator, options, 20 )
 		SetFilterOptions( indicator, options, 30,
 			'unitType',
 			self.HEADER_TYPES,

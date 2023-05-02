@@ -21,7 +21,7 @@ local function GetValues(info)
 	wipe(list)
 	if not info.arg.childName then
 		for name, ind in Grid2:IterateIndicators() do
-			if ind.dbx.type=="bar" and ind.sideKick and ind~=exclude and ( ((not ind.parentName) and (not ind.childName)) or ind.childName==exclude.name ) then
+			if ind.dbx.type=="bar" and ind.sideKick and ind~=exclude and not ind.dbx.load and ( ((not ind.parentName) and (not ind.childName)) or ind.childName==exclude.name ) then
 				list[name] = L[name]
 			end
 		end
