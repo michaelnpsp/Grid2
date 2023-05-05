@@ -18,6 +18,7 @@ local GetSpecialization = Grid2.GetSpecialization
 local UnitGroupRolesAssigned = Grid2.UnitGroupRolesAssigned
 
 -- build/version tracking
+local GetAddOnMetadata = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata
 local versionToc = GetAddOnMetadata("Grid2","Version")
 local versionCli = select(4,GetBuildInfo())
 Grid2.versionCli = versionCli
