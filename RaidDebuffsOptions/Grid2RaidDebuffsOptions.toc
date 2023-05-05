@@ -19,6 +19,7 @@ OptionsAdvanced.lua
 OptionsLuaCode.lua
 
 #@retail@
+RaidDebuffsCataclysm.lua
 RaidDebuffsMoP.lua
 RaidDebuffsWoD.lua
 RaidDebuffsLegion.lua

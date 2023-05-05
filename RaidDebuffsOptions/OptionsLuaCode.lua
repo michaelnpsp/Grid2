@@ -73,20 +73,37 @@ function RDO:GenerateModuleLuaCode(moduleName)
 
 end
 
+
+function PrintEncounterSpells(encounterID)
+	-- EJ_SetDifficulty(difficultyID)
+	local stack, encounter, _, _, curSectionID = {}, EJ_GetEncounterInfo(encounterID)
+	repeat
+		local info = C_EncounterJournal.GetSectionInfo(curSectionID)
+		table.insert(stack, info.siblingSectionID)
+		if not info.filteredByDifficulty then
+			table.insert(stack, info.firstChildSectionID)
+		end
+		curSectionID = table.remove(stack)
+	until not curSectionID
+end
+
 -- Extracts Instances & Bosses from the Game Encounter journal, generates lua code with raid debuffs module format.
 function RDO:GenerateEncounterJournalData(isRaid)
 
+	local sections, spells = {}, {}
 	local lines = ""
 
 	local function println(line)
 		lines  = lines .. line .. "\n"
 	end
 
-	println('local RDDB = Grid2Options:GetRaidDebuffsTable()')
-	println('RDDB["Shadowlands"] = {')
-	println( isRaid and "\t-- Raid instances" or "\t-- 5 man instances" )
+	local tier = EJ_GetCurrentTier() or EJ_GetNumTiers() or 0
 
-	EJ_SelectTier( EJ_GetNumTiers() )
+	println('local RDDB = Grid2Options:GetRaidDebuffsTable()')
+	println( string.format( 'RDDB["Tier %d Expansion"] = {', tier ) )
+	println( isRaid and "\t-- Raid instances" or "\t-- 5 man instances" )
+	
+	EJ_SelectTier( tier )
 	for index=1,100 do
 		local instanceID, name, description, bgImage, buttonImage, loreImage, dungeonAreaMapID, link = EJ_GetInstanceByIndex(index, isRaid)
 		if not instanceID then break end
@@ -94,11 +111,26 @@ function RDO:GenerateEncounterJournalData(isRaid)
 		println( string.format('\t\t{ id = %d, name = "%s"%s },',instanceID, name, isRaid and ", raid = true" or "") )
 		EJ_SelectInstance(instanceID)
 		for index=1,100 do
-		local encounterName, _, encounterID = EJ_GetEncounterInfoByIndex(index, instanceID)
-		if not encounterName then break end
-		println( string.format('\t\t["%s"] = {',encounterName) )
-		println( string.format('\t\torder = %d, ejid = %d,', index, encounterID ) )
-		println('\t\t},')
+			local encounterName, _, encounterID, sectionID = EJ_GetEncounterInfoByIndex(index, instanceID)
+			if not encounterName then break end
+			println( string.format('\t\t["%s"] = {',encounterName) )
+			println( string.format('\t\torder = %d, ejid = %d,', index, encounterID ) )
+			repeat
+				local info = C_EncounterJournal.GetSectionInfo(sectionID)
+				table.insert(sections, info.siblingSectionID)
+				table.insert(sections, info.firstChildSectionID)
+				sectionID = table.remove(sections)
+				if info.spellID and info.spellID~=0 then
+					local name = GetSpellInfo(info.spellID)
+					if name and not spells[name] then
+						spells[name] = true
+						println( string.format( "\t\t%d, --%s", info.spellID, name ) )
+					end	
+				end
+			until not sectionID
+			wipe(sections)
+			wipe(spells)
+			println('\t\t},')
 		end
 		println('\t},')
 	end

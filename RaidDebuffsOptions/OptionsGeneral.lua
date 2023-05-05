@@ -200,7 +200,10 @@ do
 			end
 			return modules
 		end,
-		disabled = function() return RDO.auto_enabled end
+		disabled = function() return RDO.auto_enabled end, 
+		confirm = function(info, key) 
+			return RDO.db.profile.enabledModules[key] and L["All custom settings and spells for the selected module will be removed.\nAre you sure you want to disable this module ?"] or nil
+		end,		
 	}
 end
 
