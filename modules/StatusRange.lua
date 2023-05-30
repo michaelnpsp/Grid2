@@ -157,8 +157,9 @@ function Range:OnEnable()
 	self:RegisterMessage("Grid_UnitLeft")
 	self:RegisterMessage("Grid_PlayerSpecChanged")
 	self:RegisterMessage("Grid_GroupTypeChanged")
-	self.timer = Grid2:CreateTimer( Update, self.dbx.elapsed or 0.25 )
+	self.timer = Grid2:CreateTimer( Update, self.dbx.elapsed or 0.25, false )
 	self.timer.__range = self
+	self.timer:Play()
 end
 
 function Range:OnDisable()
