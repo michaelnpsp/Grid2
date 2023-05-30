@@ -51,7 +51,7 @@ do
 		  end
 		end
 	end
-
+	
 	local function SetFilterBooleanOptions( status, options, order, key, defValue, name, desc, values )
 		local dbx = status.dbx
 		options[key..'1'] = {
@@ -88,6 +88,49 @@ do
 			end,
 			disabled = function() return not dbx.load or dbx.load.disabled or dbx.load[key]==nil end,
 			values = values,
+		}
+		options[key..'3'] = {
+			type = "description",
+			name = "",
+			order = order+3,
+		}
+	end
+
+	local function SetFilterDropdownOptions( status, options, order, key, defValue, name, desc, values, sorting )
+		local dbx = status.dbx
+		options[key..'1'] = {
+			type = "toggle",
+			name = name,
+			desc = desc,
+			order = order,
+			get = function(info) return dbx.load and dbx.load[key]~=nil end,
+			set = function(info, value)
+				if value then
+					dbx.load = dbx.load or {}
+					dbx.load[key] = defValue or next(values)
+				elseif dbx.load then
+					dbx.load[key] = nil
+					if not next(dbx.load) then dbx.load = nil end
+				end
+				status:RefreshLoad()
+			end,
+			disabled = function() return dbx.load and dbx.load.disabled end,
+		}
+		options[key..'2'] = {
+			type = "select",
+			name = name,
+			desc = desc,
+			order = order+1,
+			get = function()
+				return dbx.load and dbx.load[key]
+			end,
+			set = function(_,v)
+				dbx.load[key] = v
+				status:RefreshLoad()				
+			end,
+			disabled = function() return not dbx.load or dbx.load.disabled or dbx.load[key]==nil end,
+			values = values,
+			sorting = sorting,
 		}
 		options[key..'3'] = {
 			type = "description",
@@ -295,8 +338,19 @@ do
 			L["Load the status only if you are in the specified instance type."]
 		)
 		SetFilterZoneOptions(status, options, 55, 'instNameID')
+		if status.handlerType then
+			local spells, sorted = self:GetPlayerSpells()
+			SetFilterDropdownOptions( status, options, 60,
+				'cooldown',
+				nil,
+				L["Spell Ready"],
+				L["Load the status only if the specified player spell is not in cooldown."],
+				spells, 
+				sorted
+			)
+		end
 		if status.handlerType or (optionParams and optionParams.unitFilter) then -- hackish to detect buff/debuff type statuses
-			SetFilterOptions( status, options, 60,
+			SetFilterOptions( status, options, 65,
 				'unitReaction',
 				UNIT_REACTIONS,
 				'friendly',

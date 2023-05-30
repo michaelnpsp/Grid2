@@ -197,6 +197,27 @@ do
 	end
 end
 
+-- player known spells
+do
+	local spells, sorted
+	function Grid2Options:GetPlayerSpells()
+		if not spells then
+			spells = {}
+			for i=1,1000 do
+			   local type, spellID = GetSpellBookItemInfo(i,'spell')
+			   if not spellID then break end
+			   if type == 'SPELL' then
+				   spells[spellID] = GetSpellInfo(spellID)
+				end
+			end
+			sorted = {}
+			for k in next, spells do sorted[#sorted+1] = k end
+			sort(sorted, function(a, b) return spells[a] < spells[b] end)
+		end	
+		return spells, sorted
+	end
+end
+
 -- specialization helper functions
 do
 	Grid2Options.GetSpecializationInfo = GetSpecializationInfo or function(index)
