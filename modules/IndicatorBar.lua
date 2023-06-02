@@ -246,6 +246,9 @@ local function Bar_UpdateDB(self)
 		self.SetValue = Bar_SetValue
 		self.CanCreate = self.prototype.CanCreate
 		self.parentName = nil
+		if self.childName then -- fix changing orientation on themes, CF issue #1227
+			Grid2.indicators[self.childName].orientation = self.orientation
+		end
 	end
 end
 
