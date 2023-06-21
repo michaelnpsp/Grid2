@@ -293,70 +293,53 @@ do
 			func(v)
 		end
 	end
-	if Grid2.isWoW90 then -- retail
-		local function Get(index) -- true=party&raid / 2=raid / 1=party
-			local v = Grid2.db.profile.hideBlizzardRaidFrames
-			return v==true or tonumber(v)==index
-		end
-		local function Set(index)
-			local v = Grid2.db.profile.hideBlizzardRaidFrames
-			v = bit.bxor( (v and tonumber(v)) or (v and 3) or 0, index ) -- true<=>3 / 2<=>2 / 1<=>1 / nil<=>0
-			Grid2.db.profile.hideBlizzardRaidFrames = (v==3) or (v>0 and v) or nil
-		end
-		local function MessageReload()
-			Grid2Options:ConfirmDialog(L['Changes will take effect on next UI reload. Do you want to reload the UI now ?'], function()	ReloadUI() end)
-		end
-		local function FixAddonNotLoaded() -- fix: reenabling CompactRaidFrames addon because in dragonflight it cannot be disabled.
-			RaidAddonsEnabled(true)
-			Grid2.db.profile.hideBlizzardRaidFrames = nil
-		end
-		Grid2Options:AddGeneralOptions( "General", "Blizzard Raid Frames", {
-			hideBlizzardRaidFrames = {
-				type = "toggle",
-				name = L["Hide Blizzard Raid Frames"],
-				desc = L["Hide Blizzard Raid Frames"],
-				width = "full",
-				order = 120,
-				get = function () return Get(2) or not IsAddOnLoaded(addons[1]) end,
-				set = function (_, v)
-					if IsAddOnLoaded(addons[1]) then
-						Set(2)
-					else
-						FixAddonNotLoaded()
-					end
-					MessageReload()
-				end,
-			},
-			hideBlizzardPartyFrames = {
-				type = "toggle",
-				name = L["Hide Blizzard Party Frames"],
-				desc = L["Hide Blizzard Party Frames"],
-				width = "full",
-				order = 121,
-				get = function () return Get(1) end,
-				set = function (_, v)
-					Set(1)
-					MessageReload()
-				end,
-			},
-		})
-	else -- classic
-		Grid2Options:AddGeneralOptions( "General", "Blizzard Raid Frames", {
-			hideBlizzardRaidFrames = {
-				type = "toggle",
-				name = L["Hide Blizzard Raid Frames"],
-				desc = L["Hide Blizzard Raid Frames"],
-				width = "full",
-				order = 120,
-				get = function () return not IsAddOnLoaded(addons[1]) end,
-				set = function (_, v)
-					RaidAddonsEnabled(not v)
-					ReloadUI()
-				end,
-				confirm = function() return "UI will be reloaded. Are your sure ?" end,
-			},
-		})
+	local function Get(index) -- true=party&raid / 2=raid / 1=party
+		local v = Grid2.db.profile.hideBlizzardRaidFrames
+		return v==true or tonumber(v)==index
 	end
+	local function Set(index)
+		local v = Grid2.db.profile.hideBlizzardRaidFrames
+		v = bit.bxor( (v and tonumber(v)) or (v and 3) or 0, index ) -- true<=>3 / 2<=>2 / 1<=>1 / nil<=>0
+		Grid2.db.profile.hideBlizzardRaidFrames = (v==3) or (v>0 and v) or nil
+	end
+	local function MessageReload()
+		Grid2Options:ConfirmDialog(L['Changes will take effect on next UI reload. Do you want to reload the UI now ?'], function()	ReloadUI() end)
+	end
+	local function FixAddonNotLoaded() -- fix: reenabling CompactRaidFrames addon because in dragonflight it cannot be disabled.
+		RaidAddonsEnabled(true)
+		Grid2.db.profile.hideBlizzardRaidFrames = nil
+	end
+	Grid2Options:AddGeneralOptions( "General", "Blizzard Raid Frames", {
+		hideBlizzardRaidFrames = {
+			type = "toggle",
+			name = L["Hide Blizzard Raid Frames"],
+			desc = L["Hide Blizzard Raid Frames"],
+			width = "full",
+			order = 120,
+			get = function () return Get(2) or not IsAddOnLoaded(addons[1]) end,
+			set = function (_, v)
+				if IsAddOnLoaded(addons[1]) then
+					Set(2)
+				else
+					FixAddonNotLoaded()
+				end
+				MessageReload()
+			end,
+		},
+		hideBlizzardPartyFrames = {
+			type = "toggle",
+			name = L["Hide Blizzard Party Frames"],
+			desc = L["Hide Blizzard Party Frames"],
+			width = "full",
+			order = 121,
+			get = function () return Get(1) end,
+			set = function (_, v)
+				Set(1)
+				MessageReload()
+			end,
+			hidden = function() return not Grid2.isWoW90 end,
+		},
+	})
 end
 
 --==========================================================================

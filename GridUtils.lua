@@ -439,19 +439,18 @@ do
 		end
 	end
 
-	-- party frames
+	-- party frames, only for retail
 	local function HidePartyFrames()
+		if not PartyFrame then return end
 		hiddenFrame = hiddenFrame or CreateFrame('Frame')
 		hiddenFrame:Hide()
-		if PartyFrame then
-			hideFrame(PartyFrame)
-			for frame in PartyFrame.PartyMemberFramePool:EnumerateActive() do
-				hideFrame(frame)
-				hideFrame(frame.HealthBar)
-				hideFrame(frame.ManaBar)
-			end
-			PartyFrame.PartyMemberFramePool:ReleaseAll()
+		hideFrame(PartyFrame)
+		for frame in PartyFrame.PartyMemberFramePool:EnumerateActive() do
+			hideFrame(frame)
+			hideFrame(frame.HealthBar)
+			hideFrame(frame.ManaBar)
 		end
+		PartyFrame.PartyMemberFramePool:ReleaseAll()
 		hideFrame(CompactPartyFrame)
 		UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE") -- used by compact party frame
 	end
@@ -481,14 +480,12 @@ do
 
 	-- Only for dragonflight, for classic compactRaidFrames addon is disabled from options
 	function Grid2:UpdateBlizzardFrames()
-		if self.isWoW90 then
-			local v = self.db.profile.hideBlizzardRaidFrames
-			if v==true or v==2 then
-				HideRaidFrames()
-			end
-			if v==true or v==1 then
-				HidePartyFrames()
-			end
+		local v = self.db.profile.hideBlizzardRaidFrames
+		if v==true or v==2 then
+			HideRaidFrames()
+		end
+		if v==true or v==1 then
+			HidePartyFrames()
 		end
 		self.UpdateBlizzardFrames = nil
 	end
