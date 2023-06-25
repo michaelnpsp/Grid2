@@ -359,6 +359,9 @@ do
 	local function GetDuration(self, unit)
 		return self.dur[unit]
 	end
+	local function GetDurationFixed(self)
+		return self.dbx.maxDuration
+	end
 	local function GetDurationMissing()
 		return
 	end
@@ -479,8 +482,8 @@ do
 			self.stacks = dbx.enableStacks
 			self.GetIcon  = GetIcon
 			self.GetCount = GetCount
-			self.GetDuration = GetDuration
 			self.GetExpirationTime = GetExpirationTime
+			self.GetDuration = dbx.maxDuration and GetDurationFixed or GetDuration
 			if blinkThreshold then
 				if blinkThreshold>0 then -- blink/glow active after some time threshold
 					self.thresholds = { blinkThreshold }

@@ -277,6 +277,7 @@ do
 		Value         = { type = "header", order = 90,  name = L["Value"] },
 		Text          = { type = "header", order = 95,  name = L["Text"] },
 		Misc          = { type = "header", order = 100, name = L["Misc"]        },
+		Duration      = { type = "header", order = 105, name = L["Duration"] },
 		Highlights    = { type = "header", order = 110, name = L["Highlight"], },
 		Auras	      = { type = "header", order = 150, name = L["Auras"]       },
 		DebuffFilter  = { type = "header", order = 175, name = L["Filtered debuffs"] },

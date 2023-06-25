@@ -4,6 +4,7 @@ local ColorCountValues = {1,2,3,4,5,6,7,8,9}
 local ColorizeByValues1= { L["Number of stacks"] , L["Remaining time"], L["Elapsed time"] }
 local ColorizeByValues2= { L["Number of stacks"] , L["Remaining time"], L["Elapsed time"], L["Value"] }
 local MonitorizeValues = { [0]= L["NONE"], [1] = L["Value1"], [2] = L["Value2"], [3] = L["Value3"] }
+local DurationValues = { [1] = L['Automatic'], [2] = L['Custom'] }
 local TextValues1 = { [1] = L['Value Tracked'], [2] = L['Aura Name'], [3] = L['Custom Text'] }
 local TextValues2 = { [2] = L['Aura Name'], [3] = L['Custom Text'] }
 
@@ -75,6 +76,39 @@ function Grid2Options:MakeStatusAuraMissingOptions(status, options, optionParams
 			self:MakeStatusOptions(status)
 		end,
 	}
+end
+
+-- Grid2Options:MakeStatusAuraMaxDurationOptions()
+function Grid2Options:MakeStatusAuraMaxDurationOptions(status, options, optionParams)
+	if not status.dbx.missing then
+		self:MakeHeaderOptions(options, "Duration")
+		options.MaxDurationSelect = {
+			type = "select",
+			order = 106,
+			width ="normal",
+			name = L["Max Duration"],
+			desc = L["Max Duration"],
+			get = function() return	status.dbx.maxDuration and 2 or 1 end,
+			set = function( _, v)
+				status.dbx.maxDuration = v==2 and 12 or nil
+				status:Refresh()				
+			end,
+			values = DurationValues,
+		}
+		options.maxDurationValue = {
+			type = "input",
+			order = 107,
+			name = L["Type Max Duration"],
+			desc = L["Type the maximum duration for the aura in seconds."],
+			width = "normal",
+			get = function () return tostring(status.dbx.maxDuration) end,
+			set = function (_, v)
+				status.dbx.maxDuration = tonumber(v) or 12
+				status:Refresh()			
+			end,
+			hidden = function() return status.dbx.maxDuration==nil end,
+		}
+	end	
 end
 
 -- Grid2Options:MakeStatusBlinkThresholdOptions()
@@ -399,6 +433,7 @@ Grid2Options:RegisterStatusOptions("buff", "buff", function(self, status, option
 	self:MakeStatusAuraMissingOptions(status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
 	self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
+	self:MakeStatusAuraMaxDurationOptions(status, options, optionParams)	
 	self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
 	self:MakeStatusAuraValueOptions(status, options, optionParams)
 	self:MakeStatusAuraTextOptions(status, options, optionParams)
@@ -413,6 +448,7 @@ Grid2Options:RegisterStatusOptions("debuff", "debuff", function(self, status, op
 	self:MakeStatusAuraCombineStacksOptions(status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
 	self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
+	self:MakeStatusAuraMaxDurationOptions(status, options, optionParams)	
 	self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
 	self:MakeStatusAuraValueOptions(status, options, optionParams)
 	self:MakeStatusAuraTextOptions(status, options, optionParams)
