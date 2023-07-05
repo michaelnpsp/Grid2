@@ -43,7 +43,7 @@ local function Icon_Create(self, parent)
 		end
 		local CooldownText = f.CooldownText or f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 		CooldownText:SetParent(TextFrame)
-		CooldownText:SetFont(self.textfont, self.dbx.fontSize, self.dbx.fontFlags or "OUTLINE" )
+		if self.fontSize>=1 then CooldownText:SetFont(self.textfont, self.fontSize, self.dbx.fontFlags or "OUTLINE" ) end	
 		local c = self.dbx.stackColor
 		if c then CooldownText:SetTextColor(c.r, c.g, c.b, c.a) end
 		CooldownText:Hide()
@@ -127,6 +127,7 @@ local function Icon_Layout(self, parent)
 
 	if not self.disableStack then
 		if f.TextFrame then	f.TextFrame:SetFrameLevel(level+2) end
+		if self.fontSize<1 then f.CooldownText:SetFont(self.textfont, self.fontSize*size, self.dbx.fontFlags or "OUTLINE" ) end	
 		f.CooldownText:ClearAllPoints()
 		f.CooldownText:SetPoint(self.textPoint, self.textOffsetX, self.textOffsetY)
 	end
@@ -165,6 +166,7 @@ local function Icon_UpdateDB(self)
 	self.textPoint = (jV=='MIDDLE' and jH) or (jH=='CENTER' and jV) or jV..jH
 	self.textOffsetX = dbx.fontOffsetX or 0
 	self.textOffsetY = dbx.fontOffsetY or 0
+	self.fontSize    = dbx.fontSize
 	self.textfont    = Grid2:MediaFetch("font", dbx.font or theme.font) or STANDARD_TEXT_FONT
 	-- ignore icon and use a solid square texture
 	self.disableIcon  = dbx.disableIcon

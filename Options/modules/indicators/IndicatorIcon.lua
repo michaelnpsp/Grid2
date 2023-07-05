@@ -129,20 +129,38 @@ function Grid2Options:MakeIndicatorIconCustomOptions(indicator, options)
 		values = Grid2Options.fontFlagsValues,
 		hidden = function() return indicator.dbx.disableStack end,
 	}
-	options.fontsize = {
+	options.fontsize1 = {
 		type = "range",
 		order = 109,
 		name = L["Font Size"],
 		desc = L["Adjust the font size."],
-		min = 6,
-		max = 24,
+		softMin = 0,
+		softMax = 32,
 		step = 1,
 		get = function () return indicator.dbx.fontSize	end,
 		set = function (_, v)
+			if v==0 then v = 0.25 end
 			indicator.dbx.fontSize = v
 			self:RefreshIndicator(indicator, "Create")
 		end,
-		hidden= function() return indicator.dbx.disableStack end,
+		hidden= function() return indicator.dbx.disableStack or indicator.dbx.fontSize<1 end,
+	}
+	options.fontsize2 = {
+		type = "range",
+		order = 109,
+		name = L["Font Size"],
+		desc = L["Adjust the font size."],
+		min = 0.01,
+		max = 1,
+		step = 0.01,
+		isPercent = true,
+		get = function () return indicator.dbx.fontSize	end,
+		set = function (_, v)
+			if v>=1 then v = 12 end
+			indicator.dbx.fontSize = v
+			self:RefreshIndicator(indicator, "Create")
+		end,
+		hidden= function() return indicator.dbx.disableStack or indicator.dbx.fontSize>=1 end,
 	}
 	options.fontColor = {
 		type = "color",
