@@ -229,21 +229,39 @@ function Grid2Options:MakeIndicatorAuraIconsCustomOptions(indicator, options)
 		values = Grid2Options.fontFlagsValues,
 		hidden = function() return indicator.dbx.disableStack end,
 	}
-	options.fontsize = {
+	options.fontsize1 = {
 		type = "range",
 		order = 104,
 		name = L["Font Size"],
 		desc = L["Adjust the font size."],
-		min = 6,
-		max = 24,
+		softMin = 0,
+		softMax = 32,
 		step = 1,
-		get = function () return indicator.dbx.fontSize	or 9 end,
+		get = function () return indicator.dbx.fontSize or 9 end,
 		set = function (_, v)
+			if v==0 then v = 0.25 end
 			indicator.dbx.fontSize = v
 			self:RefreshIndicator(indicator, "Layout")
 		end,
-		hidden= function() return indicator.dbx.disableStack end,
+		hidden= function() return indicator.dbx.disableStack or (indicator.dbx.fontSize or 9)<1 end,
 	}
+	options.fontsize2 = {
+		type = "range",
+		order = 104,
+		name = L["Font Size"],
+		desc = L["Adjust the font size."],
+		min = 0.01,
+		max = 1,
+		step = 0.01,
+		isPercent = true,
+		get = function () return indicator.dbx.fontSize	end,
+		set = function (_, v)
+			if v>=1 then v = 9 end
+			indicator.dbx.fontSize = v
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		hidden= function() return indicator.dbx.disableStack or (indicator.dbx.fontSize or 9)>=1 end,
+	}	
 	options.fontOffsetX = {
 		type = "range",
 		order = 105,

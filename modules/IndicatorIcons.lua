@@ -117,6 +117,7 @@ local function Icon_Layout(self, parent)
 	local vx,vy = self.vx,self.vy
 	local borderSize = self.borderSize
 	local iconSize = self.iconSize>1 and self.iconSize or self.iconSize * parent:GetHeight()
+	local fontSize = self.fontSize<1 and self.fontSize*iconSize or self.fontSize
 	local size = iconSize + self.iconSpacing
 	local tc1,tc2,tc3,tc4 = Grid2.statusPrototype.GetTexCoord()
 	local frameName
@@ -151,7 +152,7 @@ local function Icon_Layout(self, parent)
 			local c = self.colorStack
 			frame.text = frame.text or frame:CreateFontString(nil, "OVERLAY")
 			frame.text:SetFontObject(GameFontHighlightSmall)
-			frame.text:SetFont(self.font, self.fontSize, self.fontFlags )
+			frame.text:SetFont(self.font, fontSize, self.fontFlags )
 			frame.text:SetTextColor(c.r, c.g, c.b, c.a)
 			frame.text:ClearAllPoints()
 			frame.text:SetPoint(self.fontPoint, self.fontOffsetX, self.fontOffsetY)
