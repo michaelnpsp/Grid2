@@ -278,6 +278,118 @@ RDDB["Dragonflight"] = {
 		374724, -- molten-subduction
 		},
 	},
+	[1209] = {
+		{ id = 1209, name = "Dawn of the Infinite" },
+		["Chronikar"] = {
+		order = 1, ejid = 2521,
+		413105, --Eon Shatter
+		403486, --Eon Residue
+		403259, --Residue Blast
+		405970, --Eon Fragments
+		413013, --Chronoshear
+		413041, --Sheared Lifespan
+		401421, --Sand Stomp
+		401794, --Withering Sandpool
+		},
+		["Manifested Timeways"] = {
+		order = 2, ejid = 2528,
+		403910, --Decaying Time
+		403912, --Accelerating Time
+		404141, --Chrono-faded
+		405448, --Chronofade
+		405431, --Fragments of Time
+		414303, --Unwind
+		414307, --Radiant
+		},
+		["Blight of Galakrond"] = {
+		order = 3, ejid = 2535,
+		406886, --Corrosive Infusion
+		407406, --Corrosion
+		418346, --Corrupted Mind
+		407027, --Corrosive Expulsion
+		407159, --Blight Reclamation
+		407057, --Blight Seep
+		407978, --Necrotic Winds
+		413608, --Essence Connection
+		408029, --Necrofrost
+		408141, --Incinerating Blightbreath
+		413590, --Noxious Ejection
+		},
+		["Iridikron the Stonescaled"] = {
+		order = 4, ejid = 2537,
+		409261, --Extinction Blast
+		414330, --Timeline Protection
+		414353, --Exhausted
+		414496, --Timeline Acceleration
+		414535, --Stonecracker Barrage
+		414552, --Stonecrack
+		409456, --Earthsurge
+		409287, --Rending Earthspikes
+		414376, --Punctured Ground
+		409635, --Pulverizing Exhalation
+		409884, --Pulverizing Creations
+		416256, --Stonebolt
+		409692, --Patient Tactician
+		414184, --Cataclysmic Obliteration
+		414293, --Timeline Transcendence
+		414075, --Crushing Onslaught
+		},
+		["Tyr, the Infinite Keeper"] = {
+		order = 5, ejid = 2526,
+		404296, --Infinite Hand Technique
+		410240, --Titanic Blow
+		403724, --Consecrated Ground
+		401463, --Infinite Annihilation
+		400641, --Dividing Strike
+		408183, --Titanic Empowerment
+		400649, --Spark of Tyr
+		408768, --Siphon Oathstone
+		410249, --Radiant Barrier
+		404315, --Temporal Essence
+		406543, --Stolen Time
+		},
+		["Morchie"] = {
+		order = 6, ejid = 2536,
+		404916, --Sand Blast
+		403891, --More Problems!
+		404365, --Dragon's Breath
+		413208, --Sand Buffeted
+		405279, --Familiar Faces
+		401197, --Fixate
+		412768, --Anachronistic Decay
+		406481, --Time Traps
+		401667, --Time Stasis
+		406100, --Temporal Backlash
+		},
+		["Time-Lost Battlefield"] = {
+		order = 7, ejid = 2533,
+		407120, --Serrated Axe
+		406962, --Axe Throw
+		407122, --Rain of Fire
+		407121, --Immolate
+		410234, --Bladestorm
+		410254, --Decapitate
+		410497, --Mortal Wounds
+		419602, --Thirst for Battle
+		408227, --Shockwave
+		418046, --FOR THE HORDE!
+		410496, --War Cry
+		},
+		["Chrono-Lord Deios"] = {
+		order = 8, ejid = 2538,
+		416152, --Summon Infinite Keeper
+		416261, --Collapsing Time Rift
+		412027, --Chronal Burn
+		411763, --Infinite Blast
+		410911, --Time-Displaced Trooper
+		411023, --Time-Displacement
+		410904, --Infinity Orb
+		410908, --Infinity Nova
+		416139, --Temporal Breath
+		416264, --Infinite Corruption
+		417413, --Temporal Scar
+		},
+	},
 	-- World Bosses
 	[102444] = {
 		{ id = 1205, name = "Dragon Isles", raid = true },
