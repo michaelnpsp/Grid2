@@ -102,7 +102,6 @@ local icons = {
 
 function ReadyCheck:GetIcon(unit)
 	local state = self:GetReadyCheckStatus(unit)
-	print(">", unit, state, icons[state] )
 	return icons[state]
 end
 
