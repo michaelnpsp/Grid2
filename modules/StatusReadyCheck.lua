@@ -93,9 +93,16 @@ function ReadyCheck:GetColor(unit)
 	return color.r, color.g, color.b, color.a
 end
 
-local icons = { waiting = READY_CHECK_WAITING_TEXTURE, ready = READY_CHECK_READY_TEXTURE, notready = READY_CHECK_NOT_READY_TEXTURE, afk = READY_CHECK_AFK_TEXTURE }
+local icons = { 
+	waiting = "Interface\\RaidFrame\\ReadyCheck-Waiting", 
+	ready = "Interface\\RaidFrame\\ReadyCheck-Ready", 
+	notready = "Interface\\RaidFrame\\ReadyCheck-NotReady", 
+	afk = "Interface\\RaidFrame\\ReadyCheck-NotReady",
+}
+
 function ReadyCheck:GetIcon(unit)
 	local state = self:GetReadyCheckStatus(unit)
+	print(">", unit, state, icons[state] )
 	return icons[state]
 end
 
