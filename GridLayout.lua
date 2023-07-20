@@ -517,13 +517,15 @@ function Grid2Layout:ReloadLayout(force)
 	if not UnitExists('player') then self:Debug("ReloadLayout Ignored because player unit does not exist"); return end
 	local p = self.db.profile
 	local partyType, instType, maxPlayers = Grid2:GetGroupType()
+	local numUsedGroups = Grid2:GetNumUsedGroups()
 	local layoutName = self.testLayoutName or p.layouts[maxPlayers] or p.layouts[partyType.."@"..instType] or p.layouts[partyType]
-	if layoutName ~= self.layoutName or (self.layoutHasAuto and maxPlayers ~= self.instMaxPlayers) or force or self.forceReload then
+	if layoutName ~= self.layoutName or (self.layoutHasAuto and maxPlayers ~= self.instMaxPlayers) or (p.frameAutoRescale and numUsedGroups ~= self.instUsedGroups) or force or self.forceReload then
 		self.forceReload = force
 		if not Grid2:RunSecure(3, self, "ReloadLayout") then
 			self.partyType      = partyType
 			self.instType       = instType
 			self.instMaxPlayers = maxPlayers
+			self.instUsedGroups = numUsedGroups
 			self.instMaxGroups  = math.ceil( maxPlayers/5 )
 			self:LoadLayout( layoutName )
 			self.forceReload    = nil
@@ -580,7 +582,7 @@ end
 function Grid2Layout:GenerateHeaders(defaults, setupIndex)
 	local testPlayers = Grid2.testMaxPlayers
 	self.layoutHasAuto = not (testPlayers or self.db.profile.displayAllGroups) or nil
-	local maxGroups = (testPlayers and math.ceil(testPlayers/5)) or (self.layoutHasAuto and self.instMaxGroups) or 8
+	local maxGroups = (testPlayers and math.ceil(testPlayers/5)) or (self.layoutHasAuto and self:GetNumActiveGroups()) or 8
 	local firstIndex = setupIndex==1 and 1
 	for i=1,maxGroups do
 		self:AddHeader(self.groupFilters[i], defaults, firstIndex or setupIndex*100+i)
@@ -667,7 +669,7 @@ function Grid2Layout:FixHeaderAttributes(header, index)
 	if groupFilter then
 		if groupFilter == "auto" then
 			self.layoutHasAuto = autoEnabled
-			groupFilter = self.groupsFilters[autoEnabled and self.instMaxGroups or 8] or "1"
+			groupFilter = self.groupsFilters[autoEnabled and self:GetNumActiveGroups() or 8] or "1"
 			header:SetAttribute("groupFilter", groupFilter)
 		end
 		if header:GetAttribute("strictFiltering") then
@@ -705,8 +707,21 @@ function Grid2Layout:ForceFramesCreation(header)
 	end
 end
 
+function Grid2Layout:GetNumActiveGroups()
+	local p = self.db.profile
+	return p.frameAutoRescale and self.instUsedGroups or self.instMaxGroups
+end
+
+function Grid2Layout:GetMaxPlayerCountForGroupSize()
+	local p  = Grid2Frame.db.profile
+	if not p.frameAutoRescale then return Grid2.instMaxPlayers end
+	if Grid2.instMaxPlayers == 1 then return 1 end
+	local result = Grid2.instUsedGroups * 5
+	return result == 35 and 40 or result
+end
+
 function Grid2Layout:GetFramesSizeForHeader(header)
-	local m  = Grid2.testMaxPlayers or Grid2.instMaxPlayers
+	local m  = Grid2.testMaxPlayers or self:GetMaxPlayerCountForGroupSize()
 	local p  = Grid2Frame.db.profile
 	local fw = p.frameWidths
 	local fh = p.frameHeights

@@ -227,6 +227,17 @@ do
 	function Grid2:GetGroupType()
 		return self.groupType or "solo", self.instType or "other", self.instMaxPlayers or 1
 	end
+
+	function Grid2:GetNumUsedGroups()
+		if not IsInRaid() then return 1 end
+		local max = 1
+		for i = 1, 40 do
+			local _, _, group = GetRaidRosterInfo(i)
+			if group > max then max = group end
+		end
+		return max
+	end
+
 	-- Workaround to fix maxPlayers in pvp when UI is reloaded (retry every .5 seconds for 2-3 seconds), see ticket #641
 	function Grid2:FixGroupMaxPlayers(newInstType)
 		if updateCount<=5 and (newInstType == 'pvp' or newInstType == 'arena') then
@@ -257,8 +268,9 @@ do
 		local newGroupType
 		local InInstance, newInstType = IsInInstance()
 		local instName, _, difficultyID, _, maxPlayers, _, _, instMapID = GetInstanceInfo()
+		local usedGroups = self:GetNumUsedGroups()
 		if self.debugging then
-			self:Debug("GetInstanceInfo %s %s %s/%s/%s %s@%s(%s)", tostring(event), tostring(instName), tostring(instMapID), tostring(difficultyID), tostring(maxPlayers), tostring(self.groupType), tostring(self.instType), tostring(self.instMaxPlayers))
+			self:Debug("GetInstanceInfo %s %s %s/%s/%s %s@%s(%s)", tostring(event), tostring(instName), tostring(instMapID), tostring(difficultyID), tostring(maxPlayers), tostring(usedGroups), tostring(self.groupType), tostring(self.instType), tostring(self.instMaxPlayers), tostring(self.instUsedGroups))
 		end
 		if newInstType == "arena" then
 			newGroupType = newInstType	-- arena@arena instances
@@ -303,9 +315,9 @@ do
 		elseif maxPlayers>40 then -- In Wrath Wintergrasp GetInstanceInfo() may return more than 40 players.
 			maxPlayers = 40
 		end
-		if self.groupType ~= newGroupType or self.instType ~= newInstType or self.instMaxPlayers ~= maxPlayers then
+		if self.groupType ~= newGroupType or self.instType ~= newInstType or self.instMaxPlayers ~= maxPlayers or self.instUsedGroups ~= usedGroups then
 			self:Debug("GroupChanged", event, instName, instMapID, self.groupType, self.instType, self.instMaxPlayers, "=>", newGroupType, newInstType, maxPlayers)
-			self.groupType, self.instType, self.instMaxPlayers = newGroupType, newInstType, maxPlayers
+			self.groupType, self.instType, self.instMaxPlayers, self.instUsedGroups = newGroupType, newInstType, maxPlayers, usedGroups
 			self:SendMessage("Grid_GroupTypeChanged", newGroupType, newInstType, maxPlayers)
 		end
 		self:QueueUpdateRoster()

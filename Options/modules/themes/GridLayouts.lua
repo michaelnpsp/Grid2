@@ -238,6 +238,19 @@ do
 				end
 			end,
 		},
+		autoRescale = {
+			order = 1,
+			type = "toggle",
+			width = "full",
+			name = L["Scale with actual group size"],
+			desc = L["Determine the layout dynamically based on the number of used groups, instead of the number of maximum groups."],
+			get = function() return theme.frame.frameAutoRescale end,
+			set = function (_, v)
+				theme.frame.frameAutoRescale = v
+				Grid2Layout:UpdateDisplay()
+				Grid2Layout:ReloadLayout()
+			end
+		},
 		add ={
 			type   = 'select',
 			order  = 500,
