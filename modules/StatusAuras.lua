@@ -510,15 +510,13 @@ do
 			end
 		end
 		local colorCount = dbx.colorCount or 1
-		if self.thresholds and colorCount>1 then
+		if dbx.colorThreshold and colorCount>1 then -- color by time or value
 			self.colors = self.colors or {}
-			for i=1,colorCount do
-				self.colors[i] = dbx["color"..i]
-			end
+			for i=1,colorCount do self.colors[i] = dbx["color"..i] end
 			self.GetColor = dbx.colorThresholdValue and GetValueColor or GetTimeColor
-		elseif dbx.debuffTypeColorize then
+		elseif dbx.debuffTypeColorize then -- special case for debuffType statuses
 			self.GetColor = GetDebuffTypeColor
-		else
+		else -- single color or color by number of stacks
 			MakeStatusColorHandler(self)
 		end
 		if dbx.type == "debuffType" then

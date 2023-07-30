@@ -114,6 +114,11 @@ end
 -- Grid2Options:MakeStatusBlinkThresholdOptions()
 do
 	local VALUES = { L["Never"], L["Always"], L["Threshold"] }
+	local function RefreshIndicatorsHighlight(status)
+		for indicator in next, status.indicators do
+			indicator:UpdateHighlight()
+		end
+	end
 	function Grid2Options:MakeStatusBlinkThresholdOptions(status, options, optionParams)
 		if not status.dbx.colorThreshold then
 			self:MakeHeaderOptions(options, "Highlights")
@@ -127,7 +132,8 @@ do
 				end,
 				set = function(_,v)
 					status.dbx.blinkThreshold = (v==3 and 1) or (v==2 and 0) or nil
-					status:Refresh()					
+					RefreshIndicatorsHighlight(status)
+					status:Refresh()
 					self:MakeStatusOptions(status)
 				end,
 				values = VALUES,
