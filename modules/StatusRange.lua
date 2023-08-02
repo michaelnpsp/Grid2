@@ -43,7 +43,7 @@ end
 -------------------------------------------------------------------------
 
 local friendlySpell -- friendly spell configured by the user (spell name)
-local hostileSpell  -- friendly spell configured by the user (spell name)
+local hostileSpell  -- hostile spell configured by the user (spell name)
 
 local rezSpellID = ({ -- classic has the same spellIDs
 		DRUID       = 20484,
