@@ -3,6 +3,39 @@
 # Grid2
 
 </div>
+
+<p>This is a customized versio of Grid2 that enables players to filter pets by Owner Class</p>
+
+<h3 id="w-walkthrough">Walkthrough</h3>
+
+-   Ingame open Grid2 (/grid)
+-   Depending on if you've enabled themes or not, go to:
+-   No Themes
+    -   Layouts > Editor
+-   Themes
+    -   Themes > {Profile} > Layout > Editor
+-   Select a **name** for your new Layout under **Create New Layout**
+-   Click **Okay**
+-   At the top where you see **players(1)**, click the **+** sign and select header type **pets**, then click **+Create**
+-   In pets under **Name List** create a comma separated list of classes (all caps, e.g. DEATHKNIGHT) + Pet Names (Capital First Letter, e.g. Flatoom) that you want to enable.
+-   The pets are displayed in order of your custom list so sort them as you see fit
+-   After populating your list go to **Sort By** (placed over the **Groups** header) and select **List**
+-   In your **Layouts** tab (Top Menu), to go **By Group Type** and select your newly created layout, for the group types where you want to see pets.
+-   Congratulations you are now able to heal pets!
+
+## List Example
+
+In this example my favorite Warlocks pet name is `Flatoom` so I am gonna add that first, so that it displays first
+
+```lua
+Flatoom, WARLOCK, HUNTER, DEATHKNIGHT
+```
+
+<div align="center">
+
+# Grid2
+
+</div>
 <p>Grid2 is a party/raid unit frame addon for World of Warcraft.</p>
 <p>Grid2 is fully customizable. New zones (indicators) can be defined in unit frames to display information (statuses). The indicators can be customized and placed anywhere. Grid2 supports several types of indicators: icon, icons, square, text, bar, multibar. You can configure what statuses are displayed on each indicator.</p>
 <p>Grid2 includes a huge amount of available statuses, but not all enabled by default, look through the configuration and familiarize yourself with the available options and statuses.</p>
