@@ -29,6 +29,8 @@ local SORTBYN_VALUES= { INDEX = L["Index"], NAME = L["Name"], NAMELIST = L["List
 
 local SORTBY_VALUES= { INDEX = L["Index"], NAME = L["Name"], NIL = L["Def."] }
 
+local HEADER_TYPES = { player = true, pet = true, custom = true, self = true, target = true, focus = true, boss = true }
+
 --=====================================================================================
 
 local editorOptions
@@ -333,12 +335,32 @@ headerOptions = {
 		hidden = function() return editedHeader.type~='custom' end,
 	},
 
+	typeName = {
+		type = "input",
+		order = 1,
+		-- width = "",
+		name = L["Header Type"],
+		desc = L["You can customize the header type. The specified name can be used to filter indicators using the header type condition."],
+		get = function()
+			return editedHeader.headerName or editedHeader.type or 'player'
+		end,
+		set = function(_, v)
+			v = strtrim(v)
+			if not HEADER_TYPES[ strlower(v) ] then
+				editedHeader.headerName = strlen(v)>1 and v or nil
+				Grid2Options:RefreshHeaderTypes()
+				RefreshLayout()
+			end	
+		end,
+		hidden = function() return editedHeader.type~='custom' end,
+	},
+
 	vehicle = {
 		type = "toggle",
 		name = L["Toggle vehicle"],
 		desc = L["When the player is in a vehicle replace the player frame with the vehicle frame."],
 		order = 54,
-		width = .8,
+		width = .75,
 		tristate = true,
 		get = function()
 			return editedHeader.toggleForVehicle
@@ -355,7 +377,7 @@ headerOptions = {
 		name = L["Hide Player"],
 		desc = L["Do not display the player frame (only applied when in party)."],
 		order = 55,
-		width = .8,
+		width = .75,
 		tristate = false,
 		get = function()
 			return editedHeader.showPlayer==false
@@ -376,7 +398,7 @@ headerOptions = {
 		name = L["Hide Empty"],
 		desc = L["Hide the frame if the unit does not exist."],
 		order = 55,
-		width = .8,
+		width = .75,
 		get = function()
 			return editedHeader.hideEmptyUnits
 		end,
@@ -392,7 +414,7 @@ headerOptions = {
 		name = L["Detach Header"],
 		desc = L["Allow to move this header independent of the other headers."],
 		order = 56,
-		width = .8,
+		width = .75,
 		get = function()
 			return editedHeader.detachHeader
 		end,

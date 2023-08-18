@@ -892,6 +892,22 @@ end
 
 -- Grid2Options:MakeIndicatorLoadOptions(indicator, options)
 do
+	local headerTypes
+
+	local function GetHeaderTypes()
+		if headerTypes==nil and Grid2Layout.customLayouts then
+			for _,layout in next,Grid2Layout.customLayouts do
+				for _,header in ipairs(layout) do
+					if header.headerName then
+						headerTypes = headerTypes or Grid2.CopyTable(Grid2Options.HEADER_TYPES)
+						headerTypes[header.headerName] = '/' .. header.headerName .. '/'
+					end
+				end	
+			end
+		end
+		return headerTypes or Grid2Options.HEADER_TYPES
+	end	
+
 	local function RefreshIndicator(indicator)
 		Grid2Options:UpdateIndicatorDB(indicator)
 		for _,f in next, Grid2Frame.registeredFrames do
@@ -1070,6 +1086,10 @@ do
 		end
 	end
 
+	function Grid2Options:RefreshHeaderTypes()
+		headerTypes = nil
+	end
+
 	function Grid2Options:MakeIndicatorLoadOptions(indicator, options)
 		SetFilterThemeOptions( indicator, options, 10 )
 		SetFilterOptions( indicator, options, 20,
@@ -1083,7 +1103,7 @@ do
 		)
 		SetFilterOptions( indicator, options, 30,
 			'unitType',
-			self.HEADER_TYPES,
+			GetHeaderTypes,
 			'player',
 			L["Unit Type"],
 			L["Load the indicator only for the specified unit types."],
