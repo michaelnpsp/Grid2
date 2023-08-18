@@ -343,7 +343,7 @@ local function GetThemeName(info)
 	local index = info.arg or 0
 	local name = editedTheme.db.names[index] or (index==0 and L["Default"])
 	if index == Grid2.currentTheme then
-		return string.format( "%s|T%s:0|t", name, READY_CHECK_READY_TEXTURE )
+		return string.format( "%s|TInterface\\RaidFrame\\ReadyCheck-Ready:0|t", name )
 	else
 		return name
 	end

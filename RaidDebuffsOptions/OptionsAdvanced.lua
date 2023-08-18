@@ -148,7 +148,8 @@ local function FormatBossName(  ejid, order, bossName, isCustom)
 	return string.format( mask, ICON_SKULL, prefix, name ), name
 end
 
-local ICON_CHECKED, ICON_UNCHECKED = READY_CHECK_READY_TEXTURE, READY_CHECK_NOT_READY_TEXTURE
+local ICON_CHECKED, ICON_UNCHECKED = "Interface\\RaidFrame\\ReadyCheck-Ready", "Interface\\RaidFrame\\ReadyCheck-NotReady"
+
 local function FormatDebuffName(spellId, isCustom)
 	local mask, icon, suffix
 	local status = debuffsStatuses[spellId]
