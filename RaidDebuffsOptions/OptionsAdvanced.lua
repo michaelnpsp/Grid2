@@ -393,6 +393,7 @@ do
 	options.__tracker = {
 		type = "description",
 		order = 0,
+		name = "",
 		hidden = function()
 			DisplayCurrentInstance()
 			return true
