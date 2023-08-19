@@ -230,3 +230,26 @@ if not Grid2.isClassic then
 		},
 	}
 end
+
+-- auto open current instance debuffs when configuration window is opened
+
+options.syncInstance = {
+	type = "toggle",
+	order = 210,
+	width = 1.5,
+	name = L["Auto open debuffs for current instance"],
+	desc = L["Auto open debuffs for current instance"],
+	get = function(info)
+		return RDO.db.profile.syncInstance
+	end,
+	set = function(info, v)
+		RDO.syncInstance = v or nil
+		RDO.db.profile.syncInstance = v or nil
+	end,
+}
+
+local prev_OnChatCommand = Grid2Options.OnChatCommand
+function Grid2Options:OnChatCommand()
+	RDO.syncInstance = RDO.db.profile.syncInstance 
+	prev_OnChatCommand(self)
+end

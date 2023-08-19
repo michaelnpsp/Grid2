@@ -1,3 +1,5 @@
+if Grid2.isClassic then return end
+
 local RDDB = Grid2Options:GetRaidDebuffsTable()
 RDDB["Warlords of Draenor"] = {
 	[101228] = { -- Highmaul
