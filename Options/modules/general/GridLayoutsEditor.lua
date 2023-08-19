@@ -337,22 +337,22 @@ headerOptions = {
 
 	typeName = {
 		type = "input",
-		order = 1,
-		-- width = "",
+		order = 51,
+		width = "full",
 		name = L["Header Type"],
 		desc = L["You can customize the header type. The specified name can be used to filter indicators using the header type condition."],
 		get = function()
-			return editedHeader.headerName or editedHeader.type or 'player'
+			return (editedHeader.headerName or editedHeader.type or 'player'):gsub('^player$','players'):gsub('^pet$','pets')
 		end,
 		set = function(_, v)
-			v = strtrim(v)
-			if not HEADER_TYPES[ strlower(v) ] then
+			v = strtrim(v):gsub('^players$','player'):gsub('^pets$','pet')
+			if not HEADER_TYPES[v] or v==editedHeader.type then
 				editedHeader.headerName = strlen(v)>1 and v or nil
 				Grid2Options:RefreshHeaderTypes()
 				RefreshLayout()
 			end	
 		end,
-		hidden = function() return editedHeader.type~='custom' end,
+		hidden = false,
 	},
 
 	vehicle = {
