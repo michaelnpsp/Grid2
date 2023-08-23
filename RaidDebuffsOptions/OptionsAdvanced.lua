@@ -274,6 +274,7 @@ local function DisplayCurrentInstance()
 	if RDO.syncInstance and IsInInstance() then
 		RDO.syncInstance = nil
 		local ej_id, map_id = GSRD:GetCurrentZone()
+		if ej_id==0 then ej_id=-1 end -- discard possible invalid instance ej_id (0=Azeroth worldmap returned by EJ_GetInstanceForMap())
 		for mod in next, RDO.db.profile.enabledModules do
 			for key,data in next, RDDB[mod] do
 				local id = data[1] and data[1].id 
