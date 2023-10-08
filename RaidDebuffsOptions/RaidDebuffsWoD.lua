@@ -454,12 +454,15 @@ RDDB["Warlords of Draenor"] = {
 		["Cortezamustia"] = {
 		order = 1, ejid = 1214,
 		164294, -- Crecimiento descontrolado
+		164302, -- Unchecked Growth (target)
 		},
 		["Ancianos protectores"] = {
 		order = 2, ejid = 1207,
 		167977, -- Zona de zarzas
 		169658, -- Heridas infectadas
 		168187, -- Carga desgarradora
+		427513, -- Noxious Discharge
+		427510, -- Noxious Charge
 		},
 		["Archimaga Sol"] = {
 		order = 3, ejid = 1208,
@@ -467,6 +470,9 @@ RDDB["Warlords of Draenor"] = {
 		168894, -- Bola de Fuego
 		170016, -- Polen Focoluz
 		166726, -- Lluvia helada
+		426991, -- Blazing Cinders
+		428084, -- Glacial Fusion
+		427863, -- Frostbolt
 		},
 		["Xeri'tac"] = {
 		order = 4, ejid = 1209,
@@ -489,9 +495,14 @@ RDDB["Warlords of Draenor"] = {
 		169824, -- Descarga de Escarcha
 		169850, -- Ola gelida
 		169839, -- Bola de Fuego
-		164886, -- Toxina de horrip�talo
+		164886, -- Toxina de horripetalo
 		164834, -- Tromba de hojas
 		164965, -- Vides asfixiantes
+		169445, -- Noxious Eruption
+		426849, -- Cold Fusion
+		165123, -- Venom Burst
+		426500, -- Gnarled Roots
+		169495, -- Living Leaves
 		},
 	},
 	[101358] = { -- Cumbre de Roca Negra Superior

@@ -389,6 +389,38 @@ RDDB["Dragonflight"] = {
 		416264, --Infinite Corruption
 		417413, --Temporal Scar
 		},
+		["Trash"] = {
+		 412044, -- Temposlice
+		 411994, -- Chronomelt
+		 415436, -- Tainted Sands
+		 415554, -- Chronoburst
+		 415437, -- Enervate
+		 413547, -- Bloom
+		 413529, -- Untwist
+		 412810, -- Blight Spew
+		 412285, -- Stonebolt
+		 412505, -- Rending Cleave 
+		 413606, -- Corroding Volley
+		 414922, -- Shrouding Sandstorm
+		 412922, -- Binding Grasp
+		 412131, -- Orb of Contemplation
+		 413027, -- Titanic Bulwark
+		 413618, -- Timeless Curse
+		 419351, -- Bronze Exhalation
+		 418092, -- Twisted Timeways
+		 418200, -- Infinite Burn
+		 413427, -- Time Beam
+		 419511, -- Temporal Link
+		 419517, -- Chronal Eruption
+		 407125, -- Sundering Slam
+		 407651, -- Sapper’s Perogative
+		 407715, -- Kaboom!
+		 407906, -- Earthquake
+		 407123, -- Rain of Fire
+		 411700, -- Slobbering Bite
+		 411644, -- Soggy Bonk
+		 412262, -- Staticky Punch
+		},
 	},
 	-- World Bosses
 	[102444] = {

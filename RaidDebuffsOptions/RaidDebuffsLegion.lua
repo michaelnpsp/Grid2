@@ -56,6 +56,7 @@ RDDB["Legion"] = {
 		},
 		["Illysanna Ravencrest"] = {
 		order = 2, ejid = 1653,
+		197521, -- Blazing Trail
 		197418, -- vengeful-shear
 		197546, -- brutal-glaive
 		197687, -- eye-beams
@@ -64,6 +65,8 @@ RDDB["Legion"] = {
 		},
 		["Smashspite the Hateful"] = {
 		order = 3, ejid = 1664,
+		224188, -- Hateful Charge*
+		198079, -- Hateful Gaze
 		198245, -- brutal-haymaker
 		198073, -- earthshaking-stomp
 		198446, -- fel-vomit
@@ -71,8 +74,23 @@ RDDB["Legion"] = {
 		},
 		["Lord Kur'talos Ravencrest"] = {
 		order = 4, ejid = 1672,
+		201733, -- Stinging Swarm*
 		198820, -- dark-blast
 		199143, -- cloud-of-hypnosis
+		198635, -- Unerring Shear
+		199368, -- Legacy of the Ravencrest
+		199168, -- Itchy
+		202019, -- Shadow Bolt Volley
+		},
+		["Trash"] = {
+		order = 5, ejid = nil,
+		225963, --Bloodthirsty Leap*
+		200084, --Soul Blade
+		225909, --Soul Venom
+		200261, --Bonebreaking Strike
+		204896, --Drain Life
+		203163, --Sic Bats!
+		214002, --Raven’s Dive
 		},
 	},
 	[101571] = { -- Court of Stars (5man)
@@ -126,9 +144,11 @@ RDDB["Legion"] = {
 		196376, -- grievous-tear
 		198376, -- primal-rampage
 		198408, -- nightfall
+		198477, -- Fixate		
 		},
 		["Oakheart"] = {
 		order = 2, ejid = 1655,
+		204667, -- Nightmare Breath*
 		204611, -- crushing-grip
 		204574, -- strangling-roots
 		204666, -- shattered-earth
@@ -142,10 +162,24 @@ RDDB["Legion"] = {
 		},
 		["Shade of Xavius"] = {
 		order = 4, ejid = 1657,
+		200273, -- Cowardice
+		200243, -- Waking Nightmare
+		200289, -- Growing Paranoia
 		200182, -- festering-rip
 		200238, -- feed-on-the-weak
 		204502, -- apocalyptic-nightmare
 		200111, -- apocalyptic-fire
+		},
+		["Trash"] = {
+		order = 5, ejid = nil,
+		200580, -- Maddening Roar*     
+		204243, -- Tormenting Eye*		
+		200684, -- Nightmare Toxin    
+		200642, -- Despair            
+		218759, -- Corruption Pool    
+		198904, -- Poison Spear       
+		201839, -- Curse of Isolation 
+		201365, -- Darksoul Drain     
 		},
 	},
 	[101456] = { -- Eye of Azshara (5man)

@@ -141,6 +141,7 @@ RDDB["Battle for Azeroth"] = {
 		255371, -- Terrifying Visage
 		257407, -- Pursuit
 		255421, -- Devour
+		257483, -- Pile of Bones
 		},
 		["Yazma"] = {
 		order = 4, ejid = 2030,
@@ -159,6 +160,9 @@ RDDB["Battle for Azeroth"] = {
 		252687, -- Golpe de Venolmillo
 		255041, -- Chirrido aterrorizador
 		255814, -- Acometida desgarradora
+		258723, -- Grotesque Pool  
+		255558, -- Tainted Blood   
+		250036, -- Shadowy Remains 
 		},
 	},
 	[1036] = {
@@ -246,6 +250,9 @@ RDDB["Battle for Azeroth"] = {
 		260741, -- Jagged Nettles
 		260926, -- Soul Manipulation
 		260703, -- Unstable Runic Mark
+		268086, -- Aura of Dread
+		268125, -- Aura of Thorns
+		268080, -- Aura of Apathy
 		},
 		["Soulbound Goliath"] = {
 		order = 2, ejid = 2126,
@@ -289,6 +296,9 @@ RDDB["Battle for Azeroth"] = {
 		263891, -- Espinas enredadoras
 		264556, -- Golpe desgarrador
 		278456, -- Infestar
+		264040, -- Uprooted Thorns
+		260569, -- Wildfire
+		278444, -- Infest
 		},
 	},
 	[1012] = {
