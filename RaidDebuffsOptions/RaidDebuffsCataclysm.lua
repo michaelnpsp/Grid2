@@ -433,15 +433,42 @@ RDDB["Cataclysm"] = {
 		{ id = 65, name = "Throne of the Tides" },
 		["Lady Naz'jar"] = {
 		order = 1, ejid = 101,
+		428103, -- Frostbolt
 		},
 		["Commander Ulthok, the Festering Prince"] = {
 		order = 2, ejid = 102,
+		427670, -- Crushing Claw
+		427668, -- Festering Shockwave
+		427559, -- Bubbling Ooze
 		},
 		["Mindbender Ghur'sha"] = {
 		order = 3, ejid = 103,
+		429172, -- Terrifying Vision
+		429051, -- Earthfury
+		429048, -- Flame Shock
 		},
 		["Ozumat"] = {
 		order = 4, ejid = 104,
+		428403, -- Grimy
+		428404, -- Blotting Darkness
+		428868, -- Putrid Roar
+		428407, -- Blotting Barrage
+		},
+		["Trash"]= {
+		order = 5, ejid = nil,
+		426660, --Razor Jaws
+		426663, --Ravenous Pursuit
+		76820 , --Hex
+		428542, --Crushing Depths
+		426741, --Shellbreaker
+		426727, --Acid Barrage
+		426688, --Volatile Acid
+		75992 , --Lightning Surge
+		426681, --Electric Jaws
+		426783, --Mind Flay
+		426808, --Null Blast
+		76516 , --Poisoned Spear
+		76363 , --Wave of Corruption
 		},
 	},
 	[185] = {
