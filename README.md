@@ -24,9 +24,8 @@
 <li>Then, <a href="http://www.wowace.com/addons/grid2/tickets/">Post a ticket</a>. Check for existing tickets about your bug first. Remember to check back on your ticket later in case we need more information.</li>
 </ul>
 <h3 id="w-tutorials-guides">Tutorials/Guides</h3>
-<p>https://web.archive.org/web/20200128114353/http://murlocparliament.com/how-2-grid2/</p>
-<p>http://murlocparliament.com/how-2-grid2/</p>
-<p>(Thanks to Zelmaru)</p>
+<p>https://michaelnpsp.github.io/grid2-murloc-guide/</p>
+<p></p>https://keyandheal.com/addons/grid-2/</p>
 <h3 id="w-common-issues-faq">Common issues/FAQ</h3>
 <h6 id="w-raid-debuffs-not-showing-up">Raid debuffs not showing up !!!:</h6>
 <p>Raid debuffs are not enabled by default. Go to statuses -&gt; Raid Debuffs and enable at least the Cataclysm module (if you are inside a instance you must exit and enter the instance or reload the UI after enabling the module)</p>
