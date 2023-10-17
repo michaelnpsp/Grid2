@@ -61,7 +61,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 				status.dbx.aurasBak = status.dbx.auras
 				status.dbx.auras = nil
 			end
-			status:Refresh()			
+			status:Refresh()
 		end,
 		hidden = function() return status.dbx.useWhiteList end
 	}
@@ -77,7 +77,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 				status.dbx.aurasBak = status.dbx.auras
 				status.dbx.auras = nil
 			end
-			status:Refresh()			
+			status:Refresh()
 		end,
 		hidden = function() return status.dbx.useWhiteList end
 	}
@@ -123,7 +123,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			else
 				status.dbx.filterBossDebuffs = false
 			end
-			status:Refresh()			
+			status:Refresh()
 		end,
 		hidden = function() return status.dbx.useWhiteList end
 	}
@@ -135,7 +135,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 		get = function () return status.dbx.filterBossDebuffs~=true end,
 		set = function (_, v)
 			status.dbx.filterBossDebuffs = (not v) or nil
-			status:Refresh()			
+			status:Refresh()
 		end,
 		hidden = function() return status.dbx.useWhiteList end
 	}
@@ -152,7 +152,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			else
 				status.dbx.filterLongDebuffs = false
 			end
-			status:Refresh()			
+			status:Refresh()
 		end,
 		hidden = function() return status.dbx.useWhiteList end
 	}
@@ -164,7 +164,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 		get = function () return status.dbx.filterLongDebuffs~=true end,
 		set = function (_, v)
 			status.dbx.filterLongDebuffs = (not v) and true or nil
-			status:Refresh()			
+			status:Refresh()
 		end,
 		hidden = function() return status.dbx.useWhiteList end
 	}
@@ -181,7 +181,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			else
 				status.dbx.filterCaster = false
 			end
-			status:Refresh()			
+			status:Refresh()
 		end,
 		hidden = function() return status.dbx.useWhiteList end
 	}
@@ -193,7 +193,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 		get = function () return status.dbx.filterCaster~=true end,
 		set = function (_, v)
 			status.dbx.filterCaster = (not v) and true or nil
-			status:Refresh()			
+			status:Refresh()
 		end,
 		hidden = function() return status.dbx.useWhiteList end
 	}
@@ -219,7 +219,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 				status.dbx.auras = nil
 				status.dbx.useWhiteList = nil
 			end
-			status:Refresh()			
+			status:Refresh()
 			self:MakeStatusOptions(status)
 		end,
 	}
@@ -238,7 +238,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 				status.dbx.auras = nil
 			end
 			status.dbx.useWhiteList = nil
-			status:Refresh()			
+			status:Refresh()
 			self:MakeStatusOptions(status)
 		end,
 	}
@@ -251,6 +251,7 @@ function Grid2Options:MakeStatusDebuffsGeneralOptions(status, options, optionPar
 	self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
 	self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
 	self:MakeStatusDebuffsFilterOptions(status, options, optionParams)
+	self:MakeStatusAuraCombineStacksOptions(status, options, optionParams)
 	return options
 end
 

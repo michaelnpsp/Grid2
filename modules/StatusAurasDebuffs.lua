@@ -7,6 +7,7 @@ local dispelTypes = Grid2.debuffDispelTypes
 local playerDispelTypes = Grid2.debuffPlayerDispelTypes
 
 local emptyTable = {}
+local idToIndex = {}
 local textures = {}
 local counts = {}
 local expirations = {}
@@ -50,16 +51,44 @@ end
 
 -- Called by "icons" indicator
 local function status_GetIconsFilter(self, unit, max)
-	local UpdateState, i, j, name, debuffType, caster, isBossDebuff, _ = self.UpdateState, 1, 1
+	local UpdateState, i, j, name, texture, count, debuffType, duration, expiration, caster, spellId, isBossDebuff, _ = self.UpdateState, 1, 1
+
+	wipe(idToIndex)
+
 	repeat
-		name, textures[j], counts[j], debuffType, durations[j], expirations[j], caster, _, _, _, _, isBossDebuff = UnitAura(unit, i, 'HARMFUL')
-		if not name then break end
-		if UpdateState(self, unit, name, durations[j], caster, isBossDebuff, debuffType, playerDispelTypes) then
-			colors[j] = typeColors[debuffType] or self.color
-			j = j + 1
+		name, texture, count, debuffType, duration, expiration, caster, _, _, spellId, _, isBossDebuff = UnitAura(unit, i, 'HARMFUL')
+		if count == 0 then count = 1 end
+
+		if not name then
+			textures[j], counts[j], durations[j], expirations[j] = nil, nil, nil, nil
+			break
 		end
+
+		if UpdateState(self, unit, name, duration, caster, isBossDebuff, debuffType, playerDispelTypes) then
+			local isNewIcon = false
+
+			if self.combineStacks and idToIndex[spellId] then -- combine stacks debuffs
+				local j = idToIndex[spellId]
+				counts[j] = counts[j] + count -- add extra debuffs stacks
+				expirations[j] = (expiration > expirations[j]) and expiration or expirations[j]
+			else
+				idToIndex[spellId] = j
+				isNewIcon = true
+			end
+
+			if isNewIcon then
+				colors[j] = typeColors[debuffType] or self.color
+				counts[j] = count
+				textures[j] = texture
+				durations[j] = duration
+				expirations[j] = expiration
+				j = j + 1
+			end
+		end
+
 		i = i + 1
 	until j>max
+
 	return j-1, textures, counts, expirations, durations, colors
 end
 

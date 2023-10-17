@@ -70,8 +70,18 @@ do
 				end
 			end
 			for s in next, DebuffGroups do
-				if (not s.seen) and s:UpdateState(u, nam, dur, cas, bos, typ, pTypes) then
-					s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.typ[u], s.tkr[u] = 1, i, tex, cnt, dur, exp, typ, 1
+				if s.combineStacks then -- combine stacks debuffs (for "icon" indicator)
+					if s:UpdateState(u, nam, dur, cas, bos, typ, pTypes) then
+						if s.seen then -- add extra debuffs stacks
+							s.cnt[u] = s.cnt[u] + cnt
+						else -- debuff must be always marked to be updated (seen=1) and cnt must be initialized even if first debuff is not new and didn't change
+							s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.typ[u], s.tkr[u] = 1, i, tex, cnt, dur, exp, typ, 1
+						end
+					end
+				else -- standard debuffs
+					if (not s.seen) and s:UpdateState(u, nam, dur, cas, bos, typ, pTypes) then
+						s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.typ[u], s.tkr[u] = 1, i, tex, cnt, dur, exp, typ, 1
+					end
 				end
 			end
 			i = i + 1
