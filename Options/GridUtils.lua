@@ -320,15 +320,16 @@ end
 do
 	local fmt = string.format
 	local HexDigits = "0123456789ABCDEF"
-	local prefixes = { "color-", "buff-", "debuff-", "buffs-", "debuffs-", "aoe-" }
+	local prefixes = { "color-", "buff-", "debuff-", "buffs-", "debuffs-", "aoe-", "spells-" }
 	local suffixes = { "-not-mine", "-mine" }
 	local prefixes_colors = {
-		["buff-"]   = "|cFF00ff00%s|r",
-		["debuff-"] = "|cFFff0000%s|r",
+		["buff-"]    = "|cFF00ff00%s|r",
+		["debuff-"]  = "|cFFff0000%s|r",
 		["buffs-"]   = "|cFF00ffa0%s|r",
 		["debuffs-"] = "|cFFff00a0%s|r",
-		["aoe-"]    = "|cFF0080ff%s|r",
-		["color-"]  = "|cFFffff00%s|r",
+		["aoe-"]     = "|cFF0080ff%s|r",
+		["spells-"]   = "|cFFff7070%s|r",		
+		["color-"]   = "|cFFffff00%s|r",
 	}
 	local function byteToHex(byte)
 		local L = byte % 16 + 1

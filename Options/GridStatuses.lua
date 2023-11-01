@@ -86,7 +86,7 @@ function Grid2Options:AddStatusCategoryOptions(catKey, category)
 		local group = {
 			type  = "group",
 			name  = category.name,
-			desc  = L["Options for %s."]:format(category.name),
+			desc  = category.desc or L["Options for %s."]:format(category.name),
 			order = category.order,
 			args  = options,
 		}
@@ -150,7 +150,7 @@ do
 					icon = self.debuffTypeIcons[dbx.subType or 'Default']
 					desc = L[dbx.type]
 				end
-				name   = self.LocalizeStatus(status, true)
+				name   = self.LocalizeStatus(status, not params.displayPrefix)
 				desc   = desc or params.title or L["Options for %s."]:format(name)
 				icon   = icon or params.titleIcon or category.icon
 				coords = params.titleIconCoords or iconCoords

@@ -17,6 +17,11 @@ local spells = {}
 local icons = {}
 local statuses_enabled = {}
 
+local HEAL_EVENTS = {
+	SPELL_HEAL = true,
+	SPELL_PERIODIC_HEAL = true,
+}
+
 local function TimerEvent()
 	local count = 0
 	local time  = GetTime()
@@ -43,11 +48,10 @@ local function CombatLogEventReal(...)
 	local spellName = select(13,...)
 	local statuses = spells[spellName]
 	if statuses then
-		local subEvent = select(2,...)
-		if subEvent=="SPELL_HEAL" or subEvent=="SPELL_PERIODIC_HEAL" then
-			for status in pairs(statuses) do
+		for status in pairs(statuses) do
+			if status.events[ select(2,...) ] then
 				local mine = status.mine
-				if mine == nil or status.mine == (select(4,...)==playerGUID) then
+				if mine == nil or mine == (select(4,...)==playerGUID) then
 					local unit = roster_units[ select(8,...) ]
 					if unit then
 						local prev = status.heal_cache[unit]
@@ -126,11 +130,12 @@ local function UpdateDB(self)
 	if self.enabled then self:OnDisable() end
 	self.activeTime = self.dbx.activeTime or 2
 	self.mine = self.dbx.mine -- mine => true (only mine spells) / false (not mine spells) / nil (any spell)
+	self.events = self.dbx.events or HEAL_EVENTS
 	timerDelay = math.max(0.1, math.min(timerDelay, self.activeTime / 4) )
 	if self.enabled then self:OnEnable() end
 end
 
-Grid2.setupFunc["aoe-heals"] = function(baseKey, dbx)
+local function Create(baseKey, dbx)
 	playerGUID = UnitGUID("player")
 	local status = Grid2.statusPrototype:new(baseKey)
 	status.heal_cache = {}
@@ -146,3 +151,5 @@ Grid2.setupFunc["aoe-heals"] = function(baseKey, dbx)
 	return status
 end
 
+Grid2.setupFunc["aoe-heals"] = Create
+Grid2.setupFunc["inc-spells"] = Create
