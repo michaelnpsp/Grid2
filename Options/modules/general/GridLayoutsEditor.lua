@@ -531,14 +531,16 @@ do
 end
 
 do
-	local roles, names, descs, widths
+	local roles, names, descs, widths, sroles
 	if SUPPORT_ROLES then
 		roles  = { "TANK", "HEALER", "DAMAGER", "NONE", "MAINTANK", "MAINASSIST" }
+		sroles = "DAMAGER,HEALER,MAINASSIST,MAINTANK,NONE,TANK"
 		names  = { L["Tank"], L["Healer"], L["Dps"], L["None"], L["MT"], L["MA"] }
 		descs  = { L["Tank"], L["Healer"], L["Dps"], L["None"], L["MainTank"], L["MainAssist"] }
 		widths = { .4,       .4,           .3,        .5,           .3,          .3,     }
 	else
 		roles  = { "MAINTANK", "MAINASSIST", "NONE" }
+		sroles = "MAINASSIST,MAINTANK,NONE"
 		names  = { L["MainTank"], L["MainAssist"], L["None"] }
 		descs  = names
 		widths = { .75, .75, .75 }
@@ -554,7 +556,7 @@ do
 			get = FilterGet,
 			set = FilterSet,
 			hidden = IsOptionHidden,
-			arg = { role, "roleFilter", "DAMAGER,HEALER,MAINASSIST,MAINTANK,NONE,TANK" },
+			arg = { role, "roleFilter", sroles },
 		}
 	end
 end
