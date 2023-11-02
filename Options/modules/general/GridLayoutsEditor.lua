@@ -171,7 +171,7 @@ local function FilterSet(info,value)
 		Grid2.TableRemoveByValue(tbl,key)
 	end
 	filter = table.concat(tbl,",")
-	editedHeader[field] =  (filter ~= allkeys) and filter or nil
+	editedHeader[field] =  ( filter~="" and filter~=allkeys and strlen(filter)<strlen(allkeys) ) and filter or nil
 	editedHeader.strictFiltering = (editedHeader.roleFilter~=nil and editedHeader.groupFilter~=nil) or nil
 	RefreshLayout()
 end
