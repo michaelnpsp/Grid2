@@ -625,53 +625,46 @@ RDDB["Dragonflight"] = {
 		{ id = 1207, name = "Amirdrassil, the Dream's Hope", raid = true },
 		["Gnarlroot"] = {
 		order = 1, ejid = 2564,
-		422053, --Shadow Spines
-		425816, --Blazing Pollen
-		425819, --Flaming Sap
 		421971, --Controlled Burn
 		422023, --Shadow-Scorched Earth
 		422026, --Tortured Scream
-		424352, --Dreadfire Barrage
-		421038, --Ember-Charred
+		421038, --Ember-Charred		
 		426548, --Searing Bramble
 		421840, --Uprooted Agony
-		425709, --Rising Mania
+		422053, --Shadow Spines* 
+		425816, --Blazing Pollen*
+		425819, --Flaming Sap*
+		424352, --Dreadfire Barrage*
 		},
 		["Igira the Cruel"] = {
 		order = 2, ejid = 2554,
 		414340, --Drenched Blades
 		414770, --Blistering Torment
-		422776, --Marked for Torment
-		414367, --Gathering Torment
+		414367, --Gathering Torment	
 		419462, --Flesh Mortification
 		423715, --Searing Sparks
 		416056, --Umbral Destruction
 		429277, --Brutalized
-		415624, --Heart Stopper
 		426017, --Vital Rupture
+		422776, --Marked for Torment*
+		415624, --Heart Stopper*
+		414425, --Blistering Spear*
 		},
 		["Volcoross"] = {
 		order = 3, ejid = 2557,
-		420934, --Flood of the Firelands
 		421082, --Hellboil
-		421672, --Serpent's Fury
-		421284, --Coiling Flames
 		427201, --Coiling Eruption
 		423494, --Tidal Blaze
 		419054, --Molten Venom
-		421675, --Burning Vertebrae
+		421284, --Coiling Flames*
+		420934, --Flood of the Firelands*
+		421672, --Serpent's Fury*
 		},
 		["Council of Dreams"] = {
 		order = 4, ejid = 2555,
-		420525, --Blind Rage
-		421020, --Agonizing Claws
-		421292, --Constricting Thicket
-		420937, --Relentless Barrage
-		420671, --Noxious Blossom
-		426390, --Corrosive Pollen
 		420856, --Poisonous Javelin
-		423522, --Unstable Venom
-		421029, --Song of the Dragon
+		421292, --Constricting Thicket
+		426390, --Corrosive Pollen
 		421032, --Captivating Finale
 		418720, --Polymorph Bomb
 		427602, --Hungry
@@ -680,6 +673,10 @@ RDDB["Dragonflight"] = {
 		424269, --Slippery
 		421024, --Emerald Winds
 		423551, --Whimsical Gust
+		420671, --Noxious Blossom*
+		421020, --Agonizing Claws*
+		420937, --Relentless Barrage*
+		423522, --Unstable Venom*
 		},
 		["Larodar, Keeper of the Flame"] = {
 		order = 5, ejid = 2553,
@@ -687,12 +684,9 @@ RDDB["Dragonflight"] = {
 		425531, --Dream Fatigue
 		418522, --Blistering Splinters
 		426387, --Scorching Bramblethorn
-		419485, --Nature's Bulwark
-		418637, --Furious Charge
+		419485, --Nature's Bulwark+
 		423719, --Nature's Fury
 		429032, --Everlasting Blaze
-		417583, --Combusting Presence
-		421316, --Consuming Flame
 		427306, --Encased in Ash
 		427343, --Fire Whirl
 		421594, --Smoldering Suffocation
@@ -701,88 +695,79 @@ RDDB["Dragonflight"] = {
 		},
 		["Nymue, Weaver of the Cycle"] = {
 		order = 6, ejid = 2556,
-		418423, --Verdant Matrix
-		420846, --Continuum
 		429785, --Impending Loom
 		430563, --Ephemeral Flora
 		430485, --Reclamation
 		425357, --Surging Growth
 		420907, --Viridian Rain
-		427722, --Weaver's Burden
-		423195, --Inflorescence
-		428273, --Woven Resonance
+		423195, --Inflorescence+
+		428273, --Woven Resonance?
 		423369, --Barrier Blossom
 		421368, --Unravel
-		428012, --Lucid Miasma
 		428479, --Lucid Vulnerability
 		423842, --Verdant Rend
+		418423, --Verdant Matrix*
+		420846, --Continuum*
+		428012, --Lucid Miasma*		
 		},
 		["Smolderon"] = {
 		order = 7, ejid = 2563,
 		421656, --Cauterizing Wound
 		421643, --Emberscar's Mark
-		421455, --Overheated
-		422577, --Searing Aftermath
-		426018, --Seeking Inferno
 		430325, --Inferno
 		421532, --Smoldering Ground
-		420950, --Blistering Heat
 		421858, --Ignited Essence
-		425574, --Lingering Burn
+		421455, --Overheated*
+		422577, --Searing Aftermath*
+		426018, --Seeking Inferno*
+		420950, --Blistering Heat*		
+		425574, --Lingering Burn*		
 		},
 		["Tindral Sageswift, Seer of the Flame"] = {
 		order = 8, ejid = 2565,
 		424495, --Mass Entanglement
-		429740, --Pulsing Heat
 		424581, --Fiery Growth
 		424499, --Scorching Ground
 		424582, --Lingering Cinder
-		426687, --Poisonous Mushroom
 		422000, --Searing Wrath
 		427297, --Flame Surge
-		421398, --Fire Beam
 		425657, --Fallen Feather
-		425610, --Empowering Flame
-		424258, --Dream Essence
-		421884, --Emerald Gale
-		422509, --Empowered Feather
-		424140, --Supernova
 		429166, --Astral Heat
 		424579, --Suppressive Ember
-		423265, --Flaming Germination
-		424665, --Seed of Flame
-		422325, --Flaming Tree
 		430583, --Germinating Aura
+		424258, --Dream Essence+
+		429740, --Pulsing Heat+
+		421884, --Emerald Gale+
+		422509, --Empowered Feather+
+		426687, --Poisonous Mushroom*
+		421398, --Fire Beam*
+		424665, --Seed of Flame*
+		422325, --Flaming Tree*
 		},
 		["Fyrakk the Blazing"] = {
 		order = 9, ejid = 2519,
-		426368, --Darkflame Cleave
-		417455, --Dream Rend
 		425483, --Incinerated
-		417806, --Burning Presence
 		417807, --Aflame
 		417443, --Fyr'alath's Mark
-		410223, --Shadowflame Breath
-		429866, --Shadowflame Eruption
 		429903, --Flamebound
 		429906, --Shadowbound
-		422836, --Burning Scales
-		428971, --Molten Eruption
-		422517, --Pulsing Core
-		428400, --Exploding Core
-		428968, --Shadow Cage
 		419123, --Flamefall
-		422524, --Shadowflame Devastation
-		430051, --Searing Screams
-		423601, --Seed of Amirdrassil
-		423717, --Bloom
+		423601, --Seed of Amirdrassil+
+		423717, --Bloom+
 		430048, --Corrupted Seed
 		430045, --Corruption
-		422837, --Apocalypse Roar
-		425492, --Infernal Maw
+		426368, --Darkflame Cleave*
+		417455, --Dream Rend*
+		410223, --Shadowflame Breath*
+		429866, --Shadowflame Eruption*
+		422836, --Burning Scales*
+		428971, --Molten Eruption*
+		428400, --Exploding Core*
+		428968, --Shadow Cage*
+		422524, --Shadowflame Devastation*
+		430051, --Searing Screams*
+		422837, --Apocalypse Roar*
+		425492, --Infernal Maw*
 		},
 	},
 }
-
-
-
