@@ -287,9 +287,10 @@ local function MakeCategoryOptions()
 			func = function()
 				local sPrefix = NewSpellType~=2 and "aoe-" or "spells-"
 				local sType   = NewSpellType~=2 and "aoe-heals" or "inc-spells"
+				local sEvents = NewSpellType==2 and Grid2.CopyTable(dmgEvents) or nil
 				local baseKey = sPrefix .. NewStatusName
 				if not Grid2:DbGetValue("statuses",baseKey) then
-					local dbx = { type = sType, spellList = {}, activeTime = 2, color1 = {r=0, g=0.8, b=1, a=1}, events = Grid2.CopyTable(dmgEvents) }
+					local dbx = { type = sType, spellList = {}, activeTime = 2, color1 = {r=0, g=0.8, b=1, a=1}, events = sEvents }
 					SetSpellsByCategory(NewSpellType~=2 and NewClassHeals, dbx.spellList)
 					Grid2:DbSetValue("statuses", baseKey, dbx)
 					local status = Grid2.setupFunc[dbx.type](baseKey, dbx)
