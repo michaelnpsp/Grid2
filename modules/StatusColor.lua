@@ -122,16 +122,19 @@ HostileColor:Inject(Shared)
 
 HostileColor.GetColor = Grid2.statusLibrary.GetColor
 
-function HostileColor:IsActive(unit)
+function HostileColor:IsActiveH(unit)
 	return UnitCanAttack(unit, "player")
 end
 
+function HostileColor:UpdateDB()
+	self.IsActive = self.dbx.enableFriendly and Color.IsActive or self.IsActiveH
+end
 Grid2.setupFunc["hostilecolor"] = function(baseKey, dbx)
 	Grid2:RegisterStatus(HostileColor, {"color"}, baseKey, dbx)
 	return HostileColor
 end
 
-Grid2:DbSetStatusDefaultValue( "hostilecolor", { type = "hostilecolor",  color1 = { r = 1, g = 0, b = 0, a=1 } })
+Grid2:DbSetStatusDefaultValue( "hostilecolor", { type = "hostilecolor",  color1 = { r=1, g=0, b=0, a=1 } })
 
 -- Charmed status
 local Charmed = Grid2.statusPrototype:new("charmed")

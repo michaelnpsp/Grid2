@@ -37,18 +37,33 @@ local function MakeDisableHostileOption(status, options)
 	options.separator = { type = "header", order = 110, name = "" }
 	options.hostile = {
 		type  = "toggle",
-		name  = L["Disable for hostile units"],
-		desc  = L["Disable the status for hostile units"],
+		name  = L["Disabled for hostile units"],
+		desc  = L["Disable the status for hostile units."],
 		width = "full",
 		order = 115,
 		get = function () return status.dbx.disableHostile end,
 		set = function (_, v) 
 			status.dbx.disableHostile = v or nil 
-			status:UpdateDB()
+			status:Refresh()
 		end,
 	}
 end
 
+local function MakeDisableFriendlyOption(status, options)
+	options.separator = { type = "header", order = 110, name = "" }
+	options.hostile = {
+		type  = "toggle",
+		name  = L["Disabled for non-hostile units"],
+		desc  = L["Disable the status for non-hostile units."],
+		width = "full",
+		order = 115,
+		get = function () return not status.dbx.enableFriendly end,
+		set = function (_, v) 
+			status.dbx.enableFriendly = (not v) or nil
+			status:Refresh()
+		end,
+	}
+end
 
 Grid2Options:RegisterStatusOptions("classcolor", "color", function(self, status, options, optionParams)
 	MakeCharmedToggleOption(status,options)
@@ -83,7 +98,10 @@ end, {
 	width = "full",
 })
 
-Grid2Options:RegisterStatusOptions("hostilecolor", "color", Grid2Options.MakeStatusColorOptions)
+Grid2Options:RegisterStatusOptions("hostilecolor", "color", function(self, status, options, optionParams)
+	self:MakeStatusColorOptions(status, options, optionParams)
+	MakeDisableFriendlyOption(status,options)	
+end)
 
 Grid2Options:RegisterStatusOptions( "charmed", "combat", Grid2Options.MakeStatusColorOptions, {
 	titleIcon = "Interface\\Icons\\Spell_Shadow_ShadowWordDominate",
