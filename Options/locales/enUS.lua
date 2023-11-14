@@ -500,8 +500,12 @@ L["-color"] = ":color"
 L["-mine"] = ":mine"
 L["-not-mine"] = ":not mine"
 L["buff-"] = "buff: "
+L["buffs-"] = "buffs: "
 L["debuff-"] = "debuff: "
+L["debuffs-"] = "debuffs: "
 L["color-"] = "color: "
+L["aoe-"] = "aoe: "
+L["spells-"] = "spells: "
 
 L["Status"] = true
 L["status"] = true
@@ -935,7 +939,6 @@ L["Tanks"] = true
 L["Show only selected sticky units"] = true
 
 -- aoe heals
-L["aoe-"] = true
 L["neighbors"] = true
 L["highlighter"] = true
 L["OutgoingHeals"] = true

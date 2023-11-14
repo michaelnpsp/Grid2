@@ -362,9 +362,12 @@ do
 		local name = status.name
 		local prefix, body, suffix = SplitStatusName(name)
 		if RemovePrefix then
-			prefix = ""
-		end
-		if prefix=="color-" then
+			prefix = ''
+			body = L[body]
+		elseif prefix=='' and strfind(status.dbx.type, 'color$') then
+			prefix = 'color-'
+			body = L[body]
+		elseif prefix=="color-" then
 			body = "|cFF" .. rgbToHex(status.dbx.color1) .. L[body] .. "|r"
 		else
 			body = L[body]
