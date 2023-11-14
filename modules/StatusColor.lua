@@ -4,9 +4,11 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 local Grid2 = Grid2
 local UnitClass = UnitClass
 local UnitIsEnemy= UnitIsEnemy
+local UnitReaction = UnitReaction
 local UnitIsCharmed= UnitIsCharmed
 local UnitCanAttack = UnitCanAttack
 local UnitCreatureType= UnitCreatureType
+local UnitIsTapDenied = UnitIsTapDenied
 
 -- Simple static color status
 local Color = {
@@ -161,6 +163,52 @@ Grid2.setupFunc["charmed"] =  function(baseKey, dbx)
 end
 
 Grid2:DbSetStatusDefaultValue( "charmed", {type = "charmed", color1 = {r=1,g=.1,b=.1,a=1}})
+
+-- ReactionColor status
+local ReactionColor = Grid2.statusPrototype:new("reactioncolor")
+
+local grouped_units = Grid2.grouped_units
+local R2C = {}
+
+ReactionColor:Inject(Shared)
+
+function ReactionColor:IsActiveNG(unit)
+	return not grouped_units[unit]
+end
+
+function ReactionColor:UnitColor(unit)
+	if UnitIsTapDenied(unit) then
+		return R2C[9]
+	else
+		return R2C[ UnitReaction(unit,'player') ] or R2C[1]
+	end
+end
+
+function ReactionColor:UpdateDB()
+	local colors = self.dbx.colors
+	R2C[1] = colors.hostile
+	R2C[2] = colors.hostile
+	R2C[3] = colors.hostile
+	R2C[4] = colors.neutral
+	R2C[5] = colors.friendly
+	R2C[6] = colors.friendly
+	R2C[7] = colors.friendly
+	R2C[8] = colors.friendly	
+	R2C[9] = colors.tapped
+	self.IsActive = self.dbx.disableGrouped and self.IsActiveNG or Color.IsActive
+end
+
+Grid2.setupFunc["reactioncolor"] = function(baseKey, dbx)
+	Grid2:RegisterStatus(ReactionColor, {"color"}, baseKey, dbx)
+	return ReactionColor
+end
+
+Grid2:DbSetStatusDefaultValue( "reactioncolor", {type = "reactioncolor", colors = {
+	hostile  = { r= 1, g =.1, b=.1, a=1 },
+	friendly = { r=.2, g =.6, b=.1, a=1 },
+	neutral  = { r= 1, g =.8, b= 0, a=1 },
+	tapped   = { r=.5, g =.5, b=.5, a=1 },	
+}})
 
 -- ClassColor status
 local ClassColor = Grid2.statusPrototype:new("classcolor")
