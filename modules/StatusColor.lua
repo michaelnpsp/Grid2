@@ -59,7 +59,7 @@ CreatureColor:Inject(Shared)
 
 function CreatureColor:UnitColor(unit)
 	local p = self.dbx
-	if p.colorHostile and UnitIsCharmed(unit) and UnitIsEnemy("player", unit) then
+	if p.colorHostile and UnitIsCharmed(unit) and UnitCanAttack(unit, "player") then
 		return p.colors.HOSTILE
 	else
 		local colors, color = p.colors, UnitCreatureType(unit)
@@ -86,13 +86,21 @@ local FriendColor = Grid2.statusPrototype:new("friendcolor")
 
 FriendColor:Inject(Shared)
 
+function FriendColor:IsActiveF(unit)
+	return not UnitCanAttack(unit, "player")
+end
+
 function FriendColor:UnitColor(unit)
 	local dbx = self.dbx
-	if dbx.colorHostile and UnitIsCharmed(unit) and UnitIsEnemy("player", unit) then
+	if dbx.colorHostile and UnitIsCharmed(unit) and UnitCanAttack(unit, "player") then
 		return dbx.color3
 	else
 		return Grid2:UnitIsPet(unit) and dbx.color2 or dbx.color1
 	end
+end
+
+function FriendColor:UpdateDB()
+	self.IsActive = self.dbx.disableHostile and self.IsActiveF or Color.IsActive
 end
 
 Grid2.setupFunc["friendcolor"] = function(baseKey, dbx)
@@ -106,6 +114,24 @@ Grid2:DbSetStatusDefaultValue( "friendcolor", { type = "friendcolor",
 	color2 = { r = 0, g = 1, b = 0, a=0.75 }, --pet
 	color3 = { r = 1, g = 0, b = 0, a=1 },    --hostile
 })
+
+--HostileColor status
+local HostileColor = Grid2.statusPrototype:new("hostilecolor")
+
+HostileColor:Inject(Shared)
+
+HostileColor.GetColor = Grid2.statusLibrary.GetColor
+
+function HostileColor:IsActive(unit)
+	return UnitCanAttack(unit, "player")
+end
+
+Grid2.setupFunc["hostilecolor"] = function(baseKey, dbx)
+	Grid2:RegisterStatus(HostileColor, {"color"}, baseKey, dbx)
+	return HostileColor
+end
+
+Grid2:DbSetStatusDefaultValue( "hostilecolor", { type = "hostilecolor",  color1 = { r = 1, g = 0, b = 0, a=1 } })
 
 -- Charmed status
 local Charmed = Grid2.statusPrototype:new("charmed")

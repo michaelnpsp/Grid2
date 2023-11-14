@@ -21,7 +21,7 @@ local function MakeClassColorOption(status, options, type, translation)
 end
 
 local function MakeCharmedToggleOption(status, options)
-	options.hostile = {
+	options.charmed = {
 		type  = "toggle",
 		name  = L["Color Charmed Unit"],
 		desc  = L["Color Units that are charmed."],
@@ -32,6 +32,23 @@ local function MakeCharmedToggleOption(status, options)
 		set = function (_, v) status.dbx.colorHostile = v end,
 	}
 end
+
+local function MakeDisableHostileOption(status, options)
+	options.separator = { type = "header", order = 110, name = "" }
+	options.hostile = {
+		type  = "toggle",
+		name  = L["Disable for hostile units"],
+		desc  = L["Disable the status for hostile units"],
+		width = "full",
+		order = 115,
+		get = function () return status.dbx.disableHostile end,
+		set = function (_, v) 
+			status.dbx.disableHostile = v or nil 
+			status:UpdateDB()
+		end,
+	}
+end
+
 
 Grid2Options:RegisterStatusOptions("classcolor", "color", function(self, status, options, optionParams)
 	MakeCharmedToggleOption(status,options)
@@ -58,6 +75,7 @@ end)
 Grid2Options:RegisterStatusOptions("friendcolor", "color", function(self, status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
 	MakeCharmedToggleOption(status,options)
+	MakeDisableHostileOption(status,options)	
 end, {
 	color1= L["Player color"],
 	color2= L["Pet color"],
@@ -65,10 +83,12 @@ end, {
 	width = "full",
 })
 
-Grid2Options:RegisterStatusOptions( "color", "color", Grid2Options.MakeStatusColorOptions, {
-	isDeletable = true
-} )
+Grid2Options:RegisterStatusOptions("hostilecolor", "color", Grid2Options.MakeStatusColorOptions)
 
 Grid2Options:RegisterStatusOptions( "charmed", "combat", Grid2Options.MakeStatusColorOptions, {
 	titleIcon = "Interface\\Icons\\Spell_Shadow_ShadowWordDominate",
+} )
+
+Grid2Options:RegisterStatusOptions( "color", "color", Grid2Options.MakeStatusColorOptions, {
+	isDeletable = true
 } )
