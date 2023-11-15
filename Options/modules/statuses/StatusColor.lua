@@ -1,14 +1,13 @@
 local L = Grid2Options.L
 
 local function MakeClassColorOption(status, options, type, translation)
-	if not options.colors then
-		options.colors = { type = "group", inline = true, name = L["Unit Colors"], args = {}, }
-	end
-	options.colors.args[type] = {
+	options.separator = options.separator or { type = "header", order = 1, name = "" }
+	options['color-'..type] = {
 		type = "color",
-		name = (L["%s Color"]):format(translation),
+		name = (L["%s Color"]):format(L[translation]),
+		order = options.separator.order,
 		get = function ()
-			local c = status.dbx.colors[type] or status.dbx.colors[translation] or {r=1,g=1,b=1,a=1}
+			local c = status.dbx.colors[type] or status.dbx.colors[translation] or Grid2.defaultColors.WHITE
 			return c.r, c.g, c.b, c.a
 		end,
 		set = function (_, r, g, b, a)
@@ -18,46 +17,90 @@ local function MakeClassColorOption(status, options, type, translation)
 			status:UpdateAllUnits()
 		end,
 	}
+	options.separator.order = options.separator.order + 1
 end
 
-local function MakeCharmedToggleOption(status, options)
-	options.hostile = {
-		type  = "toggle",
-		name  = L["Color Charmed Unit"],
-		desc  = L["Color Units that are charmed."],
-		width = "full",
-		order = 105,
-		tristate = false,
-		get = function () return status.dbx.colorHostile end,
-		set = function (_, v) status.dbx.colorHostile = v end,
-	}
+local function MakeCheckColorOption(status, options, key, option, nilable, invert)
+	options[key] = option
+	option.type  = "toggle"
+	option.order = option.order or 100
+	option.width = option.width or "full"
+	option.name  = L[option.name]
+	option.desc  = L[option.desc]
+	option.get = function () 
+		if invert then 
+			return not status.dbx[key]
+		else	
+			return status.dbx[key]
+		end	
+	end
+	option.set = function (_, v) 
+		if invert then v = not v end
+		if nilable then
+			status.dbx[key] = v or nil
+		else
+			status.dbx[key] = v or false
+		end
+		status:Refresh()
+	end
+end
+
+local function MakeSeparatorOption(options, order)
+	options.separator = { type = "header", order = order or 99, name = "" }
 end
 
 Grid2Options:RegisterStatusOptions("classcolor", "color", function(self, status, options, optionParams)
-	MakeCharmedToggleOption(status,options)
-	MakeClassColorOption(status, options, "HOSTILE",      L["Charmed unit Color"] )
-	MakeClassColorOption(status, options, "UNKNOWN_UNIT", L["Default unit Color"] )
-	MakeClassColorOption(status, options, "UNKNOWN_PET",  L["Default pet Color"] )
-	for _, class in ipairs{"Beast", "Demon", "Humanoid", "Elemental"} do
-		MakeClassColorOption(status, options, class, L[class] )
-	end
 	for class, translation in pairs(LOCALIZED_CLASS_NAMES_MALE) do
 		MakeClassColorOption(status, options, class, translation)
 	end
+	for _, class in ipairs{"Beast", "Demon", "Humanoid", "Elemental"} do
+		MakeClassColorOption(status, options, class, L[class] )
+	end
+	MakeClassColorOption(status, options, "UNKNOWN_UNIT", "Default unit Color" )
+	MakeClassColorOption(status, options, "UNKNOWN_PET",  "Default pet Color"  )
+	MakeClassColorOption(status, options, "HOSTILE",      "Hostile unit Color" )
+	MakeCheckColorOption(status, options, 'colorHostile', {
+		name = "Color Hostile Units", 
+		desc = "Color Units that are hostile with the hostile color."
+	})
+end)
+
+Grid2Options:RegisterStatusOptions("reactioncolor", "color", function(self, status, options, optionParams)
+	MakeClassColorOption(status, options, "hostile",  "Hostile unit"  )
+	MakeClassColorOption(status, options, "neutral",  "Neutral unit"  )
+	MakeClassColorOption(status, options, "friendly", "Friendly unit" )
+	MakeClassColorOption(status, options, "tapped",   "Tapped unit"   )
+	MakeCheckColorOption(status, options, 'disableGrouped', {
+		name = "Disabled for grouped units",
+		desc = "Disable the status for units in your group or raid.",
+	}, true )	
 end)
 
 Grid2Options:RegisterStatusOptions("creaturecolor", "color", function(self, status, options, optionParams)
-	MakeCharmedToggleOption(status,options)
-	MakeClassColorOption(status, options, "HOSTILE",      L["Charmed unit Color"] )
-	MakeClassColorOption(status, options, "UNKNOWN_UNIT", L["Default unit Color"] )
 	for _, class in ipairs{"Beast", "Demon", "Humanoid", "Elemental"} do
 		MakeClassColorOption(status, options, class, L[class])
 	end
+	MakeClassColorOption(status, options, "UNKNOWN_UNIT", "Default unit Color" )
+	MakeClassColorOption(status, options, "HOSTILE",      "Charmed unit Color" )
+	MakeCheckColorOption(status, options, 'colorHostile', {
+		name = "Color Charmed Unit", 
+		desc = "Color Units that are charmed."
+	})
 end)
 
 Grid2Options:RegisterStatusOptions("friendcolor", "color", function(self, status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
-	MakeCharmedToggleOption(status,options)
+	MakeSeparatorOption(options)
+	MakeCheckColorOption(status, options, 'colorHostile', {
+		order = 100,
+		name = "Color Charmed Unit", 
+		desc = "Color Units that are charmed."
+	})
+	MakeCheckColorOption(status, options, 'disableHostile', {
+		order = 110,
+		name = "Disabled for hostile units",
+		desc = "Disable the status for hostile units.",
+	} )	
 end, {
 	color1= L["Player color"],
 	color2= L["Pet color"],
@@ -65,10 +108,19 @@ end, {
 	width = "full",
 })
 
-Grid2Options:RegisterStatusOptions( "color", "color", Grid2Options.MakeStatusColorOptions, {
-	isDeletable = true
-} )
+Grid2Options:RegisterStatusOptions("hostilecolor", "color", function(self, status, options, optionParams)
+	self:MakeStatusColorOptions(status, options, optionParams)
+	MakeSeparatorOption(options)	
+	MakeCheckColorOption(status, options, 'enableFriendly', {
+		name = "Disabled for non-hostile units",
+		desc = "Disable the status for non-hostile units.",
+	}, true, true )		
+end)
 
 Grid2Options:RegisterStatusOptions( "charmed", "combat", Grid2Options.MakeStatusColorOptions, {
 	titleIcon = "Interface\\Icons\\Spell_Shadow_ShadowWordDominate",
+} )
+
+Grid2Options:RegisterStatusOptions( "color", "color", Grid2Options.MakeStatusColorOptions, {
+	isDeletable = true
 } )
