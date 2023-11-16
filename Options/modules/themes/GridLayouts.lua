@@ -226,7 +226,7 @@ do
 	}
 
 	local options = {
-		title = {
+		tit = {
 			order = 0,
 			type = "description",
 			name = L["A Layout defines which unit frames will be displayed and the way in which they are arranged. Here you can set different layouts for each instance size."],
@@ -238,14 +238,29 @@ do
 				end
 			end,
 		},
+		typ = {
+			type = 'select',
+			order = 0.1,
+			width = 1.5,
+			name = L["Select how to to calculate the raid size"],
+			desc = L["Select how to to calculate the raid size"],
+			get = function() 
+				return Grid2.db.profile.raidSizeType or 0
+			end,
+			set = function(_,v)
+				Grid2.db.profile.raidSizeType = (v~=0) and v or nil
+				Grid2:GroupChanged()
+			end,
+			values = Grid2Options.raidSizeValues,
+		},
 		add ={
-			type   = 'select',
-			order  = 500,
+			type = 'select',
+			order = 0.2,
 			width = "half",
-			name   = L["Add"],
-			desc   = L["Add instance size"],
-			get    = function() end,
-			set    = function(_,v)
+			name = L["Add Raid Size"],
+			desc = L["Add Raid size"],
+			get = function() end,
+			set = function(_,v)
 				new_sizes[ size_values[v] ] = true
 			end,
 			values = size_values,
@@ -262,7 +277,7 @@ do
 			type  = "group",
 			inline = true,
 			order = m,
-			name  = m>1 and string.format(L["%d man instances"],m) or L["Solo"],
+			name  = m>1 and string.format(L["%d man raid size"],m) or L["Solo"],
 			handler = { m },
 			args = options_item,
 			hidden = IsHidden,

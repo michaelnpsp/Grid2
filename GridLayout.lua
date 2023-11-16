@@ -280,8 +280,8 @@ function Grid2Layout:UpgradeThemeDB()
 end
 
 --{{{ Event handlers
-function Grid2Layout:Grid_GroupTypeChanged(_, groupType, instType, maxPlayers)
-	self:Debug("GroupTypeChanged", groupType, instType, maxPlayers)
+function Grid2Layout:Grid_GroupTypeChanged(_, groupType, instType, maxPlayers, raidMaxPlayers)
+	self:Debug("GroupTypeChanged", groupType, instType, maxPlayers, raidMaxPlayers)
 	if not Grid2:ReloadTheme() then
 		if not self:ReloadLayout() then
 			self:UpdateFramesSizeByRaidSize()
@@ -516,8 +516,8 @@ end
 function Grid2Layout:ReloadLayout(force)
 	if not UnitExists('player') then self:Debug("ReloadLayout Ignored because player unit does not exist"); return end
 	local p = self.db.profile
-	local partyType, instType, maxPlayers = Grid2:GetGroupType()
-	local layoutName = self.testLayoutName or p.layouts[maxPlayers] or p.layouts[partyType.."@"..instType] or p.layouts[partyType]
+	local partyType, instType, maxPlayers, raidMaxPlayers = Grid2:GetGroupType()
+	local layoutName = self.testLayoutName or p.layouts[raidMaxPlayers] or p.layouts[partyType.."@"..instType] or p.layouts[partyType]
 	if layoutName ~= self.layoutName or (self.layoutHasAuto and maxPlayers ~= self.instMaxPlayers) or force or self.forceReload then
 		self.forceReload = force
 		if not Grid2:RunSecure(3, self, "ReloadLayout") then
@@ -706,7 +706,7 @@ function Grid2Layout:ForceFramesCreation(header)
 end
 
 function Grid2Layout:GetFramesSizeForHeader(header)
-	local m  = Grid2.testMaxPlayers or Grid2.instMaxPlayers
+	local m  = Grid2.testMaxPlayers or Grid2.raidMaxPlayers
 	local p  = Grid2Frame.db.profile
 	local fw = p.frameWidths
 	local fh = p.frameHeights

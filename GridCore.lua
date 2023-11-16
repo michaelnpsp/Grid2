@@ -246,7 +246,7 @@ function Grid2:CheckTheme()
 	local theme   = enabled.default or 0
 	local spec    = GetSpecialization() or 0
 	local role    = UnitGroupRolesAssigned('player') or 0
-	local groupType, instType, maxPlayers = self:GetGroupType()
+	local groupType, instType, _, maxPlayers = self:GetGroupType()
 	local kM   = tostring(maxPlayers)
 	local kC   = fmt("%s@0",     self.playerClass)
 	local kS   = fmt("%s@%d",    self.playerClass, spec)

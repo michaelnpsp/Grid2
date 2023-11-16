@@ -113,6 +113,14 @@ do
 	Grid2Options.FONT_FLAGS_DEFAULT       = FONT_FLAGS_DEFAULT
 end
 
+-- raid size values calculations
+Grid2Options.raidSizeValues = {
+	[0] = L["Maximum capacity of the instance"],
+	[1] = L["Maximum non-empty raid group"],
+	[2] = L["Number of non-empty raid groups"],
+	[3] = L["Number of players in raid"],
+}
+
 -- safe get value from table, returns def value if array table does not exist
 function Grid2Options.GetTableValueSafe(t, k, def)
 	if t then
