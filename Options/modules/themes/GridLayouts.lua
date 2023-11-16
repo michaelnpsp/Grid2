@@ -229,7 +229,7 @@ do
 		tit = {
 			order = 0,
 			type = "description",
-			name = L["A Layout defines which unit frames will be displayed and the way in which they are arranged. Here you can set different layouts for each instance size."],
+			name = L["A Layout defines which unit frames will be displayed and the way in which they are arranged. Here you can set different layouts for each raid size."],
 			hidden = function()
 				-- To detect if edited theme has changed
 				if theme.layout ~= layout then
@@ -242,8 +242,8 @@ do
 			type = 'select',
 			order = 0.1,
 			width = 1.5,
-			name = L["Select how to to calculate the raid size"],
-			desc = L["Select how to to calculate the raid size"],
+			name = L["Choose the Raid Size calculation method"],
+			desc = L["Choose the Raid Size calculation method"],
 			get = function() 
 				return Grid2.db.profile.raidSizeType or 0
 			end,

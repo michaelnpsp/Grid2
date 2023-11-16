@@ -1354,7 +1354,7 @@ L["A Layout defines which unit frames will be displayed and the way in which the
 L["Select zero to use default Frame Width"] = true
 L["Select zero to use default Frame Height"] = true
 L["Are you sure?"] = true
-L["A Layout defines which unit frames will be displayed and the way in which they are arranged. Here you can set different layouts for each instance size."] = true
+L["A Layout defines which unit frames will be displayed and the way in which they are arranged. Here you can set different layouts for each raid size."] = true
 L["Add instance size"] = true
 L["Bar"] = true
 L["Back"] = true

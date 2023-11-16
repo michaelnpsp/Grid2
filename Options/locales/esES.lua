@@ -1367,7 +1367,7 @@ L["A Layout defines which unit frames will be displayed and the way in which the
 L["Select zero to use default Frame Width"] = "Elige cero para usar el valor predeterminado para el ancho de las celdas."
 L["Select zero to use default Frame Height"] = "Elige cero para usar el valor predeterminado para el alto de las celdas."
 L["Are you sure?"] = "Estás seguro?"
-L["A Layout defines which unit frames will be displayed and the way in which they are arranged. Here you can set different layouts for each instance size."] = "Un diseño define que y como se mostraran las unidades. Aqui puedes seleccionar diferentes diseños para cada tamaño de instancia."
+L["A Layout defines which unit frames will be displayed and the way in which they are arranged. Here you can set different layouts for each raid size."] = "Un diseño define que y como se mostraran las unidades. Aqui puedes seleccionar diferentes diseños para cada tamaño de raid."
 L["Add instance size"] = "Añade tamaño instancia"
 L["Bar"] = "Barra"
 L["Back"] = "Fondo"

@@ -35,7 +35,7 @@ Grid2Options:AddGeneralOptions( "General", "Themes", {
 Grid2Options:AddGeneralOptions( "General", "Raid Size", {
 	raidSizeType = {
 		type = "select",
-		name = L["Select how to calculate the raid size"],
+		name = L["Choose the Raid Size calculation method"],
 		desc = L["This setting is used to setup different layouts, frame sizes or themes depending of the raid size."],
 		width = "double",
 		order = 5,
