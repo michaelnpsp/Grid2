@@ -64,8 +64,8 @@ if Grid2.isWoW90 then
 		getHostile  = function() return IVS(193455) or IVS(19434) or IVS(132031) end -- Cobra Shot, Aimed Short, Steady shot
 		getFriendly = function() return nil end -- no avail
 	elseif playerClass == 'ROGUE' then
-		getHostile  = function() return IVS(36554) or IVS(6770) end -- shadowstep, sap
-		getFriendly = function() return nil    end -- no avail
+		getHostile  = function() return IVS(36554) or IVS(6770) end -- Shadowstep, Sap
+		getFriendly = function() return IVS(36554) end -- Shadowstep
 	elseif playerClass == 'DEATHKNIGHT' then
 		getHostile  = function() return IVS(47541) or IVS(49576) end -- Death Coil, Death Grip
 		getFriendly = function() return IVS(47541) end -- Death Coil
@@ -98,23 +98,7 @@ if Grid2.isWoW90 then
 
 end
 
--------------------------------------------------------------------------
--- shared functions
--------------------------------------------------------------------------
-
-local function Update(timer)
-	local self = timer.__range
-	local cache, UnitRangeCheck = self.cache, self.UnitRangeCheck
-	for unit in Grid2:IterateRosterUnits() do
-		local value = UnitRangeCheck(unit) and 1 or false
-		if value ~= cache[unit] then
-			cache[unit] = value
-			self:UpdateIndicators(unit)
-		end
-	end
-end
-
--------------------------------------------------------------------------
+------------------------------------------------------------------------
 -- Range status
 -------------------------------------------------------------------------
 
@@ -199,6 +183,21 @@ local Ranges = {
 	end,
 }
 
+local function Update(timer)
+	local self = timer.__range
+	local cache = self.cache
+	local UnitRangeCheck = self.UnitRangeCheck
+	hostileSpell = self.hostileSpell
+	friendlySpell = self.friendlySpell
+	for unit in Grid2:IterateRosterUnits() do
+		local value = UnitRangeCheck(unit) and 1 or false
+		if value ~= cache[unit] then
+			cache[unit] = value
+			self:UpdateIndicators(unit)
+		end
+	end
+end
+
 function Range:Grid_GroupTypeChanged(_, newGroupType)
 	groupType = newGroupType
 end
@@ -222,7 +221,7 @@ function Range:GetPercent(unit)
 end
 
 function Range:GetRanges()
-	return Ranges, self.curRange
+	return Ranges, self.curRange, rezSpellID
 end
 
 function Range:IsActive(unit)
@@ -256,10 +255,8 @@ end
 function Range:UpdateDB()
 	local dbx = self.dbx
 	local dbr = dbx.ranges and dbx.ranges[playerClass] or dbx
-	if self.name == 'range' then
-		friendlySpell = dbr.friendlySpellID and GetSpellInfo(dbr.friendlySpellID)
-		hostileSpell  = dbr.hostileSpellID  and GetSpellInfo(dbr.hostileSpellID)
-	end	
+	self.hostileSpell = dbr.hostileSpellID  and GetSpellInfo(dbr.hostileSpellID)
+	self.friendlySpell = dbr.friendlySpellID and GetSpellInfo(dbr.friendlySpellID)
 	self.curRange = tonumber(dbr.range) or (dbr.range=='spell' and 'spell') or (rangeSpell and 'heal') or 38
 	self.UnitRangeCheck = Ranges[self.curRange] or Ranges[38]
 	self.curAlpha = dbx.default or 0.25
