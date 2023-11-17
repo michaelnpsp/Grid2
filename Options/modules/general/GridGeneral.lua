@@ -29,28 +29,6 @@ Grid2Options:AddGeneralOptions( "General", "Themes", {
 })
 
 --==========================================================================
--- Raid Size calculation
---==========================================================================
-
-Grid2Options:AddGeneralOptions( "General", "Raid Size", {
-	raidSizeType = {
-		type = "select",
-		name = L["Choose the Raid Size calculation method"],
-		desc = L["This setting is used to setup different layouts, frame sizes or themes depending of the raid size."],
-		width = "double",
-		order = 5,
-		get = function() 
-			return Grid2.db.profile.raidSizeType or 0 
-		end,
-		set = function(_,v)
-			Grid2.db.profile.raidSizeType = (v~=0) and v or nil
-			Grid2:GroupChanged()
-		end,
-		values = Grid2Options.raidSizeValues,
-	},
-})
-
---==========================================================================
 -- Icons Zoom
 --==========================================================================
 
@@ -69,6 +47,28 @@ Grid2Options:AddGeneralOptions( "General", "Icon Textures Zoom", {
 			Grid2:SetupStatusPrototype()
 			Grid2Options:UpdateIndicators()
 		end,
+	},
+})
+
+--==========================================================================
+-- Raid Size calculation
+--==========================================================================
+
+Grid2Options:AddGeneralOptions( "General", "Raid Size", {
+	raidSizeType = {
+		type = "select",
+		name = L["Choose the Raid Size calculation method"],
+		desc = L["This setting is used to setup different layouts, frame sizes or themes depending of the raid size."],
+		width = "double",
+		order = 5,
+		get = function() 
+			return Grid2.db.profile.raidSizeType or 0 
+		end,
+		set = function(_,v)
+			Grid2.db.profile.raidSizeType = (v~=0) and v or nil
+			Grid2:GroupChanged()
+		end,
+		values = Grid2Options.raidSizeValues,
 	},
 })
 
