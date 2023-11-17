@@ -14,7 +14,9 @@ local UnitIsFriend = UnitIsFriend
 local UnitCanAttack = UnitCanAttack
 local UnitCanAssist = UnitCanAssist
 local IsSpellInRange = IsSpellInRange
+local InCombatLockdown = InCombatLockdown
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
+local CheckInteractOriginal = CheckInteractDistance
 local CheckInteractDistance = CheckInteractDistance
 local CheckHostileDistance  = CheckInteractDistance
 local UnitPhaseReason = UnitPhaseReason or Grid2.Dummy
@@ -61,6 +63,9 @@ if Grid2.isWoW90 then
 	elseif playerClass == 'HUNTER' then
 		getHostile  = function() return IVS(193455) or IVS(19434) or IVS(132031) end -- Cobra Shot, Aimed Short, Steady shot
 		getFriendly = function() return nil end -- no avail
+	elseif playerClass == 'ROGUE' then
+		getHostile  = function() return IVS(36554) or IVS(6770) end -- shadowstep, sap
+		getFriendly = function() return nil    end -- no avail
 	elseif playerClass == 'DEATHKNIGHT' then
 		getHostile  = function() return IVS(47541) or IVS(49576) end -- Death Coil, Death Grip
 		getFriendly = function() return IVS(47541) end -- Death Coil
@@ -87,7 +92,7 @@ if Grid2.isWoW90 then
 		elseif spellFriendly then
 			return IsSpellInRange(spellFriendly, unit) == 1
 		else
-			return true
+			return InCombatLockdown() or CheckInteractOriginal(unit,4)
 		end
 	end
 
