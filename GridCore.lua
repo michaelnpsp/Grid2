@@ -153,9 +153,7 @@ function Grid2:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	self:RegisterEvent("UNIT_NAME_UPDATE")
 	self:RegisterEvent("UNIT_PET")
-	if self.UpdatePlayerDispelTypes then
-		self:RegisterEvent("SPELLS_CHANGED", "UpdatePlayerDispelTypes")
-	end
+	self:RegisterEvent("SPELLS_CHANGED")
 	if self.versionCli>=30000 then -- wotlk or superior
 		self:RegisterEvent("PLAYER_ROLES_ASSIGNED")
 	end
@@ -213,6 +211,7 @@ function Grid2:ReloadProfile()
 	end
 end
 
+-- Themes
 function Grid2:PLAYER_SPECIALIZATION_CHANGED(event,unit)
 	if event == 'ACTIVE_TALENT_GROUP_CHANGED' or unit == 'player' then
 		self.playerClassSpec = self.playerClass .. (GetSpecialization() or 0)
@@ -228,7 +227,6 @@ function Grid2:PLAYER_ROLES_ASSIGNED()
 	self:ReloadTheme()
 end
 
--- Themes
 function Grid2:GetCurrentTheme()
 	local index  = self.currentTheme or 0
 	local themes = self.db.profile.themes
@@ -284,6 +282,16 @@ function Grid2:ReloadTheme(force)
 		end
 		return true
 	end
+end
+
+-- Player spells tracking
+function Grid2:SPELLS_CHANGED()
+	if self.UpdatePlayerDispelTypes then
+		self:UpdatePlayerDispelTypes()
+	end
+	if self.UpdatePlayerRangeSpells then
+		self:UpdatePlayerRangeSpells()
+	end	
 end
 
 -- Compartment icon
