@@ -74,6 +74,7 @@ local function Bar_Layout(self, parent)
 	Bar:Show()
 end
 
+-- normal setvalue functions
 local function Bar_SetValue(self, parent, value)
 	parent[self.name]:SetValue(value)
 end
@@ -94,6 +95,20 @@ local function Bar_SetValueChild(self, parent, value)
 		local barChild = parent[self.name]
 		barChild:SetValue(value+parentValue>1 and 1-parentValue or value)
 		barChild.realValue = value
+	end
+end
+
+-- hackish setvalue functions to fix bug in statusbar when aligned background is enabled (CF issue #1254)
+local function Bar_SetValueBg(self, parent, value)
+	parent[self.name]:SetValue(value==0 and 0.00001 or value)
+end
+
+local function Bar_SetValueParentBg(self, parent, value)
+	parent[self.name]:SetValue(value==0 and 0.00001 or value)
+	local barChild = parent[self.childName]
+	local childValue = barChild.realValue or 0
+	if childValue>0 then
+		barChild:SetValue( value+childValue>1 and 1-value or childValue)
 	end
 end
 
@@ -236,14 +251,14 @@ local function Bar_UpdateDB(self)
 	if dbx.anchorTo then
 		local barParent = Grid2.indicators[dbx.anchorTo]
 		barParent.childName = self.name
-		barParent.SetValue  = Bar_SetValueParent
+		barParent.SetValue  = barParent.dbx.backColor and Bar_SetValueParentBg or Bar_SetValueParent
 		self.SetValue       = Bar_SetValueChild
 		self.CanCreate      = Bar_CanCreateChild
 		self.parentName     = dbx.anchorTo
 		self.reverseFill    = barParent.reverseFill
 		self.orientation    = barParent.orientation
 	else
-		self.SetValue = Bar_SetValue
+		self.SetValue = dbx.backColor and Bar_SetValueBg or Bar_SetValue 
 		self.CanCreate = self.prototype.CanCreate
 		self.parentName = nil
 		if self.childName then -- fix changing orientation on themes, CF issue #1227
