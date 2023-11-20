@@ -45,20 +45,21 @@ local editedLayoutName
 
 --=====================================================================================
 
-local tmpTable = {}
-local function SelectGroup( info, layoutName, headerIndex )
-	if not layoutName then
-		editedLayout, editedLayoutName = nil, nil
-	end
-	wipe(tmpTable)
-	local options = Grid2Options.options
+local function GetEditorPath(info)
+	local options, result = info.options, {}
 	repeat
-		tmpTable[#tmpTable+1] = info[#tmpTable+1]
-		options = options.args[ info[#tmpTable] ]
-	until #tmpTable>=#info or options.arg==EDITOR_IDENTIFIER
-	tmpTable[#tmpTable+1] = layoutName
-	tmpTable[#tmpTable+1] = tostring(headerIndex)
-	LibStub("AceConfigDialog-3.0"):SelectGroup( "Grid2", unpack(tmpTable) )
+		result[#result+1] = info[#result+1]
+		options = options.args[ info[#result] ]
+	until #result>=#info or options.arg==EDITOR_IDENTIFIER
+	return result
+end
+
+local function SelectGroup(info, layoutName, headerIndex)
+	if not layoutName then editedLayout, editedLayoutName = nil, nil end
+	local path = info.options and GetEditorPath(info) or info
+	path[#path+1] = layoutName
+	path[#path+1] = tostring(headerIndex)
+	LibStub("AceConfigDialog-3.0"):SelectGroup( "Grid2", unpack(path) )
 end
 
 local function GetLayoutsSorted()
@@ -679,6 +680,37 @@ generalOptions = {
 		values = GetLayoutsValues,
 		confirm = true,
 		confirmText = L["Are you sure you want to delete the selected layout?"],
+		disabled = function() return not next(Grid2Layout.customLayouts) end,
+	},
+	
+	copyfromdesc = {
+		order = 22,
+		type = "description",
+		name = "\n" .. L["Copy the selected layout into a new layout."],
+	},	
+	
+	copyfrom = {
+		type   = "select",
+		name   = L['Copy Layout'],
+		desc   = L['Copy Layout'],
+		order  = 23,
+		get    = false,
+		set    = RemoveLayout,
+		get = function() end,
+		set = function(info, value)
+			local path = GetEditorPath(info)
+			Grid2Options:ShowEditDialog( L["Type the name of the new Layout:"], '', function(name)
+				local layouts = Grid2Layout.customLayouts
+				if strlen(name)>=3 and not layouts[name] then
+					layouts[name] = Grid2.CopyTable( layouts[value] )
+					Grid2Layout:AddLayout(name, layouts[name])
+					CreateLayoutOptions(name)
+					SelectGroup(path, name )
+				end	
+			end )
+				
+		end,
+		values = GetLayoutsValues,
 		disabled = function() return not next(Grid2Layout.customLayouts) end,
 	},
 

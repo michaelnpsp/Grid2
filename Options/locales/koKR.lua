@@ -269,6 +269,9 @@ L["List"] = "목록"
 L["Are you sure you want to remove this header?"] = "이 소그룹을 삭제하시겠습니까?"
 L["Are you sure you want to delete the selected layout?"] = "선택한 배치를 삭제하시겠습니까?"
 L["Layout Editor"] = "배치 편집기"
+-- L["Copy Layout"] = ""
+-- L["Type the name of the new Layout:"] = ""
+-- L["Copy the selected layout into a new layout."] = ""
 
 --{{{ Miscelaneous
 L["New"] = "신규"

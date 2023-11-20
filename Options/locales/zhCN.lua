@@ -269,6 +269,9 @@ L["List"] = "列表"
 L["Are you sure you want to remove this header?"] = "你确定要删除此标题？"
 L["Are you sure you want to delete the selected layout?"] = "你确定要删除选择的布局吗？"
 L["Layout Editor"] = "布局编辑"
+-- L["Copy Layout"] = ""
+-- L["Type the name of the new Layout:"] = ""
+-- L["Copy the selected layout into a new layout."] = ""
 
 --{{{ Miscelaneous
 L["New"] = "新增"

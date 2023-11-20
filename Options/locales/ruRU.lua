@@ -269,6 +269,9 @@ L["List"] = "Список"
 L["Are you sure you want to remove this header?"] = "Вы уверены, что хотите удалить этот заголовок?"
 L["Are you sure you want to delete the selected layout?"] = "Вы уверены, что хотите удалить эти настройки?"
 L["Layout Editor"] = "Редактор настроек"
+-- L["Copy Layout"] = ""
+-- L["Type the name of the new Layout:"] = ""
+-- L["Copy the selected layout into a new layout."] = ""
 
 --{{{ Miscelaneous
 L["New"] = "Новый"

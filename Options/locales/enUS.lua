@@ -269,6 +269,9 @@ L["List"] = true
 L["Are you sure you want to remove this header?"] = true
 L["Are you sure you want to delete the selected layout?"] = true
 L["Layout Editor"] = true
+L["Copy Layout"] = true
+L["Type the name of the new Layout:"] = true
+L["Copy the selected layout into a new layout."] = true
 
 --{{{ Miscelaneous
 L["New"] = true

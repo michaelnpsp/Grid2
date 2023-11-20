@@ -269,6 +269,9 @@ L["List"] = "Lista"
 L["Are you sure you want to remove this header?"] = "Seguro que quieres eliminar esta cabecera?"
 L["Are you sure you want to delete the selected layout?"] = "Seguro que quieres eliminar el diseño seleccionado?"
 L["Layout Editor"] = "Editor de Diseños"
+L["Copy Layout"] = "Copiar Diseño"
+L["Type the name of the new Layout:"] = "Tecleea el nombre del nuevo diseño:"
+L["Copy the selected layout into a new layout."] = "Copia el diseño seleccionado en un nuevo diseño."
 
 --{{{ Miscelaneous
 L["New"] = "Nuevo"

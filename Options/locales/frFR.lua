@@ -269,6 +269,9 @@ L["Select which layout to use for party."] = "Définit l'agencement à utiliser 
 -- L["Are you sure you want to remove this header?"] = ""
 -- L["Are you sure you want to delete the selected layout?"] = ""
 -- L["Layout Editor"] = ""
+-- L["Copy Layout"] = ""
+-- L["Type the name of the new Layout:"] = ""
+-- L["Copy the selected layout into a new layout."] = ""
 
 --{{{ Miscelaneous
 L["New"] = "Nouveau"
