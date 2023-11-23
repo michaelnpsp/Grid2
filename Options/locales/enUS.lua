@@ -799,6 +799,11 @@ L["Update rate"] = true
 L["Rate at which the status gets updated"] = true
 L["Out of range alpha"] = true
 L["Out of range"] = true
+L["Alpha value when units are way out of range."] = true
+L["Heal Range"] = true
+L["Spell Range"] = true
+L["Range by class"] = true
+L["Check this option to setup different range configuration for each player class."] = true
 
 -- ready-check status
 L["Delay"] = true
@@ -1335,8 +1340,6 @@ L["Nothing"] = true
 L["Transliterate cyrillic letters"] = true
 L["Convert cyrillic letters to latin alphabet."] = true
 L["N/A"] = true
-L["Alpha value when units are way out of range."] = true
-L["Heal Range"] = true
 L["Use alternate icons"] = true
 L["display damage absorb shields above max hp"] = true
 L["Hide in Pet Battles"] = true

@@ -794,6 +794,11 @@ L["Update rate"] = "업데이트 속도"
 L["Rate at which the status gets updated"] = "상태 업데이트 속도"
 L["Out of range alpha"] = "범위 밖 투명도"
 L["Out of range"] = "범위 벗어남"
+L["Alpha value when units are way out of range."] = "사거리 밖 유닛 투명도 값"
+L["Heal Range"] = "치유 사거리"
+-- L["Spell Range"] = ""
+-- L["Range by class"] = ""
+-- L["Check this option to setup different range configuration for each player class."] = ""
 
 -- ready-check status
 L["Delay"] = "지연"
