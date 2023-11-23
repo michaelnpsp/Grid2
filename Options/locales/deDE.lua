@@ -348,6 +348,9 @@ L["Adjust the size of the indicator."] = "Die Größe des Indikators anpassen."
 
 L["Frame Texture"] = "Fenstertextur"
 -- L["Adjust the frame texture."] = ""
+-- L["Blend Mode"] = ""
+-- L["Select how to mix the texture with the background."] = ""
+-- L["Additive"] = ""
 
 L["Show stack"] = "Zeige Stapel"
 L["Show the number of stacks."] = "Zeige Nummer der Stapel an."

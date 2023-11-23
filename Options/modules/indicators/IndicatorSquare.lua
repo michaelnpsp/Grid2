@@ -1,5 +1,7 @@
 local L = Grid2Options.L
 
+local BLEND_VALUES = { L["Default"] , L["Additive"] }
+
 Grid2Options:RegisterIndicatorOptions("square", true, function(self, indicator)
 	local layout, statuses, filter = {}, {}, {}
 	self:MakeIndicatorTypeLevelOptions(indicator, layout)
@@ -54,9 +56,23 @@ end
 
 function Grid2Options:MakeIndicatorSquareSizeOptions(indicator, options)
 	self:MakeHeaderOptions( options, "Appearance" )
+	options.blend = {
+		type = "select",
+		order = 12,
+		name = L["Blend Mode"],
+		desc = L["Select how to mix the texture with the background."],
+		get = function () return (indicator.dbx.blend=='ADD') and 2 or 1 end,
+		set = function (_, v)
+			indicator.dbx.blend = (v==2) and 'ADD' or 'BLEND'
+			self:RefreshIndicator(indicator, "Layout")
+			if v==1 then indicator.dbx.blend = nil end
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		values = BLEND_VALUES,
+	}
 	options.size = {
 		type = "range",
-		order = 12,
+		order = 13,
 		name = L["Size"],
 		desc = L["Adjust the size of the indicator."],
 		min = 0,
@@ -71,7 +87,7 @@ function Grid2Options:MakeIndicatorSquareSizeOptions(indicator, options)
 	}
 	options.width = {
 		type = "range",
-		order = 13,
+		order = 14,
 		name = L["Width"],
 		desc = L["Adjust the width of the indicator."],
 		min = 0,
@@ -86,7 +102,7 @@ function Grid2Options:MakeIndicatorSquareSizeOptions(indicator, options)
 	}
 	options.height = {
 		type = "range",
-		order = 14,
+		order = 15,
 		name = L["Height"],
 		desc = L["Adjust the height of the indicator."],
 		min = 0,
@@ -103,7 +119,7 @@ function Grid2Options:MakeIndicatorSquareSizeOptions(indicator, options)
 		type = "toggle",
 		name = L["Rectangle"],
 		desc = L["Allows to independently adjust width and height."],
-		order = 15,
+		order = 16,
 		tristate = false,
 		get = function () return not indicator.dbx.size end,
 		set = function (_, v)

@@ -351,6 +351,9 @@ L["Adjust the size of the indicator."] = "Définit la taille de l'indicateur."
 
 L["Frame Texture"] = "Texture du cadre"
 -- L["Adjust the frame texture."] = ""
+-- L["Blend Mode"] = ""
+-- L["Select how to mix the texture with the background."] = ""
+-- L["Additive"] = ""
 
 L["Show stack"] = "Afficher cumul"
 L["Show the number of stacks."] = "Affiche le nombre de cumuls."

@@ -49,6 +49,11 @@ local function Square_Layout(self, parent)
 			Square:SetBackdropBorderColor( c.r, c.g, c.b, c.a )
 		end
 	end
+	local mode = self.blendMode
+	if mode then
+		Square.Center:SetBlendMode(mode)
+		Square:SetBorderBlendMode(mode)
+	end	
 	Square:Show()
 end
 
@@ -71,6 +76,7 @@ local function Square_UpdateDB(self)
 	self.color = Grid2:MakeColor(dbx.color1)
 	self.borderSize = dbx.borderSize
 	self.borderSwap = dbx.borderSwap
+	self.blendMode = dbx.blend
 	self.width = dbx.size or dbx.width
 	if self.width==0 then self.width= nil end
 	self.height= dbx.size or dbx.height

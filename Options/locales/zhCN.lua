@@ -351,6 +351,9 @@ L["Always use the status color for the border"] = "总是使用状态颜色边�
 
 L["Frame Texture"] = "框架纹理"
 L["Adjust the frame texture."] = "调整框架纹理"
+-- L["Blend Mode"] = ""
+-- L["Select how to mix the texture with the background."] = ""
+-- L["Additive"] = ""
 
 L["Show stack"] = "显示堆叠"
 L["Show the number of stacks."] = "显示堆叠数"

@@ -351,6 +351,9 @@ L["Always use the status color for the border"] = "테두리에 항상 상태 �
 
 L["Frame Texture"] = "프레임 텍스처"
 L["Adjust the frame texture."] = "프레임 텍스처 설정"
+-- L["Blend Mode"] = ""
+-- L["Select how to mix the texture with the background."] = ""
+-- L["Additive"] = ""
 
 L["Show stack"] = "중첩 표시"
 L["Show the number of stacks."] = "중첩 숫자 표시"

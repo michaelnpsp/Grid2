@@ -351,6 +351,9 @@ L["Adjust background color and alpha."] = "Ajustar plano de fundo e transparenci
 
 -- L["Frame Texture"] = ""
 -- L["Adjust the frame texture."] = ""
+-- L["Blend Mode"] = ""
+-- L["Select how to mix the texture with the background."] = ""
+-- L["Additive"] = ""
 
 -- L["Show stack"] = ""
 -- L["Show the number of stacks."] = ""

@@ -351,6 +351,9 @@ L["Always use the status color for the border"] = true
 
 L["Frame Texture"] = true
 L["Adjust the frame texture."] = true
+L["Blend Mode"] = true
+L["Select how to mix the texture with the background."] = true
+L["Additive"] = true
 
 L["Show stack"] = true
 L["Show the number of stacks."] = true

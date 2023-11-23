@@ -352,6 +352,9 @@ L["Always use the status color for the border"] = "Usar siempre el color del est
 
 L["Frame Texture"] = "Textura"
 L["Adjust the frame texture."] = "Elige la textura"
+L["Blend Mode"] = "Mezcla"
+L["Select how to mix the texture with the background."] = "Elige como mezclar la textura con el fondo."
+L["Additive"] = "Aditivo"
 
 L["Show stack"] = "Acumulaciones"
 L["Show the number of stacks."] = "Muestra el número de Acumulaciones"

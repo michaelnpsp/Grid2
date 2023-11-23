@@ -351,6 +351,9 @@ L["Always use the status color for the border"] = "Всегда использу
 
 L["Frame Texture"] = "Текстура рамки"
 L["Adjust the frame texture."] = "Установить текстуру рамки."
+-- L["Blend Mode"] = ""
+-- L["Select how to mix the texture with the background."] = ""
+-- L["Additive"] = ""
 
 L["Show stack"] = "Показать сумму"
 L["Show the number of stacks."] = "Показывает сумму эффекта."
