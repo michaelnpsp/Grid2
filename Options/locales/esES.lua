@@ -1,4 +1,5 @@
-local L =  LibStub:GetLibrary("AceLocale-3.0"):NewLocale("Grid2Options", "esES")
+local lib = LibStub:GetLibrary("AceLocale-3.0")
+local L =  lib:NewLocale("Grid2Options", "esES") or lib:NewLocale("Grid2Options", "esMX")
 if not L then return end
 
 --{{{ General options
