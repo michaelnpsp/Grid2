@@ -395,6 +395,12 @@ L["Select where to anchor the bar and optional you can reverse the grow directio
 L["Previous Bar"] = "이전 바"
 L["Topmost Bar"] = "최상단 바"
 L["Previous Bar & Reverse"] = "이전 바 & 반대로"
+-- L["Glow Line"] = ""
+-- L["Line"] = ""
+-- L["Line Thickness"] = ""
+-- L["Set the thickness of the glow line."] = ""
+-- L["Line Position"] = ""
+-- L["Fine adjust the position of the line relative to the previous bar."] = ""
 
 L["Border Size"] = "테두리 크기"
 L["Adjust the border of each unit's frame."] = "각 유닛 프레임의 테두리 설정"

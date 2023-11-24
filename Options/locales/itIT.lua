@@ -395,6 +395,12 @@ L["Anchor the indicator to the selected bar."] = "Ancora l'indicatore alla barra
 -- L["Previous Bar"] = ""
 -- L["Topmost Bar"] = ""
 -- L["Previous Bar & Reverse"] = ""
+-- L["Glow Line"] = ""
+-- L["Line"] = ""
+-- L["Line Thickness"] = ""
+-- L["Set the thickness of the glow line."] = ""
+-- L["Line Position"] = ""
+-- L["Fine adjust the position of the line relative to the previous bar."] = ""
 
 L["Border Size"] = "Spessore Bordo"
 L["Adjust the border of each unit's frame."] = "Regola il bordo di ciascun frame dell'unità."

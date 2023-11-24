@@ -395,6 +395,12 @@ L["Choose zero to set the bar to the same height as parent frame"] = "Choisissez
 -- L["Previous Bar"] = ""
 -- L["Topmost Bar"] = ""
 -- L["Previous Bar & Reverse"] = ""
+-- L["Glow Line"] = ""
+-- L["Line"] = ""
+-- L["Line Thickness"] = ""
+-- L["Set the thickness of the glow line."] = ""
+-- L["Line Position"] = ""
+-- L["Fine adjust the position of the line relative to the previous bar."] = ""
 
 L["Border Size"] = "Taille de la bordure"
 L["Adjust the border of each unit's frame."] = "Ajuster la bordure de chaque cadre d'unité."

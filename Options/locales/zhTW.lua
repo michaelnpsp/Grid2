@@ -395,6 +395,12 @@ L["Anchor the indicator to the selected bar."] = "將指標定位於所選擇的
 -- L["Previous Bar"] = ""
 -- L["Topmost Bar"] = ""
 -- L["Previous Bar & Reverse"] = ""
+-- L["Glow Line"] = ""
+-- L["Line"] = ""
+-- L["Line Thickness"] = ""
+-- L["Set the thickness of the glow line."] = ""
+-- L["Line Position"] = ""
+-- L["Fine adjust the position of the line relative to the previous bar."] = ""
 
 L["Border Size"] = "邊框尺寸"
 L["Adjust the border of each unit's frame."] = "調整所有框架的邊框"

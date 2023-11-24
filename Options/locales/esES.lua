@@ -396,6 +396,12 @@ L["Select where to anchor the bar and optional you can reverse the grow directio
 L["Previous Bar"] = "Barra Previa"
 L["Topmost Bar"] = "Barra mas Alta"
 L["Previous Bar & Reverse"] = "Prev.Bar&Invertir"
+L["Glow Line"] = "Linea Brillante"
+L["Line"] = "Linea"
+L["Line Thickness"] = "Grosor Linea"
+L["Set the thickness of the glow line."] = "Configura el grosor de la linea."
+L["Line Position"] = "Posicion Linea"
+L["Fine adjust the position of the line relative to the previous bar."] = "Ajuste fine de la posicion de la linea."
 
 L["Border Size"] = "Grosor del borde"
 L["Adjust the border of each unit's frame."] = "Ajusta el grosor del borde de cada celda"

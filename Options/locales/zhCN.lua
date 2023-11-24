@@ -395,6 +395,12 @@ L["Select where to anchor the bar and optional you can reverse the grow directio
 L["Previous Bar"] = "前一个状态条"
 L["Topmost Bar"] = "最顶层"
 L["Previous Bar & Reverse"] = "前一个条块&反方向"
+-- L["Glow Line"] = ""
+-- L["Line"] = ""
+-- L["Line Thickness"] = ""
+-- L["Set the thickness of the glow line."] = ""
+-- L["Line Position"] = ""
+-- L["Fine adjust the position of the line relative to the previous bar."] = ""
 
 L["Border Size"] = "边框尺寸"
 L["Adjust the border of each unit's frame."] = "调整边框的颜色和透明度。"

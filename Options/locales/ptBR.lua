@@ -395,6 +395,12 @@ L["Adjust background color and alpha."] = "Ajustar plano de fundo e transparenci
 -- L["Previous Bar"] = ""
 -- L["Topmost Bar"] = ""
 -- L["Previous Bar & Reverse"] = ""
+-- L["Glow Line"] = ""
+-- L["Line"] = ""
+-- L["Line Thickness"] = ""
+-- L["Set the thickness of the glow line."] = ""
+-- L["Line Position"] = ""
+-- L["Fine adjust the position of the line relative to the previous bar."] = ""
 
 -- L["Border Size"] = ""
 -- L["Adjust the border of each unit's frame."] = ""

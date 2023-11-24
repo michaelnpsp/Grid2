@@ -26,10 +26,10 @@ end
 -- In this case we are talking about screen frames like in frames per second.
 local function Bar_OnFrameUpdate(bar)
 	local self        = bar.myIndicator
-	local direction   = self.direction
 	local horizontal  = self.horizontal
 	local points      = self.alignPoints
 	local barSize     = bar[self.GetSizeMethod](bar)
+	local barSizeDir  = barSize * self.direction
 	local myTextures  = bar.myTextures
 	local myValues    = bar.myValues
 	local valueTo     = myValues[1] or 0
@@ -44,37 +44,47 @@ local function Bar_OnFrameUpdate(bar)
 		local value = myValues[i] or 0
 		if value>0 then
 			maxIndex = i
-			if texture.myReverse then
-			  offset  = valueTo - value
-			  offseu  = valueTo
-			  valueTo = offset
-			elseif texture.myNoOverlap then
-			  offset   = valueMax
-			  offseu   = valueMax+value
-			  valueTo  = offseu
-			  valueMax = valueTo
-			else
-			  offset   = valueTo
-			  offseu   = valueTo+value
-			  valueTo  = offseu
-			  valueMax = valueTo>valueMax and valueTo or valueMax
-			end
-			if offset<0 then offset = 0 end
-			if offseu>1 then offseu = 1 end
-			size = offseu - offset
-			if size>0 then
+			if texture.myLineAdjust then
+				offset = texture.myNoOverlap and valueMax or valueTo
 				if horizontal then
-					texture:SetPoint( points[1], bar, points[1], direction*offset*barSize, 0)
-					if texture.myHorAdjust then texture:SetTexCoord(0,size,0,1) end
+					texture:SetPoint( points[1], bar, points[1], offset*barSizeDir+texture.myLineAdjust, 0)
 				else
-					texture:SetPoint( points[1], bar, points[1], 0, direction*offset*barSize)
-					if texture.myVerAdjust then texture:SetTexCoord(0,1,1-size,1) end
+					texture:SetPoint( points[1], bar, points[1], 0, offset*barSizedir+texture.myLineAdjust)
 				end
-				texture:mySetSize( size * barSize )
 				texture:Show()
 			else
-				texture:Hide()
-			end
+				if texture.myReverse then
+				  offset  = valueTo - value
+				  offseu  = valueTo
+				  valueTo = offset
+				elseif texture.myNoOverlap then
+				  offset   = valueMax
+				  offseu   = valueMax+value
+				  valueTo  = offseu
+				  valueMax = valueTo
+				else
+				  offset   = valueTo
+				  offseu   = valueTo+value
+				  valueTo  = offseu
+				  valueMax = valueTo>valueMax and valueTo or valueMax
+				end
+				if offset<0 then offset = 0 end
+				if offseu>1 then offseu = 1 end
+				size = offseu - offset
+				if size>0 then
+					if horizontal then
+						texture:SetPoint( points[1], bar, points[1], offset*barSizeDir, 0)
+						if texture.myHorAdjust then texture:SetTexCoord(0,size,0,1) end
+					else
+						texture:SetPoint( points[1], bar, points[1], 0, offset*barSizeDir)
+						if texture.myVerAdjust then texture:SetTexCoord(0,1,1-size,1) end
+					end
+					texture:mySetSize( size * barSize )
+					texture:Show()
+				else
+					texture:Hide()
+				end
+			end	
 		else
 			texture:Hide()
 		end
@@ -172,8 +182,8 @@ local function Bar_Layout(self, parent)
 		texture:ClearAllPoints()
 		texture.mySetSize = texture[ self.SetSizeMethod ]
 		texture.myReverse = setup.reverse
-		texture.myNoOverlap = setup.noOverlap
 		texture.myOpacity = setup.opacity
+		texture.myNoOverlap = setup.noOverlap
 		texture.myHorAdjust = setup.horAdjust
 		texture.myVerAdjust = setup.verAdjust
 		if texture:GetTexture() then texture:SetTexture(nil) end
@@ -182,6 +192,7 @@ local function Bar_Layout(self, parent)
 		texture:SetHorizTile(setup.horWrap~='CLAMP')
 		texture:SetVertTile(setup.verWrap~='CLAMP')
 		texture:SetDrawLayer("ARTWORK", setup.sublayer)
+		texture:SetBlendMode(setup.lineSize and 'ADD' or 'BLEND')
 		local c = setup.color
 		if c then
 			texture:SetVertexColor( c.r, c.g, c.b, setup.opacity )
@@ -190,8 +201,12 @@ local function Bar_Layout(self, parent)
 		end
 		if setup.background then
 			texture:SetAllPoints(); texture:Show()
-		else
-			texture:SetSize( width, height )
+		elseif setup.lineSize then
+			texture.myLineAdjust = setup.lineAdjust
+			texture:SetWidth ( self.orientation == "HORIZONTAL" and setup.lineSize or width )
+			texture:SetHeight( self.orientation ~= "HORIZONTAL" and setup.lineSize or height)
+		else	
+			texture:SetSize(width, height)
 		end
 		textures[i+1] = texture
 	end
@@ -262,7 +277,9 @@ local function Bar_UpdateDB(self)
 			verWrap   = setup.verTile or 'CLAMP',
 			horAdjust = setup.horTile=='CLAMP',
 			verAdjust = setup.verTile=='CLAMP',
-			sublayer  = i,
+			sublayer  = setup.glowLine and 7 or i,
+			lineSize  = setup.glowLine,	
+			lineAdjust= setup.glowLine and (setup.glowLineAdjust or 0) or nil,
 		}
 	end
 	if backColor then

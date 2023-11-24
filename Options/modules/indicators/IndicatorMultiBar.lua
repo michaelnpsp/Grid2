@@ -90,6 +90,7 @@ end
 -- Grid2Options:GetIndicatorMultiBarTextures()
 do
 	local emptyTable, tmpTable = {}, {}
+	local TYPE_VALUES = { L["Bar"] , L["Line"] }
 	local ANCHOR_VALUES = { L["Previous Bar"], L["Topmost Bar"], L["Prev. Bar & Reverse"] }
     local BANCHOR_VALUES =	{ [0]= L["Whole Background"], [1]= L["Main Bar"], [2]= L["Topmost Bar"] }
 	local DIRECTION_VALUES = { L['Normal'], L['Reverse'] }
@@ -99,7 +100,7 @@ do
 	local TILE_EXTRA_VALUES = { [0] = L["Fill"], [1] = L["Stretch"], [3] = L["Tile Repeat"], [4] = L["Tile Mirror"] }
 	local TILE_BACK_VALUES = { [1] = L["Stretch"], [3] = L["Tile Repeat"] }	
 	local tileTranslate = { [0] = 'CLAMP', [1] = nil,  [3] = 'REPEAT', [4] = 'MIRROR', CLAMP = 0, REPEAT = 3, MIRROR = 4 }
-	
+		
 	-- edited indicator & bar
 
 	local self, indicator, barIndex, barDbx = Grid2Options
@@ -172,13 +173,43 @@ do
 		-------------------------------------------------------------------------
 	
 		headerMain = { type = "header", order = 1,  name = function(info)
-			return (barIndex and barIndex>0) and L["Extra Bar "]..barIndex or L["Main Bar"]
+
+			if not barIndex or barIndex==0 then
+				return L["Main Bar"]
+			elseif barDbx.glowLine then
+				return L["Glow Line"]
+			else
+				return L["Extra Bar"]
+			end
 		end },
+	
+		barType = {
+			type = "select",
+			order = 1,
+			width = 0.5,
+			name = L["Type"],
+			desc = L["Select the type of bar to display."],
+			get = function()
+				return (barIndex==0 or not barDbx.glowLine) and 1 or 2
+			end,
+			set = function(_,v)
+				if v==1 then
+					barDbx.glowLine = nil
+					barDbx.glowLineAdjust = nil
+				else
+					local orientation  = indicator.dbx.orientation or Grid2Frame.db.profile.orientation or 'HORIZONTAL'
+					barDbx.glowLine = 6
+					barDbx.texture = orientation=='HORIZONTAL' and 'Grid2 GlowH' or 'Grid2 GlowV'
+				end
+			end,
+			values = TYPE_VALUES,
+			disabled = function() return barIndex<=0 end,
+		},
 	
 		barStatus = {
 			type = "select",
 			order = 2,
-			width = 1.6,
+			width = 1.2,
 			name = L["Status"],
 			desc = L["Select the status to display in this bar."],
 			get = function()
@@ -215,7 +246,7 @@ do
 		barMainDirection = {
 			type = "select",
 			order = 3,
-			width = 0.95,
+			width = 0.85,
 			name = L["Direction"],
 			desc = L["Select the direction of the main bar."],
 			get = function ()
@@ -232,7 +263,7 @@ do
 		barExtraDirection = {
 			type = "select",
 			order = 3,
-			width = 0.95,
+			width = 0.85,
 			name = L["Anchor & Direction"],
 			desc = L["Select where to anchor the bar and optional you can reverse the grow direction."],
 			get = function()
@@ -245,6 +276,46 @@ do
 			end,
 			values = ANCHOR_VALUES,
 			hidden = function() return barIndex==0 end,
+		},
+		
+		-------------------------------------------------------------------------
+		
+		lineThickenss = {
+			type = "range",
+			order = 3.5,
+			width = 1.275,
+			name = L["Line Thickness"],
+			desc = L["Set the thickness of the glow line."],
+			min = 1,
+			softMax = 50,
+			step = 1,
+			get = function ()
+				return barDbx.glowLine
+			end,
+			set = function (_, v)
+				barDbx.glowLine = v
+				self:RefreshIndicator(indicator, "Layout")
+			end,
+			hidden = function() return not barDbx.glowLine end,
+		},
+		
+		lineAdjust = {
+			type = "range",
+			order = 3.6,
+			width = 1.275,			
+			name = L["Line Position"],
+			desc = L["Fine adjust the position of the line relative to the previous bar."],
+			softMin = -50,
+			softMax = 50,
+			step = 1,
+			get = function ()
+				return barDbx.glowLineAdjust or 0
+			end,
+			set = function (_, v)
+				barDbx.glowLineAdjust = (v~=0) and v or nil
+				self:RefreshIndicator(indicator, "Layout")
+			end,
+			hidden = function() return not barDbx.glowLine end,			
 		},
 		
 		-------------------------------------------------------------------------

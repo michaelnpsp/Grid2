@@ -395,6 +395,12 @@ L["Select where to anchor the bar and optional you can reverse the grow directio
 L["Previous Bar"] = "Предыдущая панель"
 L["Topmost Bar"] = "Самая верхняя полоса"
 -- L["Previous Bar & Reverse"] = ""
+-- L["Glow Line"] = ""
+-- L["Line"] = ""
+-- L["Line Thickness"] = ""
+-- L["Set the thickness of the glow line."] = ""
+-- L["Line Position"] = ""
+-- L["Fine adjust the position of the line relative to the previous bar."] = ""
 
 L["Border Size"] = "Размер границы"
 L["Adjust the border of each unit's frame."] = "Настройка границы рамки каждого юнита."

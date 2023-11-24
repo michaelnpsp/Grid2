@@ -395,6 +395,12 @@ L["Select where to anchor the bar and optional you can reverse the grow directio
 L["Previous Bar"] = true
 L["Topmost Bar"] = true
 L["Previous Bar & Reverse"] = true
+L["Glow Line"] = true
+L["Line"] = true
+L["Line Thickness"] = true
+L["Set the thickness of the glow line."] = true
+L["Line Position"] = true
+L["Fine adjust the position of the line relative to the previous bar."] = true
 
 L["Border Size"] = true
 L["Adjust the border of each unit's frame."] = true
