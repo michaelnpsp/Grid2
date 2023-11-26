@@ -12,12 +12,9 @@ local SetSizeMethods = { HORIZONTAL = "SetWidth", VERTICAL = "SetHeight" }
 local GetSizeMethods = { HORIZONTAL = "GetWidth", VERTICAL = "GetHeight" }
 
 local function Bar_CreateHH(self, parent)
-	local bar = self:Acquire("StatusBar", parent)
+	local bar = self:Acquire("Frame", parent)
 	bar.myIndicator = self
 	bar.myValues = {}
-	bar:SetStatusBarColor(0,0,0,0)
-	bar:SetMinMaxValues(0, 1)
-	bar:SetValue(0)
 end
 
 -- Warning Do not put bar:SetValue() methods inside this function because for some reason the bar is not updated&painted
@@ -32,14 +29,11 @@ local function Bar_OnFrameUpdate(bar)
 	local barSizeDir  = barSize * self.direction
 	local myTextures  = bar.myTextures
 	local myValues    = bar.myValues
-	local valueTo     = myValues[1] or 0
-	local valueMax    = valueTo
+	local valueTo     = 0
+	local valueMax    = 0
 	local maxIndex    = 0
-	if self.reverse then
-		valueMax, valueTo = 0, -valueTo
-	end
 	local size, offset, offseu
-	for i=2,bar.myMaxIndex do
+	for i=1,bar.myMaxIndex do
 		local texture = myTextures[i]
 		local value = myValues[i] or 0
 		if value>0 then
@@ -116,8 +110,6 @@ local EnableDelayedUpdates = function()
 end
 
 -- Warning: This is an overrided indicator:Update() NOT the standard indicator:OnUpdate()
--- We are calling bar:SetValue()/bar:SetMainBarValue() here instead of inside Bar_OnFrameUpdate() because the
--- StatusBar texture is not updated inmmediatly like the additional bars textures, generating a graphic glitch.
 local function Bar_Update(self, parent, unit, status)
 	if unit then
 		local bar = parent[self.name]
@@ -130,20 +122,13 @@ local function Bar_Update(self, parent, unit, status)
 				if value>0 and index>bar.myMaxIndex then
 					bar.myMaxIndex = index -- Optimization to avoid updating bars with zero value
 				end
-				if index==1 then
-				   bar:SetMainBarValue(value)
-				end
-				if self.backAnchor or bar.myMaxIndex>1 then
-					updates[bar] = true
-				end
 			else -- update due a layout or groupType change not from a status notifying a change
 				for i, status in ipairs(self.statuses) do
 					values[i] = status:GetPercent(unit) or 0
 				end
 				bar.myMaxIndex = #self.statuses
-				bar:SetMainBarValue(values[1] or 0)
-				updates[bar] = true
 			end
+			updates[bar] = true			
 		end
 	end
 end
@@ -151,31 +136,18 @@ end
 
 local function Bar_Layout(self, parent)
 	local bar = parent[self.name]
-	-- main bar
 	local width = self.width  or parent.container:GetWidth()
 	local height = self.height or parent.container:GetHeight()
 	bar:SetParent(parent)
 	bar:ClearAllPoints()
-	bar:SetOrientation(self.orientation)
-	bar:SetReverseFill(self.reverseFill)
 	bar:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
-	bar:SetStatusBarTexture(self.texture)
-	local barTexture = bar:GetStatusBarTexture()
-	barTexture:SetDrawLayer("ARTWORK", 0)
-	barTexture:SetHorizTile(self.horTile)
-	barTexture:SetVertTile(self.verTile)
-	bar:SetStatusBarTexture(self.texture)
-	local color = self.foreColor
-	if color then bar:SetStatusBarColor(color.r, color.g, color.b, self.opacity) end
 	bar:SetSize(width, height)
 	bar:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
-	bar:SetValue(0)
-	bar.SetMainBarValue = self.reverse and Grid2.Dummy or bar.SetValue
 	-- extra bars
 	local ctextures
     local barCount = #self.bars
-	local textures = bar.myTextures or { barTexture }
-	for i=1,barCount do
+	local textures = bar.myTextures or {}
+	for i=0,barCount do
 		local setup = self.bars[i]
 		local texture = textures[i+1] or bar:CreateTexture()
 		texture:Hide()
@@ -210,7 +182,7 @@ local function Bar_Layout(self, parent)
 		end
 		textures[i+1] = texture
 	end
-	for i=barCount+2,#textures do
+	for i=barCount+1,#textures do
 		textures[i]:Hide()
 	end
 	bar.myTextures = textures
@@ -228,7 +200,7 @@ local function Bar_Disable(self, parent)
 	local bar = parent[self.name]
 	local textures = bar.myTextures
 	if textures then
-		for i=2,#textures do
+		for i=1,#textures do
 			textures[i]:Hide()
 		end
 	end
@@ -260,12 +232,17 @@ local function Bar_UpdateDB(self)
 	self.horizontal    = (orientation == "HORIZONTAL")
 	self.reverseFill   = not not dbx.reverseFill
 	self.backAnchor    = dbx.backAnchor
-	self.reverse       = dbx.reverseMainBar
-	self.opacity       = dbx.textureColor.a
-	self.texture       = Grid2:MediaFetch("statusbar", dbx.texture or theme.barTexture, "Gradient")
-	self.horTile       = dbx.horTile~=nil
-	self.verTile       = dbx.verTile~=nil
-	self.bars          = {}
+	self.bars          = { [0] = {
+		reverse   = dbx.reverseMainBar,
+		opacity   = dbx.textureColor.a,
+		color     = self.foreColor,
+		texture   = Grid2:MediaFetch("statusbar", dbx.texture or theme.barTexture, "Gradient"),
+		horWrap   = dbx.horTile or 'CLAMP',
+		verWrap   = dbx.verTile or 'CLAMP',
+		horAdjust = dbx.horTile==nil,
+		verAdjust = dbx.verTile==nil,
+		sublayer  = 0,
+	} }
 	for i,setup in ipairs(dbx) do
 		self.bars[i] = {
 			reverse   = setup.reverse,
@@ -308,13 +285,10 @@ end
 local function BarColor_SetBarColor(self, parent, r, g, b, a)
 	local bar = parent[self.parentName]
 	if bar then
-		bar:SetStatusBarColor(r, g, b, min(self.opacity,a or 1) )
 		local textures = bar.myCTextures
-		if textures then
-			for i=#textures,1,-1 do
-				local tex = textures[i]
-				tex:SetVertexColor( r, g, b, min(tex.myOpacity, a) )
-			end
+		for i=#textures,1,-1 do
+			local tex = textures[i]
+			tex:SetVertexColor( r, g, b, min(tex.myOpacity, a or 1) )
 		end
 	end
 end
