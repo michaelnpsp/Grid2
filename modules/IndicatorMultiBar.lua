@@ -180,7 +180,7 @@ local function Bar_Layout(self, parent)
 		end
 		textures[i+1] = texture
 	end
-	for i=barCount+1,#textures do
+	for i=barCount+2,#textures do
 		textures[i]:Hide()
 	end
 	bar.myTextures = textures
@@ -208,6 +208,7 @@ local function Bar_Disable(self, parent)
 end
 
 local function Bar_UpdateDB(self)
+	local bars         = {}
 	local dbx          = self.dbx
 	local l            = dbx.location
 	local theme        = Grid2Frame.db.profile
@@ -230,7 +231,8 @@ local function Bar_UpdateDB(self)
 	self.horizontal    = (orientation == "HORIZONTAL")
 	self.reverseFill   = not not dbx.reverseFill
 	self.backAnchor    = dbx.backAnchor
-	self.bars          = { [0] = {
+	self.bars          = bars
+	bars[0] = {
 		reverse   = dbx.reverseMainBar,
 		opacity   = dbx.textureColor.a,
 		color     = self.foreColor,
@@ -240,9 +242,9 @@ local function Bar_UpdateDB(self)
 		horAdjust = dbx.horTile==nil,
 		verAdjust = dbx.verTile==nil,
 		sublayer  = 0,
-	} }
+	}
 	for i,setup in ipairs(dbx) do
-		self.bars[i] = {
+		bars[i] = {
 			reverse   = setup.reverse,
 			noOverlap = setup.noOverlap,
 			opacity   = setup.color.a,
@@ -258,8 +260,8 @@ local function Bar_UpdateDB(self)
 		}
 	end
 	if backColor then
-	    self.bars[#self.bars+1] = {
-			texture = dbx.backTexture and Grid2:MediaFetch("statusbar", dbx.backTexture) or self.texture,
+	    bars[#bars+1] = {
+			texture = dbx.backTexture and Grid2:MediaFetch("statusbar", dbx.backTexture) or bars[0].texture,
 			horWrap = dbx.backHorTile or 'CLAMP',
 			verWrap = dbx.backVerTile or 'CLAMP',
 			color = dbx.invertColor and texColor or backColor,

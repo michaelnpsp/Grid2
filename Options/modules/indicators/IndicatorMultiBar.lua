@@ -558,6 +558,8 @@ do
 	-- background settings
 	
 	local backOptions = {
+
+		__load = { type = "header", order = 0, name = "", hidden = function() barIndex = -1; return true; end },
 	
 		backHeader = { type = "header", order = 1,  name = L["Background"] },
 		
