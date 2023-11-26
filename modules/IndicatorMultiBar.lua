@@ -17,14 +17,10 @@ local function Bar_CreateHH(self, parent)
 	bar.myValues = {}
 end
 
--- Warning Do not put bar:SetValue() methods inside this function because for some reason the bar is not updated&painted
--- on current frame (the bar update is delayed to the next frame), but extra bar textures are updated on current frame.
--- generating a graphic glitch because main bar & extra bars are displayed out of sync (in diferente frames)
--- In this case we are talking about screen frames like in frames per second.
 local function Bar_OnFrameUpdate(bar)
 	local self        = bar.myIndicator
 	local horizontal  = self.horizontal
-	local points      = self.alignPoints
+	local points      = self.alignPoints[1]
 	local barSize     = bar[self.GetSizeMethod](bar)
 	local barSizeDir  = barSize * self.direction
 	local myTextures  = bar.myTextures
@@ -41,9 +37,9 @@ local function Bar_OnFrameUpdate(bar)
 			if texture.myLineAdjust then
 				offset = texture.myNoOverlap and valueMax or valueTo
 				if horizontal then
-					texture:SetPoint( points[1], bar, points[1], offset*barSizeDir+texture.myLineAdjust, 0)
+					texture:SetPoint( points, bar, points, offset*barSizeDir+texture.myLineAdjust, 0)
 				else
-					texture:SetPoint( points[1], bar, points[1], 0, offset*barSizedir+texture.myLineAdjust)
+					texture:SetPoint( points, bar, points, 0, offset*barSizedir+texture.myLineAdjust)
 				end
 				texture:Show()
 			else
@@ -67,10 +63,10 @@ local function Bar_OnFrameUpdate(bar)
 				size = offseu - offset
 				if size>0 then
 					if horizontal then
-						texture:SetPoint( points[1], bar, points[1], offset*barSizeDir, 0)
+						texture:SetPoint( points, bar, points, offset*barSizeDir, 0)
 						if texture.myHorAdjust then texture:SetTexCoord(0,size,0,1) end
 					else
-						texture:SetPoint( points[1], bar, points[1], 0, offset*barSizeDir)
+						texture:SetPoint( points, bar, points, 0, offset*barSizeDir)
 						if texture.myVerAdjust then texture:SetTexCoord(0,1,1-size,1) end
 					end
 					texture:mySetSize( size * barSize )
@@ -88,7 +84,8 @@ local function Bar_OnFrameUpdate(bar)
 		local texture = myTextures[#myTextures]
 		local size = (self.backAnchor==1) and myValues[1] or valueMax
 		if size<1 then
-			texture:SetPoint( points[2], bar, points[2], 0, 0)
+			local points = self.alignPoints[2]
+			texture:SetPoint( points, bar, points, 0, 0)
 			texture:mySetSize( (1-size) * barSize )
 			texture:Show()
 		else
@@ -172,7 +169,8 @@ local function Bar_Layout(self, parent)
 			ctextures = ctextures or {}; ctextures[#ctextures+1] = texture
 		end
 		if setup.background then
-			texture:SetAllPoints(); texture:Show()
+			texture:SetAllPoints()
+			texture:Show()
 		elseif setup.lineSize then
 			texture.myLineAdjust = setup.lineAdjust
 			texture:SetWidth ( self.orientation == "HORIZONTAL" and setup.lineSize or width )
