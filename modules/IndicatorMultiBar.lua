@@ -144,9 +144,9 @@ local function Bar_Layout(self, parent)
 	local ctextures
     local barCount = #self.bars
 	local textures = bar.myTextures or {}
-	for i=0,barCount do
+	for i=1,barCount do
 		local setup = self.bars[i]
-		local texture = textures[i+1] or bar:CreateTexture()
+		local texture = textures[i] or bar:CreateTexture()
 		texture:Hide()
 		texture:ClearAllPoints()
 		texture.mySetSize = texture[ self.SetSizeMethod ]
@@ -178,9 +178,9 @@ local function Bar_Layout(self, parent)
 		else	
 			texture:SetSize(width, height)
 		end
-		textures[i+1] = texture
+		textures[i] = texture
 	end
-	for i=barCount+2,#textures do
+	for i=barCount+1,#textures do
 		textures[i]:Hide()
 	end
 	bar.myTextures = textures
@@ -232,7 +232,7 @@ local function Bar_UpdateDB(self)
 	self.reverseFill   = not not dbx.reverseFill
 	self.backAnchor    = dbx.backAnchor
 	self.bars          = bars
-	bars[0] = {
+	bars[1] = {
 		reverse   = dbx.reverseMainBar,
 		opacity   = dbx.textureColor.a,
 		color     = self.foreColor,
@@ -244,7 +244,7 @@ local function Bar_UpdateDB(self)
 		sublayer  = 0,
 	}
 	for i,setup in ipairs(dbx) do
-		bars[i] = {
+		bars[#bars+1] = {
 			reverse   = setup.reverse,
 			noOverlap = setup.noOverlap,
 			opacity   = setup.color.a,
@@ -261,7 +261,7 @@ local function Bar_UpdateDB(self)
 	end
 	if backColor then
 	    bars[#bars+1] = {
-			texture = dbx.backTexture and Grid2:MediaFetch("statusbar", dbx.backTexture) or bars[0].texture,
+			texture = dbx.backTexture and Grid2:MediaFetch("statusbar", dbx.backTexture) or bars[1].texture,
 			horWrap = dbx.backHorTile or 'CLAMP',
 			verWrap = dbx.backVerTile or 'CLAMP',
 			color = dbx.invertColor and texColor or backColor,
