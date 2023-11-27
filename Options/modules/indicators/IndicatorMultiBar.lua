@@ -96,16 +96,21 @@ do
 	local DIRECTION_VALUES = { L['Normal'], L['Reverse'] }
 	local MAINBAR_COLOR_SOURCES = { L["Status Color"], L["Custom Color"] }
 	local EXTRABAR_COLOR_SOURCES = { L["Main Bar Color"], L["Custom Color"] }
-	local TILE_MAIN_VALUES = { [1] = L["Fill"], [3] = L["Tile Repeat"] }
-	local TILE_EXTRA_VALUES = { [0] = L["Fill"], [1] = L["Stretch"], [3] = L["Tile Repeat"], [4] = L["Tile Mirror"] }
-	local TILE_BACK_VALUES = { [1] = L["Stretch"], [3] = L["Tile Repeat"] }	
-	local tileTranslate = { [0] = 'CLAMP', [1] = nil,  [3] = 'REPEAT', [4] = 'MIRROR', CLAMP = 0, REPEAT = 3, MIRROR = 4 }
+	local TILE_BAR_VALUES  = { [1] = L["Fill"], [2] = L["Stretch"], [3] = L["Tile Repeat"], [4] = L["Tile Mirror"] }
+	local TILE_BACK_VALUES = { [2] = L["Stretch"], [3] = L["Tile Repeat"] }	
+	local TILE_MAIN_TRANS  = { [1] = nil, [2] = 'CLAMP',  [3] = 'REPEAT', [4] = 'MIRROR', CLAMP = 2, EMPTY = 1, REPEAT = 3, MIRROR = 4 }
+	local TILE_EXTRA_TRANS = { [1] = 'CLAMP', [2] = nil,  [3] = 'REPEAT', [4] = 'MIRROR', CLAMP = 1, EMPTY = 2 ,REPEAT = 3, MIRROR = 4 }
 		
 	-- edited indicator & bar
 
 	local self, indicator, barIndex, barDbx = Grid2Options
 
 	-- support functions
+
+	local function tileTranslate(value)
+		local t = barIndex==0 and TILE_MAIN_TRANS or TILE_EXTRA_TRANS
+		return t[value or 'EMPTY']
+	end
 
 	local function SelectTab( key )
 		self:SelectGroup('indicators', indicator.name, 'bars', tostring(key) )
@@ -199,7 +204,7 @@ do
 				else
 					local orientation  = indicator.dbx.orientation or Grid2Frame.db.profile.orientation or 'HORIZONTAL'
 					barDbx.glowLine = 6
-					barDbx.texture = orientation=='HORIZONTAL' and 'Grid2 GlowH' or 'Grid2 GlowV'
+					barDbx.texture = orientation=='HORIZONTAL' and 'Grid2 GlowV' or 'Grid2 GlowH'
 				end
 			end,
 			values = TYPE_VALUES,
@@ -384,7 +389,7 @@ do
 				(barDbx.textureColor or barDbx.color).a = v
 				self:RefreshIndicator(indicator, "Layout")
 			end,
-			hidden = false,			
+			hidden = false,
 		},
 
 		barColor = {
@@ -459,13 +464,13 @@ do
 			name = L["Horizontal Fit"],
 			desc = L["Select howto adjust the texture horizontally."],
 			get = function()
-				return tileTranslate[barDbx.horTile] or 1
+				return tileTranslate(barDbx.horTile)
 			end,
 			set = function(_, v)
-				barDbx.horTile = tileTranslate[v]
+				barDbx.horTile = tileTranslate(v)
 				self:RefreshIndicator(indicator, "Layout")
 			end,
-			values = function() return barIndex==0 and TILE_MAIN_VALUES or TILE_EXTRA_VALUES end,			
+			values = TILE_BAR_VALUES,
 			hidden = false,
 		},
 		
@@ -476,13 +481,13 @@ do
 			name = L["Vertical Fit"],
 			desc = L["Select howto adjust the texture vertically."],
 			get = function()
-				return tileTranslate[barDbx.verTile] or 1
+				return tileTranslate(barDbx.verTile)
 			end,
 			set = function(_, v)
-				barDbx.verTile = tileTranslate[v]
+				barDbx.verTile = tileTranslate(v)
 				self:RefreshIndicator(indicator, "Layout")
 			end,
-			values = function() return barIndex==0 and TILE_MAIN_VALUES or TILE_EXTRA_VALUES end,						
+			values = TILE_BAR_VALUES,
 			hidden = false,
 		},
 
@@ -553,6 +558,8 @@ do
 	-- background settings
 	
 	local backOptions = {
+
+		__load = { type = "header", order = 0, name = "", hidden = function() barIndex = -1; return true; end },
 	
 		backHeader = { type = "header", order = 1,  name = L["Background"] },
 		
@@ -612,10 +619,10 @@ do
 			name = L["Horizontal Fit"],
 			desc = L["Select howto adjust the texture horizontally."],
 			get = function()
-				return tileTranslate[indicator.dbx.backHorTile] or 1
+				return tileTranslate(indicator.dbx.backHorTile)
 			end,
 			set = function(_, v)
-				indicator.dbx.backHorTile = tileTranslate[v]
+				indicator.dbx.backHorTile = tileTranslate(v)
 				self:RefreshIndicator(indicator, "Layout")
 			end,
 			values = TILE_BACK_VALUES,
@@ -629,10 +636,10 @@ do
 			name = L["Vertical Fit"],
 			desc = L["Select howto adjust the texture vertically."],
 			get = function()
-				return tileTranslate[indicator.dbx.backVerTile] or 1
+				return tileTranslate(indicator.dbx.backVerTile)
 			end,
 			set = function(_, v)
-				indicator.dbx.backVerTile = tileTranslate[v]
+				indicator.dbx.backVerTile = tileTranslate(v)
 				self:RefreshIndicator(indicator, "Layout")
 			end,
 			values = TILE_BACK_VALUES,			

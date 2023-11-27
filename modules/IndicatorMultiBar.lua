@@ -4,6 +4,7 @@ local Grid2 = Grid2
 local Grid2Frame = Grid2Frame
 local min = min
 local max = max
+local wipe = wipe
 local pairs = pairs
 local ipairs = ipairs
 
@@ -12,34 +13,24 @@ local SetSizeMethods = { HORIZONTAL = "SetWidth", VERTICAL = "SetHeight" }
 local GetSizeMethods = { HORIZONTAL = "GetWidth", VERTICAL = "GetHeight" }
 
 local function Bar_CreateHH(self, parent)
-	local bar = self:Acquire("StatusBar", parent)
+	local bar = self:Acquire("Frame", parent)
 	bar.myIndicator = self
 	bar.myValues = {}
-	bar:SetStatusBarColor(0,0,0,0)
-	bar:SetMinMaxValues(0, 1)
-	bar:SetValue(0)
 end
 
--- Warning Do not put bar:SetValue() methods inside this function because for some reason the bar is not updated&painted
--- on current frame (the bar update is delayed to the next frame), but extra bar textures are updated on current frame.
--- generating a graphic glitch because main bar & extra bars are displayed out of sync (in diferente frames)
--- In this case we are talking about screen frames like in frames per second.
 local function Bar_OnFrameUpdate(bar)
 	local self        = bar.myIndicator
 	local horizontal  = self.horizontal
-	local points      = self.alignPoints
+	local points      = self.alignPoints[1]
 	local barSize     = bar[self.GetSizeMethod](bar)
 	local barSizeDir  = barSize * self.direction
 	local myTextures  = bar.myTextures
 	local myValues    = bar.myValues
-	local valueTo     = myValues[1] or 0
-	local valueMax    = valueTo
+	local valueTo     = 0
+	local valueMax    = 0
 	local maxIndex    = 0
-	if self.reverse then
-		valueMax, valueTo = 0, -valueTo
-	end
 	local size, offset, offseu
-	for i=2,bar.myMaxIndex do
+	for i=1,bar.myMaxIndex do
 		local texture = myTextures[i]
 		local value = myValues[i] or 0
 		if value>0 then
@@ -47,9 +38,9 @@ local function Bar_OnFrameUpdate(bar)
 			if texture.myLineAdjust then
 				offset = texture.myNoOverlap and valueMax or valueTo
 				if horizontal then
-					texture:SetPoint( points[1], bar, points[1], offset*barSizeDir+texture.myLineAdjust, 0)
+					texture:SetPoint( points, bar, points, offset*barSizeDir+texture.myLineAdjust, 0)
 				else
-					texture:SetPoint( points[1], bar, points[1], 0, offset*barSizedir+texture.myLineAdjust)
+					texture:SetPoint( points, bar, points, 0, offset*barSizedir+texture.myLineAdjust)
 				end
 				texture:Show()
 			else
@@ -73,10 +64,10 @@ local function Bar_OnFrameUpdate(bar)
 				size = offseu - offset
 				if size>0 then
 					if horizontal then
-						texture:SetPoint( points[1], bar, points[1], offset*barSizeDir, 0)
+						texture:SetPoint( points, bar, points, offset*barSizeDir, 0)
 						if texture.myHorAdjust then texture:SetTexCoord(0,size,0,1) end
 					else
-						texture:SetPoint( points[1], bar, points[1], 0, offset*barSizeDir)
+						texture:SetPoint( points, bar, points, 0, offset*barSizeDir)
 						if texture.myVerAdjust then texture:SetTexCoord(0,1,1-size,1) end
 					end
 					texture:mySetSize( size * barSize )
@@ -94,7 +85,8 @@ local function Bar_OnFrameUpdate(bar)
 		local texture = myTextures[#myTextures]
 		local size = (self.backAnchor==1) and myValues[1] or valueMax
 		if size<1 then
-			texture:SetPoint( points[2], bar, points[2], 0, 0)
+			local points = self.alignPoints[2]
+			texture:SetPoint( points, bar, points, 0, 0)
 			texture:mySetSize( (1-size) * barSize )
 			texture:Show()
 		else
@@ -116,8 +108,6 @@ local EnableDelayedUpdates = function()
 end
 
 -- Warning: This is an overrided indicator:Update() NOT the standard indicator:OnUpdate()
--- We are calling bar:SetValue()/bar:SetMainBarValue() here instead of inside Bar_OnFrameUpdate() because the
--- StatusBar texture is not updated inmmediatly like the additional bars textures, generating a graphic glitch.
 local function Bar_Update(self, parent, unit, status)
 	if unit then
 		local bar = parent[self.name]
@@ -130,20 +120,13 @@ local function Bar_Update(self, parent, unit, status)
 				if value>0 and index>bar.myMaxIndex then
 					bar.myMaxIndex = index -- Optimization to avoid updating bars with zero value
 				end
-				if index==1 then
-				   bar:SetMainBarValue(value)
-				end
-				if self.backAnchor or bar.myMaxIndex>1 then
-					updates[bar] = true
-				end
 			else -- update due a layout or groupType change not from a status notifying a change
 				for i, status in ipairs(self.statuses) do
 					values[i] = status:GetPercent(unit) or 0
 				end
 				bar.myMaxIndex = #self.statuses
-				bar:SetMainBarValue(values[1] or 0)
-				updates[bar] = true
 			end
+			updates[bar] = true			
 		end
 	end
 end
@@ -151,33 +134,20 @@ end
 
 local function Bar_Layout(self, parent)
 	local bar = parent[self.name]
-	-- main bar
 	local width = self.width  or parent.container:GetWidth()
 	local height = self.height or parent.container:GetHeight()
 	bar:SetParent(parent)
 	bar:ClearAllPoints()
-	bar:SetOrientation(self.orientation)
-	bar:SetReverseFill(self.reverseFill)
 	bar:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
-	bar:SetStatusBarTexture(self.texture)
-	local barTexture = bar:GetStatusBarTexture()
-	barTexture:SetDrawLayer("ARTWORK", 0)
-	barTexture:SetHorizTile(self.horTile)
-	barTexture:SetVertTile(self.verTile)
-	bar:SetStatusBarTexture(self.texture)
-	local color = self.foreColor
-	if color then bar:SetStatusBarColor(color.r, color.g, color.b, self.opacity) end
 	bar:SetSize(width, height)
 	bar:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
-	bar:SetValue(0)
-	bar.SetMainBarValue = self.reverse and Grid2.Dummy or bar.SetValue
 	-- extra bars
 	local ctextures
     local barCount = #self.bars
-	local textures = bar.myTextures or { barTexture }
+	local textures = bar.myTextures or {}
 	for i=1,barCount do
 		local setup = self.bars[i]
-		local texture = textures[i+1] or bar:CreateTexture()
+		local texture = textures[i] or bar:CreateTexture()
 		texture:Hide()
 		texture:ClearAllPoints()
 		texture.mySetSize = texture[ self.SetSizeMethod ]
@@ -200,7 +170,8 @@ local function Bar_Layout(self, parent)
 			ctextures = ctextures or {}; ctextures[#ctextures+1] = texture
 		end
 		if setup.background then
-			texture:SetAllPoints(); texture:Show()
+			texture:SetAllPoints()
+			texture:Show()
 		elseif setup.lineSize then
 			texture.myLineAdjust = setup.lineAdjust
 			texture:SetWidth ( self.orientation == "HORIZONTAL" and setup.lineSize or width )
@@ -208,9 +179,9 @@ local function Bar_Layout(self, parent)
 		else	
 			texture:SetSize(width, height)
 		end
-		textures[i+1] = texture
+		textures[i] = texture
 	end
-	for i=barCount+2,#textures do
+	for i=barCount+1,#textures do
 		textures[i]:Hide()
 	end
 	bar.myTextures = textures
@@ -228,7 +199,7 @@ local function Bar_Disable(self, parent)
 	local bar = parent[self.name]
 	local textures = bar.myTextures
 	if textures then
-		for i=2,#textures do
+		for i=1,#textures do
 			textures[i]:Hide()
 		end
 	end
@@ -238,6 +209,7 @@ local function Bar_Disable(self, parent)
 end
 
 local function Bar_UpdateDB(self)
+	local bars         = {}
 	local dbx          = self.dbx
 	local l            = dbx.location
 	local theme        = Grid2Frame.db.profile
@@ -260,19 +232,26 @@ local function Bar_UpdateDB(self)
 	self.horizontal    = (orientation == "HORIZONTAL")
 	self.reverseFill   = not not dbx.reverseFill
 	self.backAnchor    = dbx.backAnchor
-	self.reverse       = dbx.reverseMainBar
-	self.opacity       = dbx.textureColor.a
-	self.texture       = Grid2:MediaFetch("statusbar", dbx.texture or theme.barTexture, "Gradient")
-	self.horTile       = dbx.horTile~=nil
-	self.verTile       = dbx.verTile~=nil
-	self.bars          = {}
+	self.bars          = bars
+	local mainBar = {
+		reverse   = dbx.reverseMainBar,
+		opacity   = dbx.textureColor.a,
+		color     = self.foreColor,
+		texture   = Grid2:MediaFetch("statusbar", dbx.texture or theme.barTexture, "Gradient"),
+		horWrap   = dbx.horTile or 'CLAMP',
+		verWrap   = dbx.verTile or 'CLAMP',
+		horAdjust = dbx.horTile==nil,
+		verAdjust = dbx.verTile==nil,
+		sublayer  = 0,
+	}
+	bars[1] = mainBar
 	for i,setup in ipairs(dbx) do
-		self.bars[i] = {
+		bars[#bars+1] = {
 			reverse   = setup.reverse,
 			noOverlap = setup.noOverlap,
 			opacity   = setup.color.a,
 			color     = setup.color.r and setup.color or self.foreColor,
-			texture   = setup.texture and Grid2:MediaFetch("statusbar", setup.texture) or self.texture,
+			texture   = setup.texture and Grid2:MediaFetch("statusbar", setup.texture) or mainBar.texture,
 			horWrap   = setup.horTile or 'CLAMP',
 			verWrap   = setup.verTile or 'CLAMP',
 			horAdjust = setup.horTile=='CLAMP',
@@ -283,8 +262,8 @@ local function Bar_UpdateDB(self)
 		}
 	end
 	if backColor then
-	    self.bars[#self.bars+1] = {
-			texture = dbx.backTexture and Grid2:MediaFetch("statusbar", dbx.backTexture) or self.texture,
+	    bars[#bars+1] = {
+			texture = dbx.backTexture and Grid2:MediaFetch("statusbar", dbx.backTexture) or mainBar.texture,
 			horWrap = dbx.backHorTile or 'CLAMP',
 			verWrap = dbx.backVerTile or 'CLAMP',
 			color = dbx.invertColor and texColor or backColor,
@@ -308,13 +287,10 @@ end
 local function BarColor_SetBarColor(self, parent, r, g, b, a)
 	local bar = parent[self.parentName]
 	if bar then
-		bar:SetStatusBarColor(r, g, b, min(self.opacity,a or 1) )
 		local textures = bar.myCTextures
-		if textures then
-			for i=#textures,1,-1 do
-				local tex = textures[i]
-				tex:SetVertexColor( r, g, b, min(tex.myOpacity, a) )
-			end
+		for i=#textures,1,-1 do
+			local tex = textures[i]
+			tex:SetVertexColor( r, g, b, min(tex.myOpacity, a or 1) )
 		end
 	end
 end
