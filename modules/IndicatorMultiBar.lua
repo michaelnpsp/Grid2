@@ -4,6 +4,7 @@ local Grid2 = Grid2
 local Grid2Frame = Grid2Frame
 local min = min
 local max = max
+local wipe = wipe
 local pairs = pairs
 local ipairs = ipairs
 
@@ -232,7 +233,7 @@ local function Bar_UpdateDB(self)
 	self.reverseFill   = not not dbx.reverseFill
 	self.backAnchor    = dbx.backAnchor
 	self.bars          = bars
-	bars[1] = {
+	local mainBar = {
 		reverse   = dbx.reverseMainBar,
 		opacity   = dbx.textureColor.a,
 		color     = self.foreColor,
@@ -243,13 +244,14 @@ local function Bar_UpdateDB(self)
 		verAdjust = dbx.verTile==nil,
 		sublayer  = 0,
 	}
+	bars[1] = mainBar
 	for i,setup in ipairs(dbx) do
 		bars[#bars+1] = {
 			reverse   = setup.reverse,
 			noOverlap = setup.noOverlap,
 			opacity   = setup.color.a,
 			color     = setup.color.r and setup.color or self.foreColor,
-			texture   = setup.texture and Grid2:MediaFetch("statusbar", setup.texture) or self.texture,
+			texture   = setup.texture and Grid2:MediaFetch("statusbar", setup.texture) or mainBar.texture,
 			horWrap   = setup.horTile or 'CLAMP',
 			verWrap   = setup.verTile or 'CLAMP',
 			horAdjust = setup.horTile=='CLAMP',
@@ -261,7 +263,7 @@ local function Bar_UpdateDB(self)
 	end
 	if backColor then
 	    bars[#bars+1] = {
-			texture = dbx.backTexture and Grid2:MediaFetch("statusbar", dbx.backTexture) or bars[1].texture,
+			texture = dbx.backTexture and Grid2:MediaFetch("statusbar", dbx.backTexture) or mainBar.texture,
 			horWrap = dbx.backHorTile or 'CLAMP',
 			verWrap = dbx.backVerTile or 'CLAMP',
 			color = dbx.invertColor and texColor or backColor,
