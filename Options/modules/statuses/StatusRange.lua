@@ -8,7 +8,7 @@ do
 		RangeList[range] = tonumber(range) and string.format(L["%d yards"],tonumber(range)) or nil
 	end
 	RangeList.heal  = L['Heal Range']
-	RangeList.spell = L['Spell Range'] 
+	RangeList.spell = L['Spell Range']
 end
 
 local GetPlayerSpells
@@ -33,7 +33,7 @@ do
 		end
 		if rezSpellID and friendly then
 			customSpells[rezSpellID] = string.format(stringMask, GetSpellInfo(rezSpellID), 40)
-		end	
+		end
 		return customSpells
 	end
 end
@@ -100,15 +100,15 @@ local function MakeRangeOptions(self, status, options, optionParams)
 		order = 40,
 		name = L["Range"],
 		desc = L["Range in yards beyond which the status will be lost."],
-		get = function () 
-			return tonumber(rangeDB.range) or (rangeDB.range=='spell' and 'spell') or "heal" 
+		get = function ()
+			return tonumber(rangeDB.range) or (rangeDB.range=='spell' and 'spell') or "heal"
 		end,
-		set = function (_, v) 
+		set = function (_, v)
 			if v=='spell' and rangeDB.default then -- force storing range by class for spell option
 				rangeDB = ToggleByClass(status, true)
 			end
-			rangeDB.range = v			
-			status:UpdateDB() 
+			rangeDB.range = v
+			status:UpdateDB()
 		end,
 		values = RangeList,
 	}
@@ -117,14 +117,14 @@ local function MakeRangeOptions(self, status, options, optionParams)
 		name = L["Range by class"],
 		desc = L["Check this option to setup different range configuration for each player class."],
 		order = 41,
-		get = function () 
+		get = function ()
 			return status.dbx.ranges and status.dbx.ranges[playerClass]
 		end,
 		set = function (_, v)
 			rangeDB = ToggleByClass(status, v)
 			status:UpdateDB()
 		end,
-	}	
+	}
 	options.newline = {
 		order = 59,
 		type = "description",
@@ -136,7 +136,7 @@ local function MakeRangeOptions(self, status, options, optionParams)
 		width = "double",
 		name = L["Spell for friendly units"],
 		desc = L["Spell to check the range of. The player must know the spell."],
-		get = function () return rangeDB.friendlySpellID;	end,	
+		get = function () return rangeDB.friendlySpellID;	end,
 		set = function (_, v) rangeDB.friendlySpellID = v; status:UpdateDB(); end,
 		values = function() return GetPlayerSpells(false) end,
 		hidden = function() return rangeDB.range~='spell' end,
@@ -144,10 +144,10 @@ local function MakeRangeOptions(self, status, options, optionParams)
 	options.hostileSpell = {
 		type = "select",
 		order = 70,
-		width = "double",		
+		width = "double",
 		name = L["Spell for hostile units"],
 		desc = L["Spell to check the range of. The player must know the spell."],
-		get = function () return rangeDB.hostileSpellID;	end,	
+		get = function () return rangeDB.hostileSpellID;	end,
 		set = function (_, v) rangeDB.hostileSpellID = v; status:UpdateDB(); end,
 		values = function() return GetPlayerSpells(true) end,
 		hidden = function() return rangeDB.range~='spell' end,

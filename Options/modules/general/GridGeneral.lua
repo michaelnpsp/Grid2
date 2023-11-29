@@ -61,8 +61,8 @@ Grid2Options:AddGeneralOptions( "General", "Raid Size", {
 		desc = L["This setting is used to setup different layouts, frame sizes or themes depending of the raid size."],
 		width = "double",
 		order = 5,
-		get = function() 
-			return Grid2.db.profile.raidSizeType or 0 
+		get = function()
+			return Grid2.db.profile.raidSizeType or 0
 		end,
 		set = function(_,v)
 			Grid2.db.profile.raidSizeType = (v~=0) and v or nil

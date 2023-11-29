@@ -678,7 +678,7 @@ local frameOptions2 = { headerback = {
 		set = function( info, r,g,b,a )
 			local c= theme.frame.frameColor
 			c.r, c.g, c.b, c.a = r, g, b, a
-			Grid2Options:LayoutFrames()			
+			Grid2Options:LayoutFrames()
 		 end,
 		hasAlpha = true,
 }, innerBorderDistance= {
@@ -704,7 +704,7 @@ local frameOptions2 = { headerback = {
 	get = function (info) return theme.frame.frameBorderTexture or "Grid2 Flat" end,
 	set = function (info, v)
 		theme.frame.frameBorderTexture = v
-		Grid2Options:LayoutFrames()		
+		Grid2Options:LayoutFrames()
 	end,
 	values = AceGUIWidgetLSMlists.border,
 
@@ -737,7 +737,7 @@ local frameOptions2 = { headerback = {
 		set = function( info, r,g,b,a )
 			local c = theme.frame.mouseoverColor
 			c.r, c.g, c.b, c.a = r, g, b, a
-			Grid2Options:LayoutFrames()			
+			Grid2Options:LayoutFrames()
 		 end,
 		hasAlpha = true,
 		hidden = function() return not theme.frame.mouseoverHighlight end,

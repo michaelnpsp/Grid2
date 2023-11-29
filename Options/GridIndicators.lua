@@ -207,7 +207,7 @@ do
 			if t[old_name] then
 				t[new_name] = t[old_name]
 				t[old_name] = nil
-			end	
+			end
 		end
 		-- create new indicator
 		local setupFunc = Grid2.setupFunc[old_indicator.dbx.type]
@@ -226,7 +226,7 @@ do
 		-- refresh options
 		Grid2Options:DeleteIndicatorOptions(old_indicator)
 		Grid2Options:MakeIndicatorOptions(new_indicator)
-		Grid2Options:SelectGroup('indicators') 
+		Grid2Options:SelectGroup('indicators')
 	end
 
 	local function RenameIndicator(info, name)
@@ -239,10 +239,10 @@ do
 					Grid2Options.LI[name] = nil -- remove status name from old faked rename table
 					if not NewIndicatorDisabled(text) then
 						RenameIndicatorReal(name, text)
-					end	
+					end
 				end
 			end)
-		end	
+		end
 	end
 
 	function Grid2Options:RenameIndicatorConfirm(indicator)
@@ -263,7 +263,7 @@ do
 			if highIndicator then
 				for parent in next, Grid2Frame.activatedFrames do
 					local frame = highIndicator:GetFrame(parent)
-					if frame then 
+					if frame then
 						LCG.ButtonGlow_Stop(frame)
 						LCG.PixelGlow_Stop( frame, 'Grid2IndicatorHighlight' )
 					end
@@ -274,10 +274,10 @@ do
 		local function HighlightIndicator(indicator)
 			if indicator and not indicator.suspended then
 				if ExcludeHigh[indicator.dbx.type] then testIndicator = indicator; return true end
-				local active 
+				local active
 				for parent in next, Grid2Frame.activatedFrames do
 					local frame = indicator:GetFrame(parent)
-					if frame then 
+					if frame then
 						if indicator.dbx.type == 'icon' then
 							LCG.ButtonGlow_Start(frame, COLOR, 0.12)
 						else
@@ -290,8 +290,8 @@ do
 					testIndicator, highIndicator = indicator, indicator
 					C_Timer.After(.7, HighlightStop)
 					return true
-				end	
-			end	
+				end
+			end
 		end
 		local function RegisterIndicator(indicator)
 			if not Exclude[indicator.dbx.type] then
@@ -302,7 +302,7 @@ do
 			for _, indicator in Grid2:IterateIndicators() do
 				RegisterIndicator(indicator)
 			end
-		end	
+		end
 		local function UnregisterIndicators()
 			for indicator in pairs(Test.indicators) do
 				indicator:UnregisterStatus(Test)
@@ -336,7 +336,7 @@ do
 			Test.dbx = TestIcons -- Asigned to TestIcons to avoid creating a new table
 			Grid2:RegisterStatus( Test, {"text","color", "percent", "icon"}, "test" )
 			InitTestMode = Grid2.Dummy
-		end	
+		end
 		-- public test function
 		function Grid2Options:ToggleTestMode()
 			InitTestMode()
@@ -345,7 +345,7 @@ do
 			else
 				RegisterIndicators()
 			end
-			Grid2Frame:UpdateIndicators()			
+			Grid2Frame:UpdateIndicators()
 		end
 		function Grid2Options:ToggleIndicatorTestMode(indicator)
 			local enable = indicator~=testIndicator
@@ -361,7 +361,7 @@ do
 			Grid2Frame:UpdateIndicators()
 		end
 	end
-	
+
 	--========================================================================================================================
 	-- Indicators management options
 	--========================================================================================================================

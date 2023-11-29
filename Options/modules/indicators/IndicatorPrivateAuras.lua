@@ -38,7 +38,7 @@ function Grid2Options:MakeIndicatorPrivateAurasCustomOptions( indicator, options
 			if v>=(indicator.dbx.auraIndex or 1) then
 				indicator.dbx.maxIcons = v
 				self:RefreshIndicator(indicator, "Layout")
-			end	
+			end
 		end,
 		values = indexValues,
 	}

@@ -244,7 +244,7 @@ do
 			width = 1.5,
 			name = L["Choose the Raid Size calculation method"],
 			desc = L["Choose the Raid Size calculation method"],
-			get = function() 
+			get = function()
 				return Grid2.db.profile.raidSizeType or 0
 			end,
 			set = function(_,v)

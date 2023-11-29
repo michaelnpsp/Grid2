@@ -27,7 +27,7 @@ function Status:OnEnable()
 end
 
 function Status:OnDisable()
-	self:UnregisterMessage("Grid_GroupTypeChanged")	
+	self:UnregisterMessage("Grid_GroupTypeChanged")
 end
 
 function Status:UpdateDB()

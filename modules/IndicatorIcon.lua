@@ -43,7 +43,7 @@ local function Icon_Create(self, parent)
 		end
 		local CooldownText = f.CooldownText or f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 		CooldownText:SetParent(TextFrame)
-		if self.fontSize>=1 then CooldownText:SetFont(self.textfont, self.fontSize, self.dbx.fontFlags or "OUTLINE" ) end	
+		if self.fontSize>=1 then CooldownText:SetFont(self.textfont, self.fontSize, self.dbx.fontFlags or "OUTLINE" ) end
 		local c = self.dbx.stackColor
 		if c then CooldownText:SetTextColor(c.r, c.g, c.b, c.a) end
 		CooldownText:Hide()
@@ -84,7 +84,7 @@ local function Icon_OnUpdate(self, parent, unit, status)
 			if CooldownText.fontSize then -- This is a ugly fix for github issue #152
 				CooldownText:SetFont(self.textfont, CooldownText.fontSize, self.dbx.fontFlags or "OUTLINE" )
 				CooldownText.fontSize = nil
-			end	
+			end
 			CooldownText:SetText( count )
 			CooldownText:Show()
 		else

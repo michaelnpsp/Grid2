@@ -925,7 +925,7 @@ L["Active Out Of Combat"] = true
 L["Enable this option to invert the status so it will become activated when the player is Out Of Combat."] = true
 
 -- pvp status
-L["Hide inside Instances"] = true 
+L["Hide inside Instances"] = true
 
 -- summon status
 L["summon"] = true

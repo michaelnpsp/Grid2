@@ -7,7 +7,7 @@ end
 
 local function ManaOptions(self, status, options, optionParams)
 	self:MakeStatusStandardOptions(status, options, optionParams)
-	self:MakeHeaderOptions(options, "Display")	
+	self:MakeHeaderOptions(options, "Display")
 	options.display1 = {
 		type = "toggle",
 		order = 110,
@@ -20,11 +20,11 @@ local function ManaOptions(self, status, options, optionParams)
 				status.dbx.displayType = 1
 			else
 				status.dbx.displayType = 2
-			end			
+			end
 			status:UpdateDB()
 			status:UpdateAllUnits()
 		end,
-	}	
+	}
 	options.display2 = {
 		type = "toggle",
 		order = 120,
@@ -41,7 +41,7 @@ local function ManaOptions(self, status, options, optionParams)
 			status:UpdateDB()
 			status:UpdateAllUnits()
 		end,
-	}	
+	}
 end
 
 Grid2Options:RegisterStatusOptions("mana","mana",  ManaOptions, {

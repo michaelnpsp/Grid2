@@ -258,8 +258,8 @@ do
 	local function GetRaidMaxPlayers(maxPlayers)
 		if IsInRaid() then
 			local typ = Grid2.db.profile.raidSizeType
-			if typ then 
-				local raidSize = raidSizeFuncs[typ]() 
+			if typ then
+				local raidSize = raidSizeFuncs[typ]()
 				return Grid2Layout.db.profile.displayAllGroups and raidSize or math.min(raidSize, maxPlayers)
 			end
 		end

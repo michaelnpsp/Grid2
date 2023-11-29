@@ -119,7 +119,7 @@ do
 		RefreshStatuses('instNameID')
 	end
 
-	-- public 
+	-- public
 	function FilterG_Register(self, load)
 		RegisterMsgFilter( self, "instNameID",      "Grid_ZoneChangedNewArea", ZoneChangedEvent, load and load.instNameID and load )
 		RegisterMsgFilter( self, "playerClassSpec", "Grid_PlayerSpecChanged",  PlayerSpecEvent,  load and load.playerClassSpec and load )
@@ -144,7 +144,7 @@ end
 
 -------------------------------------------------------------------------
 -- Unit filters: type/class/role/reaction
--- self.filtered[unit] check inside status:IsActive() method is necessary 
+-- self.filtered[unit] check inside status:IsActive() method is necessary
 -------------------------------------------------------------------------
 
 local FilterU_Register, FilterU_Unregister, FilterU_Enable, FilterU_Disable, FilterU_Refresh
@@ -204,16 +204,16 @@ do
 		for status, filtered in next, statuses.unitFilter do
 			filtered[unit] = nil
 		end
-	end	
-	
-	local function RefreshRoleFilter() 
+	end
+
+	local function RefreshRoleFilter()
 		for status, filtered in next, statuses.unitRole do
 			wipe(filtered).source = status.dbx.load
 			status:UpdateAllUnits()
 		end
 	end
 
-	local function RefreshCooldownFilter() 
+	local function RefreshCooldownFilter()
 		for status, filtered in next, statuses.cooldown do
 			local load = status.dbx.load
 			local spellID = load.cooldown
@@ -264,12 +264,12 @@ do
 		FilterU_Disable(self, load)
 		FilterU_Register(self, load or empty)
 		self:UpdateDB()
-		if self.enabled then 
+		if self.enabled then
 			FilterU_Enable(self, load or empty)
 			self:UpdateAllUnits()
 		end
 	end
-	
+
 end
 
 -------------------------------------------------------------------------
@@ -281,7 +281,7 @@ do
 	local statuses = statuses.combat
 	local IsNotActive = Grid2.Dummy
 	local frame, inCombat
-	
+
 	local function CombatEvent(_,event)
 		inCombat = (event=='PLAYER_REGEN_DISABLED')
 		for status, load in next,statuses do
@@ -295,7 +295,7 @@ do
 			end
 		end
 	end
-	
+
 	-- public
 	function FilterC_Enable(status, load)
 		if load.combat~=nil then
@@ -315,7 +315,7 @@ do
 			end
 		end
 	end
-	
+
 	function FilterC_Disable(status)
 		if statuses[status] then
 			statuses[status] = nil
@@ -330,16 +330,16 @@ do
 			end
 		end
 	end
-	
+
 	function FilterC_Refresh(status, load)
 		FilterC_Disable(status, load)
 		status:UpdateDB()
 		if status.enabled and load then
-			FilterC_Enable(status, load) 
+			FilterC_Enable(status, load)
 			status:UpdateAllUnits()
 		end
 	end
-	
+
 end
 
 -----------------------------------------------------------------------
@@ -353,7 +353,7 @@ function status:RegisterLoad() -- called from Grid2:RegisterStatus() in GridStat
 	if load then
 		FilterG_Register(self, load)
 		FilterU_Register(self, load)
-	end	
+	end
 end
 
 function status:UnregisterLoad() -- called from Grid2:UnregisterStatus() in GridStatus.lua
@@ -361,7 +361,7 @@ function status:UnregisterLoad() -- called from Grid2:UnregisterStatus() in Grid
 	if load then
 		FilterG_Unregister(self, load)
 		FilterU_Unregister(self, load)
-	end	
+	end
 	self.suspended = nil
 end
 
@@ -386,4 +386,4 @@ function status:RefreshLoad() -- used by Grid2Options
 	FilterG_Refresh(self, load)
 	FilterU_Refresh(self, load)
 	FilterC_Refresh(self, load)
-end	
+end

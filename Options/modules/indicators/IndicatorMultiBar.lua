@@ -97,10 +97,10 @@ do
 	local MAINBAR_COLOR_SOURCES = { L["Status Color"], L["Custom Color"] }
 	local EXTRABAR_COLOR_SOURCES = { L["Main Bar Color"], L["Custom Color"] }
 	local TILE_BAR_VALUES  = { [1] = L["Fill"], [2] = L["Stretch"], [3] = L["Tile Repeat"], [4] = L["Tile Mirror"] }
-	local TILE_BACK_VALUES = { [2] = L["Stretch"], [3] = L["Tile Repeat"] }	
+	local TILE_BACK_VALUES = { [2] = L["Stretch"], [3] = L["Tile Repeat"] }
 	local TILE_MAIN_TRANS  = { [1] = nil, [2] = 'CLAMP',  [3] = 'REPEAT', [4] = 'MIRROR', CLAMP = 2, EMPTY = 1, REPEAT = 3, MIRROR = 4 }
 	local TILE_EXTRA_TRANS = { [1] = 'CLAMP', [2] = nil,  [3] = 'REPEAT', [4] = 'MIRROR', CLAMP = 1, EMPTY = 2 ,REPEAT = 3, MIRROR = 4 }
-		
+
 	-- edited indicator & bar
 
 	local self, indicator, barIndex, barDbx = Grid2Options
@@ -114,7 +114,7 @@ do
 
 	local function SelectTab( key )
 		self:SelectGroup('indicators', indicator.name, 'bars', tostring(key) )
-	end	
+	end
 
 	local function GetIndicatorStatusMap(indicator)
 		return Grid2:DbGetValue('statusMap',indicator.name) or emptyTable
@@ -128,7 +128,7 @@ do
 			if status then indicator:RegisterStatus(status, priority) end
 		end
 	end
-	
+
 	local function UnregisterIndicatorStatus(indicator, statusName)
 		if statusName then
 			Grid2:DbSetMap(indicator.name, statusName, nil)
@@ -140,33 +140,33 @@ do
 	local function UnregisterIndicatorAllStatuses(indicator)
 		for statusName in next, GetIndicatorStatusMap(indicator) do
 			UnregisterIndicatorStatus(indicator, statusName)
-		end	
+		end
 	end
-	
+
 	local function SetIndicatorStatusPriority(indicator, statusName, priority)
 		assert( type(priority)=='number' )
 		Grid2:DbSetMap( indicator.name, statusName, priority)
 		local status = Grid2:GetStatusByName(statusName)
 		if status then indicator:SetStatusPriority(status, priority) end
 	end
-	
+
 	local function GetIndicatorStatusPriority(indicator, statusName)
 		if statusName then
 			local map = Grid2:DbGetValue('statusMap', indicator.name)
 			return map and map[statusName]
-		end	
+		end
 	end
-	
+
 	local function GetIndicatorStatusName(indicator, priority)
 		for name, index in next, GetIndicatorStatusMap(indicator) do
 			if priority==index then
 				return name
-			end	
+			end
 		end
 	end
 
 	-- bar settings
-	
+
 	local barOptions = {
 
 		__load = { type = "header", order = 0, name = "", hidden = function(info)
@@ -176,7 +176,7 @@ do
 		end },
 
 		-------------------------------------------------------------------------
-	
+
 		headerMain = { type = "header", order = 1,  name = function(info)
 
 			if not barIndex or barIndex==0 then
@@ -187,7 +187,7 @@ do
 				return L["Extra Bar"]
 			end
 		end },
-	
+
 		barType = {
 			type = "select",
 			order = 1,
@@ -210,7 +210,7 @@ do
 			values = TYPE_VALUES,
 			disabled = function() return barIndex<=0 end,
 		},
-	
+
 		barStatus = {
 			type = "select",
 			order = 2,
@@ -247,7 +247,7 @@ do
 			disabled = function() return barIndex>0 and not GetIndicatorStatusName(indicator, barIndex) end,
 			hidden = false,
 		},
-		
+
 		barMainDirection = {
 			type = "select",
 			order = 3,
@@ -282,9 +282,9 @@ do
 			values = ANCHOR_VALUES,
 			hidden = function() return barIndex==0 end,
 		},
-		
+
 		-------------------------------------------------------------------------
-		
+
 		lineThickenss = {
 			type = "range",
 			order = 3.5,
@@ -303,11 +303,11 @@ do
 			end,
 			hidden = function() return not barDbx.glowLine end,
 		},
-		
+
 		lineAdjust = {
 			type = "range",
 			order = 3.6,
-			width = 1.275,			
+			width = 1.275,
 			name = L["Line Position"],
 			desc = L["Fine adjust the position of the line relative to the previous bar."],
 			softMin = -50,
@@ -320,11 +320,11 @@ do
 				barDbx.glowLineAdjust = (v~=0) and v or nil
 				self:RefreshIndicator(indicator, "Layout")
 			end,
-			hidden = function() return not barDbx.glowLine end,			
+			hidden = function() return not barDbx.glowLine end,
 		},
-		
+
 		-------------------------------------------------------------------------
-		
+
 	    headerColor = { type = "header", order = 4,  name = L["Color"] },
 
 		barMainColorSource = {
@@ -340,10 +340,10 @@ do
 				local color = indicator.dbx.textureColor
 				if v==1 then -- (1) colors from statuses
 					RegisterIndicatorStatus(indicator.sideKick, 'classcolor', 50)
-					color.r, color.g, color.b = nil, nil, nil										
+					color.r, color.g, color.b = nil, nil, nil
 				else -- (2) custom color
 					UnregisterIndicatorAllStatuses(indicator.sideKick)
-					color.r, color.g, color.b = 0, 0, 0					
+					color.r, color.g, color.b = 0, 0, 0
 				end
 				self:RefreshIndicator(indicator, "Layout" )
 				self:MakeIndicatorOptions(indicator)
@@ -382,7 +382,7 @@ do
 			max = 1,
 			step = 0.01,
 			bigStep = 0.05,
-			get = function() 
+			get = function()
 				return (barDbx.textureColor or barDbx.color).a or 1
 			end,
 			set = function(_, v)
@@ -409,7 +409,7 @@ do
 				self:RefreshIndicator(indicator, "Layout")
 			end,
 			disabled = function() return (barDbx.textureColor or barDbx.color).r == nil end,
-			hidden = false,			
+			hidden = false,
 		},
 
 		mainBarColorInvert = {
@@ -454,7 +454,7 @@ do
 			end,
 			values = self.GetStatusBarValues,
 			disabled = function() return barIndex==0 and indicator.dbx.reverseMainBar end,
-			hidden = false,			
+			hidden = false,
 		},
 
 		barHorTile= {
@@ -473,7 +473,7 @@ do
 			values = TILE_BAR_VALUES,
 			hidden = false,
 		},
-		
+
 		barVerTile = {
 			type = "select",
 			order = 13,
@@ -494,7 +494,7 @@ do
 		-------------------------------------------------------------------------
 
 		headerButtons = { type = "header", order = 150, name = "" },
-		
+
 		addBar = {
 			type = "execute",
 			order = 151,
@@ -507,9 +507,9 @@ do
 				SelectTab( #indicator.dbx )
 			end,
 			disabled = function() return #indicator.dbx>=5 end,
-			hidden = false,			
+			hidden = false,
 		},
-		
+
 		delBar = {
 			type = "execute",
 			order = 152,
@@ -528,13 +528,13 @@ do
 					end
 					self:RefreshIndicator(indicator, "Layout")
 					SelectTab( barIndex<=#indicator.dbx and barIndex or barIndex-1 )
-				end	
+				end
 			end,
 			disabled = function() return barIndex==0 end,
 			confirm = function() return L["This action cannot be undone. Are you sure?"] end,
-			hidden = false,			
+			hidden = false,
 		},
-		
+
 		enableBack = {
 			type = "execute",
 			name = function() return indicator.dbx.backColor and L["Del Background"] or L["Add Background"] end,
@@ -552,17 +552,17 @@ do
 			confirm = function() return indicator.dbx.backColor~=nil and L["This action cannot be undone. Are you sure?"] end,
 			hidden = false,
 		},
-		
+
 	}
 
 	-- background settings
-	
+
 	local backOptions = {
 
 		__load = { type = "header", order = 0, name = "", hidden = function() barIndex = -1; return true; end },
-	
+
 		backHeader = { type = "header", order = 1,  name = L["Background"] },
-		
+
 		backAnchor = {
 			type = "select",
 			order = 3,
@@ -577,9 +577,9 @@ do
 				self:RefreshIndicator(indicator, "Layout")
 			end,
 			values = BANCHOR_VALUES,
-			hidden = false,			
+			hidden = false,
 		},
-		
+
 		backColor = {
 			type = "color",
 			order = 4,
@@ -628,7 +628,7 @@ do
 			values = TILE_BACK_VALUES,
 			hidden = false,
 		},
-		
+
 		backVerTile = {
 			type = "select",
 			order = 13,
@@ -642,7 +642,7 @@ do
 				indicator.dbx.backVerTile = tileTranslate(v)
 				self:RefreshIndicator(indicator, "Layout")
 			end,
-			values = TILE_BACK_VALUES,			
+			values = TILE_BACK_VALUES,
 			hidden = false,
 		},
 
@@ -667,7 +667,7 @@ do
 			confirm = function() return L["This action cannot be undone. Are you sure?"] end,
 			hidden = false,
 		},
-		
+
 	}
 
 	-- options/tabs for all bars
@@ -677,14 +677,14 @@ do
 				indicator = Grid2:GetIndicatorByName( info[#info-2] )
 				return true
 		end },
-	}	
+	}
 
 	-- add 5 extra bars tabs
 	local function isBarHidden(info)
 		local barIndex = tonumber(info[#info]) or 0
 		return barIndex>0 and not (indicator and indicator.dbx[barIndex])
 	end
-	
+
 	for i=0,6 do
 		options[tostring(i)] = {
 			type   = "group",
@@ -692,7 +692,7 @@ do
 			name   = i==0 and L['Main Bar'] or L['Bar']..i,
 			desc = "",
 			args   = barOptions,
-			hidden = isBarHidden, 
+			hidden = isBarHidden,
 		}
 	end
 
@@ -707,7 +707,7 @@ do
 	}
 
 	-- published return bars options
-	
+
 	function Grid2Options:GetIndicatorMultiBarTexturesOptions()
 		return options
 	end

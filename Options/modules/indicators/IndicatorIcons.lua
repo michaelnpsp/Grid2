@@ -261,7 +261,7 @@ function Grid2Options:MakeIndicatorAuraIconsCustomOptions(indicator, options)
 			self:RefreshIndicator(indicator, "Layout")
 		end,
 		hidden= function() return indicator.dbx.disableStack or (indicator.dbx.fontSize or 9)>=1 end,
-	}	
+	}
 	options.fontOffsetX = {
 		type = "range",
 		order = 105,

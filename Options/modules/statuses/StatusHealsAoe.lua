@@ -66,7 +66,7 @@ local function SetSpellsByCategory(typ, tab)
 				end
 			end
 		end
-	end	
+	end
 end
 
 local function GetSpellsByCategory(flag)
@@ -172,7 +172,7 @@ local function MakeStatusOutgoingOptions(self, status, options)
 			end,
 			values = GetSpellsByCategory,
 		}
-	else	
+	else
 		if status.dbx.events==nil then status.dbx.events = {} end
 		options.eventsSpacer = { type = "header", order = 45, name = L["Activation conditions"] }
 		options.eventsHeal = {
@@ -206,7 +206,7 @@ local function MakeStatusOutgoingOptions(self, status, options)
 		options.eventsCastStart = {
 			type = "toggle",
 			order = 48,
-			width = 0.62,			
+			width = 0.62,
 			name = L["Cast Start"],
 			desc = L["Enable the status when a spell cast starts."],
 			get = function () return status.dbx.events.SPELL_CAST_START	end,
@@ -263,7 +263,7 @@ local function MakeCategoryOptions()
 				NewClassHeals = nil
 			end,
 			values = { L["AOE Heal"], L["Any Spell"] }
-		},		
+		},
 		spellsCategory = {
 			type = "select",
 			order = 53,
@@ -277,7 +277,7 @@ local function MakeCategoryOptions()
 			end,
 			values = GetSpellsByCategory,
 			disabled = function() return NewSpellType==2 end,
-		},		
+		},
 	    separator2 = { type = "header", order = 54, name = "" },
 		createOutgoingStatus = {
 			type = "execute",
@@ -304,21 +304,21 @@ local function MakeCategoryOptions()
 	}
 end
 
-Grid2Options:RegisterStatusCategory("incoming-spells", { 
+Grid2Options:RegisterStatusCategory("incoming-spells", {
 	name  = L["AOE & Dmg"],
 	title = L["New AOE/DMG tracker"],
 	desc  = L["Incoming heal or damage spells"],
-	icon  = "Interface\\Icons\\Spell_holy_holynova", 
+	icon  = "Interface\\Icons\\Spell_holy_holynova",
 	options = MakeCategoryOptions(),
 } )
 
-Grid2Options:RegisterStatusOptions("aoe-heals",  "incoming-spells", MakeStatusOutgoingOptions, { 
+Grid2Options:RegisterStatusOptions("aoe-heals",  "incoming-spells", MakeStatusOutgoingOptions, {
 	title = L["Incoming AOE Heals"],
-	titleIcon ="Interface\\Icons\\Spell_holy_holybolt", 
-	groupOrder= 50, isDeletable = true, displayPrefix = true 
+	titleIcon ="Interface\\Icons\\Spell_holy_holybolt",
+	groupOrder= 50, isDeletable = true, displayPrefix = true
 } )
-Grid2Options:RegisterStatusOptions("inc-spells", "incoming-spells", MakeStatusOutgoingOptions, { 
+Grid2Options:RegisterStatusOptions("inc-spells", "incoming-spells", MakeStatusOutgoingOptions, {
 	title = L["Incoming Spells"],
-	titleIcon ="Interface\\Icons\\inv_wand_01", 
+	titleIcon ="Interface\\Icons\\inv_wand_01",
 	groupOrder= 51, isDeletable = true, displayPrefix = true,
 } )

@@ -219,7 +219,7 @@ local function Bar_Disable(self, parent)
 	bar:Hide()
 	bar:SetParent(nil)
 	bar:ClearAllPoints()
-	tdestroy(bar)	
+	tdestroy(bar)
 end
 
 local function Bar_Destroy(self, parent, bar)
@@ -258,7 +258,7 @@ local function Bar_UpdateDB(self)
 		self.reverseFill    = barParent.reverseFill
 		self.orientation    = barParent.orientation
 	else
-		self.SetValue = dbx.backColor and Bar_SetValueBg or Bar_SetValue 
+		self.SetValue = dbx.backColor and Bar_SetValueBg or Bar_SetValue
 		self.CanCreate = self.prototype.CanCreate
 		self.parentName = nil
 		if self.childName then -- fix changing orientation on themes, CF issue #1227

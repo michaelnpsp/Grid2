@@ -174,7 +174,7 @@ function GridFramePrototype:Layout()
 		self:GetHighlightTexture():SetVertexColor(color.r, color.g, color.b, color.a)
 	elseif self:GetHighlightTexture() then
 		self:SetHighlightTexture('')
-		self:GetHighlightTexture():SetVertexColor(0,0,0,0) 
+		self:GetHighlightTexture():SetVertexColor(0,0,0,0)
 	end
 	-- self:GetHighlightTexture():SetVertexColor(0,0,0,0)
 	-- Adjust indicators position to the new size

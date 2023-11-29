@@ -221,7 +221,7 @@ do
 			sorted = {}
 			for k in next, spells do sorted[#sorted+1] = k end
 			sort(sorted, function(a, b) return spells[a] < spells[b] end)
-		end	
+		end
 		return spells, sorted
 	end
 end
@@ -336,7 +336,7 @@ do
 		["buffs-"]   = "|cFF00ffa0%s|r",
 		["debuffs-"] = "|cFFff00a0%s|r",
 		["aoe-"]     = "|cFF0080ff%s|r",
-		["spells-"]   = "|cFFff7070%s|r",		
+		["spells-"]   = "|cFFff7070%s|r",
 		["color-"]   = "|cFFffff00%s|r",
 	}
 	local function byteToHex(byte)
@@ -419,7 +419,7 @@ function Grid2Options:IsCompatiblePair(indicator, status)
 				end
 			end
 		end
-	end	
+	end
 end
 
 -- Grid2Options:GetAvailableStatusValues()
@@ -427,7 +427,7 @@ function Grid2Options:GetAvailableStatusValues(indicator, statusAvailable, statu
 	statusAvailable = statusAvailable or {}
 	wipe(statusAvailable)
 	for statusKey, status in Grid2:IterateStatuses() do
-		if self:IsCompatiblePair(indicator, status) and not status.priorities[indicator] and not indicator.priorities[status] then 
+		if self:IsCompatiblePair(indicator, status) and not status.priorities[indicator] and not indicator.priorities[status] then
 			statusAvailable[statusKey] = self.LocalizeStatus(status)
 		end
 	end

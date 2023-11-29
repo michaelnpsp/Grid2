@@ -111,7 +111,7 @@ function indicator:RegisterStatus(status, priority)
 		self:SortStatuses()
 		self:UpdateHighlight(status)
 	end
-	status:RegisterIndicator( self, priority, Grid2.suspendedIndicators[self.name] )	
+	status:RegisterIndicator( self, priority, Grid2.suspendedIndicators[self.name] )
 end
 
 function indicator:UnregisterStatus(status, suspend)
@@ -119,7 +119,7 @@ function indicator:UnregisterStatus(status, suspend)
 		self.priorities[status] = nil
 		tremove(self.statuses, self:GetStatusIndex(status))
 		self:SortStatuses()
-	end	
+	end
 	status:UnregisterIndicator(self, suspend)
 end
 
@@ -142,7 +142,7 @@ function indicator:SetStatusPriority(status, priority)
 			self:SortStatuses()
 		end
 		status.priorities[self] = priority
-	end	
+	end
 end
 
 function indicator:GetStatusPriority(status)

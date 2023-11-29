@@ -18,7 +18,7 @@ Grid2Options:RegisterIndicatorOptions("tooltip", false, function(self, indicator
 		local layout = {}
 		self:MakeIndicatorTooltipOptions(indicator,layout)
 		self:AddIndicatorOptions(indicator, nil, layout )
-	end	
+	end
 end)
 
 function Grid2Options:MakeIndicatorTooltipOptions(indicator, options)
@@ -61,7 +61,7 @@ function Grid2Options:MakeIndicatorTooltipOptions(indicator, options)
 		get = function() return AdvancedTooltipsEnabled(indicator) end,
 		set = function(_,v)
 			indicator.dbx.showDefault = not v
-			if indicator.dbx.showDefault then -- Default unit tooltips 
+			if indicator.dbx.showDefault then -- Default unit tooltips
 				while #indicator.statuses>0 do -- unregister all statuses
 					Grid2:DbSetMap(indicator.name, indicator.statuses[1].name, nil)
 					indicator:UnregisterStatus(indicator.statuses[1])
@@ -69,7 +69,7 @@ function Grid2Options:MakeIndicatorTooltipOptions(indicator, options)
 				indicator.dbx.displayUnitOOC = nil
 			else -- Advanced tooltips
 				Grid2:DbSetMap(indicator.name, "name", 50) -- register "name" status
-				indicator:RegisterStatus(Grid2:GetStatusByName("name"), 50)	
+				indicator:RegisterStatus(Grid2:GetStatusByName("name"), 50)
 			end
 			if not indicator.suspended then	indicator:UpdateDB() end
 			Grid2Options:MakeIndicatorOptions(indicator)

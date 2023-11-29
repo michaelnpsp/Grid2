@@ -351,7 +351,7 @@ headerOptions = {
 				editedHeader.headerName = strlen(v)>1 and v or nil
 				Grid2Options:RefreshHeaderTypes()
 				RefreshLayout()
-			end	
+			end
 		end,
 		hidden = false,
 	},
@@ -682,13 +682,13 @@ generalOptions = {
 		confirmText = L["Are you sure you want to delete the selected layout?"],
 		disabled = function() return not next(Grid2Layout.customLayouts) end,
 	},
-	
+
 	copyfromdesc = {
 		order = 22,
 		type = "description",
 		name = "\n" .. L["Copy the selected layout into a new layout."],
-	},	
-	
+	},
+
 	copyfrom = {
 		type   = "select",
 		name   = L['Copy Layout'],
@@ -706,9 +706,9 @@ generalOptions = {
 					Grid2Layout:AddLayout(name, layouts[name])
 					CreateLayoutOptions(name)
 					SelectGroup(path, name )
-				end	
+				end
 			end )
-				
+
 		end,
 		values = GetLayoutsValues,
 		disabled = function() return not next(Grid2Layout.customLayouts) end,
