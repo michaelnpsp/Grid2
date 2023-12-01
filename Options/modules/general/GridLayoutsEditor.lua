@@ -79,7 +79,15 @@ local function GetLayoutsValues()
 	return values
 end
 
+local function UpdateStrictFiltering()
+	if editedHeader then
+		local count = (editedHeader.roleFilter and 1 or 0) + (editedHeader.groupFilter and 1 or 0) + (editedHeader.nameList and 1 or 0)
+		editedHeader.strictFiltering = (count>1) or nil
+	end
+end
+
 local function RefreshLayout(force)
+	UpdateStrictFiltering()
 	if Grid2Layout.layoutName==editedLayoutName or force then
 		Grid2Layout:RefreshLayout()
 	end
@@ -173,7 +181,6 @@ local function FilterSet(info,value)
 	end
 	filter = table.concat(tbl,",")
 	editedHeader[field] =  ( filter~="" and filter~=allkeys and strlen(filter)<strlen(allkeys) ) and filter or nil
-	editedHeader.strictFiltering = (editedHeader.roleFilter~=nil and editedHeader.groupFilter~=nil) or nil
 	RefreshLayout()
 end
 
@@ -182,7 +189,7 @@ local function IsOptionHidden()
 end
 
 local function IsOptionHiddenNL()
-	return editedHeader.type=='custom' or editedHeader.nameList~=nil
+	return editedHeader.type=='custom'
 end
 
 -- Used by Profile Export/Import module
@@ -302,12 +309,14 @@ headerOptions = {
 	},
 
 	---------------------------------------------------------------------------
+	nameListHeader = { type = "header", order = 49.9, name = L["Name List"], hidden = function() return editedHeader.nameList==nil end },
+
 	nameListEdit = {
 		type = "input",
 		order = 50,
 		width = "full",
-		name = L["Name List"],
-		desc = L["Type a list of player names"],
+		name = "",
+		desc = "",
 		multiline = 6,
 		get = function()
 			return editedHeader.nameList and table.concat( { strsplit(",", editedHeader.nameList ) } , ", " ) or ""
@@ -373,6 +382,8 @@ headerOptions = {
 		width = 1,
 		get = function() return editedHeader.nameList~=nil end,
 		set = function(info, value)
+			editedHeader.roleFilter = nil
+			editedHeader.groupFilter = nil
 			editedHeader.nameList = value and "" or nil
 			RefreshLayout()
 		end,
