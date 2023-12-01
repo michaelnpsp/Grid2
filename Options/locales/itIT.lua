@@ -1118,6 +1118,7 @@ L["OPTIONS_ONDEMAND_DESC"] = "Le opzioni non sono create finché l'utente non no
 -- L["20 man"] = ""
 -- L["25 man"] = ""
 -- L["30 man"] = ""
+-- L["35 man"] = ""
 -- L["40 man"] = ""
 -- L["Shape"] = ""
 -- L["Effect"] = ""

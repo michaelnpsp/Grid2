@@ -1122,6 +1122,7 @@ L["15 man"] = true
 L["20 man"] = true
 L["25 man"] = true
 L["30 man"] = true
+L["35 man"] = true
 L["40 man"] = true
 L["Shape"] = true
 L["Effect"] = true

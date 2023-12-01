@@ -1115,6 +1115,7 @@ L["\"%s\" has sent you a profile configuration. Do you want to activate received
 -- L["20 man"] = ""
 -- L["25 man"] = ""
 -- L["30 man"] = ""
+-- L["35 man"] = ""
 -- L["40 man"] = ""
 -- L["Shape"] = ""
 -- L["Effect"] = ""

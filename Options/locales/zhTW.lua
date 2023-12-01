@@ -1119,6 +1119,7 @@ L["OPTIONS_ONDEMAND_DESC"] = "為了減少記憶體使用和載入時間，選�
 -- L["20 man"] = ""
 -- L["25 man"] = ""
 -- L["30 man"] = ""
+-- L["35 man"] = ""
 -- L["40 man"] = ""
 -- L["Shape"] = ""
 -- L["Effect"] = ""

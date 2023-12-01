@@ -1118,6 +1118,7 @@ L["A resurrection spell has been casted on the unit"] = "A magia reviver esta se
 -- L["20 man"] = ""
 -- L["25 man"] = ""
 -- L["30 man"] = ""
+-- L["35 man"] = ""
 -- L["40 man"] = ""
 -- L["Shape"] = ""
 -- L["Effect"] = ""
