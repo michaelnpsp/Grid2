@@ -272,6 +272,8 @@ L["Layout Editor"] = "배치 편집기"
 -- L["Copy Layout"] = ""
 -- L["Type the name of the new Layout:"] = ""
 -- L["Copy the selected layout into a new layout."] = ""
+-- L["Detach Header"] = ""
+-- L["Header Type"] = ""
 
 --{{{ Miscelaneous
 L["New"] = "신규"

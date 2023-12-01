@@ -86,6 +86,13 @@ function Grid2Options:OnChatCommand()
 	end
 end
 
+function Grid2Options:RefreshOptions()
+	local dialog = LibStub("AceConfigDialog-3.0")
+	if dialog.OpenFrames["Grid2"] then
+		LibStub("AceConfigRegistry-3.0"):NotifyChange("Grid2")
+	end
+end
+
 --{{
 _G.Grid2Options = Grid2Options
 --}}

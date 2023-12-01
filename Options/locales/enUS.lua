@@ -272,6 +272,8 @@ L["Layout Editor"] = true
 L["Copy Layout"] = true
 L["Type the name of the new Layout:"] = true
 L["Copy the selected layout into a new layout."] = true
+L["Detach Header"] = true
+L["Header Type"] = true
 
 --{{{ Miscelaneous
 L["New"] = true

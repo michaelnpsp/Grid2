@@ -181,6 +181,10 @@ local function IsOptionHidden()
 	return editedHeader.type=='custom'
 end
 
+local function IsOptionHiddenNL()
+	return editedHeader.type=='custom' or editedHeader.nameList~=nil
+end
+
 -- Used by Profile Export/Import module
 function Grid2Options:AddNewCustomLayoutsOptions()
 	for name in pairs(Grid2Layout.customLayouts) do
@@ -201,6 +205,26 @@ headerOptions = {
 			editedHeader = editedLayout[ editedHeaderIndex ]
 			return true
 	end },
+
+	typeName = {
+		type = "input",
+		order = 1,
+		width = "full",
+		name = L["Header Type"],
+		desc = L["You can customize the header type. The specified name can be used to filter indicators using the unit type condition."],
+		get = function()
+			return (editedHeader.headerName or editedHeader.type or 'player'):gsub('^player$','players'):gsub('^pet$','pets')
+		end,
+		set = function(_, v)
+			v = strtrim(v):gsub('^players$','player'):gsub('^pets$','pet')
+			if not HEADER_TYPES[v] or v==editedHeader.type then
+				editedHeader.headerName = strlen(v)>1 and v or nil
+				Grid2Options:RefreshHeaderTypes()
+				RefreshLayout()
+			end
+		end,
+		hidden = false,
+	},
 
 	columns =  {
 		type   = 'select',
@@ -277,13 +301,14 @@ headerOptions = {
 		hidden = IsOptionHidden,
 	},
 
-	nameList = {
+	---------------------------------------------------------------------------
+	nameListEdit = {
 		type = "input",
 		order = 50,
 		width = "full",
 		name = L["Name List"],
 		desc = L["Type a list of player names"],
-		multiline = 5,
+		multiline = 6,
 		get = function()
 			return editedHeader.nameList and table.concat( { strsplit(",", editedHeader.nameList ) } , ", " ) or ""
 		end,
@@ -301,14 +326,15 @@ headerOptions = {
 				editedHeader.groupBy = nil
 				editedHeader.groupingOrder = nil
 			else
-				editedHeader.nameList = nil
+				editedHeader.nameList = ""
 				editedHeader.sortMethod = (editedHeader.sortMethod~="NAMELIST") and editedHeader.sortMethod or nil
 			end
 			RefreshLayout()
 		end,
-		hidden = IsOptionHidden,
+		hidden = function() return editedHeader.nameList==nil end,
 	},
 
+	---------------------------------------------------------------------------
 	unitsList = {
 		type = "input",
 		order = 50,
@@ -336,41 +362,21 @@ headerOptions = {
 		hidden = function() return editedHeader.type~='custom' end,
 	},
 
-	typeName = {
-		type = "input",
-		order = 51,
-		width = "full",
-		name = L["Header Type"],
-		desc = L["You can customize the header type. The specified name can be used to filter indicators using the header type condition."],
-		get = function()
-			return (editedHeader.headerName or editedHeader.type or 'player'):gsub('^player$','players'):gsub('^pet$','pets')
-		end,
-		set = function(_, v)
-			v = strtrim(v):gsub('^players$','player'):gsub('^pets$','pet')
-			if not HEADER_TYPES[v] or v==editedHeader.type then
-				editedHeader.headerName = strlen(v)>1 and v or nil
-				Grid2Options:RefreshHeaderTypes()
-				RefreshLayout()
-			end
-		end,
-		hidden = false,
-	},
+	---------------------------------------------------------------------------
+	bottomheader = { type = "header", order = 53, name = "", hidden = function() return editedHeader.nameList~=nil end },
 
-	vehicle = {
+	enableNameList = {
 		type = "toggle",
-		name = L["Toggle vehicle"],
-		desc = L["When the player is in a vehicle replace the player frame with the vehicle frame."],
+		name = L["Name List"],
+		desc = L["Check this option to specify a list of players names to display."],
 		order = 54,
-		width = .75,
-		tristate = true,
-		get = function()
-			return editedHeader.toggleForVehicle
-		end,
+		width = 1,
+		get = function() return editedHeader.nameList~=nil end,
 		set = function(info, value)
-			editedHeader.toggleForVehicle = value
+			editedHeader.nameList = value and "" or nil
 			RefreshLayout()
 		end,
-		hidden = false,
+		hidden = IsOptionHidden,
 	},
 
 	hidePlayer = {
@@ -378,7 +384,7 @@ headerOptions = {
 		name = L["Hide Player"],
 		desc = L["Do not display the player frame (only applied when in party)."],
 		order = 55,
-		width = .75,
+		width = 1,
 		tristate = false,
 		get = function()
 			return editedHeader.showPlayer==false
@@ -394,28 +400,29 @@ headerOptions = {
 		hidden = IsOptionHidden,
 	},
 
-	hideEmptyButtons = {
+	vehicle = {
 		type = "toggle",
-		name = L["Hide Empty"],
-		desc = L["Hide the frame if the unit does not exist."],
-		order = 55,
-		width = .75,
+		name = L["Toggle for vehicle"],
+		desc = L["When the player is in a vehicle replace the player frame with the vehicle frame."],
+		order = 56,
+		width = 1,
+		tristate = true,
 		get = function()
-			return editedHeader.hideEmptyUnits
+			return editedHeader.toggleForVehicle
 		end,
 		set = function(info, value)
-			editedHeader.hideEmptyUnits = value or nil
+			editedHeader.toggleForVehicle = value
 			RefreshLayout()
 		end,
-		hidden = function() return editedHeader.type~='custom' end,
+		hidden = false,
 	},
 
 	detachHeader = {
 		type = "toggle",
 		name = L["Detach Header"],
 		desc = L["Allow to move this header independent of the other headers."],
-		order = 56,
-		width = .75,
+		order = 57,
+		width = 1,
 		get = function()
 			return editedHeader.detachHeader
 		end,
@@ -427,12 +434,29 @@ headerOptions = {
 		hidden = false,
 	},
 
+	hideEmptyButtons = {
+		type = "toggle",
+		name = L["Hide Empty"],
+		desc = L["Hide the frame if the unit does not exist."],
+		order = 55,
+		width = 1,
+		get = function()
+			return editedHeader.hideEmptyUnits
+		end,
+		set = function(info, value)
+			editedHeader.hideEmptyUnits = value or nil
+			RefreshLayout()
+		end,
+		hidden = function() return editedHeader.type~='custom' end,
+	},
+
+	---------------------------------------------------------------------------
 	actionheader = { type = "header", order = 100, name = "", hidden = false },
 
 	clone =  {
 		type   = 'execute',
 		order  = 101,
-		width  = 0.6,
+		width  = 0.85,
 		name   = string.format( "|T%s:0|t%s", CHARACTER_PLUS_TEXTURE, L["Clone"] ),
 		desc   = L["Clone this header"],
 		func   = function(info)	CreateHeader(info, editedHeaderIndex) end,
@@ -442,7 +466,7 @@ headerOptions = {
 	delete =  {
 		type   = 'execute',
 		order  = 102,
-		width  = 0.6,
+		width  = 0.85,
 		name   = string.format( "|T%s:0|t%s", READY_CHECK_NOT_READY_TEXTURE, L["Delete"] ),
 		desc   = L["Delete this header"],
 		func   = function(info)	RemoveHeader(info, editedHeaderIndex) end,
@@ -500,7 +524,7 @@ if SUPPORT_ROLES then
 end
 
 do
-	headerOptions.groupheader = { type = "header", order = 30, name = L["Groups"], hidden = IsOptionHidden }
+	headerOptions.groupheader = { type = "header", order = 30, name = L["Groups"], hidden = IsOptionHiddenNL }
 	for i=1,8 do
 		headerOptions['group'..i] = {
 			type = "toggle",
@@ -511,7 +535,7 @@ do
 			get = FilterGet,
 			set = FilterSet,
 			disabled = function() return editedHeader.groupFilter=="auto" end,
-			hidden = IsOptionHidden,
+			hidden = IsOptionHiddenNL,
 			arg = {  tostring(i), "groupFilter", "1,2,3,4,5,6,7,8" },
 		}
 	end
@@ -527,7 +551,7 @@ do
 			editedHeader.strictFiltering = (editedHeader.roleFilter~=nil and editedHeader.groupFilter~=nil) or nil
 			RefreshLayout()
 		end,
-		hidden = IsOptionHidden,
+		hidden = IsOptionHiddenNL,
 	}
 end
 
@@ -546,7 +570,7 @@ do
 		descs  = names
 		widths = { .75, .75, .75 }
 	end
-	headerOptions.roleheader = { type = "header", order = 40, name = L["Roles"], hidden = IsOptionHidden }
+	headerOptions.roleheader = { type = "header", order = 40, name = L["Roles"], hidden = IsOptionHiddenNL }
 	for i,role in ipairs(roles) do
 		headerOptions['role'..i] = {
 			type = "toggle",
@@ -556,7 +580,7 @@ do
 			width = widths[i],
 			get = FilterGet,
 			set = FilterSet,
-			hidden = IsOptionHidden,
+			hidden = IsOptionHiddenNL,
 			arg = { role, "roleFilter", sroles },
 		}
 	end

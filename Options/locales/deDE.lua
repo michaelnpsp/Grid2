@@ -269,6 +269,8 @@ L["Select which layout to use for party."] = "Wähle, welches Layout für Gruppe
 -- L["Are you sure you want to remove this header?"] = ""
 -- L["Are you sure you want to delete the selected layout?"] = ""
 -- L["Layout Editor"] = ""
+-- L["Detach Header"] = ""
+-- L["Header Type"] = ""
 
 --{{{ Miscelaneous
 L["New"] = "Neu"
