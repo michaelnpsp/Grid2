@@ -626,17 +626,22 @@ do
 end
 
 -- Calculate and store effective values for some header properties
-function Grid2Layout:SetHeaderProperties(header, dbx, setupIndex, headerName)
-	local p = self.db.profile
-	header.dbx = dbx
-	header.headerType = dbx.type or 'player' -- player, pet, custom
-	header.headerName = headerName or dbx.headerName or header.headerType -- player, pet, self, target, focus, boss, custom or user defined
-	header.wasDetached = header.isDetached
-	header.isDetached = setupIndex>1 and (dbx.detachHeader or p.detachedHeaders=='player' or p.detachedHeaders==header.headerType) or nil
-	header.groupHorizontal = GetSetupValue( header.isDetached, p.groupHorizontals[header.headerName], p.horizontal )
-	header.groupAnchor = GetSetupValue( header.isDetached, p.groupAnchors[header.headerName], p.groupAnchor )
-	header.headerAnchor = GetSetupValue( header.isDetached, p.anchors[header.headerName], p.anchor )
-	header.headerPosKey = header.isDetached and self.layoutName..setupIndex or nil -- used as key to save positions when the layout has detached headers
+do
+	local BuiltInHeaders = { player = 'player', pet = 'pet', self = 'self', target = 'target', focus = 'focus', boss = 'boss' }
+
+	function Grid2Layout:SetHeaderProperties(header, dbx, setupIndex, headerName)
+		local p = self.db.profile
+		header.dbx = dbx
+		header.headerType = dbx.type or 'player' -- player, pet, custom
+		header.headerName = headerName or dbx.headerName or header.headerType -- player, pet, self, target, focus, boss, custom or user defined
+		header.headerClass = BuiltInHeaders[header.headerName] or 'other'
+		header.wasDetached = header.isDetached
+		header.isDetached = setupIndex>1 and (dbx.detachHeader or p.detachedHeaders=='player' or p.detachedHeaders==header.headerType) or nil
+		header.groupHorizontal = GetSetupValue( header.isDetached, p.groupHorizontals[header.headerClass], p.horizontal )
+		header.groupAnchor = GetSetupValue( header.isDetached, p.groupAnchors[header.headerClass], p.groupAnchor )
+		header.headerAnchor = GetSetupValue( header.isDetached, p.anchors[header.headerClass], p.anchor )
+		header.headerPosKey = header.isDetached and self.layoutName..setupIndex or nil -- used as key to save positions when the layout has detached headers
+	end
 end
 
 -- Apply defaults and some special cases for each header and apply workarounds to some blizzard bugs
@@ -650,7 +655,7 @@ function Grid2Layout:FixHeaderAttributes(header, index)
 	-- fix unitsPerColumn
 	local unitsPerColumn = header:GetAttribute("unitsPerColumn")
 	if not unitsPerColumn then
-		unitsPerColumn = p.unitsPerColumns[header.headerName] or 5
+		unitsPerColumn = p.unitsPerColumns[header.headerClass] or 5
 		header:SetAttribute("unitsPerColumn", unitsPerColumn)
 	end
 	-- fix anchors
@@ -712,8 +717,9 @@ function Grid2Layout:GetFramesSizeForHeader(header)
 	local fh = p.frameHeights
 	local hw = p.frameHeaderWidths
 	local hh = p.frameHeaderHeights
-	local w  = (fw[m] or p.frameWidth)  * (hw[header.headerName] or 1)
-	local h  = (fh[m] or p.frameHeight) * (hh[header.headerName] or 1)
+	local nl = not p.frameHeaderLocks[header.headerClass]
+	local w = (nl and fw[m] or p.frameWidth)  * (hw[header.headerClass] or 1)
+	local h = (nl and fh[m] or p.frameHeight) * (hh[header.headerClass] or 1)
 	return w, h
 end
 

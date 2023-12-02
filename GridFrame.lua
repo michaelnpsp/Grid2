@@ -228,6 +228,7 @@ Grid2Frame.defaultDB = {
 		mouseoverTexture = "Blizzard Quest Title Highlight",
 		frameWidths  = {},
 		frameHeights = {},
+		frameHeaderLocks = {},
 		frameHeaderWidths = {},
 		frameHeaderHeights = {},
 		-- default values for indicators
@@ -289,6 +290,7 @@ function Grid2Frame:UpgradeThemeDB()
 	local p = self.db.profile
 	p.frameWidths  = p.frameWidths  or {}
 	p.frameHeights = p.frameHeights or {}
+	p.frameHeaderLocks = p.frameHeaderLocks or {}
 	p.frameHeaderWidths = p.frameHeaderWidths or {}
 	p.frameHeaderHeights = p.frameHeaderHeights or {}
 end
