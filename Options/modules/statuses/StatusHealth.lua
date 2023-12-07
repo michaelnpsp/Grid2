@@ -286,11 +286,14 @@ end, {
 	titleIcon = Grid2.isClassic and "Interface\\Icons\\Spell_Holy_Heal" or "Interface\\Icons\\Spell_Holy_DivineProvidence"
 })
 
-
 Grid2Options:RegisterStatusOptions("health-low", "health", function(self, status, options, optionParams)
 	local per,min,max,step = true
-	if status.dbx.threshold>10 then
-		min,max,step,per = 1000, 250000, 500, nil
+	if status.dbx.threshold>=5 then
+		if Grid2.isClassic then
+			min,max,step,per = 10, 50000, 100, nil
+		else
+			min,max,step,per = 1000, 250000, 500, nil
+		end
 	end
 	self:MakeStatusColorOptions(status, options, optionParams)
 	self:MakeStatusThresholdOptions(status, options, optionParams, min, max, step, per)

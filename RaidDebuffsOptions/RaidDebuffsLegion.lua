@@ -144,7 +144,7 @@ RDDB["Legion"] = {
 		196376, -- grievous-tear
 		198376, -- primal-rampage
 		198408, -- nightfall
-		198477, -- Fixate		
+		198477, -- Fixate
 		},
 		["Oakheart"] = {
 		order = 2, ejid = 1655,
@@ -172,14 +172,15 @@ RDDB["Legion"] = {
 		},
 		["Trash"] = {
 		order = 5, ejid = nil,
-		200580, -- Maddening Roar*     
-		204243, -- Tormenting Eye*		
-		200684, -- Nightmare Toxin    
-		200642, -- Despair            
-		218759, -- Corruption Pool    
-		198904, -- Poison Spear       
-		201839, -- Curse of Isolation 
-		201365, -- Darksoul Drain     
+		200580, -- Maddening Roar*
+		204243, -- Tormenting Eye*
+		200684, -- Nightmare Toxin
+		200642, -- Despair
+		218759, -- Corruption Pool
+		198904, -- Poison Spear
+		201839, -- Curse of Isolation
+		201365, -- Darksoul Drain
+		225484, -- Grievous Rip
 		},
 	},
 	[101456] = { -- Eye of Azshara (5man)

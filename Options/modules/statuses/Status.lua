@@ -51,7 +51,7 @@ do
 		  end
 		end
 	end
-	
+
 	local function SetFilterBooleanOptions( status, options, order, key, defValue, name, desc, values )
 		local dbx = status.dbx
 		options[key..'1'] = {
@@ -84,7 +84,7 @@ do
 			end,
 			set = function(_,v)
 				dbx.load[key] = (v==2)
-				status:RefreshLoad()				
+				status:RefreshLoad()
 			end,
 			disabled = function() return not dbx.load or dbx.load.disabled or dbx.load[key]==nil end,
 			values = values,
@@ -126,7 +126,7 @@ do
 			end,
 			set = function(_,v)
 				dbx.load[key] = v
-				status:RefreshLoad()				
+				status:RefreshLoad()
 			end,
 			disabled = function() return not dbx.load or dbx.load.disabled or dbx.load[key]==nil end,
 			values = values,
@@ -185,7 +185,7 @@ do
 			get = function(info, value) return filter[value] end,
 			set = function(info, value)
 				filter[value] = (not filter[value]) or nil
-				status:RefreshLoad()				
+				status:RefreshLoad()
 			end,
 			hidden = function() return not multi end,
 			disabled = function() return dbx.load and dbx.load.disabled end,
@@ -345,7 +345,7 @@ do
 				nil,
 				L["Spell Ready"],
 				L["Load the status only if the specified player spell is not in cooldown."],
-				spells, 
+				spells,
 				sorted
 			)
 		end
@@ -480,14 +480,14 @@ function Grid2Options:MakeStatusThresholdOptions(status, options, optionParams, 
 		desc = optionParams and optionParams.thresholdDesc or L["Threshold at which to activate the status."],
 		min = min or 0,
 		max = max or 1,
-		step = step or 0.01,
+		bigStep = step or 0.01,
 		isPercent = percent or nil,
 		get = function ()
 			return status.dbx.threshold
 		end,
 		set = function (_, v)
 			status.dbx.threshold = v
-			status:UpdateAllUnits()
+			status:Refresh()
 		end,
 	}
 end

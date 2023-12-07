@@ -255,7 +255,7 @@ local function HealthCurrent_ShieldUpdate(unit)
 	if unit_is_valid[unit] then
 		HealthCurrent:UpdateIndicators(unit)
 	end
-end	
+end
 
 local function HealthCurrent_GetPercentTextShield(self, unit)
 	local m = UnitHealthMax(unit)
@@ -273,7 +273,7 @@ function HealthCurrent:OnDisable()
 	Health_Disable(self)
 	if self.addShield then
 		UnregisterEvent( "UNIT_ABSORB_AMOUNT_CHANGED" )
-	end	
+	end
 end
 
 function HealthCurrent_GetPercent(self,unit)
@@ -338,6 +338,7 @@ Grid2:DbSetStatusDefaultValue( "health-current", {type = "health-current", color
 HealthLow.OnEnable  = Health_Enable
 HealthLow.OnDisable = Health_Disable
 HealthLow.GetColor  = Grid2.statusLibrary.GetColor
+HealthLow.GetPercent = Grid2.statusLibrary.GetPercent
 
 local healthlow_threshold
 
@@ -359,7 +360,7 @@ end
 
 function HealthLow:UpdateDB()
 	healthlow_threshold = self.dbx.threshold
-	self.IsActive = self.dbx.invert and  
+	self.IsActive = self.dbx.invert and
 					(healthlow_threshold<=1 and self.IsInactive1 or self.IsInactive2) or
 					(healthlow_threshold<=1 and self.IsActive1 or self.IsActive2)
 end
@@ -727,7 +728,7 @@ HealsUpdateEvent = function(unit)
 				myheals_cache[unit] = heal
 				if myheals_enabled then
 					MyHeals:UpdateIndicators(unit)
-				end	
+				end
 			end
 		end
 		if heals_enabled or overheals_enabled then
