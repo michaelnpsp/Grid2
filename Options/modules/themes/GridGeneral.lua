@@ -651,7 +651,7 @@ local frameOptions2 = { headerback = {
 		set = function( info, r,g,b,a )
 			local c = theme.frame.frameContentColor
 			c.r, c.g, c.b, c.a = r, g, b, a
-			Grid2Frame:UpdateIndicators()
+			Grid2Options:UpdateIndicators()
 		 end,
 		hasAlpha = true,
 }, headerborder = {
