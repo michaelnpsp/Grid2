@@ -6,34 +6,56 @@ local UnitAffectingCombat = UnitAffectingCombat
 local SpellGetVisibilityInfo = SpellGetVisibilityInfo
 local myUnits = Grid2.roster_my_units
 
+-- all buffs
 local textures = {}
+local color = {}
+local colors = {color, color, color, color, color, color, color, color}
+
+-- normal buffs
 local counts = {}
 local expirations = {}
 local durations = {}
-local colors = {}
-local color = {}
+
+-- missing buffs
+local mcounts = {1}
+local mexpirations = {0}
+local mdurations = {1073741824}
 
 -- buffs group status
 local function status_GetIcons(self, unit, max)
-	color.r, color.g, color.b, color.a = self:GetColor(unit)
 	local i, j, spells, filter, name, caster, _ = 1, 1, self.spells, self.isMine
 	repeat
 		name, textures[j], counts[j], _, durations[j], expirations[j], caster = UnitAura(unit, i)
 		if not name then break end
 		if spells[name] and (filter==false or filter==myUnits[caster]) then
-			colors[j] = color
 			j = j + 1
 		end
 		i = i + 1
 	until j>max
+	if j>1 then
+		color.r, color.g, color.b, color.a = self:GetColor(unit)
+	end
 	return j-1, textures, counts, expirations, durations, colors
+end
+
+local function status_GetIconsMissing(self, unit)
+	if self:IsActive(unit) then
+		color.r, color.g, color.b, color.a = self:GetColor(unit)
+		textures[1] = self.missingTexture
+		return 1, textures, mcounts, mexpirations, mdurations, colors
+	end
+	return 0
+end
+
+local function status_Update(self, dbx)
+	self.GetIcons = dbx.missing and status_GetIconsMissing or status_GetIcons
 end
 
 local statusTypes = { "color", "icon", "icons", "percent", "text" }
 local function status_Create(baseKey, dbx)
 	local status = Grid2.statusPrototype:new(baseKey, false)
 	if dbx.spellName then dbx.spellName = nil end -- fix possible wrong data in old database
-	status.GetIcons = status_GetIcons
+	status.OnUpdate = status_Update
 	if Grid2.classicDurations then UnitAura = LibStub("LibClassicDurations").UnitAuraDirect end
 	return Grid2.CreateStatusAura( status, basekey, dbx, 'buff', statusTypes )
 end

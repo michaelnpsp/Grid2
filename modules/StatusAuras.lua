@@ -460,11 +460,9 @@ do
 		else
 			self.isMine = not not dbx.mine
 		end
-
 		if dbx.combineStacks then
 			self.combineStacks = dbx.combineStacks
 		end
-
 		if dbx.missing then
 			local spell = dbx.auras and dbx.auras[1] or dbx.spellName
 			self.missingTexture = spell and select(3,GetSpellInfo(spell)) or "Interface\\ICONS\\Achievement_General"
