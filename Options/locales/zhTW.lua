@@ -1381,6 +1381,15 @@ L["You can include a descriptive prefix using separators \"@#>\""] = "你可以�
 -- L["Vertical Tiles"] = ""
 -- L["Repeat"] = ""
 -- L["Mirror"] = ""
+-- L["Percent Format"] = ""
+-- L["Examples:\n%p\n%p percent"] = ""
+-- L["Raid Size"] = ""
+-- L["Choose the Raid Size calculation method"] = ""
+-- L["This setting is used to setup different layouts, frame sizes or themes depending of the raid size."] = ""
+-- L["Maximum capacity of the instance"] = ""
+-- L["Maximum non-empty raid group"] = ""
+-- L["Number of non-empty raid groups"] = ""
+-- L["Number of players in raid"] = ""
 
 -- RaidDebuffsOptions
 -- L["[Custom Debuffs]"] = ""

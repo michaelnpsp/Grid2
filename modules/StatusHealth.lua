@@ -53,6 +53,8 @@ local overheals_minimum = 1
 
 local healthdeficit_enabled = false
 
+local fmtPercent = "%.0f%%"
+
 -- Health statuses update function
 local statuses = {}
 
@@ -259,7 +261,7 @@ end
 
 local function HealthCurrent_GetPercentTextShield(self, unit)
 	local m = UnitHealthMax(unit)
-	return fmt( "%.0f%%",  m == 0 and 0 or (UnitHealth(unit)+UnitGetTotalAbsorbs(unit))*100/m )
+	return fmt( fmtPercent,  m == 0 and 0 or (UnitHealth(unit)+UnitGetTotalAbsorbs(unit))*100/m )
 end
 
 function HealthCurrent:OnEnable()
@@ -314,6 +316,7 @@ function HealthCurrent:GetColor(unit)
 end
 
 function HealthCurrent:UpdateDB()
+	fmtPercent = Grid2.db.profile.formatting.percentFormat
 	self.addShield = Grid2.isWoW90 and self.dbx.addPercentShield or nil
 	self.GetText = self.dbx.displayRawNumbers and self.GetText2 or self.GetText1
 	self.GetPercent = self.dbx.deadAsFullHealth and HealthCurrent_GetPercentDFH or HealthCurrent_GetPercent
@@ -471,7 +474,7 @@ function HealthDeficit:GetTextEnemy(unit) -- special case, we display health cur
 		return self:GetTextFriend(unit)
 	else
 		local m = UnitHealthMax(unit)
-		return fmt( "%d%%", m == 0 and 0 or UnitHealth(unit) * 100 / m )
+		return fmt( fmtPercent, m == 0 and 0 or UnitHealth(unit) * 100 / m )
 	end
 end
 HealthDeficit.GetText = HealthDeficit.GetText1
@@ -487,7 +490,7 @@ end
 HealthDeficit.GetPercent = HealthDeficit.GetPercent1
 
 function HealthDeficit:GetPercentText(unit)
-	return fmt( "%.0f%%", -self:GetPercent(unit)*100 )
+	return fmt( fmtPercent, -self:GetPercent(unit)*100 )
 end
 
 function HealthDeficit:UpdateDB()

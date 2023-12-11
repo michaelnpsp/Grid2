@@ -17,6 +17,7 @@ Grid2.defaults.profile.formatting = {
 	invertDurationStack      = false,
 	secondsElapsedFormat     = "%ds",
 	minutesElapsedFormat     = "%dm",
+	percentFormat            = "%.0f%%",
 }
 
 local timers = {}
@@ -188,6 +189,7 @@ local function Text_OnUpdateS(self, parent, unit, status)
 	end
 end
 
+local FmtPercent
 local function Text_OnUpdateP(self, parent, unit, status)
 	local Text = parent[self.name].Text
 	if status then
@@ -200,7 +202,7 @@ local function Text_OnUpdateP(self, parent, unit, status)
 		if text then
 			Text:SetText( text )
 		elseif percent then
-			Text:SetFormattedText( "%.0f%%", percent*100 )
+			Text:SetFormattedText( FmtPercent, percent*100 )
 		else
 			Text:SetText( string_cut(status:GetText(unit) or "", self.textlength) )
 		end
@@ -258,6 +260,7 @@ local function Text_UpdateDB(self)
 	FmtDES[false] = fmt.shortDurationStackFormat
 	FmtES = fmt.secondsElapsedFormat
 	FmtEM = fmt.minutesElapsedFormat
+	FmtPercent = fmt.percentFormat
 	UpdateES = fmt.invertDurationStack and _UpdateSE or _UpdateES
 	UpdateDS = fmt.invertDurationStack and _UpdateSD or _UpdateDS
 	-- indicator dbx

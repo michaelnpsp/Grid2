@@ -1384,6 +1384,15 @@ L["Horizontal Tiles"] = true
 L["Vertical Tiles"] = true
 L["Repeat"] = true
 L["Mirror"] = true
+L["Percent Format"] = true
+L["Examples:\n%p\n%p percent"] = true
+L["Raid Size"] = true
+L["Choose the Raid Size calculation method"] = true
+L["This setting is used to setup different layouts, frame sizes or themes depending of the raid size."] = true
+L["Maximum capacity of the instance"] = true
+L["Maximum non-empty raid group"] = true
+L["Number of non-empty raid groups"] = true
+L["Number of players in raid"] = true
 
 -- RaidDebuffsOptions
 L["[Custom Debuffs]"] = true
