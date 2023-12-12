@@ -390,36 +390,37 @@ RDDB["Dragonflight"] = {
 		417413, --Temporal Scar
 		},
 		["Trash"] = {
-		 412044, -- Temposlice
-		 411994, -- Chronomelt
-		 415436, -- Tainted Sands
-		 415554, -- Chronoburst
-		 415437, -- Enervate
-		 413547, -- Bloom
-		 413529, -- Untwist
-		 412810, -- Blight Spew
-		 412285, -- Stonebolt
-		 412505, -- Rending Cleave 
-		 413606, -- Corroding Volley
-		 414922, -- Shrouding Sandstorm
-		 412922, -- Binding Grasp
-		 412131, -- Orb of Contemplation
-		 413027, -- Titanic Bulwark
-		 413618, -- Timeless Curse
-		 419351, -- Bronze Exhalation
-		 418092, -- Twisted Timeways
-		 418200, -- Infinite Burn
-		 413427, -- Time Beam
-		 419511, -- Temporal Link
-		 419517, -- Chronal Eruption
-		 407125, -- Sundering Slam
-		 407651, -- Sapper’s Perogative
-		 407715, -- Kaboom!
-		 407906, -- Earthquake
-		 407123, -- Rain of Fire
-		 411700, -- Slobbering Bite
-		 411644, -- Soggy Bonk
-		 412262, -- Staticky Punch
+		412044, -- Temposlice
+		411994, -- Chronomelt
+		415436, -- Tainted Sands
+		415554, -- Chronoburst
+		415437, -- Enervate
+		413547, -- Bloom
+		413529, -- Untwist
+		412810, -- Blight Spew
+		412285, -- Stonebolt
+		412505, -- Rending Cleave
+		413606, -- Corroding Volley
+		414922, -- Shrouding Sandstorm
+		412922, -- Binding Grasp
+		412131, -- Orb of Contemplation
+		413027, -- Titanic Bulwark
+		413618, -- Timeless Curse
+		419351, -- Bronze Exhalation
+		418092, -- Twisted Timeways
+		418200, -- Infinite Burn
+		413427, -- Time Beam
+		419511, -- Temporal Link
+		419517, -- Chronal Eruption
+		407125, -- Sundering Slam
+		407651, -- Sapper’s Perogative
+		407715, -- Kaboom!
+		407906, -- Earthquake
+		407123, -- Rain of Fire
+		411700, -- Slobbering Bite
+		411644, -- Soggy Bonk
+		412262, -- Staticky Punch
+		407313, -- Shrapnel
 		},
 	},
 	-- World Bosses
@@ -628,10 +629,10 @@ RDDB["Dragonflight"] = {
 		421971, --Controlled Burn
 		422023, --Shadow-Scorched Earth
 		422026, --Tortured Scream
-		421038, --Ember-Charred		
+		421038, --Ember-Charred
 		426548, --Searing Bramble
 		421840, --Uprooted Agony
-		422053, --Shadow Spines* 
+		422053, --Shadow Spines*
 		425816, --Blazing Pollen*
 		425819, --Flaming Sap*
 		424352, --Dreadfire Barrage*
@@ -640,7 +641,7 @@ RDDB["Dragonflight"] = {
 		order = 2, ejid = 2554,
 		414340, --Drenched Blades
 		414770, --Blistering Torment
-		414367, --Gathering Torment	
+		414367, --Gathering Torment
 		419462, --Flesh Mortification
 		423715, --Searing Sparks
 		416056, --Umbral Destruction
@@ -708,7 +709,7 @@ RDDB["Dragonflight"] = {
 		423842, --Verdant Rend
 		418423, --Verdant Matrix*
 		420846, --Continuum*
-		428012, --Lucid Miasma*		
+		428012, --Lucid Miasma*
 		},
 		["Smolderon"] = {
 		order = 7, ejid = 2563,
@@ -720,8 +721,8 @@ RDDB["Dragonflight"] = {
 		421455, --Overheated*
 		422577, --Searing Aftermath*
 		426018, --Seeking Inferno*
-		420950, --Blistering Heat*		
-		425574, --Lingering Burn*		
+		420950, --Blistering Heat*
+		425574, --Lingering Burn*
 		},
 		["Tindral Sageswift, Seer of the Flame"] = {
 		order = 8, ejid = 2565,
