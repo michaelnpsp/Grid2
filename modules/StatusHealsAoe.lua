@@ -38,7 +38,7 @@ local function TimerEvent()
 		if next(time_cache) then
 			count = count + 1
 		end
-	end	
+	end
 	if count == 0 then
 		timer = Grid2:CancelTimer(timer)
 	end
@@ -60,11 +60,11 @@ local function CombatLogEventReal(...)
 						if prev~=spellName then
 							status:UpdateIndicators(unit)
 							timer = timer or Grid2:CreateTimer(TimerEvent, timerDelay)
-						end	
+						end
 					end
 				end
-			end	
-		end	
+			end
+		end
 	end
 end
 
@@ -81,14 +81,14 @@ local function OnEnable(self)
 		for _,spell in next, self.dbx.spellList do
 			local name,_,icon = GetSpellInfo(spell)
 			if name then
-				if not spells[name] then 
-					spells[name] = {} 
+				if not spells[name] then
+					spells[name] = {}
 				end
 				spells[name][self] = true
 				icons[name] = icon
 			end
 		end
-	end	
+	end
 end
 
 local function OnDisable(self)
@@ -105,7 +105,7 @@ local function OnDisable(self)
 	end
 	if not next(statuses_enabled) then
 		AOEM:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	end	
+	end
 end
 
 local function IsActive(self, unit)
@@ -119,7 +119,7 @@ end
 
 local function GetIcon(self, unit)
 	local spell = self.heal_cache[unit]
-	if spell then return icons[ spell ] end	
+	if spell then return icons[ spell ] end
 end
 
 local function GetText(self, unit)
