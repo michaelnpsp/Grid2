@@ -1120,6 +1120,7 @@ L["There are conditions referencing this theme. Are you sure you want to delete 
 L["Are you sure you want to delete the selected theme?"] = true
 L["Delete this condition"] = true
 L["Raid (N&H)"] = true
+L["5 man"] = true
 L["10 man"] = true
 L["15 man"] = true
 L["20 man"] = true

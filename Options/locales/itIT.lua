@@ -1116,6 +1116,7 @@ L["OPTIONS_ONDEMAND_DESC"] = "Le opzioni non sono create finché l'utente non no
 -- L["Are you sure you want to delete the selected theme?"] = ""
 -- L["Delete this condition"] = ""
 -- L["Raid (N&H)"] = ""
+-- L["5 man"] = ""
 -- L["10 man"] = ""
 -- L["15 man"] = ""
 -- L["20 man"] = ""

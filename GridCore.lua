@@ -46,6 +46,7 @@ end
 Grid2.groupType      = "solo"
 Grid2.instType       = "other"
 Grid2.instMaxPlayers = 1
+Grid2.instMaxGroup   = 1
 
 -- player class cache
 Grid2.playerClass = select(2, UnitClass("player"))
@@ -244,7 +245,7 @@ function Grid2:CheckTheme()
 	local theme   = enabled.default or 0
 	local spec    = GetSpecialization() or 0
 	local role    = UnitGroupRolesAssigned('player') or 0
-	local groupType, instType, _, maxPlayers = self:GetGroupType()
+	local groupType, instType, maxPlayers = self:GetGroupType()
 	local kM   = tostring(maxPlayers)
 	local kC   = fmt("%s@0",     self.playerClass)
 	local kS   = fmt("%s@%d",    self.playerClass, spec)
@@ -291,20 +292,20 @@ function Grid2:SPELLS_CHANGED()
 	end
 	if self.UpdatePlayerRangeSpells then
 		self:UpdatePlayerRangeSpells()
-	end	
+	end
 end
 
 -- Compartment icon
 function Grid2:InitializeCompartment()
-	if AddonCompartmentFrame and AddonCompartmentFrame.RegisterAddon then 
+	if AddonCompartmentFrame and AddonCompartmentFrame.RegisterAddon then
 		AddonCompartmentFrame:RegisterAddon({
 			text = "Grid2",
 			icon = "Interface\\AddOns\\Grid2\\media\\iconsmall.tga",
-			func = function() Grid2:OpenGrid2Options(); end,	
+			func = function() Grid2:OpenGrid2Options(); end,
 			registerForAnyClick = true,
 			notCheckable = true,
 		})
-	end 
+	end
 	self.InitializeCompartment = nil
 end
 

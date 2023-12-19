@@ -1116,6 +1116,7 @@ L["OPTIONS_ONDEMAND_DESC"] = "Настройки не создаются до т
 -- L["Are you sure you want to delete the selected theme?"] = ""
 L["Delete this condition"] = "Удалить это условие"
 -- L["Raid (N&H)"] = ""
+L["5 man"] = "5 человек"
 L["10 man"] = "10 человек"
 L["15 man"] = "15 человек"
 L["20 man"] = "20 человек"

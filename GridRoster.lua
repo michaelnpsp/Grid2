@@ -228,46 +228,55 @@ do
 	-- Calculate raid size (raid size is adjusted to be multiple of 5)
 	local raidSizeFuncs = {
 		[1] = function() -- max non-empty group in raid
-			local r = 1
+			local m = 1
 			for i = 1, 40 do
-				local g = select(3,GetRaidRosterInfo(i))
-				if g and g>r then r = g end
+				local n, _, g = GetRaidRosterInfo(i)
+				if n and g>m then m = g end
 			end
-			return r*5
+			return m*5, m
 		end,
 		[2] = function() -- count non-empty groups in raid
-			local r = 0
+			local r, m = 0, 1
 			wipe(groupsUsed)
 			for i = 1, 40 do
-				local g = select(3,GetRaidRosterInfo(i))
-				if g and groupsUsed[g]==nil then
+				local n, _, g = GetRaidRosterInfo(i)
+				if n and groupsUsed[g]==nil then
 					groupsUsed[g] = true
+					if g>m then m = g end
 					r = r + 1
 				end
 			end
-			return r*5
+			return r*5, m
 		end,
 		[3] = function() -- count players in raid
-			local r = 0
+			local r, m = 0, 1
 			for i = 1, 40 do
-				if GetRaidRosterInfo(i) then r = r + 1 end
+				local n, _, g = GetRaidRosterInfo(i)
+				if n then
+					if g>m then m = g end
+					r = r + 1
+				end
 			end
-			return math.ceil(r/5)*5
+			return math.ceil(r/5)*5, m
 		end,
 	}
-	local function GetRaidMaxPlayers(maxPlayers)
+	local function GetRaidMaxPlayers(maxPlayers, maxGroup)
 		if IsInRaid() then
 			local typ = Grid2.db.profile.raidSizeType
 			if typ then
-				local raidSize = raidSizeFuncs[typ]()
-				return Grid2Layout.db.profile.displayAllGroups and raidSize or math.min(raidSize, maxPlayers)
+				local raidSize, raidGroup = raidSizeFuncs[typ]()
+				if Grid2Layout.db.profile.displayAllGroups then
+					return raidSize, raidGroup
+				else
+					return math.min(raidSize, maxPlayers), math.min(raidGroup, maxGroup)
+				end
 			end
 		end
-		return maxPlayers
+		return maxPlayers, maxGroup
 	end
 	-- Used by another modules
 	function Grid2:GetGroupType()
-		return self.groupType or "solo", self.instType or "other", self.instMaxPlayers or 1, self.raidMaxPlayers or 1
+		return self.groupType or "solo", self.instType or "other", self.instMaxPlayers or 1, self.instMaxGroup or 1
 	end
 	-- Workaround to fix maxPlayers in pvp when UI is reloaded (retry every .5 seconds for 2-3 seconds), see ticket #641
 	function Grid2:FixGroupMaxPlayers(newInstType)
@@ -345,14 +354,14 @@ do
 		elseif maxPlayers>40 then -- In Wrath Wintergrasp GetInstanceInfo() may return more than 40 players.
 			maxPlayers = 40
 		end
-		local raidMaxPlayers = GetRaidMaxPlayers(maxPlayers)
-		if self.groupType ~= newGroupType or self.instType ~= newInstType or self.instMaxPlayers ~= maxPlayers or self.raidMaxPlayers ~= raidMaxPlayers then
-			self:Debug("GroupChanged", event, instName, instMapID, self.groupType, self.instType, self.instMaxPlayers, self.raidMaxPlayers, "=>", newGroupType, newInstType, maxPlayers, raidMaxPlayers)
+		local instMaxPlayers, instMaxGroup = GetRaidMaxPlayers( maxPlayers, math.ceil(maxPlayers/5) )
+		if self.groupType ~= newGroupType or self.instType ~= newInstType or self.instMaxPlayers ~= instMaxPlayers or self.instMaxGroup ~= instMaxGroup then
+			self:Debug("GroupChanged", event, instName, instMapID, self.groupType, self.instType, self.instMaxPlayers, self.instMaxGroup, "=>", newGroupType, newInstType, instMaxPlayers, instMaxGroup)
 			self.groupType      = newGroupType
 			self.instType       = newInstType
-			self.instMaxPlayers = maxPlayers
-			self.raidMaxPlayers = raidMaxPlayers
-			self:SendMessage("Grid_GroupTypeChanged", newGroupType, newInstType, maxPlayers, raidMaxPlayers)
+			self.instMaxPlayers = instMaxPlayers
+			self.instMaxGroup   = instMaxGroup
+			self:SendMessage("Grid_GroupTypeChanged", newGroupType, newInstType, instMaxPlayers, instMaxGroup)
 		end
 		self:QueueUpdateRoster()
 	end

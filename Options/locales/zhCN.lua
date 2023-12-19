@@ -1116,6 +1116,7 @@ L["OPTIONS_ONDEMAND_DESC"] = "为了减少内存使用和加载时间，选项�
 -- L["Are you sure you want to delete the selected theme?"] = ""
 L["Delete this condition"] = "删除此条件"
 L["Raid (N&H)"] = "团队 (N&H)"
+L["5 man"] = "5人"
 L["10 man"] = "10人"
 L["15 man"] = "15人"
 L["20 man"] = "20人"

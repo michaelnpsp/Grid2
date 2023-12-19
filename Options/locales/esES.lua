@@ -1134,6 +1134,7 @@ L["There are conditions referencing this theme. Are you sure you want to delete 
 L["Are you sure you want to delete the selected theme?"] = "Seguro que quieres eliminar el tema seleccionado ?"
 L["Delete this condition"] = "Eliminar esta condición"
 L["Raid (N&H)"] = "Raid (N&H)"
+L["5 man"] = "5 jugadores"
 L["10 man"] = "10 jugadores"
 L["15 man"] = "15 jugadores"
 L["20 man"] = "20 jugadores"

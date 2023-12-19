@@ -1116,6 +1116,7 @@ L["There are conditions referencing this theme. Are you sure you want to delete 
 L["Are you sure you want to delete the selected theme?"] = "선택한 테마를 삭제하시겠습니까?"
 L["Delete this condition"] = "현재 조건 삭제"
 L["Raid (N&H)"] = "공격대 (일반&영웅)"
+L["5 man"] = "5 인"
 L["10 man"] = "10 인"
 L["15 man"] = "15 인"
 L["20 man"] = "20 인"
