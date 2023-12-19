@@ -301,19 +301,11 @@ if Grid2Layout.minimapIcon then -- checks if Grid2LDB addon was loaded
 			desc = L["Show Minimap Icon"],
 			width = "full",
 			order = 119,
-			get = function () return not Grid2Layout.db.shared.minimapIcon.hide end,
-			set = function (_, v)
-				Grid2Layout.db.shared.minimapIcon.hide = not v
-				if v then
-					Grid2Layout.minimapIcon:Show("Grid2")
-				else
-					Grid2Layout.minimapIcon:Hide("Grid2")
-				end
-			end,
+			get = function () return Grid2:SetMinimapIcon('query') end,
+			set = function (_, v) Grid2:SetMinimapIcon(v) end,
 		},
 	})
 end
-
 
 --==========================================================================
 -- Hide blizzard raid frames

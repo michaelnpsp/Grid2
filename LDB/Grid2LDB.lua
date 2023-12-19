@@ -34,7 +34,7 @@ local Grid2LDB = DataBroker:NewDataObject("Grid2", {
 
 local icon = LibStub("LibDBIcon-1.0")
 if icon then
-	icon:Register("Grid2", Grid2LDB, Grid2Layout.db.shared.minimapIcon)
+	icon:Register("Grid2", Grid2LDB, Grid2.db.global.minimapIcon or Grid2Layout.db.shared.minimapIcon)
 	Grid2Layout.minimapIcon = icon
 end
 

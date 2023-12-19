@@ -5,7 +5,10 @@ local Grid2 = Grid2
 local display = { never = 'Never', always = 'Always', grouped = 'Grouped', raid = 'Raid', toggle = false }
 
 local function ProcessMinimapCmd(p)
-	if p=='toggle' then
+	if p=='global' then
+		Grid2.db.global.minimapIcon = (Grid2.db.global.minimapIcon==nil) and {hide=false} or nil
+		ReloadUI()
+	elseif p=='toggle' then
 		Grid2:SetMinimapIcon()
 	else
 		Grid2:SetMinimapIcon(p~='hide')
@@ -113,7 +116,7 @@ local function ProcessHelpCmd()
 	print("    /grid2 lock toggle")
 	print("    /grid2 theme name || index")
 	print("    /grid2 show never || always || grouped || raid || toggle\n")
-	print("    /grid2 minimapicon show || hide || toggle ")
+	print("    /grid2 minimapicon show || hide || toggle || global")
 	print("    /grid2 profile <profile_name>")
 	if not Grid2.isClassic then
 		print("    /grid2 profile specIndex name")
@@ -139,7 +142,7 @@ function Grid2:ProcessCommandLine(input)
 	elseif c=='profilesperspec' and (p=='enable' or p=='disable') and not InCombatLockdown() then
 		self:EnableProfilesPerSpec( p=='enable' )
 	elseif c=='minimapicon' and param then
-		ProcesesMinimapCmd(p)
+		ProcessMinimapCmd(p)
 	elseif c=='help' then
 		ProcessHelpCmd()
 	elseif c=='namelist' or c=='nl' then

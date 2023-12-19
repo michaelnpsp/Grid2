@@ -399,10 +399,10 @@ end
 
 -- MinimapIcon visibility: value = true | false | nil => toggle
 function Grid2:SetMinimapIcon(value)
-	local minimapIcon = Grid2Layout.db.shared.minimapIcon
+	local minimapIcon = Grid2.db.global.minimapIcon or Grid2Layout.db.shared.minimapIcon
 	if value == nil then
 		minimapIcon.hide = not minimapIcon.hide
-	else
+	elseif value ~= 'query' then
 		minimapIcon.hide = not value
 	end
 	if minimapIcon.hide then
@@ -410,8 +410,8 @@ function Grid2:SetMinimapIcon(value)
 	else
 		Grid2Layout.minimapIcon:Show("Grid2")
 	end
+	return not minimapIcon.hide
 end
-
 
 -- Hide blizzard raid & party frames
 do
