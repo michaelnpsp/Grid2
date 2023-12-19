@@ -545,6 +545,10 @@ L["Threshold"] = "Umbral"
 L["Thresholds"] = "Umbrales"
 L["Threshold at which to activate the status."] = "Elige el umbral para activar el Estado"
 
+L["Stacks"] = "Acumulaciones"
+L["Activation"] = "Activacion"
+L["Highlight"] = "Resaltado"
+
 L["available statuses"] = "estados disponibles"
 
 -- buff & debuff statuses management
@@ -563,6 +567,8 @@ L["Show if mine"] = "Mostrar si es mío"
 L["Show if not mine"] = "Mostrar si no es mío"
 L["Show if missing"] = "Muestra si falta"
 L["Display status only if the buff is not active."] = "Mostrar el estado solo si el buff no esta activo"
+L["Hide on pets"] = "Oculto en pets"
+L["Never display this status on pets."] = "Nunca mostrar este estado para las mascotas."
 L["Display status only if the buff was cast by you."] = "Mostrar el estado solo si el buff ha sido casteado por ti"
 L["Display status only if the buff was not cast by you."] = "Mostrar el estado solo si el buff no ha sido casteado por ti"
 L["Color count"] = "No. colores"

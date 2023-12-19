@@ -544,6 +544,10 @@ L["Threshold"] = "临界值"
 L["Thresholds"] = "临界值"
 L["Threshold at which to activate the status."] = "启动该状态的临界值"
 
+-- L["Stacks"] = ""
+-- L["Activation"] = ""
+-- L["Highlight"] = ""
+
 L["available statuses"] = "可用状态"
 
 -- buff & debuff statuses management
@@ -562,6 +566,8 @@ L["Show if mine"] = "显示自身的"
 L["Show if not mine"] = "显示非自身的"
 L["Show if missing"] = "缺少时显示"
 L["Display status only if the buff is not active."] = "仅在增益缺少时才显示状态。"
+-- L["Hide on pets"] = ""
+-- L["Never display this status on pets."] = ""
 L["Display status only if the buff was cast by you."] = "显示你施放增益时的状态。"
 L["Display status only if the buff was not cast by you."] = "不显示自己施放的增益效果"
 L["Color count"] = "颜色数量"

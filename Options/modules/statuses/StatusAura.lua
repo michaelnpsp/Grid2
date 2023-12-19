@@ -51,30 +51,43 @@ function Grid2Options:MakeStatusAuraEnableStacksOptions(status, options, optionP
 			end,
 			set = function (_, v)
 				status.dbx.enableStacks = v~=1 and v or nil
-				status:Refresh()				
+				status:Refresh()
 			end,
 		}
 	end
 end
 
 function Grid2Options:MakeStatusAuraMissingOptions(status, options, optionParams)
-	options.threshold = {
+	options.showMissing = {
 		type = "toggle",
 		name = L["Show if missing"],
 		desc = L["Display status only if the buff is not active."],
-		order = 8,
+		order = 4.6,
 		get = function () return status.dbx.missing end,
 		set = function (_, v)
 			status.dbx.missing = v or nil
+			status.dbx.missingPets = nil
 			if v then
 				StatusAuraGenerateColors(status,1)
 				status.dbx.colorThreshold = nil
 				status.dbx.valueIndex = nil
 				status.dbx.enableStacks = nil
 			end
-			status:Refresh()			
+			status:Refresh()
 			self:MakeStatusOptions(status)
 		end,
+	}
+	options.missingPets = {
+		type = "toggle",
+		name = L["Hide on pets"],
+		desc = L["Never display this status on pets."],
+		order = 4.7,
+		get = function () return not status.dbx.missingPets end,
+		set = function (_, v)
+			status.dbx.missingPets = not v or nil
+			status:Refresh()
+		end,
+		hidden = function() return not status.dbx.missing end,
 	}
 end
 
@@ -91,7 +104,7 @@ function Grid2Options:MakeStatusAuraMaxDurationOptions(status, options, optionPa
 			get = function() return	status.dbx.maxDuration and 2 or 1 end,
 			set = function( _, v)
 				status.dbx.maxDuration = v==2 and 12 or nil
-				status:Refresh()				
+				status:Refresh()
 			end,
 			values = DurationValues,
 		}
@@ -104,11 +117,11 @@ function Grid2Options:MakeStatusAuraMaxDurationOptions(status, options, optionPa
 			get = function () return tostring(status.dbx.maxDuration) end,
 			set = function (_, v)
 				status.dbx.maxDuration = tonumber(v) or 12
-				status:Refresh()			
+				status:Refresh()
 			end,
 			hidden = function() return status.dbx.maxDuration==nil end,
 		}
-	end	
+	end
 end
 
 -- Grid2Options:MakeStatusBlinkThresholdOptions()
@@ -152,7 +165,7 @@ do
 				end,
 				set = function (_, v)
 					status.dbx.blinkThreshold = v
-					status:Refresh()					
+					status:Refresh()
 				end,
 				hidden = function() return (status.dbx.blinkThreshold or 0)<=0 end,
 			}
@@ -436,10 +449,11 @@ Grid2Options:RegisterStatusOptions("buff", "buff", function(self, status, option
 	self:MakeStatusAuraUseSpellIdOptions(status, options, optionParams)
 	self:MakeStatusAuraCommonOptions(status, options, optionParams)
 	self:MakeStatusAuraEnableStacksOptions(status, options, optionParams)
+	self:MakeHeaderOptions(options, "Activation")
 	self:MakeStatusAuraMissingOptions(status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
 	self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
-	self:MakeStatusAuraMaxDurationOptions(status, options, optionParams)	
+	self:MakeStatusAuraMaxDurationOptions(status, options, optionParams)
 	self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
 	self:MakeStatusAuraValueOptions(status, options, optionParams)
 	self:MakeStatusAuraTextOptions(status, options, optionParams)
@@ -454,7 +468,7 @@ Grid2Options:RegisterStatusOptions("debuff", "debuff", function(self, status, op
 	self:MakeStatusAuraCombineStacksOptions(status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
 	self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
-	self:MakeStatusAuraMaxDurationOptions(status, options, optionParams)	
+	self:MakeStatusAuraMaxDurationOptions(status, options, optionParams)
 	self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
 	self:MakeStatusAuraValueOptions(status, options, optionParams)
 	self:MakeStatusAuraTextOptions(status, options, optionParams)

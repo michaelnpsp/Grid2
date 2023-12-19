@@ -544,6 +544,10 @@ L["Threshold"] = "Порог"
 L["Thresholds"] = "Уровни"
 L["Threshold at which to activate the status."] = "Порог, при котором активируется статус."
 
+-- L["Stacks"] = ""
+-- L["Activation"] = ""
+-- L["Highlight"] = ""
+
 L["available statuses"] = "доступные статусы"
 
 -- buff & debuff statuses management
@@ -562,6 +566,8 @@ L["Show if mine"] = "Показать если моё"
 L["Show if not mine"] = "Показать если НЕ моё"
 L["Show if missing"] = "Показывать если пропущен"
 L["Display status only if the buff is not active."] = "Показывать статус только если бафф не активен."
+-- L["Hide on pets"] = ""
+-- L["Never display this status on pets."] = ""
 L["Display status only if the buff was cast by you."] = "Показывать статус только если бафф был наложен вами. "
 L["Display status only if the buff was not cast by you."] = "Показывать статус только если бафф был наложен не вами."
 L["Color count"] = "Цвета счетчиков"

@@ -548,6 +548,10 @@ L["Threshold"] = true
 L["Thresholds"] = true
 L["Threshold at which to activate the status."] = true
 
+L["Stacks"] = true
+L["Activation"] = true
+L["Highlight"] = true
+
 L["available statuses"] = true
 
 -- buff & debuff statuses management
@@ -566,6 +570,8 @@ L["Show if mine"] = true
 L["Show if not mine"] = true
 L["Show if missing"] = true
 L["Display status only if the buff is not active."] = true
+L["Hide on pets"] = true
+L["Never display this status on pets."] = true
 L["Display status only if the buff was cast by you."] = true
 L["Display status only if the buff was not cast by you."] = true
 L["Color count"]= true

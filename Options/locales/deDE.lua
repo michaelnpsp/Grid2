@@ -541,6 +541,10 @@ L["Threshold"] = "Schwelle"
 -- L["Thresholds"] = ""
 L["Threshold at which to activate the status."] = "Schwelle ab wann der Status Aktiviert werden soll"
 
+-- L["Stacks"] = ""
+-- L["Activation"] = ""
+-- L["Highlight"] = ""
+
 -- L["available statuses"] = ""
 
 -- buff & debuff statuses management
@@ -559,6 +563,8 @@ L["Show if mine"] = "Zeigen, wenn mir"
 L["Show if not mine"] = "Zeigen, wenn nicht mir"
 L["Show if missing"] = "Zeigen, wenn fehlt"
 L["Display status only if the buff is not active."] = "Status nur anzeigen, wenn der Stärkungszauber nicht aktiv ist."
+-- L["Hide on pets"] = ""
+-- L["Never display this status on pets."] = ""
 L["Display status only if the buff was cast by you."] = "Status nur anzeigen, wenn der Stärkungszauber von Dir gezaubert wurde."
 L["Display status only if the buff was not cast by you."] = "Status nur anzeigen, wenn der Stärkungszauber nicht von Dir gezaubert wurde."
 -- L["Color count"] = ""

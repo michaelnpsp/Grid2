@@ -544,6 +544,10 @@ L["Adjust background color and alpha."] = "Ajustar plano de fundo e transparenci
 -- L["Thresholds"] = ""
 -- L["Threshold at which to activate the status."] = ""
 
+-- L["Stacks"] = ""
+-- L["Activation"] = ""
+-- L["Highlight"] = ""
+
 -- L["available statuses"] = ""
 
 -- buff & debuff statuses management
@@ -562,6 +566,8 @@ L["Adjust background color and alpha."] = "Ajustar plano de fundo e transparenci
 -- L["Show if not mine"] = ""
 -- L["Show if missing"] = ""
 -- L["Display status only if the buff is not active."] = ""
+-- L["Hide on pets"] = ""
+-- L["Never display this status on pets."] = ""
 -- L["Display status only if the buff was cast by you."] = ""
 -- L["Display status only if the buff was not cast by you."] = ""
 -- L["Color count"] = ""

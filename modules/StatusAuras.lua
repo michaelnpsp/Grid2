@@ -303,6 +303,12 @@ do
 		return not self.filtered[unit] and not (self.idx[unit] or unit_is_pet[unit])
 	end
 	local function IsInactiveBlinkFilter(self, unit)
+		return not self.filtered[unit] and not (self.idx[unit] or unit_is_pet[unit]) and "blink"
+	end
+	local function IsInactiveFilterPets(self, unit)
+		return not self.filtered[unit] and not self.idx[unit]
+	end
+	local function IsInactiveBlinkFilterPets(self, unit)
 		return not self.filtered[unit] and not self.idx[unit] and "blink"
 	end
 	-- no unit class/reaction/role filters
@@ -332,6 +338,12 @@ do
 		return not (self.idx[unit] or unit_is_pet[unit])
 	end
 	local function IsInactiveBlink(self, unit)
+		return not (self.idx[unit] or unit_is_pet[unit]) and "blink"
+	end
+	local function IsInactivePets(self, unit)
+		return not self.idx[unit]
+	end
+	local function IsInactiveBlinkPets(self, unit)
 		return not self.idx[unit] and "blink"
 	end
 	--
@@ -470,10 +482,18 @@ do
 			self.GetCount = GetCountMissing
 			self.GetDuration = GetDurationMissing
 			self.GetExpirationTime = GetExpirationTimeMissing
-			if self.filtered then
-				self.IsActive = blinkThreshold and IsInactiveBlinkFilter or IsInactiveFilter
+			if dbx.missingPets then
+				if self.filtered then
+					self.IsActive = blinkThreshold and IsInactiveBlinkFilterPets or IsInactiveFilterPets
+				else
+					self.IsActive = blinkThreshold and IsInactiveBlinkPets or IsInactivePets
+				end
 			else
-				self.IsActive = blinkThreshold and IsInactiveBlink or IsInactive
+				if self.filtered then
+					self.IsActive = blinkThreshold and IsInactiveBlinkFilter or IsInactiveFilter
+				else
+					self.IsActive = blinkThreshold and IsInactiveBlink or IsInactive
+				end
 			end
 			self.thresholds = nil
 		else

@@ -544,6 +544,10 @@ L["Threshold"] = "Soglia"
 L["Thresholds"] = "Soglie"
 L["Threshold at which to activate the status."] = "Soglia alla quale lo stato si attiva"
 
+-- L["Stacks"] = ""
+-- L["Activation"] = ""
+-- L["Highlight"] = ""
+
 L["available statuses"] = "Stati Disponibili"
 
 -- buff & debuff statuses management
@@ -562,6 +566,8 @@ L["Show if mine"] = "Visualizza se mio"
 L["Show if not mine"] = "Visualizza se non è mio"
 L["Show if missing"] = "Visualizza se manca"
 L["Display status only if the buff is not active."] = "Visualizza lo stato solo se il buff non è attivo."
+-- L["Hide on pets"] = ""
+-- L["Never display this status on pets."] = ""
 L["Display status only if the buff was cast by you."] = "Visualizza lo stato solo se il buff è stato lanciato da te."
 L["Display status only if the buff was not cast by you."] = "Visualizza lo stato solo se il buff non è stato lanciato da te."
 L["Color count"] = "Conteggio colore"

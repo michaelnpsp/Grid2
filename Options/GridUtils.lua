@@ -279,6 +279,7 @@ do
 		ZoomIn     = { type = "header", order = 150, name = L["Zoom In"]	},
 		Highlight  = { type = "header", order = 200, name = L["Highlight"]	},
 		-- statuses headers
+		Activation    = { type = "header", order = 4.5, name = L["Activation"]  },
 		Stacks	      = { type = "header", order = 4.9, name = L["Stacks"]      },
 		Colors	      = { type = "header", order = 10,  name = L["Colors"]      },
 		Thresholds    = { type = "header", order = 50,  name = L["Thresholds"], },

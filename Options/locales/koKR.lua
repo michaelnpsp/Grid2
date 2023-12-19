@@ -544,6 +544,10 @@ L["Threshold"] = "임계치"
 L["Thresholds"] = "다중 임계치"
 L["Threshold at which to activate the status."] = "상태를 활성화할 임계치"
 
+-- L["Stacks"] = ""
+-- L["Activation"] = ""
+-- L["Highlight"] = ""
+
 L["available statuses"] = "사용가능한 상태들"
 
 -- buff & debuff statuses management
@@ -562,6 +566,8 @@ L["Show if mine"] = "자신이 시전한것 표시"
 L["Show if not mine"] = "자신이 시전 안한것 표시"
 L["Show if missing"] = "사라짐 표시"
 L["Display status only if the buff is not active."] = "버프가 사라졌을 경우만 상태 표시"
+-- L["Hide on pets"] = ""
+-- L["Never display this status on pets."] = ""
 L["Display status only if the buff was cast by you."] = "당신이 버프를 시전했을 경우만 상태 표시"
 L["Display status only if the buff was not cast by you."] = "당신이 버프를 시전하지 않았을 경우만 상태 표시"
 L["Color count"]= "색상 개수"
