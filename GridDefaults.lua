@@ -5,7 +5,7 @@ Created by Michael, based on Grid2Options\GridDefaults.lua from original Grid2 a
 local Grid2 = Grid2
 
 -- Latest database profile version
-local DB_VERSION = 12
+local DB_VERSION = 13
 
 -- Database manipulation functions
 function Grid2:DbSetStatusDefaultValue(name, value)
@@ -145,7 +145,10 @@ function Grid2:UpdateDefaults()
 				dbx.load = dbx.load or {}
 				dbx.load.unitRole = { HEALER = true }
 				dbx.showOnlyHealers = nil
-			end	
+			end
+		end
+		if version<13 and self.db.profile.formatting.percentFormat==nil then
+			self.db.profile.formatting.percentFormat = self.defaults.profile.formatting.percentFormat
 		end
 	end
 	-- Set database version
