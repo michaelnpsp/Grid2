@@ -1429,6 +1429,9 @@ L["Typeless"] = true
 L["phased"] = true
 L["color"] = true
 
+L["Disabled in instances"] = true
+L["Disable this status inside instances."] = true
+
 L["Enable harmful spells Allowlist"] = true
 L["Display only the spells specified in a user defined list."] = true
 

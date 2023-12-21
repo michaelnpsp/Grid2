@@ -1422,6 +1422,9 @@ L["\"%s\" has sent you a profile configuration. Do you want to activate received
 -- L["phased"] = ""
 -- L["color"] = ""
 --
+-- L["Disabled in instances"] = ""
+-- L["Disable this status inside instances."] = ""
+--
 -- L["Enable harmful spells Allowlist"] = ""
 -- L["Display only the spells specified in a user defined list."] = ""
 --

@@ -1427,6 +1427,9 @@ L["Typeless"] = "비유형"
 L["phased"] = "위상"
 L["color"] = "색상"
 
+-- L["Disabled in instances"] = ""
+-- L["Disable this status inside instances."] = ""
+
 L["Enable harmful spells Allowlist"] = "위험 주문 허용 목록 사용"
 L["Display only the spells specified in a user defined list."] = "사용자 정의 목록의 주문만 표시"
 

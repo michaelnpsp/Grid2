@@ -24,11 +24,6 @@ Grid2Options:RegisterStatusOptions("self", "target", nil, {
 	titleIcon = "Interface\\Icons\\Inv_wand_12",
 })
 
-Grid2Options:RegisterStatusOptions("phased", "misc", nil, {
-	titleIcon = "Interface\\TARGETINGFRAME\\UI-PhasingIcon",
-	titleIconCoords = { 0.15625, 0.84375, 0.15625, 0.84375 },
-})
-
 Grid2Options:RegisterStatusOptions("resurrection", "combat", nil, {
 	color1 = L["Casting resurrection"],
 	colorDesc1 = L["A resurrection spell is being casted on the unit"],
@@ -56,6 +51,26 @@ Grid2Options:RegisterStatusOptions("monk-stagger", "combat", nil, {
 	color3 = L["Low stagger"],
 	width = "full",
 	titleIcon = "463281",
+})
+
+Grid2Options:RegisterStatusOptions("phased", "misc", function(self, status, options, optionParams)
+	self:MakeStatusColorOptions(status, options, optionParams)
+	self:MakeSpacerOptions(options, 30)
+	options.inInstance = {
+		type = "toggle",
+		name = L["Disabled in instances"],
+		desc = L["Disable this status inside instances."],
+		width = "full",
+		order = 35,
+		get = function () return not status.dbx.enabledInstances end,
+		set = function (_, v)
+			status.dbx.enabledInstances = not v or nil
+			status:Refresh()
+		end,
+	}
+end, {
+	titleIcon = "Interface\\TARGETINGFRAME\\UI-PhasingIcon",
+	titleIconCoords = { 0.15625, 0.84375, 0.15625, 0.84375 },
 })
 
 Grid2Options:RegisterStatusOptions("vehicle", "misc", function(self, status, options, optionParams)

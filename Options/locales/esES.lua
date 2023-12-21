@@ -1443,6 +1443,9 @@ L["Typeless"] = "Sin tipo"
 L["phased"] = "desfasado"
 L["color"] = "color"
 
+L["Disabled in instances"] = "Desactivado en instancias"
+L["Disable this status inside instances."] = "Desactiva este estado dentro de las instancias."
+
 L["Enable harmful spells Allowlist"] = "Activar lista blanca de hechizos dañinos"
 L["Display only the spells specified in a user defined list."] = "Muestra solo los hechizos especificados en una lista definida por el usuario."
 L["Display health percent text for enemies"] = "Mostrar porcentaje de vida para los enemigos"

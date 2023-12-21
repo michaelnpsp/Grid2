@@ -1425,6 +1425,9 @@ L["You can include a descriptive prefix using separators \"@#>\""] = "你可以�
 -- L["phased"] = ""
 -- L["color"] = ""
 --
+-- L["Disabled in instances"] = ""
+-- L["Disable this status inside instances."] = ""
+--
 -- L["Enable harmful spells Allowlist"] = ""
 -- L["Display only the spells specified in a user defined list."] = ""
 --
