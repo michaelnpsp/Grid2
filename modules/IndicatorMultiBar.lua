@@ -75,7 +75,7 @@ local function Bar_OnFrameUpdate(bar)
 				else
 					texture:Hide()
 				end
-			end	
+			end
 		else
 			texture:Hide()
 		end
@@ -126,7 +126,7 @@ local function Bar_Update(self, parent, unit, status)
 				end
 				bar.myMaxIndex = #self.statuses
 			end
-			updates[bar] = true			
+			updates[bar] = true
 		end
 	end
 end
@@ -176,7 +176,7 @@ local function Bar_Layout(self, parent)
 			texture.myLineAdjust = setup.lineAdjust
 			texture:SetWidth ( self.orientation == "HORIZONTAL" and setup.lineSize or width )
 			texture:SetHeight( self.orientation ~= "HORIZONTAL" and setup.lineSize or height)
-		else	
+		else
 			texture:SetSize(width, height)
 		end
 		textures[i] = texture
@@ -257,7 +257,7 @@ local function Bar_UpdateDB(self)
 			horAdjust = setup.horTile=='CLAMP',
 			verAdjust = setup.verTile=='CLAMP',
 			sublayer  = setup.glowLine and 7 or i,
-			lineSize  = setup.glowLine,	
+			lineSize  = setup.glowLine,
 			lineAdjust= setup.glowLine and (setup.glowLineAdjust or 0) or nil,
 		}
 	end
@@ -288,9 +288,11 @@ local function BarColor_SetBarColor(self, parent, r, g, b, a)
 	local bar = parent[self.parentName]
 	if bar then
 		local textures = bar.myCTextures
-		for i=#textures,1,-1 do
-			local tex = textures[i]
-			tex:SetVertexColor( r, g, b, min(tex.myOpacity, a or 1) )
+		if textures then
+			for i=#textures,1,-1 do
+				local tex = textures[i]
+				tex:SetVertexColor( r, g, b, min(tex.myOpacity, a or 1) )
+			end
 		end
 	end
 end
@@ -299,7 +301,9 @@ local function BarColor_SetBarColorInverted(self, parent, r, g, b, a)
 	local bar = parent[self.parentName]
 	if bar then
 		local textures = bar.myTextures
-		textures[#textures]:SetVertexColor(r, g, b, a)
+		if textures then
+			textures[#textures]:SetVertexColor(r, g, b, a)
+		end
 	end
 end
 
