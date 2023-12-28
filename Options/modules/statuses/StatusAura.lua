@@ -490,14 +490,14 @@ function Grid2Options:MakeStatusAuraListOptions(status, options, optionParams)
 			wipe(status.dbx.auras)
 			local auras = { strsplit("\n,", strtrim(v)) }
 			for _,name in pairs(auras) do
-				local aura = strtrim(name)
+				local prefix, links = string.match(name,"^(.-)(|c.*)")
+				local aura = strtrim(prefix or name)
 				if #aura>0 then
-					local count = #status.dbx.auras
-					for aura in string.gmatch(aura, "Hspell:(%d+):") do
+					table.insert( status.dbx.auras, tonumber(aura) or tonumber(strmatch(aura,'^.+<(%d+)')) or aura )
+				end
+				if links then -- check for spell links
+					for aura in string.gmatch(links, "Hspell:(%d+):") do
 						table.insert( status.dbx.auras, tonumber(aura) or aura )
-					end
-					if count==#status.dbx.auras then
-						table.insert( status.dbx.auras, tonumber(aura) or tonumber(strmatch(aura,'^.+<(%d+)')) or aura )
 					end
 				end
 			end
