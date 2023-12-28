@@ -14,7 +14,7 @@ local durations = {}
 local colors = {}
 
 -- Compile a filter function, the function is called from StatusAura.lua to filter auras
-local function CompileUpdateStateFilter(self, lazy)
+local function CompileUpdateStateFilter(self, lazy, spellId)
 	local dbx = self.dbx
 	local t = {}
 	if dbx.filterDispelDebuffs~=nil then
@@ -30,13 +30,13 @@ local function CompileUpdateStateFilter(self, lazy)
 		t[#t+1] = string.format( "%s (caster=='player' or caster=='pet' or caster=='vehicle')", dbx.filterCaster and 'not' or '')
 	end
 	if dbx.filterTyped~=nil then
-		t[#t+1] = string.format( "%s typ",  dbx.filterTyped and 'not' or '')
+		t[#t+1] = string.format( "%s typ", dbx.filterTyped and 'not' or '')
 	end
 	local q -- special case for black/white lists because they are always strict (non lazy).
 	if dbx.useWhiteList then
-		q = "self.spells[name]"
+		q = spellId and "(self.spells[sid] or self.spells[name])" or "self.spells[name]"
 	elseif next(self.spells) then
-		q = string.format( "not self.spells[name]" )
+		q = spellId and "not (self.spells[sid] or self.spells[name])" or "not self.spells[name]"
 	end
 	local r = table.concat( t, lazy and ' or ' or ' and ' )
 	if r=='' then
@@ -44,17 +44,16 @@ local function CompileUpdateStateFilter(self, lazy)
 	elseif q then
 		r = string.format("%s and (%s)", q, r)
 	end
-	return assert(loadstring( "return function(self, unit, name, duration, caster, boss, typ, dispel) return " .. r .. ' end' ))()
+	return assert(loadstring( "return function(self, unit, sid, name, duration, caster, boss, typ, dispel) return " .. r .. ' end' ))()
 end
-
 
 -- Called by "icons" indicator
 local function status_GetIconsFilter(self, unit, max)
 	local UpdateState, i, j, name, debuffType, caster, isBossDebuff, _ = self.UpdateState, 1, 1
 	repeat
-		name, textures[j], counts[j], debuffType, durations[j], expirations[j], caster, _, _, _, _, isBossDebuff = UnitAura(unit, i, 'HARMFUL')
+		name, textures[j], counts[j], debuffType, durations[j], expirations[j], caster, _, _, sid, _, isBossDebuff = UnitAura(unit, i, 'HARMFUL')
 		if not name then break end
-		if UpdateState(self, unit, name, durations[j], caster, isBossDebuff, debuffType, playerDispelTypes) then
+		if UpdateState(self, unit, sid, name, durations[j], caster, isBossDebuff, debuffType, playerDispelTypes) then
 			colors[j] = typeColors[debuffType] or self.color
 			j = j + 1
 		end
@@ -68,7 +67,7 @@ local function status_Update(self, dbx)
 	self.color = dbx.color1
 	self.spells = self.spells or emptyTable
 	self.GetIcons = status_GetIconsFilter
-	self.UpdateState  = CompileUpdateStateFilter(self, dbx.lazyFiltering)
+	self.UpdateState = CompileUpdateStateFilter(self, dbx.lazyFiltering, dbx.useSpellId)
 end
 
 -- Registration

@@ -70,7 +70,7 @@ do
 				end
 			end
 			for s in next, DebuffGroups do
-				if (not s.seen) and s:UpdateState(u, nam, dur, cas, bos, typ, pTypes) then
+				if (not s.seen) and s:UpdateState(u, sid, nam, dur, cas, bos, typ, pTypes) then
 					s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.typ[u], s.tkr[u] = 1, i, tex, cnt, dur, exp, typ, 1
 				end
 			end
@@ -458,14 +458,21 @@ do
 		self.GetPercent = dbx.valueIndex and (dbx.valueMax and GetPercentMax or GetPercentHealth) or Grid2.statusLibrary.GetPercent
 		if self.spells then wipe(self.spells) end
 		if dbx.auras then -- multiple spells
+			local useSpellId = dbx.useSpellId
 			self.spells = self.spells or {}
-			for _,spell in ipairs(dbx.auras) do -- We only allow spell names because DebuffsGroups do not support spellIDs
-				self.spells[ type(spell)=='number' and GetSpellInfo(spell) or spell ] = true
+			if dbx.useSpellId then
+				for _,spell in ipairs(dbx.auras) do
+					self.spells[spell] = true
+				end
+			else
+				for _,spell in ipairs(dbx.auras) do
+					self.spells[ type(spell)=='number' and GetSpellInfo(spell) or spell ] = true
+				end
 			end
 		elseif dbx.spellName then -- single spell
 			local spell = dbx.spellName
 			self.spellText = type(spell)=='number' and GetSpellInfo(spell) or spell
-			self.spell = self.dbx.useSpellId and spell or self.spellText
+			self.spell = dbx.useSpellId and spell or self.spellText
 		end
 		if dbx.mine==2 then  -- 2>nil = not mine;  1|true>true = mine;  false|nil>false = mine&not-mine
 			self.isMine = nil
@@ -612,7 +619,7 @@ Grid2.debuffDispelTypes = debuffDispelTypes
 	type = "buff"
 	enableStacks = integer              -- minimum stacks to activate the status
 	spellName = string|integer
-	useSpellID = true|nil			    -- track by spellID instead of aura name
+	useSpellId = true|nil			    -- track by spellID instead of aura name
 	mine = 2 | 1 | true | false | nil   -- 2=not mine; 1|true=mine; false|nil=all spells
 	missing = true | nil
 	blinkThreshold = number	            -- seconds remaining to enable indicator blinking
@@ -626,7 +633,7 @@ Grid2.debuffDispelTypes = debuffDispelTypes
 	type = "debuff"
 	enableStacks = integer              -- minimum stacks to activate the status
 	spellName = string|integer
-	useSpellID = true|nil
+	useSpellId = true|nil
 	blinkThreshold = number	            -- seconds remaining to enable indicator blinking
 	colorThresholdValue = true | nil 	-- true = color by value; nil = color by time
 	colorThresholdElapsed = true | nil 	-- true = color by elapsed time; nil= color by remaining time
