@@ -1,63 +1,5 @@
 local L = Grid2Options.L
 
-function Grid2Options:MakeStatusDebuffsListOptions(status, options, optionParams)
-	options.auraAdd = {
-		type = "input", dialogControl = "EditBoxGrid2Debuffs",
-		order = 153,
-		width = 1.75,
-		name = L["Name or SpellId"],
-		desc = L["Type a name or spell identifier to add to the list below."],
-		get = function() end,
-		set = function(info, value)
-			local _, spell = string.match(value, "^(.-[@#>])(.*)$")
-			spell = strtrim(spell or value)
-			if #spell>0 then
-				table.insert(status.dbx.auras, tonumber(spell) or spell)
-				status:Refresh()
-			end
-		end,
-	}
-	options.auraUseSpellID = {
-		type = "toggle",
-		width = 0.75,
-		name = L["Track by SpellId"],
-		desc = L["If available use the spell identifier instead of the spell name to detect the auras."],
-		order = 154,
-		get = function() return status.dbx.useSpellId end,
-		set = function(_,v)
-			status.dbx.useSpellId = v or nil
-			status:Refresh()
-		end,
-	}
-	options.aurasList = {
-		type = "input", dialogControl = "Grid2ExpandedEditBox",
-		order = 155,
-		width = "full",
-		name = "",
-		multiline = 16,
-		get = function()
-			local auras = {}
-			for _,aura in pairs(status.dbx.auras) do
-				auras[#auras+1] = type(aura)~='number' and aura or string.format("%s <%d>", GetSpellInfo(aura) or UNKNOWN or L["Unknown"], aura)
-			end
-			return table.concat( auras, "\n" )
-		end,
-		set = function(_, v)
-			wipe(status.dbx.auras)
-			local auras = { strsplit("\n,", strtrim(v)) }
-			for _,name in pairs(auras) do
-				local aura = strtrim(name)
-				if #aura>0 then
-					table.insert( status.dbx.auras, tonumber(aura) or tonumber(strmatch(aura,'^.+<(%d+)')) or aura )
-				end
-			end
-			status:Refresh()
-		end,
-		hidden = function() return status.dbx.auras==nil end
-	}
-	return options
-end
-
 function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionParams)
 	self:MakeHeaderOptions( options, "Display" )
 	options.strictFiltering = {
@@ -291,7 +233,7 @@ Grid2Options:RegisterStatusOptions("debuffs", "debuff", function(self, status, o
 	options.debuffslist = {
 		type = "group", order = 20, name = L[ status.dbx.useWhiteList and 'Whitelist' or 'Blacklist'],
 		desc = L["Type a list of debuffs, one debuff per line."],
-		args = self:MakeStatusDebuffsListOptions(status,{}, optionParams), hidden = function() return status.dbx.auras==nil end
+		args = self:MakeStatusAuraListOptions(status,{}, optionParams), hidden = function() return status.dbx.auras==nil end
 	}
 	options.load = {
 		type = "group", order = 30, name = L['Load'],

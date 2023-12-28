@@ -35,12 +35,13 @@ Grid2Options:RegisterStatusOptions("buffs", "buff", function(self, status, optio
 	if status.dbx.subType == 'blizzard' then
 		self:MakeStatusColorOptions(status, options, optionParams)
 	else
-		self:MakeStatusBuffsListOptions(status, options, optionParams)
 		self:MakeStatusAuraCommonOptions(status, options, optionParams)
 		self:MakeStatusAuraMissingOptions(status, options, optionParams)
 		self:MakeStatusColorOptions(status, options, optionParams)
 		self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
 		self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
+		self:MakeHeaderOptions( options, "AurasExpanded" )
+		self:MakeStatusAuraListOptions(status, options, optionParams)
 	end
 end,{
 	groupOrder = 20, isDeletable = true,
