@@ -33,8 +33,8 @@ function AuraPredictor:GetValues(text, values, max)
 	-- The user can optionally type a prefix, for example: "Druid>Rejuvenation",
 	-- so we have to remove the prefix if exists, valid prefix separators: "@#>"
 	local _, suffix = strmatch(text, "^(.-[@#>])(.*)$")
-	text = suffix or text
-	local spellID = tonumber(text)
+	text = strtrim(suffix or text)
+	local spellID = strmatch(text,"^%d+$") and tonumber(text) -- because tonumber('inf') returns inf and it is considered a number
 	if spellID and GetSpellInfo(spellID) then
 		-- if the user has typed a number, return directly this spell info
 		local spellName,_,spellIcon = GetSpellInfo(spellID)

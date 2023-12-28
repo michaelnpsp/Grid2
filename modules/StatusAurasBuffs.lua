@@ -25,9 +25,9 @@ local mdurations = {1073741824}
 local function status_GetIcons(self, unit, max)
 	local i, j, spells, filter, name, caster, _ = 1, 1, self.spells, self.isMine
 	repeat
-		name, textures[j], counts[j], _, durations[j], expirations[j], caster = UnitAura(unit, i)
+		name, textures[j], counts[j], _, durations[j], expirations[j], caster, _, _, sid = UnitAura(unit, i)
 		if not name then break end
-		if spells[name] and (filter==false or filter==myUnits[caster]) then
+		if (spells[name] or spells[sid]) and (filter==false or filter==myUnits[caster]) then
 			j = j + 1
 		end
 		i = i + 1
@@ -135,5 +135,3 @@ end
 	color1 = { r=1,g=1,b=1,a=1 }
 	color2 = { r=1,g=1,b=0,a=1 }
 --]]
-
-

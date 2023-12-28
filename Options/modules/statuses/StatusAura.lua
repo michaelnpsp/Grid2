@@ -444,6 +444,70 @@ function Grid2Options:MakeStatusDebuffTypeFilterOptions(status, options, optionP
 	}
 end
 
+function Grid2Options:MakeStatusAuraListOptions(status, options, optionParams)
+	options.auraListAdd = {
+		type = "input", dialogControl = (status.dbx.type=='buffs') and "EditBoxGrid2Buffs" or "EditBoxGrid2Debuffs",
+		order = 500,
+		width = 1.75,
+		name = L["Name or SpellId"],
+		desc = L["Type a name or spell identifier to add to the list below."],
+		get = function() end,
+		set = function(info, value)
+			local _, spell = string.match(value, "^(.-[@#>])(.*)$")
+			spell = strtrim(spell or value)
+			if #spell>0 then
+				table.insert(status.dbx.auras, tonumber(spell) or spell)
+				status:Refresh()
+			end
+		end,
+	}
+	options.auraListUseSpellId = {
+		type = "toggle",
+		width = 0.75,
+		name = L["Track by SpellId"],
+		desc = L["If available use the spell identifier instead of the spell name to detect the auras."],
+		order = 510,
+		get = function() return status.dbx.useSpellId end,
+		set = function(_,v)
+			status.dbx.useSpellId = v or nil
+			status:Refresh()
+		end,
+	}
+	options.auraList = {
+		type = "input", dialogControl = "Grid2ExpandedEditBox",
+		order = 520,
+		width = "full",
+		name = "",
+		multiline = 16,
+		get = function()
+			local auras = {}
+			for _,aura in pairs(status.dbx.auras) do
+				auras[#auras+1] = type(aura)~='number' and aura or string.format("%s <%d>", GetSpellInfo(aura) or UNKNOWN or L["Unknown"], aura)
+			end
+			return table.concat( auras, "\n" )
+		end,
+		set = function(_, v)
+			wipe(status.dbx.auras)
+			local auras = { strsplit("\n,", strtrim(v)) }
+			for _,name in pairs(auras) do
+				local aura = strtrim(name)
+				if #aura>0 then
+					local count = #status.dbx.auras
+					for aura in string.gmatch(aura, "Hspell:(%d+):") do
+						table.insert( status.dbx.auras, tonumber(aura) or aura )
+					end
+					if count==#status.dbx.auras then
+						table.insert( status.dbx.auras, tonumber(aura) or tonumber(strmatch(aura,'^.+<(%d+)')) or aura )
+					end
+				end
+			end
+			status:Refresh()
+		end,
+		hidden = function() return status.dbx.auras==nil end
+	}
+	return options
+end
+
 -- {{ Register
 Grid2Options:RegisterStatusOptions("buff", "buff", function(self, status, options, optionParams)
 	self:MakeStatusAuraUseSpellIdOptions(status, options, optionParams)

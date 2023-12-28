@@ -1,35 +1,5 @@
 local L = Grid2Options.L
 
-function Grid2Options:MakeStatusDebuffsListOptions(status, options, optionParams)
-	options.aurasList = {
-		type = "input", dialogControl = "Grid2ExpandedEditBox",
-		order = 155,
-		width = "full",
-		name = "",
-		multiline = 16,
-		get = function()
-			local auras = {}
-			for _,aura in pairs(status.dbx.auras) do
-				auras[#auras+1]= (type(aura)=="number") and GetSpellInfo(aura) or aura
-			end
-			return table.concat( auras, "\n" )
-		end,
-		set = function(_, v)
-			wipe(status.dbx.auras)
-			local auras = { strsplit("\n,", strtrim(v)) }
-			for _,name in pairs(auras) do
-				local aura = strtrim(name)
-				if #aura>0 then
-					table.insert(status.dbx.auras, tonumber(aura) or aura )
-				end
-			end
-			status:Refresh()
-		end,
-		hidden = function() return status.dbx.auras==nil end
-	}
-	return options
-end
-
 function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionParams)
 	self:MakeHeaderOptions( options, "Display" )
 	options.strictFiltering = {
@@ -61,7 +31,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 				status.dbx.aurasBak = status.dbx.auras
 				status.dbx.auras = nil
 			end
-			status:Refresh()			
+			status:Refresh()
 		end,
 		hidden = function() return status.dbx.useWhiteList end
 	}
@@ -77,7 +47,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 				status.dbx.aurasBak = status.dbx.auras
 				status.dbx.auras = nil
 			end
-			status:Refresh()			
+			status:Refresh()
 		end,
 		hidden = function() return status.dbx.useWhiteList end
 	}
@@ -123,7 +93,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			else
 				status.dbx.filterBossDebuffs = false
 			end
-			status:Refresh()			
+			status:Refresh()
 		end,
 		hidden = function() return status.dbx.useWhiteList end
 	}
@@ -135,7 +105,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 		get = function () return status.dbx.filterBossDebuffs~=true end,
 		set = function (_, v)
 			status.dbx.filterBossDebuffs = (not v) or nil
-			status:Refresh()			
+			status:Refresh()
 		end,
 		hidden = function() return status.dbx.useWhiteList end
 	}
@@ -152,7 +122,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			else
 				status.dbx.filterLongDebuffs = false
 			end
-			status:Refresh()			
+			status:Refresh()
 		end,
 		hidden = function() return status.dbx.useWhiteList end
 	}
@@ -164,7 +134,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 		get = function () return status.dbx.filterLongDebuffs~=true end,
 		set = function (_, v)
 			status.dbx.filterLongDebuffs = (not v) and true or nil
-			status:Refresh()			
+			status:Refresh()
 		end,
 		hidden = function() return status.dbx.useWhiteList end
 	}
@@ -181,7 +151,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			else
 				status.dbx.filterCaster = false
 			end
-			status:Refresh()			
+			status:Refresh()
 		end,
 		hidden = function() return status.dbx.useWhiteList end
 	}
@@ -193,7 +163,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 		get = function () return status.dbx.filterCaster~=true end,
 		set = function (_, v)
 			status.dbx.filterCaster = (not v) and true or nil
-			status:Refresh()			
+			status:Refresh()
 		end,
 		hidden = function() return status.dbx.useWhiteList end
 	}
@@ -219,7 +189,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 				status.dbx.auras = nil
 				status.dbx.useWhiteList = nil
 			end
-			status:Refresh()			
+			status:Refresh()
 			self:MakeStatusOptions(status)
 		end,
 	}
@@ -238,7 +208,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 				status.dbx.auras = nil
 			end
 			status.dbx.useWhiteList = nil
-			status:Refresh()			
+			status:Refresh()
 			self:MakeStatusOptions(status)
 		end,
 	}
@@ -263,7 +233,7 @@ Grid2Options:RegisterStatusOptions("debuffs", "debuff", function(self, status, o
 	options.debuffslist = {
 		type = "group", order = 20, name = L[ status.dbx.useWhiteList and 'Whitelist' or 'Blacklist'],
 		desc = L["Type a list of debuffs, one debuff per line."],
-		args = self:MakeStatusDebuffsListOptions(status,{}, optionParams), hidden = function() return status.dbx.auras==nil end
+		args = self:MakeStatusAuraListOptions(status,{}, optionParams), hidden = function() return status.dbx.auras==nil end
 	}
 	options.load = {
 		type = "group", order = 30, name = L['Load'],
