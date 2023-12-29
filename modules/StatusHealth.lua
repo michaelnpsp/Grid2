@@ -417,7 +417,7 @@ function FeignDeath:GetText(unit)
 	return feignText
 end
 
-function Death:GetPercent(unit)
+function FeignDeath:GetPercent(unit)
 	return self.dbx.color1.a, feignText
 end
 
