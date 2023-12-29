@@ -251,8 +251,6 @@ end
 -- health-current status
 HealthCurrent.IsActive  = Grid2.statusLibrary.IsActive
 
-local HealthCurrent_GetPercent
-
 local function HealthCurrent_ShieldUpdate(unit)
 	if unit_is_valid[unit] then
 		HealthCurrent:UpdateIndicators(unit)
@@ -278,7 +276,7 @@ function HealthCurrent:OnDisable()
 	end
 end
 
-function HealthCurrent_GetPercent(self,unit)
+local function HealthCurrent_GetPercentSTD(self,unit)
 	local m = UnitHealthMax(unit)
 	return m == 0 and 0 or UnitHealth(unit) / m
 end
@@ -319,12 +317,11 @@ function HealthCurrent:UpdateDB()
 	fmtPercent = Grid2.db.profile.formatting.percentFormat
 	self.addShield = Grid2.isWoW90 and self.dbx.addPercentShield or nil
 	self.GetText = self.dbx.displayRawNumbers and self.GetText2 or self.GetText1
-	self.GetPercent = self.dbx.deadAsFullHealth and HealthCurrent_GetPercentDFH or HealthCurrent_GetPercent
-	self.GetPercentText= self.addShield and HealthCurrent_GetPercentTextShield or nil
+	self.GetPercent = self.dbx.deadAsFullHealth and HealthCurrent_GetPercentDFH or HealthCurrent_GetPercentSTD
+	self.GetPercentText = self.addShield and HealthCurrent_GetPercentTextShield or nil
 	self.color1 = Grid2:MakeColor(self.dbx.color1)
 	self.color2 = Grid2:MakeColor(self.dbx.color2)
 	self.color3 = Grid2:MakeColor(self.dbx.color3)
-	HealthCurrent_GetPercent = self.GetPercent
 	Health_UpdateStatuses()
 end
 
@@ -345,16 +342,26 @@ HealthLow.GetPercent = Grid2.statusLibrary.GetPercent
 
 local healthlow_threshold
 
+-- percent health threshold
 function HealthLow:IsActive1(unit)
-	return UnitExists(unit) and HealthCurrent_GetPercent(self, unit) < healthlow_threshold
-end
-
-function HealthLow:IsActive2(unit)
-	return UnitExists(unit) and UnitHealth(unit) < healthlow_threshold
+	local m = UnitHealthMax(unit)
+	if m~=0 then -- unit exists
+		local h = UnitHealth(unit)
+		return h>1 and (h/m) < healthlow_threshold -- fails when unit is alive with 1 health (we are assuming 1 health => ghost form)
+	end
 end
 
 function HealthLow:IsInactive1(unit)
-	return not UnitExists(unit) or HealthCurrent_GetPercent(self, unit) >= healthlow_threshold
+	local m = UnitHealthMax(unit)
+	return m==0 or (UnitHealth(unit)/m) >= healthlow_threshold
+end
+
+-- absolute health threshold
+function HealthLow:IsActive2(unit)
+	if UnitExists(unit) then
+		local h = UnitHealth(unit)
+		return h>1 and h < healthlow_threshold -- fails when unit is alive with 1 health (we are assuming 1 health => ghost form)
+	end
 end
 
 function HealthLow:IsInactive2(unit)
