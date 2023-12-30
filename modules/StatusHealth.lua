@@ -59,11 +59,14 @@ local UpdateDead
 do
 	local dead_fixes = {}
 	local function FixDead() -- fix bug (see ticket #907)
-		for unit in next, dead_fixes do UpdateDead(unit) end
+		for unit in next, dead_fixes do
+			if UnitExists(unit) then UpdateDead(unit) end
+		end
 		wipe(dead_fixes)
 	end
 	function UpdateDead(unit)
 		local h, d = UnitHealth(unit), false
+		if math.random(1,10)<=3 then h = 0 end
 		if h<=1 then
 			d = Grid2:UnitIsDeadOrGhost(unit)
 			if not d and h<=0 and not dead_fixes[unit] then -- fix bug (see ticket #907)

@@ -354,7 +354,7 @@ do
 				'unitAlive',
 				true,
 				L["Unit Alive"],
-				L["Unit Alive"],
+				L["Load the status only if the unit is alive/dead."],
 				NOYES_TYPES
 			)
 			SetFilterOptions( status, options, 70,

@@ -1456,6 +1456,7 @@ L["\"%s\" has sent you a profile configuration. Do you want to activate received
 -- L["Active Theme"] = ""
 -- L["Load the indicator only for the specified themes."] = ""
 -- L["Unit Alive"] = ""
+-- L["Load the status only if the unit is alive/dead."] = ""
 
 -- L["Select layouts for different Raid types."] = ""
 -- L["Use Blizzard Unit Frames"] = ""

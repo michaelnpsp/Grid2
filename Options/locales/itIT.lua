@@ -1459,6 +1459,7 @@ L["You can include a descriptive prefix using separators \"@#>\""] = "Puoi inclu
 -- L["Active Theme"] = ""
 -- L["Load the indicator only for the specified themes."] = ""
 -- L["Unit Alive"] = ""
+-- L["Load the status only if the unit is alive/dead."] = ""
 
 -- L["Select layouts for different Raid types."] = ""
 -- L["Use Blizzard Unit Frames"] = ""

@@ -1459,6 +1459,7 @@ L["Load the status only if the unit belong to the specified class."] = "해당 �
 -- L["Active Theme"] = ""
 -- L["Load the indicator only for the specified themes."] = ""
 -- L["Unit Alive"] = ""
+-- L["Load the status only if the unit is alive/dead."] = ""
 
 L["Select layouts for different Raid types."] = "공격대 유형에 따라 배치 선택"
 L["Use Blizzard Unit Frames"] = "Blizzard 유닛 프레임 사용"
