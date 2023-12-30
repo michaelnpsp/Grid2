@@ -15,14 +15,12 @@ local Death = Grid2.statusPrototype:new("death", true)
 
 local Grid2 = Grid2
 local next = next
+local select = select
 local tostring = tostring
 local fmt = string.format
-local select = select
 local GetTime = GetTime
 local UnitExists = UnitExists
 local UnitHealth = UnitHealth
-local UnitIsDead = UnitIsDead
-local UnitIsGhost = UnitIsGhost
 local UnitIsFriend = UnitIsFriend
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitIsFeignDeath = UnitIsFeignDeath
@@ -30,6 +28,7 @@ local UnitGetTotalAbsorbs = UnitGetTotalAbsorbs
 local UnitHealthMax = UnitHealthMax
 local C_Timer_After = C_Timer.After
 local unit_is_valid = Grid2.roster_guids
+local dead_cache = Grid2.roster_deads
 
 -- Caches
 local heals_enabled = false
@@ -55,11 +54,36 @@ local healthdeficit_enabled = false
 
 local fmtPercent = "%.0f%%"
 
+-- Death tracking
+local UpdateDead
+do
+	local dead_fixes = {}
+	local function FixDead() -- fix bug (see ticket #907)
+		for unit in next, dead_fixes do UpdateDead(unit) end
+		wipe(dead_fixes)
+	end
+	function UpdateDead(unit)
+		local h, d = UnitHealth(unit), false
+		if h<=1 then
+			d = Grid2:UnitIsDeadOrGhost(unit)
+			if not d and h<=0 and not dead_fixes[unit] then -- fix bug (see ticket #907)
+				if not next(dead_fixes) then C_Timer_After(0.05, FixDead) end
+				dead_fixes[unit] = true
+			end
+		end
+		if d ~= dead_cache[unit] then
+			dead_cache[unit] = d
+			Grid2:SendMessage("Grid_UnitDeadUpdated", unit, d)
+		end
+	end
+end
+
 -- Health statuses update function
 local statuses = {}
 
 local function UpdateIndicators(unit)
 	if unit_is_valid[unit] then
+		UpdateDead(unit)
 		for status in next, statuses do
 			status:UpdateIndicators(unit)
 		end
@@ -524,73 +548,18 @@ Grid2.setupFunc["health-deficit"] = CreateHealthDeficit
 Grid2:DbSetStatusDefaultValue( "health-deficit", {type = "health-deficit", color1 = {r=1,g=1,b=1,a=1}, threshold = 0.05})
 
 -- death status
-local textDeath = L["DEAD"]
-local textGhost = L["GHOST"]
-local dead_cache = {}
-local units_to_fix = {}
-
 Death.GetColor = Grid2.statusLibrary.GetColor
 
-local function DeathUpdateUnit(_, unit, noUpdate)
-	if unit_is_valid[unit] then
-		local new = UnitIsDeadOrGhost(unit) and (UnitIsGhost(unit) and textGhost or textDeath) or false
-		if (not new) and UnitHealth(unit)<=0 and not units_to_fix[unit] then
-			Death:FixDeathBug(unit) -- see ticket #907
-		end
-		if new ~= dead_cache[unit] then
-			dead_cache[unit] = new
-			if not noUpdate then
-				if new then
-					if heals_cache[unit]~=0 then
-						heals_cache[unit] = 0
-						Heals:UpdateIndicators(unit)
-					end
-					if HealthCurrent.enabled then
-						HealthCurrent:UpdateIndicators(unit)
-					end
-				end
-				Death:UpdateIndicators(unit)
-			end
-		end
-	end
-end
-
-local function DeathTimerEvent()
-	local updateFunc = HealthCurrent.enabled and HealthCurrent.dbx.deadAsFullHealth and HealthCurrent.UpdateIndicators
-	for unit in next, units_to_fix do
-		DeathUpdateUnit(nil, unit)
-		if updateFunc then updateFunc(HealthCurrent,unit) end
-	end
-	wipe(units_to_fix)
-end
-
-function Death:FixDeathBug(unit)
-	if not next(units_to_fix) then
-		C_Timer_After(0.05, DeathTimerEvent)
-	end
-	units_to_fix[unit] = true
-	Grid2:Debug("Fixing possible death bug (ticket #907) for unit:", unit)
-end
-
-function Death:Grid_UnitUpdated(_, unit)
-	DeathUpdateUnit(_, unit, true)
-end
-
-function Death:Grid_UnitLeft(_, unit)
-	dead_cache[unit] = nil
+function Death:Grid_UnitDeadUpdated(_, unit)
+	self:UpdateIndicators(unit)
 end
 
 function Death:OnEnable()
-	self:RegisterEvent( "UNIT_HEALTH", DeathUpdateUnit )
-	self:RegisterMessage("Grid_UnitUpdated")
-	self:RegisterMessage("Grid_UnitLeft")
+	self:RegisterMessage("Grid_UnitDeadUpdated")
 end
 
 function Death:OnDisable()
-	self:UnregisterEvent( "UNIT_HEALTH" )
-	self:UnregisterMessage("Grid_UnitUpdated")
-	self:UnregisterMessage("Grid_UnitLeft")
-	wipe(dead_cache)
+	self:UnregisterMessage("Grid_UnitDeadUpdated")
 end
 
 function Death:IsActive(unit)

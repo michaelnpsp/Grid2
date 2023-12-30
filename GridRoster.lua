@@ -1,5 +1,6 @@
 -- Roster management
 local Grid2 = Grid2
+local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 -- Local variables to speed up things
 local ipairs, pairs, next, select = ipairs, pairs, next, select
@@ -8,6 +9,9 @@ local IsInRaid = IsInRaid
 local UnitName = UnitName
 local UnitGUID = UnitGUID
 local UnitExists = UnitExists
+local UnitIsDead = UnitIsDead
+local UnitIsGhost = UnitIsGhost
+local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local GetRaidRosterInfo = GetRaidRosterInfo
 local GetNumGroupMembers = GetNumGroupMembers
 local isClassic = Grid2.isClassic
@@ -31,6 +35,10 @@ local roster_guids    = {} -- raid1=>guid,..
 local roster_players  = {} -- raid1=>guid ;only non pet units in group/raid
 local roster_pets     = {} -- raidpet1=>guid ;only pet units in group/raid
 local roster_units    = {} -- guid=>raid1, ..
+-- roster dead tracking
+local roster_deads = {}
+local textDeath = L["DEAD"]
+local textGhost = L["GHOST"]
 
 -- populate unit tables
 do
@@ -90,6 +98,7 @@ do
 			modified = true
 		end
 		if modified then
+			roster_deads[unit] = Grid2:UnitIsDeadOrGhost(unit)
 			Grid2:SendMessage("Grid_UnitUpdated", unit)
 			return true
 		end
@@ -109,6 +118,7 @@ do
 			roster_units[guid] = unit
 			roster_pets[unit] = guid
 		end
+		roster_deads[unit] = Grid2:UnitIsDeadOrGhost(unit)
 		Grid2:SendMessage("Grid_UnitUpdated", unit, true)
 	end
 
@@ -125,6 +135,7 @@ do
 		if unit == roster_units[guid] then
 			roster_units[guid] = nil
 		end
+		roster_deads[unit] = nil
 		Grid2:SendMessage("Grid_UnitLeft", unit)
 	end
 
@@ -368,6 +379,10 @@ do
 end
 
 --{{ Public variables and methods used by some statuses
+function Grid2:UnitIsDeadOrGhost(unit)
+	return UnitIsDeadOrGhost(unit) and (UnitIsGhost(unit) and textGhost or textDeath) or false
+end
+
 function Grid2:GetUnitOfGUID(guid) -- only party/raid units
 	return roster_units[guid]
 end
@@ -424,4 +439,5 @@ Grid2.roster_types    = roster_types
 Grid2.grouped_units   = grouped_units
 Grid2.raid_indexes    = raid_indexes
 Grid2.party_indexes   = party_indexes
+Grid2.roster_deads    = roster_deads
 --}}
