@@ -66,7 +66,6 @@ do
 	end
 	function UpdateDead(unit)
 		local h, d = UnitHealth(unit), false
-		if math.random(1,10)<=3 then h = 0 end
 		if h<=1 then
 			d = Grid2:UnitIsDeadOrGhost(unit)
 			if not d and h<=0 and not dead_fixes[unit] then -- fix bug (see ticket #907)
@@ -373,8 +372,7 @@ local healthlow_threshold
 function HealthLow:IsActive1(unit)
 	local m = UnitHealthMax(unit)
 	if m~=0 then -- unit exists
-		local h = UnitHealth(unit)
-		return h>1 and (h/m) < healthlow_threshold -- fails when unit is alive with 1 health (we are assuming 1 health => ghost form)
+		return UnitHealth(unit)/m < healthlow_threshold
 	end
 end
 
@@ -385,10 +383,7 @@ end
 
 -- absolute health threshold
 function HealthLow:IsActive2(unit)
-	if UnitExists(unit) then
-		local h = UnitHealth(unit)
-		return h>1 and h < healthlow_threshold -- fails when unit is alive with 1 health (we are assuming 1 health => ghost form)
-	end
+	return UnitExists(unit) and UnitHealth(unit) < healthlow_threshold
 end
 
 function HealthLow:IsInactive2(unit)
