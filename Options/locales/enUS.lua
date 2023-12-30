@@ -1462,6 +1462,7 @@ L["Load the status only for the specified unit types."] = true
 L["Load the indicator only for the specified unit types."] = true
 L["Active Theme"] = true
 L["Load the indicator only for the specified themes."] = true
+L["Unit Alive"] = true
 
 L["Select layouts for different Raid types."] = true
 L["Use Blizzard Unit Frames"] = true

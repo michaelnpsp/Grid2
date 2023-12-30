@@ -1458,6 +1458,7 @@ L["A resurrection spell has been casted on the unit"] = "A magia reviver esta se
 -- L["Load the indicator only for the specified unit types."] = ""
 -- L["Active Theme"] = ""
 -- L["Load the indicator only for the specified themes."] = ""
+-- L["Unit Alive"] = ""
 
 -- L["Select layouts for different Raid types."] = ""
 -- L["Use Blizzard Unit Frames"] = ""

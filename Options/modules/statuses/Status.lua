@@ -350,7 +350,14 @@ do
 			)
 		end
 		if status.handlerType or (optionParams and optionParams.unitFilter) then -- hackish to detect buff/debuff type statuses
-			SetFilterOptions( status, options, 65,
+			SetFilterBooleanOptions( status, options, 65,
+				'unitAlive',
+				true,
+				L["Unit Alive"],
+				L["Unit Alive"],
+				NOYES_TYPES
+			)
+			SetFilterOptions( status, options, 70,
 				'unitReaction',
 				UNIT_REACTIONS,
 				'friendly',
@@ -358,7 +365,7 @@ do
 				L["Load the status only if the unit has the specified reaction towards the player."],
 				true, true
 			)
-			SetFilterOptions( status, options, 70,
+			SetFilterOptions( status, options, 75,
 				'unitClass',
 				PLAYER_CLASSES,
 				select(2,UnitClass('player')),
@@ -374,7 +381,7 @@ do
 				L["Load the status only if the unit has the specified role."],
 				true
 			)
-			SetFilterOptions( status, options, 90,
+			SetFilterOptions( status, options, 85,
 				'unitType',
 				HEADER_TYPES,
 				'player',

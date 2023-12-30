@@ -10,13 +10,14 @@ local UnitIsFriend = UnitIsFriend
 local GetSpellCooldown = GetSpellCooldown
 local UnitGroupRolesAssigned = Grid2.UnitGroupRolesAssigned
 local roster_types = Grid2.roster_types
+local roster_deads = Grid2.roster_deads
 local empty = {}
 
 -------------------------------------------------------------------------
 -- Register/Unregister filtered statuses
 -------------------------------------------------------------------------
 
-local statuses = { combat = {}, playerClassSpec = {}, groupInstType = {}, instNameID = {}, unitFilter = {}, unitRole = {}, cooldown = {} }
+local statuses = { combat = {}, playerClassSpec = {}, groupInstType = {}, instNameID = {}, unitFilter = {}, unitRole = {}, unitAlive = {}, cooldown = {} }
 
 local function RegisterMsgFilter(status, filterType, message, func, enabled)
 	local registered = statuses[filterType]
@@ -186,8 +187,13 @@ do
 							if load.unitReaction.hostile then r = not r end
 						end
 						if not r then
-							if load.cooldown then
-								r = cooldowns_mt[load.cooldown]
+							if load.unitAlive~=nil then
+								r = not roster_deads[u] == not load.unitAlive
+							end
+							if not r then
+								if load.cooldown then
+									r = cooldowns_mt[load.cooldown]
+								end
 							end
 						end
 					end
@@ -203,6 +209,13 @@ do
 	local function ClearUnitFilters(_, unit)
 		for status, filtered in next, statuses.unitFilter do
 			filtered[unit] = nil
+		end
+	end
+
+	local function RefreshAliveFilter(_, unit)
+		for status, filtered in next, statuses.unitAlive do
+			filtered[unit] = nil
+			status:UpdateIndicators(unit)
 		end
 	end
 
@@ -230,7 +243,7 @@ do
 
 	-- public
 	function FilterU_Register(self, load)
-		if load.unitType or load.unitReaction or load.unitClass or load.unitRole or load.cooldown then
+		if load.unitType or load.unitReaction or load.unitClass or load.unitRole or load.cooldown or load.unitAlive~=nil then
 			self.filtered = setmetatable({source = load}, filter_mt)
 		else
 			self.filtered = nil
@@ -245,6 +258,7 @@ do
 		local filtered = self.filtered
 		if filtered then
 			RegisterMsgFilter( self, "unitFilter", "Grid_UnitUpdated", ClearUnitFilters,  filtered )
+			RegisterMsgFilter( self, "unitAlive", "Grid_UnitDeadUpdated", RefreshAliveFilter,  load.unitAlive~=nil and filtered )
 			RegisterMsgFilter( self, "unitRole", "Grid_PlayerRolesAssigned", RefreshRoleFilter, load.unitRole and filtered )
 			RegisterEventFilter( self, "cooldown", "SPELL_UPDATE_USABLE", RefreshCooldownFilter, load.cooldown and filtered )
 		end
@@ -254,6 +268,7 @@ do
 		local filtered = self.filtered
 		if filtered then
 			RegisterMsgFilter( self, "unitFilter", "Grid_UnitUpdated" )
+			RegisterMsgFilter( self, "unitAlive", "Grid_UnitDeadUpdated" )
 			RegisterMsgFilter( self, "unitRole", "Grid_PlayerRolesAssigned" )
 			RegisterEventFilter( self, "cooldown", "SPELL_UPDATE_USABLE" )
 			wipe(filtered).source = load

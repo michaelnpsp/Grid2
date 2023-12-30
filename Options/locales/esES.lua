@@ -1476,6 +1476,7 @@ L["Load the status only for the specified unit types."] = "Carga el estado solo 
 L["Load the indicator only for the specified unit types."] = "Carga el indicator solo para los tipos de unidad indicadas."
 L["Active Theme"] = "Tema Activo"
 L["Load the indicator only for the specified themes."] = "Carga el indicator solo para los temas indicados."
+L["Unit Alive"] = "Unidad: Viva"
 
 L["Select layouts for different Raid types."] = "Elige los diseños para diferentes tipos de raid."
 L["Use Blizzard Unit Frames"] = "Usar Marcos de Unidades de Blizzard"

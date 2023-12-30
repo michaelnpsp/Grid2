@@ -1458,6 +1458,7 @@ L["You can include a descriptive prefix using separators \"@#>\""] = "Вы мо�
 -- L["Load the indicator only for the specified unit types."] = ""
 -- L["Active Theme"] = ""
 -- L["Load the indicator only for the specified themes."] = ""
+-- L["Unit Alive"] = ""
 
 -- L["Select layouts for different Raid types."] = ""
 -- L["Use Blizzard Unit Frames"] = ""
