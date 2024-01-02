@@ -45,10 +45,12 @@ local function UpdateUnits()
 	if einst or not IsInInstance() then
 		for unit in Grid2:IterateGroupedPlayers() do
 			local distance, valid = UnitDistanceSquared(unit)
-			local inrange = valid and distance<62500 -- UnitPhaseReason() only works if distance squared<250*250
-			if inrange~=range[unit] then
-				range[unit] = inrange
-				UpdateUnit(nil, unit)
+			if valid then
+				local inrange = distance<62500 -- UnitPhaseReason() only works if distance squared<250*250
+				if inrange~=range[unit] then
+					range[unit] = inrange
+					UpdateUnit(nil, unit)
+				end
 			end
 		end
 	else
