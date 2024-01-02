@@ -133,6 +133,8 @@ L["Adjust Grid scale."] = "Ajustar escala da Grade"
 -- L["Flash"] = ""
 -- L["Blink Frequency"] = ""
 -- L["Adjust the frequency of the Blink effect."] = ""
+-- L["Highlight Effect"] = ""
+-- L["Zoom In"] = ""
 
 -- text formatting
 -- L["Text Formatting"] = ""
@@ -561,7 +563,6 @@ L["Adjust background color and alpha."] = "Ajustar plano de fundo e transparenci
 -- L["Targeting&Distances"] = ""
 -- L["Raid&Party Roles"] = ""
 -- L["Miscellaneous"] = ""
-
 -- L["Show if mine"] = ""
 -- L["Show if not mine"] = ""
 -- L["Show if missing"] = ""
@@ -1357,6 +1358,11 @@ L["A resurrection spell has been casted on the unit"] = "A magia reviver esta se
 -- L["Nothing"] = ""
 -- L["Transliterate cyrillic letters"] = ""
 -- L["Convert cyrillic letters to latin alphabet."] = ""
+-- L["Display Pet's Owner"] = ""
+-- L["Display the pet's owner name instead of the pet name."]  = ""
+-- L["Display Vehicle's Owner"] = ""
+-- L["Display the vehicle's owner name instead of the vehicle name."] = ""
+-- L["Use Owner/Vehicle Class Color"] = ""
 -- L["N/A"] = ""
 -- L["Use alternate icons"] = ""
 -- L["display damage absorb shields above max hp"] = ""

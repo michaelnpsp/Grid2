@@ -133,6 +133,8 @@ L["Blink"] = true
 L["Flash"] = true
 L["Blink Frequency"] = true
 L["Adjust the frequency of the Blink effect."] = true
+L["Highlight Effect"] = true
+L["Zoom In"] = true
 
 -- text formatting
 L["Text Formatting"] = true
@@ -565,7 +567,6 @@ L["Combat"] = true
 L["Targeting&Distances"] = true
 L["Raid&Party Roles"] = true
 L["Miscellaneous"] = true
-
 L["Show if mine"] = true
 L["Show if not mine"] = true
 L["Show if missing"] = true
@@ -1361,6 +1362,11 @@ L["Unit Tag"] = true
 L["Nothing"] = true
 L["Transliterate cyrillic letters"] = true
 L["Convert cyrillic letters to latin alphabet."] = true
+L["Display Pet's Owner"] = true
+L["Display the pet's owner name instead of the pet name."]  = true
+L["Display Vehicle's Owner"] = true
+L["Display the vehicle's owner name instead of the vehicle name."] = true
+L["Use Owner/Vehicle Class Color"] = true
 L["N/A"] = true
 L["Use alternate icons"] = true
 L["display damage absorb shields above max hp"] = true
