@@ -68,6 +68,7 @@ function Phased:OnEnable()
 	einst = self.dbx.enabledInstances
 	self:RegisterEvent("UNIT_PHASE", UpdateUnit)
 	self:RegisterEvent("UNIT_FLAGS", UpdateUnit)
+	self:RegisterEvent("UNIT_OTHER_PARTY_CHANGED", UpdateUnit)
 	self:RegisterMessage("Grid_UnitUpdated", ResetUnit)
 	self:RegisterMessage("Grid_UnitLeft",    ResetUnit)
 	if not einst then
@@ -79,6 +80,7 @@ end
 function Phased:OnDisable()
 	self:UnregisterEvent("UNIT_PHASE")
 	self:UnregisterEvent("UNIT_FLAGS")
+	self:UnregisterEvent("UNIT_OTHER_PARTY_CHANGED")
 	self:UnregisterMessage("Grid_UnitUpdated")
 	self:UnregisterMessage("Grid_UnitLeft")
 	self:UnregisterMessage("Grid_GroupTypeChanged")
