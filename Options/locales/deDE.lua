@@ -879,6 +879,9 @@ L["Visible Units"] = "Sichtbare Einheiten"
 L["Display status for units less than 100 yards away"] = "Zeige Status für Einheiten die weniger als 100 Meter entfernt sind"
 L["Dead Units"] = "Tote Einheiten"
 L["Display status only for dead units"] = "Zeige Status nur für tote Einheiten"
+-- L["Show only selected sticky units"] = ""
+-- L["Show only when all conditions are met"] = ""
+-- L["Show always for selected sticky units"] = ""
 
 -- resurrection
 -- L["Casting resurrection"] = ""
@@ -957,7 +960,6 @@ L["Resurrected"] = "Wiederbelebt"
 -- L["Sticky Units"] = ""
 -- L["Target"] = ""
 -- L["Tanks"] = ""
--- L["Show only selected sticky units"] = ""
 
 -- aoe heals
 -- L["aoe-"] = ""

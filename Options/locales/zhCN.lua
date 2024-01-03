@@ -882,6 +882,9 @@ L["Visible Units"] = "可见单位"
 L["Display status for units less than 100 yards away"] = "显示100码外单位的状态"
 L["Dead Units"] = "死亡单位"
 L["Display status only for dead units"] = "只显示死亡单位的状态"
+L["Show only selected sticky units"] = "只显示选择的关联单位 "
+-- L["Show only when all conditions are met"] = ""
+-- L["Show always for selected sticky units"] = ""
 
 -- resurrection
 L["Casting resurrection"] = "施放复活中"
@@ -960,7 +963,6 @@ L["display remaining amount of damage absorb shields"] = "显示剩余的损坏�
 L["Sticky Units"] = "关联单位"
 L["Target"] = "目标"
 L["Tanks"] = "坦克"
-L["Show only selected sticky units"] = "只显示选择的关联单位 "
 
 -- aoe heals
 L["aoe-"] = "范围："

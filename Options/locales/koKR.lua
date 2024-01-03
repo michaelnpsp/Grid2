@@ -882,6 +882,9 @@ L["Visible Units"] = "표시 유닛"
 L["Display status for units less than 100 yards away"] = "유닛과의 거리가 100미터 미만이면 상태 표시"
 L["Dead Units"] = "죽은 유닛"
 L["Display status only for dead units"] = "유닛이 죽은 경우 상태 표시"
+L["Show only selected sticky units"] = "선택한 유닛만 표시"
+-- L["Show only when all conditions are met"] = ""
+-- L["Show always for selected sticky units"] = ""
 
 -- resurrection
 L["Casting resurrection"] = "부활 시전"
@@ -960,7 +963,6 @@ L["display remaining amount of damage absorb shields"] = "남은 피해 흡수�
 L["Sticky Units"] = "항상 표시할 유닛"
 L["Target"] = "대상"
 L["Tanks"] = "탱커"
-L["Show only selected sticky units"] = "선택한 유닛만 표시"
 
 -- aoe heals
 L["aoe-"] = "AOE-"

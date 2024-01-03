@@ -883,6 +883,9 @@ L["Visible Units"] = "可見單位"
 L["Display status for units less than 100 yards away"] = "替100碼內的單位顯示狀態"
 L["Dead Units"] = "死亡單位"
 L["Display status only for dead units"] = "只顯示死亡單位的狀態"
+-- L["Show only selected sticky units"] = ""
+-- L["Show only when all conditions are met"] = ""
+-- L["Show always for selected sticky units"] = ""
 
 -- resurrection
 L["Casting resurrection"] = "施放復活中"
@@ -961,7 +964,6 @@ L["display remaining amount of heal absorb shields"] = "顯示剩餘的治療吸
 -- L["Sticky Units"] = ""
 -- L["Target"] = ""
 -- L["Tanks"] = ""
--- L["Show only selected sticky units"] = ""
 
 -- aoe heals
 L["aoe-"] = "範圍效果："

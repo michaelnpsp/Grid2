@@ -887,6 +887,9 @@ L["Visible Units"] = true
 L["Display status for units less than 100 yards away"] = true
 L["Dead Units"] = true
 L["Display status only for dead units"] = true
+L["Show only selected sticky units"] = true
+L["Show only when all conditions are met"] = true
+L["Show always for selected sticky units"] = true
 
 -- resurrection
 L["Casting resurrection"] = true
@@ -965,7 +968,6 @@ L["display remaining amount of damage absorb shields"] = true
 L["Sticky Units"] = true
 L["Target"] = true
 L["Tanks"] = true
-L["Show only selected sticky units"] = true
 
 -- aoe heals
 L["neighbors"] = true

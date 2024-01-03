@@ -882,6 +882,9 @@ L["Visible Units"] = "Видимые юниты"
 L["Display status for units less than 100 yards away"] = "Показать статус для юнитов на расстоянии меньшее 100 метров"
 L["Dead Units"] = "Мертвые юниты"
 L["Display status only for dead units"] = "Показывать статус только для мертвых юнитов"
+-- L["Show only selected sticky units"] = ""
+-- L["Show only when all conditions are met"] = ""
+-- L["Show always for selected sticky units"] = ""
 
 -- resurrection
 L["Casting resurrection"] = "Применение воскрешения"
@@ -960,7 +963,6 @@ L["display remaining amount of damage absorb shields"] = "показать ос�
 -- L["Sticky Units"] = ""
 L["Target"] = "Цель"
 L["Tanks"] = "Танки ."
--- L["Show only selected sticky units"] = ""
 
 -- aoe heals
 L["aoe-"] = "aoe-"

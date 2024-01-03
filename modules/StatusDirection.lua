@@ -12,64 +12,27 @@ local GetPlayerFacing = GetPlayerFacing
 local UnitPosition = UnitPosition
 local UnitIsUnit = UnitIsUnit
 local UnitGUID = UnitGUID
-local C_GetNamePlateForUnit = C_NamePlate.GetNamePlateForUnit
-local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo
-
-local f_env = {
-	UnitIsUnit = UnitIsUnit,
-	UnitGroupRolesAssigned = UnitGroupRolesAssigned or (function() return 'NONE' end),
-	UnitInRange = UnitInRange,
-	UnitIsVisible = UnitIsVisible,
-	UnitIsDead = UnitIsDead,
-}
+local roster_units = Grid2.roster_units
 
 local timer
+local colors
 local distances
+local mouseover = ""
 local directions = {}
 local UnitCheck
-local mouseover = ""
 
-local guessDirections = false
-local roster_units    = Grid2.roster_units
-local curtime   = 0
-local plates    = {}  -- [guid] = PlateFrame.UnitFrame
-local guid2guid = {}  --
-local guid2time	= {}  --
-local playerx,playery
-
---
-local function PlateAdded(_, unit)
-	local plateFrame = C_GetNamePlateForUnit(unit)
-	if plateFrame then
-		plates[ UnitGUID(unit) ] = plateFrame.UnitFrame
-	end
-end
-
-local function PlateRemoved(_, unit )
-	plates[ UnitGUID(unit) ] = nil
-end
-
-local function CombatLogEvent()
-	local timestamp, event,_,srcGUID, _,_,_, dstGUID = CombatLogGetCurrentEventInfo()
-	if event=='SWING_DAMAGE' then
-		local unit = roster_units[srcGUID]
-		if unit then
-			guid2guid[srcGUID] = dstGUID
-			guid2time[srcGUID] = timestamp
-		end
-	end
-	curtime = timestamp
-end
-
-local function GetPlate(guid)
-	local dguid = guid2guid[guid]
-	return dguid and curtime-guid2time[guid]<3 and plates[dguid]
-end
---
+local CODE = [[
+local UnitIsUnit = UnitIsUnit
+local UnitInRange = UnitInRange
+local UnitIsVisible = UnitIsVisible
+local UnitIsDeadOrGhost = UnitIsDeadOrGhost
+local UnitGroupRolesAssigned = UnitGroupRolesAssigned or (function() return 'NONE' end)
+return function(unit, mouseover) return (%s) end
+]]
 
 local function UpdateDirections()
 	local x1,y1, _, map1 = UnitPosition("player")
-	if x1 or guessDirections then
+	if x1 then
 		local facing = GetPlayerFacing()
 		if facing then
 			for unit,guid in Grid2:IterateRosterUnits() do
@@ -81,14 +44,6 @@ local function UpdateDirections()
 							local dx, dy = x2 - x1, y2 - y1
 							direction = floor((atan2(dy,dx)-facing) / PI2 * 32 + 0.5) % 32
 							if distances then distance = floor( ((dx*dx+dy*dy)^0.5)/10 ) + 1 end
-						elseif guessDirections then -- disabled guessDirections, this condition is never true
-							local frame = plates[guid] or GetPlate(guid)
-							if frame then
-								local s = frame:GetEffectiveScale()
-								local x, y = frame:GetCenter()
-								local dx, dy = x*s - playerx, y*s - playery
-								direction = floor( (atan2(dy,dx)/PI2+0.75) * 32 ) % 32
-							end
 						end
 					end
 				end
@@ -145,60 +100,37 @@ do
 end
 
 function Direction:UpdateDB()
-	local isRestr
-	t= {}
-	t[1] = "return function(unit, mouseover) return "
-	if not self.dbx.showOnlyStickyUnits then
-		if self.dbx.ShowOutOfRange 	then t[#t+1]= "and (not UnitInRange(unit)) "; isRestr=true 	end
-		if self.dbx.ShowVisible 	then t[#t+1]= "and UnitIsVisible(unit) "; isRestr=true		end
-		if self.dbx.ShowDead 		then t[#t+1]= "and UnitIsDead(unit) "; isRestr=true			end
-	end
-	if isRestr or self.dbx.showOnlyStickyUnits then
-		if self.dbx.StickyTarget	then t[#t+1]= "or  UnitIsUnit(unit, 'target') "		     end
-		if self.dbx.StickyMouseover	then t[#t+1]= "or  UnitIsUnit(unit, mouseover) "          end
-		if self.dbx.StickyFocus		then t[#t+1]= "or  UnitIsUnit(unit, 'focus') "	         end
-		if self.dbx.StickyTanks		then t[#t+1]= "or  UnitGroupRolesAssigned(unit)=='TANK' " end
-	end
-	t[2] = t[2] and t[2]:sub(5) or "true "
-	t[#t+1]= "end"
-	SetMouseoverHooks((isRestr or self.dbx.showOnlyStickyUnits) and self.dbx.StickyMouseover)
-	UnitCheck = assert(loadstring(table.concat(t)))()
-	setfenv(UnitCheck, f_env)
-	--
-	local count = self.dbx.colorCount or 1
+	local dbx, t, u = self.dbx, {}, {}
+	SetMouseoverHooks(dbx.StickyMouseover)
+	if dbx.ShowOutOfRange  then u[#u+1]= "(not UnitInRange(unit))" end
+	if dbx.ShowVisible 	   then u[#u+1]= "UnitIsVisible(unit)" end
+	if dbx.ShowDead 	   then u[#u+1]= "UnitIsDeadOrGhost(unit) " end
+	if #u>0                then t[#t+1]= table.concat(u, dbx.lazyFilter and ' or ' or ' and '); wipe(u) end
+	if dbx.StickyTarget	   then u[#u+1]= "UnitIsUnit(unit,'target')" end
+	if dbx.StickyMouseover then u[#u+1]= "UnitIsUnit(unit,mouseover)" end
+	if dbx.StickyFocus	   then u[#u+1]= "UnitIsUnit(unit,'focus')" end
+	if dbx.StickyTanks	   then u[#u+1]= "UnitGroupRolesAssigned(unit)=='TANK'" end
+	if #u>0                then t[#t+1]= table.concat(u, ' or '); wipe(u) end
+	local s = string.format( CODE, #t>0 and table.concat(t, dbx.showAlwaysStickyUnits and ') or (' or ') and (') or 'true' )
+	UnitCheck = assert(loadstring(s))()
+	local count = dbx.colorCount or 1
 	if count>1 then
 		distances = distances or {}
-		self.GetVertexColor = Direction.GetDistanceColor
-		self.colors = self.colors or {}
-		for i=1,count do
-			self.colors[i] = self.dbx["color"..i]
-		end
+		colors = colors or {}
+		for i=1,count do colors[i] = dbx["color"..i] end
+		self.GetVertexColor = self.GetDistanceColor
 	else
 		distances = nil
 		self.GetVertexColor = Grid2.statusLibrary.GetColor
 	end
-	-- disabled because doesn't work due to new Nameplates restrictions, GetCenter() cannot be called in combat now
-	-- guessDirections = self.dbx.guessDirections
 end
 
 function Direction:OnEnable()
 	self:SetTimer(true)
-	if guessDirections then
-		playerx = UIParent:GetWidth()  * UIParent:GetEffectiveScale() / 2
-		playery = UIParent:GetHeight() * UIParent:GetEffectiveScale() / 2
-		self:RegisterEvent("NAME_PLATE_UNIT_ADDED", PlateAdded )
-		self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", PlateRemoved )
-		self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", CombatLogEvent)
-	end
 end
 
 function Direction:OnDisable()
 	self:SetTimer(false)
-	if guestDirections then
-		self:UnregisterEvent("NAME_PLATE_UNIT_ADDED")
-		self:UnregisterEvent("NAME_PLATE_UNIT_REMOVED")
-		self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	end
 end
 
 function Direction:IsActive(unit)
@@ -216,7 +148,7 @@ end
 
 function Direction:GetDistanceColor(unit)
 	local distance = distances[unit]
-	local color = distance and self.colors[distance] or self.colors[5]
+	local color = distance and colors[distance] or colors[5]
 	return color.r, color.g, color.b, color.a
 end
 

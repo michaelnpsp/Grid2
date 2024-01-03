@@ -882,6 +882,9 @@ L["%s Color"] = "%s"
 -- L["Display status for units less than 100 yards away"] = ""
 -- L["Dead Units"] = ""
 -- L["Display status only for dead units"] = ""
+-- L["Show only selected sticky units"] = ""
+-- L["Show only when all conditions are met"] = ""
+-- L["Show always for selected sticky units"] = ""
 
 -- resurrection
 -- L["Casting resurrection"] = ""
@@ -960,7 +963,6 @@ L["A resurrection spell has been casted on the unit"] = "A magia reviver esta se
 -- L["Sticky Units"] = ""
 -- L["Target"] = ""
 -- L["Tanks"] = ""
--- L["Show only selected sticky units"] = ""
 
 -- aoe heals
 -- L["aoe-"] = ""

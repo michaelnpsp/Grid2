@@ -884,6 +884,9 @@ L["Visible Units"] = "Jugadores visibles"
 L["Display status for units less than 100 yards away"] = "Muestra el estado solo para jugadores a menos de 100 metros"
 L["Dead Units"] = "Jugadores muertos"
 L["Display status only for dead units"] = "Muestra el estado solo para jugadores muertos"
+L["Show only selected sticky units"] = "Mostrar solo para las unidades especiales"
+L["Show only when all conditions are met"] = "Mostrar solo cuando se cumplan todas las condiciones"
+L["Show always for selected sticky units"] = "Mostrar siempre las unidades especiales seleccionadas"
 
 -- resurrection
 L["Casting resurrection"] = "Resucitando"
@@ -962,7 +965,6 @@ L["display remaining amount of damage absorb shields"] = "muestra escudos que ab
 L["Sticky Units"] = "Unidades especiales"
 L["Target"] = "Objetivo"
 L["Tanks"] = "Tanques"
-L["Show only selected sticky units"] = "Mostrar solo para las unidades especiales"
 
 -- aoe heals & dmg
 L["spells-"] = "spells: "
