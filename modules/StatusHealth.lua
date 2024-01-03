@@ -87,9 +87,6 @@ do
 			for status in next, statuses do
 				status:UpdateIndicators(unit)
 			end
-			if overheals_enabled then
-				OverHeals:UpdateIndicators(unit)
-			end
 		end
 	end
 end
