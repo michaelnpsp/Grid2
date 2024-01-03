@@ -54,22 +54,25 @@ local healthdeficit_enabled = false
 
 local fmtPercent = "%.0f%%"
 
--- Death tracking
-local UpdateDead
+local statuses = {}
+
+-- Health&Death tracking
+local UpdateIndicators, UpdateDead
 do
-	local dead_fixes = {}
+	local dead_fixes, prev_fixes = {}, {}
 	local function FixDead() -- fix bug (see ticket #907)
-		for unit in next, dead_fixes do
-			if UnitExists(unit) then UpdateDead(unit) end
-		end
+		dead_fixes, prev_fixes = prev_fixes, dead_fixes
 		wipe(dead_fixes)
+		for unit in next, prev_fixes do
+			UpdateIndicators(unit)
+		end
 	end
 	function UpdateDead(unit)
 		local h, d = UnitHealth(unit), false
 		if h<=1 then
 			d = Grid2:UnitIsDeadOrGhost(unit)
 			if not d and h<=0 and not dead_fixes[unit] then -- fix bug (see ticket #907)
-				if not next(dead_fixes) then C_Timer_After(0.05, FixDead) end
+				if not next(dead_fixes) then C_Timer_After(0.25, FixDead) end
 				dead_fixes[unit] = true
 			end
 		end
@@ -78,19 +81,15 @@ do
 			Grid2:SendMessage("Grid_UnitDeadUpdated", unit, d)
 		end
 	end
-end
-
--- Health statuses update function
-local statuses = {}
-
-local function UpdateIndicators(unit)
-	if unit_is_valid[unit] then
-		UpdateDead(unit)
-		for status in next, statuses do
-			status:UpdateIndicators(unit)
-		end
-		if overheals_enabled then
-			OverHeals:UpdateIndicators(unit)
+	function UpdateIndicators(unit)
+		if unit_is_valid[unit] then
+			UpdateDead(unit)
+			for status in next, statuses do
+				status:UpdateIndicators(unit)
+			end
+			if overheals_enabled then
+				OverHeals:UpdateIndicators(unit)
+			end
 		end
 	end
 end
