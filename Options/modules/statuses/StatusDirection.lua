@@ -47,7 +47,7 @@ Grid2Options:RegisterStatusOptions( "direction", "target", function(self, status
 		end,
 		set = function (_, v)
 			status.dbx.updateRate = v
-			status:RestartTimer()
+			status:Refresh()
 		end,
 	}
 	options.spacer = {

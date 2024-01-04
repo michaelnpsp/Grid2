@@ -45,4 +45,5 @@ Grid2Options:RegisterStatusOptions("buffs", "buff", function(self, status, optio
 	end
 end,{
 	groupOrder = 20, isDeletable = true,
+	titleIcon = "Interface\\Icons\\Inv_enchant_shardbrilliantsmall",
 })

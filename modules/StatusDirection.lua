@@ -66,22 +66,6 @@ local function UpdateDirections()
 	end
 end
 
-function Direction:SetTimer(enable)
-	if enable then
-		timer = timer or Grid2:CreateTimer(UpdateDirections)
-		timer:SetDuration(self.dbx.updateRate or 0.2)
-		timer:Play()
-	elseif timer then
-		timer:Stop()
-	end
-end
-
-function Direction:RestartTimer()
-	if timer and timer:IsPlaying() then
-		self:SetTimer(true)
-	end
-end
-
 local SetMouseoverHooks -- UnitIsUnit(unit, "mouseover") does not work for units that are not Visible
 do
 	local function OnMouseEnter(frame)
@@ -126,11 +110,13 @@ function Direction:UpdateDB()
 end
 
 function Direction:OnEnable()
-	self:SetTimer(true)
+	timer = timer or Grid2:CreateTimer(UpdateDirections)
+	timer:SetDuration(self.dbx.updateRate or 0.2)
+	timer:Play()
 end
 
 function Direction:OnDisable()
-	self:SetTimer(false)
+	if timer then timer:Stop() end
 end
 
 function Direction:IsActive(unit)

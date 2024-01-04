@@ -274,4 +274,5 @@ Grid2Options:RegisterStatusOptions("debuffs", "debuff", function(self, status, o
 	}
 end,{
 	groupOrder = 20, hideTitle = true, isDeletable = true,
+	titleIcon = "Interface\\Icons\\Spell_deathknight_strangulate",
 })
