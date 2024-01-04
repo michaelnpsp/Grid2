@@ -23,6 +23,9 @@ local function CompileUpdateStateFilter(self, lazy, spellId)
 	if dbx.filterLongDebuffs~=nil then
 		t[#t+1] = string.format( "%s (duration>=300)", dbx.filterLongDebuffs and 'not' or '')
 	end
+	if dbx.filterPermaDebuffs~=nil then
+		t[#t+1] = string.format( "%s (duration==0)", dbx.filterPermaDebuffs and 'not' or '')
+	end
 	if dbx.filterBossDebuffs~=nil then
 		t[#t+1] = string.format( "%s boss", dbx.filterBossDebuffs and 'not' or '')
 	end
