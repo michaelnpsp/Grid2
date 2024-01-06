@@ -312,59 +312,49 @@ end
 --==========================================================================
 
 do
-	local addons = { "Blizzard_CompactRaidFrames", "Blizzard_CUFProfiles" }
-	local function RaidAddonsEnabled(enabled)
-		local func = enabled and EnableAddOn or DisableAddOn
-		for _, v in pairs(addons) do
-			func(v)
+	local order = 0
+	local function Fix(k,v)
+		if k=='party' and GetCVar("useCompactPartyFrames") then
+			SetCVar("useCompactPartyFrames", v and '1' or '0') -- special case for parties in classic because PartyFrame does not exist
+		end
+		if not IsAddOnLoaded("Blizzard_CompactRaidFrames") then
+			EnableAddOn("Blizzard_CompactRaidFrames") -- reenabling CompactRaidFrames addon because in dragonflight it cannot be disabled
+			EnableAddOn("Blizzard_CUFProfiles")
 		end
 	end
-	local function Get(index) -- true=party&raid / 2=raid / 1=party
-		local v = Grid2.db.profile.hideBlizzardRaidFrames
-		return v==true or tonumber(v)==index
+	local function Reload()
+		Grid2Options:ConfirmDialog(L['Changes will take effect on next UI reload. Do you want to reload the UI now ?'], ReloadUI)
 	end
-	local function Set(index)
-		local v = Grid2.db.profile.hideBlizzardRaidFrames
-		v = bit.bxor( (v and tonumber(v)) or (v and 3) or 0, index ) -- true<=>3 / 2<=>2 / 1<=>1 / nil<=>0
-		Grid2.db.profile.hideBlizzardRaidFrames = (v==3) or (v>0 and v) or nil
+	local function Get(key)
+		local v = Grid2.db.profile.hideBlizzard
+		return v and v[key]
 	end
-	local function MessageReload()
-		Grid2Options:ConfirmDialog(L['Changes will take effect on next UI reload. Do you want to reload the UI now ?'], function()	ReloadUI() end)
+	local function Set(key)
+		local dbx = Grid2.db.profile
+		dbx.hideBlizzard = dbx.hideBlizzard or {}
+		dbx.hideBlizzard[key] = not dbx.hideBlizzard[key] or nil
+		if not next(dbx.hideBlizzard) then dbx.hideBlizzard = nil end
 	end
-	local function FixAddonNotLoaded() -- fix: reenabling CompactRaidFrames addon because in dragonflight it cannot be disabled.
-		RaidAddonsEnabled(true)
-		Grid2.db.profile.hideBlizzardRaidFrames = nil
-	end
-	Grid2Options:AddGeneralOptions( "General", "Blizzard Raid Frames", {
-		hideBlizzardRaidFrames = {
+	local function Create(key, text, disabled)
+		if disabled then return end
+		order = order + 1
+		return {
 			type = "toggle",
-			name = L["Hide Blizzard Raid Frames"],
-			desc = L["Hide Blizzard Raid Frames"],
-			width = "full",
-			order = 120,
-			get = function () return Get(2) or not IsAddOnLoaded(addons[1]) end,
-			set = function (_, v)
-				if IsAddOnLoaded(addons[1]) then
-					Set(2)
-				else
-					FixAddonNotLoaded()
-				end
-				MessageReload()
-			end,
-		},
-		hideBlizzardPartyFrames = {
-			type = "toggle",
-			name = L["Hide Blizzard Party Frames"],
-			desc = L["Hide Blizzard Party Frames"],
-			width = "full",
-			order = 121,
-			get = function () return Get(1) end,
-			set = function (_, v)
-				Set(1)
-				MessageReload()
-			end,
-			hidden = function() return not Grid2.isWoW90 end,
-		},
+			width = 0.43,
+			order = order,
+			name = L[text],
+			desc = L[text],
+			get = function () return Get(key) end,
+			set = function (_, v) Fix(key,v); Set(key,v); Reload(); end,
+		}
+	end
+	Grid2Options:AddGeneralOptions( "General", "Hide Blizzard Frames", {
+		raid   = Create( 'raid',   "Raid"    ),
+		party  = Create( 'party',  "Party"   ),
+		player = Create( 'player', "Player"  ),
+		target = Create( 'target', "Target"  ),
+		focus  = Create( 'focus',  "Focus",  _G.FocusFrame==nil),
+		pet    = Create( 'pet',    "Pet"     ),
 	})
 end
 

@@ -5,7 +5,7 @@ Created by Michael, based on Grid2Options\GridDefaults.lua from original Grid2 a
 local Grid2 = Grid2
 
 -- Latest database profile version
-local DB_VERSION = 13
+local DB_VERSION = 14
 
 -- Database manipulation functions
 function Grid2:DbSetStatusDefaultValue(name, value)
@@ -149,6 +149,16 @@ function Grid2:UpdateDefaults()
 		end
 		if version<13 and self.db.profile.formatting.percentFormat==nil then
 			self.db.profile.formatting.percentFormat = self.defaults.profile.formatting.percentFormat
+		end
+		if version<14 and self.db.profile.hideBlizzardRaidFrames then
+			local dbx = self.db.profile
+			local hid = dbx.hideBlizzardRaidFrames
+			if hid then
+				dbx.hideBlizzardRaidFrames = nil
+				dbx.hideBlizzard = dbx.hideBlizzard or {}
+				dbx.hideBlizzard.raid  = (hid==true or hid==2) or nil
+				dbx.hideBlizzard.party = (hid==true or hid==1) or nil
+			end
 		end
 	end
 	-- Set database version

@@ -413,7 +413,7 @@ function Grid2:SetMinimapIcon(value)
 	return not minimapIcon.hide
 end
 
--- Hide blizzard raid & party frames
+-- Hide blizzard frames
 do
 	local hiddenFrame
 
@@ -425,7 +425,7 @@ do
 		if f then f:UnregisterAllEvents() end
 	end
 
-	local function hideFrame(frame)
+	local function hideFrame(frame,dontsave)
 		if frame then
 			UnregisterUnitWatch(frame)
 			frame:Hide()
@@ -436,6 +436,9 @@ do
 			unregister(frame.manabar)
 			unregister(frame.powerBarAlt)
 			unregister(frame.spellbar)
+			if dontsave then
+				frame:SetDontSavePosition(true)
+			end
 		end
 	end
 
@@ -478,16 +481,33 @@ do
 		HideFrames()
 	end
 
-	-- Only for dragonflight, for classic compactRaidFrames addon is disabled from options
 	function Grid2:UpdateBlizzardFrames()
-		local v = self.db.profile.hideBlizzardRaidFrames
-		if v==true or v==2 then
-			HideRaidFrames()
-		end
-		if v==true or v==1 then
-			HidePartyFrames()
+		local hide = self.db.profile.hideBlizzard
+		if hide then
+			if hide.raid then
+				HideRaidFrames()
+			end
+			if hide.party then
+				HidePartyFrames()
+			end
+			if hide.pet then
+				hideFrame(PetFrame, true)
+			end
+			if hide.focus then
+				hideFrame(FocusFrame, true)
+				hideFrame(FocusFrameToT)
+			end
+			if hide.target then
+				hideFrame(TargetFrame,true)
+				hideFrame(TargetFrameToT)
+				hideFrame(ComboFrame)
+			end
+			if hide.player then
+				hideFrame(PlayerFrame, true)
+				hideFrame(PlayerFrameAlternateManaBar)
+				hideFrame(AlternatePowerBar)
+			end
 		end
 		self.UpdateBlizzardFrames = nil
 	end
 end
-
