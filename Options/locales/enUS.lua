@@ -426,6 +426,9 @@ L["Never"] = true
 L["Always"] = true
 L["In Combat"] = true
 L["Out of Combat"] = true
+L["Tooltip"] = true
+L["Display Tooltips"] = true
+L["Check this option to display a tooltip when the mouse is over the icon."] = true
 
 L["Select statuses to display with the indicator"] = true
 L["Available Statuses"] = true

@@ -426,6 +426,9 @@ L["Adjust background color and alpha."] = "Ajustar plano de fundo e transparenci
 -- L["Always"] = ""
 -- L["In Combat"] = ""
 -- L["Out of Combat"] = ""
+-- L["Tooltip"] = ""
+-- L["Display Tooltips"] = ""
+-- L["Check this option to display a tooltip when the mouse is over the icon."] = ""
 
 -- L["Select statuses to display with the indicator"] = ""
 -- L["Available Statuses"] = ""

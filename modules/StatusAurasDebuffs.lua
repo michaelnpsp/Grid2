@@ -12,6 +12,7 @@ local counts = {}
 local expirations = {}
 local durations = {}
 local colors = {}
+local slots = {}
 
 -- Compile a filter function, the function is called from StatusAura.lua to filter auras
 local function CompileUpdateStateFilter(self, lazy, spellId)
@@ -58,11 +59,12 @@ local function status_GetIconsFilter(self, unit, max)
 		if not name then break end
 		if UpdateState(self, unit, sid, name, durations[j], caster, isBossDebuff, debuffType, playerDispelTypes) then
 			colors[j] = typeColors[debuffType] or self.color
+			slots[j] = i
 			j = j + 1
 		end
 		i = i + 1
 	until j>max
-	return j-1, textures, counts, expirations, durations, colors
+	return j-1, textures, counts, expirations, durations, colors, slots
 end
 
 -- Called by status:UpdateDB()

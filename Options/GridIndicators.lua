@@ -254,7 +254,7 @@ do
 		local LCG = LibStub("LibCustomGlow-1.0")
 		local Test -- Test indicator
 		local TestIcons = {}
-		local TestAuras = {	tex = {}, cnt = {}, exp = {}, dur = {}, col = {} }
+		local TestAuras = {	tex = {}, cnt = {}, exp = {}, dur = {}, col = {}, idx = {} }
 		local Exclude = { bar = true, multibar = true, alpha = true }
 		local ExcludeHigh = { glowborder = true, text = true }
 		local COLOR ={1,1,0,1}
@@ -330,7 +330,7 @@ do
 			function Test:GetDuration() return 60 end
 			function Test:GetExpirationTime() return GetTime() + 60 end
 			function Test:GetIcon()	    return TestIcons[ math.random(#TestIcons) ]	end
-			function Test:GetIcons(_,m) return math.min(m,#TestIcons), TestAuras.tex, TestAuras.cnt, TestAuras.exp, TestAuras.dur, TestAuras.col end
+			function Test:GetIcons(_,m) return math.min(m,#TestIcons), TestAuras.tex, TestAuras.cnt, TestAuras.exp, TestAuras.dur, TestAuras.col, TestAuras.idx end
 			function Test:GetBorder()	return 0 end
 			function Test:GetTooltip()  return end
 			Test.dbx = TestIcons -- Asigned to TestIcons to avoid creating a new table

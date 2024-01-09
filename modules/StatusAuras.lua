@@ -423,10 +423,16 @@ do
 			return 0,0,0,1
 		end
 	end
-	local function GetDebuffTooltip(self, unit, tip)
-		local index = self.idx[unit]
+	local function GetDebuffTooltip(self, unit, tip, slotID)
+		local index = slotID or self.idx[unit]
 		if index then
 			tip:SetUnitDebuff(unit, index)
+		end
+	end
+	local function GetBuffTooltip(self, unit, tip, slotID)
+		local index = slotID or self.idx[unit]
+		if index then
+			tip:SetUnitBuff(unit, index)
 		end
 	end
 	local function OnEnable(self)
@@ -551,9 +557,7 @@ do
 		else
 			self.GetBorder = GetBorderOptional
 		end
-		if self.handlerType ~= "buff" then
-			self.GetTooltip = GetDebuffTooltip
-		end
+		self.GetTooltip = (self.handlerType~="buff") and GetDebuffTooltip or GetBuffTooltip
 		self.customText = dbx.text
 		if dbx.text==1 then -- tracked value
 			self.GetText = GetTextValue
@@ -589,7 +593,7 @@ end
 -- buff, debuff, debuffType statuses
 --===============================================================================
 
-local statusTypesBD = { "color", "icon", "icons", "percent", "text" }
+local statusTypesBD = { "color", "icon", "icons", "percent", "text", "tooltip" }
 local statusTypesDT = { "color", "icon", "icons", "text", "tooltip" }
 
 local function CreateAura(baseKey, dbx)

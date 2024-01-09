@@ -271,7 +271,7 @@ local class = {
 }
 
 do
-	local textures, counts, expirations, durations, colors = {}, {}, {}, {}, {}
+	local textures, counts, expirations, durations, colors, slots = {}, {}, {}, {}, {}, {}
 	function class:GetIconsMultiple(unit, max)
 		local color, tc, i, j, name, id, dt, _ = self.dbx.color1, self.dbx.debuffTypeColorize, 1, 1
 		repeat
@@ -279,11 +279,12 @@ do
 			if not name then break end
 			if spells_status[name]==self or spells_status[id]==self then
 				colors[j] = tc and debuffTypeColors[dt] or color
+				slots[j] = i
 				j = j + 1
 			end
 			i = i + 1
 		until j>max
-		return j-1, textures, counts, expirations, durations, colors
+		return j-1, textures, counts, expirations, durations, colors, slots
 	end
 end
 
