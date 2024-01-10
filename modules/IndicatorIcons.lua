@@ -252,7 +252,7 @@ local function Icon_GetMouseOverStatus(self, unit, parent, frame)
 	for i=1,frame.visibleCount do
 		local aura = auras[i]
 		if aura:IsMouseOver() then
-			return aura.status, true, aura.slotID
+			return aura.status, true, aura.slotID, aura
 		end
 	end
 end

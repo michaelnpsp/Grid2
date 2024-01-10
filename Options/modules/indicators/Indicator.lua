@@ -627,16 +627,26 @@ end
 -- Grid2Options:MakeIndicatorTooltipsOptions()
 function Grid2Options:MakeIndicatorTooltipsOptions(indicator, options)
 	self:MakeHeaderOptions( options, "Tooltip" )
-	options.enableTooltips= {
+	options.tooltipEnabled = {
 		type = "toggle",
 		order = 155,
 		name = L["Display Tooltips"],
 		desc = L["Check this option to display a tooltip when the mouse is over the icon."],
-		get = function () return indicator.dbx.enableTooltips end,
+		get = function () return indicator.dbx.tooltipEnabled end,
 		set = function (_, v)
-			indicator.dbx.enableTooltips = v or nil
+			indicator.dbx.tooltipEnabled = v or nil
 			indicator:DisableTooltips(); indicator:EnableTooltips()
 		end,
+	}
+	options.tooltipAnchor = {
+		type = "select",
+		name = L["Tooltip Anchor"],
+		desc = L["Sets where Tooltip is anchored relative to the icon or select the default anchor."],
+		order = 156,
+		get = function () return indicator.dbx.tooltipAnchor or 'ANCHOR_ABSENT' end,
+		set = function (_, v) indicator.dbx.tooltipAnchor = v ~= 'ANCHOR_ABSENT' and v or nil  end,
+		values = Grid2Options.tooltipAnchorValues,
+		hidden = function() return not indicator.dbx.tooltipEnabled end,
 	}
 end
 

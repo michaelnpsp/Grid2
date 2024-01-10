@@ -113,6 +113,37 @@ do
 	Grid2Options.FONT_FLAGS_DEFAULT       = FONT_FLAGS_DEFAULT
 end
 
+-- gametooltip anchors
+Grid2Options.tooltipAnchorValues = {
+	ANCHOR_ABSENT = L["Default"],
+	ANCHOR_TOP = L["TOP"],
+	ANCHOR_BOTTOM = L["BOTTOM"],
+	ANCHOR_LEFT = L["LEFT"],
+	ANCHOR_RIGHT = L["RIGHT"],
+	ANCHOR_TOPLEFT = L["TOPLEFT"],
+	ANCHOR_TOPRIGHT = L["TOPRIGHT"],
+	ANCHOR_BOTTOMLEFT = L["BOTTOMLEFT"],
+	ANCHOR_BOTTOMRIGHT = L["BOTTOMRIGHT"]
+}
+
+Grid2Options.tooltipAnchorValues = {
+	ANCHOR_ABSENT = L["Default"],
+
+	ANCHOR_TOPLEFT = L["RIGHTTOP"],
+	ANCHOR_TOPRIGHT = L["LEFTTOP"],
+
+
+	ANCHOR_TOP = L["TOP"],
+	ANCHOR_LEFT = L["TOPLEFT"],
+	ANCHOR_RIGHT = L["TOPRIGHT"],
+
+
+	ANCHOR_BOTTOM = L["BOTTOM"],
+	ANCHOR_BOTTOMLEFT = L["BOTTOMLEFT"],
+	ANCHOR_BOTTOMRIGHT = L["BOTTOMRIGHT"]
+}
+
+
 -- raid size values calculations
 Grid2Options.raidSizeValues = {
 	[0] = L["Maximum capacity of the instance"],

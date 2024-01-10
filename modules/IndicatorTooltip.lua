@@ -18,7 +18,8 @@ local TooltipCheck= {
 local tooltipOOC
 local tooltipDefault
 local tooltipCheck
-local tooltipFrame     -- unit frame under the mouse, usually parent in indicators code
+local tooltipFrame  -- unit frame under the mouse, usually parent in indicators code
+local tooltipOwner  -- default frame to anchor the tooltip if no indicator is provided
 local tooltipDisplayed
 local OnFrameEnter
 local OnFrameLeave
@@ -36,9 +37,9 @@ local function TimerEvent()
 				local frame = indicator:GetFrame(tooltipFrame)
 				if frame:IsMouseOver() then
 					if frame:IsVisible() then
-						local status, _, extraID = func(indicator, unit, tooltipFrame, frame)
+						local status, _, extraID, tframe = func(indicator, unit, tooltipFrame, frame)
 						if status and status.GetTooltip then
-							Tooltip:Display(unit, status, extraID)
+							Tooltip:Display(unit, status, extraID, tframe or frame, indicator.dbx.tooltipAnchor)
 							tooltipIndicator = frame
 							return
 						end
@@ -55,7 +56,7 @@ local function TimerEvent()
 end
 
 function Grid2.indicatorPrototype:EnableTooltips()
-	if self.dbx.enableTooltips then
+	if self.dbx.tooltipEnabled then
 		if not next(indicators) then
 			Tooltip:SetMouseHooks(true)
 			timer = Grid2:CreateTimer( TimerEvent, 0.2 )
@@ -101,10 +102,11 @@ function Tooltip:GetTooltip(unit, tip)
 	tip:SetUnit(unit) -- Special case to get unit info without linking "name" status to the indicator
 end
 
-function Tooltip:Display(unit, status, extraID)
-	local anchor = self.dbx.tooltipAnchor
+function Tooltip:Display(unit, status, extraID, owner, anchor)
 	if anchor then
-		GameTooltip:SetOwner(Grid2Layout.frame.frameBack, anchor)
+		GameTooltip:SetOwner(owner, anchor)
+	elseif self.dbx.tooltipAnchor then
+		GameTooltip:SetOwner(tooltipOwner, self.dbx.tooltipAnchor)
 	else
 		GameTooltip_SetDefaultAnchor(GameTooltip, UIParent)
 	end
@@ -143,6 +145,7 @@ function Tooltip:UpdateDB()
 	tooltipOOC = dbx.displayUnitOOC
 	tooltipDefault = dbx.showDefault
 	tooltipCheck = TooltipCheck[dbx.showTooltip or 4]
+	tooltipOwner = Grid2Layout.frame.frameBack
 	self:SetMouseHooks( dbx.showTooltip~=1 or next(indicators) )
 end
 
