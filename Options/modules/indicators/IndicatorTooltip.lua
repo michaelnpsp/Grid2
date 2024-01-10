@@ -49,7 +49,6 @@ function Grid2Options:MakeIndicatorTooltipOptions(indicator, options)
 				if not indicator.suspended then	indicator:UpdateDB() end
 			  end,
 		values = Grid2Options.tooltipAnchorValues,
-		hidden = function() return indicator.dbx.showTooltip==1 end,
 	}
 	options.advanced = {
 		type = "toggle",
