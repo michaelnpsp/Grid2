@@ -504,6 +504,10 @@ L["Adjust background color and alpha."] = "Ajustar plano de fundo e transparenci
 -- L["TOPRIGHT"] = ""
 -- L["BOTTOMLEFT"] = ""
 -- L["BOTTOMRIGHT"] = ""
+-- L["LEFTTOP"] = ""
+-- L["LEFTBOTTOM"] = ""
+-- L["RIGHTTOP"] = ""
+-- L["RIGHTBOTTOM"] = ""
 
 -- L["location"] = ""
 

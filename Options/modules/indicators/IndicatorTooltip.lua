@@ -2,7 +2,6 @@
 local L = Grid2Options.L
 
 local DISPLAY_VALUES = { [1] = L["Never"], [2] = L["Always"], [3] = L["In Combat"], [4] = L["Out of Combat"] }
-local ANCHOR_VALUES  = { ['@'] = L["Default"], ANCHOR_TOP = L["TOP"], ANCHOR_BOTTOM = L["BOTTOM"], ANCHOR_LEFT = L["LEFT"], ANCHOR_RIGHT = L["RIGHT"], ANCHOR_TOPLEFT = L["TOPLEFT"], ANCHOR_TOPRIGHT = L["TOPRIGHT"], ANCHOR_BOTTOMLEFT = L["BOTTOMLEFT"], ANCHOR_BOTTOMRIGHT = L["BOTTOMRIGHT"] }
 
 local function AdvancedTooltipsEnabled(indicator)
 	return not indicator.dbx.showDefault or #indicator.statuses>0
@@ -44,13 +43,12 @@ function Grid2Options:MakeIndicatorTooltipOptions(indicator, options)
 		name = L["Tooltip Anchor"],
 		desc = L["Sets where Tooltip is anchored relative to Grid2 window or select the game default anchor."],
 		order = 20,
-		get = function () return indicator.dbx.tooltipAnchor or "@" end,
+		get = function () return indicator.dbx.tooltipAnchor or 'ANCHOR_ABSENT' end,
 		set = function (_, v)
-				indicator.dbx.tooltipAnchor = v ~= '@' and v or nil
+				indicator.dbx.tooltipAnchor = v ~= 'ANCHOR_ABSENT' and v or nil
 				if not indicator.suspended then	indicator:UpdateDB() end
 			  end,
-		values = ANCHOR_VALUES,
-		hidden = function() return indicator.dbx.showTooltip==1 end,
+		values = Grid2Options.tooltipAnchorValues,
 	}
 	options.advanced = {
 		type = "toggle",
