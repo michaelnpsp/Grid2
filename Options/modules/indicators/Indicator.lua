@@ -624,6 +624,22 @@ function Grid2Options:MakeIndicatorCooldownOptions(indicator, options)
 	}
 end
 
+-- Grid2Options:MakeIndicatorTooltipsOptions()
+function Grid2Options:MakeIndicatorTooltipsOptions(indicator, options)
+	self:MakeHeaderOptions( options, "Tooltip" )
+	options.enableTooltips= {
+		type = "toggle",
+		order = 155,
+		name = L["Display Tooltips"],
+		desc = L["Check this option to display a tooltip when the mouse is over the icon."],
+		get = function () return indicator.dbx.enableTooltips end,
+		set = function (_, v)
+			indicator.dbx.enableTooltips = v or nil
+			indicator:DisableTooltips(); indicator:EnableTooltips()
+		end,
+	}
+end
+
 -- Grid2Options:MakeIndicatorHighlightEffectOptions()
 do
 	local LCG = LibStub("LibCustomGlow-1.0")
@@ -902,11 +918,11 @@ do
 						headerTypes = headerTypes or Grid2.CopyTable(Grid2Options.HEADER_TYPES)
 						headerTypes[header.headerName] = '/' .. header.headerName .. '/'
 					end
-				end	
+				end
 			end
 		end
 		return headerTypes or Grid2Options.HEADER_TYPES
-	end	
+	end
 
 	local function RefreshIndicator(indicator)
 		Grid2Options:UpdateIndicatorDB(indicator)

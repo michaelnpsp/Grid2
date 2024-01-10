@@ -8,6 +8,7 @@ Grid2Options:RegisterIndicatorOptions("icon", true, function(self, indicator)
 	self:MakeIndicatorIconSizeOptions(indicator, options)
 	self:MakeIndicatorBorderOptions(indicator, options)
 	self:MakeIndicatorCooldownOptions(indicator, options)
+	self:MakeIndicatorTooltipsOptions(indicator, options)
 	self:MakeIndicatorIconCustomOptions(indicator, options)
 	self:MakeIndicatorHighlightEffectOptions(indicator, options)
 	self:MakeIndicatorStatusOptions(indicator, statuses)
@@ -175,4 +176,5 @@ function Grid2Options:MakeIndicatorIconCustomOptions(indicator, options)
 		end,
 		hidden= function() return indicator.dbx.disableStack end,
 	}
+	self:MakeHeaderOptions( options, "Icon"  )
 end

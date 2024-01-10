@@ -181,7 +181,6 @@ local function Icon_UpdateDB(self)
 	self.backdrop = Grid2:GetBackdropTable("Interface\\Addons\\Grid2\\media\\white16x16", self.borderSize or 1)
 end
 
-
 local function CreateIcon(indicatorKey, dbx)
 	local indicator = Grid2.indicatorPrototype:new(indicatorKey)
 	indicator.dbx 			= dbx

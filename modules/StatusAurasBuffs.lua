@@ -8,6 +8,7 @@ local myUnits = Grid2.roster_my_units
 
 -- all buffs
 local textures = {}
+local slots = {}
 local color = {}
 local colors = {color, color, color, color, color, color, color, color}
 
@@ -28,6 +29,7 @@ local function status_GetIcons(self, unit, max)
 		name, textures[j], counts[j], _, durations[j], expirations[j], caster, _, _, sid = UnitAura(unit, i)
 		if not name then break end
 		if (spells[name] or spells[sid]) and (filter==false or filter==myUnits[caster]) then
+			slots[j] = i
 			j = j + 1
 		end
 		i = i + 1
@@ -35,14 +37,14 @@ local function status_GetIcons(self, unit, max)
 	if j>1 then
 		color.r, color.g, color.b, color.a = self:GetColor(unit)
 	end
-	return j-1, textures, counts, expirations, durations, colors
+	return j-1, textures, counts, expirations, durations, colors, slots
 end
 
 local function status_GetIconsMissing(self, unit)
 	if self:IsActive(unit) then
 		color.r, color.g, color.b, color.a = self:GetColor(unit)
-		textures[1] = self.missingTexture
-		return 1, textures, mcounts, mexpirations, mdurations, colors
+		textures[1], slots[1] = self.missingTexture, 0
+		return 1, textures, mcounts, mexpirations, mdurations, colors, slots
 	end
 	return 0
 end
@@ -77,13 +79,13 @@ function blizzard:GetIcons(unit, max)
 				valid = canApplyAura and myUnits[caster] and not SpellIsSelfBuff(spellId)
 			end
 			if valid then
-				colors[j] = color
+				colors[j], slots[j] = color, i
 				j = j + 1
 			end
 		end
 		i = i + 1
 	until j>max
-	return j-1, textures, counts, expirations, durations, colors
+	return j-1, textures, counts, expirations, durations, colors, slots
 end
 
 function blizzard:UNIT_AURA(_, unit)
