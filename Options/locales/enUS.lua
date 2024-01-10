@@ -427,7 +427,7 @@ L["Always"] = true
 L["In Combat"] = true
 L["Out of Combat"] = true
 L["Tooltip"] = true
-L["Display Tooltips"] = true
+L["Display Tooltip"] = true
 L["Check this option to display a tooltip when the mouse is over the icon."] = true
 
 L["Select statuses to display with the indicator"] = true
@@ -504,6 +504,10 @@ L["TOPLEFT"] = true
 L["TOPRIGHT"] = true
 L["BOTTOMLEFT"] = true
 L["BOTTOMRIGHT"] = true
+L["LEFTTOP"] = true
+L["LEFTBOTTOM"] = true
+L["RIGHTTOP"] = true
+L["RIGHTBOTTOM"] = true
 
 L["location"] = true
 

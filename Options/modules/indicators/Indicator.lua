@@ -630,10 +630,12 @@ function Grid2Options:MakeIndicatorTooltipsOptions(indicator, options)
 	options.tooltipEnabled = {
 		type = "toggle",
 		order = 155,
-		name = L["Display Tooltips"],
+		name = L["Display Tooltip"],
 		desc = L["Check this option to display a tooltip when the mouse is over the icon."],
 		get = function () return indicator.dbx.tooltipEnabled end,
 		set = function (_, v)
+			indicator.dbx.enableTooltips = nil -- remove old unused setting
+			indicator.dbx.tooltipAnchor = nil
 			indicator.dbx.tooltipEnabled = v or nil
 			indicator:DisableTooltips(); indicator:EnableTooltips()
 		end,
