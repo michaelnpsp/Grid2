@@ -6,7 +6,8 @@ local Grid2Layout = Grid2:NewModule("Grid2Layout")
 
 local Grid2 = Grid2
 local GetSetupValue = Grid2.GetSetupValue
-local pairs, ipairs, next, strmatch, strsplit = pairs, ipairs, next, strmatch, strsplit
+local UnitExists = UnitExists
+local math, pairs, ipairs, next, strmatch, strsplit = math, pairs, ipairs, next, strmatch, strsplit
 
 --{{{ Frame config function for secure headers
 local function GridHeader_InitialConfigFunction(self, name)
@@ -505,30 +506,38 @@ function Grid2Layout:UpdateHeaders()
 	end
 end
 
--- Used from Grid2Options
-function Grid2Layout:RefreshLayout()
+function Grid2Layout:RefreshLayout() -- Used from Grid2Options
 	self:ReloadLayout(true)
+end
+
+function Grid2Layout:SetGroupType(partyType, instType, maxPlayers, maxGroup)
+	self.partyType      = partyType
+	self.instType       = instType
+	self.instMaxPlayers = maxPlayers
+	self.instMaxGroup   = maxGroup
 end
 
 -- If player does not exist (this can happen just before a load screen when changing instances if layout load is delayed by RunSecure()
 -- due to combat restrictions) we cannot setup SecureGroupHeaders so we ignore the layout change, anyway the layour will be reloaded
 -- on PLAYER_ENTERING_WORLD event when the load screen finish. See Ticket #923.
 function Grid2Layout:ReloadLayout(force)
-	if not UnitExists('player') then self:Debug("ReloadLayout Ignored because player unit does not exist"); return end
-	local p = self.db.profile
-	local partyType, instType, maxPlayers, maxGroup = Grid2:GetGroupType()
-	local layoutName = self.testLayoutName or p.layouts[maxPlayers] or p.layouts[partyType.."@"..instType] or p.layouts[partyType]
-	if layoutName~=self.layoutName or (self.layoutHasAuto and (maxPlayers~=self.instMaxPlayers or maxGroup~=self.instMaxGroup)) or force or self.forceReload then
-		self.forceReload = force
-		if not Grid2:RunSecure(3, self, "ReloadLayout") then
-			self.partyType      = partyType
-			self.instType       = instType
-			self.instMaxPlayers = maxPlayers
-			self.instMaxGroup   = maxGroup
-			self:LoadLayout( layoutName )
-			self.forceReload    = nil
+	if UnitExists('player') then
+		local p = self.db.profile
+		local partyType, instType, maxPlayers, maxGroup = Grid2:GetGroupType()
+		local layoutName = self.testLayoutName or p.layouts[maxPlayers] or p.layouts[partyType.."@"..instType] or p.layouts[partyType]
+		if layoutName~=self.layoutName or (self.layoutHasAuto and (maxPlayers~=self.instMaxPlayers or maxGroup~=self.instMaxGroup)) or force or self.forceReload then
+			self.forceReload = force
+			if not Grid2:RunSecure(3, self, "ReloadLayout") then
+				self:SetGroupType(partyType, instType, maxPlayers, maxGroup)
+				self:LoadLayout(layoutName)
+				self.forceReload = nil
+			end
+			return true
+		else
+			self:SetGroupType(partyType, instType, maxPlayers, maxGroup)
 		end
-		return true
+	else
+		self:Debug("ReloadLayout Ignored because player unit does not exist")
 	end
 end
 
