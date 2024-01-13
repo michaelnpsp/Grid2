@@ -62,4 +62,3 @@ Grid2:DbSetStatusDefaultValue( "monk-stagger", { type = "monk-stagger", colorCou
 	color2 = { r = 1, g = 1, b = 0, a=1 },
 	color3 = { r = 0, g = 1, b = 0, a=1 },
 } )
-

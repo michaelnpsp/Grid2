@@ -93,10 +93,10 @@ function ReadyCheck:GetColor(unit)
 	return color.r, color.g, color.b, color.a
 end
 
-local icons = { 
-	waiting = "Interface\\RaidFrame\\ReadyCheck-Waiting", 
-	ready = "Interface\\RaidFrame\\ReadyCheck-Ready", 
-	notready = "Interface\\RaidFrame\\ReadyCheck-NotReady", 
+local icons = {
+	waiting = "Interface\\RaidFrame\\ReadyCheck-Waiting",
+	ready = "Interface\\RaidFrame\\ReadyCheck-Ready",
+	notready = "Interface\\RaidFrame\\ReadyCheck-NotReady",
 	afk = "Interface\\RaidFrame\\ReadyCheck-NotReady",
 }
 

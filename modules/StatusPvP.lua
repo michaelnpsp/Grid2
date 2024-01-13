@@ -9,8 +9,8 @@ local UnitIsPVPFreeForAll = UnitIsPVPFreeForAll
 local pvpText = L["PvP"]
 local ffaText = L["FFA"]
 local ffaTexture = [[Interface\TargetingFrame\UI-PVP-FFA]]
-local pvpTexture = UnitFactionGroup("player") == "Horde" and 
-				   [[Interface\PVPFrame\PVP-Currency-Horde]] or 
+local pvpTexture = UnitFactionGroup("player") == "Horde" and
+				   [[Interface\PVPFrame\PVP-Currency-Horde]] or
 				   [[Interface\PVPFrame\PVP-Currency-Alliance]]
 
 PvP.GetColor = Grid2.statusLibrary.GetColor
@@ -23,14 +23,14 @@ function PvP:OnEnable()
 	self:RegisterEvent("UNIT_FACTION")
 	if not self.displayAlways then
 		self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "UpdateAllUnits")
-	end	
+	end
 end
 
 function PvP:OnDisable()
 	self:UnregisterEvent("UNIT_FACTION")
 	if not self.displayAlways then
 		self:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
-	end	
+	end
 end
 
 function PvP:GetTexCoord(unit)

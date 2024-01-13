@@ -10,7 +10,7 @@ local iconColors = {
 	{r = 1.0, g = 0.92, b = 0, a = 1},
 	{r = 0.98, g = 0.57, b = 0, a = 1},
 	{r = 0.83, g = 0.22, b = 0.9, a = 1},
-	{r = 0.04, g = 0.95, b = 0, a = 1},  
+	{r = 0.04, g = 0.95, b = 0, a = 1},
 	{r = 0.7, g = 0.82, b = 0.875, a = 1},
 	{r = 0, g = 0.71, b = 1, a = 1},
 	{r = 1.0, g = 0.24, b = 0.168, a = 1},
@@ -24,15 +24,15 @@ for i = 1,8 do
 end
 
 local caches = {
-	["raid-icon-player"] = setmetatable({}, {__index = function(t,unit) 
+	["raid-icon-player"] = setmetatable({}, {__index = function(t,unit)
 		local v = GetRaidTargetIndex(unit) or false
-		t[unit] = v 
+		t[unit] = v
 		return v
 	end}),
 	["raid-icon-target"] = setmetatable({}, {__index = function(t,unit)
 		local target = unit .. "target"
 		local v = UnitExists(target) and GetRaidTargetIndex(target) or false
-		t[unit] = v 
+		t[unit] = v
 		return v
 	end})
 }

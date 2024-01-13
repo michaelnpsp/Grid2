@@ -26,7 +26,7 @@ do
 			for status, update in next, statuses do
 				update(status, unit, powerType, event)
 			end
-		end	
+		end
 	end
 	function status_OnEnable(status)
 		if not next(statuses) then
@@ -172,7 +172,7 @@ function Power:UpdateDB()
 	powerColors["LUNAR_POWER"] = dbx.color8
 	powerColors["FURY"] = dbx.color9
 	powerColors["PAIN"] = dbx.color10
-	powerColors["POWER_TYPE_FOCUS"] = self.dbx.color3 	  -- Codes returned by UnitPowerType() in 
+	powerColors["POWER_TYPE_FOCUS"] = self.dbx.color3 	  -- Codes returned by UnitPowerType() in
 	powerColors["POWER_TYPE_RED_POWER"] = self.dbx.color2 -- garrison proving grounds for friendly NPCs
 	self.IsActive = self.filtered and self.IsActiveFilter or self.IsActiveStandard
 	self.UpdateUnitPower = self.filtered and self.UpdateUnitPowerFilter or self.UpdateUnitPowerStandard
@@ -200,13 +200,13 @@ Grid2:DbSetStatusDefaultValue( "power", {type = "power", colorCount = 10,
 local function Mana_UpdateUnitPower(self, unit, powerType)
 	if powerType=='MANA' or powerType==nil then -- powerType==nil => UNIT_DISPLAYPOWER event
 		self:UpdateIndicators(unit)
-	end	
+	end
 end
 
 local function Mana_UpdateUnitPowerF(self, unit, powerType)
 	if not self.filtered[unit] and (powerType=='MANA' or powerType==nil) then
 		self:UpdateIndicators(unit)
-	end	
+	end
 end
 
 local function Mana_IsActiveAlways(self, unit)
@@ -248,7 +248,7 @@ local function Mana_UpdateDB(self)
 		self.IsActive = self.filtered and Mana_IsActivePrimaryF or Mana_IsActivePrimary
 	elseif self.dbx.displayType==2 then -- 2 = display mana only when is secondary resource
 		self.IsActive = self.filtered and Mana_IsActiveSecondaryF or Mana_IsActiveSecondary
-	else -- 1 = display mana always  
+	else -- 1 = display mana always
 		self.IsActive = self.filtered and Mana_IsActiveAlwaysF or Mana_IsActiveAlways
 	end
 end

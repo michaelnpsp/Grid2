@@ -1,6 +1,4 @@
---[[
-Created by Grid2 original authors, modified by Michael
---]]
+-- Created by Grid2 original authors, modified by Michael
 
 local Range = Grid2.statusPrototype:new("range")
 local RangeAlt = Grid2.statusPrototype:new("rangealt")
@@ -73,19 +71,19 @@ if Grid2.isWoW90 then
 		getHostile  = function() return IVS(116) or IVS(30451) or IVS(133) end -- Frostbolt, Arcane Blast, Fireball
 		getFriendly = function() return 1459 end -- Arcane intellect
 	end
-	
+
 	-- update range spells, called from Grid2.lua
 	local spellHostile, spellFriendly = '', nil
 	function Grid2:UpdatePlayerRangeSpells()
 		spellHostile  = GetSpellInfo( getHostile() )
 		spellFriendly = GetSpellInfo( getFriendly() )
 	end
-	
+
 	-- overrided functions
 	CheckHostileDistance = function(unit)
 		return IsSpellInRange(spellHostile, unit) == 1
 	end
-	
+
 	CheckInteractDistance = function(unit)
 		if UnitCanAttack('player', unit) then
 			return IsSpellInRange(spellHostile, unit) == 1
@@ -176,7 +174,7 @@ local Ranges = {
 				else
 					return CheckHostileDistance(unit,4) -- 28y for enemies
 				end
-			else	
+			else
 				return CheckHostileDistance(unit,4) -- 28y for enemies
 			end
 		end
@@ -263,7 +261,7 @@ function Range:UpdateDB()
 	self.timer = self.timer or Grid2:CreateTimer( Update )
 	if self.timer then
 		self.timer:SetDuration(dbx.elapsed or 0.25)
-	end	
+	end
 end
 
 Range.GetColor = Grid2.statusLibrary.GetColor
