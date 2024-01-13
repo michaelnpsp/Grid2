@@ -88,6 +88,12 @@ function blizzard:GetIcons(unit, max)
 	return j-1, textures, counts, expirations, durations, colors, slots
 end
 
+function blizzard:GetTooltip(unit, tip, slotID)
+	if slotID then
+		tip:SetUnitBuff(unit, slotID)
+	end
+end
+
 function blizzard:UNIT_AURA(_, unit)
 	self:UpdateIndicators(unit)
 end

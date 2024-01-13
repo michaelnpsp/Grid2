@@ -429,6 +429,13 @@ L["Out of Combat"] = true
 L["Tooltip"] = true
 L["Display Tooltip"] = true
 L["Check this option to display a tooltip when the mouse is over the icon."] = true
+L["Show Tooltip"] = true
+L["Enable Advanced Tooltips"] = true
+L["Display default unit tooltip when Out of Combat"] = true
+L["Icon Tooltips"] = true
+L["Unit Tooltips"] = true
+L["Sets where the Tooltip is anchored relative to the icon."] = true
+L["Check this option to display a tooltip when the mouse is over this indicator."] = true
 
 L["Select statuses to display with the indicator"] = true
 L["Available Statuses"] = true
@@ -455,9 +462,6 @@ L["Icon Size"] = true
 L["Icon Spacing"] = true
 L["Direction"] = true
 L["Select the direction of the main bar."] = true
-L["Show Tooltip"] = true
-L["Enable Advanced Tooltips"] = true
-L["Display default unit tooltip when Out of Combat"] = true
 
 L["First Aura"] = true
 L["Select the index of the first private aura to display."] = true

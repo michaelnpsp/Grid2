@@ -429,6 +429,13 @@ L["Adjust background color and alpha."] = "Ajustar plano de fundo e transparenci
 -- L["Tooltip"] = ""
 -- L["Display Tooltips"] = ""
 -- L["Check this option to display a tooltip when the mouse is over the icon."] = ""
+-- L["Show Tooltip"] = ""
+-- L["Enable Advanced Tooltips"] = ""
+-- L["Display default unit tooltip when Out of Combat"] = ""
+-- L["Icon Tooltips"] = ""
+-- L["Unit Tooltips"] = ""
+-- L["Sets where the Tooltip is anchored relative to the icon."] = ""
+-- L["Check this option to display a tooltip when the mouse is over this indicator."] = ""
 
 -- L["Select statuses to display with the indicator"] = ""
 -- L["Available Statuses"] = ""
@@ -455,9 +462,6 @@ L["Adjust background color and alpha."] = "Ajustar plano de fundo e transparenci
 -- L["Icon Spacing"] = ""
 -- L["Direction"] = ""
 -- L["Select the direction of the main bar."] = ""
--- L["Show Tooltip"] = ""
--- L["Enable Advanced Tooltips"] = ""
--- L["Display default unit tooltip when Out of Combat"] = ""
 
 -- L["First Aura"] = ""
 -- L["Select the index of the first private aura to display."] = ""

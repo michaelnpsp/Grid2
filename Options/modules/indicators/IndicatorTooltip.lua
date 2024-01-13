@@ -11,16 +11,19 @@ Grid2Options:RegisterIndicatorOptions("tooltip", false, function(self, indicator
 	if indicator.dbx.showTooltip~=1 and AdvancedTooltipsEnabled(indicator) then
 		local layout, statuses = {}, {}
 		self:MakeIndicatorStatusOptions(indicator, statuses)
-		self:MakeIndicatorTooltipOptions(indicator,layout)
+		self:MakeIndicatorUnitTooltipOptions(indicator,layout)
+		self:MakeIndicatorIconTooltipOptions(indicator,layout)
 		self:AddIndicatorOptions(indicator, statuses, layout )
 	else
 		local layout = {}
-		self:MakeIndicatorTooltipOptions(indicator,layout)
+		self:MakeIndicatorUnitTooltipOptions(indicator,layout)
+		self:MakeIndicatorIconTooltipOptions(indicator,layout)
 		self:AddIndicatorOptions(indicator, nil, layout )
 	end
 end)
 
-function Grid2Options:MakeIndicatorTooltipOptions(indicator, options)
+function Grid2Options:MakeIndicatorUnitTooltipOptions(indicator, options)
+	options.unittooltip = { type = "header", order = 1, name = L["Unit Tooltips"] }
 	options.tooltip = {
 			type = "select",
 			order = 10,
@@ -90,4 +93,64 @@ function Grid2Options:MakeIndicatorTooltipOptions(indicator, options)
 	}
 end
 
-
+-- Grid2Options:MakeIndicatorIconTooltipOptions()
+do
+	local indicators = {}
+	function Grid2Options:MakeIndicatorIconTooltipOptions(indicator, options)
+		options.__display = { type = "header", order = 0, name = "", hidden = function()
+			wipe(indicators)
+			for _,indicator in next, Grid2.indicatorTypes.icon do
+				indicators[#indicators+1] = indicator
+			end
+			table.sort( indicators, function(a,b) if a.dbx.type==b.dbx.type then return a.name<b.name else return a.dbx.type>b.dbx.type	end; end )
+			return true
+		end }
+		options.icontooltip = { type = "header", order = 100, name = L["Icon Tooltips"] }
+		for i=1,10 do
+			options['icon'..i] = {
+				type = "toggle",
+				order = 110 + i,
+				desc = L["Check this option to display a tooltip when the mouse is over this indicator."],
+				name = function()
+					return indicators[i] and self:LocalizeIndicator(indicators[i]) or ''
+				end,
+				get = function()
+					return indicators[i].dbx.tooltipEnabled
+				end,
+				set = function(_,v)
+					local indicator = indicators[i]
+					indicator.dbx.tooltipAnchor = nil
+					indicator.dbx.tooltipEnabled = v or nil
+					indicator:DisableTooltips(); indicator:EnableTooltips()
+				end,
+				hidden = function()
+					return indicators[i]==nil
+				end,
+			}
+			options['anchor'..i] = {
+				type = "select",
+				order = 110.1 + i,
+				name = L["Tooltip Anchor"],
+				desc = L["Sets where the Tooltip is anchored relative to the icon."],
+				get = function ()
+					return indicators[i] and indicators[i].dbx.tooltipAnchor or 'ANCHOR_ABSENT'
+				end,
+				set = function (_, v)
+					indicators[i].dbx.tooltipAnchor = v ~= 'ANCHOR_ABSENT' and v or nil
+				end,
+				hidden = function()
+					return indicators[i]==nil
+				end,
+				disabled = function()
+					return not indicators[i].dbx.tooltipEnabled
+				end,
+				values = Grid2Options.tooltipAnchorValues,
+			}
+			options['newline'..i] = {
+				type = "description",
+				order = 110.2 + i,
+				name = "",
+			}
+		end
+	end
+end

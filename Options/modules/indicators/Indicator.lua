@@ -643,7 +643,7 @@ function Grid2Options:MakeIndicatorTooltipsOptions(indicator, options)
 	options.tooltipAnchor = {
 		type = "select",
 		name = L["Tooltip Anchor"],
-		desc = L["Sets where Tooltip is anchored relative to the icon or select the default anchor."],
+		desc = L["Sets where the Tooltip is anchored relative to the icon."],
 		order = 156,
 		get = function () return indicator.dbx.tooltipAnchor or 'ANCHOR_ABSENT' end,
 		set = function (_, v) indicator.dbx.tooltipAnchor = v ~= 'ANCHOR_ABSENT' and v or nil  end,
