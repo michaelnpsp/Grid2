@@ -318,7 +318,7 @@ do
 			SetFilterOptions( status, options, 20,
 				'playerClassSpec',
 				CLASSES_SPECS,
-				Grid2.playerClass..Grid2.GetSpecialization(),
+				Grid2.playerClass..(Grid2.GetSpecialization() or 0),
 				L["Player Class&Spec"],
 				L["Load the status only if your toon has the specified class and specialization."]
 			)

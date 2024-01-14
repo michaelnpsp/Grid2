@@ -14,6 +14,7 @@ local UnitIsGhost = UnitIsGhost
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local GetRaidRosterInfo = GetRaidRosterInfo
 local GetNumGroupMembers = GetNumGroupMembers
+local UnitGroupRolesAssigned = UnitGroupRolesAssigned
 local isClassic = Grid2.isClassic
 local isVanilla = Grid2.isVanilla
 local isWrath   = Grid2.isWrath
@@ -39,6 +40,20 @@ local roster_units    = {} -- guid=>raid1, ..
 local roster_deads = {}
 local textDeath = L["DEAD"]
 local textGhost = L["GHOST"]
+
+-- provide alternative missing api functions for classic
+Grid2.GetSpecialization = GetSpecialization or GetActiveTalentGroup or function()
+	return 0
+end
+
+Grid2.GetNumSpecializations = GetNumSpecializations or function()
+	return 2
+end
+
+Grid2.UnitGroupRolesAssigned = (not Grid2.isVanilla) and UnitGroupRolesAssigned or function(unit)
+	local index = raid_indexes[unit]
+	return ((index and select(10,GetRaidRosterInfo(index))=='MAINTANK') and 'TANK') or UnitGroupRolesAssigned(unit) or 'NONE'
+end
 
 -- populate unit tables
 do

@@ -26,7 +26,7 @@ local UnitIsUnit = UnitIsUnit
 local UnitInRange = UnitInRange
 local UnitIsVisible = UnitIsVisible
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
-local UnitGroupRolesAssigned = UnitGroupRolesAssigned or (function() return 'NONE' end)
+local UnitGroupRolesAssigned = Grid2.UnitGroupRolesAssigned
 return function(unit, mouseover) return (%s) end
 ]]
 

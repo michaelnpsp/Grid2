@@ -10,6 +10,9 @@ local pairs = pairs
 local tonumber = tonumber
 local tremove = table.remove
 
+-- Dummy function
+Grid2.Dummy = function() end
+
 -- Fetch LibSharedMedia resources
 function Grid2:MediaFetch(mediatype, key, def)
 	return (key and media:Fetch(mediatype, key)) or (def and media:Fetch(mediatype, def))
@@ -383,7 +386,6 @@ function Grid2:EnableProfilesPerSpec(enabled)
 		self:ReloadProfile()
 	end
 end
-
 
 -- Set a profile for the specified specIndex or the general profile if specIndex==nil
 function Grid2:SetProfileForSpec(profileName, specIndex)
