@@ -17,7 +17,6 @@ local GetNumGroupMembers = GetNumGroupMembers
 local UnitGroupRolesAssigned = UnitGroupRolesAssigned
 local isClassic = Grid2.isClassic
 local isVanilla = Grid2.isVanilla
-local isWrath   = Grid2.isWrath
 
 -- helper tables to check units types/categories
 local party_indexes   = {} -- player=>0, party1=>1, ..
@@ -218,6 +217,9 @@ do
 			end
 		end
 		self:SendMessage("Grid_RosterUpdate", roster_unknowns)
+		if isVanilla then
+			self:SendMessage("Grid_PlayerRolesAssigned")
+		end
 	end
 end
 
