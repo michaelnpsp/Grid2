@@ -131,6 +131,11 @@ end
 -- Clear/update auras when unit changes or leaves the roster.
 local UpdateAllAuras
 do
+	local function UpdateFakedUnitsAuras(_,units)
+		for unit in next, units do
+			AuraFrame_OnEvent(nil, true, unit)
+		end
+	end
 	local function ClearAurasOfUnit(_, unit)
 		for status in next, Statuses do
 			status.idx[unit], status.exp[unit], status.val[unit] = nil, nil, nil
@@ -146,6 +151,7 @@ do
 	end
 	Grid2.RegisterMessage( Statuses, "Grid_UnitLeft", ClearAurasOfUnit )
 	Grid2.RegisterMessage( Statuses, "Grid_UnitUpdated", UpdateAurasOfUnit )
+	Grid2.RegisterMessage( Statuses, "Grid_FakedUnitsUpdate", UpdateFakedUnitsAuras)
 end
 
 -- EnableAuraEvents() DisableAuraEvents()

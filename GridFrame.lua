@@ -137,11 +137,6 @@ local function GridFrame_GetInitialSize(self)
 	return header.frameWidth, header.frameHeight
 end
 
-function GridFramePrototype:OnUnitStateChanged()
-	Grid2:RosterRefreshUnit(self.unit)
-	self:UpdateIndicators() -- TODO maybe do not update if not visible and unit does not exist
-end
-
 function GridFramePrototype:Layout()
 	local dbx = Grid2Frame.db.profile
 	local w,h = GridFrame_GetInitialSize(self)
@@ -370,6 +365,16 @@ end
 function Grid2Frame:SetEventHook( event, func, enabled )
 	eventHooks[event][func] = enabled or nil
 end
+
+-- Callback function called from custom insecure headers (GridGroupHeaders.lua) to refresh special units like: target,focus,bossX,etc
+Grid2InsecureGroupCustomHeader_RegisterUpdate(function(units)
+	for unit in next, units do
+		Grid2:RosterRefreshUnit(unit)
+		for frame in next, frames_of_unit[unit] do
+			frame:UpdateIndicators()
+		end
+	end
+end)
 
 -- Event handlers
 function Grid2Frame:UpdateFrameUnits()

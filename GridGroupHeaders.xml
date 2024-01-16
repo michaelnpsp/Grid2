@@ -21,7 +21,7 @@
 			<OnLoad function="Grid2InsecureGroupCustomHeader_OnLoad" />
         </Scripts>
     </Frame>
-	<!-- A frame used for managing special focus frame -->
+	<!-- A frame used for managing special player frame -->
     <Frame name="Grid2InsecureGroupPlayerHeaderTemplate" inherits="Grid2InsecureFrameTemplate" hidden="true" virtual="true">
         <Scripts>
 			<OnLoad function="Grid2InsecureGroupCustomHeader_OnLoad" />

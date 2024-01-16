@@ -28,6 +28,7 @@ local grouped_players = {} -- party1=>1, raid1=>1 ; only party/raid player/owner
 local grouped_pets    = {} -- partypet1=>1, raidpet2=>1 ; only party/raid pet units
 local roster_types    = { target = 'target', focus = 'focus' }
 local roster_my_units = { player = true, pet = true, vehicle = true }
+local faked_units     = { targettarget = true, focustarget = true, boss6 = true, boss7 = true, boss8 = true }
 -- roster tables / storing only existing units
 local roster_names    = {} -- raid1=>name, ..
 local roster_realms   = {} -- raid1=>realm,..
@@ -35,6 +36,7 @@ local roster_guids    = {} -- raid1=>guid,..
 local roster_players  = {} -- raid1=>guid ;only non pet units in group/raid
 local roster_pets     = {} -- raidpet1=>guid ;only pet units in group/raid
 local roster_units    = {} -- guid=>raid1, ..
+local roster_faked    = {} -- eventless units
 -- roster dead tracking
 local roster_deads = {}
 local textDeath = L["DEAD"]
@@ -78,6 +80,12 @@ do
 	for i = 1, 8 do
 		roster_types['boss'..i] = 'boss'
 	end
+end
+
+-- upate eventless units
+local faked_timer
+local function UpdateFakedUnits()
+	Grid2:SendMessage('Grid_FakedUnitsUpdate', roster_faked)
 end
 
 -- roster management
@@ -132,6 +140,12 @@ do
 			roster_units[guid] = unit
 			roster_pets[unit] = guid
 		end
+		if faked_units[unit] then
+			if not next(roster_faked) then
+				faked_timer = Grid2:CreateTimer(UpdateFakedUnits, 0.5)
+			end
+			roster_faked[unit] = true
+		end
 		roster_deads[unit] = Grid2:UnitIsDeadOrGhost(unit)
 		Grid2:SendMessage("Grid_UnitUpdated", unit, true)
 	end
@@ -148,6 +162,12 @@ do
 		end
 		if unit == roster_units[guid] then
 			roster_units[guid] = nil
+		end
+		if faked_units[unit] then
+			roster_faked[unit] = nil
+			if not next(roster_faked) then
+				faked_timer = Grid2:CancelTimer(faked_timer)
+			end
 		end
 		roster_deads[unit] = nil
 		Grid2:SendMessage("Grid_UnitLeft", unit)
