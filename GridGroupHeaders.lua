@@ -507,22 +507,24 @@ do
 	local FOCUS  = { 'PLAYER_FOCUS_CHANGED', 'PLAYER_ENTERING_WORLD' }
 	local BOSS   = { 'INSTANCE_ENCOUNTER_ENGAGE_UNIT', 'PLAYER_REGEN_ENABLED' }
 	local UNITS  = { target=TARGET, focus=FOCUS, targettarget=TARGET, focustarget=FOCUS, boss1=BOSS, boss2=BOSS, boss3=BOSS, boss4=BOSS, boss5=BOSS, boss6=BOSS, boss7=BOSS, boss8=BOSS, arena1=ARENA, arena2=ARENA, arena3=ARENA, arena4=ARENA, arena5=ARENA }
+	local tmpUnits = {}
 	local updateCallback
 
 	local function UnregisterAll(self)
-		wipe(self.active_units)
 		wipe(self.event_units)
 		self:UnregisterAllEvents()
 	end
 
-	local function UpdateUnits(self, event)
-		-- execute a function to add/del units to/from roster (Grid2InsecureGroupCustomHeader_RegisterUpdate)
-		updateCallback( event and self.event_units[event] or self.active_units )
-		-- fire OnSizeChanged event to update decoration visibility
+	local function FireSizeChanged(self) -- fire OnSizeChanged event to update decoration visibility
 		if self:GetAttribute('hideEmptyUnits') then
 			local func = self:GetScript("OnSizeChanged")
 			if func then C_Timer.After(0, function() func(self) end) end
 		end
+	end
+
+	local function UpdateUnits(self, event)
+		updateCallback( self.event_units[event] )
+		FireSizeChanged(self)
 	end
 
 	local function RegisterUnits(self, units)
@@ -532,9 +534,11 @@ do
 				self.event_units[event][unit] = true
 				self:RegisterEvent(event)
 			end
-			self.active_units[unit] = true
+			tmpUnits[unit] = true
 		end
-		UpdateUnits(self)
+		updateCallback(tmpUnits)
+		wipe(tmpUnits)
+		FireSizeChanged(self)
 	end
 
 	local function ApplyFilter(self, srtTable)
@@ -568,7 +572,6 @@ do
 
 	-- header load
 	function Grid2InsecureGroupCustomHeader_OnLoad(self)
-		self.active_units = {}
 		self.event_units = setmetatable({}, META)
 		InjectMixins(self, 'custom')
 		self:SetScript('OnAttributeChanged', OnAttributeChanged)
@@ -576,5 +579,4 @@ do
 		self:SetScript('OnHide', UnregisterAll)
 		self:SetScript('OnShow', Update)
 	end
-
 end
