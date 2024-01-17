@@ -539,10 +539,11 @@ do
 	end
 
 	local function RegisterUnits(self, units)
+		local event_units = self.event_units
 		Reset(self)
 		for idx,unit in ipairs(units) do
 			for _,event in ipairs(UNITS[unit] or ROSTER) do
-				self.event_units[event][unit] = self[idx]
+				event_units[event][unit] = self[idx]
 				self:RegisterEvent(event)
 			end
 			refreshRoster(unit)
@@ -582,14 +583,12 @@ do
 			unit = TOU[unit]
 			if unit then
 				local frame = units[unit]
-				if frame then
-					if refreshRoster(unit) then
-						if not self.hideEmptyUnits or UnitExists(unit) then
-							frame:UpdateIndicators()
-							FireSizeChanged(self)
-						end
-						UpdateFakedTimer()
+				if frame and refreshRoster(unit) then
+					if not self.hideEmptyUnits or UnitExists(unit) then
+						frame:UpdateIndicators()
+						FireSizeChanged(self)
 					end
+					UpdateFakedTimer()
 				end
 			end
 		else
