@@ -509,7 +509,7 @@ do
 	local FOCUS   = { 'PLAYER_FOCUS_CHANGED', 'PLAYER_ENTERING_WORLD' }
 	local TTARGET = { 'UNIT_TARGET', 'PLAYER_TARGET_CHANGED', 'PLAYER_ENTERING_WORLD' }
 	local FTARGET = { 'UNIT_TARGET', 'FOCUS_TARGET_CHANGED', 'PLAYER_ENTERING_WORLD' }
-	local TOU     = { target = 'targettarget', focus = 'focustarget' }
+	local TARGETS = { target = 'targettarget', focus = 'focustarget', targettarget = 'target', focustarget = 'focus' }
 	local UNITS   = { target=TARGET, focus=FOCUS, targettarget=TTARGET, focustarget=FTARGET, boss1=BOSS, boss2=BOSS, boss3=BOSS, boss4=BOSS, boss5=BOSS, boss6=BOSS, boss7=BOSS, boss8=BOSS, arena1=ARENA, arena2=ARENA, arena3=ARENA, arena4=ARENA, arena5=ARENA }
 	local notifyObject, updateMessage, refreshRoster, fakedRoster, updateEnabled
 
@@ -539,14 +539,21 @@ do
 	end
 
 	local function RegisterUnits(self, units)
-		local event_units = self.event_units
+		local event_units, tunits = self.event_units
 		Reset(self)
 		for idx,unit in ipairs(units) do
 			for _,event in ipairs(UNITS[unit] or ROSTER) do
 				event_units[event][unit] = self[idx]
-				self:RegisterEvent(event)
+				if event == 'UNIT_TARGET' then
+					tunits = tunits or {}; tunits[#tunits+1] = TARGETS[unit]
+				else
+					self:RegisterEvent(event)
+				end
 			end
 			refreshRoster(unit)
+		end
+		if tunits then
+			self:RegisterUnitEvent( 'UNIT_TARGET', unpack(tunits) )
 		end
 		FireSizeChanged(self)
 		UpdateFakedTimer()
@@ -580,16 +587,13 @@ do
 	local function OnEvent(self, event, unit)
 		local units = self.event_units[event]
 		if event == 'UNIT_TARGET' then
-			unit = TOU[unit]
-			if unit then
-				local frame = units[unit]
-				if frame and refreshRoster(unit) then
-					if not self.hideEmptyUnits or UnitExists(unit) then
-						frame:UpdateIndicators()
-						FireSizeChanged(self)
-					end
-					UpdateFakedTimer()
+			unit = TARGETS[unit]
+			if refreshRoster(unit) then
+				if not self.hideEmptyUnits or UnitExists(unit) then
+					units[unit]:UpdateIndicators()
+					FireSizeChanged(self)
 				end
+				UpdateFakedTimer()
 			end
 		else
 			for unit, frame in next, units do
