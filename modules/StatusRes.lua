@@ -16,7 +16,7 @@ local res_cache= {}
 
 local function Timer()
 	for unit in next, res_cache do
-		if not (UnitExists(unit) and UnitIsDeadOrGhost(unit) and UnitHasIncomingResurrection(unit)) then
+		if not (UnitExists(unit) and UnitIsDeadOrGhost(unit)) then
 			res_cache[unit]= nil
 			Resurrection:UpdateIndicators(unit)
 		end
@@ -32,13 +32,13 @@ function Resurrection:INCOMING_RESURRECT_CHANGED(_, unit)
 			if res_cache[unit] ~= 1 then
 				res_cache[unit]= 1
 				self:UpdateIndicators(unit)
-				timer = timer or Grid2:CreateTimer( Timer, .25 )
+				if not self.dbx.onlyReviving then
+					timer = timer or Grid2:CreateTimer( Timer, .25 )
+				end
 			end
-		else
-			if res_cache[unit] == 1 then
-				res_cache[unit]= 0
-				self:UpdateIndicators(unit)
-			end
+		elseif res_cache[unit] == 1 then
+			res_cache[unit]= (not self.dbx.onlyReviving) and 0 or nil
+			self:UpdateIndicators(unit)
 		end
 	end
 end
