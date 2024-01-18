@@ -588,19 +588,18 @@ do
 		local units = self.event_units[event]
 		if event == 'UNIT_TARGET' then
 			unit = TARGETS[unit]
-			if refreshRoster(unit) then
-				if not self.hideEmptyUnits or UnitExists(unit) then
-					local frame = units[unit]
-					if frame then
-						frame:UpdateIndicators()
-						FireSizeChanged(self)
-					end
+			refreshRoster(unit) -- do not check return value to avoid indicators update, because the same unit can be used in several headers.
+			if not self.hideEmptyUnits or UnitExists(unit) then
+				local frame = units[unit]
+				if frame then
+					frame:UpdateIndicators()
+					FireSizeChanged(self)
 				end
-				UpdateFakedTimer()
 			end
+			UpdateFakedTimer()
 		else
 			for unit, frame in next, units do
-				refreshRoster(unit)
+				refreshRoster(unit) -- do not check return value to avoid indicators update, because the same unit can be used in several headers.
 				frame:UpdateIndicators()
 			end
 			FireSizeChanged(self)
