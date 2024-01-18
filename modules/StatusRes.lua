@@ -16,7 +16,7 @@ local res_cache= {}
 
 local function Timer()
 	for unit in next, res_cache do
-		if not (UnitExists(unit) and UnitIsDeadOrGhost(unit)) then
+		if not (UnitExists(unit) and UnitIsDeadOrGhost(unit) and UnitHasIncomingResurrection(unit)) then
 			res_cache[unit]= nil
 			Resurrection:UpdateIndicators(unit)
 		end
