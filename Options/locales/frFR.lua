@@ -99,12 +99,10 @@ L["Resets the layout frame's position and anchor."] = "Réinitialise la position
 -- L["Layout Disposition"] = ""
 -- L["Layout Look&Feel"] = ""
 -- L["Frames Look&Feel"] = ""
+-- L["Main Window Position"] = ""
 -- L["Default Settings"] = ""
 -- L["Groups Orientation"] = ""
 -- L['Header Types'] = ""
--- L["Players"] = ""
--- L["Pets"] = ""
--- L["Others"] = ""
 -- L["Units per Column"] = ""
 -- L["Hide Empty Units"] = ""
 -- L["Hide frames of non-existant units."] = ""
@@ -113,6 +111,15 @@ L["Resets the layout frame's position and anchor."] = "Réinitialise la position
 -- L["Adjust the width percent of each unit's frame."] = ""
 -- L["Adjust the height percent of each unit's frame."] = ""
 -- L["Adjust the default units per column for this group type."] = ""
+
+-- L["Players"] = ""
+-- L["Pets"] = ""
+-- L["Player"] = ""
+-- L["Target"] = ""
+-- L["Target of Target"] = ""
+-- L["Focus"] = ""
+-- L["Target of Focus"] = ""
+-- L["Others"] = ""
 
 -- minimap icon
 -- L["Minimap Icon"] = ""
@@ -974,7 +981,6 @@ L["A resurrection spell has been casted on the unit"] = "Un sort de résurrectio
 -- L["display remaining amount of damage absorption shields"] = ""
 -- L["display remaining amount of damage absorb shields"] = ""
 -- L["Sticky Units"] = ""
--- L["Target"] = ""
 -- L["Tanks"] = ""
 
 -- aoe heals
@@ -1500,6 +1506,10 @@ L["\"%s\" has sent you a profile configuration. Do you want to activate received
 -- L["Enable this option to display the focus unit."] = ""
 -- L["Display Bosses units"] = ""
 -- L["Enable this option to display the bosses unit."] = ""
+-- L["Display Target of Target unit"] = ""
+-- L["Enable this option to display the target of target unit."] = ""
+-- L["Display Target of Focus unit"] = ""
+-- L["Enable this option to display the target of focus unit."] = ""
 
 -- L['Party (Normal)'] = ""
 -- L['Party (Heroic)'] = ""

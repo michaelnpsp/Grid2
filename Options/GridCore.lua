@@ -63,7 +63,7 @@ function Grid2Options:Initialize()
 	self:EnableLoadOnDemand(true) -- (not Grid2.db.global.LoadOnDemandDisabled)
 	self:MakeOptions()
 	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("Grid2", self.options, true)
-	LibStub("AceConfigDialog-3.0"):SetDefaultSize("Grid2", 735, 558)
+	LibStub("AceConfigDialog-3.0"):SetDefaultSize("Grid2", 735, 585)
 	self.Initialize = nil
 end
 
