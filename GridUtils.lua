@@ -9,9 +9,18 @@ local type = type
 local pairs = pairs
 local tonumber = tonumber
 local tremove = table.remove
+local GetAuraDataByIndex = C_UnitAuras and C_UnitAuras.GetAuraDataByIndex
 
 -- Dummy function
 Grid2.Dummy = function() end
+
+-- Grid2.UnitAuraLite, missing aura custom values in retail (16,17,18)
+Grid2.UnitAuraLite = GetAuraDataByIndex==nil and UnitAura or function(unit, index, filter)
+	local a = GetAuraDataByIndex(unit, index, filter)
+	if a then
+		return a.name, a.icon, a.applications, a.dispelName, a.duration, a.expirationTime, a.sourceUnit, nil, nil, a.spellId, nil, a.isBossAura
+	end
+end
 
 -- Fetch LibSharedMedia resources
 function Grid2:MediaFetch(mediatype, key, def)

@@ -4,9 +4,10 @@ local Grid2Frame = Grid2Frame
 local type = type
 local next = next
 local rawget = rawget
+local max = math.max
 local GetTime = GetTime
-local UnitAura = UnitAura
 local isClassic = Grid2.isClassic
+local UnitAura = Grid2.UnitAuraLite
 
 -- Local variables
 local Statuses = {}
@@ -25,26 +26,33 @@ local cache_tex, cache_cnt, cache_exp, cache_dur, cache_col = {}, {}, {}, {}, {}
 -- s.seen = -1  aura was not changed, do nothing
 local AuraFrame_OnEvent
 do
-	local indicators = {}
-	local val = {0, 0, 0}
+	local GetAuraDataByIndex = C_UnitAuras and C_UnitAuras.GetAuraDataByIndex
 	local pTypes   = Grid2.debuffPlayerDispelTypes
 	local myUnits  = Grid2.roster_my_units
 	local roUnits  = Grid2.roster_guids
 	local myFrames = Grid2Frame.frames_of_unit
+	local indicators = {}
+	local val = {0,0,0}
+	local fill = (GetAuraDataByIndex~=nil)
+	local a, nam, tex, cnt, typ, dur, exp, cas, sid, bos, _
+	local GetAura = GetAuraDataByIndex and function(unit, index, filter) -- for retail
+		a = GetAuraDataByIndex(unit, index, filter)
+		if a then fill, nam, sid, cas = true, a.name, a.spellId, a.sourceUnit; return true; end
+	end or function(unit, index, filter) -- for classic
+		nam, tex, cnt, typ, dur, exp, cas, _, _, sid, _, bos, _, _, _, val[1], val[2], val[3] = UnitAura(unit, index,filter)
+		if nam then if cnt==0 then cnt=1 end; return true end
+	end
 	AuraFrame_OnEvent = function(_, event, u)
 		if not roUnits[u] then return end
 		-- Scan Debuffs, Debuff Types, Debuff Groups
 		local i = 1
-		while true do
-			local nam, tex, cnt, typ, dur, exp, cas, sid, bos, _
-			nam, tex, cnt, typ, dur, exp, cas, _, _, sid, _, bos, _, val[1], val[2], val[3] = UnitAura(u, i, 'HARMFUL')
-			if not nam then break end
-			if cnt==0 then cnt=1 end
+		while GetAura(u, i, 'HARMFUL') do
 			local statuses = Debuffs[nam] or Debuffs[sid]
 			if statuses then
 				for s in next, statuses do
 					local mine = s.isMine
 					if mine==false or mine==myUnits[cas] then
+						if fill then fill, tex, cnt, typ, dur, exp, bos, val[s.vId] = false, a.icon, max(a.applications,1), a.dispelName, a.duration, a.expirationTime, a.isBossAura, a.points[s.vId] end
 						if s.combineStacks then -- combine stacks debuffs
 							if s.seen then -- adding extra debuffs stacks
 								s.cnt[u] = s.cnt[u] + cnt
@@ -63,6 +71,7 @@ do
 			end
 			local s = DebuffTypes[typ or 'Typeless']
 			if s and not s.seen and not (s.debuffFilter and s.debuffFilter[nam]) then
+				if fill then fill, tex, cnt, typ, dur, exp, bos = false, a.icon, max(a.applications,1), a.dispelName, a.duration, a.expirationTime, a.isBossAura end
 				if exp~=s.exp[u] or cnt~=s.cnt[u] then
 					s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u] = 1, i, tex, cnt, dur, exp
 				else
@@ -70,6 +79,7 @@ do
 				end
 			end
 			for s in next, DebuffGroups do
+				if fill then fill, tex, cnt, typ, dur, exp, bos = false, a.icon, max(a.applications,1), a.dispelName, a.duration, a.expirationTime, a.isBossAura end
 				if (not s.seen) and s:UpdateState(u, sid, nam, dur, cas, bos, typ, pTypes) then
 					s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.typ[u], s.tkr[u] = 1, i, tex, cnt, dur, exp, typ, 1
 				end
@@ -78,16 +88,13 @@ do
 		end
 		-- Scan Buffs
 		i = 1
-		while true do
-			local nam, tex, cnt, dur, exp, cas, sid, _
-			nam, tex, cnt, _, dur, exp, cas, _, _, sid, _, _, _, val[1], val[2], val[3] = UnitAura(u, i)
-			if not nam then break end
+		while GetAura(u,i,'HELPFUL') do
 			local statuses = Buffs[nam] or Buffs[sid]
 			if statuses then
-				if cnt==0 then cnt = 1 end
 				for s in next, statuses do
 					local mine = s.isMine
 					if (mine==false or mine==myUnits[cas]) and s.seen~=1 then
+						if fill then fill, tex, cnt, typ, dur, exp, bos, val[s.vId] = false, a.icon, max(a.applications,1), a.dispelName, a.duration, a.expirationTime, a.isBossAura, a.points[s.vId] end
 						if exp~=s.exp[u] or s.cnt[u]~=cnt or val[s.vId]~=s.val[u] or s.spells then
 							s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.val[u], s.tkr[u] = 1, i, tex, cnt, dur, exp, val[s.vId], 1
 						else

@@ -1,6 +1,6 @@
 -- Group of Debuffs status
 local Grid2 = Grid2
-local UnitAura = UnitAura
+local UnitAura = Grid2.UnitAuraLite
 local myUnits = Grid2.roster_my_units
 local typeColors = Grid2.debuffTypeColors
 local dispelTypes = Grid2.debuffDispelTypes

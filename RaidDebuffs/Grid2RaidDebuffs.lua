@@ -5,14 +5,14 @@ local GSRD = Grid2:NewModule("Grid2RaidDebuffs")
 local frame = CreateFrame("Frame")
 
 local Grid2 = Grid2
-local isClassic = Grid2.isClassic
 local next = next
 local ipairs = ipairs
 local strfind = strfind
 local GetTime = GetTime
 local UnitGUID = UnitGUID
 local GetSpellInfo = GetSpellInfo
-local UnitAura = UnitAura
+local isClassic = Grid2.isClassic
+local UnitAura = Grid2.UnitAuraLite
 
 local EJ_GetInstanceForMap = EJ_GetInstanceForMap or function(mapID) return mapID-100000 end
 local EJ_SelectInstance = EJ_SelectInstance or Grid2.Dummy

@@ -1,10 +1,10 @@
 -- Group of Buffs status
 local Grid2 = Grid2
-local UnitAura = UnitAura
 local SpellIsSelfBuff = SpellIsSelfBuff
 local UnitAffectingCombat = UnitAffectingCombat
 local SpellGetVisibilityInfo = SpellGetVisibilityInfo
 local myUnits = Grid2.roster_my_units
+local UnitAura = Grid2.UnitAuraLite
 
 -- all buffs
 local textures = {}
