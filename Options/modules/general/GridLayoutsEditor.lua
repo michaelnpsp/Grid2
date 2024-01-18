@@ -358,8 +358,7 @@ headerOptions = {
 			local t = { strsplit("\n,;:|", v) }
 			for i=#t,1,-1 do
 				v = strlower( strtrim( t[i] ) )
-				v = strmatch(v,'^target$') or strmatch(v,'^focus$') or strmatch(v,'^player$') or strmatch(v,'^party%d+$') or strmatch(v,'^raid%d+$') or strmatch(v,'^boss%d+$') or strmatch(v,'^arena%d+$')
-				if v then
+				if Grid2.roster_types[v] and Grid2.roster_types[v]~='pet' then
 					t[i] = v
 				else
 					table.remove(t,i)

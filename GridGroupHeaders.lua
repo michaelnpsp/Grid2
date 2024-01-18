@@ -590,16 +590,18 @@ do
 			unit = TARGETS[unit]
 			if refreshRoster(unit) then
 				if not self.hideEmptyUnits or UnitExists(unit) then
-					units[unit]:UpdateIndicators()
-					FireSizeChanged(self)
+					local frame = units[unit]
+					if frame then
+						frame:UpdateIndicators()
+						FireSizeChanged(self)
+					end
 				end
 				UpdateFakedTimer()
 			end
 		else
 			for unit, frame in next, units do
-				if refreshRoster(unit) then
-					frame:UpdateIndicators()
-				end
+				refreshRoster(unit)
+				frame:UpdateIndicators()
 			end
 			FireSizeChanged(self)
 			UpdateFakedTimer()

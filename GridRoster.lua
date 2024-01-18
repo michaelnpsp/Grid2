@@ -26,7 +26,7 @@ local owner_of_unit   = {} -- partypet1=>party1, raidpet3=>raid3, arenapet1=>are
 local grouped_units   = {} -- party1=>1, raid1=>1 ; units in party or raid
 local grouped_players = {} -- party1=>1, raid1=>1 ; only party/raid player/owner units
 local grouped_pets    = {} -- partypet1=>1, raidpet2=>1 ; only party/raid pet units
-local roster_types    = { target = 'target', focus = 'focus' }
+local roster_types    = { target = 'target', focus = 'focus', targettarget = 'targettarget', focustarget = 'focustarget' }
 local roster_my_units = { player = true, pet = true, vehicle = true }
 local faked_units     = { targettarget = true, focustarget = true, boss6 = true, boss7 = true, boss8 = true } -- eventless units
 -- roster tables / storing only existing units
@@ -465,6 +465,7 @@ Grid2.pet_of_unit     = pet_of_unit
 Grid2.roster_my_units = roster_my_units
 Grid2.roster_types    = roster_types
 Grid2.grouped_units   = grouped_units
+Grid2.grouped_players = grouped_players
 Grid2.raid_indexes    = raid_indexes
 Grid2.party_indexes   = party_indexes
 Grid2.roster_deads    = roster_deads

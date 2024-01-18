@@ -29,7 +29,7 @@ do
 
 	local PLAYER_CLASSES = Grid2Options.PLAYER_CLASSES
 
-	local HEADER_TYPES = { player = L['Players'], pet = L['Pets'], boss = L['Bosses'], target = L['Target'], focus = L['Focus'] }
+	local UNIT_TYPES = { player = L['Players'], pet = L['Pets'], boss = L['Bosses'], target = L['Target'], focus = L['Focus'], targettarget = L['Target of Target'], focustarget = L['Target of Focus'] }
 
 	local NOYES_TYPES = { L["No"], L['Yes'] }
 
@@ -383,7 +383,7 @@ do
 			)
 			SetFilterOptions( status, options, 85,
 				'unitType',
-				HEADER_TYPES,
+				UNIT_TYPES,
 				'player',
 				L["Unit Type"],
 				L["Load the status only for the specified unit types."],
