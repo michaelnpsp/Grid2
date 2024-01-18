@@ -65,23 +65,30 @@ end
 -- special buffs Blizzard status
 local blizzard = { GetColor = Grid2.statusLibrary.GetColor }
 
+local ShouldDisplayBuff = C_UnitAuras and C_UnitAuras.GetAuraDataByIndex and AuraUtil.ShouldDisplayBuff
+
 function blizzard:GetIcons(unit, max)
-	local filter = UnitAffectingCombat("player") and "RAID_INCOMBAT" or "RAID_OUTOFCOMBAT"
+	local filter
+	if not ShouldDisplayBuff then
+		filter  = UnitAffectingCombat("player") and "RAID_INCOMBAT" or "RAID_OUTOFCOMBAT"
+	end
 	local color, i, j, name, caster, spellId, canApplyAura, isBossAura, valid, _ = self.dbx.color1, 1, 1
 	repeat
 		name, textures[j], counts[j], _, durations[j], expirations[j], caster, _, _, spellId, canApplyAura, isBossAura = UnitAura(unit, i)
 		if not name then break end
-		if not isBossAura then
+		if ShouldDisplayBuff then
+			valid = ShouldDisplayBuff(caster, spellId, canApplyAura)
+		elseif not isBossAura then
 			local hasCustom, alwaysShowMine, showForMySpec = SpellGetVisibilityInfo(spellId, filter)
 			if hasCustom  then
 				valid = showForMySpec or (alwaysShowMine and myUnits[caster])
 			else
 				valid = canApplyAura and myUnits[caster] and not SpellIsSelfBuff(spellId)
 			end
-			if valid then
-				colors[j], slots[j] = color, i
-				j = j + 1
-			end
+		end
+		if valid then
+			colors[j], slots[j] = color, i
+			j = j + 1
 		end
 		i = i + 1
 	until j>max
@@ -98,8 +105,13 @@ function blizzard:UNIT_AURA(_, unit)
 	self:UpdateIndicators(unit)
 end
 
+blizzard.PLAYER_REGEN_DISABLED = Grid2.statusLibrary.UpdateAllUnits
+blizzard.PLAYER_REGEN_ENABLED = Grid2.statusLibrary.UpdateAllUnits
+
 function blizzard:OnEnable()
 	self:RegisterEvent("UNIT_AURA")
+	self:RegisterEvent("PLAYER_REGEN_ENABLED")
+	self:RegisterEvent("PLAYER_REGEN_DISABLED")
 	if Grid2.classicDurations then
 		LibStub("LibClassicDurations"):Register(blizzard)
 		UnitAura = LibStub("LibClassicDurations").UnitAuraDirect
@@ -108,6 +120,8 @@ end
 
 function blizzard:OnDisable()
 	self:UnregisterEvent("UNIT_AURA")
+	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	self:UnregisterEvent("PLAYER_REGEN_DISABLED")
 	if Grid2.classicDurations then
 		LibStub("LibClassicDurations"):Unregister(blizzard)
 	end

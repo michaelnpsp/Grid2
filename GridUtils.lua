@@ -18,7 +18,7 @@ Grid2.Dummy = function() end
 Grid2.UnitAuraLite = GetAuraDataByIndex==nil and UnitAura or function(unit, index, filter)
 	local a = GetAuraDataByIndex(unit, index, filter)
 	if a then
-		return a.name, a.icon, a.applications, a.dispelName, a.duration, a.expirationTime, a.sourceUnit, nil, nil, a.spellId, nil, a.isBossAura
+		return a.name, a.icon, a.applications, a.dispelName, a.duration, a.expirationTime, a.sourceUnit, nil, nil, a.spellId, a.canApplyAura, a.isBossAura
 	end
 end
 
