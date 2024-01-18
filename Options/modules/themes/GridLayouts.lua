@@ -425,8 +425,22 @@ local generalOptions = {
 		end,
 	},
 
-	displayFocus = {
+	displayTargetTarget = {
 		order = 110,
+		type = "toggle",
+		name = "|cffffd200".. L["Display Target of Target unit"] .."|r",
+		desc = L["Enable this option to display the target of target unit."],
+		width = "full",
+		get = function(info)
+			return theme.layout.specialHeaders and theme.layout.specialHeaders.targettarget~=nil
+		end,
+		set = function(info,v)
+			SetupSpecialHeader('targettarget', v)
+		end,
+	},
+
+	displayFocus = {
+		order = 115,
 		type = "toggle",
 		name = "|cffffd200".. L["Display Focus unit"] .."|r",
 		desc = L["Enable this option to display the focus unit."],
@@ -440,8 +454,23 @@ local generalOptions = {
 		hidden = function() return Grid2.isVanilla end,
 	},
 
-	displayBosses = {
+	displayFocusTarget = {
 		order = 120,
+		type = "toggle",
+		name = "|cffffd200".. L["Display Target of Focus unit"] .."|r",
+		desc = L["Enable this option to display the target of focus unit."],
+		width = "full",
+		get = function(info)
+			return theme.layout.specialHeaders and theme.layout.specialHeaders.focustarget~=nil
+		end,
+		set = function(info,v)
+			SetupSpecialHeader('focustarget', v)
+		end,
+		hidden = function() return Grid2.isVanilla end,
+	},
+
+	displayBosses = {
+		order = 125,
 		type = "toggle",
 		name = "|cffffd200".. L["Display Bosses units"] .."|r",
 		desc = L["Enable this option to display bosses units."],

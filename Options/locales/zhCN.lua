@@ -99,12 +99,10 @@ L["HIGH"] = "高"
 -- L["Layout Disposition"] = ""
 -- L["Layout Look&Feel"] = ""
 -- L["Frames Look&Feel"] = ""
+-- L["Main Window Position"] = ""
 -- L["Default Settings"] = ""
 -- L["Groups Orientation"] = ""
 -- L['Header Types'] = ""
--- L["Players"] = ""
--- L["Pets"] = ""
--- L["Others"] = ""
 -- L["Units per Column"] = ""
 -- L["Hide Empty Units"] = ""
 -- L["Hide frames of non-existant units."] = ""
@@ -113,6 +111,16 @@ L["HIGH"] = "高"
 -- L["Adjust the width percent of each unit's frame."] = ""
 -- L["Adjust the height percent of each unit's frame."] = ""
 -- L["Adjust the default units per column for this group type."] = ""
+
+-- L["Players"] = ""
+-- L["Pets"] = ""
+-- L["Player"] = ""
+L["Target"] = "目标"
+-- L["Target of Target"] = ""
+L["Focus"] = "专注"
+
+-- L["Target of Focus"] = ""
+-- L["Others"] = ""
 
 -- minimap icon
 L["Minimap Icon"] = "小地图图标"
@@ -908,7 +916,6 @@ L["A resurrection spell has been casted on the unit"] = "已经施放复活法�
 -- power
 L["Mana"] = "法力值"
 L["Rage"] = "怒气"
-L["Focus"] = "专注"
 L["Energy"] = "能量"
 L["Runic Power"] = "符能"
 
@@ -974,7 +981,6 @@ L["display remaining amount of heal absorb shields"] = "显示剩余的治疗吸
 -- L["display remaining amount of damage absorption shields"] = ""
 L["display remaining amount of damage absorb shields"] = "显示剩余的损坏吸收罩的数量"
 L["Sticky Units"] = "关联单位"
-L["Target"] = "目标"
 L["Tanks"] = "坦克"
 
 -- aoe heals
@@ -1500,6 +1506,10 @@ L["You can include a descriptive prefix using separators \"@#>\""] = "你可以�
 -- L["Enable this option to display the focus unit."] = ""
 -- L["Display Bosses units"] = ""
 -- L["Enable this option to display the bosses unit."] = ""
+-- L["Display Target of Target unit"] = ""
+-- L["Enable this option to display the target of target unit."] = ""
+-- L["Display Target of Focus unit"] = ""
+-- L["Enable this option to display the target of focus unit."] = ""
 
 -- L['Party (Normal)'] = ""
 -- L['Party (Heroic)'] = ""

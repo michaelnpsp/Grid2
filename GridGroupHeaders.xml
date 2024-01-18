@@ -21,7 +21,7 @@
 			<OnLoad function="Grid2InsecureGroupCustomHeader_OnLoad" />
         </Scripts>
     </Frame>
-	<!-- A frame used for managing special focus frame -->
+	<!-- A frame used for managing special player frame -->
     <Frame name="Grid2InsecureGroupPlayerHeaderTemplate" inherits="Grid2InsecureFrameTemplate" hidden="true" virtual="true">
         <Scripts>
 			<OnLoad function="Grid2InsecureGroupCustomHeader_OnLoad" />
@@ -35,6 +35,18 @@
     </Frame>
 	<!-- A frame used for managing special focus frame -->
     <Frame name="Grid2InsecureGroupFocusHeaderTemplate" inherits="Grid2InsecureFrameTemplate" hidden="true" virtual="true">
+        <Scripts>
+			<OnLoad function="Grid2InsecureGroupCustomHeader_OnLoad" />
+        </Scripts>
+    </Frame>
+	<!-- A frame used for managing special targettarget frame -->
+    <Frame name="Grid2InsecureGroupTargetTargetHeaderTemplate" inherits="Grid2InsecureFrameTemplate" hidden="true" virtual="true">
+        <Scripts>
+			<OnLoad function="Grid2InsecureGroupCustomHeader_OnLoad" />
+        </Scripts>
+    </Frame>
+	<!-- A frame used for managing special focustarget frame -->
+    <Frame name="Grid2InsecureGroupFocusTargetHeaderTemplate" inherits="Grid2InsecureFrameTemplate" hidden="true" virtual="true">
         <Scripts>
 			<OnLoad function="Grid2InsecureGroupCustomHeader_OnLoad" />
         </Scripts>

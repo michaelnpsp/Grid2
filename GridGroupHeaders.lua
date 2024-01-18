@@ -5,6 +5,7 @@
 local versionCli = select(4,GetBuildInfo())
 local isClassic = versionCli<30000 -- vanilla or tbc
 local dummyFunc = function() end
+local next = next
 local select = select
 local unpack = unpack
 local tonumber = tonumber
@@ -495,129 +496,132 @@ do
 end
 
 --[[ Grid2InsecureGroupCustomHeader
-unitsFilter = "target, focus, player, party1, boss1, boss2, boss3, arena1, arena2, arena3, .."
+unitsFilter = "target, focus, player, targettarget, focustarget, party1, boss1, boss2, boss3, arena1, arena2, arena3, .."
 hideEmptyUnits = true|nil
 --]]
 do
-	--Forze size changed event to refresh decoration visibility
-	local function TriggerSizeChangedEvent(self)
-		if self:GetAttribute('hideEmptyUnits') then
+	local C_Timer_After = C_Timer.After
+	local META    = { __index = function(t,k) t[k] = {} return t[k]; end }
+	local ROSTER  = { 'GROUP_ROSTER_UPDATE' }
+	local ARENA   = { 'ARENA_OPPONENT_UPDATE' }
+	local BOSS    = { 'INSTANCE_ENCOUNTER_ENGAGE_UNIT', 'PLAYER_REGEN_ENABLED' }
+	local TARGET  = { 'PLAYER_TARGET_CHANGED', 'PLAYER_ENTERING_WORLD' }
+	local FOCUS   = { 'PLAYER_FOCUS_CHANGED', 'PLAYER_ENTERING_WORLD' }
+	local TTARGET = { 'UNIT_TARGET', 'PLAYER_TARGET_CHANGED', 'PLAYER_ENTERING_WORLD' }
+	local FTARGET = { 'UNIT_TARGET', 'PLAYER_FOCUS_CHANGED', 'PLAYER_ENTERING_WORLD' }
+	local TARGETS = { target = 'targettarget', focus = 'focustarget', targettarget = 'target', focustarget = 'focus' }
+	local UNITS   = { target=TARGET, focus=FOCUS, targettarget=TTARGET, focustarget=FTARGET, boss1=BOSS, boss2=BOSS, boss3=BOSS, boss4=BOSS, boss5=BOSS, boss6=BOSS, boss7=BOSS, boss8=BOSS, arena1=ARENA, arena2=ARENA, arena3=ARENA, arena4=ARENA, arena5=ARENA }
+	local notifyObject, updateMessage, refreshRoster, fakedRoster, updateEnabled
+
+	local function UpdateFakedUnits() -- timer to update faked/eventless units
+		if not next(fakedRoster) then updateEnabled = nil; return end
+		notifyObject:SendMessage(updateMessage, fakedRoster)
+		C_Timer_After(0.5, UpdateFakedUnits)
+	end
+
+	local function UpdateFakedTimer() -- controls activation of update timer
+		if not updateEnabled and next(fakedRoster) then
+			C_Timer_After(0.5, UpdateFakedUnits)
+			updateEnabled = true
+		end
+	end
+
+	local function FireSizeChanged(self) -- fire OnSizeChanged event to update decoration visibility
+		if self.hideEmptyUnits then
 			local func = self:GetScript("OnSizeChanged")
-			if func then
-				C_Timer.After(0, function()	func(self) end)	end
+			if func then C_Timer_After(0, function() func(self) end) end
 		end
 	end
 
-	-- notify grid2 roster for unit changes, OnUnitStateChanged() defined in Grid2Frame.lua
-	local function RefreshButtons(self, pattern)
-		local index, unitButton = 1, self[1]
-		while unitButton and unitButton.unit do
-			if pattern==nil or strfind(unitButton.unit,pattern) then
-				unitButton:OnUnitStateChanged()
+	local function Reset(self)
+		wipe(self.event_units)
+		self:UnregisterAllEvents()
+	end
+
+	local function RegisterUnits(self, units)
+		local event_units, tunits = self.event_units
+		Reset(self)
+		for idx,unit in ipairs(units) do
+			for _,event in ipairs(UNITS[unit] or ROSTER) do
+				event_units[event][unit] = self[idx]
+				if event == 'UNIT_TARGET' then
+					tunits = tunits or {}; tunits[#tunits+1] = TARGETS[unit]
+				else
+					self:RegisterEvent(event)
+				end
 			end
-			index = index + 1; unitButton = self[index]
+			refreshRoster(unit)
 		end
-		TriggerSizeChangedEvent(self)
+		if tunits then
+			self:RegisterUnitEvent( 'UNIT_TARGET', unpack(tunits) )
+		end
+		FireSizeChanged(self)
+		UpdateFakedTimer()
 	end
 
-	-- event register management
-	local function SetRegisterEvent(self, enabled, event)
-		if not enabled ~= not self:IsEventRegistered(event) then
-			if enabled then
-				self:RegisterEvent(event)
-			else
-				self:UnregisterEvent(event)
-			end
-		end
-	end
-
-	local function RegisterEvents(self, unitTable)
-		local bossUnits, arenaUnits, normalUnits
-		self.buttonTarget, self.buttonFocus = nil, nil
-		for i, unit in ipairs(unitTable) do
-			if unit=='target' then
-				self.buttonTarget = self[i]
-			elseif unit=='focus' then
-				self.buttonFocus = self[i]
-			elseif strfind(unit,"^boss") then
-				bossUnits = true
-			elseif strfind(unit,"^arena") then
-				arenaUnits = true
-			else
-				normalUnits = true
-			end
-		end
-		SetRegisterEvent( self, self.buttonTarget, 'PLAYER_TARGET_CHANGED' )
-		SetRegisterEvent( self, self.buttonFocus, 'PLAYER_FOCUS_CHANGED' )
-		SetRegisterEvent( self, self.buttonTarget or self.buttonFocus, 'PLAYER_ENTERING_WORLD' )
-		SetRegisterEvent( self, bossUnits, 'INSTANCE_ENCOUNTER_ENGAGE_UNIT' )
-		SetRegisterEvent( self, arenaUnits, 'ARENA_OPPONENT_UPDATE' )
-		SetRegisterEvent( self, normalUnits, 'GROUP_ROSTER_UPDATE' )
-	end
-
-	local function ApplySpecialFilter(self)
+	local function ApplyFilter(self, srtTable)
 		wipe(srtTable)
-		local unitsFilter = self:GetAttribute('unitsFilter')
-		if unitsFilter then
-			fillArrayTable( srtTable, strsplit(",",unitsFilter) )
+		local units = self:GetAttribute('unitsFilter')
+		if units then
+			fillArrayTable( srtTable, strsplit(",",units) )
 		end
+		self.hideEmptyUnits = self:GetAttribute('hideEmptyUnits')
 	end
 
-	-- update header
+	-- update
 	local function Update(self)
 		if RunSecure(Update, self, true) then
-			ApplySpecialFilter( self )
-			DisplayButtons( self, srtTable )
-			RegisterEvents( self, srtTable )
-			RefreshButtons( self )
+			ApplyFilter(self, srtTable)
+			DisplayButtons(self, srtTable)
+			RegisterUnits(self, srtTable)
 		end
 	end
 
-	-- event callbacks
-	local function OnHide(self)
-		SetRegisterEvent( self, false, 'GROUP_ROSTER_UPDATE' )
-		SetRegisterEvent( self, false, 'PLAYER_TARGET_CHANGED' )
-		SetRegisterEvent( self, false, 'PLAYER_FOCUS_CHANGED' )
-		SetRegisterEvent( self, false, 'INSTANCE_ENCOUNTER_ENGAGE_UNIT' )
-		SetRegisterEvent( self, false, 'PLAYER_REGEN_ENABLED' )
-		SetRegisterEvent( self, false, 'PLAYER_ENTERING_WORLD' )
-		SetRegisterEvent( self, false, 'ARENA_OPPONENT_UPDATE' )
-	end
-
+	-- events
 	local function OnAttributeChanged(self, name, value)
 		if name ~= "_ignore" and not self:GetAttribute("_ignore") and self:IsVisible() then
 			Update(self)
 		end
 	end
 
-	local function OnEvent(self, event)
-		if event=='PLAYER_TARGET_CHANGED' then
-			self.buttonTarget:OnUnitStateChanged()
-			TriggerSizeChangedEvent(self)
-		elseif event=='PLAYER_FOCUS_CHANGED' then
-			self.buttonFocus:OnUnitStateChanged()
-			TriggerSizeChangedEvent(self)
-		elseif event=='INSTANCE_ENCOUNTER_ENGAGE_UNIT' then
-			self:RegisterEvent('PLAYER_REGEN_ENABLED')
-			RefreshButtons(self, "^boss")
-		elseif event=='PLAYER_REGEN_ENABLED' then
-			RefreshButtons(self, "^boss")
-		elseif event=='ARENA_OPPONENT_UPDATE' then
-			RefreshButtons(self, "^arena")
-		elseif event=='PLAYER_ENTERING_WORLD' then
-			if self.buttonTarget then self.buttonTarget:OnUnitStateChanged() end
-			if self.buttonFocus  then self.buttonFocus:OnUnitStateChanged() end
-		else -- GROUP_ROSTER_UPDATE
-			RefreshButtons(self)
+	local function OnEvent(self, event, unit)
+		local units = self.event_units[event]
+		if event == 'UNIT_TARGET' then
+			unit = TARGETS[unit]
+			refreshRoster(unit) -- do not check return value to avoid indicators update, because the same unit can be used in several headers.
+			if not self.hideEmptyUnits or UnitExists(unit) then
+				local frame = units[unit]
+				if frame then
+					frame:UpdateIndicators()
+					FireSizeChanged(self)
+				end
+			end
+			UpdateFakedTimer()
+		else
+			for unit, frame in next, units do
+				refreshRoster(unit) -- do not check return value to avoid indicators update, because the same unit can be used in several headers.
+				frame:UpdateIndicators()
+			end
+			FireSizeChanged(self)
+			UpdateFakedTimer()
 		end
+	end
+
+	-- register functions and data to update custom units
+	function Grid2InsecureGroupCustomHeader_RegisterUpdate(object, message, refresh, units)
+		notifyObject  = object  -- table/addon to send messages (usually Grid2)
+		updateMessage = message -- message used to update faked units
+		refreshRoster = refresh -- function to refresh a unit in roster
+		fakedRoster   = units   -- table with active faked units maintained by object addon.
 	end
 
 	-- header load
 	function Grid2InsecureGroupCustomHeader_OnLoad(self)
+		self.event_units = setmetatable({}, META)
 		InjectMixins(self, 'custom')
 		self:SetScript('OnAttributeChanged', OnAttributeChanged)
-		self:SetScript('OnShow', Update)
-		self:SetScript('OnHide', OnHide)
 		self:SetScript('OnEvent', OnEvent)
+		self:SetScript('OnHide', Reset)
+		self:SetScript('OnShow', Update)
 	end
 end

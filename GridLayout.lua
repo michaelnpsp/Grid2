@@ -18,6 +18,13 @@ end
 --{{{ Class for group headers
 
 local NUM_HEADERS = 0
+local SPECIAL_HEADERS = {
+	player       = 'Grid2InsecureGroupPlayerHeaderTemplate',
+	target       = 'Grid2InsecureGroupTargetHeaderTemplate',
+	focus        = 'Grid2InsecureGroupFocusHeaderTemplate' ,
+	targettarget = 'Grid2InsecureGroupTargetTargetHeaderTemplate',
+	focustarget  = 'Grid2InsecureGroupFocusTargetHeaderTemplate' ,
+}
 local FRAMES_TEMPLATE = "SecureUnitButtonTemplate"                        .. (BackdropTemplateMixin and ",BackdropTemplate" or "")
 local FRAMEC_TEMPLATE = "ClickCastUnitTemplate,SecureUnitButtonTemplate"  .. (BackdropTemplateMixin and ",BackdropTemplate" or "")
 local SECURE_INIT_TMP =  [[
@@ -58,10 +65,7 @@ local GridLayoutHeaderClass = {
 	end,
 	template = function(self, dbx, insecure)
 		if dbx.type=='custom' then
-			return  (dbx.unitsFilter=='player' and 'Grid2InsecureGroupPlayerHeaderTemplate' ) or
-				    (dbx.unitsFilter=='target' and 'Grid2InsecureGroupTargetHeaderTemplate' ) or
-				    (dbx.unitsFilter=='focus'  and 'Grid2InsecureGroupFocusHeaderTemplate'  ) or
-					'Grid2InsecureGroupCustomHeaderTemplate'
+			return SPECIAL_HEADERS[dbx.unitsFilter] or 'Grid2InsecureGroupCustomHeaderTemplate'
 		elseif insecure or (dbx.nameList and (dbx.roleFilter or dbx.groupFilter)) then
 			return dbx.type=='pet' and 'Grid2InsecureGroupPetHeaderTemplate' or 'Grid2InsecureGroupHeaderTemplate'
 		else
@@ -614,6 +618,8 @@ do
 		{ 'self',   1, 'player' },
 		{ 'target', 1, 'target' },
 		{ 'focus',  1, 'focus'  },
+		{ 'targettarget', 1, 'targettarget' },
+		{ 'focustarget',  1, 'focustarget'  },
 		{ 'boss',   8, 'boss1,boss2,boss3,boss4,boss5,boss6,boss7,boss8' },
 	}
 	function Grid2Layout:AddSpecialHeaders()
@@ -636,7 +642,7 @@ end
 
 -- Calculate and store effective values for some header properties
 do
-	local BuiltInHeaders = { player = 'player', pet = 'pet', self = 'self', target = 'target', focus = 'focus', boss = 'boss' }
+	local BuiltInHeaders = { player = 'player', pet = 'pet', self = 'self', target = 'target', focus = 'focus', boss = 'boss', targettarget = 'targettarget', focustarget = 'focustarget' }
 
 	function Grid2Layout:SetHeaderProperties(header, dbx, setupIndex, headerName)
 		local p = self.db.profile

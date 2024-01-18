@@ -191,7 +191,7 @@ local layoutOptions1 =  { positionheader = {
 do
 	local key, def
 	local defUPC = { player = 5, pet = 5, boss =  8, other = 5 }
-	local extraHeaders = { boss = true, target = true, focus = true, other = true }
+	local extraHeaders = { boss = true, target = true, targettarget = true, focus = true, focustarget = true, other = true }
 	local headerAnchorPoints = { [''] = L['Default'], CENTER = L["CENTER"], TOP = L["TOP"], BOTTOM = L["BOTTOM"], LEFT = L["LEFT"], RIGHT = L["RIGHT"], TOPLEFT = L["TOPLEFT"], TOPRIGHT = L["TOPRIGHT"], BOTTOMLEFT = L["BOTTOMLEFT"], BOTTOMRIGHT = L["BOTTOMRIGHT"] }
 	local groupAnchorPoints  = { [''] = L['Default'], TOPLEFT = L["TOPLEFT"], TOPRIGHT = L["TOPRIGHT"], BOTTOMLEFT = L["BOTTOMLEFT"], BOTTOMRIGHT = L["BOTTOMRIGHT"] }
 
@@ -392,10 +392,10 @@ do
 			name = L['Lock Frame Size'],
 			desc = L["Forbid dynamic changes in frame dimensions for this kind of header."],
 			get = function(info)
-				return theme.frame.frameHeaderLocks[key]
+				return GetTableValue( theme.frame.frameHeaderLocks, key, false)
 			end,
 			set = function(info,v)
-				theme.frame.frameHeaderLocks[key] = v or nil
+				SetTableValue(theme.frame, 'frameHeaderLocks', key, v or nil)
 				Grid2Layout:RefreshLayout()
 			end,
 			hidden = function() return not extraHeaders[key] end,
@@ -427,32 +427,41 @@ do
 		type = "group", order = 2, name = L['Pets'],
 		args = layoutAnchorOptions,
 	}
-	layoutOptions1.self  = {
-		type = "group", order = 3, name = L['Player'],
+	layoutOptions1.boss  = {
+		type = "group", order = 3, name = L['Bosses'],
 		args = layoutAnchorOptions,
-		hidden = function() return theme.layout.specialHeaders==nil or theme.layout.specialHeaders.self==nil end
+		disabled = function() return Grid2.isClassic or theme.layout.specialHeaders==nil or theme.layout.specialHeaders.boss==nil end
+	}
+	layoutOptions1.self  = {
+		type = "group", order = 4, name = L['Player'],
+		args = layoutAnchorOptions,
+		disabled = function() return theme.layout.specialHeaders==nil or theme.layout.specialHeaders.self==nil end
 	}
 	layoutOptions1.target = {
-	    type = "group", order = 4, name = L['Target'],
+	    type = "group", order = 5, name = L['Target'],
 		args = layoutAnchorOptions,
-		hidden = function() return theme.layout.specialHeaders==nil or theme.layout.specialHeaders.target==nil end,
+		disabled = function() return theme.layout.specialHeaders==nil or theme.layout.specialHeaders.target==nil end,
+	}
+	layoutOptions1.targettarget = {
+	    type = "group", order = 6, name = L['Target of Target'],
+		args = layoutAnchorOptions,
+		disabled = function() return theme.layout.specialHeaders==nil or theme.layout.specialHeaders.targettarget==nil end,
 	}
 	layoutOptions1.focus  = {
-		type = "group", order = 5, name = L['Focus'],
+		type = "group", order = 7, name = L['Focus'],
 		args = layoutAnchorOptions,
-		hidden = function() return Grid2.isVanilla or theme.layout.specialHeaders==nil or theme.layout.specialHeaders.focus==nil end
+		disabled = function() return Grid2.isVanilla or theme.layout.specialHeaders==nil or theme.layout.specialHeaders.focus==nil end
 	}
-	layoutOptions1.boss  = {
-		type = "group", order = 6, name = L['Bosses'],
+	layoutOptions1.focustarget  = {
+		type = "group", order = 8, name = L['Target of Focus'],
 		args = layoutAnchorOptions,
-		hidden = function() return Grid2.isClassic or theme.layout.specialHeaders==nil or theme.layout.specialHeaders.boss==nil end
+		disabled = function() return Grid2.isVanilla or theme.layout.specialHeaders==nil or theme.layout.specialHeaders.focustarget==nil end
 	}
 	layoutOptions1.other  = {
-		type = "group", order = 7, name = L['Others'],
+		type = "group", order = 9, name = L['Others'],
 		args = layoutAnchorOptions,
-		hidden = function() return not (Grid2Layout.db.global.customLayouts and next(Grid2Layout.db.global.customLayouts)) end
+		disabled = function() return not (Grid2Layout.db.global.customLayouts and next(Grid2Layout.db.global.customLayouts)) end
 	}
-
 end
 
 --=========================================================================================================
@@ -603,6 +612,8 @@ local layoutOptions2 =  { displayheader = {
 		order = 210,
 		get = function() return theme.layout.FrameLock end,
 		set = function()
+
+
 			theme.layout.FrameLock = not theme.layout.FrameLock
 			Grid2Layout:UpdateFrame()
 		end,

@@ -26,8 +26,9 @@ local owner_of_unit   = {} -- partypet1=>party1, raidpet3=>raid3, arenapet1=>are
 local grouped_units   = {} -- party1=>1, raid1=>1 ; units in party or raid
 local grouped_players = {} -- party1=>1, raid1=>1 ; only party/raid player/owner units
 local grouped_pets    = {} -- partypet1=>1, raidpet2=>1 ; only party/raid pet units
-local roster_types    = { target = 'target', focus = 'focus' }
+local roster_types    = { target = 'target', focus = 'focus', targettarget = 'targettarget', focustarget = 'focustarget' }
 local roster_my_units = { player = true, pet = true, vehicle = true }
+local faked_units     = { targettarget = true, focustarget = true, boss6 = true, boss7 = true, boss8 = true } -- eventless units
 -- roster tables / storing only existing units
 local roster_names    = {} -- raid1=>name, ..
 local roster_realms   = {} -- raid1=>realm,..
@@ -35,6 +36,7 @@ local roster_guids    = {} -- raid1=>guid,..
 local roster_players  = {} -- raid1=>guid ;only non pet units in group/raid
 local roster_pets     = {} -- raidpet1=>guid ;only pet units in group/raid
 local roster_units    = {} -- guid=>raid1, ..
+local roster_faked    = {} -- eventless units
 -- roster dead tracking
 local roster_deads = {}
 local textDeath = L["DEAD"]
@@ -132,6 +134,7 @@ do
 			roster_units[guid] = unit
 			roster_pets[unit] = guid
 		end
+		roster_faked[unit] = faked_units[unit]
 		roster_deads[unit] = Grid2:UnitIsDeadOrGhost(unit)
 		Grid2:SendMessage("Grid_UnitUpdated", unit, true)
 	end
@@ -149,52 +152,60 @@ do
 		if unit == roster_units[guid] then
 			roster_units[guid] = nil
 		end
+		roster_faked[unit] = nil
 		roster_deads[unit] = nil
 		Grid2:SendMessage("Grid_UnitLeft", unit)
 	end
 
-	function Grid2:UNIT_NAME_UPDATE(_, unit)
+	local function RefreshUnit(unit)
+		if UnitExists(unit) then
+			if roster_guids[unit] then
+				return UpdateUnit(unit)
+			else
+				AddUnit(unit)
+				return true
+			end
+		elseif roster_guids[unit] then
+			DelUnit(unit)
+			return true
+		end
+	end
+
+	function Grid2:RosterRegisterUnit(unit) -- Called from Grid2Frame:OnAttributeChanged() to maintain roster up to date.
+		if UnitExists(unit) and not roster_guids[unit] then
+			AddUnit(unit)
+		end
+	end
+
+	function Grid2:RosterUnregisterUnit(unit) -- Called from Grid2Frame:OnAttributeChanged() to maintain roster up to date.
+		if roster_guids[unit] then
+			DelUnit(unit)
+		end
+	end
+
+	function Grid2:UNIT_NAME_UPDATE(_, unit) -- event registered in GridCore.lua because this module does not have a init function
 		if roster_guids[unit] then
 			UpdateUnit(unit)
 			self:UpdateFramesOfUnit(unit)
 		end
 	end
 
-	function Grid2:UNIT_PET(_, owner)
+	function Grid2:UNIT_PET(_, owner) -- event registered in GridCore.lua because this module does not have a init function
 		local unit = pet_of_unit[owner]
 		if roster_guids[unit] then
-			self:RosterRefreshUnit(unit)
+			RefreshUnit(unit)
 			self:UpdateFramesOfUnit(unit)
 		end
 	end
-	-- Called from Grid2Frame:OnUnitStateChanged() to maintain roster up to date, this callback is only fired by Special headers.
-	function Grid2:RosterRefreshUnit(unit)
-		if UnitExists(unit) then
-			if roster_guids[unit] then
-				UpdateUnit(unit)
-			else
-				AddUnit(unit)
-			end
-		elseif roster_guids[unit] then
-			DelUnit(unit)
-		end
-	end
-	-- Called from Grid2Frame:OnAttributeChanged() to maintain roster up to date.
-	function Grid2:RosterRegisterUnit(unit)
-		if UnitExists(unit) and not roster_guids[unit] then
-			AddUnit(unit)
-		end
-	end
-	-- Called from Grid2Frame:OnAttributeChanged() to maintain roster up to date.
-	function Grid2:RosterUnregisterUnit(unit)
-		if roster_guids[unit] then
-			DelUnit(unit)
-		end
-	end
-	-- Workaround for blizzard bug (see ticket #628)
-	function Grid2:RosterHasUnknowns()
+
+	function Grid2:RosterHasUnknowns() -- Workaround for blizzard bug (see ticket #628)
 		return roster_unknowns
 	end
+
+	-- functions to manage non-grouped and eventless units from custom headers (see GridGroupHeaders.lua)
+	-- target, focus, targettarget, focustarget, bosssX, arenaX, ...
+	Grid2InsecureGroupCustomHeader_RegisterUpdate(Grid2, "Grid_FakedUnitsUpdate", RefreshUnit, roster_faked)
+
 	-- We delay roster updates to the next frame Update, to ensure all GROUP_ROSTER_UPDATE group headers events were already
 	-- processed, in this way roster is up to date: non-existant units already removed from roster when UpdateRoster() is executed.
 	-- As side effect we avoid a lot of unecessary roster updates, because blizzard fires a lot of GROUP_ROSTER_UPDATE events.
@@ -454,7 +465,9 @@ Grid2.pet_of_unit     = pet_of_unit
 Grid2.roster_my_units = roster_my_units
 Grid2.roster_types    = roster_types
 Grid2.grouped_units   = grouped_units
+Grid2.grouped_players = grouped_players
 Grid2.raid_indexes    = raid_indexes
 Grid2.party_indexes   = party_indexes
 Grid2.roster_deads    = roster_deads
+Grid2.roster_faked    = roster_faked
 --}}

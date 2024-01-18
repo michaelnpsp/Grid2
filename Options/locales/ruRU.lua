@@ -99,12 +99,10 @@ L["HIGH"] = "ВЫСОКИЙ"
 -- L["Layout Disposition"] = ""
 -- L["Layout Look&Feel"] = ""
 -- L["Frames Look&Feel"] = ""
+-- L["Main Window Position"] = ""
 -- L["Default Settings"] = ""
 -- L["Groups Orientation"] = ""
 -- L['Header Types'] = ""
--- L["Players"] = ""
--- L["Pets"] = ""
--- L["Others"] = ""
 -- L["Units per Column"] = ""
 -- L["Hide Empty Units"] = ""
 -- L["Hide frames of non-existant units."] = ""
@@ -113,6 +111,15 @@ L["HIGH"] = "ВЫСОКИЙ"
 -- L["Adjust the width percent of each unit's frame."] = ""
 -- L["Adjust the height percent of each unit's frame."] = ""
 -- L["Adjust the default units per column for this group type."] = ""
+
+-- L["Players"] = ""
+-- L["Pets"] = ""
+-- L["Player"] = ""
+L["Target"] = "Цель"
+-- L["Target of Target"] = ""
+L["Focus"] = "Фокус"
+-- L["Target of Focus"] = ""
+-- L["Others"] = ""
 
 -- minimap icon
 L["Minimap Icon"] = "Иконка миникарты"
@@ -908,7 +915,6 @@ L["A resurrection spell has been casted on the unit"] = "Воскрешение 
 -- power
 L["Mana"] = "Мана"
 L["Rage"] = "Ярость"
-L["Focus"] = "Фокус"
 L["Energy"] = "Энергия"
 L["Runic Power"] = "Энергия рун"
 
@@ -974,7 +980,6 @@ L["display remaining amount of heal absorb shields"] = "показать ост�
 -- L["display remaining amount of damage absorption shields"] = ""
 L["display remaining amount of damage absorb shields"] = "показать оставшееся количество урона поглощаемого щитом"
 -- L["Sticky Units"] = ""
-L["Target"] = "Цель"
 L["Tanks"] = "Танки ."
 
 -- aoe heals
@@ -1500,6 +1505,10 @@ L["You can include a descriptive prefix using separators \"@#>\""] = "Вы мо�
 -- L["Enable this option to display the focus unit."] = ""
 -- L["Display Bosses units"] = ""
 -- L["Enable this option to display the bosses unit."] = ""
+-- L["Display Target of Target unit"] = ""
+-- L["Enable this option to display the target of target unit."] = ""
+-- L["Display Target of Focus unit"] = ""
+-- L["Enable this option to display the target of focus unit."] = ""
 
 -- L['Party (Normal)'] = ""
 -- L['Party (Heroic)'] = ""

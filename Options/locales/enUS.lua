@@ -99,12 +99,10 @@ L["HIGH"] = true
 L["Layout Disposition"] = true
 L["Layout Look&Feel"] = true
 L["Frames Look&Feel"] = true
+L["Main Window Position"] =  true
 L["Default Settings"] = true
 L["Groups Orientation"] = true
 L['Header Types'] = true
-L["Players"] = true
-L["Pets"] = true
-L["Others"] = true
 L["Units per Column"] = true
 L["Hide Empty Units"] = true
 L["Hide frames of non-existant units."] = true
@@ -113,6 +111,15 @@ L["Forbid dynamic changes in frame dimensions for this kind of header."] = true
 L["Adjust the width percent of each unit's frame."] = true
 L["Adjust the height percent of each unit's frame."] = true
 L["Adjust the default units per column for this group type."] = true
+
+L["Players"] = true
+L["Pets"] = true
+L["Player"] = true
+L["Target"] = true
+L["Target of Target"] = true
+L["Focus"] = true
+L["Target of Focus"] = true
+L["Others"] = true
 
 -- minimap icon
 L["Minimap Icon"] = true
@@ -913,7 +920,6 @@ L["A resurrection spell has been casted on the unit"] = true
 -- power
 L["Mana"] = true
 L["Rage"] = true
-L["Focus"] = true
 L["Energy"] = true
 L["Runic Power"] = true
 
@@ -979,7 +985,6 @@ L["display remaining amount of heal absorb shields"] = true
 L["display remaining amount of damage absorption shields"] = true
 L["display remaining amount of damage absorb shields"] = true
 L["Sticky Units"] = true
-L["Target"] = true
 L["Tanks"] = true
 
 -- aoe heals
@@ -1504,6 +1509,10 @@ L["Display Focus unit"] = true
 L["Enable this option to display the focus unit."] = true
 L["Display Bosses units"] = true
 L["Enable this option to display the bosses unit."] = true
+L["Display Target of Target unit"] = true
+L["Enable this option to display the target of target unit."] = true
+L["Display Target of Focus unit"] = true
+L["Enable this option to display the target of focus unit."] = true
 L["Units Per Column"] =  true
 L["Bosses units to display per column."] = true
 L['Hide Empty'] = true

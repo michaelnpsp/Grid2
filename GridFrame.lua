@@ -137,11 +137,6 @@ local function GridFrame_GetInitialSize(self)
 	return header.frameWidth, header.frameHeight
 end
 
-function GridFramePrototype:OnUnitStateChanged()
-	Grid2:RosterRefreshUnit(self.unit)
-	self:UpdateIndicators() -- TODO maybe do not update if not visible and unit does not exist
-end
-
 function GridFramePrototype:Layout()
 	local dbx = Grid2Frame.db.profile
 	local w,h = GridFrame_GetInitialSize(self)
@@ -366,7 +361,7 @@ do
 	end
 end
 
--- Alow other modules to hook unit frames OnEnter, OnExit events
+-- Allow other modules to hook unit frames OnEnter, OnExit events
 function Grid2Frame:SetEventHook( event, func, enabled )
 	eventHooks[event][func] = enabled or nil
 end
