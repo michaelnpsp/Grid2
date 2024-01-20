@@ -137,13 +137,6 @@ function Grid2.CopyTable(src, dst)
 	return dst
 end
 
--- Return number of items in table
-function Grid2.CountTable(t)
-	local count = 0
-	for _ in next, t do count = count + 1 end
-	return count
-end
-
 -- Remove item by value in a ipairs table
 function Grid2.TableRemoveByValue(t,v)
 	for i=#t,1,-1 do
