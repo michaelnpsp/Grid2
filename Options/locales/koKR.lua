@@ -1517,3 +1517,5 @@ L['Party (Mythic)'] = "파티 (신화)"
 -- L["Click Targeting"] = ""
 -- L["Trigger targeting on the down portion of the mouse click"] = ""
 
+-- L["Show when all buffs are active"] = ""
+-- L["Display the status only when all buffs are active."] = ""

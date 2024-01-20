@@ -1516,3 +1516,6 @@ L["A resurrection spell has been casted on the unit"] = "A magia reviver esta se
 
 -- L["Click Targeting"] = ""
 -- L["Trigger targeting on the down portion of the mouse click"] = ""
+
+-- L["Show when all buffs are active"] = ""
+-- L["Display the status only when all buffs are active."] = ""

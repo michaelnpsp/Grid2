@@ -1516,3 +1516,6 @@ L["You can include a descriptive prefix using separators \"@#>\""] = "Вы мо�
 
 -- L["Click Targeting"] = ""
 -- L["Trigger targeting on the down portion of the mouse click"] = ""
+
+-- L["Show when all buffs are active"] = ""
+-- L["Display the status only when all buffs are active."] = ""

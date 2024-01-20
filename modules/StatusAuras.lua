@@ -95,7 +95,9 @@ do
 					local mine = s.isMine
 					if (mine==false or mine==myUnits[cas]) and s.seen~=1 then
 						if fill then fill, tex, cnt, typ, dur, exp, bos, val[s.vId] = false, a.icon, max(a.applications,1), a.dispelName, a.duration, a.expirationTime, a.isBossAura, a.points[s.vId] end
-						if exp~=s.exp[u] or s.cnt[u]~=cnt or val[s.vId]~=s.val[u] or s.spells then
+						if s.UpdateState then
+							 s:UpdateState(u, i, sid, nam, tex, cnt, dur, exp)
+						elseif exp~=s.exp[u] or s.cnt[u]~=cnt or val[s.vId]~=s.val[u] or s.spells then
 							s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.val[u], s.tkr[u] = 1, i, tex, cnt, dur, exp, val[s.vId], 1
 						else
 							s.seen, s.idx[u] = -1, i
@@ -114,6 +116,7 @@ do
 						indicators[indicator] = true
 					end
 				end
+				if s.ResetState then s:ResetState(u) end
 				s.seen = false
 			end
 			-- Update indicators that needs updating only once.
@@ -129,6 +132,7 @@ do
 				if not s.seen and s.idx[u] then
 					s.idx[u], s.exp[u], s.val[u] = nil, nil, nil
 				end
+				if s.ResetState then s:ResetState(u) end
 				s.seen = false
 			end
 		end
@@ -284,8 +288,7 @@ do
 	local fmt = string.format
 	local UnitHealthMax = UnitHealthMax
 	local unit_is_pet   = Grid2.owner_of_unit
-	local function Reset(self, unit)
-		-- multibar indicator needs val[unit]=nil because due to a speed optimization it does not check if status is active before calling GetPercent()
+	local function Reset(self, unit) -- multibar indicator needs val[unit]=nil because due to a speed optimization it does not check if status is active before calling GetPercent()
 		self.idx[unit], self.exp[unit], self.val[unit] = nil, nil, nil
 		return true
 	end

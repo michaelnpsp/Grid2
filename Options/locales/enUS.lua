@@ -1524,3 +1524,6 @@ L["Party (Mythic)"] = true
 
 L["Click Targeting"] = true
 L["Trigger targeting on the down portion of the mouse click"] = true
+
+L["Show when all buffs are active"] = true
+L["Display the status only when all buffs are active."] = true

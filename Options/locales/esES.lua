@@ -1538,3 +1538,6 @@ L['Party (Mythic)'] = "Grupo (Mitica)"
 
 L["Click Targeting"] = "Click para Objetivo"
 L["Trigger targeting on the down portion of the mouse click"] = "Cambiar objetivo al presionar el botón del ratón (en lugar de soltarlo)."
+
+L["Show when all buffs are active"] = "Muestra con todos los buffs activos"
+L["Display the status only when all buffs are active."] = "Mostrar el estado solo cuando todos los buffs estan presentes."

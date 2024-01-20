@@ -67,6 +67,7 @@ function Grid2Options:MakeStatusAuraMissingOptions(status, options, optionParams
 		set = function (_, v)
 			status.dbx.missing = v or nil
 			status.dbx.missingPets = nil
+			status.dbx.strictFilter = nil
 			if v then
 				StatusAuraGenerateColors(status,1)
 				status.dbx.colorThreshold = nil

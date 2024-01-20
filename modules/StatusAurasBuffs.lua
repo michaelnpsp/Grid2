@@ -49,8 +49,28 @@ local function status_GetIconsMissing(self, unit)
 	return 0
 end
 
+local function status_UpdateStateStrict(s, u, i, sid, nam, tex, cnt, dur, exp)
+	s.countCurrent = s.countCurrent + 1
+	if s.countCurrent==s.countSpells then
+		if s.idx[u] then
+			s.seen, s.idx[u] = -1, i
+		else
+			s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.val[u], s.tkr[u] = 1, i, tex, cnt, dur, exp, 0, 1
+		end
+	end
+end
+
+local function status_ResetStateStrict(self)
+	self.countCurrent = 0
+end
+
 local function status_Update(self, dbx)
 	self.GetIcons = dbx.missing and status_GetIconsMissing or status_GetIcons
+	if dbx.strictFilter then
+		self.UpdateState, self.ResetState, self.countSpells, self.countCurrent = status_UpdateStateStrict, status_ResetStateStrict, Grid2.CountTable(self.spells), 0
+	else
+		self.UpdateState, self.ResetState = nil, nil
+	end
 end
 
 local statusTypes = { "color", "icon", "icons", "percent", "text" }
