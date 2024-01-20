@@ -1,5 +1,6 @@
 -- Group of Buffs status
 local Grid2 = Grid2
+local bit_bor= bit.bor
 local SpellIsSelfBuff = SpellIsSelfBuff
 local UnitAffectingCombat = UnitAffectingCombat
 local SpellGetVisibilityInfo = SpellGetVisibilityInfo
@@ -21,6 +22,34 @@ local durations = {}
 local mcounts = {1}
 local mexpirations = {0}
 local mdurations = {1073741824}
+
+-- strict filter management functions
+local function GenSpellsMask(spells)
+	local bit, mask = 1, 0
+	for spell in pairs(spells) do
+		mask = mask + bit
+		spells[spell] = bit
+		bit = bit*2
+	end
+	return mask
+end
+
+local function status_UpdateStateStrict(s, u, i, sid, nam, tex, cnt, dur, exp)
+	local mask = s.strictMask
+	mask = bit_bor( mask, s.spells[nam] or s.spells[sid] )
+	if mask==s.strictMASK then
+		if s.idx[u] then
+			s.seen, s.idx[u] = -1, i
+		else
+			s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.val[u], s.tkr[u] = 1, i, tex, cnt, dur, exp, 0, 1
+		end
+	end
+	s.strictMask = mask
+end
+
+local function status_ResetStateStrict(self)
+	self.strictMask = 0
+end
 
 -- buffs group status
 local function status_GetIcons(self, unit, max)
@@ -49,25 +78,10 @@ local function status_GetIconsMissing(self, unit)
 	return 0
 end
 
-local function status_UpdateStateStrict(s, u, i, sid, nam, tex, cnt, dur, exp)
-	s.countCurrent = s.countCurrent + 1
-	if s.countCurrent==s.countSpells then
-		if s.idx[u] then
-			s.seen, s.idx[u] = -1, i
-		else
-			s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.val[u], s.tkr[u] = 1, i, tex, cnt, dur, exp, 0, 1
-		end
-	end
-end
-
-local function status_ResetStateStrict(self)
-	self.countCurrent = 0
-end
-
 local function status_Update(self, dbx)
 	self.GetIcons = dbx.missing and status_GetIconsMissing or status_GetIcons
 	if dbx.strictFilter then
-		self.UpdateState, self.ResetState, self.countSpells, self.countCurrent = status_UpdateStateStrict, status_ResetStateStrict, Grid2.CountTable(self.spells), 0
+		self.UpdateState, self.ResetState, self.strictMask, self.strictMASK = status_UpdateStateStrict, status_ResetStateStrict, 0, GenSpellsMask(self.spells)
 	else
 		self.UpdateState, self.ResetState = nil, nil
 	end
