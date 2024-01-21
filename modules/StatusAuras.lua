@@ -39,7 +39,7 @@ do
 		a = GetAuraDataByIndex(unit, index, filter)
 		if a then fill, nam, sid, cas = true, a.name, a.spellId, a.sourceUnit; return true; end
 	end or function(unit, index, filter) -- for classic
-		nam, tex, cnt, typ, dur, exp, cas, _, _, sid, _, bos, _, _, _, val[1], val[2], val[3] = UnitAura(unit, index,filter)
+		nam, tex, cnt, typ, dur, exp, cas, _, _, sid, _, bos, _, _, _, val[1], val[2], val[3] = UnitAura(unit, index, filter)
 		if nam then if cnt==0 then cnt=1 end; return true end
 	end
 	AuraFrame_OnEvent = function(_, event, u)
@@ -53,18 +53,12 @@ do
 					local mine = s.isMine
 					if mine==false or mine==myUnits[cas] then
 						if fill then fill, tex, cnt, typ, dur, exp, bos, val[s.vId] = false, a.icon, max(a.applications,1), a.dispelName, a.duration, a.expirationTime, a.isBossAura, a.points[s.vId] end
-						if s.combineStacks then -- combine stacks debuffs
-							if s.seen then -- adding extra debuffs stacks
-								s.cnt[u] = s.cnt[u] + cnt
-							else -- debuff must be always marked to be updated (seen=1) and cnt must be initialized even if first debuff is not new and didn't change
-								s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.typ[u], s.val[u], s.tkr[u] = 1, i, tex, cnt, dur, exp, typ, val[s.vId], 1
-							end
-						else -- standard debuffs
-							if exp~=s.exp[u] or cnt~=s.cnt[u] or val[s.vId]~=s.val[u] then
-								s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.typ[u], s.val[u], s.tkr[u] = 1, i, tex, cnt, dur, exp, typ, val[s.vId], 1
-							else
-								s.seen, s.idx[u] = -1, i
-							end
+						if s.UpdateState then
+							s:UpdateState(u, i, sid, nam, tex, cnt, dur, exp, typ, pTypes)
+						elseif exp~=s.exp[u] or cnt~=s.cnt[u] or val[s.vId]~=s.val[u] then
+							s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.typ[u], s.val[u], s.tkr[u] = 1, i, tex, cnt, dur, exp, typ, val[s.vId], 1
+						else
+							s.seen, s.idx[u] = -1, i
 						end
 					end
 				end
@@ -471,6 +465,13 @@ do
 		UnregisterTimeTrackerStatus(self)
 		wipe(self.idx);	wipe(self.exp); wipe(self.val)
 	end
+	local function UpdateStateCombineStacks(s, u, i, sid, nam, tex, cnt, dur, exp, typ)
+		if s.seen then -- adding extra debuffs stacks
+			s.cnt[u] = s.cnt[u] + cnt
+		else -- debuff must be always marked to be updated (seen=1) and cnt must be initialized even if first debuff is not new and didn't change
+			s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.typ[u], s.tkr[u], s.val[u]  = 1, i, tex, cnt, dur, exp, typ, 1, nil
+		end
+	end
 	local function UpdateDB(self,dbx)
 		if self.enabled then self:OnDisable() end
 		local dbx = dbx or self.dbx
@@ -501,9 +502,6 @@ do
 		else
 			self.isMine = not not dbx.mine
 		end
-		if dbx.combineStacks then
-			self.combineStacks = dbx.combineStacks
-		end
 		if dbx.missing then
 			local spell = dbx.auras and dbx.auras[1] or dbx.spellName
 			self.missingTexture = spell and select(3,GetSpellInfo(spell)) or "Interface\\ICONS\\Achievement_General"
@@ -525,12 +523,14 @@ do
 				end
 			end
 			self.thresholds = nil
+			self.UpdateState = nil
 		else
 			self.stacks = dbx.enableStacks
-			self.GetIcon  = GetIcon
+			self.GetIcon = GetIcon
 			self.GetCount = GetCount
 			self.GetExpirationTime = GetExpirationTime
 			self.GetDuration = dbx.maxDuration and GetDurationFixed or GetDuration
+			self.UpdateState = dbx.combineStacks and UpdateStateCombineStacks or nil
 			if blinkThreshold then
 				if blinkThreshold>0 then -- blink/glow active after some time threshold
 					self.thresholds = { blinkThreshold }

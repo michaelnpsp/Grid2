@@ -571,6 +571,8 @@ L["Threshold at which to activate the status."] = true
 L["Stacks"] = true
 L["Activation"] = true
 L["Highlight"] = true
+L["Combine Stacks"] = true
+L["Multiple instances of the same debuff will be treated as multiple stacks of the same debuff."] = true
 
 L["available statuses"] = true
 

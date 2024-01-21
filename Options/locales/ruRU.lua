@@ -567,6 +567,8 @@ L["Threshold at which to activate the status."] = "Порог, при котор
 -- L["Stacks"] = ""
 -- L["Activation"] = ""
 -- L["Highlight"] = ""
+-- L["Combine Stacks"] = ""
+-- L["Multiple instances of the same debuff will be treated as multiple stacks of the same debuff."] = ""
 
 L["available statuses"] = "доступные статусы"
 

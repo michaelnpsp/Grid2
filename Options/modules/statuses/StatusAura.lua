@@ -213,7 +213,7 @@ function Grid2Options:MakeStatusAuraCombineStacksOptions(status, options, option
 		type = "toggle",
 		name = L["Combine Stacks"],
 		width = "normal",
-		desc = string.format( "%s ", L["Multiple instances of the same debuff will be treated as multiple stacks of the same debuff"] ),
+		desc = L["Multiple instances of the same debuff will be treated as multiple stacks of the same debuff."],
 		order = 9,
 		get = function () return status.dbx.combineStacks end,
 		set = function (_, v)

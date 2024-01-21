@@ -568,6 +568,8 @@ L["Threshold at which to activate the status."] = "Elige el umbral para activar 
 L["Stacks"] = "Acumulaciones"
 L["Activation"] = "Activacion"
 L["Highlight"] = "Resaltado"
+L["Combine Stacks"] = "Combina Acumulaciones"
+L["Multiple instances of the same debuff will be treated as multiple stacks of the same debuff."] = "Multiples instancias de un debuff seran mostradas como acumulaciones de un mismo debuff."
 
 L["available statuses"] = "estados disponibles"
 

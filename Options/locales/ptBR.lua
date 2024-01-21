@@ -567,6 +567,8 @@ L["Adjust background color and alpha."] = "Ajustar plano de fundo e transparenci
 -- L["Stacks"] = ""
 -- L["Activation"] = ""
 -- L["Highlight"] = ""
+-- L["Combine Stacks"] = ""
+-- L["Multiple instances of the same debuff will be treated as multiple stacks of the same debuff."] = ""
 
 -- L["available statuses"] = ""
 

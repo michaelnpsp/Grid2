@@ -568,6 +568,8 @@ L["Threshold at which to activate the status."] = "启动该状态的临界值"
 -- L["Stacks"] = ""
 -- L["Activation"] = ""
 -- L["Highlight"] = ""
+-- L["Combine Stacks"] = ""
+-- L["Multiple instances of the same debuff will be treated as multiple stacks of the same debuff."] = ""
 
 L["available statuses"] = "可用状态"
 
