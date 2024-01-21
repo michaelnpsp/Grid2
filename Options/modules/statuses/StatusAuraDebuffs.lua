@@ -250,6 +250,7 @@ function Grid2Options:MakeStatusDebuffsGeneralOptions(status, options, optionPar
 	self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
 	self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
 	self:MakeStatusDebuffsFilterOptions(status, options, optionParams)
+	self:MakeStatusAurasCombineStacksOptions(status, options, optionParams)
 	return options
 end
 

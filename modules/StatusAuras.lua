@@ -72,9 +72,9 @@ do
 					s.seen, s.idx[u] = -1, i
 				end
 			end
-			for s in next, DebuffGroups do
+			for s, update in next, DebuffGroups do
 				if fill then fill, tex, cnt, typ, dur, exp, bos = false, a.icon, max(a.applications,1), a.dispelName, a.duration, a.expirationTime, a.isBossAura end
-				if (not s.seen) and s:UpdateState(u, sid, nam, dur, cas, bos, typ, pTypes) then
+				if (update or not s.seen) and s:UpdateState(u, sid, nam, cnt, dur, cas, bos, typ, pTypes) then
 					s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.typ[u], s.tkr[u] = 1, i, tex, cnt, dur, exp, typ, 1
 				end
 			end
@@ -217,12 +217,12 @@ do
 	end
 end
 
-local function RegisterStatusAura(status, auraType, spell)
+local function RegisterStatusAura(status, auraType, spell, update)
 	EnableAuraEvents(status)
 	if auraType=="debuffType" then
 		DebuffTypes[spell] = status
 	elseif not spell then
-		DebuffGroups[status] = true
+		DebuffGroups[status] = not not update
 	else
 		local handler = auraType=="buff" and Buffs or Debuffs
 		local statuses = handler[spell]
@@ -453,7 +453,7 @@ do
 				RegisterStatusAura( self, 'buff', spell )
 			end
 		else -- debuffType or group of filtered debuffs
-			RegisterStatusAura(self, self.handlerType, self.dbx.subType)
+			RegisterStatusAura(self, self.handlerType, self.dbx.subType, self.fullUpdate)
 		end
 		if self.thresholds and (not self.dbx.colorThresholdValue) then
 			RegisterTimeTrackerStatus(self, self.dbx.colorThresholdElapsed)

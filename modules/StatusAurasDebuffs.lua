@@ -5,6 +5,7 @@ local myUnits = Grid2.roster_my_units
 local typeColors = Grid2.debuffTypeColors
 local dispelTypes = Grid2.debuffDispelTypes
 local playerDispelTypes = Grid2.debuffPlayerDispelTypes
+local wipe = wipe
 
 local emptyTable = {}
 local textures = {}
@@ -13,9 +14,18 @@ local expirations = {}
 local durations = {}
 local colors = {}
 local slots = {}
+local spells = {}
+
+local code_standard = [[ return %s ]]
+
+local code_stacks = [[
+	if not (%s) then return end
+	if not self.seen then self.currentName=name; return true; end
+	if name==self.currentName then self.cnt[unit] = self.cnt[unit] + count; end
+]]
 
 -- Compile a filter function, the function is called from StatusAura.lua to filter auras
-local function CompileUpdateStateFilter(self, lazy, spellId)
+local function CompileUpdateStateFilter(self, lazy, useSpellId, code)
 	local dbx = self.dbx
 	local t = {}
 	if dbx.filterDispelDebuffs~=nil then
@@ -38,9 +48,9 @@ local function CompileUpdateStateFilter(self, lazy, spellId)
 	end
 	local q -- special case for black/white lists because they are always strict (non lazy).
 	if dbx.useWhiteList then
-		q = spellId and "(self.spells[sid] or self.spells[name])" or "self.spells[name]"
+		q = useSpellId and "(self.spells[sid] or self.spells[name])" or "self.spells[name]"
 	elseif next(self.spells) then
-		q = spellId and "not (self.spells[sid] or self.spells[name])" or "not self.spells[name]"
+		q = useSpellId and "not (self.spells[sid] or self.spells[name])" or "not self.spells[name]"
 	end
 	local r = table.concat( t, lazy and ' or ' or ' and ' )
 	if r=='' then
@@ -48,19 +58,48 @@ local function CompileUpdateStateFilter(self, lazy, spellId)
 	elseif q then
 		r = string.format("%s and (%s)", q, r)
 	end
-	return assert(loadstring( "return function(self, unit, sid, name, duration, caster, boss, typ, dispel) return " .. r .. ' end' ))()
+	return assert(loadstring( "return function(self, unit, sid, name, count, duration, caster, boss, typ, dispel) " .. string.format(code, r) .. ' end' ))()
 end
 
--- Called by "icons" indicator
-local function status_GetIconsFilter(self, unit, max)
-	local UpdateState, i, j, name, debuffType, caster, isBossDebuff, _ = self.UpdateState, 1, 1
+-- Called by "icons" indicator, standard
+local function status_GetIconsFilterStandard(self, unit, max)
+	local UpdateState, i, j, name, debuffType, caster, boss, _ = self.UpdateState, 1, 1
 	repeat
-		name, textures[j], counts[j], debuffType, durations[j], expirations[j], caster, _, _, sid, _, isBossDebuff = UnitAura(unit, i, 'HARMFUL')
+		name, textures[j], counts[j], debuffType, durations[j], expirations[j], caster, _, _, sid, _, boss = UnitAura(unit, i, 'HARMFUL')
 		if not name then break end
-		if UpdateState(self, unit, sid, name, durations[j], caster, isBossDebuff, debuffType, playerDispelTypes) then
+		if UpdateState(self, unit, sid, name, counts[j], durations[j], caster, boss, debuffType, playerDispelTypes) then
 			colors[j] = typeColors[debuffType] or self.color
 			slots[j] = i
 			j = j + 1
+		end
+		i = i + 1
+	until j>max
+	return j-1, textures, counts, expirations, durations, colors, slots
+end
+
+-- Called by "icons" indicator, combine stacks
+local function status_GetIconsFilterStacks(self, unit, max)
+	local CheckState, i, j, name, texture, count, debuffType, duration, expiration, caster, spellId, boss, _ = self.CheckState, 1, 1
+	wipe(spells)
+	repeat
+		name, texture, count, debuffType, duration, expiration, caster, _, _, spellId, _, boss = UnitAura(unit, i, 'HARMFUL')
+		if not name then break end
+		if CheckState(self, unit, name, count, duration, caster, boss, debuffType, playerDispelTypes) then
+			local k = spells[name]
+			if k then -- add extra stacks
+				counts[k] = counts[k] + (count==0 and 1 or count)
+				if expiration > expirations[k] then expirations[k] = expiration end
+			else -- add new debuff
+				spells[name]   = j
+				colors[j]      = typeColors[debuffType] or self.color
+				counts[j]      = count==0 and 1 or count
+				textures[j]    = texture
+				durations[j]   = duration
+				expirations[j] = expiration
+				slots[j] = i
+				j = j + 1
+			end
+
 		end
 		i = i + 1
 	until j>max
@@ -71,8 +110,17 @@ end
 local function status_Update(self, dbx)
 	self.color = dbx.color1
 	self.spells = self.spells or emptyTable
-	self.GetIcons = status_GetIconsFilter
-	self.UpdateState = CompileUpdateStateFilter(self, dbx.lazyFiltering, dbx.useSpellId)
+	self.UpdateState = CompileUpdateStateFilter(self, dbx.lazyFiltering, dbx.useSpellId, code_standard)
+	if dbx.combineStacks then
+		self.fullUpdate = true
+		self.GetIcons = status_GetIconsFilterStacks
+		self.CheckState = self.UpdateState
+		self.UpdateState = CompileUpdateStateFilter(self, dbx.lazyFiltering, dbx.useSpellId, code_stacks)
+	else
+		self.fullUpdate = nil
+		self.CheckState = nil
+		self.GetIcons = status_GetIconsFilterStandard
+	end
 end
 
 -- Registration

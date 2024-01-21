@@ -223,6 +223,22 @@ function Grid2Options:MakeStatusAuraCombineStacksOptions(status, options, option
 	}
 end
 
+function Grid2Options:MakeStatusAurasCombineStacksOptions(status, options, optionParams)
+	self:MakeHeaderOptions(options, "Combine")
+	options.combineStacks = {
+		type = "toggle",
+		name = L["Combine Stacks"],
+		width = "normal",
+		desc = L["Multiple instances of the same debuff will be treated as multiple stacks of the same debuff."],
+		order = 91,
+		get = function () return status.dbx.combineStacks end,
+		set = function (_, v)
+			status.dbx.combineStacks = v or nil
+			status:UpdateDB()
+		end,
+	}
+end
+
 function Grid2Options:MakeStatusAuraCommonOptions(status, options, optionParams)
 	self:MakeHeaderOptions(options, "Colors")
 	if not status.dbx.missing then
