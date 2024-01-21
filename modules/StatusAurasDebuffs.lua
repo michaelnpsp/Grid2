@@ -99,11 +99,11 @@ local function status_GetIconsFilterStacks(self, unit, max)
 				end
 			else -- add new debuff
 				spells[name]   = j
-				colors[j]      = typeColors[debuffType] or self.color
-				counts[j]      = count==0 and 1 or count
 				textures[j]    = texture
 				durations[j]   = duration
 				expirations[j] = expiration
+				counts[j]      = count==0 and 1 or count
+				colors[j]      = typeColors[debuffType] or self.color
 				slots[j] = i
 				j = j + 1
 			end
