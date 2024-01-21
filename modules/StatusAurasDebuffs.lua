@@ -4,7 +4,6 @@ local UnitAura = Grid2.UnitAuraLite
 local myUnits = Grid2.roster_my_units
 local typeColors = Grid2.debuffTypeColors
 local dispelTypes = Grid2.debuffDispelTypes
-local playerDispelTypes = Grid2.debuffPlayerDispelTypes
 local wipe = wipe
 
 local emptyTable = {}
@@ -16,13 +15,21 @@ local colors = {}
 local slots = {}
 local spells = {}
 
-local code_standard = [[ return %s ]]
+local code_standard = [[
+local spells = Grid2.statuses["%s"].spells
+local dispel = Grid2.debuffPlayerDispelTypes
+return function(self, unit, sid, name, count, duration, caster, boss, typ)
+	return %s
+end ]]
 
 local code_stacks = [[
+local spells = Grid2.statuses["%s"].spells
+local dispel = Grid2.debuffPlayerDispelTypes
+return function(self, unit, sid, name, count, duration, caster, boss, typ)
 	if not (%s) then return end
 	if not self.seen then self.currentName=name; return true; end
 	if name==self.currentName then self.cnt[unit] = self.cnt[unit] + count; end
-]]
+end ]]
 
 -- Compile a filter function, the function is called from StatusAura.lua to filter auras
 local function CompileUpdateStateFilter(self, lazy, useSpellId, code)
@@ -48,9 +55,9 @@ local function CompileUpdateStateFilter(self, lazy, useSpellId, code)
 	end
 	local q -- special case for black/white lists because they are always strict (non lazy).
 	if dbx.useWhiteList then
-		q = useSpellId and "(self.spells[sid] or self.spells[name])" or "self.spells[name]"
+		q = useSpellId and "(spells[sid] or spells[name])" or "spells[name]"
 	elseif next(self.spells) then
-		q = useSpellId and "not (self.spells[sid] or self.spells[name])" or "not self.spells[name]"
+		q = useSpellId and "not (spells[sid] or spells[name])" or "not spells[name]"
 	end
 	local r = table.concat( t, lazy and ' or ' or ' and ' )
 	if r=='' then
@@ -58,16 +65,16 @@ local function CompileUpdateStateFilter(self, lazy, useSpellId, code)
 	elseif q then
 		r = string.format("%s and (%s)", q, r)
 	end
-	return assert(loadstring( "return function(self, unit, sid, name, count, duration, caster, boss, typ, dispel) " .. string.format(code, r) .. ' end' ))()
+	return assert(loadstring( string.format(code, self.name, r) ))()
 end
 
 -- Called by "icons" indicator, standard
 local function status_GetIconsFilterStandard(self, unit, max)
-	local UpdateState, i, j, name, debuffType, caster, boss, _ = self.UpdateState, 1, 1
+	local UpdateState, i, j, name, debuffType, caster, sid, boss, _ = self.UpdateState, 1, 1
 	repeat
 		name, textures[j], counts[j], debuffType, durations[j], expirations[j], caster, _, _, sid, _, boss = UnitAura(unit, i, 'HARMFUL')
 		if not name then break end
-		if UpdateState(self, unit, sid, name, counts[j], durations[j], caster, boss, debuffType, playerDispelTypes) then
+		if UpdateState(self, unit, sid, name, counts[j], durations[j], caster, boss, debuffType) then
 			colors[j] = typeColors[debuffType] or self.color
 			slots[j] = i
 			j = j + 1
@@ -79,16 +86,19 @@ end
 
 -- Called by "icons" indicator, combine stacks
 local function status_GetIconsFilterStacks(self, unit, max)
-	local CheckState, i, j, name, texture, count, debuffType, duration, expiration, caster, spellId, boss, _ = self.CheckState, 1, 1
+	local CheckState, i, j, name, texture, count, debuffType, duration, expiration, caster, sid, boss, _ = self.CheckState, 1, 1
 	wipe(spells)
 	repeat
-		name, texture, count, debuffType, duration, expiration, caster, _, _, spellId, _, boss = UnitAura(unit, i, 'HARMFUL')
+		name, texture, count, debuffType, duration, expiration, caster, _, _, sid, _, boss = UnitAura(unit, i, 'HARMFUL')
 		if not name then break end
-		if CheckState(self, unit, name, count, duration, caster, boss, debuffType, playerDispelTypes) then
+		if CheckState(self, unit, sid, name, count, duration, caster, boss, debuffType) then
 			local k = spells[name]
 			if k then -- add extra stacks
 				counts[k] = counts[k] + (count==0 and 1 or count)
-				if expiration > expirations[k] then expirations[k] = expiration end
+				if expiration > expirations[k] then
+					expirations[k] = expiration
+					slots[k] = i
+				end
 			else -- add new debuff
 				spells[name]   = j
 				colors[j]      = typeColors[debuffType] or self.color

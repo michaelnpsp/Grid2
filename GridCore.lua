@@ -325,7 +325,7 @@ end
 
 function Grid2:OpenGrid2Options()
 	if not IsAddOnLoaded("Grid2Options") then
-		if InCombatLockdown() then
+		if InCombatLockdown() and not self.isDevelop then
 			self:Print("Grid2Options cannot be loaded in combat.")
 			return
 		end

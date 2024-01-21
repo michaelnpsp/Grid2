@@ -27,7 +27,6 @@ local cache_tex, cache_cnt, cache_exp, cache_dur, cache_col = {}, {}, {}, {}, {}
 local AuraFrame_OnEvent
 do
 	local GetAuraDataByIndex = C_UnitAuras and C_UnitAuras.GetAuraDataByIndex
-	local pTypes   = Grid2.debuffPlayerDispelTypes
 	local myUnits  = Grid2.roster_my_units
 	local roUnits  = Grid2.roster_guids
 	local myFrames = Grid2Frame.frames_of_unit
@@ -54,7 +53,7 @@ do
 					if mine==false or mine==myUnits[cas] then
 						if fill then fill, tex, cnt, typ, dur, exp, bos, val[s.vId] = false, a.icon, max(a.applications,1), a.dispelName, a.duration, a.expirationTime, a.isBossAura, a.points[s.vId] end
 						if s.UpdateState then
-							s:UpdateState(u, i, sid, nam, tex, cnt, dur, exp, typ, pTypes)
+							s:UpdateState(u, i, sid, nam, tex, cnt, dur, exp, typ)
 						elseif exp~=s.exp[u] or cnt~=s.cnt[u] or val[s.vId]~=s.val[u] then
 							s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.typ[u], s.val[u], s.tkr[u] = 1, i, tex, cnt, dur, exp, typ, val[s.vId], 1
 						else
@@ -74,7 +73,7 @@ do
 			end
 			for s, update in next, DebuffGroups do
 				if fill then fill, tex, cnt, typ, dur, exp, bos = false, a.icon, max(a.applications,1), a.dispelName, a.duration, a.expirationTime, a.isBossAura end
-				if (update or not s.seen) and s:UpdateState(u, sid, nam, cnt, dur, cas, bos, typ, pTypes) then
+				if (update or not s.seen) and s:UpdateState(u, sid, nam, cnt, dur, cas, bos, typ) then
 					s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.typ[u], s.tkr[u] = 1, i, tex, cnt, dur, exp, typ, 1
 				end
 			end
