@@ -18,7 +18,6 @@ local DebuffTypes = {}
 local DebuffGroups = {}
 local debuffTypeColors = {}
 local debuffDispelTypes = { Magic = true, Curse = true, Disease = true, Poison = true }
-local cache_tex, cache_cnt, cache_exp, cache_dur, cache_col = {}, {}, {}, {}, {}
 
 -- UNIT_AURA event management
 -- s.seen = nil aura was removed, linked indicators must be updated
