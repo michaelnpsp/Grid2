@@ -99,28 +99,22 @@ end
 -- special buffs Blizzard status
 local blizzard = { GetColor = Grid2.statusLibrary.GetColor }
 
-local ShouldDisplayBuff = C_UnitAuras and C_UnitAuras.GetAuraDataByIndex and AuraUtil.ShouldDisplayBuff
+local function ShouldDisplayBuff(filter, spellId, caster, canApplyAura, isBossAura)
+	local hasCustom, alwaysShowMine, showForMySpec = SpellGetVisibilityInfo(spellId, filter)
+	if hasCustom  then
+		return showForMySpec or (alwaysShowMine and myUnits[caster])
+	else
+		return canApplyAura and myUnits[caster] and not SpellIsSelfBuff(spellId)
+	end
+end
 
 function blizzard:GetIcons(unit, max)
-	local filter
-	if not ShouldDisplayBuff then
-		filter  = UnitAffectingCombat("player") and "RAID_INCOMBAT" or "RAID_OUTOFCOMBAT"
-	end
+	local filter = UnitAffectingCombat("player") and "RAID_INCOMBAT" or "RAID_OUTOFCOMBAT"
 	local color, i, j, name, caster, spellId, canApplyAura, isBossAura, valid, _ = self.dbx.color1, 1, 1
 	repeat
 		name, textures[j], counts[j], _, durations[j], expirations[j], caster, _, _, spellId, canApplyAura, isBossAura = UnitAura(unit, i)
 		if not name then break end
-		if ShouldDisplayBuff then
-			valid = ShouldDisplayBuff(caster, spellId, canApplyAura)
-		elseif not isBossAura then
-			local hasCustom, alwaysShowMine, showForMySpec = SpellGetVisibilityInfo(spellId, filter)
-			if hasCustom  then
-				valid = showForMySpec or (alwaysShowMine and myUnits[caster])
-			else
-				valid = canApplyAura and myUnits[caster] and not SpellIsSelfBuff(spellId)
-			end
-		end
-		if valid then
+		if ShouldDisplayBuff(filter, spellId, caster, canApplyAura, isBossAura) then
 			colors[j], slots[j] = color, i
 			j = j + 1
 		end
