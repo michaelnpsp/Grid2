@@ -1,8 +1,9 @@
 -- Group of Debuffs status
 local Grid2 = Grid2
+local wipe = wipe
+local SpellGetVisibilityInfo = SpellGetVisibilityInfo
 local UnitAura = Grid2.UnitAuraLite
 local typeColors = Grid2.debuffTypeColors
-local wipe = wipe
 
 local emptyTable = {}
 local textures = {}
@@ -16,6 +17,7 @@ local spells = {}
 local code_standard = [[
 local spells = Grid2.statuses["%s"].spells
 local dispel = Grid2.debuffPlayerDispelTypes
+local IsRelevantDebuff = Grid2.IsRelevantDebuff
 return function(self, unit, sid, name, count, duration, caster, boss, typ)
 	return %s
 end ]]
@@ -23,33 +25,72 @@ end ]]
 local code_stacks = [[
 local spells = Grid2.statuses["%s"].spells
 local dispel = Grid2.debuffPlayerDispelTypes
+local IsRelevantDebuff = Grid2.IsRelevantDebuff
 return function(self, unit, sid, name, count, duration, caster, boss, typ)
 	if not (%s) then return end
 	if not self.seen then self.currentName=name; return true; end
 	if name==self.currentName then self.cnt[unit] = self.cnt[unit] + count; end
 end ]]
 
+-- code to manage dbx.filterRelevant debuffs filter
+local raidFilter = "RAID_OUTOFCOMBAT"
+local raid_statuses = {}
+
+function Grid2.IsRelevantDebuff(spellId, caster)
+	local hasCustom, alwaysShowMine, showForMySpec = SpellGetVisibilityInfo(spellId, raidFilter)
+	return not hasCustom or showForMySpec or (alwaysShowMine and (caster=="player" or caster=="pet" or caster=="vehicle"))
+end
+
+local function UpdateRaidStatuses(event)
+	local newFilter = (event=='PLAYER_REGEN_DISABLED') and "RAID_INCOMBAT" or "RAID_OUTOFCOMBAT"
+	if newFilter~=raidFilter then
+		raidFilter = newFilter
+		for status in next, raid_statuses do
+			status:UpdateAllUnits()
+		end
+	end
+end
+
+local function status_OnEnableAura(self)
+	if not next(raid_statuses) then
+		self:RegisterEvent("PLAYER_REGEN_ENABLED", UpdateRaidStatuses)
+		self:RegisterEvent("PLAYER_REGEN_DISABLED", UpdateRaidStatuses)
+	end
+	raid_statuses[self] = true
+end
+
+local function status_OnDisableAura(self)
+	raid_statuses[self] = nil
+	if not next(raid_statuses) then
+		self:UnregisterEvent("PLAYER_REGEN_ENABLED", UpdateRaidStatuses)
+		self:UnregisterEvent("PLAYER_REGEN_DISABLED", UpdateRaidStatuses)
+	end
+end
+
 -- Compile a filter function, the function is called from StatusAura.lua to filter auras
 local function CompileUpdateStateFilter(self, lazy, useSpellId, code)
 	local dbx = self.dbx
 	local t = {}
 	if dbx.filterDispelDebuffs~=nil then
-		t[#t+1] = string.format( "%s dispel[typ]", dbx.filterDispelDebuffs and '' or 'not')
+		t[#t+1] = string.format("%s dispel[typ]", dbx.filterDispelDebuffs and '' or 'not')
 	end
 	if dbx.filterLongDebuffs~=nil then
-		t[#t+1] = string.format( "%s (duration>=300)", dbx.filterLongDebuffs and 'not' or '')
+		t[#t+1] = string.format("%s (duration>=300)", dbx.filterLongDebuffs and 'not' or '')
 	end
 	if dbx.filterPermaDebuffs~=nil then
-		t[#t+1] = string.format( "%s (duration==0)", dbx.filterPermaDebuffs and 'not' or '')
+		t[#t+1] = string.format("%s (duration==0)", dbx.filterPermaDebuffs and 'not' or '')
 	end
 	if dbx.filterBossDebuffs~=nil then
-		t[#t+1] = string.format( "%s boss", dbx.filterBossDebuffs and 'not' or '')
+		t[#t+1] = string.format("%s boss", dbx.filterBossDebuffs and 'not' or '')
 	end
 	if dbx.filterCaster~=nil then
-		t[#t+1] = string.format( "%s (caster=='player' or caster=='pet' or caster=='vehicle')", dbx.filterCaster and 'not' or '')
+		t[#t+1] = string.format("%s (caster=='player' or caster=='pet' or caster=='vehicle')", dbx.filterCaster and 'not' or '')
 	end
 	if dbx.filterTyped~=nil then
-		t[#t+1] = string.format( "%s typ", dbx.filterTyped and 'not' or '')
+		t[#t+1] = string.format( "%s typ", dbx.filterTyped and 'not' or '' )
+	end
+	if dbx.filterRelevant~=nil then
+		t[#t+1] = string.format( "%s IsRelevantDebuff(sid, caster)", dbx.filterRelevant and 'not' or '' )
 	end
 	local q -- special case for black/white lists because they are always strict (non lazy).
 	if dbx.useWhiteList then
@@ -129,6 +170,8 @@ local function status_Update(self, dbx)
 		self.CheckState = nil
 		self.GetIcons = status_GetIconsFilterStandard
 	end
+	self.OnEnableAura  = dbx.filterRelevant~=nil and status_OnEnableAura  or nil
+	self.OnDisableAura = dbx.filterRelevant~=nil and status_OnDisableAura or nil
 end
 
 -- Registration
@@ -141,7 +184,7 @@ do
 		if dbx.spellName then -- fix possible wrong data in old database
 			dbx.spellName = nil
 		end
-		local status = Grid2.statusPrototype:new(baseKey, false)
+		local status = Grid2.statusPrototype:new(baseKey)
 		status.OnUpdate = status_Update
 		return Grid2.CreateStatusAura(status, basekey, dbx, 'debuff', statusTypes)
 	end

@@ -36,7 +36,7 @@ do
 	local a, nam, tex, cnt, typ, dur, exp, cas, sid, bos, _
 	local GetAura = GetAuraDataByIndex and function(unit, index, filter) -- for retail
 		a = GetAuraDataByIndex(unit, index, filter)
-		if a then fill, nam, sid, cas = true, a.name, a.spellId, a.sourceUnit; return true; end
+		if a then fill, nam, typ, cas, sid = true, a.name, a.dispelName, a.sourceUnit, a.spellId; return true; end
 	end or function(unit, index, filter) -- for classic
 		nam, tex, cnt, typ, dur, exp, cas, _, _, sid, _, bos, _, _, _, val[1], val[2], val[3] = UnitAura(unit, index, filter)
 		if nam then if cnt==0 then cnt=1 end; return true end
@@ -51,7 +51,7 @@ do
 				for s in next, statuses do
 					local mine = s.isMine
 					if mine==false or mine==myUnits[cas] then
-						if fill then fill, tex, cnt, typ, dur, exp, bos, val[s.vId] = false, a.icon, max(a.applications,1), a.dispelName, a.duration, a.expirationTime, a.isBossAura, a.points[s.vId] end
+						if fill then fill, tex, cnt, dur, exp, bos, val[s.vId] = false, a.icon, max(a.applications,1), a.duration, a.expirationTime, a.isBossAura, a.points[s.vId] end
 						if s.UpdateState then
 							s:UpdateState(u, i, sid, nam, tex, cnt, dur, exp, typ)
 						elseif exp~=s.exp[u] or cnt~=s.cnt[u] or val[s.vId]~=s.val[u] then
@@ -64,7 +64,7 @@ do
 			end
 			local s = DebuffTypes[typ or 'Typeless']
 			if s and not s.seen and not (s.debuffFilter and s.debuffFilter[nam]) then
-				if fill then fill, tex, cnt, typ, dur, exp, bos = false, a.icon, max(a.applications,1), a.dispelName, a.duration, a.expirationTime, a.isBossAura end
+				if fill then fill, tex, cnt, dur, exp, bos = false, a.icon, max(a.applications,1), a.duration, a.expirationTime, a.isBossAura end
 				if exp~=s.exp[u] or cnt~=s.cnt[u] then
 					s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u] = 1, i, tex, cnt, dur, exp
 				else
@@ -72,7 +72,7 @@ do
 				end
 			end
 			for s, update in next, DebuffGroups do
-				if fill then fill, tex, cnt, typ, dur, exp, bos = false, a.icon, max(a.applications,1), a.dispelName, a.duration, a.expirationTime, a.isBossAura end
+				if fill then fill, tex, cnt, dur, exp, bos = false, a.icon, max(a.applications,1), a.duration, a.expirationTime, a.isBossAura end
 				if (update or not s.seen) and s:UpdateState(u, sid, nam, cnt, dur, cas, bos, typ) then
 					s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.typ[u], s.tkr[u] = 1, i, tex, cnt, dur, exp, typ, 1
 				end
@@ -87,7 +87,7 @@ do
 				for s in next, statuses do
 					local mine = s.isMine
 					if (mine==false or mine==myUnits[cas]) and s.seen~=1 then
-						if fill then fill, tex, cnt, typ, dur, exp, bos, val[s.vId] = false, a.icon, max(a.applications,1), a.dispelName, a.duration, a.expirationTime, a.isBossAura, a.points[s.vId] end
+						if fill then fill, tex, cnt, dur, exp, bos, val[s.vId] = false, a.icon, max(a.applications,1), a.duration, a.expirationTime, a.isBossAura, a.points[s.vId] end
 						if s.UpdateState then
 							 s:UpdateState(u, i, sid, nam, tex, cnt, dur, exp)
 						elseif exp~=s.exp[u] or s.cnt[u]~=cnt or val[s.vId]~=s.val[u] or s.spells then
@@ -458,11 +458,13 @@ do
 			RegisterTimeTrackerStatus(self, self.dbx.colorThresholdElapsed)
 		end
 		UpdateAllAuras()
+		if self.OnEnableAura then self:OnEnableAura() end
 	end
 	local function OnDisable(self)
 		UnregisterStatusAura(self, self.handlerType, self.dbx.subType)
 		UnregisterTimeTrackerStatus(self)
 		wipe(self.idx);	wipe(self.exp); wipe(self.val)
+		if self.OnDisableAura then self:OnDisableAura() end
 	end
 	local function UpdateStateCombineStacks(s, u, i, sid, nam, tex, cnt, dur, exp, typ)
 		if s.seen then -- adding extra debuffs stacks

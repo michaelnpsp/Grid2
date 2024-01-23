@@ -1,6 +1,7 @@
 local L = Grid2Options.L
 
 function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionParams)
+	local IsHidden = function () return status.dbx.useWhiteList end
 	self:MakeHeaderOptions( options, "Display" )
 	options.strictFiltering = {
 		type = "toggle",
@@ -13,7 +14,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			status.dbx.lazyFiltering = (not v) or nil
 			status:Refresh()
 		end,
-		hidden = function() return status.dbx.useWhiteList end,
+		hidden = IsHidden,
 	}
 	options.showDispelDebuffs = {
 		type = "toggle",
@@ -33,7 +34,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			end
 			status:Refresh()
 		end,
-		hidden = function() return status.dbx.useWhiteList end
+		hidden = IsHidden,
 	}
 	options.showNonDispelDebuffs = {
 		type = "toggle",
@@ -49,9 +50,9 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			end
 			status:Refresh()
 		end,
-		hidden = function() return status.dbx.useWhiteList end
+		hidden = IsHidden,
 	}
-	options.filterTyped = { type = "description", name = "", order = 83 }
+	options.filterTyped = { type = "description", name = "", order = 83, hidden = IsHidden }
 	options.showTypedDebuffs = {
 		type = "toggle",
 		name = L["Typed Debuffs"],
@@ -62,7 +63,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			status.dbx.filterTyped = (not v) or nil
 			status:Refresh()
 		end,
-		hidden = function() return status.dbx.useWhiteList end
+		hidden = IsHidden,
 	}
 	options.showUntypedDebuffs = {
 		type = "toggle",
@@ -78,14 +79,26 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			end
 			status:Refresh()
 		end,
-		hidden = function() return status.dbx.useWhiteList end
+		hidden = IsHidden,
 	}
-	options.filterBoss = { type = "description", name = "", order = 84 }
+	options.filterBoss = { type = "description", name = "", order = 84, hidden = IsHidden }
+	options.showBossDebuffs = {
+		type = "toggle",
+		name = L["Boss Debuffs"],
+		desc = L["Display debuffs direct casted by Bosses"],
+		order = 84.1,
+		get = function () return status.dbx.filterBossDebuffs~=true end,
+		set = function (_, v)
+			status.dbx.filterBossDebuffs = (not v) or nil
+			status:Refresh()
+		end,
+		hidden = IsHidden,
+	}
 	options.showNonBossDebuffs = {
 		type = "toggle",
 		name = L["Non Boss Debuffs"],
 		desc = L["Display debuffs not casted by Bosses"],
-		order = 84.1,
+		order = 84.2,
 		get = function () return status.dbx.filterBossDebuffs~=false end,
 		set = function (_, v)
 			if v then
@@ -95,21 +108,9 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			end
 			status:Refresh()
 		end,
-		hidden = function() return status.dbx.useWhiteList end
+		hidden = IsHidden,
 	}
-	options.showBossDebuffs = {
-		type = "toggle",
-		name = L["Boss Debuffs"],
-		desc = L["Display debuffs direct casted by Bosses"],
-		order = 84.2,
-		get = function () return status.dbx.filterBossDebuffs~=true end,
-		set = function (_, v)
-			status.dbx.filterBossDebuffs = (not v) or nil
-			status:Refresh()
-		end,
-		hidden = function() return status.dbx.useWhiteList end
-	}
-	options.filterPerma = { type = "description", name = "", order = 85 }
+	options.filterPerma = { type = "description", name = "", order = 85, hidden = IsHidden }
 	options.showTempDebuffs = {
 		type = "toggle",
 		name = L["Temporary Debuffs"],
@@ -124,7 +125,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			end
 			status:Refresh()
 		end,
-		hidden = function() return status.dbx.useWhiteList end
+		hidden = IsHidden,
 	}
 	options.showPermaDebuffs = {
 		type = "toggle",
@@ -136,9 +137,9 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			status.dbx.filterPermaDebuffs = (not v) and true or nil
 			status:Refresh()
 		end,
-		hidden = function() return status.dbx.useWhiteList end
+		hidden = IsHidden,
 	}
-	options.filterLong = { type = "description", name = "", order = 86 }
+	options.filterLong = { type = "description", name = "", order = 86, hidden = IsHidden }
 	options.showShortDebuffs = {
 		type = "toggle",
 		name = L["Short Duration"],
@@ -153,7 +154,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			end
 			status:Refresh()
 		end,
-		hidden = function() return status.dbx.useWhiteList end
+		hidden = IsHidden,
 	}
 	options.showLongDebuffs = {
 		type = "toggle",
@@ -165,14 +166,26 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			status.dbx.filterLongDebuffs = (not v) and true or nil
 			status:Refresh()
 		end,
-		hidden = function() return status.dbx.useWhiteList end
+		hidden = IsHidden,
 	}
-	options.filterSelf = { type = "description", name = "", order = 87 }
+	options.filterSelf = { type = "description", name = "", order = 87, hidden = IsHidden }
+	options.showSelfDebuffs = {
+		type = "toggle",
+		name = L["Self Casted"],
+		desc = L["Display self debuffs"],
+		order = 87.1,
+		get = function () return status.dbx.filterCaster~=true end,
+		set = function (_, v)
+			status.dbx.filterCaster = (not v) and true or nil
+			status:Refresh()
+		end,
+		hidden = IsHidden,
+	}
 	options.showNonSelfDebuffs = {
 		type = "toggle",
 		name = L["Non Self Casted"],
 		desc = L["Display non self debuffs"],
-		order = 87.1,
+		order = 87.2,
 		get = function () return status.dbx.filterCaster~=false end,
 		set = function (_, v)
 			if v then
@@ -182,26 +195,43 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			end
 			status:Refresh()
 		end,
-		hidden = function() return status.dbx.useWhiteList end
+		hidden = IsHidden,
 	}
-	options.showSelfDebuffs = {
+	options.filterRelevant = { type = "description", name = "", order = 88, hidden = IsHidden }
+	options.relevantDebuffs = {
 		type = "toggle",
-		name = L["Self Casted"],
-		desc = L["Display self debuffs"],
-		order = 87.2,
-		get = function () return status.dbx.filterCaster~=true end,
+		name = L["Relevant Debuffs"],
+		desc = L["Display debuffs marked as relevant by blizzard designers."],
+		order = 88.1,
+		get = function () return status.dbx.filterRelevant~=true end,
 		set = function (_, v)
-			status.dbx.filterCaster = (not v) and true or nil
+			status.dbx.filterRelevant = (not v) and true or nil
 			status:Refresh()
 		end,
-		hidden = function() return status.dbx.useWhiteList end
+		hidden = IsHidden,
 	}
-	options.filterList = { type = "description", name = "", order = 88 }
+	options.nonrelevantDebuffs = {
+		type = "toggle",
+		name = L["Non-Relevant Debuffs"],
+		desc = L["Display debuffs marked as non-relevant by blizzard designers."],
+		order = 88.2,
+		get = function () return status.dbx.filterRelevant~=false end,
+		set = function (_, v)
+			if v then
+				status.dbx.filterRelevant = nil
+			else
+				status.dbx.filterRelevant = false
+			end
+			status:Refresh()
+		end,
+		hidden = IsHidden,
+	}
+	options.filterList = { type = "description", name = "", order = 89, hidden = IsHidden }
 	options.useWhiteList = {
 		type = "toggle",
 		name = L["Whitelist"],
 		desc = L["Display only debuffs contained in a user defined list."],
-		order = 88.1,
+		order = 89.1,
 		get = function () return status.dbx.useWhiteList and status.dbx.auras~=nil end,
 		set = function (_, v)
 			status.dbx.filterDispelDebuffs = nil
@@ -226,7 +256,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 		type = "toggle",
 		name = L["Blacklist"],
 		desc = L["Ignore debuffs contained in a user defined list. This condition is always strict."],
-		order = 88.2,
+		order = 89.2,
 		get = function () return (not status.dbx.useWhiteList) and status.dbx.auras~=nil end,
 		set = function (_, v)
 			if v then
