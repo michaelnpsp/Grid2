@@ -1,7 +1,49 @@
 local L = Grid2Options.L
 
+local FILTERS = { 'filterDispelDebuffs', 'filterTyped', 'filterBossDebuffs', 'filterPermaDebuffs', 'filterLongDebuffs', 'filterCaster', 'filterRelevant' }
+local MT = {
+	['nil']   = { [1] = true, [2] = false }, -- nil   setting
+	['false'] = { [1] = true, [2] = nil   }, -- false setting
+	['true']  = { [1] = nil , [2] = false }, -- true  setting
+	[1]       = { [true] = 1, [false] = 2 }, -- Key=1 left  toggle / true  = non-lazy filter
+	[2]       = { [true] = 2, [false] = 1 }, -- key=2 right toggle / false = lazy filter
+}
+
 function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionParams)
+	local order = 82
 	local IsHidden = function () return status.dbx.useWhiteList end
+	local function MakeCondition(key, invert, text1, desc1, text2, desc2)
+		options[key..'1'] = {
+			type = "toggle",
+			order = order + (invert and 0.1 or 0),
+			name = L[text1],
+			desc = L[desc1],
+			get = function ()
+				return status.dbx[key]==false or (not status.dbx.lazyFiltering and status.dbx[key]==nil)
+			end,
+			set = function (_, v)
+				status.dbx[key] = MT[ tostring(status.dbx[key]) ][ MT[1][not status.dbx.lazyFiltering] ]
+				status:Refresh()
+			end,
+			hidden = IsHidden,
+		}
+		options[key..'2'] = {
+			type = "toggle",
+			order = order + (invert and 0 or 0.1),
+			name = L[text2],
+			desc = L[desc2],
+			get = function ()
+				return status.dbx[key]==true or (not status.dbx.lazyFiltering and status.dbx[key]==nil)
+			end,
+			set = function (_, v)
+				status.dbx[key] = MT[ tostring(status.dbx[key]) ][ MT[2][not status.dbx.lazyFiltering] ]
+				status:Refresh()
+			end,
+			hidden = IsHidden,
+		}
+		options[key..'3'] = { type = "description", name = "", order = order + 0.2, hidden = IsHidden }
+		order = order + 1
+	end
 	self:MakeHeaderOptions( options, "Display" )
 	options.strictFiltering = {
 		type = "toggle",
@@ -16,229 +58,56 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 		end,
 		hidden = IsHidden,
 	}
-	options.showDispelDebuffs = {
-		type = "toggle",
-		name = L["Dispellable by Me"],
-		desc = L["Display debuffs i can dispell"],
-		order = 82.1,
-		get = function () return status.dbx.filterDispelDebuffs~=false end,
-		set = function (_, v)
-			if v then
-				status.dbx.filterDispelDebuffs = nil
-			else
-				status.dbx.filterDispelDebuffs = false
-			end
-			if v~=nil and status.dbx.auras then
-				status.dbx.aurasBak = status.dbx.auras
-				status.dbx.auras = nil
-			end
-			status:Refresh()
-		end,
-		hidden = IsHidden,
-	}
-	options.showNonDispelDebuffs = {
-		type = "toggle",
-		name = L["Non Dispellable by Me"],
-		desc = L["Display debuffs i can not dispell"],
-		order = 82.2,
-		get = function () return status.dbx.filterDispelDebuffs~=true end,
-		set = function (_, v)
-			status.dbx.filterDispelDebuffs = not v or nil
-			if v~=nil and status.dbx.auras then
-				status.dbx.aurasBak = status.dbx.auras
-				status.dbx.auras = nil
-			end
-			status:Refresh()
-		end,
-		hidden = IsHidden,
-	}
-	options.filterTyped = { type = "description", name = "", order = 83, hidden = IsHidden }
-	options.showTypedDebuffs = {
-		type = "toggle",
-		name = L["Typed Debuffs"],
-		desc = L["Display Magic, Curse, Poison or Disease type debuffs."],
-		order = 83.1,
-		get = function () return status.dbx.filterTyped~=true end,
-		set = function (_, v)
-			status.dbx.filterTyped = (not v) or nil
-			status:Refresh()
-		end,
-		hidden = IsHidden,
-	}
-	options.showUntypedDebuffs = {
-		type = "toggle",
-		name = L["Untyped Debuffs"],
-		desc = L["Display debuffs with no type."],
-		order = 83.2,
-		get = function () return status.dbx.filterTyped~=false end,
-		set = function (_, v)
-			if v then
-				status.dbx.filterTyped = nil
-			else
-				status.dbx.filterTyped = false
-			end
-			status:Refresh()
-		end,
-		hidden = IsHidden,
-	}
-	options.filterBoss = { type = "description", name = "", order = 84, hidden = IsHidden }
-	options.showBossDebuffs = {
-		type = "toggle",
-		name = L["Boss Debuffs"],
-		desc = L["Display debuffs direct casted by Bosses"],
-		order = 84.1,
-		get = function () return status.dbx.filterBossDebuffs~=true end,
-		set = function (_, v)
-			status.dbx.filterBossDebuffs = (not v) or nil
-			status:Refresh()
-		end,
-		hidden = IsHidden,
-	}
-	options.showNonBossDebuffs = {
-		type = "toggle",
-		name = L["Non Boss Debuffs"],
-		desc = L["Display debuffs not casted by Bosses"],
-		order = 84.2,
-		get = function () return status.dbx.filterBossDebuffs~=false end,
-		set = function (_, v)
-			if v then
-				status.dbx.filterBossDebuffs = nil
-			else
-				status.dbx.filterBossDebuffs = false
-			end
-			status:Refresh()
-		end,
-		hidden = IsHidden,
-	}
-	options.filterPerma = { type = "description", name = "", order = 85, hidden = IsHidden }
-	options.showTempDebuffs = {
-		type = "toggle",
-		name = L["Temporary Debuffs"],
-		desc = L["Display debuffs with a duration."],
-		order = 85.1,
-		get = function () return status.dbx.filterPermaDebuffs~=false end,
-		set = function (_, v)
-			if v then
-				status.dbx.filterPermaDebuffs = nil
-			else
-				status.dbx.filterPermaDebuffs = false
-			end
-			status:Refresh()
-		end,
-		hidden = IsHidden,
-	}
-	options.showPermaDebuffs = {
-		type = "toggle",
-		name = L["Permanent Debuffs"],
-		desc = L["Display debuffs with no duration."],
-		order = 85.2,
-		get = function () return status.dbx.filterPermaDebuffs~=true end,
-		set = function (_, v)
-			status.dbx.filterPermaDebuffs = (not v) and true or nil
-			status:Refresh()
-		end,
-		hidden = IsHidden,
-	}
-	options.filterLong = { type = "description", name = "", order = 86, hidden = IsHidden }
-	options.showShortDebuffs = {
-		type = "toggle",
-		name = L["Short Duration"],
-		desc = L["Display debuffs with duration below 5 minutes."],
-		order = 86.1,
-		get = function () return status.dbx.filterLongDebuffs~=false end,
-		set = function (_, v)
-			if v then
-				status.dbx.filterLongDebuffs = nil
-			else
-				status.dbx.filterLongDebuffs = false
-			end
-			status:Refresh()
-		end,
-		hidden = IsHidden,
-	}
-	options.showLongDebuffs = {
-		type = "toggle",
-		name = L["Long Duration"],
-		desc = L["Display debuffs with duration above 5 minutes."],
-		order = 86.2,
-		get = function () return status.dbx.filterLongDebuffs~=true end,
-		set = function (_, v)
-			status.dbx.filterLongDebuffs = (not v) and true or nil
-			status:Refresh()
-		end,
-		hidden = IsHidden,
-	}
-	options.filterSelf = { type = "description", name = "", order = 87, hidden = IsHidden }
-	options.showSelfDebuffs = {
-		type = "toggle",
-		name = L["Self Casted"],
-		desc = L["Display self debuffs"],
-		order = 87.1,
-		get = function () return status.dbx.filterCaster~=true end,
-		set = function (_, v)
-			status.dbx.filterCaster = (not v) and true or nil
-			status:Refresh()
-		end,
-		hidden = IsHidden,
-	}
-	options.showNonSelfDebuffs = {
-		type = "toggle",
-		name = L["Non Self Casted"],
-		desc = L["Display non self debuffs"],
-		order = 87.2,
-		get = function () return status.dbx.filterCaster~=false end,
-		set = function (_, v)
-			if v then
-				status.dbx.filterCaster = nil
-			else
-				status.dbx.filterCaster = false
-			end
-			status:Refresh()
-		end,
-		hidden = IsHidden,
-	}
-	options.filterRelevant = { type = "description", name = "", order = 88, hidden = IsHidden }
-	options.relevantDebuffs = {
-		type = "toggle",
-		name = L["Relevant Debuffs"],
-		desc = L["Display debuffs marked as relevant by blizzard designers."],
-		order = 88.1,
-		get = function () return status.dbx.filterRelevant~=true end,
-		set = function (_, v)
-			status.dbx.filterRelevant = (not v) and true or nil
-			status:Refresh()
-		end,
-		hidden = IsHidden,
-	}
-	options.nonrelevantDebuffs = {
-		type = "toggle",
-		name = L["Non-Relevant Debuffs"],
-		desc = L["Display debuffs marked as non-relevant by blizzard designers."],
-		order = 88.2,
-		get = function () return status.dbx.filterRelevant~=false end,
-		set = function (_, v)
-			if v then
-				status.dbx.filterRelevant = nil
-			else
-				status.dbx.filterRelevant = false
-			end
-			status:Refresh()
-		end,
-		hidden = IsHidden,
-	}
-	options.filterList = { type = "description", name = "", order = 89, hidden = IsHidden }
+	MakeCondition('filterDispelDebuffs', true,
+		"Non Dispellable by Me",
+		"Display debuffs i can not dispell",
+		"Dispellable by Me",
+		"Display debuffs i can dispell"
+	)
+	MakeCondition('filterTyped', false,
+		"Typed Debuffs",
+		"Display Magic, Curse, Poison or Disease type debuffs.",
+		"Untyped Debuffs",
+		"Display debuffs with no type."
+	)
+	MakeCondition('filterBossDebuffs', false,
+		"Boss Debuffs",
+		"Display debuffs direct casted by Bosses",
+		"Non Boss Debuffs",
+		"Display debuffs not casted by Bosses"
+	)
+	MakeCondition('filterRelevant', false,
+		"Relevant Debuffs",
+		"Display debuffs marked as relevant by blizzard developers.",
+		"Non-Relevant Debuffs",
+		"Display debuffs marked as non-relevant by blizzard developers."
+	)
+	MakeCondition('filterPermaDebuffs', false,
+		"Permanent Debuffs",
+		"Display debuffs with no duration.",
+		"Temporary Debuffs",
+		"Display debuffs with a duration."
+	)
+	MakeCondition('filterLongDebuffs', false,
+		"Long Duration",
+		"Display debuffs with duration above 5 minutes.",
+		"Short Duration",
+		"Display debuffs with duration below 5 minutes."
+	)
+	MakeCondition('filterCaster', false,
+		"Self Casted",
+		"Display self debuffs",
+		"Non Self Casted",
+		"Display non self debuffs"
+	)
 	options.useWhiteList = {
 		type = "toggle",
 		name = L["Whitelist"],
 		desc = L["Display only debuffs contained in a user defined list."],
-		order = 89.1,
+		order = order + 0.1,
 		get = function () return status.dbx.useWhiteList and status.dbx.auras~=nil end,
 		set = function (_, v)
-			status.dbx.filterDispelDebuffs = nil
-			status.dbx.filterLongDebuffs = nil
-			status.dbx.filterBossDebuffs = nil
-			status.dbx.filterCaster = nil
-			status.dbx.filterTyped = nil
+			for _,key in ipairs(FILTERS) do	status.dbx[key] = nil end
 			if v then
 				status.dbx.auras = status.dbx.auras or status.dbx.aurasBak or {}
 				status.dbx.aurasBak = nil
@@ -256,7 +125,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 		type = "toggle",
 		name = L["Blacklist"],
 		desc = L["Ignore debuffs contained in a user defined list. This condition is always strict."],
-		order = 89.2,
+		order = order + 0.2,
 		get = function () return (not status.dbx.useWhiteList) and status.dbx.auras~=nil end,
 		set = function (_, v)
 			if v then
@@ -274,13 +143,11 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 end
 
 function Grid2Options:MakeStatusDebuffsGeneralOptions(status, options, optionParams)
-	self:MakeStatusAuraCommonOptions(status, options, optionParams)
-	self:MakeStatusAuraTextOptions(status, options, optionParams)
-	self:MakeStatusColorOptions(status, options, optionParams)
-	self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
+	self:MakeStatusAuraColorsOptions(status, options, optionParams)
 	self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
 	self:MakeStatusDebuffsFilterOptions(status, options, optionParams)
-	self:MakeStatusAurasCombineStacksOptions(status, options, optionParams)
+	self:MakeStatusAuraCombineStacksOptions(status, options, optionParams)
+	self:MakeStatusAuraTextOptions(status, options, optionParams)
 	return options
 end
 

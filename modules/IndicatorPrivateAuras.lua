@@ -41,10 +41,10 @@ local function Icon_Update(self, parent, unit)
 			auraHandles[i] = AddPrivateAuraAnchor(auraAnchor)
 			iconAnchor.offsetX = iconAnchor.offsetX + self.sumx
 			iconAnchor.offsetY = iconAnchor.offsetY + self.sumy
-			auraAnchor.auraIndex = auraAnchor.auraIndex + 1			
+			auraAnchor.auraIndex = auraAnchor.auraIndex + 1
 		end
 		f.auraUnit = unit
-	end	
+	end
 end
 
 local function Icon_Layout(self, parent)

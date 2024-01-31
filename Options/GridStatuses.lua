@@ -36,6 +36,7 @@ Grid2Options.debuffTypeIcons = {
 	Disease = "Interface\\Icons\\Spell_nature_removedisease",
 	Curse   = "Interface\\Icons\\Spell_nature_removedisease",
 	Typeless= "Interface\\Icons\\Spell_holy_harmundeadaura",
+	Boss    = "Interface\\Icons\\Ability_Creature_Cursed_05",
 	Default = "Interface\\Icons\\Spell_holy_harmundeadaura",
 }
 -- status.dbx.type -> categoryKey

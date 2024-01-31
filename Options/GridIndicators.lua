@@ -152,6 +152,7 @@ do
 			local setupFunc = Grid2.setupFunc[dbx.type]
 			local indicator = setupFunc(newIndicatorName, dbx)
 			Grid2Options:CreateIndicatorFrames(indicator)
+			Grid2Frame:UpdateIndicators()
 			-- Create indicator options
 			newIndicatorValues.name = ""
 			Grid2Options:MakeIndicatorOptions(indicator)

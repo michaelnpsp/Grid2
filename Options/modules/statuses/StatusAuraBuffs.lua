@@ -22,10 +22,8 @@ Grid2Options:RegisterStatusOptions("buffs", "buff", function(self, status, optio
 		self:MakeStatusColorOptions(status, options, optionParams)
 	else
 		self:MakeStatusBuffsStrictOptions(status, options, optionParams)
-		self:MakeStatusAuraCommonOptions(status, options, optionParams)
+		self:MakeStatusAuraColorsOptions(status, options, optionParams)
 		self:MakeStatusAuraMissingOptions(status, options, optionParams)
-		self:MakeStatusColorOptions(status, options, optionParams)
-		self:MakeStatusAuraColorThresholdOptions(status, options, optionParams)
 		self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
 		self:MakeHeaderOptions( options, "AurasExpanded" )
 		self:MakeStatusAuraListOptions(status, options, optionParams)

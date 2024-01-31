@@ -293,11 +293,10 @@ do
 		Highlight  = { type = "header", order = 200, name = L["Highlight"]	},
 		-- statuses headers
 		Activation    = { type = "header", order = 4.5, name = L["Activation"] },
-		Stacks	      = { type = "header", order = 4.9, name = L["Stacks"] },
 		Colors	      = { type = "header", order = 10,  name = L["Colors"] },
 		Thresholds    = { type = "header", order = 50,  name = L["Thresholds"] },
+		Combine       = { type = "header", order = 89.9,name = L["Stacks"] },
 		Value         = { type = "header", order = 90,  name = L["Value"] },
-		Combine       = { type = "header", order = 90,  name = L["Stacks"] },
 		Text          = { type = "header", order = 95,  name = L["Text"] },
 		Misc          = { type = "header", order = 100, name = L["Misc"] },
 		Duration      = { type = "header", order = 105, name = L["Duration"] },

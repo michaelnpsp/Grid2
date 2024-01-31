@@ -32,6 +32,15 @@ return function(self, unit, sid, name, count, duration, caster, boss, typ)
 	if name==self.currentName then self.cnt[unit] = self.cnt[unit] + count; end
 end ]]
 
+-- helper functions
+local function GetColorStd(self) -- single color for multiple-icons
+	return self.color
+end
+
+local function GetColorTyp(self, typ, bos) -- color by debuff type for multiple-icons
+	return (typ and typeColors[typ]) or (bos and typeColors.Boss) or self.color
+end
+
 -- code to manage dbx.filterRelevant debuffs filter
 local raidFilter = "RAID_OUTOFCOMBAT"
 local raid_statuses = {}
@@ -109,12 +118,12 @@ end
 
 -- Called by "icons" indicator, standard
 local function status_GetIconsFilterStandard(self, unit, max)
-	local UpdateState, i, j, name, debuffType, caster, sid, boss, _ = self.UpdateState, 1, 1
+	local UpdateState, GetColor, i, j, name, debuffType, caster, sid, boss, _ = self.UpdateState, self.GetColorIcons, 1, 1
 	repeat
 		name, textures[j], counts[j], debuffType, durations[j], expirations[j], caster, _, _, sid, _, boss = UnitAura(unit, i, 'HARMFUL')
 		if not name then break end
 		if UpdateState(self, unit, sid, name, counts[j], durations[j], caster, boss, debuffType) then
-			colors[j] = typeColors[debuffType] or self.color
+			colors[j] = GetColor(self, debuffType, boss)
 			slots[j] = i
 			j = j + 1
 		end
@@ -125,7 +134,7 @@ end
 
 -- Called by "icons" indicator, combine stacks
 local function status_GetIconsFilterStacks(self, unit, max)
-	local CheckState, i, j, name, texture, count, debuffType, duration, expiration, caster, sid, boss, _ = self.CheckState, 1, 1
+	local CheckState, GetColor, i, j, name, texture, count, debuffType, duration, expiration, caster, sid, boss, _ = self.CheckState, self.GetColorIcons, 1, 1
 	wipe(spells)
 	repeat
 		name, texture, count, debuffType, duration, expiration, caster, _, _, sid, _, boss = UnitAura(unit, i, 'HARMFUL')
@@ -144,7 +153,7 @@ local function status_GetIconsFilterStacks(self, unit, max)
 				durations[j]   = duration
 				expirations[j] = expiration
 				counts[j]      = count==0 and 1 or count
-				colors[j]      = typeColors[debuffType] or self.color
+				colors[j]      = GetColor(self, debuffType, boss)
 				slots[j] = i
 				j = j + 1
 			end
@@ -155,10 +164,21 @@ local function status_GetIconsFilterStacks(self, unit, max)
 	return j-1, textures, counts, expirations, durations, colors, slots
 end
 
+-- color by debuff type
+local function status_GetDebuffTypeColor(self, unit)
+	local color = typeColors[ self.typ[unit] ] or self.color
+	if color then
+		return color.r, color.g, color.b, color.a
+	else
+		return 0,0,0,1
+	end
+end
+
 -- Called by status:UpdateDB()
 local function status_Update(self, dbx)
 	self.color = dbx.color1
 	self.spells = self.spells or emptyTable
+	self.GetColorIcons = dbx.debuffTypeColorize and GetColorTyp or GetColorStd
 	self.UpdateState = CompileUpdateStateFilter(self, dbx.lazyFiltering, dbx.useSpellId, code_standard)
 	if dbx.combineStacks then
 		self.fullUpdate = true
@@ -169,6 +189,9 @@ local function status_Update(self, dbx)
 		self.fullUpdate = nil
 		self.CheckState = nil
 		self.GetIcons = status_GetIconsFilterStandard
+	end
+	if dbx.debuffTypeColorize then
+		self.GetColor = status_GetDebuffTypeColor
 	end
 	self.OnEnableAura  = dbx.filterRelevant~=nil and status_OnEnableAura  or nil
 	self.OnDisableAura = dbx.filterRelevant~=nil and status_OnDisableAura or nil

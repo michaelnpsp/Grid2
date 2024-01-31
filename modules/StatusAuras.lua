@@ -17,6 +17,7 @@ local Debuffs = {}
 local DebuffTypes = {}
 local DebuffGroups = {}
 local debuffTypeColors = {}
+local debuffTypesKeys = { 'Magic', 'Curse', 'Disease', 'Poison', 'Typeless', 'Boss' }
 local debuffDispelTypes = { Magic = true, Curse = true, Disease = true, Poison = true }
 
 -- UNIT_AURA event management
@@ -35,7 +36,7 @@ do
 	local a, nam, tex, cnt, typ, dur, exp, cas, sid, bos, _
 	local GetAura = GetAuraDataByIndex and function(unit, index, filter) -- for retail
 		a = GetAuraDataByIndex(unit, index, filter)
-		if a then fill, nam, typ, cas, sid = true, a.name, a.dispelName, a.sourceUnit, a.spellId; return true; end
+		if a then fill, nam, typ, cas, sid, bos = true, a.name, a.dispelName, a.sourceUnit, a.spellId, a.isBossAura; return true; end
 	end or function(unit, index, filter) -- for classic
 		nam, tex, cnt, typ, dur, exp, cas, _, _, sid, _, bos, _, _, _, val[1], val[2], val[3] = UnitAura(unit, index, filter)
 		if nam then if cnt==0 then cnt=1 end; return true end
@@ -50,7 +51,7 @@ do
 				for s in next, statuses do
 					local mine = s.isMine
 					if mine==false or mine==myUnits[cas] then
-						if fill then fill, tex, cnt, dur, exp, bos, val[s.vId] = false, a.icon, max(a.applications,1), a.duration, a.expirationTime, a.isBossAura, a.points[s.vId] end
+						if fill then fill, tex, cnt, dur, exp, val[s.vId] = false, a.icon, max(a.applications,1), a.duration, a.expirationTime, a.points[s.vId] end
 						if s.UpdateState then
 							s:UpdateState(u, i, sid, nam, tex, cnt, dur, exp, typ)
 						elseif exp~=s.exp[u] or cnt~=s.cnt[u] or val[s.vId]~=s.val[u] then
@@ -63,15 +64,26 @@ do
 			end
 			local s = DebuffTypes[typ or 'Typeless']
 			if s and not s.seen and not (s.debuffFilter and s.debuffFilter[nam]) then
-				if fill then fill, tex, cnt, dur, exp, bos = false, a.icon, max(a.applications,1), a.duration, a.expirationTime, a.isBossAura end
+				if fill then fill, tex, cnt, dur, exp = false, a.icon, max(a.applications,1), a.duration, a.expirationTime end
 				if exp~=s.exp[u] or cnt~=s.cnt[u] then
 					s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u] = 1, i, tex, cnt, dur, exp
 				else
 					s.seen, s.idx[u] = -1, i
 				end
 			end
+			if bos then
+				local s = DebuffTypes.Boss
+				if s and not s.seen and not (s.debuffFilter and s.debuffFilter[nam]) then
+					if fill then fill, tex, cnt, dur, exp = false, a.icon, max(a.applications,1), a.duration, a.expirationTime end
+					if exp~=s.exp[u] or cnt~=s.cnt[u] then
+						s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u] = 1, i, tex, cnt, dur, exp
+					else
+						s.seen, s.idx[u] = -1, i
+					end
+				end
+			end
 			for s, update in next, DebuffGroups do
-				if fill then fill, tex, cnt, dur, exp, bos = false, a.icon, max(a.applications,1), a.duration, a.expirationTime, a.isBossAura end
+				if fill then fill, tex, cnt, dur, exp = false, a.icon, max(a.applications,1), a.duration, a.expirationTime end
 				if (update or not s.seen) and s:UpdateState(u, sid, nam, cnt, dur, cas, bos, typ) then
 					s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.typ[u], s.tkr[u] = 1, i, tex, cnt, dur, exp, typ, 1
 				end
@@ -86,7 +98,7 @@ do
 				for s in next, statuses do
 					local mine = s.isMine
 					if (mine==false or mine==myUnits[cas]) and s.seen~=1 then
-						if fill then fill, tex, cnt, dur, exp, bos, val[s.vId] = false, a.icon, max(a.applications,1), a.duration, a.expirationTime, a.isBossAura, a.points[s.vId] end
+						if fill then fill, tex, cnt, dur, exp, val[s.vId] = false, a.icon, max(a.applications,1), a.duration, a.expirationTime, a.points[s.vId] end
 						if s.UpdateState then
 							 s:UpdateState(u, i, sid, nam, tex, cnt, dur, exp)
 						elseif exp~=s.exp[u] or s.cnt[u]~=cnt or val[s.vId]~=s.val[u] or s.spells then
@@ -157,6 +169,15 @@ do
 	Grid2.RegisterMessage( Statuses, "Grid_FakedUnitsUpdate", UpdateFakedUnitsAuras)
 end
 
+-- Load colors cache for debuff types
+local function LoadDebuffTypeColors()
+	local statuses = Grid2.db.profile.statuses
+	for _,typ in ipairs(debuffTypesKeys) do
+		local status = statuses['debuff-'..typ]
+		debuffTypeColors[typ] = status and status.color1
+	end
+end
+
 -- EnableAuraEvents() DisableAuraEvents()
 local EnableAuraEvents, DisableAuraEvents
 do
@@ -170,6 +191,7 @@ do
 				LibStub("LibClassicDurations"):Register(Grid2)
 				UnitAura = LibStub("LibClassicDurations").UnitAuraDirect
 			end
+			LoadDebuffTypeColors()
 		end
 	end
 	DisableAuraEvents = function(status)
@@ -423,14 +445,6 @@ do
 	local function GetBorderOptional()
 		return 0
 	end
-	local function GetDebuffTypeColor(self, unit)
-		local color = debuffTypeColors[ self.typ[unit] ]
-		if color then
-			return color.r, color.g, color.b, color.a
-		else
-			return 0,0,0,1
-		end
-	end
 	local function GetDebuffTooltip(self, unit, tip, slotID)
 		local index = slotID or self.idx[unit]
 		if index then
@@ -561,15 +575,12 @@ do
 			self.colors = self.colors or {}
 			for i=1,colorCount do self.colors[i] = dbx["color"..i] end
 			self.GetColor = dbx.colorThresholdValue and GetValueColor or GetTimeColor
-		elseif dbx.debuffTypeColorize then -- special case for debuffType statuses
-			self.GetColor = GetDebuffTypeColor
 		else -- single color or color by number of stacks
 			MakeStatusColorHandler(self)
 		end
 		if dbx.type == "debuffType" then
 			self.debuffFilter = dbx.debuffFilter
 			self.GetBorder = GetBorderMandatory
-			debuffTypeColors[dbx.subType] = dbx.color1
 		else
 			self.GetBorder = GetBorderOptional
 		end
@@ -621,11 +632,12 @@ Grid2.setupFunc["buff"]       = CreateAura
 Grid2.setupFunc["debuff"]     = CreateAura
 Grid2.setupFunc["debuffType"] = CreateAura
 
-Grid2:DbSetStatusDefaultValue( "debuff-Magic",    {type = "debuffType", subType = "Magic",    color1 = {r=.2,g=.6,b=1,a=1}} )
-Grid2:DbSetStatusDefaultValue( "debuff-Poison",   {type = "debuffType", subType = "Poison",   color1 = {r=0,g=.6,b=0,a=1 }} )
-Grid2:DbSetStatusDefaultValue( "debuff-Curse",    {type = "debuffType", subType = "Curse",    color1 = {r=.6,g=0,b=1,a=1 }} )
-Grid2:DbSetStatusDefaultValue( "debuff-Disease",  {type = "debuffType", subType = "Disease",  color1 = {r=.6,g=.4,b=0,a=1}} )
-Grid2:DbSetStatusDefaultValue( "debuff-Typeless", {type = "debuffType", subType = "Typeless", color1 = {r=0,g=0,b=0,a=1}} )
+Grid2:DbSetStatusDefaultValue( "debuff-Boss",     {type = "debuffType", subType = "Boss",     color1 = {r=1, g=0, b=0,a=1 }} )
+Grid2:DbSetStatusDefaultValue( "debuff-Magic",    {type = "debuffType", subType = "Magic",    color1 = {r=.2,g=.6,b=1,a=1 }} )
+Grid2:DbSetStatusDefaultValue( "debuff-Poison",   {type = "debuffType", subType = "Poison",   color1 = {r=0, g=.6,b=0,a=1 }} )
+Grid2:DbSetStatusDefaultValue( "debuff-Curse",    {type = "debuffType", subType = "Curse",    color1 = {r=.6,g=0, b=1,a=1 }} )
+Grid2:DbSetStatusDefaultValue( "debuff-Disease",  {type = "debuffType", subType = "Disease",  color1 = {r=.6,g=.4,b=0,a=1 }} )
+Grid2:DbSetStatusDefaultValue( "debuff-Typeless", {type = "debuffType", subType = "Typeless", color1 = {r=0, g=0, b=0,a=1 }} )
 
 --===============================================================================
 -- Publish some functions & tables
