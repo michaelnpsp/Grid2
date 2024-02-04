@@ -203,7 +203,7 @@ local function MakeStatusOutgoingOptions(self, status, options)
 				status:UpdateDB()
 			end,
 		}
-		options.eventsCastStart = {
+		--[[options.eventsCastStart = {
 			type = "toggle",
 			order = 48,
 			width = 0.62,
@@ -214,7 +214,7 @@ local function MakeStatusOutgoingOptions(self, status, options)
 				status.dbx.events.SPELL_CAST_START = v or nil
 				status:UpdateDB()
 			end,
-		}
+		}--]]
 		options.eventsCastSuccess = {
 			type = "toggle",
 			order = 49,
