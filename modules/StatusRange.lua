@@ -273,7 +273,7 @@ Grid2.setupFunc["range"] = function(baseKey, dbx)
 	return Range
 end
 
-Grid2:DbSetStatusDefaultValue( "range", {type = "range", color1 = {r=1, g=0, b=0, a=1}, range=38, default = 0.25, elapsed = 0.5})
+Grid2:DbSetStatusDefaultValue( "range", {type = "range", color1 = {r=1, g=0, b=0, a=1}, range=38, default = 0.25, elapsed = 0.5} )
 
 -------------------------------------------------------------------------
 -- rangealt status
@@ -288,7 +288,7 @@ RangeAlt.OnEnable = Range.OnEnable
 RangeAlt.OnDisable = Range.OnDisable
 RangeAlt.GetPercent = Range.GetPercent
 RangeAlt.IsActive = Range.IsActive
-RangeAlt.GetRangers = Range.GetRanges
+RangeAlt.GetRanges = Range.GetRanges
 RangeAlt.GetColor = Range.GetColor
 RangeAlt.cache = {}
 
@@ -297,4 +297,4 @@ Grid2.setupFunc["rangealt"] = function(baseKey, dbx)
 	return RangeAlt
 end
 
-Grid2:DbSetStatusDefaultValue( "rangealt", {type = "rangealt", color1 = {r=1, g=0, b=0, a=1}, range=28, default = 0.25, elapsed = 0.5})
+Grid2:DbSetStatusDefaultValue( "rangealt", {type = "rangealt", color1 = {r=1, g=0, b=0, a=1}, range= (Grid2.isClassic and 28 or 38), default = 0.25, elapsed = 0.5} )
