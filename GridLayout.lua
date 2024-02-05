@@ -289,8 +289,9 @@ function Grid2Layout:Grid_GroupTypeChanged(_, groupType, instType, maxPlayers, m
 	self:Debug("GroupTypeChanged", groupType, instType, maxPlayers, maxGroup)
 	if not Grid2:ReloadTheme() then
 		if not self:ReloadLayout() then
-			self:UpdateFramesSizeByRaidSize()
-			self:UpdateVisibility()
+			if not self:UpdateFramesSizeByRaidSize() then
+				self:UpdateVisibility()
+			end
 		end
 	end
 end
@@ -744,6 +745,7 @@ function Grid2Layout:UpdateDisplay()
 	self:UpdateColor()
 	self:UpdateVisibility()
 	self:UpdateFramesSize()
+	self:UpdateSize()
 end
 
 function Grid2Layout:UpdateFramesSizeForHeader(header)
@@ -765,7 +767,6 @@ function Grid2Layout:UpdateFramesSize()
 	if modified then
 		Grid2Frame:UpdateIndicators()
 		Grid2Layout:UpdateHeaders()
-		Grid2:RunThrottled(self, "UpdateSize", 0.01)
 	end
 	return modified
 end
@@ -773,7 +774,12 @@ end
 function Grid2Layout:UpdateFramesSizeByRaidSize()
 	local p = Grid2Frame.db.profile
 	if next(p.frameWidths) or next(p.frameHeights) then
-		self:UpdateFramesSize()
+		if not Grid2:RunSecure(6, self, "UpdateFramesSizeByRaidSize") then
+			self:UpdateFramesSize()
+			self:UpdateSize()
+			self:UpdateVisibility()
+		end
+		return true
 	end
 end
 
@@ -792,7 +798,7 @@ function Grid2Layout:UpdateSize()
 	local row = math.max( maxRow + p.Spacing*2, 1 )
 	if p.horizontal then col,row = row,col end
 	self.frame.frameBack:SetSize(col,row)
-	if not Grid2:RunSecure(6, self, "UpdateSize") then
+	if not Grid2:RunSecure(7, self, "UpdateSize") then
 		self.frame:SetSize(col,row)
 	end
 end
@@ -819,7 +825,7 @@ function Grid2Layout:UpdateColor()
 end
 
 function Grid2Layout:UpdateVisibility()
-	if not Grid2:RunSecure(7, self, "UpdateVisibility") then
+	if not Grid2:RunSecure(8, self, "UpdateVisibility") then
 		local fd, pt = self.db.profile.FrameDisplay, Grid2:GetGroupType()
 		self.frame:SetShown(
 			self.testLayoutName~=nil or (
