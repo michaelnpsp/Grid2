@@ -794,9 +794,11 @@ function Grid2Layout:UpdateSize()
 		curCol = curCol + col
 		remSize = (g.dbx.type=='custom' or (g[1] and g[1]:IsVisible())) and 0 or remSize + col
 	end
-	local col = math.max( curCol - remSize + p.Spacing*2 - p.Padding, 1 )
+	curCol = curCol - remSize
+	local col = math.max( curCol + p.Spacing*2 - p.Padding, 1 )
 	local row = math.max( maxRow + p.Spacing*2, 1 )
 	if p.horizontal then col,row = row,col end
+	self.frame.frameBack:SetShown(curCol>1 and maxRow>1)
 	self.frame.frameBack:SetSize(col,row)
 	if not Grid2:RunSecure(7, self, "UpdateSize") then
 		self.frame:SetSize(col,row)
