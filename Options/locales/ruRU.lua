@@ -819,6 +819,7 @@ L["Instant"] = "мгновенно"
 L["Update frequency"] = "Частота обновления"
 L["Select the health update frequency."] = "Выберите частоту обновления здоровья."
 -- L["Add shields to health percent"] = ""
+-- L["Add shields to health amount"] = ""
 
 -- health-low status
 L["Use Health Percent"] = "Использовать процент здоровья"

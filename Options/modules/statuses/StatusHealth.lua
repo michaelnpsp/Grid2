@@ -113,7 +113,7 @@ Grid2Options:RegisterStatusOptions("health-current", "health", function(self, st
 			end,
 		}
 	else
-		options.healthShield = {
+		options.healthPercentShield = {
 			type = "toggle",
 			tristate = false,
 			width = "full",
@@ -123,6 +123,19 @@ Grid2Options:RegisterStatusOptions("health-current", "health", function(self, st
 			get = function () return status.dbx.addPercentShield end,
 			set = function (_, v)
 				status.dbx.addPercentShield = v or nil
+				status:Refresh()
+			end,
+		}
+		options.healthAmountShield = {
+			type = "toggle",
+			tristate = false,
+			width = "full",
+			order = 51,
+			name = L["Add shields to health amount"],
+			desc = L["Add shields to health amount"],
+			get = function () return status.dbx.addAmountShield end,
+			set = function (_, v)
+				status.dbx.addAmountShield = v or nil
 				status:Refresh()
 			end,
 		}

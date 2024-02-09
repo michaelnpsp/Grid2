@@ -821,6 +821,7 @@ L["Instant"] = "Instantaneo"
 L["Update frequency"] = "Frecuencia de actualizaciones"
 L["Select the health update frequency."] = "Elige la frequencia de actualización de las vidas."
 L["Add shields to health percent"] = "Añade escudos al porcentaje de vida"
+L["Add shields to health amount"] = "Añade escudos al valor de vida"
 
 -- health-low status
 L["Use Health Percent"] = "Usar Porcentajes"

@@ -230,6 +230,7 @@ end
 -- health-current status
 HealthCurrent.IsActive  = Grid2.statusLibrary.IsActive
 
+-- percent health
 local function HealthCurrent_ShieldUpdate(unit)
 	if unit_is_valid[unit] then
 		HealthCurrent:UpdateIndicators(unit)
@@ -239,6 +240,35 @@ end
 local function HealthCurrent_GetPercentTextShield(self, unit)
 	local m = UnitHealthMax(unit)
 	return fmt( fmtPercent,  m == 0 and 0 or (UnitHealth(unit)+UnitGetTotalAbsorbs(unit))*100/m )
+end
+
+local function HealthCurrent_GetPercentSTD(self,unit)
+	local m = UnitHealthMax(unit)
+	return m == 0 and 0 or UnitHealth(unit) / m
+end
+
+local function HealthCurrent_GetPercentDFH(self, unit)
+	if UnitIsDeadOrGhost(unit) then return 1 end
+	local m = UnitHealthMax(unit)
+	return m == 0 and 1 or UnitHealth(unit) / m
+end
+
+-- text health
+local function HealthCurrent_GetTextClassic(self, unit)
+	local h = UnitHealth(unit)
+	return h<1000 and fmt("%d",h) or fmt("%.1fk",h/1000)
+end
+
+local function HealthCurrent_GetTextClassicRaw(self, unit)
+	return tostring(UnitHealth(unit))
+end
+
+local function HealthCurrent_GetTextRetail(self, unit)
+	return fmt("%.1fk", UnitHealth(unit) / 1000)
+end
+
+local function HealthCurrent_GetTextRetailShield(self, unit)
+	return fmt("%.1fk", (UnitHealth(unit)+UnitGetTotalAbsorbs(unit)) / 1000)
 end
 
 function HealthCurrent:OnEnable()
@@ -255,32 +285,6 @@ function HealthCurrent:OnDisable()
 	end
 end
 
-local function HealthCurrent_GetPercentSTD(self,unit)
-	local m = UnitHealthMax(unit)
-	return m == 0 and 0 or UnitHealth(unit) / m
-end
-
-local function HealthCurrent_GetPercentDFH(self, unit)
-	if UnitIsDeadOrGhost(unit) then return 1 end
-	local m = UnitHealthMax(unit)
-	return m == 0 and 1 or UnitHealth(unit) / m
-end
-
-if Grid2.isClassic then
-	function HealthCurrent:GetText1(unit)
-		local h = UnitHealth(unit)
-		return h<1000 and fmt("%d",h) or fmt("%.1fk",h/1000)
-	end
-	function HealthCurrent:GetText2(unit)
-		return tostring(UnitHealth(unit))
-	end
-else
-	function HealthCurrent:GetText1(unit)
-		return fmt("%.1fk", UnitHealth(unit) / 1000)
-	end
-end
-HealthCurrent.GetText = HealthCurrent.GetText1
-
 function HealthCurrent:GetColor(unit)
 	local f,t
 	local p = self:GetPercent(unit)
@@ -293,14 +297,19 @@ function HealthCurrent:GetColor(unit)
 end
 
 function HealthCurrent:UpdateDB()
+	local dbx = self.dbx
 	fmtPercent = Grid2.db.profile.formatting.percentFormat
-	self.addShield = Grid2.isWoW90 and self.dbx.addPercentShield or nil
-	self.GetText = self.dbx.displayRawNumbers and self.GetText2 or self.GetText1
-	self.GetPercent = self.dbx.deadAsFullHealth and HealthCurrent_GetPercentDFH or HealthCurrent_GetPercentSTD
-	self.GetPercentText = self.addShield and HealthCurrent_GetPercentTextShield or nil
-	self.color1 = Grid2:MakeColor(self.dbx.color1)
-	self.color2 = Grid2:MakeColor(self.dbx.color2)
-	self.color3 = Grid2:MakeColor(self.dbx.color3)
+	if Grid2.isClassic then
+		self.GetText = dbx.displayRawNumbers and HealthCurrent_GetTextClassicRaw or HealthCurrent_GetTextClassic
+	else
+		self.addShield = (dbx.addPercentShield or dbx.addAmountShield) or nil
+		self.GetText = dbx.addAmountShield and HealthCurrent_GetTextRetailShield or HealthCurrent_GetTextRetail
+		self.GetPercentText = dbx.addPercentShield and HealthCurrent_GetPercentTextShield or nil
+	end
+	self.GetPercent = dbx.deadAsFullHealth and HealthCurrent_GetPercentDFH or HealthCurrent_GetPercentSTD
+	self.color1 = Grid2:MakeColor(dbx.color1)
+	self.color2 = Grid2:MakeColor(dbx.color2)
+	self.color3 = Grid2:MakeColor(dbx.color3)
 	Health_UpdateStatuses()
 end
 

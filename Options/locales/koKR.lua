@@ -819,6 +819,7 @@ L["Instant"] = "즉시"
 L["Update frequency"] = "업데이트 빈도"
 L["Select the health update frequency."] = "생명력 업데이트 빈도 선택"
 -- L["Add shields to health percent"] = ""
+-- L["Add shields to health amount"] = ""
 
 -- health-low status
 L["Use Health Percent"] = "생명력 비율(%) 사용"

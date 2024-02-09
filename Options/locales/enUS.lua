@@ -824,6 +824,7 @@ L["Instant"] = true
 L["Update frequency"] = true
 L["Select the health update frequency."] = true
 L["Add shields to health percent"] = true
+L["Add shields to health amount"] = true
 
 -- health-low status
 L["Use Health Percent"] = true

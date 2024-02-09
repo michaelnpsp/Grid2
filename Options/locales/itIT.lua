@@ -819,6 +819,7 @@ L["Normal"] = "Normale"
 -- L["Update frequency"] = ""
 -- L["Select the health update frequency."] = ""
 -- L["Add shields to health percent"] = ""
+-- L["Add shields to health amount"] = ""
 
 -- health-low status
 -- L["Use Health Percent"] = ""
