@@ -43,7 +43,7 @@ local textDeath = L["DEAD"]
 local textGhost = L["GHOST"]
 
 -- provide alternative missing api functions for classic
-Grid2.GetSpecialization = GetSpecialization or GetActiveTalentGroup or function()
+Grid2.GetSpecialization = GetSpecialization or (Grid2.versionCli>=30000 and GetActiveTalentGroup) or function()
 	return 0
 end
 
