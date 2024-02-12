@@ -208,10 +208,13 @@ end
 -- Themes
 function Grid2:PLAYER_SPECIALIZATION_CHANGED(event,unit)
 	if event == 'ACTIVE_TALENT_GROUP_CHANGED' or unit == 'player' then
-		self.playerClassSpec = self.playerClass .. (self.GetSpecialization() or 0)
-		if not Grid2:ReloadProfile() then
-			Grid2:ReloadTheme()
-			self:SendMessage("Grid_PlayerSpecChanged") -- Send message only if profile has not changed
+		local playerClassSpec = self.playerClass .. (self.GetSpecialization() or 0)
+		if playerClassSpec ~= self.playerClassSpec then
+			self.playerClassSpec = playerClassSpec
+			if not Grid2:ReloadProfile() then
+				Grid2:ReloadTheme()
+				self:SendMessage("Grid_PlayerSpecChanged") -- Send message only if profile has not changed
+			end
 		end
 	end
 end
