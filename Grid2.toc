@@ -109,11 +109,11 @@ modules\StatusAurasBuffs.lua
 modules\StatusAurasDebuffs.lua
 modules\StatusThreat.lua
 modules\StatusUnitIndex.lua
+modules\StatusPhased.lua
 #@retail@
 modules\StatusVehicle.lua
 modules\StatusShields.lua
 modules\StatusHealAbsorbs.lua
 modules\StatusSummon.lua
-modules\StatusPhased.lua
 modules\StatusStagger.lua
 #@end-retail@
