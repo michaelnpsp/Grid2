@@ -271,6 +271,24 @@ local function HealthCurrent_GetTextRetailShield(self, unit)
 	return fmt("%.1fk", (UnitHealth(unit)+UnitGetTotalAbsorbs(unit)) / 1000)
 end
 
+local function HealthCurrent_GetTextRetailM(self, unit)
+	local h = UnitHealth(unit)
+	if h<1000000 then
+		return fmt("%.1fk",h/1000)
+	else
+		return fmt("%.1fm",h/1000000)
+	end
+end
+
+local function HealthCurrent_GetTextRetailShieldM(self, unit)
+	local h = UnitHealth(unit)+UnitGetTotalAbsorbs(unit)
+	if h<1000000 then
+		return fmt("%.1fk",h/1000)
+	else
+		return fmt("%.1fm",h/1000000)
+	end
+end
+
 function HealthCurrent:OnEnable()
 	Health_Enable(self)
 	if self.addShield then
@@ -303,8 +321,12 @@ function HealthCurrent:UpdateDB()
 		self.GetText = dbx.displayRawNumbers and HealthCurrent_GetTextClassicRaw or HealthCurrent_GetTextClassic
 	else
 		self.addShield = (dbx.addPercentShield or dbx.addAmountShield) or nil
-		self.GetText = dbx.addAmountShield and HealthCurrent_GetTextRetailShield or HealthCurrent_GetTextRetail
 		self.GetPercentText = dbx.addPercentShield and HealthCurrent_GetPercentTextShield or nil
+		if dbx.displayMillionShort then
+			self.GetText = dbx.addAmountShield and HealthCurrent_GetTextRetailShieldM or HealthCurrent_GetTextRetailM
+		else
+			self.GetText = dbx.addAmountShield and HealthCurrent_GetTextRetailShield or HealthCurrent_GetTextRetail
+		end
 	end
 	self.GetPercent = dbx.deadAsFullHealth and HealthCurrent_GetPercentDFH or HealthCurrent_GetPercentSTD
 	self.color1 = Grid2:MakeColor(dbx.color1)

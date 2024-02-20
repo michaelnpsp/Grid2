@@ -113,11 +113,24 @@ Grid2Options:RegisterStatusOptions("health-current", "health", function(self, st
 			end,
 		}
 	else
-		options.healthPercentShield = {
+		options.millionShorten = {
 			type = "toggle",
 			tristate = false,
 			width = "full",
 			order = 50,
+			name = L["Shorten Above Million Numbers"],
+			desc = L["Shorten Above Million Numbers"],
+			get = function () return status.dbx.displayMillionShort end,
+			set = function (_, v)
+				status.dbx.displayMillionShort = v or nil
+				status:Refresh()
+			end,
+		}
+		options.healthPercentShield = {
+			type = "toggle",
+			tristate = false,
+			width = "full",
+			order = 51,
 			name = L["Add shields to health percent"],
 			desc = L["Add shields to health percent"],
 			get = function () return status.dbx.addPercentShield end,
@@ -130,7 +143,7 @@ Grid2Options:RegisterStatusOptions("health-current", "health", function(self, st
 			type = "toggle",
 			tristate = false,
 			width = "full",
-			order = 51,
+			order = 52,
 			name = L["Add shields to health amount"],
 			desc = L["Add shields to health amount"],
 			get = function () return status.dbx.addAmountShield end,

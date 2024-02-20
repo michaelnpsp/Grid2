@@ -1362,6 +1362,7 @@ L["Show only heals that are going to land within the selected time period. Selec
 L["Heal Types"] = "치유 유형"
 L["Shorten Heal Numbers"] = "치유 숫자 짧게"
 L["Shorten Health Numbers"] = "생명력 숫자 짧게"
+-- L["Shorten Above Million Numbers"] = ""
 L["Include heals casted by me, if unchecked only other players heals are displayed."] = "내가 시전한 치유도 포함, 미체크시 다른 플레이어의 치유만 표시"
 L["Apply this multiplier value to incoming heals."] = "현재 배율을 받은 치유에 적용"
 L["Incoming overheals below the specified value will not be shown."] = "지정값 아래의 받는 초과 치유는 표시하지 않음"

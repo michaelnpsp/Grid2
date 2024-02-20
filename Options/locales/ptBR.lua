@@ -1362,6 +1362,7 @@ L["A resurrection spell has been casted on the unit"] = "A magia reviver esta se
 -- L["Heal Types"] = ""
 -- L["Shorten Heal Numbers"] = ""
 -- L["Shorten Health Numbers"] = ""
+-- L["Shorten Above Million Numbers"] = ""
 -- L["Include heals casted by me, if unchecked only other players heals are displayed."] = ""
 -- L["Apply this multiplier value to incoming heals."] = ""
 -- L["Incoming overheals below the specified value will not be shown."] = ""
