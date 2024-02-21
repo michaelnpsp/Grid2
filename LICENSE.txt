@@ -23,11 +23,6 @@ distribution.
 
 ------------------------------------------------------------------------
 
-LibHealComm-4.0 library used with permission of the author: Azilroka
-https://github.com/Azilroka/LibHealComm-4.0
-
-------------------------------------------------------------------------
-
 ARTWORK LICENSES AND CREDITS
 
 Some textures are based on icons created by: <http://p.yusukekamiyamane.com/>
