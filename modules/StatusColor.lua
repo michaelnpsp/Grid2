@@ -243,7 +243,7 @@ local colors = {
 	[L["Humanoid"]] = { r = 0.92, g = 0.67, b = 0.85, a = 1 },
 	[L["Elemental"]] = { r = 0.1, g = 0.3, b = 0.9, a = 1 },
 }
-for class, color in pairs(RAID_CLASS_COLORS) do
+for class, color in pairs(CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS) do
 	if not colors[class] then
 		colors[class] = { r = color.r, g = color.g, b = color.b, a = 1 }
 	end
