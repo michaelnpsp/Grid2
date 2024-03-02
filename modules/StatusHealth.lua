@@ -254,17 +254,21 @@ local function HealthCurrent_GetPercentDFH(self, unit)
 end
 
 -- text health
+local function HealthCurrent_GetTextRaw(self, unit)
+	return tostring(UnitHealth(unit))
+end
+
 local function HealthCurrent_GetTextClassic(self, unit)
 	local h = UnitHealth(unit)
 	return h<1000 and fmt("%d",h) or fmt("%.1fk",h/1000)
 end
 
-local function HealthCurrent_GetTextClassicRaw(self, unit)
-	return tostring(UnitHealth(unit))
-end
-
 local function HealthCurrent_GetTextRetail(self, unit)
 	return fmt("%.1fk", UnitHealth(unit) / 1000)
+end
+
+local function HealthCurrent_GetTextRetailShieldRaw(self, unit)
+	return tostring(UnitHealth(unit)+UnitGetTotalAbsorbs(unit))
 end
 
 local function HealthCurrent_GetTextRetailShield(self, unit)
@@ -318,12 +322,14 @@ function HealthCurrent:UpdateDB()
 	local dbx = self.dbx
 	fmtPercent = Grid2.db.profile.formatting.percentFormat
 	if Grid2.isClassic then
-		self.GetText = dbx.displayRawNumbers and HealthCurrent_GetTextClassicRaw or HealthCurrent_GetTextClassic
+		self.GetText = dbx.displayRawNumbers and HealthCurrent_GetTextRaw or HealthCurrent_GetTextClassic
 	else
 		self.addShield = (dbx.addPercentShield or dbx.addAmountShield) or nil
 		self.GetPercentText = dbx.addPercentShield and HealthCurrent_GetPercentTextShield or nil
 		if dbx.displayMillionShort then
 			self.GetText = dbx.addAmountShield and HealthCurrent_GetTextRetailShieldM or HealthCurrent_GetTextRetailM
+		elseif dbx.displayRawNumbersRetail then
+			self.GetText = dbx.addAmountShield and HealthCurrent_GetTextRetailShieldRaw or HealthCurrent_GetTextRaw
 		else
 			self.GetText = dbx.addAmountShield and HealthCurrent_GetTextRetailShield or HealthCurrent_GetTextRetail
 		end

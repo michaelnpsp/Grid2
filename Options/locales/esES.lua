@@ -1380,6 +1380,7 @@ L["Show only heals that are going to land within the selected time period. Selec
 L["Heal Types"] = "Tipo de Curas"
 L["Shorten Heal Numbers"] = "Acorta numeros (curas)"
 L["Shorten Health Numbers"] = "Acorta numeros (vidas)"
+L["Shorten Thousand Numbers"] = "Acorta numeros por encima de mil"
 L["Shorten Above Million Numbers"] = "Acorta numeros por encima de un millon"
 L["Include heals casted by me, if unchecked only other players heals are displayed."] = "Incluir curas casteadas por mi, si se desactiva solo se muestran las curas originadas por otros juegadores."
 L["Apply this multiplier value to incoming heals."] = "Aplicar este mulitplicador a las curas entrantes."

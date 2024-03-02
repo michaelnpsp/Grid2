@@ -1366,6 +1366,7 @@ L["Show only heals that are going to land within the selected time period. Selec
 L["Heal Types"] = true
 L["Shorten Heal Numbers"] = true
 L["Shorten Health Numbers"] = true
+L["Shorten Thousand Numbers"] = true
 L["Shorten Above Million Numbers"] = true
 L["Include heals casted by me, if unchecked only other players heals are displayed."] = true
 L["Apply this multiplier value to incoming heals."] = true
