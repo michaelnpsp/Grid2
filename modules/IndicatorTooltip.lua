@@ -35,7 +35,7 @@ local function TimerEvent()
 		if unit then
 			for indicator, func in next, indicators do
 				local frame = indicator:GetFrame(tooltipFrame)
-				if frame:IsMouseOver() then
+				if frame and frame:IsMouseOver() then
 					if frame:IsVisible() then
 						local status, _, extraID, tframe = func(indicator, unit, tooltipFrame, frame)
 						if status and status.GetTooltip then
