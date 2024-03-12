@@ -156,7 +156,6 @@ local function Icon_Layout(self, parent)
 		if self.showStack then
 			local c = self.colorStack
 			frame.text = frame.text or frame:CreateFontString(nil, "OVERLAY")
-			frame.text:SetFontObject(GameFontHighlightSmall)
 			frame.text:SetFont(self.font, fontSize, self.fontFlags )
 			frame.text:SetTextColor(c.r, c.g, c.b, c.a)
 			frame.text:ClearAllPoints()
