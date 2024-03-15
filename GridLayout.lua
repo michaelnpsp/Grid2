@@ -272,6 +272,7 @@ end
 
 function Grid2Layout:RefreshTheme()
 	self:UpdateFrame()
+	self:ResetHeadersFramesSize()
 	self:ReloadLayout(true)
 end
 
@@ -746,6 +747,15 @@ function Grid2Layout:UpdateDisplay()
 	self:UpdateVisibility()
 	self:UpdateFramesSize()
 	self:UpdateSize()
+end
+
+-- Needed when the active theme changes to force a frames Layout() to reactivate possible suspended indicators (github issue #215)
+function Grid2Layout:ResetHeadersFramesSize()
+	for _, headers in pairs(self.groups) do
+		for _, header in ipairs(headers) do
+			header.frameWidth, header.frameHeight = nil, nil
+		end
+	end
 end
 
 function Grid2Layout:UpdateFramesSizeForHeader(header)
