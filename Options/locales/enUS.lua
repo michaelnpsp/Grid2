@@ -156,6 +156,7 @@ L["When duration<1sec"] = true
 L["Blizzard Raid Frames"] = true
 L["Hide Blizzard Raid Frames"] = true
 L["Hide Blizzard Party Frames"] = true
+L["Hide Blizzard Frames"] = true
 
 -- debugging & maintenance
 L["debugging"] = true

@@ -156,6 +156,7 @@ L["When duration<1sec"] = "Когда  <1 сек"
 L["Blizzard Raid Frames"] = "Рамки рейда Blizzard "
 L["Hide Blizzard Raid Frames"] = "Скрыть профили рейда Blizzard"
 -- L["Hide Blizzard Party Frames"] = ""
+-- L["Hide Blizzard Frames"] = ""
 
 -- debugging & maintenance
 L["debugging"] = "Отладка"

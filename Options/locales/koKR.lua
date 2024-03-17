@@ -156,6 +156,7 @@ L["When duration<1sec"] = "지속시간이<1초일때"
 L["Blizzard Raid Frames"] = "블리자드 공격대 창"
 L["Hide Blizzard Raid Frames"] = "블리자드 공격대 창 숨김"
 -- L["Hide Blizzard Party Frames"] = ""
+-- L["Hide Blizzard Frames"] = ""
 
 -- debugging & maintenance
 L["debugging"] = "디버깅"

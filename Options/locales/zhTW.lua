@@ -156,6 +156,7 @@ L["When duration<1sec"] = "當持續時間小於1秒"
 L["Blizzard Raid Frames"] = "暴風雪團隊框架"
 L["Hide Blizzard Raid Frames"] = "啟動後隱藏暴風雪團隊框架"
 -- L["Hide Blizzard Party Frames"] = ""
+-- L["Hide Blizzard Frames"] = ""
 
 -- debugging & maintenance
 L["debugging"] = "除錯中"

@@ -156,6 +156,7 @@ L["Adjust the frequency of the Blink effect."] = "Ajuste la fréquence de cligno
 -- L["Blizzard Raid Frames"] = ""
 -- L["Hide Blizzard Raid Frames"] = ""
 -- L["Hide Blizzard Party Frames"] = ""
+-- L["Hide Blizzard Frames"] = ""
 
 -- debugging & maintenance
 L["debugging"] = "debugging"
