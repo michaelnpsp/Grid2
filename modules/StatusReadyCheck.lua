@@ -37,15 +37,25 @@ function ReadyCheck:READY_CHECK()
 end
 
 function ReadyCheck:READY_CHECK_CONFIRM(_, unit)
-	-- warning do not remove the line below (without this line Icons indicator fails for the last player because it delays the update
-	-- to the next frame OnUpdate() when ReadyCheck has already finished and GetReadyCheckStatus() inside GetIcon() or GetText() returns nil
-	readyStatuses[unit] = GetReadyCheckStatus(unit)
-	self:UpdateIndicators(unit)
+	if readyChecking then
+		readyStatuses[unit] = GetReadyCheckStatus(unit) -- warning do not remove this line (without this line Icons indicator fails for the last player because it delays the update
+		self:UpdateIndicators(unit)                     -- to the next frame OnUpdate() when ReadyCheck has already finished and GetReadyCheckStatus() inside GetIcon() or GetText() returns nil
+	end
 end
 
 function ReadyCheck:READY_CHECK_FINISHED()
-	self:UpdatePlayerUnits()
-	self:ClearStatusDelayed()
+	if readyChecking then
+		self:UpdatePlayerUnits()
+		self:ClearStatusDelayed()
+	end
+end
+
+function ReadyCheck:PLAYER_REGEN_DISABLED()
+	if readyChecking then
+		readyChecking = nil
+		wipe(readyStatuses)
+		self:UpdatePlayerUnits()
+	end
 end
 
 function ReadyCheck:Grid_UnitUpdated(_, unit)
@@ -59,6 +69,9 @@ function ReadyCheck:OnEnable()
 	self:RegisterEvent("READY_CHECK_CONFIRM")
 	self:RegisterEvent("READY_CHECK_FINISHED")
 	self:RegisterMessage("Grid_UnitUpdated")
+	if self.dbx.clearInCombat then
+		self:RegisterEvent('PLAYER_REGEN_DISABLED')
+	end
 end
 
 function ReadyCheck:OnDisable()
@@ -66,6 +79,9 @@ function ReadyCheck:OnDisable()
 	self:UnregisterEvent("READY_CHECK_CONFIRM")
 	self:UnregisterEvent("READY_CHECK_FINISHED")
 	self:UnregisterMessage("Grid_UnitUpdated")
+	if self.dbx.clearInCombat then
+		self:UnregisterEvent('PLAYER_REGEN_DISABLED')
+	end
 	wipe(readyStatuses)
 	readyCount = readyCount + 1
 	readyChecking = nil

@@ -865,6 +865,8 @@ L["Not Ready color"] = true
 L["Color for Not Ready."] = true
 L["AFK color"] = true
 L["Color for AFK."] = true
+L["Hide on Combat Start"] = true
+L["Hide ready check status if combat starts."] = true
 
 -- heals-incoming status
 L["Include player heals"] = true

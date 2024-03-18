@@ -860,6 +860,8 @@ L["Not Ready color"] = "Цвет не готовности"
 L["Color for Not Ready."] = "Цвет обозначающий не готовность."
 L["AFK color"] = "Цвет AFK"
 L["Color for AFK."] = "Цвет для отсутствующих."
+-- L["Hide on Combat Start"] = ""
+-- L["Hide ready check status if combat starts."] = ""
 
 -- heals-incoming status
 L["Include player heals"] = "Включая исцеления игрока"

@@ -860,6 +860,8 @@ L["Not Ready color"] = "Couleur nok"
 L["Color for Not Ready."] = "Couleur pour non prêt"
 L["AFK color"] = "Couleur d'AFK"
 L["Color for AFK."] = "Couleur pour AFK"
+-- L["Hide on Combat Start"] = ""
+-- L["Hide ready check status if combat starts."] = ""
 
 -- heals-incoming status
 L["Include player heals"] = "Inclure les soins du joueur"
