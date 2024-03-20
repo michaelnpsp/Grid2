@@ -218,7 +218,8 @@ headerOptions = {
 		order = 1,
 		width = "full",
 		name = L["Header Type"],
-		desc = L["You can customize the header type. The specified name can be used to filter indicators using the unit type condition."],
+		name = L["Header Type"],
+		-- desc = L["You can customize the header type. The specified name can be used to filter indicators using the unit type condition."],
 		get = function()
 			return (editedHeader.headerName or editedHeader.type or 'player'):gsub('^player$','players'):gsub('^pet$','pets')
 		end,

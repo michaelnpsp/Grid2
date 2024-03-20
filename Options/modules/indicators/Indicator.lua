@@ -923,6 +923,7 @@ do
 	local headerTypes
 
 	local function GetHeaderTypes()
+		--[[ Disabled because changes in GridLayout template() function is needed to filter headers by custom headerNames (each headerName must have its own frame pool in Grid2Layout.groups).
 		if headerTypes==nil and Grid2Layout.customLayouts then
 			for _,layout in next,Grid2Layout.customLayouts do
 				for _,header in ipairs(layout) do
@@ -932,7 +933,7 @@ do
 					end
 				end
 			end
-		end
+		end	--]]
 		return headerTypes or Grid2Options.HEADER_TYPES
 	end
 
