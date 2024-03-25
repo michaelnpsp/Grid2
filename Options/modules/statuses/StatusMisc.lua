@@ -72,17 +72,31 @@ Grid2Options:RegisterStatusOptions("monk-stagger", "combat", nil, {
 Grid2Options:RegisterStatusOptions("phased", "misc", function(self, status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
 	self:MakeSpacerOptions(options, 30)
+	options.displayLFG = {
+		type = "toggle",
+		name = L["Display other groups"],
+		desc = L["Enable the status if the player is in another LFG or PvP instance."],
+		width = "full",
+		order = 35,
+		get = function () return status.dbx.displayLFG end,
+		set = function (_, v)
+			status.dbx.displayLFG = v or nil
+			status.dbx.enabledInstances = v or nil
+			status:Refresh()
+		end,
+	}
 	options.inInstance = {
 		type = "toggle",
 		name = L["Disabled in instances"],
 		desc = L["Disable this status inside instances."],
 		width = "full",
-		order = 35,
+		order = 40,
 		get = function () return not status.dbx.enabledInstances end,
 		set = function (_, v)
 			status.dbx.enabledInstances = not v or nil
 			status:Refresh()
 		end,
+		disabled = function() return status.dbx.displayLFG end,
 	}
 end, {
 	titleIcon = "Interface\\TARGETINGFRAME\\UI-PhasingIcon",

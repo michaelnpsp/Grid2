@@ -1469,6 +1469,8 @@ L["color"] = "색상"
 
 -- L["Disabled in instances"] = ""
 -- L["Disable this status inside instances."] = ""
+-- L["Display other groups"] = ""
+-- L["Enable the status if the player is in another LFG or PvP instance."] = ""
 
 L["Enable harmful spells Allowlist"] = "위험 주문 허용 목록 사용"
 L["Display only the spells specified in a user defined list."] = "사용자 정의 목록의 주문만 표시"

@@ -8,9 +8,11 @@ local IsInInstance = IsInInstance
 local UnitInPhase = UnitInPhase
 local UnitPhaseReason = UnitPhaseReason
 local UnitDistanceSquared = UnitDistanceSquared
+local UnitInOtherParty = UnitInOtherParty
 
 local timer
-local einst
+local einst -- enabled inside instances
+local elfg  -- display lfg eye icon
 local range = {}
 local cache = {}
 
@@ -44,12 +46,17 @@ end
 local function UpdateUnits()
 	if einst or not IsInInstance() then
 		for unit in Grid2:IterateGroupedPlayers() do
-			local distance, valid = UnitDistanceSquared(unit)
-			if valid then
-				local inrange = distance<62500 -- UnitPhaseReason() only works if distance squared<250*250
-				if inrange~=range[unit] then
-					range[unit] = inrange
-					UpdateUnit(nil, unit)
+			if elfg and UnitInOtherParty(unit) and cache[unit]~=-1 then -- player in another instance group LFG/PVP instance
+				cache[unit] = -1
+				Phased:UpdateIndicators(unit)
+			else
+				local distance, valid = UnitDistanceSquared(unit)
+				if valid then
+					local inrange = distance<62500 -- UnitPhaseReason() only works if distance squared<250*250
+					if inrange~=range[unit] then
+						range[unit] = inrange
+						UpdateUnit(nil, unit)
+					end
 				end
 			end
 		end
@@ -66,6 +73,7 @@ end
 
 function Phased:OnEnable()
 	einst = self.dbx.enabledInstances
+	elfg  = self.dbx.displayLFG
 	self:RegisterEvent("UNIT_PHASE", UpdateUnit)
 	self:RegisterEvent("UNIT_FLAGS", UpdateUnit)
 	self:RegisterEvent("UNIT_OTHER_PARTY_CHANGED", UpdateUnit)
@@ -89,12 +97,16 @@ function Phased:OnDisable()
 	Grid2:CancelTimer(timer)
 end
 
-function Phased:GetIcon()
-	return "Interface\\TARGETINGFRAME\\UI-PhasingIcon"
+function Phased:GetIcon(unit)
+	return cache[unit]==-1 and "Interface\\LFGFrame\\LFG-Eye" or "Interface\\TARGETINGFRAME\\UI-PhasingIcon"
 end
 
-function Phased:GetTexCoord()
-	return 0.15625, 0.84375, 0.15625, 0.84375
+function Phased:GetTexCoord(unit)
+	if cache[unit]==-1 then -- lfg eye
+		return 0.14, 0.235, 0.28, 0.47
+	else -- phased
+		return 0.15625, 0.84375, 0.15625, 0.84375
+	end
 end
 
 function Phased:IsActive(unit)

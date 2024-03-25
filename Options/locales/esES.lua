@@ -1485,6 +1485,8 @@ L["color"] = "color"
 
 L["Disabled in instances"] = "Desactivado en instancias"
 L["Disable this status inside instances."] = "Desactiva este estado dentro de las instancias."
+L["Display other groups"] = "Mostrar otros grupos"
+L["Enable the status if the player is in another LFG or PvP instance."] = "Activa el estado si el jugador esta en otra instancia LFG o JcJ."
 
 L["Enable harmful spells Allowlist"] = "Activar lista blanca de hechizos dañinos"
 L["Display only the spells specified in a user defined list."] = "Muestra solo los hechizos especificados en una lista definida por el usuario."

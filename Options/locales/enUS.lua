@@ -1471,6 +1471,8 @@ L["color"] = true
 
 L["Disabled in instances"] = true
 L["Disable this status inside instances."] = true
+L["Display other groups"] = true
+L["Enable the status if the player is in another LFG or PvP instance."] = true
 
 L["Enable harmful spells Allowlist"] = true
 L["Display only the spells specified in a user defined list."] = true
