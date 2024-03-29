@@ -167,7 +167,7 @@ local Ranges = {
 	[38] = function(unit)
 		if UnitIsUnit(unit,"player") then
 			return true
-		elseif grouped_units[unit] then
+		elseif grouped_units[unit] and unit~='pet' then
 			return UnitInRange(unit)
 		else
 			return CheckInteractDistance(unit,4) -- 28 yards for non grouped units: target/focus/bossX or when solo (because UnitInRange() does not work for pet when solo)
