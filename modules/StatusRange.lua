@@ -19,10 +19,8 @@ local CheckInteractDistance = CheckInteractDistance
 local CheckHostileDistance  = CheckInteractDistance
 local UnitPhaseReason = UnitPhaseReason or Grid2.Dummy
 
-local groupType
 local grouped_units = Grid2.grouped_units
 local playerClass = Grid2.playerClass
-
 local isRangeAvail = Grid2.isWrath
 
 -------------------------------------------------------------------------
@@ -169,7 +167,7 @@ local Ranges = {
 	[38] = function(unit)
 		if UnitIsUnit(unit,"player") then
 			return true
-		elseif grouped_units[unit] and groupType~='solo' then
+		elseif grouped_units[unit] then
 			return UnitInRange(unit)
 		else
 			return CheckInteractDistance(unit,4) -- 28 yards for non grouped units: target/focus/bossX or when solo (because UnitInRange() does not work for pet when solo)
@@ -229,10 +227,6 @@ local function Update(timer)
 	end
 end
 
-function Range:Grid_GroupTypeChanged(_, newGroupType)
-	groupType = newGroupType
-end
-
 function Range:Grid_PlayerSpecChanged()
 	if tonumber(self.dbx.range)==nil then -- If is not a number -> Using RangeSpell for the player class if available
 		self:UpdateDB()
@@ -260,11 +254,9 @@ function Range:IsActive(unit)
 end
 
 function Range:OnEnable()
-	groupType = Grid2:GetGroupType()
 	self:RegisterMessage("Grid_UnitUpdated")
 	self:RegisterMessage("Grid_UnitLeft")
 	self:RegisterMessage("Grid_PlayerSpecChanged")
-	self:RegisterMessage("Grid_GroupTypeChanged")
 	self.timer = Grid2:CreateTimer( Update, self.dbx.elapsed or 0.25, false )
 	self.timer.__range = self
 	self.timer:Play()
@@ -274,7 +266,6 @@ function Range:OnDisable()
 	self:UnregisterMessage("Grid_UnitUpdated")
 	self:UnregisterMessage("Grid_UnitLeft")
 	self:UnregisterMessage("Grid_PlayerSpecChanged")
-	self:UnregisterMessage("Grid_GroupTypeChanged")
 	self.timer.__range = nil
 	self.timer = Grid2:CancelTimer( self.timer )
 end
