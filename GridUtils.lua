@@ -412,15 +412,17 @@ end
 -- MinimapIcon visibility: value = true | false | nil => toggle
 function Grid2:SetMinimapIcon(value)
 	local minimapIcon = Grid2.db.global.minimapIcon or Grid2Layout.db.shared.minimapIcon
-	if value == nil then
-		minimapIcon.hide = not minimapIcon.hide
-	elseif value ~= 'query' then
-		minimapIcon.hide = not value
-	end
-	if minimapIcon.hide then
-		Grid2Layout.minimapIcon:Hide("Grid2")
-	else
-		Grid2Layout.minimapIcon:Show("Grid2")
+	if value~='query' then
+		if value==nil then
+			minimapIcon.hide = not minimapIcon.hide
+		else
+			minimapIcon.hide = not value
+		end
+		if minimapIcon.hide then
+			Grid2Layout.minimapIcon:Hide("Grid2")
+		else
+			Grid2Layout.minimapIcon:Show("Grid2")
+		end
 	end
 	return not minimapIcon.hide
 end
