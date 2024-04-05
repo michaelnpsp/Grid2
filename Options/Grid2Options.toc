@@ -1,6 +1,6 @@
 ## Interface: 100206
 ## Interface-Retail: 100206
-## Interface-Classic: 11501
+## Interface-Classic: 11502
 ## Interface-BCC: 20504
 ## Interface-Wrath: 30403
 ## Title: Grid2 |cd0ff7d0aOptions|r
