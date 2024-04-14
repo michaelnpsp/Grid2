@@ -9,7 +9,6 @@ local tostring = tostring
 local IsInInstance = IsInInstance
 local UnitIsUnit = UnitIsUnit
 local UnitInRange = UnitInRange
-local UnitIsFriend = UnitIsFriend
 local UnitCanAttack = UnitCanAttack
 local UnitCanAssist = UnitCanAssist
 local IsSpellInRange = IsSpellInRange
@@ -180,19 +179,17 @@ local Ranges = {
 			return
 		elseif UnitIsUnit(unit,'player') then
 			return true
-		elseif UnitIsFriend("player", unit) then
-			if worldRange40 and grouped_units[unit] then
-				return UnitInRange(unit)
-			else
-				return IsSpellInRange(UnitIsDeadOrGhost(unit) and rezSpell or rangeSpell,unit)==1
-			end
-		else
+		elseif UnitCanAttack('player', unit) then
 			return CheckHostileDistance(unit,4) -- 28y for enemies
+		elseif worldRange40 and grouped_units[unit] then
+			return UnitInRange(unit)
+		else
+			return IsSpellInRange(UnitIsDeadOrGhost(unit) and rezSpell or rangeSpell,unit)==1
 		end
 	end,
 	["spell"] = function(unit)
 		if not UnitPhaseReason(unit) then
-			if UnitIsFriend("player", unit) then
+			if not UnitCanAttack('player', unit) then
 				if UnitIsUnit(unit,'player') then
 					return true
 				elseif worldRange40 and grouped_units[unit] then
