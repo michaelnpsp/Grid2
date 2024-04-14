@@ -158,6 +158,25 @@ local function MakeRangeOptions(self, status, options, optionParams)
 		values = function() return GetPlayerSpells(status, true) end,
 		hidden = function() return rangeDB.range~='spell' end,
 	}
+	options.newline2 = {
+		order = 79,
+		type = "description",
+		name = "\n",
+		hidden = function() return rangeDB.range~='spell' end,
+	}
+	options.worldRange40 = {
+		type = "toggle",
+		name = L["Use 40 yards range check in open world"],
+		desc = L["Enable this option to be able to track the range of grouped players of the other faction while in open world."],
+		width = "full",
+		order = 80,
+		get = function () return status.dbx.worldRange40 end,
+		set = function (_, v)
+			status.dbx.worldRange40 = v or nil
+			status:UpdateDB()
+		end,
+		hidden = function() return tonumber(rangeDB.range)~=nil end,
+	}
 end
 
 Grid2Options:RegisterStatusOptions("range", "target", MakeRangeOptions, { groupOrder = 201 } )

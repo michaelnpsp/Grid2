@@ -6,6 +6,7 @@ local RangeAlt = Grid2.statusPrototype:new("rangealt")
 local Grid2 = Grid2
 local tonumber = tonumber
 local tostring = tostring
+local IsInInstance = IsInInstance
 local UnitIsUnit = UnitIsUnit
 local UnitInRange = UnitInRange
 local UnitIsFriend = UnitIsFriend
@@ -131,6 +132,7 @@ end
 -- Range status
 -------------------------------------------------------------------------
 
+local worldRange40  -- special case to be able to see in range grouped players of the other faction in open world
 local friendlySpell -- friendly spell configured by the user (spell name)
 local hostileSpell  -- hostile spell configured by the user (spell name)
 
@@ -179,10 +181,10 @@ local Ranges = {
 		elseif UnitIsUnit(unit,'player') then
 			return true
 		elseif UnitIsFriend("player", unit) then
-			if UnitIsDeadOrGhost(unit) then
-				return IsSpellInRange(rezSpell,unit)==1
+			if worldRange40 and grouped_units[unit] then
+				return UnitInRange(unit)
 			else
-				return IsSpellInRange(rangeSpell,unit)==1
+				return IsSpellInRange(UnitIsDeadOrGhost(unit) and rezSpell or rangeSpell,unit)==1
 			end
 		else
 			return CheckHostileDistance(unit,4) -- 28y for enemies
@@ -193,6 +195,8 @@ local Ranges = {
 			if UnitIsFriend("player", unit) then
 				if UnitIsUnit(unit,'player') then
 					return true
+				elseif worldRange40 and grouped_units[unit] then
+					return UnitInRange(unit)
 				elseif rezSpell and UnitIsDeadOrGhost(unit) then
 					return IsSpellInRange(rezSpell,unit)==1
 				elseif friendlySpell then
@@ -210,6 +214,7 @@ local Ranges = {
 			end
 		end
 	end,
+
 }
 
 local function Update(timer)
@@ -218,6 +223,7 @@ local function Update(timer)
 	local UnitRangeCheck = self.UnitRangeCheck
 	hostileSpell = self.hostileSpell
 	friendlySpell = self.friendlySpell
+	worldRange40 = self.worldRange40 and not IsInInstance()
 	for unit in Grid2:IterateRosterUnits() do
 		local value = UnitRangeCheck(unit) and 1 or false
 		if value ~= cache[unit] then
@@ -282,6 +288,7 @@ function Range:UpdateDB()
 	self.curRange = tonumber(dbr.range) or (dbr.range=='spell' and 'spell') or (rangeSpell and 'heal') or 38
 	self.UnitRangeCheck = Ranges[self.curRange] or Ranges[38]
 	self.curAlpha = dbx.default or 0.25
+	self.worldRange40 = dbx.worldRange40
 	self.timer = self.timer or Grid2:CreateTimer( Update )
 	if self.timer then
 		self.timer:SetDuration(dbx.elapsed or 0.25)
