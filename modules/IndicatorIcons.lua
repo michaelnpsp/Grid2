@@ -115,6 +115,7 @@ local function Icon_Update(self, parent, unit)
 	end
 end
 
+-- Layout icons
 local function Icon_Layout(self, parent)
 	local f = parent[self.name]
 	local x,y = 0,0
@@ -125,6 +126,7 @@ local function Icon_Layout(self, parent)
 	local fontSize = self.fontSize<1 and self.fontSize*iconSize or self.fontSize
 	local size = iconSize + self.iconSpacing
 	local tc1,tc2,tc3,tc4 = Grid2.statusPrototype.GetTexCoord()
+	local level = parent:GetFrameLevel() + self.frameLevel
 	local frameName
 	if not self.dbx.disableOmniCC then
 		local i,j  = parent:GetName():match("Grid2LayoutHeader(%d+)UnitButton(%d+)")
@@ -133,7 +135,7 @@ local function Icon_Layout(self, parent)
 	f:SetParent(parent)
 	f:ClearAllPoints()
 	f:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
-	f:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
+	f:SetFrameLevel(level)
 	f:SetSize( size*self.pw, size*self.ph )
 	local auras = f.auras
 	for i=1,self.maxIcons do
@@ -155,12 +157,20 @@ local function Icon_Layout(self, parent)
 		-- stack count text
 		if self.showStack then
 			local c = self.colorStack
-			frame.text = frame.text or frame:CreateFontString(nil, "OVERLAY")
-			frame.text:SetFont(self.font, fontSize, self.fontFlags )
-			frame.text:SetTextColor(c.r, c.g, c.b, c.a)
-			frame.text:ClearAllPoints()
-			frame.text:SetPoint(self.fontPoint, self.fontOffsetX, self.fontOffsetY)
-			frame.text:Show()
+			local text = frame.text
+			if not text then
+				local tframe = CreateFrame("frame", nil, frame)
+				text = tframe:CreateFontString(nil, "OVERLAY")
+				frame.text = text
+				text.tframe = tframe
+				tframe:SetAllPoints()
+			end
+			text.tframe:SetFrameLevel(level+2)
+			text:SetFont(self.font, fontSize, self.fontFlags )
+			text:SetTextColor(c.r, c.g, c.b, c.a)
+			text:ClearAllPoints()
+			text:SetPoint(self.fontPoint, self.fontOffsetX, self.fontOffsetY)
+			text:Show()
 		elseif frame.text then
 			frame.text:Hide()
 		end
