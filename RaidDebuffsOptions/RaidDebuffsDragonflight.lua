@@ -9,6 +9,11 @@ RDDB["Dragonflight"] = {
 		order = 1, ejid = 2471,
 		378020, --gash-frenzy
 		381379, --decayed-senses
+		377844, -- Bladestorm
+		381835, -- Bladestorm
+		381466, -- Hextrick
+		381461, -- Savage Charge
+		378229, -- Marked for Butchery
 		},
 		["Treemouth"] = {
 		order = 2, ejid = 2473,
@@ -16,14 +21,37 @@ RDDB["Dragonflight"] = {
 		378054, --withering-away
 		378022, --consuming
 		376933, --grasping-vines
+		383875, -- Partially Digested
 			},
 		["Gutshot"] = {
 		order = 3, ejid = 2472,
 		376997, --savage-peck
+		384425, -- Smell Like Meat
+		385356, -- Ensnaring Trap
 		},
 		["Decatriarch Wratheye"] = {
 		order = 4, ejid = 2474,
 		373896, --withering-rot
+		373917, -- Decaystrike
+		},
+		["Trash"] = {
+		order = 5, ejid = nil,
+		375416, -- Bleeding
+		367481, -- Bloody Bite
+		367521, -- Bone Bolt
+		384558, -- Bounding Leap
+		382593, -- Crushing Smash
+		382787, -- Decay Claws
+		373899, -- Decaying Roots
+		385185, -- Disoriented
+		373872, -- Gushing Ooze
+		367500, -- Hideous Cackle
+		368091, -- Infected Bite
+		382805, -- Necrotic Breath
+		373943, -- Stomp
+		367485, -- Vicious Clawmangle
+		368081, -- Withering
+		396305, -- Withering Contagion
 		},
 	},
 	[1197] = {
@@ -32,6 +60,7 @@ RDDB["Dragonflight"] = {
 		order = 1, ejid = 2475,
 		377825, --burning-pitch
 		375286, --searing-cannonfire
+		369791, -- Skullcracker
 		},
 		["Bromach"] = {
 		order = 2, ejid = 2487,
@@ -40,16 +69,33 @@ RDDB["Dragonflight"] = {
 		["Sentinel Talondras"] = {
 		order = 3, ejid = 2484,
 		372652, --resonating-orb
+		372718, -- Earthen Shards
 		},
 		["Emberon"] = {
 		order = 4, ejid = 2476,
 		369110, --unstable-embers
 		369025, --fire-wave
+		369006, -- Burning Heat
 		},
 		["Chrono-Lord Deios"] = {
 		order = 5, ejid = 2479,
 		376325, --eternity-zone
 		377405, --time-sink
+		},
+		["Trash"] = {
+		order = 5, ejid = nil,
+		369811, -- Brutal Slam
+		369828, -- Chomp
+		369365, -- Curse of Stone
+		369337, -- Difficult Terrain
+		369818, -- Diseased Bite
+		377732, -- Jagged Bite
+		382576, -- Scorn of Tyr
+		369791, -- Skullcracker
+		369411, -- Sonic Burst
+		377510, -- Stolen Time
+		377486, -- Time Blade
+		369419, -- Venomous Fangs
 		},
 	},
 	[1198] = {
@@ -59,11 +105,13 @@ RDDB["Dragonflight"] = {
 		384185, -- Lightning Strike
 		386916, -- The Raging Tempest
 		382628, -- Surge of Power
+		384620, -- Electrical Storm
 		},
 		["Teera and Maruuk"] = {
 		order = 3, ejid = 2478,
 		392151, -- Gale Arrow
 		395669, -- Aftershock
+		386063, -- Frightful Roar
 		},
 		["Balakar Khan"] = {
 		order = 4, ejid = 2477,
@@ -92,6 +140,12 @@ RDDB["Dragonflight"] = {
 		373395, -- Bloodcurdling Shout
 		387629, -- Rotting Wind
 		395035, -- Shatter Soul
+		384365, -- Disruptive Shout
+		436841, -- Rotting Wind
+		387826, -- Sundering Slash
+		400474, -- Surge of Power
+		386024, -- Tempest
+		386028, -- Thunder Clap
 		},
 	},
 	[1199] = {
@@ -100,15 +154,22 @@ RDDB["Dragonflight"] = {
 		order = 1, ejid = 2490,
 		374471, --erupted-ground
 		374482, --grounding-chain
+		373735, -- Dragon Strike
+		396332, -- Fiery Focus
+		389059, -- Slag Eruption
 		},
 		["Forgemaster Gorek"] = {
 		order = 2, ejid = 2489,
 		381482, --forgefire
+		392666, -- Blazing Aegis
+		374842, -- Blazing Aegis
 		},
 		["Magmatusk"] = {
 		order = 3, ejid = 2494,
 		375890, --magma-eruption
 		374410, --magma-tentacle
+		372461, -- Imbued Magma
+		378818, -- Magma Conflagration
 		},
 		["Warlord Sargha"] = {
 		order = 4, ejid = 2501,
@@ -117,6 +178,17 @@ RDDB["Dragonflight"] = {
 		377018, --molten-gold
 		377022, --hardened-gold
 		377542, --burning-ground
+		391762, -- Curse of the Dragon Hoard
+		},
+		["Trash"] = {
+		order = 5, ejid = nil,
+		377522, -- Burning Pursuit
+		372224, -- Dragonbone Axe
+		372461, -- Imbued Magma
+		378818, -- Magma Conflagration
+		378221, -- Molten Vulnerability
+		384161, -- Mote of Combustion
+		372971, -- Reverberating Slam
 		},
 	},
 	[1201] = {
@@ -195,6 +267,8 @@ RDDB["Dragonflight"] = {
 		392451, -- Flashfire
 		392924, -- Shock Blast
 		373589, -- Primal Chill
+		385536, -- Flame Dance
+		391050, -- Tempest Stormshield
 		},
 	},
 	[1203] = {
@@ -207,12 +281,15 @@ RDDB["Dragonflight"] = {
 		},
 		["Azureblade"] = {
 		order = 2, ejid = 2505,
+		384625, -- Overwhelming Energy
+		389855, -- Unstable Magic
 		},
 		["Telash Greywing"] = {
 		order = 3, ejid = 2483,
 		386881, -- Frost Bomb
 		387150, -- Frozen Ground
 		387151, -- Icy Devastator
+		387152, -- Icy Devastator
 		388072, -- Vault Rune
 		396722, -- Absolute Zero
 		},
@@ -240,6 +317,10 @@ RDDB["Dragonflight"] = {
 		371352, -- Forbidden Knowledge
 		377488, -- Icy Bindings
 		386640, -- Tear Flesh
+		371358, -- Forbidden Knowledge
+		377488, -- Icy Bindings
+		386536, -- Null Stomp
+		436652, -- Shoulder Slam
 		},
 	},
 	[1204] = {
@@ -250,6 +331,7 @@ RDDB["Dragonflight"] = {
 		383935, -- spark-volley
 		389179, -- power-overload
 		389181, -- power-field
+		389443, -- Purifying Blast
 		},
 		["Gulping Goliath"] = {
 		order = 2, ejid = 2507,
@@ -276,6 +358,9 @@ RDDB["Dragonflight"] = {
 		374615, -- cheap-shot
 		374563, -- dazzle
 		374724, -- molten-subduction
+		391634, -- Deep Chill
+		374339, -- Demoralizing Shout
+		375384, -- Rumbling Earth
 		},
 	},
 	[1209] = {
