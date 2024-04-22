@@ -9,6 +9,11 @@ RDDB["Dragonflight"] = {
 		order = 1, ejid = 2471,
 		378020, --gash-frenzy
 		381379, --decayed-senses
+		377844, -- Bladestorm
+		381835, -- Bladestorm
+		381466, -- Hextrick
+		381461, -- Savage Charge
+		378229, -- Marked for Butchery
 		},
 		["Treemouth"] = {
 		order = 2, ejid = 2473,
