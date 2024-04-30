@@ -184,6 +184,7 @@ RDDB["Dragonflight"] = {
 		order = 5, ejid = nil,
 		377522, -- Burning Pursuit
 		372224, -- Dragonbone Axe
+		372570, -- Bold Ambush
 		372461, -- Imbued Magma
 		378818, -- Magma Conflagration
 		378221, -- Molten Vulnerability
