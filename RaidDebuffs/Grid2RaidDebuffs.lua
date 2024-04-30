@@ -267,7 +267,7 @@ local class = {
 	GetCount          = function(self, unit) return self.counts[unit]      end,
 	GetDuration       = function(self, unit) return self.durations[unit]   end,
 	GetExpirationTime = function(self, unit) return self.expirations[unit] end,
-	GetTooltip        = function(self, unit, tip) tip:SetUnitDebuff(unit, self.states[unit]) end,
+	GetTooltip        = function(self, unit, tip, slotID) local idx = slotID or self.states[unit];	if idx then tip:SetUnitDebuff(unit, idx) end; end,
 }
 
 do
