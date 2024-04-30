@@ -26,20 +26,25 @@ local function Timer()
 	end
 end
 
-function Resurrection:INCOMING_RESURRECT_CHANGED(_, unit)
+local function ResEventStandard(self, _, unit)
 	if unit and UnitIsDeadOrGhost(unit) then
 		if UnitHasIncomingResurrection(unit) then
 			if res_cache[unit] ~= 1 then
 				res_cache[unit]= 1
 				self:UpdateIndicators(unit)
-				if not self.dbx.onlyReviving then
-					timer = timer or Grid2:CreateTimer( Timer, .25 )
-				end
+				timer = timer or Grid2:CreateTimer( Timer, .25 )
 			end
 		elseif res_cache[unit] == 1 then
-			res_cache[unit]= (not self.dbx.onlyReviving) and 0 or nil
+			res_cache[unit]= 0
 			self:UpdateIndicators(unit)
 		end
+	end
+end
+
+local function ResEventOnlyReviving(self, _, unit)
+	if unit then
+		res_cache[unit] = UnitHasIncomingResurrection(unit) and 1 or nil
+		self:UpdateIndicators(unit)
 	end
 end
 
@@ -50,6 +55,10 @@ end
 function Resurrection:OnDisable()
 	self:UnregisterEvent("INCOMING_RESURRECT_CHANGED")
 	wipe(res_cache)
+end
+
+function Resurrection:UpdateDB()
+	self.INCOMING_RESURRECT_CHANGED = self.dbx.onlyReviving and ResEventOnlyReviving or ResEventStandard
 end
 
 function Resurrection:IsActive(unit)
