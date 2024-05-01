@@ -6,6 +6,9 @@ on:
       retail:
         type: boolean
         description: Retail
+      cata:
+        type: boolean
+        description: Cataclysm
       wrath:
         type: boolean
         description: Wrath
@@ -30,6 +33,16 @@ jobs:
         uses: BigWigsMods/packager@master
         with:
           args: -g retail -m .pkgmeta-retail
+        env:
+          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+          WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
+
+      - name: Create Cata Package
+        if: ${{ inputs.cata }}
+        uses: BigWigsMods/packager@master
+        with:
+          args: -g cata -m .pkgmeta-cata
         env:
           GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
