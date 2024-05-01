@@ -1,22 +1,34 @@
 -- Grid2RaidDebuffsOptions, Created by Michael
+local Grid2Options = Grid2Options
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 local GSRD = Grid2:GetModule("Grid2RaidDebuffs")
 
 Grid2Options:RegisterStatusOptions("raid-debuffs", "debuff", function(self, status, options)
 	self.RDO:Init()
-	local empty = not (next(GSRD.db.profile.enabledModules) or next(GSRD.db.profile.debuffs))
-	options.general= {
-			type = "group",
-			name = L["General Settings"],
-			order = empty and 10 or 20,
-			args = self.RDO.OPTIONS_GENERAL,
-		}
-	options.advanced= {
-			type = "group",
-			name = L["Debuff Configuration"],
-			order = empty and 20 or 10,
-			args = self.RDO.OPTIONS_ADVANCED,
-		}
+	options.advanced = {
+		type = "group",
+		name = L["Raid Debuffs"],
+		order = 10,
+		args = self.RDO.OPTIONS_ADVANCED,
+	}
+	options.statuses = {
+		type = "group",
+		name = L["Statuses"],
+		order = 20,
+		args = self.RDO.OPTIONS_STATUSES,
+	}
+	options.modules = {
+		type = "group",
+		name = L["Modules"],
+		order = 30,
+		args = self.RDO.OPTIONS_MODULES,
+	}
+	options.miscellaneous = {
+		type = "group",
+		name = L["Miscellaneous"],
+		order = 40,
+		args = self.RDO.OPTIONS_MISCELLANEOUS,
+	}
 end, {
 	hideTitle    = true,
 	childGroups  = "tab",
@@ -28,11 +40,14 @@ end, {
 
 --===================================================================
 
-Grid2Options.RDO = {
+local RDDK = {}
+local RDDB = setmetatable( {}, { __newindex = function (t,k,v) rawset(t,k,v); RDDK[#RDDK+1] = k end } )
+local RDO  = {
 	-- Grid2RaidDebuffs status acedb database
 	db = GSRD.db,
 	-- Static raid debuffs database modules
-	RDDB = {},
+	RDDK = RDDK,
+	RDDB = RDDB,
 	-- raid-debuffs statuses
 	statuses = {},
 	statusesIndexes = {},
@@ -40,8 +55,7 @@ Grid2Options.RDO = {
 	-- debuffs autodetection
 	auto_enabled = nil,
 }
-local RDO  = Grid2Options.RDO
-local RDDB = RDO.RDDB
+Grid2Options.RDO = RDO
 
 --===================================================================
 
@@ -96,25 +110,6 @@ function RDO:FixWrongInstances()
 	end
 end
 
--- Methods shared by different configuration modules
-function RDO:LoadStatuses()
-	wipe(self.statuses)
-	wipe(self.statusesIndexes)
-	wipe(self.statusesNames)
-	for _,status in Grid2:IterateStatuses() do
-		if status.dbx and status.dbx.type == "raid-debuffs" then
-			self.statuses[#self.statuses+1] = status
-		end
-	end
-	table.sort( self.statuses, function(a,b) return (tonumber(strmatch(a.name,"(%d+)")) or 1) < (tonumber(strmatch(b.name,"(%d+)")) or 1) end )
-	local text = L["raid-debuffs"]
-	for index,status in ipairs(self.statuses) do
-		self.statusesIndexes[status] = index
-		self.statusesNames[index] = string.format( "%s(%d)", text, index )
-	end
-	self.statusesNames[1] = text
-end
-
 function RDO:EnableInstanceAllDebuffs(curModule, curInstance)
 	local debuffs = {}
 	for instance,values in pairs(RDDB[curModule][curInstance]) do
@@ -148,6 +143,7 @@ function RDO:UpdateZoneSpells(instance)
 	end
 end
 
+-- data export
 function RDO:ExportData(data)
 	local AceGUI = LibStub("AceGUI-3.0")
 	local frame = AceGUI:Create("Frame")
@@ -165,6 +161,37 @@ function RDO:ExportData(data)
 	edit:SetText(data)
 	edit.editBox:SetFocus()
 	edit.editBox:HighlightText()
+end
+
+-- raid debuffs statuses names management
+function RDO:LoadStatuses()
+	wipe(self.statuses)
+	wipe(self.statusesIndexes)
+	wipe(self.statusesNames)
+	for _,status in Grid2:IterateStatuses() do
+		if status.dbx and status.dbx.type == "raid-debuffs" then
+			self.statuses[#self.statuses+1] = status
+		end
+	end
+	table.sort( self.statuses, function(a,b) return (tonumber(strmatch(a.name,"(%d+)")) or 1) < (tonumber(strmatch(b.name,"(%d+)")) or 1) end )
+	local LI = Grid2Options.LI
+	local text = L["raid-debuffs"]
+	for index, status in ipairs(self.statuses) do
+		self.statusesIndexes[status] = index
+		self.statusesNames[index] = LI[status.name] or string.format("%s(%d)", text, index) or text
+	end
+end
+
+function RDO:GetStatusName(status)
+	return Grid2Options.LI[status.name] or L[status.name]
+end
+
+function RDO:SetStatusName(status, newname)
+	local oldname = status.name
+	newname = (strlen(newname)>=5 and newname~=Grid2Options.LI[oldname] and newname~=L[oldname] and newname~=oldname) and newname or nil
+	Grid2Options.LI[oldname] = newname
+	local index = self.statusesIndexes[status]
+	self.statusesNames[index] = newname or string.format( "%s(%d)", L["raid-debuffs"], index )
 end
 
 -- Util functions to access nested tables values

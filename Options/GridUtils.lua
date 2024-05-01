@@ -382,6 +382,7 @@ do
 	end
 	function Grid2Options.LocalizeStatus(status, RemovePrefix)
 		local name = status.name
+		if status.dbx.type == "raid-debuffs" then return Grid2Options.LI[name] or L[name] end
 		local prefix, body, suffix = SplitStatusName(name)
 		if RemovePrefix then
 			prefix = ''
@@ -417,7 +418,6 @@ function Grid2Options:LocalizeIndicator(indicator, all)
 		icon = self.indicatorIconPath .. (self.indicatorTypesOrder[type] and type or "default")
 		suffix = ''
 	end
-
 	return string.format( (all or type~='multibar') and "|T%s:0|t%s%s" or "|T%s:0|t|cFF808080%s%s|r", icon, self.LI[name] or L[name], suffix )
 end
 

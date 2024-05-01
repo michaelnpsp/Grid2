@@ -4,29 +4,42 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 local GSRD = Grid2:GetModule("Grid2RaidDebuffs")
 local RDO = Grid2Options.RDO
 
-local options = {}
-RDO.OPTIONS_GENERAL = options
+----------------------------------------------------------------------
+-- Statuses
+----------------------------------------------------------------------
 
-function RDO:InitGeneralOptions()
+local options = {}
+RDO.OPTIONS_STATUSES = options
+
+local function InitStatusOptions()
 	Grid2Options:MakeStatusTitleOptions( RDO.statuses[1], options)
 end
 
--- separate content from title
-options.separator0 = { type = "description", order = 9, name = "\n" }
-
--- raid-debuffs statuses
 do
 	local function GetStatus(info)
 		return RDO.statuses[info.handler[1]]
 	end
 	local statusOptions = {
 		type = 'group', inline = true,
-		name   = function(info) return RDO.statusesNames[info.handler[1]] end,
+		name = function(info) local status = RDO.statuses[info.handler[1]]; return status and L[status.name] or ''; end,
 		hidden = function(info) return info.handler[1]>#RDO.statuses end,
 		args = {
+			name = {
+				type = "input",
+				order = 1,
+				width = "full",
+				name = L["Status Name"],
+				desc = L["You can type a more descriptive name for this status. You can leave the field blank to recover the default name."],
+				get = function(info)
+					return RDO:GetStatusName(GetStatus(info))
+				end,
+				set = function(info,v)
+					RDO:SetStatusName(GetStatus(info), strtrim(v))
+				end,
+			},
 			color = {
 				type = "color",
-				order = 1,
+				order = 2,
 				width = "half",
 				name = L['color'],
 				hasAlpha = true,
@@ -41,7 +54,7 @@ do
 			},
 			debuffTypeColor = {
 				type = "toggle",
-				order = 2,
+				order = 3,
 				width = 1,
 				name = L["Use debuff Type color"],
 				desc = L["Use the debuff Type color first. The specified color will be applied only if the debuff has no type."],
@@ -59,7 +72,7 @@ do
 			},
 			icons = {
 				type = "toggle",
-				order = 3,
+				order = 4,
 				width = 1,
 				name = L["multiple icons support"],
 				desc = L["Enable multiple icons support for icons indicators."],
@@ -124,14 +137,102 @@ options.deleteStatus = {
 	end,
 }
 
--- debuffs autodetection
+----------------------------------------------------------------------
+-- Modules
+----------------------------------------------------------------------
 
+local options = {}
+RDO.OPTIONS_MODULES = options
+
+local InitModulesOptions
+do
+	local function get(info)
+		local key = info[#info]
+		return RDO.db.profile.enabledModules[key] ~= nil
+	end
+	local function set(info,state)
+		local module = info[#info]
+		RDO.db.profile.enabledModules[module] = state or nil
+		for instance in pairs(RDO.RDDB[module]) do
+			if state then
+				RDO:EnableInstanceAllDebuffs(module,instance)
+			else
+				RDO:DisableInstanceAllDebuffs(instance)
+			end
+		end
+		RDO:UpdateZoneSpells()
+		RDO:RefreshAdvancedOptions()
+	end
+	local function confirm(info)
+		local key = info[#info]
+		return RDO.db.profile.enabledModules[key] and L["All custom settings and spells for the selected module will be removed.\nAre you sure you want to disable this module ?"] or nil
+	end
+	function InitModulesOptions()
+		if not next(options) then
+			options.title = { order = 1, type = "description", fontSize = 'medium', name = string.format("|cFFe0e000%s", L["Select the expansion modules to enable:\n"]) }
+			options.sep   = { type = "header", order = 2, name = '' }
+			for index,name in ipairs(RDO.RDDK) do
+				if name ~= "[Custom Debuffs]" then
+					options[name] = { type = "toggle", width = "full",	order = 100-index, name = L[name], desc = '', get = get, set = set, confirm = confirm }
+				end
+			end
+		end
+	end
+end
+
+----------------------------------------------------------------------
+-- Miscellaneus
+----------------------------------------------------------------------
+
+local options = {}
+RDO.OPTIONS_MISCELLANEOUS = options
+
+-- encounter journal
+do
+	options.journal = { type = "group", order = 10, name = L["Encounter Journal"], inline= true, args = {
+		difficulty = {
+			type = "select",
+			order = 100,
+			name = L["Encounter Journal difficulty"],
+			desc = L["Default difficulty for Encounter Journal links"],
+			get = function ()
+				return RDO.db.profile.defaultEJ_difficulty or 14
+			end,
+			set = function (_, v)
+				RDO.db.profile.defaultEJ_difficulty = v
+			end,
+			values = {
+				[14] = PLAYER_DIFFICULTY1, -- Normal
+				[15] = PLAYER_DIFFICULTY2, -- Heroic
+				[16] = PLAYER_DIFFICULTY6, -- Mythic
+				[17] = PLAYER_DIFFICULTY3  -- LFR
+			},
+			hidden = function() return Grid2.isClassic end,
+		},
+		syncInstance = {
+			type = "toggle",
+			order = 200,
+			width = "full",
+			name = L["Auto open debuffs for current instance"],
+			desc = L["Auto open debuffs for current instance"],
+			get = function(info)
+				return RDO.db.profile.syncInstance
+			end,
+			set = function(info, v)
+				RDO.syncInstance = v or nil
+				RDO.db.profile.syncInstance = v or nil
+			end,
+		},
+	} }
+end
+
+-- debuffs autodetection
 do
 	local function AddToTooltip(tooltip)
 		tooltip:AddDoubleLine( L["RaidDebuffs Autodetection"], L["Enabled"], 255,255,255, 255,255,0)
 	end
 
-	options.autodetect = { type = "group", order = 100,	name = L["Debuffs Autodetection"], inline= true, args = {
+	options.autodetect = { type = "group", order = 20,	name = L["Debuffs Autodetection"], inline= true, args = {
 		autoenable = {
 			type = "toggle",
 			order = 1,
@@ -169,87 +270,21 @@ do
 	} }
 end
 
--- enabled/disable modules
-do
-	local modules = {}
-	options.modules= {
-		type = "multiselect",
-		name = L["Enabled raid debuffs modules"],
-		order = 150,
-		get = function(info,key)
-			return RDO.db.profile.enabledModules[key] ~= nil
-		end,
-		set = function(_,module,state)
-			RDO.db.profile.enabledModules[module] = state or nil
-			for instance in pairs(RDO.RDDB[module]) do
-				if state then
-					RDO:EnableInstanceAllDebuffs(module,instance)
-				else
-					RDO:DisableInstanceAllDebuffs(instance)
-				end
-			end
-			RDO:UpdateZoneSpells()
-			RDO:RefreshAdvancedOptions()
-		end,
-		values = function()
-			wipe(modules)
-			for name in pairs(RDO.RDDB) do
-				if name ~= "[Custom Debuffs]" then
-					modules[name] = L[name]
-				end
-			end
-			return modules
-		end,
-		disabled = function() return RDO.auto_enabled end, 
-		confirm = function(info, key) 
-			return RDO.db.profile.enabledModules[key] and L["All custom settings and spells for the selected module will be removed.\nAre you sure you want to disable this module ?"] or nil
-		end,		
-	}
+----------------------------------------------------------------------
+--
+----------------------------------------------------------------------
+
+function RDO:InitGeneralOptions()
+	InitStatusOptions()
+	InitModulesOptions()
 end
 
--- encounter journal
-if not Grid2.isClassic then
-	options.header3 = { type = "header", order = 52, name = "" }
-
-	options.difficulty = {
-		type = "select",
-		order = 200,
-		name = L["Encounter Journal difficulty"],
-		desc = L["Default difficulty for Encounter Journal links"],
-		get = function ()
-			return RDO.db.profile.defaultEJ_difficulty or 14
-		end,
-		set = function (_, v)
-			RDO.db.profile.defaultEJ_difficulty = v
-		end,
-		values = {
-			[14] = PLAYER_DIFFICULTY1, -- Normal
-			[15] = PLAYER_DIFFICULTY2, -- Heroic
-			[16] = PLAYER_DIFFICULTY6, -- Mythic
-			[17] = PLAYER_DIFFICULTY3  -- LFR
-		},
-	}
-end
-
--- auto open current instance debuffs when configuration window is opened
-
-options.syncInstance = {
-	type = "toggle",
-	order = 210,
-	width = 1.5,
-	name = L["Auto open debuffs for current instance"],
-	desc = L["Auto open debuffs for current instance"],
-	get = function(info)
-		return RDO.db.profile.syncInstance
-	end,
-	set = function(info, v)
-		RDO.syncInstance = v or nil
-		RDO.db.profile.syncInstance = v or nil
-	end,
-}
+----------------------------------------------------------------------
+--
+----------------------------------------------------------------------
 
 local prev_OnChatCommand = Grid2Options.OnChatCommand
 function Grid2Options:OnChatCommand()
-	RDO.syncInstance = RDO.db.profile.syncInstance 
+	RDO.syncInstance = RDO.db.profile.syncInstance
 	prev_OnChatCommand(self)
 end

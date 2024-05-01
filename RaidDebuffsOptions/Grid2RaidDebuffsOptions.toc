@@ -18,6 +18,12 @@ OptionsGeneral.lua
 OptionsAdvanced.lua
 OptionsLuaCode.lua
 
+#@non-retail@
+RaidDebuffsClassic.lua
+RaidDebuffsBC.lua
+RaidDebuffsLichKing.lua
+#@end-non-retail@
+
 #@retail@
 RaidDebuffsCataclysm.lua
 RaidDebuffsMoP.lua
@@ -28,9 +34,4 @@ RaidDebuffsShadowlands.lua
 RaidDebuffsDragonflight.lua
 #@end-retail@
 
-#@non-retail@
-RaidDebuffsClassic.lua
-RaidDebuffsBC.lua
-RaidDebuffsLichKing.lua
-#@end-non-retail@
 
