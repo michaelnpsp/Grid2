@@ -483,7 +483,7 @@ function Grid2Options:MakeStatusAuraListOptions(status, options, optionParams)
 		end,
 		set = function(_, v)
 			wipe(status.dbx.auras)
-			local auras = { strsplit("\n,", strtrim(v)) }
+			local auras = { strsplit("\n", strtrim(v)) }
 			for _,name in pairs(auras) do
 				local prefix, links = string.match(name,"^(.-)(|c.*)")
 				local aura = strtrim(prefix or name)
