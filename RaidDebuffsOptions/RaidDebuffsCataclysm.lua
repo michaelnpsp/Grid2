@@ -1,4 +1,4 @@
-if Grid2.isClassic then return end
+if Grid2.versionCli<40000 then return end
 
 local RDDB= Grid2Options:GetRaidDebuffsTable()
 

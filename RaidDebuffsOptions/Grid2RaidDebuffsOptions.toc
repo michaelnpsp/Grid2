@@ -24,8 +24,9 @@ RaidDebuffsBC.lua
 RaidDebuffsLichKing.lua
 #@end-non-retail@
 
-#@retail@
 RaidDebuffsCataclysm.lua
+
+#@retail@
 RaidDebuffsMoP.lua
 RaidDebuffsWoD.lua
 RaidDebuffsLegion.lua
