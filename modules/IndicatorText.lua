@@ -7,7 +7,7 @@ local min = math.min
 local next = next
 
 local justifyH = { CENTER = "CENTER", TOP = "CENTER", BOTTOM = "CENTER", LEFT = "LEFT",   RIGHT = "RIGHT",  TOPLEFT = "LEFT", TOPRIGHT = "RIGHT", BOTTOMLEFT = "LEFT",   BOTTOMRIGHT = "RIGHT"  }
-local justifyV = { CENTER = "CENTER", TOP = "TOP",    BOTTOM = "BOTTOM", LEFT = "CENTER", RIGHT = "CENTER", TOPLEFT = "TOP",  TOPRIGHT = "TOP",   BOTTOMLEFT = "BOTTOM", BOTTOMRIGHT = "BOTTOM" }
+local justifyV = { CENTER = "MIDDLE", TOP = "TOP",    BOTTOM = "BOTTOM", LEFT = "MIDDLE", RIGHT = "MIDDLE", TOPLEFT = "TOP",  TOPRIGHT = "TOP",   BOTTOMLEFT = "BOTTOM", BOTTOMRIGHT = "BOTTOM" }
 
 Grid2.defaults.profile.formatting = {
 	longDecimalFormat        = "%.1f",
@@ -124,8 +124,12 @@ local function Text_Layout(self, parent)
 	Text:SetFont(self.textfont, self.textsize, self.fontFlags)
 	Text:ClearAllPoints()
 	Text:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
+
+	print(">", self.name, self.anchorRel, justifyH[self.anchorRel], justifyV[self.anchorRel] )
+
 	Text:SetJustifyH(justifyH[self.anchorRel])
 	Text:SetJustifyV(justifyV[self.anchorRel])
+
 	Text:SetWidth(parent:GetWidth())
 	Text:SetShadowOffset(1,-1)
 	Text:SetShadowColor(0,0,0, self.shadowAlpha)

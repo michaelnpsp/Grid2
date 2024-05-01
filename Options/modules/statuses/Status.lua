@@ -46,7 +46,9 @@ do
 			local coord = CLASS_ICON_TCOORDS[class]
 			for index=Grid2Options.GetNumSpecializationsForClassID(classID), 1,-1 do
 				local _, specName, _, specIcon = Grid2Options.GetSpecializationInfoForClassID(classID, index)
-				CLASSES_SPECS[class..index] = string.format("|TInterface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES:0:0:0:0:256:256:%f:%f:%f:%f:0|t|T%s:0|t%s",coord[1]*256,coord[2]*256,coord[3]*256,coord[4]*256,specIcon,specName)
+				if specName and specIcon then
+					CLASSES_SPECS[class..index] = string.format("|TInterface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES:0:0:0:0:256:256:%f:%f:%f:%f:0|t|T%s:0|t%s",coord[1]*256,coord[2]*256,coord[3]*256,coord[4]*256,specIcon,specName)
+				end
 			end
 		  end
 		end
