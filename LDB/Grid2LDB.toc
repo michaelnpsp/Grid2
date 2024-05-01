@@ -3,6 +3,7 @@
 ## Interface-Classic: 11502
 ## Interface-BCC: 20504
 ## Interface-Wrath: 30403
+## Interface-Cata: 40400
 ## Title: Grid2 |cd3ff7d0aLDB|r
 ## Notes: Grid2 Databroker Launcher.
 ## Notes-esES: Lanzador del Grid2 (Databroker)
