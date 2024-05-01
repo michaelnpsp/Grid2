@@ -124,12 +124,8 @@ local function Text_Layout(self, parent)
 	Text:SetFont(self.textfont, self.textsize, self.fontFlags)
 	Text:ClearAllPoints()
 	Text:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
-
-	print(">", self.name, self.anchorRel, justifyH[self.anchorRel], justifyV[self.anchorRel] )
-
 	Text:SetJustifyH(justifyH[self.anchorRel])
 	Text:SetJustifyV(justifyV[self.anchorRel])
-
 	Text:SetWidth(parent:GetWidth())
 	Text:SetShadowOffset(1,-1)
 	Text:SetShadowColor(0,0,0, self.shadowAlpha)
