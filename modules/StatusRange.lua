@@ -21,13 +21,13 @@ local UnitPhaseReason = UnitPhaseReason or Grid2.Dummy
 
 local grouped_units = Grid2.grouped_units
 local playerClass = Grid2.playerClass
-local isRangeAvail = Grid2.isWrath
+local isRangeAvail = false -- all versions for now
 
 -------------------------------------------------------------------------
 -- CheckInteractDistance() replacements
 -------------------------------------------------------------------------
 
-if not isRangeAvail then -- vanilla or retail
+if not isRangeAvail then
 	-- range spells data
 	local getHostile, getFriendly
 	local function IVS(spellID)	return IsPlayerSpell(spellID) and spellID end
@@ -72,7 +72,7 @@ if not isRangeAvail then -- vanilla or retail
 			getHostile  = function() return IVS(116) or IVS(30451) or IVS(133) end -- Frostbolt, Arcane Blast, Fireball
 			getFriendly = function() return 1459 end -- Arcane intellect
 		end
-	else -- vanilla
+	else -- classic
 		if playerClass == 'DRUID' then
 			getHostile  = function() return 5176 end -- Wrath
 			getFriendly = function() return 5185 end -- Healing Touchaw
@@ -100,6 +100,9 @@ if not isRangeAvail then -- vanilla or retail
 		elseif playerClass == 'MAGE' then
 			getHostile  = function() return IVS(116) or IVS(133)  end -- Frostbolt, Fireball
 			getFriendly = function() return IVS(1459) end -- Arcane intellect
+		elseif playerClass == 'DEATHKNIGHT' then
+			getHostile  = function() return IVS(47541) or IVS(49576) end -- Death Coil, Death Grip
+			getFriendly = function() return IVS(47541) end -- Death Coil
 		end
 	end
 
@@ -148,10 +151,10 @@ local rezSpellID = ({ -- classic has the same spellIDs
 local rezSpell = rezSpellID and GetSpellInfo(rezSpellID)
 
 local rangeSpellID = ({
-		DRUID   = Grid2.isClassic and 774 or 8936,
+		DRUID   = Grid2.isClassic and 774   or 8936,
 		PRIEST  = Grid2.isClassic and 2050  or 2061,
 		SHAMAN  = Grid2.isClassic and 25357 or 8004,
-		PALADIN = 19750,
+		PALADIN = Grid2.isClassic and 635   or 19750,
 		MONK    = 116670,
 		EVOKER  = 361469,
 	})[playerClass]
