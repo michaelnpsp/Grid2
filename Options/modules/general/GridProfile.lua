@@ -19,7 +19,7 @@ do
 		if not showCurrent then
 			values[Grid2.db:GetCurrentProfile()] = nil
 		elseif showCurrent==0 then
-			values[0] = L['-- Create new profile --']
+			values[0] = string.format("-- %s --", L['New Profile'])
 		end
 		return values
 	end
@@ -133,7 +133,7 @@ options.renamedesc = {
 
 options.rename = {
 	name = L["Rename Profile"],
-	desc = L["Rename current profile."],
+	desc = L["Change the name of the current profile."],
 	type = "input",
 	order = 55,
 	get = false,
