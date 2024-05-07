@@ -6,7 +6,7 @@ local L = Grid2Options.L
 
 --==============================
 
-local GetAllProfiles, GetUnusedProfiles
+local GetAllProfiles, GetUnusedProfiles, GetDefaultProfiles
 do
 	local profiles, values = {}, {}
 	local function GetProfiles(showCurrent)
@@ -18,11 +18,14 @@ do
 		end
 		if not showCurrent then
 			values[Grid2.db:GetCurrentProfile()] = nil
+		elseif showCurrent==0 then
+			values[0] = L['-- Create new profile --']
 		end
 		return values
 	end
-	GetAllProfiles    = function() return GetProfiles(true)  end
-	GetUnusedProfiles = function() return GetProfiles(false) end
+	GetAllProfiles     = function() return GetProfiles(true)  end
+	GetUnusedProfiles  = function() return GetProfiles(false) end
+	GetDefaultProfiles = function() return GetProfiles(0) end
 end
 
 --==============================
@@ -122,6 +125,32 @@ options.new = {
 
 --==============
 
+options.renamedesc = {
+	order = 50,
+	type = "description",
+	name = "\n" .. L["Change the name of the current profile."],
+}
+
+options.rename = {
+	name = L["Rename Profile"],
+	desc = L["Rename current profile."],
+	type = "input",
+	order = 55,
+	get = false,
+	set = function(_, v)
+		local old = Grid2.db:GetCurrentProfile()
+		Grid2.db:SetProfile(strtrim(v))
+		Grid2:ProfileShutdown()
+		Grid2.db:CopyProfile(old)
+		Grid2.db:DeleteProfile(old)
+	end,
+	validate = function(info, v)
+		return (strlen(v)>3 and not GetAllProfiles()[v])
+	end,
+}
+
+--==============
+
 options.copydesc = {
 	order = 25,
 	type = "description",
@@ -161,6 +190,28 @@ options.delete = {
 	values = GetUnusedProfiles,
 	confirm = true,
 	confirmText = L["Are you sure you want to delete the selected profile?"],
+}
+
+--==============
+
+options.defaultdesc = {
+	order = 60,
+	type = "description",
+	name = "\n" .. L["Select the profile to use if no profile is assigned to the character."],
+}
+
+options.default = {
+	type   = "select",
+	name   = L['Default Profile'],
+	desc   = L["Select the profile to use if no profile is assigned to the character."],
+	order  = 65,
+	get = function()
+		return Grid2.db.global.defaultProfileName or 0
+	end,
+	set = function(_, v)
+		Grid2.db.global.defaultProfileName = (v~=0) and v or nil
+	end,
+	values = GetDefaultProfiles,
 }
 
 --==============================

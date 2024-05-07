@@ -115,7 +115,7 @@ end
 
 -- Start code
 function Grid2:OnInitialize()
-	self.db = LibStub("AceDB-3.0"):New("Grid2DB", self.defaults)
+	self.db = LibStub("AceDB-3.0"):New("Grid2DB", self.defaults, self:GetDefaultProfileName() )
 
 	self.profiles = self.db:RegisterNamespace('LibDualSpec-1.0') -- Using "LibDualSpec-1.0" namespace for backward compatibility
 
@@ -180,6 +180,10 @@ function Grid2:LoadConfig()
 end
 
 -- Profiles
+function Grid2:GetDefaultProfileName()
+	return (Grid2DB and Grid2DB.global and Grid2DB.global.defaultProfileName) or nil
+end
+
 function Grid2:ProfileShutdown()
 	self:Debug("Shutdown profile (", self.db:GetCurrentProfile(),")")
 	self:SetupShutdown()
