@@ -277,7 +277,39 @@ end
 -- dispellable by player spells types tracking
 do
 	local class, dispel, func  = Grid2.playerClass, {}, nil
-	if Grid2.isClassic then
+	if Grid2.isCata then -- cataclysm
+		if class == 'DRUID' then
+			func = function()
+				dispel.Magic  = IsPlayerSpell(88423)
+				dispel.Curse  = IsPlayerSpell(2782)
+				dispel.Poison = IsPlayerSpell(2782)
+			end
+		elseif class == 'PALADIN' then
+			func = function()
+				dispel.Magic   = IsPlayerSpell(53551)
+				dispel.Disease = IsPlayerSpell(4987)
+				dispel.Poison  = IsPlayerSpell(4987)
+			end
+		elseif class == 'PRIEST' then
+			func = function()
+				dispel.Magic   = IsPlayerSpell(527)
+				dispel.Disease = IsPlayerSpell(528)
+			end
+		elseif class == 'SHAMAN' then
+			func = function()
+				dispel.Magic = IsPlayerSpell(77130)
+				dispel.Curse = IsPlayerSpell(51886)
+			end
+		elseif class == 'MAGE' then
+			func = function()
+				dispel.Curse = IsPlayerSpell(475)
+			end
+		elseif class == 'WARLOCK' then
+			func = function()
+				dispel.Magic = IsPlayerSpell(19505)
+			end
+		end
+	elseif Grid2.isClassic then -- vanilla/tbc/wotlk
 		if class == 'DRUID' then
 			func = function()
 				dispel.Poison = IsPlayerSpell(2893) or IsPlayerSpell(8946)
