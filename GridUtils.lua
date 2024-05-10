@@ -292,7 +292,7 @@ do
 			end
 		elseif class == 'PRIEST' then
 			func = function()
-				dispel.Magic   = IsPlayerSpell(527)
+				dispel.Magic   = IsPlayerSpell(527) and IsPlayerSpell(33167)
 				dispel.Disease = IsPlayerSpell(528)
 			end
 		elseif class == 'SHAMAN' then
