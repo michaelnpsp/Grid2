@@ -123,6 +123,11 @@ local function GridFrame_Init(frame, width, height)
 	if frame:CanChangeAttribute() then
 		frame:SetAttribute("initial-width", width)
 		frame:SetAttribute("initial-height", height)
+		if PingUtil then
+			frame:SetToplevel(true)
+			frame:SetAttribute("ping-receiver", true)
+			frame.IsPingable = true
+		end
 	end
 	frame:RegisterForClicks( Grid2Frame.mouseClickType or "AnyUp" )
 	if Clique then Clique:UpdateRegisteredClicks(frame) end
@@ -201,6 +206,16 @@ function GridFramePrototype:CreateIndicators()
 		end
 	end
 end
+
+if PingUtil then
+	function GridFramePrototype:GetContextualPingType()
+		return PingUtil:GetContextualPingTypeForUnit( UnitGUID(self.unit) )
+	end
+	function GridFramePrototype:GetTargetPingGUID()
+		return UnitGUID(self.unit)
+	end
+end
+
 --}}}
 
 --{{{ Grid2Frame
