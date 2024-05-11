@@ -23,29 +23,48 @@ local function MakeOptions(self, status, options, optionParams)
 			order = 30,
 			get = function () return not status.dbx.alwaysActive end,
 			set = function (_, v)
-				local enabled = status.enabled
-				if enabled then status:OnDisable() end
 				status.dbx.alwaysActive = (not v) or nil
-				if enabled then status:OnEnable() end
+				status:Refresh()
 			end,
 		}
 	end
 	if status.dbx.type=='banzai' then
-		options.enableWhiteList = {
+		options.spellsHeader = { type = "header", order = 49, name = L["Spells"] }
+		options.useWhiteList = {
 			type = "toggle",
-			name = L["Enable harmful spells Allowlist"],
+			name = L["Whitelist"],
 			desc = L["Display only the spells specified in a user defined list."],
-			width = "full",
 			order = 50,
-			get = function () return status.dbx.spells~=nil end,
+			get = function () return status.dbx.spells~=nil and not status.dbx.useBlackList end,
 			set = function (_, v)
+				status.dbx.useBlackList = nil
 				if v then
-					status.dbx.spells = status.dbx.spellsBack or {}
+					status.dbx.spells = status.dbx.spells or status.dbx.spellsBack or {}
 					status.dbx.spellsBack = nil
 				else
 					status.dbx.spellsBack = status.dbx.spells
 					status.dbx.spells = nil
 				end
+				status:Refresh()
+			end,
+		}
+		options.useBlackList = {
+			type = "toggle",
+			name = L["Blacklist"],
+			desc = L["Ignore spells specified in a user defined list."],
+			order = 60,
+			get = function () return status.dbx.spells~=nil and status.dbx.useBlackList end,
+			set = function (_, v)
+				if v then
+					status.dbx.spells = status.dbx.spells or status.dbx.spellsBack or {}
+					status.dbx.spellsBack = nil
+					status.dbx.useBlackList = true
+				else
+					status.dbx.spellsBack = status.dbx.spells
+					status.dbx.spells = nil
+					status.dbx.useBlackList = nil
+				end
+				status:Refresh()
 			end,
 		}
 		options.spellsList = {
@@ -70,7 +89,7 @@ local function MakeOptions(self, status, options, optionParams)
 						table.insert(status.dbx.spells, tonumber(aura) or aura )
 					end
 				end
-				status:UpdateDB()
+				status:Refresh()
 			end,
 			hidden = function() return status.dbx.spells==nil end
 		}

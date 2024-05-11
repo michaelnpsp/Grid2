@@ -230,11 +230,12 @@ function Banzai:Update()
 		end
 	end
 	local spells = self.spells
+	local sblack = self.sblack
 	for g,func in next, bsrc do	-- Search new banzais
 		local unit = tguids[g]
 		if unit then
 			local name,_,ico,_,et,_,_,spellId2,spellId1 = func(sguids[g], g) -- Casting spellId1=9th, Channeling spellId2=8th
-			if name and (spells==nil or spells[name]) then
+			if name and (spells==nil or (not spells[name]) == sblack) then
 				local spellID = spellId1 or spellId2 or 0
 				et         = et and et/1000 or ct+0.25
 				bgid[g]    = unit
@@ -243,7 +244,7 @@ function Banzai:Update()
 				bdur[unit] = et - ct
 				bexp[unit] = et
 				bico[unit] = ico or "Interface\\ICONS\\Ability_Creature_Cursed_02"
-				bspl[unit] = GetSpellInfo(spellID) and spellID or name				
+				bspl[unit] = GetSpellInfo(spellID) and spellID or name
 				self:UpdateIndicators(unit)
 			end
 		end
@@ -311,6 +312,7 @@ function Banzai:UpdateDB()
 		end
 	end
 	self.spells = spells
+	self.sblack = not not self.dbx.useBlackList
 end
 
 Banzai.SetUpdateRate = status_SetUpdateRate
