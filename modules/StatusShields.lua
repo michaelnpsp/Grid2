@@ -1,20 +1,20 @@
-if Grid2.isClassic then return end
+if Grid2.versionCli<40000 then return end -- only cataclysm or retail
 
 -- Shields absorb status, created by Michael
 
 local Grid2 = Grid2
 local min   = math.min
 local fmt   = string.format
-local UnitGetTotalAbsorbs = UnitGetTotalAbsorbs
 local UnitHealthMax = UnitHealthMax
+local UnitGetTotalAbsorbs = UnitGetTotalAbsorbs
+local unit_is_valid = Grid2.roster_guids
 
 -- Shields
-
 local Shields = Grid2.statusPrototype:new("shields")
 
 function Shields:OnEnable()
-	self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
-	self:RegisterEvent("UNIT_MAXHEALTH", "UNIT_ABSORB_AMOUNT_CHANGED")
+	self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED", "UpdateUnit")
+	self:RegisterEvent("UNIT_MAXHEALTH", "UpdateUnit")
 end
 
 function Shields:OnDisable()
@@ -22,8 +22,10 @@ function Shields:OnDisable()
 	self:UnregisterEvent("UNIT_MAXHEALTH")
 end
 
-function Shields:UNIT_ABSORB_AMOUNT_CHANGED(_,unit)
-	self:UpdateIndicators(unit)
+function Shields:UpdateUnit(_,unit)
+	if unit_is_valid[unit] then
+		self:UpdateIndicators(unit)
+	end
 end
 
 function Shields:GetColor(unit)
@@ -94,15 +96,13 @@ Grid2:DbSetStatusDefaultValue( "shields", { type = "shields", thresholdMedium = 
 local Overflow = Grid2.statusPrototype:new("shields-overflow")
 
 local overflow_cache = {}
-local unit_is_valid = Grid2.roster_guids
 
 Overflow.GetColor = Grid2.statusLibrary.GetColor
 
 function Overflow:OnEnable()
-	self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED", "UpdateUnit")
 	self:RegisterEvent("UNIT_MAXHEALTH", "UpdateUnit")
 	self:RegisterEvent("UNIT_HEALTH", "UpdateUnit")
-	if not Grid2.isWoW90 then self:RegisterEvent("UNIT_HEALTH_FREQUENT", "UpdateUnit") end
+	self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED", "UpdateUnit")
 	self:RegisterMessage("Grid_UnitUpdated", "UpdateUnit")
 end
 
@@ -110,7 +110,6 @@ function Overflow:OnDisable()
 	self:UnregisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
 	self:UnregisterEvent("UNIT_MAXHEALTH")
 	self:UnregisterEvent("UNIT_HEALTH")
-	if not Grid2.isWoW90 then self:UnregisterEvent("UNIT_HEALTH_FREQUENT") end
 	self:UnregisterMessage("Grid_UnitUpdated")
 end
 
@@ -139,3 +138,86 @@ end
 Grid2.setupFunc["shields-overflow"] = Create
 
 Grid2:DbSetStatusDefaultValue( "shields-overflow", { type = "shields-overflow", color1 = {r=1, g=1, b=1, a=1} } )
+
+-- Cataclysm classic, implementation of missing UnitGetTotalAbsorbs()
+if not Grid2.isCata then return end
+
+local next  = next
+local CalcUnitShield
+local GetAuraDataByIndex = C_UnitAuras.GetAuraDataByIndex
+local shield_units = Grid2.roster_guids
+local shield_statuses = {}
+local shield_cache = setmetatable( {}, { __index = function(t,u) t[u]=CalcUnitShield(u); return t[u]; end } )
+local shield_spells = {
+	[11426] = 1, -- Ice Barrier (Mage)
+	[17]    = 1, -- Power Word: Shield (Priest)
+	[47753] = 1, -- Divine Aegis (Priest)
+	[86273] = 1, -- Iluminated Healing (Paladin)
+	-- [77535] = 1, -- Blood Shield (DK)
+}
+
+function UnitGetTotalAbsorbs(unit)
+	return shield_cache[unit]
+end
+
+function CalcUnitShield(unit)
+	local shield_value = 0
+	for i=1,40 do
+		local data = GetAuraDataByIndex(unit, i, 'HELPFUL')
+		if not data then break end
+		if shield_spells[data.spellId] then shield_value = shield_value + data.points[1] end
+	end
+	return shield_value
+end
+
+function Shields:UNIT_AURA(_, unit)
+	if shield_units[unit] then
+		local shield_value = CalcUnitShield(unit)
+		if shield_value~=shield_cache[unit] then
+			shield_cache[unit] = shield_value
+			if Shields.enabled then
+				Shields:UpdateIndicators(unit)
+			end
+			if Overflow.enabled then
+				Overflow:UpdateUnit(nil, unit)
+			end
+		end
+	end
+end
+
+function Shields:ClearUnit(_,unit)
+	shield_cache[unit] = nil
+end
+
+function Shields:OnEnable()
+	if not next(shield_statuses) then -- do not change, must be Shields: (not self)
+		Shields:RegisterEvent("UNIT_AURA")
+		Shields:RegisterMessage("Grid_UnitUpdated", "ClearUnit")
+	end
+	shield_statuses[self] = true
+	self:RegisterEvent("UNIT_MAXHEALTH","UpdateUnit")
+end
+
+function Shields:OnDisable()
+	shield_statuses[self] = nil
+	if not next(shield_statuses) then -- do not change, must be Shields: (not self)
+		Shields:UnregisterEvent("UNIT_AURA")
+		Shields:UnregisterMessage("ClearUnit")
+		wipe(shield_cache)
+	end
+	self:UnregisterEvent("UNIT_MAXHEALTH")
+end
+
+function Overflow:OnEnable()
+	Shields.OnEnable(self)
+	self:RegisterEvent("UNIT_HEALTH", "UpdateUnit")
+	self:RegisterEvent("UNIT_HEALTH_FREQUENT", "UpdateUnit")
+	self:RegisterMessage("Grid_UnitUpdated", "UpdateUnit")
+end
+
+function Overflow:OnDisable()
+	Shields.OnDisable(self)
+	self:UnregisterEvent("UNIT_HEALTH")
+	self:UnregisterEvent("UNIT_HEALTH_FREQUENT")
+	self:UnregisterMessage("Grid_UnitUpdated")
+end
