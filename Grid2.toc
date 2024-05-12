@@ -111,9 +111,9 @@ modules\StatusAurasDebuffs.lua
 modules\StatusThreat.lua
 modules\StatusUnitIndex.lua
 modules\StatusPhased.lua
+modules\StatusShields.lua
 #@retail@
 modules\StatusVehicle.lua
-modules\StatusShields.lua
 modules\StatusHealAbsorbs.lua
 modules\StatusSummon.lua
 modules\StatusStagger.lua
