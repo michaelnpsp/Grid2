@@ -19,14 +19,14 @@ local select = select
 local tostring = tostring
 local fmt = string.format
 local GetTime = GetTime
+local C_Timer_After = C_Timer.After
 local UnitExists = UnitExists
 local UnitHealth = UnitHealth
 local UnitIsFriend = UnitIsFriend
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitIsFeignDeath = UnitIsFeignDeath
-local UnitGetTotalAbsorbs = UnitGetTotalAbsorbs
 local UnitHealthMax = UnitHealthMax
-local C_Timer_After = C_Timer.After
+local UnitGetTotalAbsorbs = UnitGetTotalAbsorbs
 local unit_is_valid = Grid2.roster_guids
 local dead_cache = Grid2.roster_deads
 
@@ -94,29 +94,35 @@ end
 -- Events management
 local RegisterEvent, UnregisterEvent
 do
-	local isWoW90 = Grid2.isWoW90
+	local IsEventValid = C_EventUtils.IsEventValid
 	local frame
 	local Events = {}
 	function RegisterEvent(event, func)
-		if isWoW90 and event == 'UNIT_HEALTH_FREQUENT' then return end
 		if not frame then
 			frame = CreateFrame("Frame", nil, Grid2LayoutFrame)
 			frame:SetScript( "OnEvent",  function(_, event, ...) Events[event](...) end )
 		end
-		if not Events[event] then frame:RegisterEvent(event) end
+		if not Events[event] and IsEventValid(event) then frame:RegisterEvent(event) end
 		Events[event] = func
 	end
 	function UnregisterEvent(...)
 		if frame then
 			for i=select("#",...),1,-1 do
 				local event = select(i,...)
-				if Events[event] then
-					frame:UnregisterEvent( event )
-					Events[event] = nil
-				end
+				if Events[event] and IsEventValid(event) then frame:UnregisterEvent(event) end
+				Events[event] = nil
 			end
 		end
 	end
+	local function FireEvent(event,...)
+		local func = Events[event]
+		if func then func(...) end
+	end
+	local function RegisterAbsorbsFunction(func)
+		UnitGetTotalAbsorbs = func
+	end
+	Grid2.Health_FireEvent = FireEvent
+	Grid2.Health_RegisterAbsorbsFunction = RegisterAbsorbsFunction
 end
 
 -- Faked eventless units health update: targettarget,focustarget,boss6,boss7,boss8,... github issue #44
@@ -258,17 +264,22 @@ local function HealthCurrent_GetTextRaw(self, unit)
 	return tostring(UnitHealth(unit))
 end
 
+local function HealthCurrent_GetTextShieldRaw(self, unit)
+	return tostring(UnitHealth(unit)+UnitGetTotalAbsorbs(unit))
+end
+
 local function HealthCurrent_GetTextClassic(self, unit)
 	local h = UnitHealth(unit)
 	return h<1000 and fmt("%d",h) or fmt("%.1fk",h/1000)
 end
 
-local function HealthCurrent_GetTextRetail(self, unit)
-	return fmt("%.1fk", UnitHealth(unit) / 1000)
+local function HealthCurrent_GetTextClassicShield(self, unit) -- cataclysm
+	local h = UnitHealth(unit)+UnitGetTotalAbsorbs(unit)
+	return h<1000 and fmt("%d",h) or fmt("%.1fk",h/1000)
 end
 
-local function HealthCurrent_GetTextRetailShieldRaw(self, unit)
-	return tostring(UnitHealth(unit)+UnitGetTotalAbsorbs(unit))
+local function HealthCurrent_GetTextRetail(self, unit)
+	return fmt("%.1fk", UnitHealth(unit) / 1000)
 end
 
 local function HealthCurrent_GetTextRetailShield(self, unit)
@@ -296,14 +307,14 @@ end
 function HealthCurrent:OnEnable()
 	Health_Enable(self)
 	if self.addShield then
-		RegisterEvent( "UNIT_ABSORB_AMOUNT_CHANGED", HealthCurrent_ShieldUpdate )
+		RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED", HealthCurrent_ShieldUpdate)
 	end
 end
 
 function HealthCurrent:OnDisable()
 	Health_Disable(self)
 	if self.addShield then
-		UnregisterEvent( "UNIT_ABSORB_AMOUNT_CHANGED" )
+		UnregisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
 	end
 end
 
@@ -321,18 +332,26 @@ end
 function HealthCurrent:UpdateDB()
 	local dbx = self.dbx
 	fmtPercent = Grid2.db.profile.formatting.percentFormat
-	if Grid2.isClassic then
-		self.GetText = dbx.displayRawNumbers and HealthCurrent_GetTextRaw or HealthCurrent_GetTextClassic
-	else
+	if Grid2.isWoW90 then
 		self.addShield = (dbx.addPercentShield or dbx.addAmountShield) or nil
 		self.GetPercentText = dbx.addPercentShield and HealthCurrent_GetPercentTextShield or nil
 		if dbx.displayMillionShort then
 			self.GetText = dbx.addAmountShield and HealthCurrent_GetTextRetailShieldM or HealthCurrent_GetTextRetailM
 		elseif dbx.displayRawNumbersRetail then
-			self.GetText = dbx.addAmountShield and HealthCurrent_GetTextRetailShieldRaw or HealthCurrent_GetTextRaw
+			self.GetText = dbx.addAmountShield and HealthCurrent_GetTextShieldRaw or HealthCurrent_GetTextRaw
 		else
 			self.GetText = dbx.addAmountShield and HealthCurrent_GetTextRetailShield or HealthCurrent_GetTextRetail
 		end
+	elseif Grid2.isCata then
+		self.addShield = (dbx.addPercentShield or dbx.addAmountShield) or nil
+		self.GetPercentText = dbx.addPercentShield and HealthCurrent_GetPercentTextShield or nil
+		if dbx.displayRawNumbers then
+			self.GetText = dbx.addAmountShield and HealthCurrent_GetTextShieldRaw or HealthCurrent_GetTextRaw
+		else
+			self.GetText = dbx.addAmountShield and HealthCurrent_GetTextClassicShield or HealthCurrent_GetTextClassic
+		end
+	else -- vanilla/tbc/wotlk
+		self.GetText = dbx.displayRawNumbers and HealthCurrent_GetTextRaw or HealthCurrent_GetTextClassic
 	end
 	self.GetPercent = dbx.deadAsFullHealth and HealthCurrent_GetPercentDFH or HealthCurrent_GetPercentSTD
 	self.color1 = Grid2:MakeColor(dbx.color1)

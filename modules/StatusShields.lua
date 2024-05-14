@@ -144,11 +144,13 @@ if not Grid2.isCata then return end
 
 local next  = next
 local CalcUnitShield
+local FireEvent = Grid2.Health_FireEvent
 local GetAuraDataByIndex = C_UnitAuras.GetAuraDataByIndex
 local shield_units = Grid2.roster_guids
 local shield_statuses = {}
 local shield_cache = setmetatable( {}, { __index = function(t,u) t[u]=CalcUnitShield(u); return t[u]; end } )
 local shield_spells = {
+	[1463]  = 1, -- Mana Shield (Mage)
 	[11426] = 1, -- Ice Barrier (Mage)
 	[17]    = 1, -- Power Word: Shield (Priest)
 	[47753] = 1, -- Divine Aegis (Priest)
@@ -156,9 +158,10 @@ local shield_spells = {
 	-- [77535] = 1, -- Blood Shield (DK)
 }
 
-function UnitGetTotalAbsorbs(unit)
+function UnitGetTotalAbsorbs(unit) -- overriding UnitGetTotalAbsorbs() function
 	return shield_cache[unit]
 end
+Grid2.Health_RegisterAbsorbsFunction(UnitGetTotalAbsorbs) -- Needed by health-current status
 
 function CalcUnitShield(unit)
 	local shield_value = 0
@@ -181,6 +184,7 @@ function Shields:UNIT_AURA(_, unit)
 			if Overflow.enabled then
 				Overflow:UpdateUnit(nil, unit)
 			end
+			FireEvent('UNIT_ABSORB_AMOUNT_CHANGED',unit)
 		end
 	end
 end

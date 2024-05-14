@@ -142,6 +142,8 @@ Grid2Options:RegisterStatusOptions("health-current", "health", function(self, st
 				status:Refresh()
 			end,
 		}
+	end
+	if Grid2.isWoW90 or Grid2.isCata then
 		options.healthPercentShield = {
 			type = "toggle",
 			tristate = false,
