@@ -97,32 +97,37 @@ do
 	local IsEventValid = C_EventUtils.IsEventValid
 	local frame
 	local Events = {}
+	local function FireEvent(event,...)
+		local func = Events[event]
+		if func then func(...) end
+	end
 	function RegisterEvent(event, func)
 		if not frame then
 			frame = CreateFrame("Frame", nil, Grid2LayoutFrame)
 			frame:SetScript( "OnEvent",  function(_, event, ...) Events[event](...) end )
 		end
-		if not Events[event] and IsEventValid(event) then frame:RegisterEvent(event) end
-		Events[event] = func
+		if not Events[event] then
+			Events[event] = func
+			if IsEventValid(event) then
+				frame:RegisterEvent(event)
+			elseif event=='UNIT_ABSORB_AMOUNT_CHANGED' and Grid2.isCata then -- cataclysm shields
+				UnitGetTotalAbsorbs = Grid2:RegisterCustomAbsorbsEvent(FireEvent)
+			end
+		end
 	end
 	function UnregisterEvent(...)
 		if frame then
 			for i=select("#",...),1,-1 do
 				local event = select(i,...)
-				if Events[event] and IsEventValid(event) then frame:UnregisterEvent(event) end
+				if IsEventValid(event) then
+					if Events[event] then frame:UnregisterEvent(event) end
+				elseif event=='UNIT_ABSORB_AMOUNT_CHANGED' and Grid2.isCata then -- cataclysm shields
+					Grid2:UnregisterCustomAbsorbsEvent(FireEvent)
+				end
 				Events[event] = nil
 			end
 		end
 	end
-	local function FireEvent(event,...)
-		local func = Events[event]
-		if func then func(...) end
-	end
-	local function RegisterAbsorbsFunction(func)
-		UnitGetTotalAbsorbs = func
-	end
-	Grid2.Health_FireEvent = FireEvent
-	Grid2.Health_RegisterAbsorbsFunction = RegisterAbsorbsFunction
 end
 
 -- Faked eventless units health update: targettarget,focustarget,boss6,boss7,boss8,... github issue #44
