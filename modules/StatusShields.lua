@@ -155,7 +155,10 @@ local shield_spells = {
 	[17]    = 1, -- Power Word: Shield (Priest)
 	[47753] = 1, -- Divine Aegis (Priest)
 	[86273] = 1, -- Iluminated Healing (Paladin)
-	-- [77535] = 1, -- Blood Shield (DK)
+	[96263] = 1, -- Sacred Shield (Paladin)
+	[88063] = 1, -- Guarded by the Light (Paladin)
+	-- [77535] = 1, -- Blood Shield (DK) / Physical
+	-- [62606] = 1, -- Savage-defense (Druid) / Physical
 }
 
 function UnitGetTotalAbsorbs(unit) -- overriding UnitGetTotalAbsorbs() function
