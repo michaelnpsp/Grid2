@@ -67,18 +67,12 @@ options.reset = {
 --==============
 if Grid2.versionCli>=30000 then
 
-	options.prodesc = {
-		order = 8,
-		type = "description",
-		name = " ",
-	}
-
 	options.proenabled = {
 		type = "toggle",
 		name = "|cffffd200".. L["Enable profiles by Specialization"] .."|r",
 		desc = L["When enabled, your profile will be set according to the character specialization."],
 		descStyle = "inline",
-		order = 9,
+		order = 5,
 		width = "full",
 		get = function(info)
 			return Grid2.profiles.char[1] and Grid2.profiles.char.enabled
@@ -93,7 +87,7 @@ if Grid2.versionCli>=30000 then
 			type  = "select",
 			name  = select( 2, Grid2Options.GetSpecializationInfo(i) ),
 			desc  = "",
-			order = 10.5+i,
+			order = 6+i,
 			get = function() return Grid2.profiles.char[i] end,
 			set = function(_, v)
 				Grid2.profiles.char[i] = v
@@ -103,6 +97,12 @@ if Grid2.versionCli>=30000 then
 			hidden = function() return type(Grid2.profiles.char[1])~='string' end,
 		}
 	end
+
+	options.miscsep = {
+		order = 14,
+		type = "header",
+		name = L["Maintenance"],
+	}
 
 end
 
