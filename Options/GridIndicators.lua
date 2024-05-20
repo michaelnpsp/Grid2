@@ -156,6 +156,7 @@ do
 			-- Create indicator options
 			newIndicatorValues.name = ""
 			Grid2Options:MakeIndicatorOptions(indicator)
+			Grid2Options:SelectGroup('indicators', indicator.name)
 		end
 	end
 
