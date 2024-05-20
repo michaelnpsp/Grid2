@@ -32,7 +32,7 @@ local BuffSubTypes= {
 			122278, -- Dampen Harm
 			-- DH
 			187827, -- Metamorphosis
-			
+
 	},
 }
 
@@ -68,7 +68,7 @@ local function ExistsBlizzardBuffsStatus()
 		end
 	end
 end
-				
+
 -- {{ Shared code
 local NewAuraHandlerMT = {
 	Init = function (self)
@@ -81,7 +81,7 @@ local NewAuraHandlerMT = {
 		if name ~= "" then
 			local mine = (self.mine==2 and "-not-mine") or (self.mine and "-mine") or ""
 			return string.format("%s-%s%s", self.realType, name, mine )
-		end	
+		end
 	end,
 	GetName = function (self)
 		return self.name
@@ -125,7 +125,7 @@ local NewAuraHandlerMT = {
 		for k in pairs(self.subTypes) do
 			if k ~= 'Buffs: Blizzard' or not ExistsBlizzardBuffsStatus() then
 				result[k]= L[k]
-			end	
+			end
 		end
 	    return result
 	end,
@@ -174,6 +174,7 @@ local NewAuraHandlerMT = {
 			local status = Grid2.setupFunc[dbx.type](baseKey, dbx)
 			--Create the status options
 			Grid2Options:MakeStatusOptions(status)
+			Grid2Options:SelectGroup('statuses', Grid2Options:GetStatusCategory(status), status.name)
 			self:Init()
 		end
 	end,
@@ -246,7 +247,7 @@ NewBuffHandler.options = {
 		func = "Create",
 		disabled = "IsDisabled",
 		handler = NewBuffHandler,
-	},	
+	},
 }
 NewBuffHandler:Init()
 
@@ -302,7 +303,7 @@ NewDebuffHandler.options = {
 		type = "header",
 		order = 5.4,
 		name = ""
-	},	
+	},
 	newStatusDebuff = {
 		type = "execute",
 		order = 5.5,
