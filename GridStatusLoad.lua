@@ -7,6 +7,7 @@ local rawget = rawget
 local UnitClass = UnitClass
 local UnitExists = UnitExists
 local UnitIsFriend = UnitIsFriend
+local GetInstanceInfo = GetInstanceInfo
 local GetSpellCooldown = GetSpellCooldown
 local UnitGroupRolesAssigned = Grid2.UnitGroupRolesAssigned
 local roster_types = Grid2.roster_types

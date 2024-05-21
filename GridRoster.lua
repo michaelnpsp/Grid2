@@ -336,6 +336,9 @@ do
 		end
 		self.groupType, updateCount = nil, 0
 		self:GroupChanged('PLAYER_ENTERING_WORLD')
+		if self.isSoD then -- Workaround for Season of Discovery because ZONE_CHANGED_NEW_AREA is not fired for raids like Gnomeregan or Sunken Temple
+			self:SendMessage("Grid_ZoneChangedNewArea")
+		end
 	end
 	-- message registered by status filter code (GridStatusLoad.lua)
 	function Grid2:ZONE_CHANGED_NEW_AREA(event)

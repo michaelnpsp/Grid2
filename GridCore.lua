@@ -17,6 +17,7 @@ local versionCli = select(4,GetBuildInfo())
 Grid2.versionCli = versionCli
 Grid2.isClassic = versionCli<90000 -- not retail
 Grid2.isVanilla = versionCli<20000
+Grid2.isSoD     = C_Seasons and C_Seasons.GetActiveSeason()==2
 Grid2.isTBC     = versionCli>=20000 and versionCli<30000
 Grid2.isWrath   = versionCli>=30000 and versionCli<40000
 Grid2.isCata    = versionCli>=40000 and versionCli<50000
