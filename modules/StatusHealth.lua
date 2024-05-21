@@ -107,13 +107,13 @@ do
 			frame:SetScript( "OnEvent",  function(_, event, ...) Events[event](...) end )
 		end
 		if not Events[event] then
-			Events[event] = func
 			if IsEventValid(event) then
 				frame:RegisterEvent(event)
 			elseif event=='UNIT_ABSORB_AMOUNT_CHANGED' and Grid2.isCata then -- cataclysm shields
 				UnitGetTotalAbsorbs = Grid2:RegisterCustomAbsorbsEvent(FireEvent)
 			end
 		end
+		Events[event] = func
 	end
 	function UnregisterEvent(...)
 		if frame then
