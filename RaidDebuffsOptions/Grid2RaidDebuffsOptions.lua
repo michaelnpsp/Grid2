@@ -3,6 +3,8 @@ local Grid2Options = Grid2Options
 local L = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 local GSRD = Grid2:GetModule("Grid2RaidDebuffs")
 
+local GetSpellInfo = Grid2.Shims.GetSpellInfo
+
 Grid2Options:RegisterStatusOptions("raid-debuffs", "debuff", function(self, status, options)
 	self.RDO:Init()
 	options.advanced = {

@@ -5,6 +5,7 @@ local RDO = Grid2Options.RDO
 local RDDB = RDO.RDDB
 
 local EJ_GetInstanceInfo = EJ_GetInstanceInfo or Grid2.Dummy
+local GetSpellInfo = Grid2.Shims.GetSpellInfo
 
 -- Generates lua code containing the instances/bosses/raid debuffs of the especified module.
 function RDO:GenerateModuleLuaCode(moduleName)

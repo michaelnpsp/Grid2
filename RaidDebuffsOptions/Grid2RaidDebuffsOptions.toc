@@ -34,6 +34,7 @@ RaidDebuffsLegion.lua
 RaidDebuffsBfA.lua
 RaidDebuffsShadowlands.lua
 RaidDebuffsDragonflight.lua
+RaidDebuffsTheWarWithin.lua
 #@end-retail@
 
 

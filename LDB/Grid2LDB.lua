@@ -9,6 +9,8 @@ local Grid2Layout = Grid2Layout
 
 local MenuLayoutsShow
 
+local GetAddOnInfo = C_AddOns and C_AddOns.GetAddOnInfo or GetAddOnInfo
+
 local Grid2LDB = DataBroker:NewDataObject("Grid2", {
 	type  = "launcher",
 	label = GetAddOnInfo("Grid2", "Title"),

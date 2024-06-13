@@ -23,6 +23,9 @@ local grouped_units = Grid2.grouped_units
 local playerClass = Grid2.playerClass
 local isRangeAvail = false -- all versions for now
 
+local GetSpellInfo = Grid2.Shims.GetSpellInfo
+local IsSpellInRange = Grid2.Shims.IsSpellInRange
+
 -------------------------------------------------------------------------
 -- CheckInteractDistance() replacements
 -------------------------------------------------------------------------
@@ -187,7 +190,7 @@ local Ranges = {
 		elseif worldRange40 and grouped_units[unit] then
 			return UnitInRange(unit)
 		else
-			return IsSpellInRange(UnitIsDeadOrGhost(unit) and rezSpell or rangeSpell,unit)==1
+			return IsSpellInRange(UnitIsDeadOrGhost(unit) and rezSpell or rangeSpell,unit) == 1
 		end
 	end,
 	["spell"] = function(unit)
