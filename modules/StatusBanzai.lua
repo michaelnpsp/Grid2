@@ -10,7 +10,6 @@ local GetTime = GetTime
 local UnitName = UnitName
 local UnitGUID = UnitGUID
 local UnitExists = UnitExists
-local GetSpellInfo = GetSpellInfo
 local UnitCanAttack = UnitCanAttack
 local roster_units = Grid2.roster_units
 

@@ -11,7 +11,6 @@ local UnitIsUnit = UnitIsUnit
 local UnitInRange = UnitInRange
 local UnitCanAttack = UnitCanAttack
 local UnitCanAssist = UnitCanAssist
-local IsSpellInRange = IsSpellInRange
 local InCombatLockdown = InCombatLockdown
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local CheckInteractOriginal = CheckInteractDistance

@@ -2,7 +2,7 @@
 local ipairs = ipairs
 local strlower = string.lower
 local strmatch = string.match
-local GetSpellInfo = GetSpellInfo
+local GetSpellInfo = Grid2.Shims.GetSpellInfo
 
 -- translated&colorized players class names table
 local classNames, classNamesLoc
