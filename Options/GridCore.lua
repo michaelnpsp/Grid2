@@ -51,6 +51,15 @@ local Grid2Options = {
 	SpellEditDialogControl = type(LibStub("AceGUI-3.0").WidgetVersions["Aura_EditBox"]) == "number" and "Aura_EditBox" or nil,
 }
 
+-- AceDB defaults
+Grid2Options.defaults = {
+	profile = {
+		L = {
+			indicators = {},
+		}
+	}
+}
+
 -- Declare some variables for fast access to main sections options.
 -- generalOptions, themesOptions, indicatorsOptions, statusesOptions
 for k,o in pairs(Grid2Options.options.args) do
@@ -59,7 +68,7 @@ end
 
 -- Initialize
 function Grid2Options:Initialize()
-	self.db = Grid2.db:RegisterNamespace("Grid2Options",  { profile = { L = { indicators = {} } } } )
+	self.db = Grid2.db:RegisterNamespace("Grid2Options", self.defaults)
 	self:EnableLoadOnDemand(true) -- (not Grid2.db.global.LoadOnDemandDisabled)
 	self:MakeOptions()
 	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("Grid2", self.options, true)

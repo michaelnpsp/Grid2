@@ -134,7 +134,8 @@ do
 	local iconCoords, emptyTable = { 0.05, 0.95, 0.05, 0.95 }, {}
 	function Grid2Options:GetStatusInfo(status, params)
 		params = params or self.optionParams[status.dbx.type] or {}
-		if not (params.masterStatus and params.masterStatus ~= status.name ) then
+		local master = params.masterStatus
+		if not (master and master ~= status.name) then
 			local catKey   = self:GetStatusCategory(status)
 			local catGroup = self.statusesOptions[catKey]
 			if catGroup then
@@ -153,7 +154,7 @@ do
 					icon = self.debuffTypeIcons[dbx.subType or 'Default']
 					desc = L[dbx.type]
 				end
-				name   = self.LocalizeStatus(status, not params.displayPrefix)
+				name   = master and L[master] or self.LocalizeStatus(status, not params.displayPrefix)
 				desc   = desc or params.title or L["Options for %s."]:format(name)
 				icon   = icon or params.titleIcon or category.icon
 				coords = params.titleIconCoords or iconCoords
