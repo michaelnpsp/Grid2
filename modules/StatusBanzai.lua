@@ -20,6 +20,8 @@ local sguids   = {} -- enemy guid -> enemy unit
 local tguids   = {} -- enemy guid -> friendly unit targeted by the enemy
 local target   = setmetatable({}, {__index = function(t,k) local v=k.."target" t[k]=v return v end})
 
+local GetSpellInfo = Grid2.Shims.GetSpellInfo
+
 -- events management
 local RegisterEvent, UnregisterEvent
 do

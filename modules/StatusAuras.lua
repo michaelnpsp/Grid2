@@ -8,6 +8,7 @@ local max = math.max
 local GetTime = GetTime
 local isClassic = Grid2.isClassic
 local UnitAura = Grid2.UnitAuraLite
+local GetSpellInfo = Grid2.Shims.GetSpellInfo
 
 -- Local variables
 local Statuses = {}

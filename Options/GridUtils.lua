@@ -5,6 +5,8 @@
 local Grid2Options = Grid2Options
 local L  = Grid2Options.L
 local LG = Grid2Options.LG
+local GetSpellInfo = Grid2.Shims.GetSpellInfo
+local GetSpellBookItemInfo = Grid2.Shims.GetSpellBookItemInfo
 
 -- Helper points tables
 Grid2Options.pointMap = {
@@ -225,10 +227,9 @@ do
 		if not spells then
 			spells = {}
 			for i=1,1000 do
-			   local type, spellID = GetSpellBookItemInfo(i,'spell')
-			   if not spellID then break end
-			   if type == 'SPELL' then
-				   spells[spellID] = GetSpellInfo(spellID)
+			   	local type, spellID = GetSpellBookItemInfo(i,'spell')
+			   	if spellID and type == 'SPELL' then
+					spells[spellID] = GetSpellInfo(spellID)
 				end
 			end
 			sorted = {}

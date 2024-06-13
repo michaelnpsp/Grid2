@@ -30,6 +30,8 @@ local EJ_GetInstanceInfo  = EJ_GetInstanceInfo  or Grid2.Dummy
 local EJ_GetEncounterInfo = EJ_GetEncounterInfo or Grid2.Dummy
 local EJ_GetCreatureInfo  = EJ_GetCreatureInfo  or Grid2.Dummy
 
+local GetSpellInfo = Grid2.Shims.GetSpellInfo
+
 --============================================================
 -- Misc utils functions
 --============================================================

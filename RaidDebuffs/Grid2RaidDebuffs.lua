@@ -10,9 +10,11 @@ local ipairs = ipairs
 local strfind = strfind
 local GetTime = GetTime
 local UnitGUID = UnitGUID
-local GetSpellInfo = GetSpellInfo
 local isClassic = Grid2.isClassic
 local UnitAura = Grid2.UnitAuraLite
+
+local GetSpellInfo = Grid2.Shims.GetSpellInfo
+local LoadAddOn = C_AddOns and C_AddOns.LoadAddOn or LoadAddOn;
 
 local EJ_GetInstanceForMap = EJ_GetInstanceForMap or function(mapID) return mapID-100000 end
 local EJ_SelectInstance = EJ_SelectInstance or Grid2.Dummy

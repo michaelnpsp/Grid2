@@ -2,6 +2,8 @@ local L = Grid2Options.L
 
 local playerClass = Grid2.playerClass
 
+local GetSpellBookItemInfo = Grid2.Shims.GetSpellBookItemInfo
+
 local GetRangeList
 do
 	local list
@@ -19,22 +21,21 @@ end
 
 local GetPlayerSpells
 do
-	local GetSpellInfo = GetSpellInfo
+	local GetSpellInfo = Grid2.Shims.GetSpellInfo
 	local IsPlayerSpell = IsPlayerSpell
-	local IsSpellInRange = IsSpellInRange
+	local IsSpellInRange = Grid2.Shims.IsSpellInRange
 	local customSpells = {}
 	local stringMask = string.format("%%s (%s)",L["%d yards"])
 	function GetPlayerSpells(status, hostile)
 		local rezSpellID = select(3, status:GetRanges())
 		wipe(customSpells)
 		for i=1,1000 do
-		   local type, spellID = GetSpellBookItemInfo(i,'spell')
-		   if not spellID then break end
-		   if type == 'SPELL' then
-			   local name, _, _, _, minRange, maxRange = GetSpellInfo(spellID)
-			   if maxRange>0 and maxRange<100 and spellID~=rezSpellID and IsPlayerSpell(spellID) and (hostile or IsSpellInRange(name, 'player')==1)  then
-					customSpells[spellID] = string.format(stringMask, name, maxRange)
-			   end
+			local type, spellID = GetSpellBookItemInfo(i,'spell')
+			if spellID and type == 'SPELL' then
+				local name, _, _, _, minRange, maxRange = GetSpellInfo(spellID)
+				if maxRange>0 and maxRange<100 and spellID~=rezSpellID and IsPlayerSpell(spellID) and (hostile or IsSpellInRange(name, 'player')==1)  then
+						customSpells[spellID] = string.format(stringMask, name, maxRange)
+				end
 			end
 		end
 		if rezSpellID and friendly then

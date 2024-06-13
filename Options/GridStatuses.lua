@@ -8,6 +8,8 @@ local L = Grid2Options.L
 local pairs = pairs
 local fmt = string.format
 
+local GetSpellInfo = Grid2.Shims.GetSpellInfo
+
 -- status types indicators icons
 Grid2Options.statusTypesIcons = {
 	generic = Grid2Options.indicatorIconPath .. "color",
