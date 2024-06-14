@@ -26,73 +26,113 @@ local function Icon_OnFrameUpdate(f)
 	local showIcons = self.showIcons
 	local useStatus = self.useStatusColor
 	local i = 1
+
+	local activeIcons = {}
+
+	local iconCount = 0
+
 	for _, status in ipairs(self.statuses) do
 		if status:IsActive(unit) then
 			if status.GetIcons then
 				local k, textures, counts, expirations, durations, colors, slots = status:GetIcons(unit,max)
-				for j=1,k do
-					local aura = auras[i]
-					aura.status, aura.slotID = status, slots[j]
-					if showIcons then
-						aura.icon:SetTexture(textures[j])
-						if useStatus then
-							local c = colors[j]
-							aura:SetBackdropBorderColor(c.r, c.g, c.b, min(c.a,self.borderOpacity) )
-						end
-					else
-						local c = colors[j]
-						aura.icon:SetColorTexture(c.r, c.g, c.b)
+				for j=1,k do 
+					if iconCount >= self.maxIcons then
+						break
 					end
-					if showStack then
-						local count = counts[j]
-						aura.text:SetText(count>1 and count or "")
-					end
-					if showCool then
-						local expiration, duration = expirations[j], durations[j]
-						aura.cooldown:SetCooldown(expiration - duration, duration)
-					end
-					aura:Show()
-					i = i + 1
+
+					local icon = {}
+					icon.texture = textures[j]
+					icon.color = colors[j]
+					icon.stackcount = counts[j]
+					icon.expiration, icon.duration = expirations[j], durations[j]
+					icon.status = status
+					icon.slotID = slots[j]
+
+					iconCount = iconCount + 1
+					activeIcons [iconCount] = icon
 				end
-				max = max - k
 			else
-				local aura = auras[i]
-				aura.status, aura.slotID = status, nil
-				if showIcons then
-					aura.icon:SetTexture(status:GetIcon(unit))
-					aura.icon:SetTexCoord(status:GetTexCoord(unit))
-					aura.icon:SetVertexColor(status:GetVertexColor(unit))
-					if useStatus then
-						local r,g,b,a = status:GetColor(unit)
-						aura:SetBackdropBorderColor(r,g,b, min(a or 1,self.borderOpacity) )
-					end
-				else
-					local r,g,b = status:GetColor(unit)
-					aura.icon:SetColorTexture(r,g,b)
+				if iconCount >= self.maxIcons then
+					break
 				end
-				if showStack then
-					local count = status:GetCount(unit)
-					aura.text:SetText(count>1 and count or "")
-				end
-				if showCool then
-					local expiration, duration = status:GetExpirationTime(unit) or 0, status:GetDuration(unit) or 0
-					aura.cooldown:SetCooldown(expiration - duration, duration)
-				end
-				aura:Show()
-				i = i + 1
-				max = max - 1
+	
+				local icon = {}
+				icon.texture = status:GetIcon(unit)
+				icon.color = {}
+				icon.color.r, icon.color.g, icon.color.b, icon.color.a = status:GetColor(unit)
+				icon.stackcount = status:GetCount(unit)
+				icon.expiration, icon.duration = status:GetExpirationTime(unit) or 0, status:GetDuration(unit) or 0
+				icon.status = status
+				icon.slotID = nil
+
+				iconCount = iconCount + 1
+				activeIcons[iconCount] = icon
 			end
-			if max<=0 then break end
 		end
 	end
-	for j=i,f.visibleCount do
+
+	for iconNumber, icon in ipairs(activeIcons) do
+		local aura = auras[iconNumber]
+		aura.status, aura.slotID = icon.status, icon.slotID
+		if showIcons then
+			aura.icon:SetTexture(icon.texture)
+			if useStatus then
+				aura:SetBackdropBorderColor(icon.color.r, icon.color.g, icon.color.b, min(icon.color.a,self.borderOpacity) )
+			end
+		else
+			aura.icon:SetColorTexture(icon.color.r, icon.color.g, icon.color.b)
+		end
+		if showStack then
+			aura.text:SetText(icon.stackcount > 1 and icon.stackcount or "")
+		end
+		if showCool then
+			aura.cooldown:SetCooldown(icon.expiration - icon.duration, icon.duration)
+		end
+		aura:Show()
+	end
+
+	for j=iconCount+1,self.maxIcons do
 		local aura = auras[j]
 		aura.status = nil
 		aura.slotID = nil
 		aura:Hide()
 	end
-	f.visibleCount = i-1
-	f:SetShown(i>1)
+	f.visibleCount = iconCount
+
+	if self.smartLayout then
+		local iconNumber = 1
+		local rows = math.ceil(iconCount / math.min(self.maxIconsPerRow, self.maxIcons))
+		local maxRows = math.ceil(self.maxIcons / self.maxIconsPerRow)
+		
+		local rowYOffset = (maxRows - rows) / 2
+
+		for row = 1,rows do
+			local iconsInRow = math.min(iconCount - ((row - 1) * self.maxIconsPerRow), self.maxIconsPerRow, self.maxIcons)
+			
+			local rowXOffset = (math.min(self.maxIconsPerRow, self.maxIcons) - iconsInRow) / 2
+
+			for k=1, iconsInRow do
+				local aura = auras[iconNumber]
+				local width, height = aura:GetSize()
+				aura:ClearAllPoints()
+
+				local rx, ry
+				if self.orientation=="VERTICAL" then
+					rx, ry = rowYOffset, rowXOffset
+				else
+					rx, ry = rowXOffset, rowYOffset
+				end
+				
+				local offsetX = ((width + self.iconSpacing) * rx) + ((k - 1) * self.ux + (row - 1) * self.vx) * (width + self.iconSpacing)
+				local offsetY = ((height + self.iconSpacing) * -ry) + ((k - 1) * self.uy + (row - 1) * self.vy) * (height + self.iconSpacing)
+				
+				aura:SetPoint( self.anchorIcon, f, self.anchorIcon, offsetX, offsetY)
+				iconNumber = iconNumber + 1
+			end
+		end
+	end
+
+	f:SetShown(iconCount>=1)
 end
 
 -- Delayed updates
@@ -136,7 +176,7 @@ local function Icon_Layout(self, parent)
 	f:ClearAllPoints()
 	f:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
 	f:SetFrameLevel(level)
-	f:SetSize( size*self.pw, size*self.ph )
+	f:SetSize( (size*self.pw) - self.iconSpacing, (size*self.ph) - self.iconSpacing )
 	local auras = f.auras
 	for i=1,self.maxIcons do
 		local frame = auras[i]
@@ -225,11 +265,12 @@ local function Icon_UpdateDB(self)
 	self.maxIcons       = dbx.maxIcons or 3
 	self.maxIconsPerRow = dbx.maxIconsPerRow or 3
 	self.maxRows        = math.floor(self.maxIcons/self.maxIconsPerRow) + (self.maxIcons%self.maxIconsPerRow==0 and 0 or 1)
+	self.smartLayout 	= false
 	self.uy 			= 0
 	self.vx 			= 0
 	self.ux 			= pointsX[self.anchorIcon]
 	self.vy 			= pointsY[self.anchorIcon]
-	self.pw             = math.abs(self.ux)*self.maxIconsPerRow
+	self.pw             = math.abs(self.ux)*math.min(self.maxIcons, self.maxIconsPerRow)
 	self.ph             = math.abs(self.vy)*self.maxRows
 	if self.orientation=="VERTICAL" then
 		self.ux, self.vx = self.vx, self.ux
