@@ -164,6 +164,18 @@ function Grid2Options:MakeIndicatorAuraIconsSizeOptions(indicator, options, opti
 			self:RefreshIndicator(indicator, "Layout")
 		end,
 	}
+	options.smartLayout = {
+		type = "toggle",
+		name = L["Use Smart Layout"],
+		desc = L["When Smart Layout is enabled, icons in incomplete rows will be aligned centrally"],
+		order = 19,
+		tristate = false,
+		get = function () return indicator.dbx.smartLayout end,
+		set = function (_, v)
+			indicator.dbx.smartLayout = v or nil
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+	}
 end
 
 function Grid2Options:MakeIndicatorAuraIconsLocationOptions(indicator, options)

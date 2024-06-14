@@ -265,7 +265,7 @@ local function Icon_UpdateDB(self)
 	self.maxIcons       = dbx.maxIcons or 3
 	self.maxIconsPerRow = dbx.maxIconsPerRow or 3
 	self.maxRows        = math.floor(self.maxIcons/self.maxIconsPerRow) + (self.maxIcons%self.maxIconsPerRow==0 and 0 or 1)
-	self.smartLayout 	= false
+	self.smartLayout 	= dbx.smartLayout or false
 	self.uy 			= 0
 	self.vx 			= 0
 	self.ux 			= pointsX[self.anchorIcon]
