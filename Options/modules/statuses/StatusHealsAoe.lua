@@ -2,7 +2,7 @@ local AOEM = Grid2:GetModule("Grid2AoeHeals")
 
 local L = Grid2Options.L
 local select = select
-local GetSpellInfo = GetSpellInfo
+local GetSpellInfo = Grid2.Shims.GetSpellInfo
 
 local classHeals = Grid2.isClassic and {
 	SHAMAN  = { 1064 }, -- Chain Heal
