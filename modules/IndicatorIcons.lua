@@ -15,19 +15,35 @@ local function Icon_Create(self, parent)
 	f.visibleCount = 0
 end
 
+local function SetAura(f, iconNumber, icon)
+	local self = f.myIndicator
+	local auras = f.auras
+	local aura = auras[iconNumber]
+
+	aura.status, aura.slotID = icon.status, icon.slotID
+	if self.showIcons then
+		aura.icon:SetTexture(icon.texture)
+		if self.useStatus then
+			aura:SetBackdropBorderColor(icon.color.r, icon.color.g, icon.color.b, min(icon.color.a,self.borderOpacity) )
+		end
+	else
+		aura.icon:SetColorTexture(icon.color.r, icon.color.g, icon.color.b)
+	end
+	if self.showStack then
+		aura.text:SetText(icon.stackcount > 1 and icon.stackcount or "")
+	end
+	if self.showCool then
+		aura.cooldown:SetCooldown(icon.expiration - icon.duration, icon.duration)
+	end
+	aura:Show()
+end
+
 local function Icon_OnFrameUpdate(f)
 	local unit = f.myFrame.unit
 	if not unit then return end
 	local self = f.myIndicator
 	local max = self.maxIcons
 	local auras = f.auras
-	local showStack = self.showStack
-	local showCool  = self.showCooldown
-	local showIcons = self.showIcons
-	local useStatus = self.useStatusColor
-	local i = 1
-
-	local activeIcons = {}
 
 	local iconCount = 0
 
@@ -35,7 +51,7 @@ local function Icon_OnFrameUpdate(f)
 		if status:IsActive(unit) then
 			if status.GetIcons then
 				local k, textures, counts, expirations, durations, colors, slots = status:GetIcons(unit,max)
-				for j=1,k do 
+				for j=1,k do
 					if iconCount >= self.maxIcons then
 						break
 					end
@@ -49,13 +65,13 @@ local function Icon_OnFrameUpdate(f)
 					icon.slotID = slots[j]
 
 					iconCount = iconCount + 1
-					activeIcons [iconCount] = icon
+				  	SetAura(f, iconCount, icon)
 				end
 			else
 				if iconCount >= self.maxIcons then
 					break
 				end
-	
+
 				local icon = {}
 				icon.texture = status:GetIcon(unit)
 				icon.color = {}
@@ -66,29 +82,9 @@ local function Icon_OnFrameUpdate(f)
 				icon.slotID = nil
 
 				iconCount = iconCount + 1
-				activeIcons[iconCount] = icon
+				SetAura(f, iconCount, icon)
 			end
 		end
-	end
-
-	for iconNumber, icon in ipairs(activeIcons) do
-		local aura = auras[iconNumber]
-		aura.status, aura.slotID = icon.status, icon.slotID
-		if showIcons then
-			aura.icon:SetTexture(icon.texture)
-			if useStatus then
-				aura:SetBackdropBorderColor(icon.color.r, icon.color.g, icon.color.b, min(icon.color.a,self.borderOpacity) )
-			end
-		else
-			aura.icon:SetColorTexture(icon.color.r, icon.color.g, icon.color.b)
-		end
-		if showStack then
-			aura.text:SetText(icon.stackcount > 1 and icon.stackcount or "")
-		end
-		if showCool then
-			aura.cooldown:SetCooldown(icon.expiration - icon.duration, icon.duration)
-		end
-		aura:Show()
 	end
 
 	for j=iconCount+1,self.maxIcons do
@@ -114,7 +110,6 @@ local function Icon_OnFrameUpdate(f)
 			for k=1, iconsInRow do
 				local aura = auras[iconNumber]
 				local width, height = aura:GetSize()
-				aura:ClearAllPoints()
 
 				local rx, ry
 				if self.orientation=="VERTICAL" then
@@ -122,10 +117,11 @@ local function Icon_OnFrameUpdate(f)
 				else
 					rx, ry = rowXOffset, rowYOffset
 				end
-				
+
 				local offsetX = ((width + self.iconSpacing) * rx) + ((k - 1) * self.ux + (row - 1) * self.vx) * (width + self.iconSpacing)
 				local offsetY = ((height + self.iconSpacing) * -ry) + ((k - 1) * self.uy + (row - 1) * self.vy) * (height + self.iconSpacing)
-				
+
+				aura:ClearAllPoints()
 				aura:SetPoint( self.anchorIcon, f, self.anchorIcon, offsetX, offsetY)
 				iconNumber = iconNumber + 1
 			end
