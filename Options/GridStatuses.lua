@@ -8,7 +8,7 @@ local L = Grid2Options.L
 local pairs = pairs
 local fmt = string.format
 
-local GetSpellInfo = Grid2.Shims.GetSpellInfo
+local GetSpellInfo = Grid2.API.GetSpellInfo
 
 -- status types indicators icons
 Grid2Options.statusTypesIcons = {

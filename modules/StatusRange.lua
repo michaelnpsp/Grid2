@@ -22,8 +22,8 @@ local grouped_units = Grid2.grouped_units
 local playerClass = Grid2.playerClass
 local isRangeAvail = false -- all versions for now
 
-local GetSpellInfo = Grid2.Shims.GetSpellInfo
-local IsSpellInRange = Grid2.Shims.IsSpellInRange
+local GetSpellInfo = Grid2.API.GetSpellInfo
+local IsSpellInRange = Grid2.API.IsSpellInRange
 
 -------------------------------------------------------------------------
 -- CheckInteractDistance() replacements

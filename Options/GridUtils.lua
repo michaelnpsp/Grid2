@@ -5,8 +5,8 @@
 local Grid2Options = Grid2Options
 local L  = Grid2Options.L
 local LG = Grid2Options.LG
-local GetSpellInfo = Grid2.Shims.GetSpellInfo
-local GetSpellBookItemInfo = Grid2.Shims.GetSpellBookItemInfo
+local GetSpellInfo = Grid2.API.GetSpellInfo
+local GetSpellBookItemInfo = Grid2.API.GetSpellBookItemInfo
 
 -- Helper points tables
 Grid2Options.pointMap = {

@@ -9,7 +9,7 @@ local ColorizeByValues1= { [1] = L["Single Color"], [5] = L["Number of stacks"],
 local ColorizeByValues2= { [1] = L["Single Color"], [5] = L["Number of stacks"], [6] = L["Remaining time"], [7] = L["Elapsed time"], [8] = L["Value"] }
 local ColorizeByValues3= { [1] = L["Single Color"], [5] = L["Number of stacks"], [6] = L["Remaining time"], [7] = L["Elapsed time"], [2] = L["Debuff Type"] }
 
-local GetSpellInfo = Grid2.Shims.GetSpellInfo
+local GetSpellInfo = Grid2.API.GetSpellInfo
 
 --{{ colors for aura statuses
 local function StatusAuraUpdateColors(status, newCount)

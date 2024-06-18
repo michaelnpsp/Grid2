@@ -1,6 +1,6 @@
 local L = Grid2Options.L
 
-local GetSpellInfo = Grid2.Shims.GetSpellInfo
+local GetSpellInfo = Grid2.API.GetSpellInfo
 
 local function MakeOptions(self, status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)

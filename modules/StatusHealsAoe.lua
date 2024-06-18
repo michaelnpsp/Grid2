@@ -17,7 +17,7 @@ local spells = {}
 local icons = {}
 local statuses_enabled = {}
 
-local GetSpellInfo = Grid2.Shims.GetSpellInfo
+local GetSpellInfo = Grid2.API.GetSpellInfo
 
 local HEAL_EVENTS = {
 	SPELL_HEAL = true,

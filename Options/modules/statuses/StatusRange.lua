@@ -2,7 +2,7 @@ local L = Grid2Options.L
 
 local playerClass = Grid2.playerClass
 
-local GetSpellBookItemInfo = Grid2.Shims.GetSpellBookItemInfo
+local GetSpellBookItemInfo = Grid2.API.GetSpellBookItemInfo
 
 local GetRangeList
 do
@@ -21,9 +21,9 @@ end
 
 local GetPlayerSpells
 do
-	local GetSpellInfo = Grid2.Shims.GetSpellInfo
+	local GetSpellInfo = Grid2.API.GetSpellInfo
 	local IsPlayerSpell = IsPlayerSpell
-	local IsSpellInRange = Grid2.Shims.IsSpellInRange
+	local IsSpellInRange = Grid2.API.IsSpellInRange
 	local customSpells = {}
 	local stringMask = string.format("%%s (%s)",L["%d yards"])
 	function GetPlayerSpells(status, hostile)

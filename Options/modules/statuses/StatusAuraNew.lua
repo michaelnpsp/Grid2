@@ -1,6 +1,6 @@
 local L = Grid2Options.L
 
-local GetSpellInfo = Grid2.Shims.GetSpellInfo
+local GetSpellInfo = Grid2.API.GetSpellInfo
 
 local BuffSubTypes= {
 	["Buff"] =  1,
