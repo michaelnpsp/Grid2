@@ -40,7 +40,7 @@ local function Bar_OnFrameUpdate(bar)
 				if horizontal then
 					texture:SetPoint( points, bar, points, offset*barSizeDir+texture.myLineAdjust, 0)
 				else
-					texture:SetPoint( points, bar, points, 0, offset*barSizedir+texture.myLineAdjust)
+					texture:SetPoint( points, bar, points, 0, offset*barSizeDir+texture.myLineAdjust)
 				end
 				texture:Show()
 			else
