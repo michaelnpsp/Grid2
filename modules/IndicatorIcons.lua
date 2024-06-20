@@ -92,6 +92,9 @@ local function Icon_OnFrameUpdate(f)
 		aura:Hide()
 	end
 	f.visibleCount = i-1
+	if self.smartCenter and i>1 then
+		f:SetSmartSize( self.cellSize * f.visibleCount - self.iconSpacing )
+	end
 	f:SetShown(i>1)
 end
 
@@ -118,6 +121,7 @@ end
 -- Layout icons
 local function Icon_Layout(self, parent)
 	local f = parent[self.name]
+	local frameName
 	local x,y = 0,0
 	local ux,uy = self.ux,self.uy
 	local vx,vy = self.vx,self.vy
@@ -127,7 +131,10 @@ local function Icon_Layout(self, parent)
 	local size = iconSize + self.iconSpacing
 	local tc1,tc2,tc3,tc4 = Grid2.statusPrototype.GetTexCoord()
 	local level = parent:GetFrameLevel() + self.frameLevel
-	local frameName
+	if self.smartCenter then
+		self.cellSize = size
+		f.SetSmartSize = self.vertical and f.SetHeight or f.SetWidth
+	end
 	if not self.dbx.disableOmniCC then
 		local i,j  = parent:GetName():match("Grid2LayoutHeader(%d+)UnitButton(%d+)")
 		frameName  = format( "Grid2Icons%s%02d%02d", self.name:gsub("%-","") , i, j )
@@ -217,21 +224,22 @@ local function Icon_UpdateDB(self)
 	self.offsety    = l.y
 	self.anchorIcon = (pointsX[self.anchor] and self.anchor) or (self.anchor=="BOTTOM" and "BOTTOMLEFT") or (self.anchor=="RIGHT" and "TOPRIGHT") or "TOPLEFT"
 	-- misc variables
+	self.vertical       = dbx.orientation=='VERTICAL'
 	self.borderSize     = dbx.borderSize or 0
-	self.orientation    = dbx.orientation or "HORIZONTAL"
 	self.frameLevel     = dbx.level or 1
 	self.iconSize       = dbx.iconSize or theme.iconSize or 14
 	self.iconSpacing    = dbx.iconSpacing or 1
 	self.maxIcons       = dbx.maxIcons or 3
 	self.maxIconsPerRow = dbx.maxIconsPerRow or 3
 	self.maxRows        = math.floor(self.maxIcons/self.maxIconsPerRow) + (self.maxIcons%self.maxIconsPerRow==0 and 0 or 1)
+	self.smartCenter    = dbx.smartCenter and self.maxRows==1
 	self.uy 			= 0
 	self.vx 			= 0
 	self.ux 			= pointsX[self.anchorIcon]
 	self.vy 			= pointsY[self.anchorIcon]
 	self.pw             = math.abs(self.ux)*self.maxIconsPerRow
 	self.ph             = math.abs(self.vy)*self.maxRows
-	if self.orientation=="VERTICAL" then
+	if self.vertical then
 		self.ux, self.vx = self.vx, self.ux
 		self.uy, self.vy = self.vy, self.uy
 		self.pw, self.ph = self.ph, self.pw

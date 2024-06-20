@@ -1,6 +1,17 @@
 local media = LibStub("LibSharedMedia-3.0", true)
 local L = Grid2Options.L
 
+local FixSmartCenter
+do
+	local SMARTCENTER_POINTS = { LEFT = true, TOP = true, CENTER = true, BOTTOM = true, RIGHT = true }
+	function FixSmartCenter(indicator)
+		if not (indicator.maxRows==1 and SMARTCENTER_POINTS[indicator.anchorRel]) then
+			indicator.dbx.smartCenter = nil
+			return true
+		end
+	end
+end
+
 Grid2Options:RegisterIndicatorOptions("icons", true, function(self, indicator)
 	local statuses, options, filter =  {}, {}, {}
 	self:MakeIndicatorTypeLevelOptions(indicator,options)
@@ -13,7 +24,6 @@ Grid2Options:RegisterIndicatorOptions("icons", true, function(self, indicator)
 	self:MakeIndicatorLoadOptions(indicator, filter)
 	self:AddIndicatorOptions(indicator, statuses, options, nil, filter)
 end)
-
 
 function Grid2Options:MakeIndicatorAuraIconsBorderOptions(indicator, options, optionParams)
 	self:MakeIndicatorBorderOptions(indicator, options)
@@ -46,7 +56,6 @@ function Grid2Options:MakeIndicatorAuraIconsBorderOptions(indicator, options, op
 		end,
 	}
 end
-
 
 function Grid2Options:MakeIndicatorAuraIconsSizeOptions(indicator, options, optionParams)
 	options.orientation = {
@@ -152,11 +161,27 @@ function Grid2Options:MakeIndicatorAuraIconsSizeOptions(indicator, options, opti
 			self:RefreshIndicator(indicator, "Layout")
 		end,
 	}
+	options.smartCenter = {
+		type = "toggle",
+		name = L["Smart Center Align"],
+		desc = L["Dinamically center the visible icons. Not available for multi-row configurations."],
+		order = 18,
+		tristate = false,
+		get = function ()
+			FixSmartCenter(indicator)
+			return indicator.dbx.smartCenter
+		end,
+		set = function (_, v)
+			indicator.dbx.smartCenter = v or nil
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		disabled = function() return FixSmartCenter(indicator) end,
+	}
 	options.disableIcons = {
 		type = "toggle",
 		name = L["Display Squares"],
 		desc = L["Display flat square textures instead of the icons provided by the statuses."],
-		order = 18,
+		order = 19,
 		tristate = false,
 		get = function () return indicator.dbx.disableIcons end,
 		set = function (_, v)
