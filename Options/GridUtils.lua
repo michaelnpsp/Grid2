@@ -175,8 +175,8 @@ function Grid2Options:PackColor( r,g,b,a, dbx, key )
 end
 
 -- Refresh AceConfig options window
-function Grid2Options:NotifyChange() -- do not use self variable inside this function (self can be nil or ~=Grid2Options)
-	LibStub("AceConfigRegistry-3.0"):NotifyChange("Grid2")
+function Grid2Options:NotifyChange()
+	Grid2Options:RefreshOptions() -- do not use self variable inside this function (self can be nil or ~=Grid2Options)
 end
 
 -- Grid2Options:EnableLoadOnDemand()

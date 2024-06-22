@@ -3,6 +3,31 @@
 -------------------------------------------------------------------------------------------------
 
 local AceGUI= LibStub("AceGUI-3.0", true)
+local AceDlg = LibStub("AceConfigDialog-3.0")
+-------------------------------------------------------------------------------------------------
+-- Grid2 Main Options Widget
+-------------------------------------------------------------------------------------------------
+do
+	local WidgetType = "Grid2OptionsFrame"
+	AceGUI:RegisterWidgetType( WidgetType, function()
+		local widget = AceGUI:Create("Frame")
+		widget.type = WidgetType
+		-- customizing the default AceGUI frame container
+		local statusbg = widget.statustext:GetParent()
+		statusbg:SetPoint("BOTTOMLEFT", 132, 15)
+		statusbg:SetPoint("BOTTOMRIGHT", -132, 15) -- statusbg in AceGUIContainer-frame
+		--
+		local button = CreateFrame("Button", nil, widget.frame, "UIPanelButtonTemplate")
+		button:SetPoint("BOTTOMLEFT", 27, 17)
+		button:SetHeight(20)
+		button:SetWidth(100)
+		button:SetText("Lock")
+		-- to close the frame with ESCAPE key
+		_G["Grid2OptionsFrame"] = widget.frame
+		table.insert(UISpecialFrames, "Grid2OptionsFrame")
+		return widget
+	end , 1)
+end
 
 -------------------------------------------------------------------------------------------------
 -- Modified Multiline Editbox that vertical fills the parent container even in AceConfigDialog Flow layouts.

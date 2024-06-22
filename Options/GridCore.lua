@@ -87,18 +87,23 @@ function Grid2Options:MakeOptions()
 end
 
 function Grid2Options:OnChatCommand()
-	local dialog = LibStub("AceConfigDialog-3.0")
-	if dialog.OpenFrames["Grid2"] then
-		dialog:Close("Grid2")
+	if self.optionsFrame then
+		self.optionsFrame:Hide()
 	else
-		dialog:Open("Grid2")
+		self.optionsFrame = LibStub("AceGUI-3.0"):Create('Grid2OptionsFrame')
+		self.optionsFrame:SetCallback("OnClose", function(f)
+			LibStub("AceGUI-3.0"):Release(f)
+			self.optionsFrame = nil
+		end)
+		LibStub("AceConfigDialog-3.0"):Open("Grid2", self.optionsFrame)
 	end
 end
 
 function Grid2Options:RefreshOptions()
-	local dialog = LibStub("AceConfigDialog-3.0")
-	if dialog.OpenFrames["Grid2"] then
-		LibStub("AceConfigRegistry-3.0"):NotifyChange("Grid2")
+	local frame = self.optionsFrame
+	if frame then
+		local user = frame:GetUserDataTable()
+		LibStub("AceConfigDialog-3.0"):Open('Grid2', frame, unpack(user.basepath or {}))
 	end
 end
 
