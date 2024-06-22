@@ -35,10 +35,11 @@ local InjectMixins
 do
 	local callMethod = function(self, name, ...) self[name](self, ...); end
 	function InjectMixins(self, headerType)
-		self.headerType   = headerType
+		self.headerType  = headerType
 		self.isInsecure  = true
 		self.CallMethod  = callMethod
 		self.GetFrameRef = dummyFunc
+		ClickCastFrames  = ClickCastFrames or {} -- clique support
 	end
 end
 
@@ -68,10 +69,11 @@ do
 	end
 end
 
--- fill test units table
 local function SetupTestMode(self, units)
 	local maxPlayers = self:GetAttribute('testMode')
-	if maxPlayers then
+	local test = (maxPlayers~=nil) or nil
+	local click = not test
+	if test then
 		if self.headerType~='custom' then
 			local unit = self.headerType~='pet' and 'player' or 'pet'
 			for i=#units+1,maxPlayers do
@@ -83,6 +85,14 @@ local function SetupTestMode(self, units)
 			end
 		end
 	end
+	if self.testModeEnabled ~= test then -- disable mouse on buttons to enable frame draging
+		for _,unitButton in ipairs(self) do
+			ClickCastFrames[unitButton] = click
+			unitButton:EnableMouse(click)
+		end
+		self.testModeEnabled = test
+	end
+	return click
 end
 
 -- misc table functions
@@ -312,7 +322,7 @@ local function ApplyPetsFilter(self, raid, start,stop)
 end
 
 -- create an unit frame button
-local function CreateButton(self, index)
+local function CreateButton(self, index, click)
 	-- create and initialize button
 	local parentName = self:GetName()
 	local button = CreateFrame( self:GetAttribute("templateType") or "Button", parentName.."UnitButton"..index, self, self:GetAttribute("template") )
@@ -329,14 +339,14 @@ local function CreateButton(self, index)
 	self:SetAttribute("frameref-"..childName, GetFrameHandle(button))
 	self:SetAttribute("_ignore", saved)
 	-- clique support
-	ClickCastFrames = ClickCastFrames or {}
-	ClickCastFrames[button] = true
+	ClickCastFrames[button] = click
+	button:EnableMouse(click)
 	return button
 end
 
 -- display unit frame buttons on screen
 local function DisplayButtons(self, unitTable)
-	SetupTestMode(self, unitTable)
+	local clickEnabled = SetupTestMode(self, unitTable)
 	local frameSpacing = self:GetAttribute('frameSpacing') or 0
 	local unitWatch = not not self:GetAttribute('hideEmptyUnits')
 	local startingIndex = self:GetAttribute("startingIndex") or 1
@@ -349,7 +359,7 @@ local function DisplayButtons(self, unitTable)
 	-- create enough buttons
 	local numButtons = max(1, numDisplayed)
 	for i = #self+1, numButtons do
-		self[i] = CreateButton(self, i)
+		self[i] = CreateButton(self, i, clickEnabled)
 	end
 	-- setup the buttons
 	local point, relPoint, xOffMult, yOffMult, xMult, yMult = getAnchorPoints(self:GetAttribute("point") or 'TOP')

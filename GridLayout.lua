@@ -411,9 +411,13 @@ end
 -- enable layout test mode
 function Grid2Layout:SetTestMode(enabled, themeIndex, layoutName, maxPlayers)
 	if enabled then
-		Grid2.testThemeIndex, Grid2.testMaxPlayers, self.testLayoutName = themeIndex, maxPlayers, layoutName
+		self.testLayoutName = layoutName
+		self.frameEnterEvent = function() SetCursor("UI_MOVE_CURSOR") end
+		Grid2.testThemeIndex, Grid2.testMaxPlayers = themeIndex, maxPlayers
 	else
-		Grid2.testThemeIndex, Grid2.testMaxPlayers, self.testLayoutName = nil, nil, nil
+		self.testLayoutName = nil
+		self.frameEnterEvent = nil
+		Grid2.testThemeIndex, Grid2.testMaxPlayers = nil, nil
 	end
 	if not Grid2:ReloadTheme() then
 		self:ReloadTextIndicatorsDB()
@@ -445,12 +449,14 @@ function Grid2Layout:UpdateFrame()
 	self:EnableMouse(not p.FrameLock)
 end
 
+
 function Grid2Layout:SetupMainFrame()
 	local frame = self.frame
 	frame.headerPosKey = self.layoutHasDetached and self.layoutName or nil -- used if there are detached headers to save/restore position in different place on db
 	if frame:GetWidth()==0 then
 		frame:SetSize(1,1) -- assign a default size, to make frame visible if we are in combat after a UI reload
 	end
+	frame:SetScript("OnEnter", self.frameEnterEvent)
 end
 
 function Grid2Layout:SetClamp()
@@ -937,6 +943,7 @@ function Grid2Layout:SetupDetachedHeader(header, setupIndex)
 		frameBack:SetPoint('TOPLEFT', header, 'TOPLEFT', -Spacing, Spacing )
 		frameBack:SetPoint('BOTTOMRIGHT', header, 'BOTTOMRIGHT', Spacing, -Spacing )
 		frameBack:SetFrameLevel(0)
+		frameBack:SetScript("OnEnter", self.frameEnterEvent)
 		frameBack:Hide()
 		self.layoutHasDetached = true
 	end

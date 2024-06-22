@@ -21,7 +21,7 @@ local function TestMode(info)
 		layoutName = layouts[info.arg] or layouts["raid"]
 	end
 	local enabled = (not Grid2.testMaxPlayers) or (theme.index~=Grid2.testThemeIndex or layoutName~=Grid2Layout.testLayoutName or maxPlayers~=Grid2.testMaxPlayers)
-	Grid2Layout:SetTestMode( enabled, theme.index, layoutName, maxPlayers)
+	Grid2Layout:SetTestMode(enabled, theme.index, layoutName, maxPlayers)
 end
 
 -- special header setup
