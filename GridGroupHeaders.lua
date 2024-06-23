@@ -71,28 +71,18 @@ end
 
 local function SetupTestMode(self, units)
 	local maxPlayers = self:GetAttribute('testMode')
-	local test = (maxPlayers~=nil) or nil
-	local click = not test
-	if test then
-		if self.headerType~='custom' then
-			local unit = self.headerType~='pet' and 'player' or 'pet'
-			for i=#units+1,maxPlayers do
-				units[i] = unit
-			end
-		elseif self:GetAttribute('hideEmptyUnits') then
-			for i=1,#units do
-				units[i] = 'player'
-			end
+	if not maxPlayers then return true end
+	if self.headerType~='custom' then
+		local unit = self.headerType~='pet' and 'player' or 'pet'
+		for i=#units+1,maxPlayers do
+			units[i] = unit
+		end
+	elseif self:GetAttribute('hideEmptyUnits') then
+		for i=1,#units do
+			units[i] = 'player'
 		end
 	end
-	if self.testModeEnabled ~= test then -- disable mouse on buttons to enable frame draging
-		for _,unitButton in ipairs(self) do
-			ClickCastFrames[unitButton] = click
-			unitButton:EnableMouse(click)
-		end
-		self.testModeEnabled = test
-	end
-	return click
+	return false
 end
 
 -- misc table functions
@@ -339,8 +329,7 @@ local function CreateButton(self, index, click)
 	self:SetAttribute("frameref-"..childName, GetFrameHandle(button))
 	self:SetAttribute("_ignore", saved)
 	-- clique support
-	ClickCastFrames[button] = click
-	button:EnableMouse(click)
+	ClickCastFrames[button] = true
 	return button
 end
 
@@ -359,7 +348,7 @@ local function DisplayButtons(self, unitTable)
 	-- create enough buttons
 	local numButtons = max(1, numDisplayed)
 	for i = #self+1, numButtons do
-		self[i] = CreateButton(self, i, clickEnabled)
+		self[i] = CreateButton(self, i)
 	end
 	-- setup the buttons
 	local point, relPoint, xOffMult, yOffMult, xMult, yMult = getAnchorPoints(self:GetAttribute("point") or 'TOP')
@@ -383,6 +372,7 @@ local function DisplayButtons(self, unitTable)
 	end
 	for i = start, finish, step do
 		local unitButton = self[buttonNum]
+		unitButton:EnableMouse(clickEnabled)
 		unitButton:ClearAllPoints()
 		if buttonNum==1 then
 			unitButton:SetPoint(point, curAnchor, point, xOffMult*frameSpacing, yOffMult*frameSpacing)
