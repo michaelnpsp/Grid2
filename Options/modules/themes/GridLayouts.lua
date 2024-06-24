@@ -11,17 +11,57 @@ local GetTableValue = Grid2Options.GetTableValueSafe
 local SetTableValue = Grid2Options.SetTableValueSafe
 
 -- enable test mode
-local function TestMode(info)
-	local layouts, layoutName, maxPlayers = theme.layout.layouts
-	if info.handler[1] then
-		maxPlayers = info.handler[1]
-		layoutName = layouts[maxPlayers] or layouts[ (maxPlayers==1 and "solo") or (maxPlayers==5 and "party") or "raid" ]
-	else
-		maxPlayers = strfind(info.arg,"raid") and 40 or 5
-		layoutName = layouts[info.arg] or layouts["raid"]
+local TestMode
+do
+	local frame, text, textbg
+	local function DisplayTestInfo(self)
+		frame = CreateFrame("Frame",nil, self.frame)
+		frame:SetPoint("BOTTOMLEFT", self.frame, "TOPLEFT", 0, -4)
+		frame:SetPoint("BOTTOMRIGHT", self.frame, "TOPRIGHT", 0, -4)
+		frame:SetHeight(24)
+		frame:SetScript("OnMouseUp", Grid2Layout.frame:GetScript("OnMouseUp") )
+		frame:SetScript("OnMouseDown", Grid2Layout.frame:GetScript("OnMouseDown") )
+		frame:SetScript("OnEnter", Grid2Layout.frame:GetScript("OnEnter") )
+		frame:EnableMouse(true)
+		textbg = frame:CreateTexture(nil, "OVERLAY")
+		textbg:SetPoint('CENTER')
+		textbg:SetColorTexture( .1, .1, .1, 1)
+		text = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+		text:SetPoint('CENTER')
+		DisplayTestInfo = function(self)
+			if Grid2Frame.dba.profile.extraThemes~=nil then
+				text:SetFormattedText("|cFFffffff%s:|r %s |cFFffffff%s:|r %s", L["Theme"], select(2,Grid2:GetCurrentTheme()), L["Layout"], LG[self.lsayoutName])
+			else
+				text:SetFormattedText("|cFFffffff%s:|r %s", L["Layout"], LG[self.layoutName])
+			end
+			textbg:SetWidth( text:GetWidth() + 8 )
+			textbg:SetHeight( text:GetHeight() + 4 )
+			frame:Show()
+		end
+		DisplayTestInfo(self)
 	end
-	local enabled = (not Grid2.testMaxPlayers) or (theme.index~=Grid2.testThemeIndex or layoutName~=Grid2Layout.testLayoutName or maxPlayers~=Grid2.testMaxPlayers)
-	Grid2Layout:SetTestMode(enabled, theme.index, layoutName, maxPlayers)
+
+	local function SetupTestInfo(enabled)
+		if enabled then
+			DisplayTestInfo(Grid2Layout)
+		elseif frame then
+			frame:Hide()
+		end
+	end
+
+	function TestMode(info)
+		local layouts, layoutName, maxPlayers = theme.layout.layouts
+		if info.handler[1] then
+			maxPlayers = info.handler[1]
+			layoutName = layouts[maxPlayers] or layouts[ (maxPlayers==1 and "solo") or (maxPlayers==5 and "party") or "raid" ]
+		else
+			maxPlayers = strfind(info.arg,"raid") and 40 or 5
+			layoutName = layouts[info.arg] or layouts["raid"]
+		end
+		local enabled = (not Grid2.testMaxPlayers) or (theme.index~=Grid2.testThemeIndex or layoutName~=Grid2Layout.testLayoutName or maxPlayers~=Grid2.testMaxPlayers)
+		Grid2Layout:SetTestMode(enabled, theme.index, layoutName, maxPlayers)
+		SetupTestInfo(enabled)
+	end
 end
 
 -- special header setup

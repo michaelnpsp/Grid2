@@ -449,7 +449,6 @@ function Grid2Layout:UpdateFrame()
 	self:EnableMouse(not p.FrameLock)
 end
 
-
 function Grid2Layout:SetupMainFrame()
 	local frame = self.frame
 	frame.headerPosKey = self.layoutHasDetached and self.layoutName or nil -- used if there are detached headers to save/restore position in different place on db
