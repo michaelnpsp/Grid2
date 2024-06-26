@@ -2,7 +2,52 @@
 -- Grid2 AceGUI widgets to be used in AceConfigTables, using dialogControl property.
 -------------------------------------------------------------------------------------------------
 
-local AceGUI= LibStub("AceGUI-3.0", true)
+local AceGUI = LibStub("AceGUI-3.0", true)
+local AceDlg = LibStub("AceConfigDialog-3.0")
+
+-------------------------------------------------------------------------------------------------
+-- Grid2 Main Options Widget:
+-- A Modified AceGUI "Frame" widget see: AceGUIContainer-Frame.lua
+-------------------------------------------------------------------------------------------------
+do
+	local WidgetType, optionsFrame = "Grid2OptionsFrame"
+
+	local function Frame_OnClose(frame)
+		AceGUI:Release(frame.obj)
+		Grid2Options:SetLayoutTestMode(false)
+		Grid2Options.optionsFrame = nil
+	end
+
+	local function TestButton_OnClick(frame)
+		Grid2Options:SetLayoutTestMode()
+	end
+
+	AceGUI:RegisterWidgetType( WidgetType, function()
+		assert(optionsFrame==nil, "Error: Only one Grid2 options frame can be created.")
+		local widget = AceGUI:Create("Frame")
+		widget.type = WidgetType
+		widget.frame:SetScript("OnHide", Frame_OnClose)
+		-- changing button status text widget position and width to make room for a test button
+		local statusbg = widget.statustext:GetParent()
+		statusbg:SetPoint("BOTTOMLEFT", 132, 15)
+		statusbg:SetPoint("BOTTOMRIGHT", -132, 15) -- statusbg in AceGUIContainer-frame
+		-- changing height of down sizer frame to avoid overlap with the Test Layout button
+		widget.sizer_s:SetHeight(16)
+		-- test layout Button
+		local button = CreateFrame("Button", nil, widget.frame, "UIPanelButtonTemplate")
+		button:SetPoint("BOTTOMLEFT", 27, 17)
+		button:SetHeight(20)
+		button:SetWidth(100)
+		button:SetText( Grid2Options.L["Test"] )
+		button:SetScript("OnClick", TestButton_OnClick)
+		-- to close the frame with ESCAPE key
+		_G["Grid2OptionsFrame"] = widget.frame
+		table.insert(UISpecialFrames, "Grid2OptionsFrame")
+		-- for failsafe check
+		optionsFrame = widget
+		return widget
+	end , 1)
+end
 
 -------------------------------------------------------------------------------------------------
 -- Modified Multiline Editbox that vertical fills the parent container even in AceConfigDialog Flow layouts.

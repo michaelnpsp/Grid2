@@ -174,11 +174,6 @@ function Grid2Options:PackColor( r,g,b,a, dbx, key )
 	return { r=r, g=g, b=b, a=a }
 end
 
--- Refresh AceConfig options window
-function Grid2Options:NotifyChange() -- do not use self variable inside this function (self can be nil or ~=Grid2Options)
-	LibStub("AceConfigRegistry-3.0"):NotifyChange("Grid2")
-end
-
 -- Grid2Options:EnableLoadOnDemand()
 -- Delays the creation of indicators and statuses options, until the user clicks on each option,
 -- reducing initial memory usage and load time. Instead of the real options, a "description" type option
@@ -588,11 +583,6 @@ function Grid2Options:CopyOptionsTable(src, dst)
 	return dst
 end
 
--- Goto the specified options section.
-function Grid2Options:SelectGroup( ... )
-	LibStub("AceConfigDialog-3.0"):SelectGroup( "Grid2", ... )
-end
-
 -- Grid2Options.MEDIA_FONT_DEFAULT
 -- Grid2Options.MEDIA_VALUE_DEFAULT
 -- Grid2Options.GetFontsValues()
@@ -661,4 +651,38 @@ do
 	function Grid2Options:ShowEditDialog(message, text, funcAccept, funcCancel)
 		ShowDialog(message, text or "", funcAccept, funcCancel or Grid2.Dummy)
 	end
+end
+
+-- Current Layout Test Mode
+function Grid2Options:SetLayoutTestMode(enabled)
+	if enabled == nil then enabled = not Grid2.testMaxPlayers end
+	Grid2Layout:SetTestMode( enabled, Grid2.currentTheme or 0, Grid2Layout.layoutName, math.max(select(3,Grid2:GetGroupType()),5) )
+end
+
+-- Functions to interact with AceConfigDialog options
+do
+	-- We cannot used AceConfigRegistry:NotifyChange() and AceConfigDialog:SelectGroup() because they breaks everything when
+	-- a custom mainframe is used so we have to define our custom NotifyChange() and SelectGroup() functions.
+	local ACD = LibStub("AceConfigDialog-3.0")
+
+	-- Goto the specified options section.
+	function Grid2Options:SelectGroup(...)
+		ACD:SelectGroup( "Grid2", ... )
+		Grid2Options:NotifyChange()
+	end
+
+	-- Refresh AceConfig options window
+	function Grid2Options:NotifyChange() -- do not use self variable inside this function (self can be nil or ~=Grid2Options))
+		C_Timer.After(0, Grid2Options.RefreshOptions)
+	end
+
+	-- Refresh AceConfig options window
+	function Grid2Options:RefreshOptions()  -- do not use self variable inside this function (self can be nil or ~=Grid2Options))
+		local frame = Grid2Options.optionsFrame
+		if frame then
+			local user = frame:GetUserDataTable()
+			ACD:Open('Grid2', frame, unpack(user.basepath or {}))
+		end
+	end
+
 end

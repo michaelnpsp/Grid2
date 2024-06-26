@@ -99,7 +99,7 @@ do
 		Grid2Layout:ReloadLayout()
 	end
 
-	function MakeLayoutsOptions()
+	function MakeLayoutsOptions(forGroupType)
 		local options = {}
 		local order = 10
 		local function MakeSeparatorOption(description)
@@ -136,32 +136,38 @@ do
 			order = order + 100
 		end
 
-		options.title = {
-			order = 1,
-			type = "description",
-			name = L["A Layout defines which unit frames will be displayed and the way in which they are arranged. Here you can set different layouts for each group or raid type."]
-		}
+		if forGroupType then
 
-		-- partyTypes = solo party arena raid
-		MakeLayoutOptions( "solo"       , "Solo"  )
-		MakeLayoutOptions( "arena"      , "Arena" )
-		MakeLayoutOptions( "party"      , "Party" )
-		MakeLayoutOptions( "raid"       , "Raid"  )
+			options.title = {
+				order = 1,
+				type = "description",
+				name = L["A Layout defines which unit frames will be displayed and the way in which they are arranged. Here you can set different layouts for each group or raid type."]
+			}
 
-		-- instTypes  = none pvp lfr flex mythic other
-		options.titleraid = {
-			order = order + 10,
-			type = "description",
-			name = "\n" .. L["Select layouts for different Raid types."]
-		}
-		order = order + 10
+			-- partyTypes = solo party arena raid
+			MakeLayoutOptions( "solo"       , "Solo"  )
+			MakeLayoutOptions( "party"      , "Party" )
+			MakeLayoutOptions( "raid"       , "Raid"  )
+			MakeLayoutOptions( "arena"      , "Arena" )
 
-		MakeLayoutOptions( "raid@pvp"   , "PvP Instances (BGs)" )
-		MakeLayoutOptions( "raid@lfr"   , "LFR Instances" )
-		MakeLayoutOptions( "raid@flex"  , "Flexible raid Instances (normal/heroic)" )
-		MakeLayoutOptions( "raid@mythic", "Mythic raids Instances" )
-		MakeLayoutOptions( "raid@other" , "Other raids Instances" )
-		MakeLayoutOptions( "raid@none"  , "In World" )
+		else
+
+			-- instTypes  = none pvp lfr flex mythic other
+			options.titleraid = {
+				order = order + 10,
+				type = "description",
+				name = "\n" .. L["Select layouts for different Raid types."]
+			}
+			order = order + 10
+
+			MakeLayoutOptions( "raid@pvp"   , "PvP Instances (BGs)" )
+			MakeLayoutOptions( "raid@lfr"   , "LFR Instances" )
+			MakeLayoutOptions( "raid@flex"  , "Flexible raid Instances (normal/heroic)" )
+			MakeLayoutOptions( "raid@mythic", "Mythic raids Instances" )
+			MakeLayoutOptions( "raid@other" , "Other raids Instances" )
+			MakeLayoutOptions( "raid@none"  , "In World" )
+
+		end
 
 		return options
 	end
@@ -532,16 +538,23 @@ Grid2Options:AddThemeOptions( "layouts", "Layouts" , {
 
 general = {
 	type = "group",
-	order= 200,
+	order= 199,
 	name = L["General"],
 	args = generalOptions,
 },
 
 bygroup = {
 	type = "group",
-	order= 201,
+	order= 200,
 	name = L["By Group Type"],
-	args = MakeLayoutsOptions()
+	args = MakeLayoutsOptions(true)
+},
+
+byraid = {
+	type = "group",
+	order= 201,
+	name = L["By Raid Type"],
+	args = MakeLayoutsOptions(false)
 },
 
 frameSizes = {
