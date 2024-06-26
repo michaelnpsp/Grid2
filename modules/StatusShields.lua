@@ -247,7 +247,7 @@ function Grid2:RegisterCustomAbsorbsEvent(func)
 	return UnitGetTotalAbsorbs
 end
 
-function Grid2:UnegisterCustomAbsorbsEvent(func)
+function Grid2:UnregisterCustomAbsorbsEvent(func)
 	FireEvent = nil
 	UnregisterShieldEvents(func)
 end
