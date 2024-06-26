@@ -89,12 +89,9 @@ end
 function Grid2Options:OnChatCommand()
 	if self.optionsFrame then
 		self.optionsFrame:Hide()
+		self.optionsFrame = nil
 	else
 		self.optionsFrame = LibStub("AceGUI-3.0"):Create('Grid2OptionsFrame')
-		self.optionsFrame:SetCallback("OnClose", function(f)
-			LibStub("AceGUI-3.0"):Release(f)
-			self.optionsFrame = nil
-		end)
 		LibStub("AceConfigDialog-3.0"):Open("Grid2", self.optionsFrame)
 	end
 end

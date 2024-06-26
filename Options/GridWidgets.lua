@@ -2,30 +2,45 @@
 -- Grid2 AceGUI widgets to be used in AceConfigTables, using dialogControl property.
 -------------------------------------------------------------------------------------------------
 
-local AceGUI= LibStub("AceGUI-3.0", true)
+local AceGUI = LibStub("AceGUI-3.0", true)
 local AceDlg = LibStub("AceConfigDialog-3.0")
 
 -------------------------------------------------------------------------------------------------
 -- Grid2 Main Options Widget
 -------------------------------------------------------------------------------------------------
 do
-	local WidgetType = "Grid2OptionsFrame"
+	local WidgetType, optionsFrame = "Grid2OptionsFrame"
+
+	local function Frame_OnClose(frame)
+		AceGUI:Release(frame.obj)
+		Grid2Options:SetLayoutTestMode(false)
+	end
+
+	local function TestButton_OnClick(frame)
+		Grid2Options:SetLayoutTestMode()
+	end
+
 	AceGUI:RegisterWidgetType( WidgetType, function()
+		assert(optionsFrame==nil, "Error: Only one Grid2 options frame can be created.")
 		local widget = AceGUI:Create("Frame")
 		widget.type = WidgetType
+		widget.frame:SetScript("OnHide", Frame_OnClose)
 		-- customizing the default AceGUI frame container
 		local statusbg = widget.statustext:GetParent()
 		statusbg:SetPoint("BOTTOMLEFT", 132, 15)
 		statusbg:SetPoint("BOTTOMRIGHT", -132, 15) -- statusbg in AceGUIContainer-frame
-		--
+		-- Test Layout Button
 		local button = CreateFrame("Button", nil, widget.frame, "UIPanelButtonTemplate")
 		button:SetPoint("BOTTOMLEFT", 27, 17)
 		button:SetHeight(20)
 		button:SetWidth(100)
-		button:SetText("Test")
+		button:SetText( Grid2Options.L["Test"] )
+		button:SetScript("OnClick", TestButton_OnClick)
 		-- to close the frame with ESCAPE key
 		_G["Grid2OptionsFrame"] = widget.frame
 		table.insert(UISpecialFrames, "Grid2OptionsFrame")
+		-- for failsafe check
+		optionsFrame = widget
 		return widget
 	end , 1)
 end
