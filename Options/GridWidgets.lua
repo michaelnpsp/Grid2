@@ -26,10 +26,12 @@ do
 		local widget = AceGUI:Create("Frame")
 		widget.type = WidgetType
 		widget.frame:SetScript("OnHide", Frame_OnClose)
-		-- customizing the default AceGUI frame container
+		-- changing button status text widget position and width to make room for a test button
 		local statusbg = widget.statustext:GetParent()
 		statusbg:SetPoint("BOTTOMLEFT", 132, 15)
 		statusbg:SetPoint("BOTTOMRIGHT", -132, 15) -- statusbg in AceGUIContainer-frame
+		-- changing height of down sizer frame to avoid overlap with the Test Layout button
+		widget.sizer_s:SetHeight(16)
 		-- Test Layout Button
 		local button = CreateFrame("Button", nil, widget.frame, "UIPanelButtonTemplate")
 		button:SetPoint("BOTTOMLEFT", 27, 17)
@@ -37,6 +39,7 @@ do
 		button:SetWidth(100)
 		button:SetText( Grid2Options.L["Test"] )
 		button:SetScript("OnClick", TestButton_OnClick)
+		-- button:SetFrameLevel( button:GetFrameLevel() + 10)
 		-- to close the frame with ESCAPE key
 		_G["Grid2OptionsFrame"] = widget.frame
 		table.insert(UISpecialFrames, "Grid2OptionsFrame")
