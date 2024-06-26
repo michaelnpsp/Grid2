@@ -4,6 +4,7 @@
 
 local AceGUI= LibStub("AceGUI-3.0", true)
 local AceDlg = LibStub("AceConfigDialog-3.0")
+
 -------------------------------------------------------------------------------------------------
 -- Grid2 Main Options Widget
 -------------------------------------------------------------------------------------------------
@@ -21,7 +22,7 @@ do
 		button:SetPoint("BOTTOMLEFT", 27, 17)
 		button:SetHeight(20)
 		button:SetWidth(100)
-		button:SetText("Lock")
+		button:SetText("Test")
 		-- to close the frame with ESCAPE key
 		_G["Grid2OptionsFrame"] = widget.frame
 		table.insert(UISpecialFrames, "Grid2OptionsFrame")

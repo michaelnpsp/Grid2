@@ -814,4 +814,4 @@ Grid2Options:AddThemeOptions( "appearance", "Appearance", options )
 -- Refresh theme general options the first time they are displayed, it's a workaround to a weird bug in AceConfig/AceGUI:
 -- sometimes all editboxes of sliders do not display any value, this only happens when we have 3 nested groups like in:
 -- "Themes>Default>General Tab>options width sliders", and clicking very fast to open general theme options.
-options.bugfix = { type = "header", order = 500, name = "", hidden = function()	options.bugfix = nil; Grid2Options:NotifyChange(); return true end }
+options.bugfix = { type = "header", order = 500, name = "", hidden = function()	 options.bugfix = nil; Grid2Options:NotifyChange(); return true end }

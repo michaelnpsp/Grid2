@@ -116,10 +116,13 @@ do
 	end
 
 	local function StatusOpenOptions(status)
-		Grid2Options:SelectGroup('statuses')
-		Grid2Options:NotifyChange()
-		Grid2Options:SelectGroup('statuses', Grid2Options:GetStatusCategory(status), status.name)
-		Grid2Options:NotifyChange()
+		C_Timer.After(0,  function()
+			Grid2Options:SelectGroup('statuses')
+			Grid2Options:RefreshOptions()
+			Grid2Options:SelectGroup('statuses', Grid2Options:GetStatusCategory(status), status.name)
+			Grid2Options:RefreshOptions()
+		end	)
+		--]]
 	end
 
 	-- Grid2Options:MakeIndicatorCurrentStatusOptions(indicator, options)

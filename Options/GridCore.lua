@@ -99,14 +99,6 @@ function Grid2Options:OnChatCommand()
 	end
 end
 
-function Grid2Options:RefreshOptions()
-	local frame = self.optionsFrame
-	if frame then
-		local user = frame:GetUserDataTable()
-		LibStub("AceConfigDialog-3.0"):Open('Grid2', frame, unpack(user.basepath or {}))
-	end
-end
-
 --{{
 _G.Grid2Options = Grid2Options
 --}}
