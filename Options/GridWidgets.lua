@@ -14,6 +14,7 @@ do
 	local function Frame_OnClose(frame)
 		AceGUI:Release(frame.obj)
 		Grid2Options:SetLayoutTestMode(false)
+		Grid2Options.optionsFrame = nil
 	end
 
 	local function TestButton_OnClick(frame)
