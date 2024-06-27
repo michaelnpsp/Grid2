@@ -1251,6 +1251,8 @@ L["\"%s\" has sent you a profile configuration. Do you want to activate received
 -- L["Set the font border type."] = ""
 -- L["Orientation"] = ""
 -- L["Set the icons orientation."] = ""
+-- L["Smart Center Align"] = ""
+-- L["Dinamically center the visible icons. Not available for multi-row configurations."] = ""
 -- L["Display Squares"] = ""
 -- L["Display flat square textures instead of the icons provided by the statuses."] = ""
 -- L["Select maximum number of icons to display."] = ""
