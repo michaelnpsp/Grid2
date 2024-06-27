@@ -131,10 +131,6 @@ local function Icon_Layout(self, parent)
 	local size = iconSize + self.iconSpacing
 	local tc1,tc2,tc3,tc4 = Grid2.statusPrototype.GetTexCoord()
 	local level = parent:GetFrameLevel() + self.frameLevel
-	if self.smartCenter then
-		self.cellSize = size
-		f.SetSmartSize = self.vertical and f.SetHeight or f.SetWidth
-	end
 	if not self.dbx.disableOmniCC then
 		local i,j  = parent:GetName():match("Grid2LayoutHeader(%d+)UnitButton(%d+)")
 		frameName  = format( "Grid2Icons%s%02d%02d", self.name:gsub("%-","") , i, j )
@@ -143,7 +139,16 @@ local function Icon_Layout(self, parent)
 	f:ClearAllPoints()
 	f:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
 	f:SetFrameLevel(level)
-	f:SetSize( size*self.pw, size*self.ph )
+	self.cellSize = size
+	if not self.smartCenter then
+		f:SetSize( size*self.pw, size*self.ph )
+	elseif self.vertical then
+		f:SetWidth(iconSize)
+		f.SetSmartSize = f.SetHeight
+	else
+		f:SetHeight(iconSize)
+		f.SetSmartSize = f.SetWidth
+	end
 	local auras = f.auras
 	for i=1,self.maxIcons do
 		local frame = auras[i]
@@ -237,7 +242,7 @@ local function Icon_UpdateDB(self)
 	self.vx 			= 0
 	self.ux 			= pointsX[self.anchorIcon]
 	self.vy 			= pointsY[self.anchorIcon]
-	self.pw             = math.abs(self.ux)*self.maxIconsPerRow
+	self.pw             = math.abs(self.ux)*math.min(self.maxIcons, self.maxIconsPerRow)
 	self.ph             = math.abs(self.vy)*self.maxRows
 	if self.vertical then
 		self.ux, self.vx = self.vx, self.ux
