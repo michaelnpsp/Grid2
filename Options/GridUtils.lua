@@ -653,12 +653,6 @@ do
 	end
 end
 
--- Current Layout Test Mode
-function Grid2Options:SetLayoutTestMode(enabled)
-	if enabled == nil then enabled = not Grid2.testMaxPlayers end
-	Grid2Layout:SetTestMode( enabled, Grid2.currentTheme or 0, Grid2Layout.layoutName, math.max(select(3,Grid2:GetGroupType()),5) )
-end
-
 -- Functions to interact with AceConfigDialog options
 do
 	-- We cannot used AceConfigRegistry:NotifyChange() and AceConfigDialog:SelectGroup() because they breaks everything when

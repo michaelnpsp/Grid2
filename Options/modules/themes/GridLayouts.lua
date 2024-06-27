@@ -16,6 +16,7 @@ do
 	local frame, text, textbg
 	local function DisplayTestInfo(self)
 		frame = CreateFrame("Frame",nil, self.frame)
+		frame:SetFrameStrata('DIALOG')
 		frame:SetPoint("BOTTOMLEFT", self.frame, "TOPLEFT", 0, -4)
 		frame:SetPoint("BOTTOMRIGHT", self.frame, "TOPRIGHT", 0, -4)
 		frame:SetHeight(24)
@@ -30,7 +31,7 @@ do
 		text:SetPoint('CENTER')
 		DisplayTestInfo = function(self)
 			if Grid2Frame.dba.profile.extraThemes~=nil then
-				text:SetFormattedText("|cFFffffff%s:|r %s |cFFffffff%s:|r %s", L["Theme"], select(2,Grid2:GetCurrentTheme()), L["Layout"], LG[self.lsayoutName])
+				text:SetFormattedText("|cFFffffff%s:|r %s |cFFffffff%s:|r %s", L["Theme"], select(2,Grid2:GetCurrentTheme()), L["Layout"], LG[self.layoutName])
 			else
 				text:SetFormattedText("|cFFffffff%s:|r %s", L["Layout"], LG[self.layoutName])
 			end
@@ -60,6 +61,12 @@ do
 		end
 		local enabled = (not Grid2.testMaxPlayers) or (theme.index~=Grid2.testThemeIndex or layoutName~=Grid2Layout.testLayoutName or maxPlayers~=Grid2.testMaxPlayers)
 		Grid2Layout:SetTestMode(enabled, theme.index, layoutName, maxPlayers)
+		SetupTestInfo(enabled)
+	end
+
+	function Grid2Options:SetLayoutTestMode(enabled)
+		if enabled == nil then enabled = not Grid2.testMaxPlayers end
+		Grid2Layout:SetTestMode( enabled, Grid2.currentTheme or 0, Grid2Layout.layoutName, math.max(select(3,Grid2:GetGroupType()),5) )
 		SetupTestInfo(enabled)
 	end
 end
