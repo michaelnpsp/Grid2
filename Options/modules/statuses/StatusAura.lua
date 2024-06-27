@@ -1,15 +1,19 @@
 local L = Grid2Options.L
 
+local GetSpellInfo = Grid2.API.GetSpellInfo
 local MonitorizeValues = { [0]= L["NONE"], [1] = L["Value1"], [2] = L["Value2"], [3] = L["Value3"] }
 local DurationValues = { [1] = L['Automatic'], [2] = L['Custom'] }
 local TextValues1 = { [1] = L['Value Tracked'], [2] = L['Aura Name'], [3] = L['Custom Text'] }
 local TextValues2 = { [2] = L['Aura Name'], [3] = L['Custom Text'] }
 local ColorCountValues = {1,2,3,4,5,6,7,8,9}
-local ColorizeByValues1= { [1] = L["Single Color"], [5] = L["Number of stacks"], [6] = L["Remaining time"], [7] = L["Elapsed time"] }
-local ColorizeByValues2= { [1] = L["Single Color"], [5] = L["Number of stacks"], [6] = L["Remaining time"], [7] = L["Elapsed time"], [8] = L["Value"] }
-local ColorizeByValues3= { [1] = L["Single Color"], [5] = L["Number of stacks"], [6] = L["Remaining time"], [7] = L["Elapsed time"], [2] = L["Debuff Type"] }
-
-local GetSpellInfo = Grid2.API.GetSpellInfo
+local ColorizeValues = {
+	buffs   = { [1] = L["Single Color"], [5] = L["Number of stacks"] },
+	debuffs = { [1] = L["Single Color"], [5] = L["Number of stacks"], [2] = L["Debuff Type"] },
+	default = { -- buff/debuff
+		[true]  = { [1] = L["Single Color"], [5] = L["Number of stacks"], [6] = L["Remaining time"], [7] = L["Elapsed time"], [8] = L["Value"] },
+		[false] = { [1] = L["Single Color"], [5] = L["Number of stacks"], [6] = L["Remaining time"], [7] = L["Elapsed time"] },
+	},
+}
 
 --{{ colors for aura statuses
 local function StatusAuraUpdateColors(status, newCount)
@@ -70,7 +74,7 @@ function Grid2Options:MakeStatusAuraColorsSelectionOptions(status, options, opti
 			status:UpdateDB()
 			self:MakeStatusOptions(status)
 		end,
-		values = (status.dbx.type=='debuffs' and ColorizeByValues3) or (status.dbx.valueIndex and ColorizeByValues2) or ColorizeByValues1,
+		values = ColorizeValues[status.dbx.type] or ColorizeValues.default[status.dbx.valueIndex~=nil]
 	}
 	if not status.dbx.colorCount then return end
 	options.colorCount = {
