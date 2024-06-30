@@ -72,6 +72,12 @@ L["Me"] = "Yo"
 L["combat"] = "Combate"
 --}}
 
+--{{{ Summon
+L["Pending"] = "Pendiente"
+L["Accepted"] = "Aceptado"
+L["Declined"] = "Rechazado"
+---}}}
+
 --Layouts
 L["None"] = "Ninguno"
 L["Solo"] = "Solo"

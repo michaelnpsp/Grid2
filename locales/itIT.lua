@@ -39,6 +39,12 @@ L["vehicle"] = "veicolo"
 L["X"] = "X"
 L["Me"] = "Io"
 
+--{{{ Summon
+-- L["Pending"] = ""
+-- L["Accepted"] = ""
+-- L["Declined"] = ""
+---}}}
+
 --Layouts
 L["None"] = "Nessuno"
 L["Solo"] = "Solo"

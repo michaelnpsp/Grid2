@@ -68,6 +68,12 @@ L["Revived"] = "부활"
 -- L["Me"] = ""
 ---}}}
 
+--{{{ Summon
+-- L["Pending"] = ""
+-- L["Accepted"] = ""
+-- L["Declined"] = ""
+---}}}
+
 --Layouts
 L["None"] = "없음"
 L["Solo"] = "솔로잉"

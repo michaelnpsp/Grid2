@@ -72,6 +72,12 @@ L["Me"] = true
 L["combat"] = true
 ---}}}
 
+--{{{ Summon
+L["Pending"] = true
+L["Accepted"] = true
+L["Declined"] = true
+---}}}
+
 --Layouts
 L["None"] = true
 L["Solo"] = true

@@ -1,9 +1,17 @@
 if Grid2.isClassic then return end
 
+local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
+
 local status = Grid2.statusPrototype:new("summon")
 
 local HasIncomingSummon = C_IncomingSummon.HasIncomingSummon
 local IncomingSummonStatus = C_IncomingSummon.IncomingSummonStatus
+
+local texts = {
+ [1] = L["Pending"],
+ [2] = L["Accepted"],
+ [3] = L["Declined"],
+}
 
 function status:INCOMING_SUMMON_CHANGED(_, unit)
 	self:UpdateIndicators(unit)
@@ -48,8 +56,12 @@ function status:GetTexCoord(unit)
 	end
 end
 
+function status:GetText(unit)
+	return texts[ IncomingSummonStatus(unit) ] or ""
+end
+
 Grid2.setupFunc["summon"] = function(baseKey, dbx)
-	Grid2:RegisterStatus(status, {"color", "icon"}, baseKey, dbx)
+	Grid2:RegisterStatus(status, {"text", "color", "icon"}, baseKey, dbx)
 	return status
 end
 

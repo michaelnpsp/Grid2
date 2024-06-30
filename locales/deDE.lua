@@ -68,6 +68,12 @@ L["talking"] = "Spricht"
 -- L["Me"] = ""
 ---}}}
 
+--{{{ Summon
+-- L["Pending"] = ""
+-- L["Accepted"] = ""
+-- L["Declined"] = ""
+---}}}
+
 --Layouts
 L["None"] = "Keine"
 L["Solo"] = "Allein"
