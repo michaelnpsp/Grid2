@@ -296,7 +296,7 @@ local function HealthCurrent_GetTextRetailM(self, unit)
 	if h<1000000 then
 		return fmt("%.1fk",h/1000)
 	else
-		return fmt("%.1fm",h/1000000)
+		return fmt("%.2fm",h/1000000)
 	end
 end
 
@@ -305,7 +305,7 @@ local function HealthCurrent_GetTextRetailShieldM(self, unit)
 	if h<1000000 then
 		return fmt("%.1fk",h/1000)
 	else
-		return fmt("%.1fm",h/1000000)
+		return fmt("%.2fm",h/1000000)
 	end
 end
 
