@@ -4,6 +4,7 @@ local wipe = wipe
 local SpellGetVisibilityInfo = SpellGetVisibilityInfo
 local UnitAura = Grid2.UnitAuraLite
 local typeColors = Grid2.debuffTypeColors
+local GetSpellInfo = Grid2.API.GetSpellInfo
 
 local emptyTable = {}
 local textures = {}
@@ -174,6 +175,40 @@ local function status_GetDebuffTypeColor(self, unit)
 	end
 end
 
+-- to add/remove spells from a macro
+local function status_IgnoreTooltipDebuff(self)
+	if GameTooltip:IsVisible() then
+		local dbx = self.dbx
+		local data = GameTooltip:GetTooltipData()
+		local spellID = tonumber(data.id)
+		if spellID then
+			local spellName = GetSpellInfo(spellID)
+			if spellName then
+				local spellKey = dbx.useSpellId and spellID or spellName
+				if self.spells and self.spells[spellKey] then
+					for i=#dbx.auras,1,-1 do
+						local spell = dbx.auras[i]
+						if spell==spellID or spell==spellKey then
+							table.remove(dbx.auras,i)
+						end
+					end
+					Grid2:Print( string.format('Spell "%s" |cFF%sremoved|r from "%s" status.',spellName, dbx.useWhiteList and 'ff0000' or '00ff00', self.name) )
+				else
+					if not dbx.auras then
+						dbx.auras = {}
+						dbx.useWhiteList = nil
+					end
+					table.insert(dbx.auras, spellID)
+					Grid2:Print( string.format('Spell "%s" |cFF%sadded|r to "%s" status.',spellName, dbx.useWhiteList and '00ff00' or 'ff0000', self.name) )
+				end
+				self:Refresh()
+			else
+				Grid2:Print( string.format('Error, Unknown spellID: %d.',spellID) )
+			end
+		end
+	end
+end
+
 -- Called by status:UpdateDB()
 local function status_Update(self, dbx)
 	self.color = dbx.color1
@@ -195,6 +230,7 @@ local function status_Update(self, dbx)
 	end
 	self.OnEnableAura  = dbx.filterRelevant~=nil and status_OnEnableAura  or nil
 	self.OnDisableAura = dbx.filterRelevant~=nil and status_OnDisableAura or nil
+	self.IgnoreTooltipDebuff = status_IgnoreTooltipDebuff
 end
 
 -- Registration

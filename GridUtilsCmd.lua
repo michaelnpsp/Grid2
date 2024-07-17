@@ -106,6 +106,25 @@ do
 	end
 end
 
+local function ProcessIgnoreTooltipDebuff(param)
+	if param then
+		local status = Grid2.statuses[ 'debuffs-' .. strtrim(param,'" ') ]
+		if status and status.IgnoreTooltipDebuff then
+			status:IgnoreTooltipDebuff()
+		else
+			Grid2:Print( string.format('Error: Specified %s status not found in current profile.',param) )
+		end
+	else
+		for _,status in pairs(Grid2.statusTypes.tooltip) do
+			if status.IgnoreTooltipDebuff then
+				status:IgnoreTooltipDebuff()
+				return
+			end
+		end
+		Grid2:Print( string.format('Error: You must create at least one debuffs status to use this command.') )
+	end
+end
+
 local function ProcessHelpCmd()
 	Grid2:Print("commands (/grid2, /gr2)")
 	print("    /grid2")
@@ -115,7 +134,7 @@ local function ProcessHelpCmd()
 	print("    /grid2 lock")
 	print("    /grid2 lock toggle")
 	print("    /grid2 theme name || index")
-	print("    /grid2 show never || always || grouped || raid || toggle\n")
+	print("    /grid2 show never || always || grouped || raid || toggle")
 	print("    /grid2 minimapicon show || hide || toggle || global")
 	print("    /grid2 profile <profile_name>")
 	if not Grid2.isClassic then
@@ -123,6 +142,7 @@ local function ProcessHelpCmd()
 		print("    /grid2 profilesperspec enable || disable")
 	end
 	print("    /grid2 namelist || nl [header_type] clear || @mouseover || <player_name>")
+	print("    /grid2 tooltip [status_name]")
 end
 
 function Grid2:ProcessCommandLine(input)
@@ -145,6 +165,8 @@ function Grid2:ProcessCommandLine(input)
 		ProcessMinimapCmd(p)
 	elseif c=='help' then
 		ProcessHelpCmd()
+	elseif c=='tooltip' then
+		ProcessIgnoreTooltipDebuff(param)
 	elseif c=='namelist' or c=='nl' then
 		ProcessNameListCmd(param)
 	end
