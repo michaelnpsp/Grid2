@@ -115,13 +115,20 @@ local function ProcessIgnoreTooltipDebuff(param)
 			Grid2:Print( string.format('Error: Specified %s status not found in current profile.',param) )
 		end
 	else
+		local gstatus, gpriority = nil, 0
 		for _,status in pairs(Grid2.statusTypes.tooltip) do
 			if status.IgnoreTooltipDebuff then
-				status:IgnoreTooltipDebuff()
-				return
+				local priority = (status.dbx.auras==nil and 1) or (status.dbx.useWhiteList and 2) or 3
+				if priority>gpriority then
+					gstatus, gpriority = status, priority
+				end
 			end
 		end
-		Grid2:Print( string.format('Error: You must create at least one debuffs status to use this command.') )
+		if gstatus then
+			gstatus:IgnoreTooltipDebuff()
+		else
+			Grid2:Print( string.format('Error: You must create at least one debuffs status to use this command.') )
+		end
 	end
 end
 
@@ -142,7 +149,7 @@ local function ProcessHelpCmd()
 		print("    /grid2 profilesperspec enable || disable")
 	end
 	print("    /grid2 namelist || nl [header_type] clear || @mouseover || <player_name>")
-	print("    /grid2 tooltip [status_name]")
+	print("    /grid2 parsetip [status_name]")
 end
 
 function Grid2:ProcessCommandLine(input)
@@ -165,7 +172,7 @@ function Grid2:ProcessCommandLine(input)
 		ProcessMinimapCmd(p)
 	elseif c=='help' then
 		ProcessHelpCmd()
-	elseif c=='tooltip' then
+	elseif c=='parsetip' then
 		ProcessIgnoreTooltipDebuff(param)
 	elseif c=='namelist' or c=='nl' then
 		ProcessNameListCmd(param)
