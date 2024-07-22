@@ -191,7 +191,7 @@ local layoutOptions1 =  { positionheader = {
 do
 	local key, def
 	local defUPC = { player = 5, pet = 5, boss =  8, other = 5 }
-	local extraHeaders = { boss = true, target = true, targettarget = true, focus = true, focustarget = true, other = true }
+	local extraHeaders = { boss = true, self = true, target = true, targettarget = true, focus = true, focustarget = true, other = true }
 	local headerAnchorPoints = { [''] = L['Default'], CENTER = L["CENTER"], TOP = L["TOP"], BOTTOM = L["BOTTOM"], LEFT = L["LEFT"], RIGHT = L["RIGHT"], TOPLEFT = L["TOPLEFT"], TOPRIGHT = L["TOPRIGHT"], BOTTOMLEFT = L["BOTTOMLEFT"], BOTTOMRIGHT = L["BOTTOMRIGHT"] }
 	local groupAnchorPoints  = { [''] = L['Default'], TOPLEFT = L["TOPLEFT"], TOPRIGHT = L["TOPRIGHT"], BOTTOMLEFT = L["BOTTOMLEFT"], BOTTOMRIGHT = L["BOTTOMRIGHT"] }
 
