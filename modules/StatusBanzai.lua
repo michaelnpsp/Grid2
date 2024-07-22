@@ -189,7 +189,7 @@ end
 Grid2:DbSetStatusDefaultValue( "banzai-threat", { type = "banzai-threat", color1 = {r=1,g=0,b=0,a=1} })
 
 -- banzai status
-if Grid2.isClassic then return end -- sorry, no banzai status in Classic
+-- if Grid2.isClassic then return end -- sorry, no banzai status in Classic
 
 Banzai = Grid2.statusPrototype:new("banzai", false)
 
