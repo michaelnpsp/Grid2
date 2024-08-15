@@ -312,15 +312,17 @@ end
 --==========================================================================
 
 do
+	local IsAddOnLoaded = C_AddOns and C_AddOns.IsAddOnLoaded or IsAddOnLoaded
+	local EnableAddOn   = C_AddOns and C_AddOns.EnableAddOn or EnableAddOn
 	local order = 0
 	local function Fix(k,v)
 		if k=='party' and GetCVar("useCompactPartyFrames") then
 			SetCVar("useCompactPartyFrames", v and '1' or '0') -- special case for parties in classic because PartyFrame does not exist
 		end
-		if not IsAddOnLoaded("Blizzard_CompactRaidFrames") then
-			EnableAddOn("Blizzard_CompactRaidFrames") -- reenabling CompactRaidFrames addon because in dragonflight it cannot be disabled
-			EnableAddOn("Blizzard_CUFProfiles")
-		end
+		-- if not IsAddOnLoaded("Blizzard_CompactRaidFrames") then
+		-- 	EnableAddOn("Blizzard_CompactRaidFrames") -- reenabling CompactRaidFrames addon because in dragonflight it cannot be disabled
+		--	EnableAddOn("Blizzard_CUFProfiles")
+		-- end
 	end
 	local function Reload()
 		Grid2Options:ConfirmDialog(L['Changes will take effect on next UI reload. Do you want to reload the UI now ?'], ReloadUI)

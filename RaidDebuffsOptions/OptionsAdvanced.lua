@@ -29,6 +29,9 @@ RDO.debuffsIndexes   = debuffsIndexes
 local EJ_GetInstanceInfo  = EJ_GetInstanceInfo  or Grid2.Dummy
 local EJ_GetEncounterInfo = EJ_GetEncounterInfo or Grid2.Dummy
 local EJ_GetCreatureInfo  = EJ_GetCreatureInfo  or Grid2.Dummy
+-- AddOn management
+local IsAddOnLoaded = C_AddOns and C_AddOns.IsAddOnLoaded or IsAddOnLoaded
+local LoadAddOn = C_AddOns and C_AddOns.LoadAddOn or LoadAddOn
 
 local GetSpellInfo = Grid2.API.GetSpellInfo
 
@@ -279,7 +282,7 @@ local function DisplayCurrentInstance()
 		if ej_id==0 then ej_id=-1 end -- discard possible invalid instance ej_id (0=Azeroth worldmap returned by EJ_GetInstanceForMap())
 		for mod in next, RDO.db.profile.enabledModules do
 			for key,data in next, RDDB[mod] do
-				local id = data[1] and data[1].id 
+				local id = data[1] and data[1].id
 				if ej_id==id or map_id==id or ej_id==key or map_id==key then
 					RDO.db.profile.lastSelectedModule = mod
 					RDO.db.profile.lastSelectedInstance = key
@@ -290,7 +293,7 @@ local function DisplayCurrentInstance()
 		end
 	end
 end
-	
+
 function RDO:RefreshAdvancedOptions()
 	MakeRaidDebuffsOptions(true)
 end

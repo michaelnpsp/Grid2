@@ -12,8 +12,8 @@ local fmt = string.format
 
 -- build/version tracking
 local GetAddOnMetadata = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata
-local IsAddOnLoaded = C_AddOns and C_AddOns.IsAddOnLoaded or IsAddOnLoaded;
-local LoadAddOn = C_AddOns and C_AddOns.LoadAddOn or LoadAddOn;
+local IsAddOnLoaded = C_AddOns and C_AddOns.IsAddOnLoaded or IsAddOnLoaded
+local LoadAddOn = C_AddOns and C_AddOns.LoadAddOn or LoadAddOn
 local versionToc = GetAddOnMetadata("Grid2","Version")
 local versionCli = select(4,GetBuildInfo())
 Grid2.versionCli = versionCli
@@ -329,14 +329,14 @@ function Grid2:InitializeOptions()
 		HideUIPanel(GameMenuFrame)
 		Grid2:OnChatCommand()
 	end)
-	
+
 	if InterfaceOptions_AddCategory then
 		InterfaceOptions_AddCategory(optionsFrame)
 	else
 		local category = Settings.RegisterCanvasLayoutCategory(optionsFrame, optionsFrame.name);
 		Settings.RegisterAddOnCategory(category);
 	end
-	
+
 	self.optionsFrame = optionsFrame
 	self.InitializeOptions = nil
 end
