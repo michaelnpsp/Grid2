@@ -187,7 +187,7 @@ local function UnregisterShieldEvents(status)
 	shield_statuses[status] = nil
 	if not next(shield_statuses) then
 		Shields:UnregisterEvent("UNIT_AURA")
-		Shields:UnregisterMessage("ClearUnit")
+		Shields:UnregisterMessage("Grid_UnitUpdated")
 		wipe(shield_cache)
 	end
 end

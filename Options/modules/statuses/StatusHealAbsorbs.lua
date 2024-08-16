@@ -50,6 +50,21 @@ Grid2Options:RegisterStatusOptions("heal-absorbs", "health", function(self, stat
 			   status:UpdateDB()
 		end,
 	}
+	if Grid2.isWoW90 then
+		self:MakeSpacerOptions(options, 40)
+		options.filterMartyr = {
+			type = "toggle",
+			order = 41,
+			width = "full",
+			name = L["Ignore Light of the Martyr debuff"],
+			desc = L["Does not show the absorb amount for the Light of the Martyr paladins debuff."],
+			get = function () return status.dbx.ignoreAutoAbsorbs end,
+			set = function (_, v)
+				status.dbx.ignoreAutoAbsorbs = v or nil
+				status:Refresh()
+			end
+		}
+	end
 end, {
 	color1 = L["Normal"],
 	colorDesc1 = L["Normal heal absorbs color"],
