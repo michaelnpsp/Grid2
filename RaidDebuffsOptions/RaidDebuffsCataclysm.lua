@@ -308,16 +308,44 @@ RDDB["Cataclysm"] = {
 	[71] = {
 		{ id = 71, name = "Grim Batol" },
 		["General Umbriss"] = {
-		order = 1, ejid = 131,
+		order = 1, ejid = 2617,
+		448847, --Commanding Roar
+		448566, --Shadowflame Breath
+		448882, --Rock Spike
+		448953, --Rumbling Earth
+		447261, --Skullsplitter
 		},
 		["Forgemaster Throngus"] = {
-		order = 2, ejid = 132,
+		order = 2, ejid = 2627,
+		449536, --Molten Pool
+		457664, --Forge Weapon
+		452008, --Blistering Heat
+		449687, --Molten Mace
+		449444, --Molten Flurry
+		449474, --Molten Spark
+		447395, --Fiery Cleave
 		},
 		["Drahga Shadowburner"] = {
-		order = 3, ejid = 133,
+		order = 3, ejid = 2618,
+		448013, --Invocation of Shadowflame
+		82850, --Flaming Fixate
+		75238, --Shadowflame Nova
+		450095, --Curse of Entropy
+		447966, --Shadowflame Bolt
+		456751, --Twilight Buffet
+		456773, --Twilight Wind
+		448105, --Devouring Flame
 		},
 		["Erudax, the Duke of Below"] = {
-		order = 4, ejid = 134,
+		order = 4, ejid = 2619,
+		449939, --Shadow Gale
+		448064, --Abyssal Corruption
+		450077, --Void Surge
+		450087, --Depth's Grasp
+		450088, --Void Infusion
+		456718, --Shadow Corruption
+		456719, --Shadow Wound
+		450100, --Crush
 		},
 	},
 	[70] = {

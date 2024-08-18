@@ -83,15 +83,41 @@ RDDB["Shadowlands"] = {
 		{ id = 1184, name = "Mists of Tirna Scithe" },
 		["Ingra Maloch"] = {
 		order = 1, ejid = 2400,
-		323250, -- Charco de ánima
+		321005, --Soul Shackle
+		323138, --Force Compliance
+		323057, --Spirit Bolt
+		328756, --Repulsive Visage
+		323149, --Embrace Darkness
+		323146, --Death Shroud
+		323137, --Bewildering Pollen
+		323177, --Tears of the Forest
+		323250, --Anima Puddle
+		331440, --Weakened Resolve
+		323059, --Droman's Wrath
 		},
 		["Mistcaller"] = {
 		order = 2, ejid = 2402,
-		321828, -- Palmas palmitas
+		321471, --Guessing Game
+		321669, --Penalizing Burst
+		321837, --Oopsie
+		321834, --Dodge Ball
+		321828, --Patty Cake
+		321873, --Freeze Tag
+		321891, --Freeze Tag Fixation
+		321893, --Freezing Burst
 		},
 		["Tred'ova"] = {
 		order = 3, ejid = 2405,
-		322648, -- Vínculo mental
+		463602, --Coalescing Poison
+		322450, --Consumption
+		322527, --Gorging Shield
+		322465, --Anima Rejection
+		326263, --Anima Shedding
+		322550, --Accelerated Incubation
+		326308, --Decomposition Pool
+		322614, --Mind Link
+		322563, --Marked Prey
+		322655, --Acid Expulsion
 		},
 		["Trash"] = {
 		order = 4, ejid = nil,
@@ -218,25 +244,52 @@ RDDB["Shadowlands"] = {
 		{ id = 1182, name = "The Necrotic Wake" },
 		["Blightbone"] = {
 		order = 1, ejid = 2395,
-		320596, -- Arcadas fulminantes
-		320717, -- Hambre de sangre
+		320596, --Heaving Retch
+		320614, --Blood Gorge
+		320631, --Carrion Eruption
+		328146, --Fetid Gas
+		320655, --Crunch
 		},
 		["Amarth, The Harvester"] = {
 		order = 2, ejid = 2391,
-		320170, -- Descarga necrótica
-		333633, -- Ecos torturados
+		321226, --Land of the Dead
+		333602, --Frostbolt
+		328664, --Chilled
+		333623, --Frostbolt Volley
+		319997, --Shoot
+		321247, --Final Harvest
+		333633, --Tortured Echoes
+		333493, --Necrotic Breath
+		333492, --Necrotic Ichor
+		320012, --Unholy Frenzy
+		320170, --Necrotic Bolt
 		},
 		["Surgeon Stitchflesh"] = {
 		order = 3, ejid = 2392,
-		320200, -- Coseaguja
-		322548, -- Gancho de carnicero
-		320366, -- Icor embalsamante
+		327100, --Noxious Fog
+		320358, --Awaken Creation
+		322681, --Meat Hook
+		320376, --Mutilate
+		334321, --Festering Rot
+		327664, --Embalming Ichor
+		320200, --Stitchneedle
+		334488, --Sever Flesh
+		343555, --Morbid Fixation
+		320359, --Escape
 		},
 		["Nalthor the Rimebinder"] = {
 		order = 4, ejid = 2396,
-		320784, -- Lluvia de cometas
-		320788, -- Ataduras congeladas
-		322274, -- Socavar
+		320784, --Comet Storm
+		321368, --Icebound Aegis
+		320788, --Frozen Binds
+		320771, --Icy Shard
+		321894, --Dark Exile
+		328181, --Frigid Cold
+		328212, --Razorshard Ice
+		287294, --Blizzard
+		287295, --Chilled
+		322274, --Enfeeble
+		345323, --Champion's Boon
 		},
 		["Trash"] = {
 		order = 5, ejid = nil,
