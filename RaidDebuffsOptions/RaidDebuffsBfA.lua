@@ -21,14 +21,14 @@ RDDB["Battle for Azeroth"] = {
 		263234, -- Arcing Blade
 		268993, -- Golpe bajo
 		263778, -- Fuerza de vendaval
-		225080, -- Reencarnación
+		225080, -- Reencarnaciï¿½n
 		},
 		["Merektha"] = {
 		order = 2, ejid = 2143,
 		267027, -- Cytotoxin
 		263958, -- A Knot of Snakes
 		261732, -- Blinding Sand
-		263927, -- Charco tóxico
+		263927, -- Charco tï¿½xico
 		},
 		["Galvazzt"] = {
 		order = 3, ejid = 2144,
@@ -38,7 +38,7 @@ RDDB["Battle for Azeroth"] = {
 		["Avatar of Sethraliss"] = {
 		order = 4, ejid = 2145,
 		269686, -- Plague
-		269670, -- Potenciación
+		269670, -- Potenciaciï¿½n
 		268024, -- Pulso
 		},
 		["Trash"] = {
@@ -46,10 +46,10 @@ RDDB["Battle for Azeroth"] = {
 		273563, -- Neurotoxina
 		272657, -- Aliento nocivo
 		272655, -- Arena asoladora
-		272696, -- Relámpagos embotellados
+		272696, -- Relï¿½mpagos embotellados
 		272699, -- Flema venenosa
 		268013, -- Choque de llamas
-		268007, -- Ataque al corazón
+		268007, -- Ataque al corazï¿½n
 		268008, -- Amuleto de serpiente
 		},
 	},
@@ -68,7 +68,7 @@ RDDB["Battle for Azeroth"] = {
 		["Ring of Booty"] = {
 		order = 3, ejid = 2094,
 		256553, -- Flailing Shark
-		256363, -- Puñetazo desgarrador
+		256363, -- Puï¿½etazo desgarrador
 		},
 		["Harlan Sweete"] = {
 		order = 4, ejid = 2095,
@@ -96,7 +96,7 @@ RDDB["Battle for Azeroth"] = {
 		["Sporecaller Zancha"] = {
 		order = 3, ejid = 2130,
 		259714, -- Decaying Spores
-		259718, -- Agitación
+		259718, -- Agitaciï¿½n
 		273226, -- Esporas putrefactas
 		},
 		["Unbound Abomination"] = {
@@ -112,9 +112,9 @@ RDDB["Battle for Azeroth"] = {
 		266107, -- Sed de sangre
 		266265, -- Asalto malvado
 		272180, -- Descarga mortal
-		265468, -- Maldición fulminante
+		265468, -- Maldiciï¿½n fulminante
 		272609, -- Mirada enloquecedora
-		265511, -- Drenaje de espíritu
+		265511, -- Drenaje de espï¿½ritu
 		278961, -- Mente putrefacta
 		273599, -- Aliento podrido
 		},
@@ -126,14 +126,14 @@ RDDB["Battle for Azeroth"] = {
 		274195, -- Corrupted Blood
 		277072, -- Corrupted Gold
 		265914, -- Molten Gold
-		255835, -- Transfusión
-		255836, -- Transfusión
+		255835, -- Transfusiï¿½n
+		255836, -- Transfusiï¿½n
 		},
 		["Vol'kaal"] = {
 		order = 2, ejid = 2036,
 		263927, -- Toxic Pool
 		250372, -- Lingering Nausea
-		255620, -- Erupción purulenta
+		255620, -- Erupciï¿½n purulenta
 		},
 		["Rezan"] = {
 		order = 3, ejid = 2083,
@@ -153,8 +153,8 @@ RDDB["Battle for Azeroth"] = {
 		order = 5, ejid = nil,
 		253562, -- Fuego salvaje
 		254959, -- Quemar alma
-		260668, -- Transfusión
-		255567, -- Carga frenética
+		260668, -- Transfusiï¿½n
+		255567, -- Carga frenï¿½tica
 		279118, -- Maleficio inestable
 		252692, -- Golpe embotador
 		252687, -- Golpe de Venolmillo
@@ -180,7 +180,7 @@ RDDB["Battle for Azeroth"] = {
 		["Lord Stormsong"] = {
 		order = 3, ejid = 2155,
 		268896, -- Mind Rend
-		269104, -- Vacío explosivo
+		269104, -- Vacï¿½o explosivo
 		269131, -- Dominamentes ancestral
 		},
 		["Vol'zith the Whisperer"] = {
@@ -198,7 +198,7 @@ RDDB["Battle for Azeroth"] = {
 		268391, -- Ataque mental
 		274720, -- Golpe abisal
 		276268, -- Golpe tumultuoso
-		268059, -- Ancla de vinculación
+		268059, -- Ancla de vinculaciï¿½n
 		268027, -- Mareas crecientes
 		268214, -- Grabar carne
 		},
@@ -215,7 +215,7 @@ RDDB["Battle for Azeroth"] = {
 		257791, -- Howling Fear
 		257777, -- Chafarote entorpecedor
 		257793, -- Polvo de humo
-		260067, -- Vapuleo sañoso
+		260067, -- Vapuleo saï¿½oso
 		},
 		["Knight Captain Valyri"] = {
 		order = 3, ejid = 2099,
@@ -228,19 +228,19 @@ RDDB["Battle for Azeroth"] = {
 		256038, -- Deadeye
 		256044, -- Deadeye
 		256200, -- Veneno Muerte Diestra
-		256105, -- Ráfaga explosiva
+		256105, -- Rï¿½faga explosiva
 		256201, -- Cartuchos incendiarios
 		},
 		["Trash"] = {
 		order = 5, ejid = nil,
-		258864, -- Fuego de supresión
+		258864, -- Fuego de supresiï¿½n
 		258313, -- Esposar
 		258079, -- Dentellada enorme
 		258075, -- Mordedura irritante
 		258058, -- Exprimir
 		265889, -- Golpe de antorcha
 		258128, -- Grito debilitante
-		225080, -- Reencarnación
+		225080, -- Reencarnaciï¿½n
 		},
 	},
 	[1021] = {
@@ -275,11 +275,11 @@ RDDB["Battle for Azeroth"] = {
 		["Trash"] = {
 		order = 6, ejid = nil,
 		263905, -- Tajo marcador
-		265352, -- Añublo de sapo
+		265352, -- Aï¿½ublo de sapo
 		266036, -- Drenar esencia
-		264105, -- Señal rúnica
-		264390, -- Hechizo de vinculación
-		265346, -- Mirada pálida
+		264105, -- Seï¿½al rï¿½nica
+		264390, -- Hechizo de vinculaciï¿½n
+		265346, -- Mirada pï¿½lida
 		264050, -- Espina infectada
 		265761, -- Tromba espinosa
 		264153, -- Flema
@@ -290,7 +290,7 @@ RDDB["Battle for Azeroth"] = {
 		265881, -- Toque putrefacto
 		264378, -- Fragmentar alma
 		264407, -- Rostro horripilante
-		265880, -- Marca pérfida
+		265880, -- Marca pï¿½rfida
 		265882, -- Pavor persistente
 		266035, -- Astilla de hueso
 		263891, -- Espinas enredadoras
@@ -307,7 +307,7 @@ RDDB["Battle for Azeroth"] = {
 		order = 1, ejid = 2109,
 		256137, -- Timed Detonation
 		257333, -- Shocking Claw
-		262347, -- Pulso estático
+		262347, -- Pulso estï¿½tico
 		270882, -- Azerita llameante
 		},
 		["Azerokk"] = {
@@ -315,13 +315,13 @@ RDDB["Battle for Azeroth"] = {
 		257582, -- Raging Gaze
 		258627, -- Resonant Quake
 		257544, -- Corte dentado
-		275907, -- Machaque tectónico
+		275907, -- Machaque tectï¿½nico
 		},
 		["Rixxa Fluxflame"] = {
 		order = 3, ejid = 2115,
 		258971, -- Azerite Catalyst
 		259940, -- Propellant Blast
-		259853, -- Quemadura química
+		259853, -- Quemadura quï¿½mica
 		},
 		["Mogul Razdunk"] = {
 		order = 4, ejid = 2116,
@@ -333,44 +333,70 @@ RDDB["Battle for Azeroth"] = {
 		["Trash"] = {
 		order = 5, ejid = nil,
 		280604, -- Chorro helado
-		280605, -- Congelación cerebral
+		280605, -- Congelaciï¿½n cerebral
 		263637, -- Tendedero
 		269298, -- Toxina de creaviudas
 		263202, -- Lanza de roca
 		268704, -- Temblor furioso
 		268846, -- Hoja de eco
 		263074, -- Mordedura degenerativa
-		262270, -- Compuesto cáustico
-		262794, -- Latigazo de energía
-		262811, -- Glóbulo parasitario
+		262270, -- Compuesto cï¿½ustico
+		262794, -- Latigazo de energï¿½a
+		262811, -- Glï¿½bulo parasitario
 		268797, -- Transmutar: enemigo en baba
 		269429, -- Disparo cargado
 		262377, -- Buscar y destruir
-		262348, -- Deflagración de mina
-		269092, -- Tromba de artillería
+		262348, -- Deflagraciï¿½n de mina
+		269092, -- Tromba de artillerï¿½a
 		262515, -- Buscacorazones de azerita
 		262513, -- Buscacorazones de azerita
 		},
 	},
 	[1023] = {
 		{ id = 1023, name = "Siege of Boralus" },
-		["Chopper Redhook"] = {
-		order = 1, ejid = 2132,
-		257459, -- On the Hook
-		257288, -- Heavy Slash
+		["Sergeant Bainbridge"] = {
+		order = 1, ejid = 2133,
+		256867, --Heavy Hitter
+		260954, --Iron Gaze
+		257649, --Boiling Rage
+		261428, --Hangman's Noose
+		260924, --Steel Tempest
+		257585, --Cannon Barrage
+		273716, --Heavy Ordnance
+		257292, --Heavy Slash
+		257641, --Molten Slug
 		},
 		["Dread Captain Lockwood"] = {
 		order = 2, ejid = 2173,
-		256076, -- Gut Shot
+		463185, --Mass Bombardment
+		272426, --Sighted Artillery
+		463182, --Fiery Ricochet
+		280389, --Shoot
+		272471, --Evasive
+		273470, --Gut Shot
+		269029, --Clear the Deck
+		268752, --Withdraw
+		268443, --Dread Volley
+		268230, --Crimson Swipe
+		268260, --Broadside
+		268976, --Unstable Ordnance
 		},
 		["Hadal Darkfathom"] = {
 		order = 3, ejid = 2134,
-		257882, -- Break Water
-		257862, -- Crashing Tide
+		261563, --Crashing Tide
+		257882, --Break Water
+		276068, --Tidal Surge
 		},
 		["Viq'Goth"] = {
 		order = 4, ejid = 2140,
-		274991, -- Putrid Waters
+		274991, --Putrid Waters
+		279897, --Terror From Below
+		270624, --Crushing Embrace
+		270185, --Call of the Deep
+		270590, --Hull Cracker
+		269266, --Slam
+		269416, --Blast
+		269484, --Eradication
 		},
 	},
 	[1041] = {
