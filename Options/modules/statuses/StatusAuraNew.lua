@@ -6,35 +6,107 @@ local BuffSubTypes= {
 	["Buff"] =  1,
 	["Buffs"] =  {},
 	["Buffs: Blizzard"] =  {},
-	["Buffs: Defensive Cooldowns"] = {
-			6940,  --Hand of Sacrifice
-			31850, --Ardent Defender
-			498,   --Divine Protection
-			86657, --Ancient Guardian (It the buff channeled by the Guardian of the Ancient Kings)
-			86659, -- Guardian of Ancient Kings
-			204018, -- Blessing of Spellwarding
-			-- War
-			2565,  --Shield Block
-			871,   --Shield Wall
-			12975, --Last Stand
-			--Druid
-			61336, --Survival Instincts
-			22812, --Barkskin
-			22842, --Frenzied Regeneration
-			--Dk
-			55233, --Vampiric Blood
-			49028, --Dancing Rune Weapon
-			48792, --Icebound Fortitude
-			48707, --Anti-Magic Shell
-			--Priest
-			33206, --Pain Suppression
-			47788, --Guardian Spirit
-			-- Monk
-			115203, -- Fortifying Brew BrM
-			122278, -- Dampen Harm
-			-- DH
-			187827, -- Metamorphosis
-
+	["Buffs: Personal Defensive Cooldowns"] = {
+		-- Demon hunter
+		187827, -- Metamorphosis (Vengeance)
+		212800, --Blur
+		196555, --Netherwalk
+		-- Death knight
+		48792, --Icebound Fortitude
+		48707, --Anti-Magic Shell
+		49039, --Lichborne
+		194679, --Rune Tap
+		55233, --Vampiric Blood
+		81256, --Dancing Rune Weapon
+		512402, --Tombstone
+		--Druid
+		22812, --Barkskin
+		22842, --Frenzied Regeneration
+		61336, --Survival Instincts
+		200851, --Rage of the Sleeper
+		50334, --Berserk (Guardian)
+		204066, --Lunar Beam
+		102558, --Incarnation: Guardian of Ursoc
+		102342, --Ironbark
+		--Evoker
+		374348, --Renewing Blaze
+		363916, --Obsidian Scales
+		357170, --Time Dilation
+		--Hunter
+		264735, --Survival of the Fittest
+		186265, --Aspect of the Turtle
+		--Mage
+		45438, --Ice Block
+		342246, --Alter Time
+		113862, --Greater Invisibility
+		414658, --Ice Cold
+		55342, --Mirror Image
+		--Monk
+		120954, --Fortifying Bre
+		122783, --Diffuse Magic
+		122278, --Dampen Harm
+		115176, --Zen Meditation
+		322507, --Celestial Brew
+		116849, --Life Cocoon
+		125174, --Touch of Karma
+		-- Paladin
+		403876, --Divine Protection
+		1022, --Blessing of Protection
+		184662, --Shield of Vengeance
+		6940,  --Blessing of Sacrifice
+		31850, --Ardent Defender
+		212641, --Guardian of Ancient Kings
+		204018, --Blessing of Spellwarding
+		327193, --Moment of Glory
+		--Priest
+		47585, --Dispersion
+		193065, --Protective Light
+		586, --Fade
+		19236, --Desperate Prayer
+		33206, --Pain Suppression
+		47788, --Guardian Spirit
+		--Rogue
+		31224, --Cloak of Shadows
+		5277, --Evasion		
+		--Shaman
+		260881, --Spirit Wolf
+		108271, --Astral Shift
+		114893, --Stone Bulwark Totem
+		--Warlock
+		104773, --Unending Resolve
+		108416, --Dark Pact
+		-- Warrior
+		184364, --Enraged Regeneration
+		23920, --Spell Reflection
+		118038, --Die by the Sword
+		871,   --Shield Wall		
+		12975, --Last Stand
+		190456, --Ignore Pain
+	},
+	["Buffs: Raid Defensive Cooldowns"] =  {
+		--Demon Hunter
+		209426, --Darkness
+		--Death knight
+		145629, --Anti-magic zone
+		--Evoker
+		374227, --Zephyr
+		--Priest
+		271466, --Luminous Barrier
+		81782, --Power Word: Barrier
+		--Shaman
+		325174, --Spirit Link Totem
+		--Warrior
+		97463, --Rallying Cry
+	},
+	["Buffs: Tank Active Mitigation"] =  {
+		--Demon HUnter
+		203819, --Demon Spikes
+		--Druid
+		192081, --Ironfur
+		--Warrior
+		132404,  --Shield Block
+		--Paladin
+		132403, --Shield of the Righteous
 	},
 }
 
