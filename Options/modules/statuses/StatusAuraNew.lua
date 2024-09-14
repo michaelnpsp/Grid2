@@ -6,7 +6,7 @@ local BuffSubTypes= {
 	["Buff"] =  1,
 	["Buffs"] =  {},
 	["Buffs: Blizzard"] =  {},
-	["Buffs: Personal Defensive Cooldowns"] = {
+	["Buffs: Defensive Cooldowns"] = {
 		-- Demon hunter
 		187827, -- Metamorphosis (Vengeance)
 		212800, --Blur
@@ -67,7 +67,7 @@ local BuffSubTypes= {
 		47788, --Guardian Spirit
 		--Rogue
 		31224, --Cloak of Shadows
-		5277, --Evasion		
+		5277, --Evasion
 		--Shaman
 		260881, --Spirit Wolf
 		108271, --Astral Shift
@@ -79,11 +79,11 @@ local BuffSubTypes= {
 		184364, --Enraged Regeneration
 		23920, --Spell Reflection
 		118038, --Die by the Sword
-		871,   --Shield Wall		
+		871,   --Shield Wall
 		12975, --Last Stand
 		190456, --Ignore Pain
 	},
-	["Buffs: Raid Defensive Cooldowns"] =  {
+	["Buffs: Raid Wide Defensive Cooldowns"] =  {
 		--Demon Hunter
 		209426, --Darkness
 		--Death knight
@@ -98,7 +98,7 @@ local BuffSubTypes= {
 		--Warrior
 		97463, --Rallying Cry
 	},
-	["Buffs: Tank Active Mitigation"] =  {
+	["Buffs: Tanks Active Mitigation"] =  {
 		--Demon HUnter
 		203819, --Demon Spikes
 		--Druid
