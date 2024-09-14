@@ -194,6 +194,7 @@ local function Icon_Layout(self, parent)
 			frame.cooldown:SetDrawEdge(self.dbx.disableOmniCC~=nil)
 			frame.cooldown.noCooldownCount = self.dbx.disableOmniCC
 			frame.cooldown:SetReverse(self.dbx.reverseCooldown)
+			frame.cooldown:SetAlpha(self.coolAnimAlpha)
 			frame.cooldown:Show()
 		elseif frame.cooldown then
 			frame.cooldown:Hide()
@@ -249,6 +250,7 @@ local function Icon_UpdateDB(self)
 		self.uy, self.vy = self.vy, self.uy
 		self.pw, self.ph = self.ph, self.pw
 	end
+	self.coolAnimAlpha   = dbx.disableCooldownAnim and 0 or 1
 	self.showCooldown    = not dbx.disableCooldown
 	self.showStack       = not dbx.disableStack
 	self.showIcons       = not dbx.disableIcons

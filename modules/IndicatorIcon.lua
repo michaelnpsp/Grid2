@@ -130,8 +130,11 @@ local function Icon_Layout(self, parent)
 	end
 	f:SetSize(size,size)
 
-	if f.Cooldown and self.disableIcon then
-		f.Cooldown:SetSwipeTexture(0)
+	if f.Cooldown then
+		f.Cooldown:SetAlpha(self.coolAnimAlpha)
+		if self.disableIcon then
+			f.Cooldown:SetSwipeTexture(0)
+		end
 	end
 
 	if not self.disableStack then
@@ -177,6 +180,7 @@ local function Icon_UpdateDB(self)
 	self.textfont    = Grid2:MediaFetch("font", dbx.font or theme.font) or STANDARD_TEXT_FONT
 	-- ignore icon and use a solid square texture
 	self.disableIcon  = dbx.disableIcon
+	self.coolAnimAlpha = dbx.disableCooldownAnim and 0 or 1
 	-- backdrop
 	self.backdrop = Grid2:GetBackdropTable("Interface\\Addons\\Grid2\\media\\white16x16", self.borderSize or 1)
 end
