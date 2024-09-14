@@ -200,6 +200,10 @@ RDDB["The War Within"] = {
 		451606, --Holy Flame
 		423536, --Holy Smite
 		},
+		["Trash"] = {
+		order = 4, ejid = nil,
+		426964, --Mortal Strike
+		},
 	},
 	[1270] = {
 		{ id = 1270, name = "The Dawnbreaker" },
