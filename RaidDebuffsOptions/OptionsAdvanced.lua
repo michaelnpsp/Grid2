@@ -440,6 +440,7 @@ do
 		options.instances = {
 			type = "select",
 			order = 20,
+			width = 1.8,
 			name = L["Select instance"],
 			desc = "",
 			get = function()

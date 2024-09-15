@@ -63,7 +63,7 @@ Grid2Options.RDO = RDO
 
 -- Called from debuffs database modules (see: RaidDebuffsWoW.lua)
 function Grid2Options:GetRaidDebuffsTable()
-	return RDDB
+	return RDDB, RDO
 end
 
 -- Initialization (Called on first run or when acedb profile change)
@@ -143,6 +143,10 @@ function RDO:UpdateZoneSpells(instance)
 	if (not instance) or instance == zone1 or instance == zone2 then
 		GSRD:UpdateZoneSpells()
 	end
+end
+
+function RDO:IsModuleEnabled(moduleName)
+	return self.db.profile.enabledModules[moduleName] and RDDB[moduleName]
 end
 
 -- data export

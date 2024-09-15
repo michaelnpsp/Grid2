@@ -160,9 +160,9 @@ RDDB["Battle for Azeroth"] = {
 		252687, -- Golpe de Venolmillo
 		255041, -- Chirrido aterrorizador
 		255814, -- Acometida desgarradora
-		258723, -- Grotesque Pool  
-		255558, -- Tainted Blood   
-		250036, -- Shadowy Remains 
+		258723, -- Grotesque Pool
+		255558, -- Tainted Blood
+		250036, -- Shadowy Remains
 		},
 	},
 	[1036] = {
@@ -346,8 +346,8 @@ RDDB["Battle for Azeroth"] = {
 		268797, -- Transmutar: enemigo en baba
 		269429, -- Disparo cargado
 		262377, -- Buscar y destruir
-		262348, -- Deflagraci�n de mina
-		269092, -- Tromba de artiller�a
+		262348, -- Deflagracion de mina
+		269092, -- Tromba de artilleria
 		262515, -- Buscacorazones de azerita
 		262513, -- Buscacorazones de azerita
 		},
@@ -412,7 +412,7 @@ RDDB["Battle for Azeroth"] = {
 		454440, -- Stinky Vomit
 		256616, -- Tooth Breaker
 		257069, -- Watertight Shell
-		},		
+		},
 	},
 	[1041] = {
 		{ id = 1041, name = "Kings' Rest" },

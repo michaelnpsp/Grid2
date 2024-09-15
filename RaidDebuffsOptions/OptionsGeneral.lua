@@ -152,12 +152,16 @@ do
 	end
 	local function set(info,state)
 		local module = info[#info]
+		local mpdata = (module=="Mythic+ Dungeons" or RDO:IsModuleEnabled("Mythic+ Dungeons")) and RDO.MPlusDungeonModule
 		RDO.db.profile.enabledModules[module] = state or nil
-		for instance in pairs(RDO.RDDB[module]) do
-			if state then
-				RDO:EnableInstanceAllDebuffs(module,instance)
-			else
-				RDO:DisableInstanceAllDebuffs(instance)
+		for instance, data in pairs(RDO.RDDB[module]) do
+			local skip = mpdata and mpdata[instance] and (module~="Mythic+ Dungeons" or RDO:IsModuleEnabled(mpdata[instance])) -- if the instance is shared with another enabled module do not enable/disable the debuffs
+			if not skip then
+				if state then
+					RDO:EnableInstanceAllDebuffs(module,instance)
+				else
+					RDO:DisableInstanceAllDebuffs(instance)
+				end
 			end
 		end
 		RDO:UpdateZoneSpells()
@@ -169,11 +173,16 @@ do
 	end
 	function InitModulesOptions()
 		if not next(options) then
-			options.title = { order = 1, type = "description", fontSize = 'medium', name = string.format("|cFFe0e000%s", L["Select the expansion modules to enable:\n"]) }
-			options.sep   = { type = "header", order = 2, name = '' }
+			options.tit1 = { order = 1, type = "description", fontSize = 'medium', name = string.format("\n|cFFe0e000%s", L["Select the expansion modules to enable:\n"]) }
+			options.sep1 = { type = "header", order = 2, name = '' }
 			for index,name in ipairs(RDO.RDDK) do
-				if name ~= "[Custom Debuffs]" then
+				if name~="[Custom Debuffs]" then
 					options[name] = { type = "toggle", width = "full",	order = 100-index, name = L[name], desc = '', get = get, set = set, confirm = confirm }
+					if name=='Mythic+ Dungeons' then
+						options[name].order = 110
+						options.tit2 = { order = 101, type = "description", fontSize = 'medium', name = string.format("\n|cFFe0e000%s", L["Select extra modules to enable:\n"]) }
+						options.sep2   = { type = "header", order = 102, name = '' }
+					end
 				end
 			end
 		end
