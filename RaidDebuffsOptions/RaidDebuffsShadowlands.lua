@@ -135,6 +135,9 @@ RDDB["Shadowlands"] = {
 		340160, -- Aliento radiante
 		325418, -- Ácido volátil
 		326092, -- Veneno debilitador
+		324859, -- Bramblethorn Entanglement
+		325224, -- Anima Injection
+		340300, -- Tongue Lashing
 		},
 	},
 	[1183] = {
@@ -309,6 +312,8 @@ RDDB["Shadowlands"] = {
 		334610, -- Fijación descerebrada
 		333477, -- Rebanar tripas
 		323471, -- Lanzar cuchilla
+		320717, -- Blood Hunger
+		320462, -- Necrotic Bolt
 		},
 	},
 	[1187] = {

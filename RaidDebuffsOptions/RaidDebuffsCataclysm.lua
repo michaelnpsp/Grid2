@@ -347,6 +347,23 @@ RDDB["Cataclysm"] = {
 		456719, --Shadow Wound
 		450100, --Crush
 		},
+		["Trash"] = {
+		order = 5, ejid = nil,
+		76711,  -- Sear Mind
+		317898, -- Blinding Sleet
+		451224, -- Enveloping Shadowflame
+		451241, -- Shadowflame Slash
+		451378, -- Rive
+		451394, -- Mind Peircer
+		451965, -- Molten Wake
+		456719, -- Shadow Wound
+		451613, -- Twilight Flame
+		451614, -- Twilight Ember
+		451395, -- Corrupt
+		456712, -- Dark Eruption
+		462220, -- Blazing Shadowflame
+		451871, -- Mass Tremor
+		},
 	},
 	[70] = {
 		{ id = 70, name = "Halls of Origination" },

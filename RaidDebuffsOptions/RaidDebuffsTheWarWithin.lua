@@ -33,6 +33,17 @@ RDDB["The War Within"] = {
 		432227, --Venom Volley
 		432130, --Erupting Webs
 		},
+		["Trash"] = {
+		order = 4, ejid = nil,
+		433843, -- Erupting Webs
+		434252, -- Massive Slam
+		448248, -- Revolting Volley
+		433841, -- Venom Volley
+		436322, -- Poisen Bolt
+		436401, -- AUGH!
+		438599, -- Bleeding Jab
+		438825, -- Poisonous Cloud
+		},
 	},
 	[1272] = {
 		{ id = 1272, name = "Cinderbrew Meadery" },
@@ -118,6 +129,26 @@ RDDB["The War Within"] = {
 		450055, --Gutburst
 		438860, --Umbral Weave
 		439646, --Process of Elimination
+		},
+		["Trash"] = {
+		order = 5, ejid = nil,
+		443401, -- Venom Strike
+		443437, -- Shadow of Doubt
+		443438, -- Doubt
+		450783, -- Perfume Toss
+		443432, -- Silken Binding
+		446718, -- Umbral Weave
+		443435, -- Twist Thoughts
+		448047, -- Web Wrap
+		451426, -- Gossamer Barrage
+		461630, -- Venomous Spray
+		451239, -- Brutal Jab
+		451295, -- Void Rush
+		452151, -- Rigorous Jab
+		443509, -- Ravenous Swarm
+		445812, -- Dark Barrage
+		443427, -- Web Bolt
+		451309, -- Eye of the Queen
 		},
 	},
 	[1210] = {
@@ -252,6 +283,20 @@ RDDB["The War Within"] = {
 		438957, --Acid Pools
 		435793, --Tacky Burst
 		},
+		["Trash"] = {
+		order = 4, ejid = nil,
+		451115, -- Terrifying Slam
+		432448, -- Stygian Seed
+		451107, -- Bursting Cocoon
+		451098, -- Tacky Nova
+		431309, -- Ensnaring Shadows
+		431350, -- Tormenting Eruption
+		431365, -- Tormenting Ray
+		431491, -- Tainted Slash
+		451119, -- Abyssal Blast
+		453345, -- Abyssal Rot
+		449332, -- Encroaching Shadows
+		},
 	},
 	[1268] = {
 		{ id = 1268, name = "The Rookery" },
@@ -330,6 +375,20 @@ RDDB["The War Within"] = {
 		427854, --Entropic Reckoning
 		457465, --Entropy
 		427869, --Unbridled Void
+		},
+		["Trash"] = {
+		order = 5, ejid = nil,
+		449455, -- Howling Fear
+		429545, -- Censoring gear
+		448975, -- Shield Stampede
+		425027, -- Seismic Wave
+		426308, -- Void Infection
+		427361, -- Fracture
+		428887, -- Smashed
+		449154, -- Molten Mortar
+		445207, -- Piercing Wail
+		464879, -- Concussive Smash
+		425974, -- Ground Pound		
 		},
 	},
 	-- Raid instances

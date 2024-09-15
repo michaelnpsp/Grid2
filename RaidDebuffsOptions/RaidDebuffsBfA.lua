@@ -398,6 +398,21 @@ RDDB["Battle for Azeroth"] = {
 		269416, --Blast
 		269484, --Eradication
 		},
+		["Trash"] = {
+		order = 5, ejid = nil,
+		454437, -- Azerite Charge
+		454439, -- Azerite Charge
+		268230, -- Crimson Swipe
+		257168, -- Cursed Slash
+		257459, -- On the Hook
+		272588, -- Rotting Wounds
+		272421, -- Slighted Artillery
+		256709, -- Singing Steel
+		275836, -- Stinging Venom
+		454440, -- Stinky Vomit
+		256616, -- Tooth Breaker
+		257069, -- Watertight Shell
+		},		
 	},
 	[1041] = {
 		{ id = 1041, name = "Kings' Rest" },
