@@ -51,6 +51,8 @@ L["talking"] = "hablando"
 L["TANK"] = "Tanque"
 L["HEALER"] = "Curador"
 L["DAMAGER"] = "Daño"
+L["melee"] = "Melee"
+L["ranged"] = "Rango"
 --}}}
 
 --{{{ Other roles

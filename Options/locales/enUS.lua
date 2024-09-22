@@ -698,6 +698,7 @@ L["rangealt"] = true
 L["ready-check"] = true
 L["role"] = true
 L["dungeon-role"] = true
+L["spec-role"] = true
 L["leader"]= true
 L["master-looter"]= true
 L["raid-assistant"]= true

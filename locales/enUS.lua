@@ -51,6 +51,8 @@ L["talking"] = true
 L["TANK"] = true
 L["HEALER"] = true
 L["DAMAGER"] = true
+L["melee"] = true
+L["ranged"] = true
 --}}}
 
 --{{{ Other roles
