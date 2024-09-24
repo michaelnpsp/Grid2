@@ -51,8 +51,13 @@ L["talking"] = true
 L["TANK"] = true
 L["HEALER"] = true
 L["DAMAGER"] = true
-L["melee"] = true
-L["ranged"] = true
+--}}}
+
+--{{{ SpecRole
+L["Tank"] = true
+L["Healer"] = true
+L["Melee"] = true
+L["Ranged"] = true
 --}}}
 
 --{{{ Other roles

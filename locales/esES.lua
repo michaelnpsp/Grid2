@@ -51,8 +51,13 @@ L["talking"] = "hablando"
 L["TANK"] = "Tanque"
 L["HEALER"] = "Curador"
 L["DAMAGER"] = "Daño"
-L["melee"] = "Melee"
-L["ranged"] = "Rango"
+--}}}
+
+--{{{ SpecRole
+L["Tank"] = "Tanque"
+L["Healer"] = "Healer"
+L["Melee"] = "Melee"
+L["Ranged"] = "Rango"
 --}}}
 
 --{{{ Other roles
