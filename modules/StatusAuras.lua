@@ -509,7 +509,7 @@ do
 			end
 		elseif dbx.spellName then -- single spell
 			local spell = dbx.spellName
-			self.spellText = type(spell)=='number' and GetSpellInfo(spell) or spell
+			self.spellText = type(spell)=='number' and GetSpellInfo(spell) or tostring(spell)
 			self.spell = dbx.useSpellId and spell or self.spellText
 		end
 		if dbx.mine==2 then  -- 2>nil = not mine;  1|true>true = mine;  false|nil>false = mine&not-mine
