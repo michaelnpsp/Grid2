@@ -255,3 +255,146 @@ do
 
 	AceGUI:RegisterWidgetType(Type, Constructor, Version)
 end
+
+-------------------------------------------------------------------------------------------------
+-- Widget to manage statuses mapped to indicators.
+-------------------------------------------------------------------------------------------------
+do
+	local WidgetType = "Grid2IndicatorCurrentStatuses"
+
+	local dummy = function() end
+	local sorttable = {}
+	local curwidth = 0
+
+	local function OnWidthSet(self, width)
+		self:OnWidthSetP(width)
+		if math.abs(width-curwidth)>1.5 then
+			local scroll = self.children[1]
+			if scroll then
+				local children = scroll.children
+				for i=1,#children,4 do
+					children[i]:SetWidth(width-120)
+				end
+				curwidth = width
+			end
+		end
+	end
+
+	local function Execute(widget)
+		local user = widget.parent.parent:GetUserDataTable()
+		user.option.set( user, widget:GetUserData('cmd'), widget:GetUserData('key') )
+	end
+
+	local function CreateItem(parent, type, event, key, cmd, width, imglabel, tooltip)
+		local item = AceGUI:Create(type)
+		item:SetUserData('key', key)
+		item:SetUserData('cmd', cmd)
+		item:SetWidth(width)
+		item:SetCallback(event, Execute)
+		if type=='Icon' then
+			item:SetImage(imglabel)
+			item:SetImageSize(16,14)
+		else
+			item:SetLabel(imglabel)
+			item:SetValue(true)
+		end
+		item:SetHeight(18)
+		parent:AddChild(item)
+	end
+
+	local function SetList(self, values)
+		-- sort values
+		for key, desc in pairs(values) do
+			sorttable[#sorttable+1] = key
+		end
+		table.sort(sorttable)
+		-- create scroll
+		local scroll = AceGUI:Create("ScrollFrame")
+		scroll:SetLayout("Flow")
+		scroll:SetFullWidth(true)
+		scroll:SetFullHeight(false)
+		self:PauseLayout()
+		self:AddChild(scroll)
+		-- create checkbox & icons
+		curwidth = math.max(250, curwidth)
+		for _,key in ipairs(sorttable) do
+			CreateItem( scroll, 'CheckBox', 'OnValueChanged', key, 'rm', curwidth - 120, values[key] )
+			if #sorttable>1 then
+				CreateItem( scroll, 'Icon', 'OnClick', key, 'up', 25, "Interface\\Addons\\Grid2Options\\media\\arrow-up" )
+				CreateItem( scroll, 'Icon', 'OnClick', key, 'dn', 25, "Interface\\Addons\\Grid2Options\\media\\arrow-down" )
+			end
+			CreateItem( scroll, 'Icon', 'OnClick', key, 'st', 25, "Interface\\Addons\\Grid2Options\\media\\test" )
+		end
+		-- adjust height
+		local child = scroll.children[1]
+		local rows = math.min(#sorttable,10)
+		scroll:SetHeight( child and (child.frame.height+3)*rows+6 or 4 )
+		self:ResumeLayout()
+		self:DoLayout()
+		-- clean up
+		wipe(sorttable)
+	end
+
+	AceGUI:RegisterWidgetType( WidgetType, function()
+		local widget = AceGUI:Create("InlineGroup")
+		widget.type = WidgetType
+		widget.SetLabel = widget.SetTitle
+		widget.SetList = SetList
+		widget.OnWidthSetP = widget.OnWidthSet
+		widget.OnWidthSet  = OnWidthSet
+		widget.SetMultiselect = dummy
+		widget.SetItemValue = dummy
+		widget.SetDisabled = dummy
+		return widget
+	end , 1)
+end
+
+-------------------------------------------------------------------------------------------------
+-- Widget to manage available statuses for an indicator.
+-------------------------------------------------------------------------------------------------
+do
+	local WidgetType = "Grid2IndicatorAvailableStatuses"
+
+	local sorttable, dummy = {}, function() end
+
+	local function Execute(widget, event, ...)
+		local user = widget.parent:GetUserDataTable()
+		user.option.set( user, widget:GetUserData("value"), ... )
+	end
+
+	local function SetList(self, values)
+		-- sort values
+		for key, desc in pairs(values) do
+			sorttable[#sorttable+1] = key
+		end
+		table.sort(sorttable, function(a,b) return values[a]<values[b] end )
+		-- create checkboxes
+		self:PauseLayout()
+		self:SetLayout("Flow")
+		for _,key in ipairs(sorttable) do
+			local check = AceGUI:Create("CheckBox")
+			check:SetUserData("value", key)
+			check:SetWidth(250)
+			check:SetCallback("OnValueChanged", Execute)
+			check:SetLabel(values[key])
+			check:SetValue(false)
+			check:SetHeight(18)
+			self:AddChild(check)
+		end
+		self:ResumeLayout()
+		self:DoLayout()
+		-- clean up
+		wipe(sorttable)
+	end
+
+	AceGUI:RegisterWidgetType( WidgetType, function()
+		local widget = AceGUI:Create("SimpleGroup")
+		widget.type = WidgetType
+		widget.SetList = SetList
+		widget.SetLabel = dummy
+		widget.SetMultiselect = dummy
+		widget.SetItemValue = dummy
+		widget.SetDisabled = dummy
+		return widget
+	end , 1)
+end
