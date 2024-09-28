@@ -5,12 +5,14 @@
 local AceGUI = LibStub("AceGUI-3.0", true)
 local AceDlg = LibStub("AceConfigDialog-3.0")
 
+local optionsFrame -- Main Grid2Options AceGUI widget frame
+
 -------------------------------------------------------------------------------------------------
 -- Grid2 Main Options Widget:
 -- A Modified AceGUI "Frame" widget see: AceGUIContainer-Frame.lua
 -------------------------------------------------------------------------------------------------
 do
-	local WidgetType, optionsFrame = "Grid2OptionsFrame"
+	local WidgetType = "Grid2OptionsFrame"
 
 	local function Frame_OnClose(frame)
 		AceGUI:Release(frame.obj)
@@ -46,7 +48,7 @@ do
 		button:SetWidth(100)
 		button:SetText( Grid2Options.L["Test"] )
 		button:SetScript("OnClick", TestButton_OnClick)
-		-- to close the frame with ESCAPE key
+		-- to close the frame with ESCAPE key, warning: _G["Grid2OptionsFrame"] == Grid2Options.optionsFrame.frame
 		_G["Grid2OptionsFrame"] = widget.frame
 		table.insert(UISpecialFrames, "Grid2OptionsFrame")
 		-- for failsafe check
@@ -286,9 +288,10 @@ do
 		end
 	end
 
-	local function Execute(widget)
+	local function Execute(widget) -- Code specific for AceConfigDialog because custom multiselect management code is bugged/unfinished in AceConfigDialog library
 		local user = widget.parent.parent:GetUserDataTable()
 		user.option.set( user, widget:GetUserData('cmd'), widget:GetUserData('key') )
+		AceDlg:Open('Grid2', optionsFrame, unpack(optionsFrame:GetUserData('basepath') or {}))
 	end
 
 	local function CreateItem(parent, type, event, key, cmd, width, imglabel, tooltip)
@@ -358,13 +361,14 @@ end
 -- Widget to manage available statuses for an indicator.
 -------------------------------------------------------------------------------------------------
 do
-	local WidgetType = "Grid2IndicatorAvailableStatuses"
+	local WidgetType = "Grid2SimpleMultiselect"
 
 	local sorttable, dummy = {}, function() end
 
-	local function Execute(widget, event, ...)
+	local function Execute(widget, event, ...) -- Code specific for AceConfigDialog because custom multiselect management code is bugged/unfinished in AceConfigDialog library
 		local user = widget.parent:GetUserDataTable()
 		user.option.set( user, widget:GetUserData("value"), ... )
+		AceDlg:Open('Grid2', optionsFrame, unpack(optionsFrame:GetUserData('basepath') or {}))
 	end
 
 	local function SetList(self, values)
@@ -374,32 +378,42 @@ do
 		end
 		table.sort(sorttable, function(a,b) return values[a]<values[b] end )
 		-- create checkboxes
+		local children = {}
 		self:PauseLayout()
+		self:SetFullWidth(true)
 		self:SetLayout("Flow")
-		for _,key in ipairs(sorttable) do
+		self:SetUserData('children',children)
+		for idx,key in ipairs(sorttable) do
 			local check = AceGUI:Create("CheckBox")
 			check:SetUserData("value", key)
-			check:SetWidth(250)
+			check:SetWidth(225)
 			check:SetCallback("OnValueChanged", Execute)
 			check:SetLabel(values[key])
 			check:SetValue(false)
 			check:SetHeight(18)
 			self:AddChild(check)
+			children[key] = check
 		end
 		self:ResumeLayout()
-		self:DoLayout()
 		-- clean up
 		wipe(sorttable)
+	end
+
+	local function SetItemValue (self, key, value)
+		local check = self:GetUserData('children')[key]
+		if check and check.checked ~= value then
+			check:SetValue(value)
+		end
 	end
 
 	AceGUI:RegisterWidgetType( WidgetType, function()
 		local widget = AceGUI:Create("SimpleGroup")
 		widget.type = WidgetType
 		widget.SetList = SetList
-		widget.SetLabel = dummy
+		widget.SetItemValue = SetItemValue
 		widget.SetMultiselect = dummy
-		widget.SetItemValue = dummy
 		widget.SetDisabled = dummy
+		widget.SetLabel = dummy
 		return widget
 	end , 1)
 end

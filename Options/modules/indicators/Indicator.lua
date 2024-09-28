@@ -134,14 +134,14 @@ do
 					Grid2Options:RefreshOptions()
 					Grid2Options:SelectGroup('statuses', Grid2Options:GetStatusCategory(status), status.name)
 				end
-				Grid2Options:RefreshOptions()
+				-- Grid2Options:RefreshOptions()
 			end,
 		},
 		title = { type = "description", order = 2, fontSize = "medium", name = string.format("|cffffd200    %s|r",L["Available Statuses"]) },
 	}
 
 	local sharedStatuses = {
-		type = "multiselect", dialogControl = "Grid2IndicatorAvailableStatuses", width = "full", order = 1,	name = "",
+		type = "multiselect", dialogControl = "Grid2SimpleMultiselect", width = "full", order = 1,	name = "",
 		values = function(info)
 			local values = {}
 			local categoryKey = info[4]
@@ -157,7 +157,6 @@ do
 		set = function(info, statusName)
 			local status = Grid2:GetStatusByName(statusName)
 			RegisterIndicatorStatus(editedIndicator, status, true)
-			Grid2Options:RefreshOptions()
 		end,
 	}
 
@@ -183,9 +182,9 @@ do
 	-- Grid2Options:MakeStatusIndicatorOptions()
 	function Grid2Options:MakeStatusIndicatorsOptions( status, options )
 		options.indicators = {
-			type = "multiselect",
+			type = "multiselect",  dialogControl = "Grid2SimpleMultiselect",
 			order = 10,
-			name = L['Assigned indicators'],
+			name = "",
 			values = function()
 				return self:GetAvailableIndicatorValues(status)
 			end,
@@ -198,10 +197,9 @@ do
 				if indicator.dbx.type~='multibar' then
 					RegisterIndicatorStatus(indicator, status, value)
 					self:RefreshIndicatorOptions(indicator)
+				else
+					self:MessageDialog(L['This indicator cannot be changed from here: go to indicators section to assign/unassign statuses to this indicator.'])
 				end
-			end,
-			confirm = function(info,key)
-				return Grid2.indicators[key].dbx.type == 'multibar' and L['This indicator cannot be changed from here: go to indicators section to assign/unassign statuses to this indicator.']
 			end,
 		}
 		return options

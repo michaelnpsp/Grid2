@@ -678,5 +678,4 @@ do
 			ACD:Open('Grid2', frame, unpack(user.basepath or {}))
 		end
 	end
-
 end
