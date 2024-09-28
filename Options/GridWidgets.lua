@@ -27,6 +27,12 @@ do
 		local widget = AceGUI:Create("Frame")
 		widget.type = WidgetType
 		widget.frame:SetScript("OnHide", Frame_OnClose)
+		-- min frame size
+		if widget.frame.SetResizeBounds then
+			widget.frame:SetResizeBounds(570, 500)
+		else
+			widget.frame:SetMinResize(570, 500)
+		end
 		-- changing button status text widget position and width to make room for a test button
 		local statusbg = widget.statustext:GetParent()
 		statusbg:SetPoint("BOTTOMLEFT", 132, 15)
@@ -330,7 +336,6 @@ do
 		local rows = math.min(#sorttable,10)
 		scroll:SetHeight( child and (child.frame.height+3)*rows+6 or 4 )
 		self:ResumeLayout()
-		self:DoLayout()
 		-- clean up
 		wipe(sorttable)
 	end
