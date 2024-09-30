@@ -91,16 +91,13 @@ API.GetTexCoordsForRoleSmall = GetTexCoordsForRoleSmall or function(role)
 end
 
 --  GetSpellBookItemInfo()
-API.GetSpellBookItemInfo = GetSpellBookItemInfo or function(id, type)
-    local bookType, typeName
-    if type == "spell" then bookType = Enum.SpellBookSpellBank.Player end
-    local type, spellID = C_SpellBook.GetSpellBookItemType(id, bookType)
-    if type == Enum.SpellBookItemType.None then typeName = "NONE" end
-    if type == Enum.SpellBookItemType.Spell then typeName = "SPELL" end
-    if type == Enum.SpellBookItemType.FutureSpell then typeName = "FUTURESPELL" end
-    if type == Enum.SpellBookItemType.PetAction then typeName = "PETACTION" end
-    if type == Enum.SpellBookItemType.Flyout then typeName = "FLYOUT" end
-    return typeName, spellID
+do
+	local C_SpellBook_GetSpellBookItemType = C_SpellBook.GetSpellBookItemType
+	local bookTypes = { [0] = 'NONE', [1] = 'SPELL', [2] = 'FUTURESPELL', [3] = 'PETACTION', [4] = 'FLYOUT' }
+	API.GetSpellBookItemInfo = GetSpellBookItemInfo or function(id, type)
+		local typeID, actionID, spellID = C_SpellBook_GetSpellBookItemType(id, type=='pet' and 1 or 0)
+		return bookTypes[typeID], spellID or actionID
+	end
 end
 
 -- Publish functions
