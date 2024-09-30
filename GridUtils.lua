@@ -276,6 +276,7 @@ end
 
 -- dispellable by player spells types tracking
 do
+	local IsPlayerSpell = IsPlayerSpell
 	local class, dispel, func  = Grid2.playerClass, {}, nil
 	if Grid2.isCata then -- cataclysm
 		if class == 'DRUID' then
@@ -364,8 +365,9 @@ do
 			end
 		elseif class == 'SHAMAN' then
 			func = function(self, event)
-				dispel.Magic = IsPlayerSpell(77130)
-				dispel.Curse = IsPlayerSpell(383016) or IsPlayerSpell(51886)
+				dispel.Magic  = IsPlayerSpell(77130)
+				dispel.Curse  = IsPlayerSpell(383016) or IsPlayerSpell(51886)
+				dispel.Poison = IsPlayerSpell(383013)
 			end
 		elseif class == 'MAGE' then
 			func = function()
