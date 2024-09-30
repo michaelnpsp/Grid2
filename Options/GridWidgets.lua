@@ -5,12 +5,14 @@
 local AceGUI = LibStub("AceGUI-3.0", true)
 local AceDlg = LibStub("AceConfigDialog-3.0")
 
+local optionsFrame -- Main Grid2Options AceGUI widget frame
+
 -------------------------------------------------------------------------------------------------
 -- Grid2 Main Options Widget:
 -- A Modified AceGUI "Frame" widget see: AceGUIContainer-Frame.lua
 -------------------------------------------------------------------------------------------------
 do
-	local WidgetType, optionsFrame = "Grid2OptionsFrame"
+	local WidgetType = "Grid2OptionsFrame"
 
 	local function Frame_OnClose(frame)
 		AceGUI:Release(frame.obj)
@@ -27,6 +29,12 @@ do
 		local widget = AceGUI:Create("Frame")
 		widget.type = WidgetType
 		widget.frame:SetScript("OnHide", Frame_OnClose)
+		-- min frame size
+		if widget.frame.SetResizeBounds then
+			widget.frame:SetResizeBounds(570, 500)
+		else
+			widget.frame:SetMinResize(570, 500)
+		end
 		-- changing button status text widget position and width to make room for a test button
 		local statusbg = widget.statustext:GetParent()
 		statusbg:SetPoint("BOTTOMLEFT", 132, 15)
@@ -40,7 +48,7 @@ do
 		button:SetWidth(100)
 		button:SetText( Grid2Options.L["Test"] )
 		button:SetScript("OnClick", TestButton_OnClick)
-		-- to close the frame with ESCAPE key
+		-- to close the frame with ESCAPE key, warning: _G["Grid2OptionsFrame"] == Grid2Options.optionsFrame.frame
 		_G["Grid2OptionsFrame"] = widget.frame
 		table.insert(UISpecialFrames, "Grid2OptionsFrame")
 		-- for failsafe check
@@ -254,4 +262,158 @@ do
 	end
 
 	AceGUI:RegisterWidgetType(Type, Constructor, Version)
+end
+
+-------------------------------------------------------------------------------------------------
+-- Widget to manage statuses mapped to indicators.
+-------------------------------------------------------------------------------------------------
+do
+	local WidgetType = "Grid2IndicatorCurrentStatuses"
+
+	local dummy = function() end
+	local sorttable = {}
+	local curwidth = 0
+
+	local function OnWidthSet(self, width)
+		self:OnWidthSetP(width)
+		if math.abs(width-curwidth)>1.5 then
+			local scroll = self.children[1]
+			if scroll then
+				local children = scroll.children
+				for i=1,#children,4 do
+					children[i]:SetWidth(width-120)
+				end
+				curwidth = width
+			end
+		end
+	end
+
+	local function Execute(widget) -- Code specific for AceConfigDialog because custom multiselect management code is bugged/unfinished in AceConfigDialog library
+		local user = widget.parent.parent:GetUserDataTable()
+		user.option.set( user, widget:GetUserData('cmd'), widget:GetUserData('key') )
+		AceDlg:Open('Grid2', optionsFrame, unpack(optionsFrame:GetUserData('basepath') or {}))
+	end
+
+	local function CreateItem(parent, type, event, key, cmd, width, imglabel, tooltip)
+		local item = AceGUI:Create(type)
+		item:SetUserData('key', key)
+		item:SetUserData('cmd', cmd)
+		item:SetWidth(width)
+		item:SetCallback(event, Execute)
+		if type=='Icon' then
+			item:SetImage(imglabel)
+			item:SetImageSize(16,14)
+		else
+			item:SetLabel(imglabel)
+			item:SetValue(true)
+		end
+		item:SetHeight(18)
+		parent:AddChild(item)
+	end
+
+	local function SetList(self, values)
+		-- sort values
+		for key, desc in pairs(values) do
+			sorttable[#sorttable+1] = key
+		end
+		table.sort(sorttable)
+		-- create scroll
+		local scroll = AceGUI:Create("ScrollFrame")
+		scroll:SetLayout("Flow")
+		scroll:SetFullWidth(true)
+		scroll:SetFullHeight(false)
+		self:PauseLayout()
+		self:AddChild(scroll)
+		-- create checkbox & icons
+		curwidth = math.max(250, curwidth)
+		for _,key in ipairs(sorttable) do
+			CreateItem( scroll, 'CheckBox', 'OnValueChanged', key, 'rm', curwidth - 120, values[key] )
+			if #sorttable>1 then
+				CreateItem( scroll, 'Icon', 'OnClick', key, 'up', 25, "Interface\\Addons\\Grid2Options\\media\\arrow-up" )
+				CreateItem( scroll, 'Icon', 'OnClick', key, 'dn', 25, "Interface\\Addons\\Grid2Options\\media\\arrow-down" )
+			end
+			CreateItem( scroll, 'Icon', 'OnClick', key, 'st', 25, "Interface\\Addons\\Grid2Options\\media\\test" )
+		end
+		-- adjust height
+		local child = scroll.children[1]
+		local rows = math.min(#sorttable,10)
+		scroll:SetHeight( child and (child.frame.height+3)*rows+6 or 4 )
+		self:ResumeLayout()
+		-- clean up
+		wipe(sorttable)
+	end
+
+	AceGUI:RegisterWidgetType( WidgetType, function()
+		local widget = AceGUI:Create("InlineGroup")
+		widget.type = WidgetType
+		widget.SetLabel = widget.SetTitle
+		widget.SetList = SetList
+		widget.OnWidthSetP = widget.OnWidthSet
+		widget.OnWidthSet  = OnWidthSet
+		widget.SetMultiselect = dummy
+		widget.SetItemValue = dummy
+		widget.SetDisabled = dummy
+		return widget
+	end , 1)
+end
+
+-------------------------------------------------------------------------------------------------
+-- Widget to manage available statuses for an indicator.
+-------------------------------------------------------------------------------------------------
+do
+	local WidgetType = "Grid2SimpleMultiselect"
+
+	local sorttable, dummy = {}, function() end
+
+	local function Execute(widget, event, ...) -- Code specific for AceConfigDialog because custom multiselect management code is bugged/unfinished in AceConfigDialog library
+		local user = widget.parent:GetUserDataTable()
+		user.option.set( user, widget:GetUserData("value"), ... )
+		AceDlg:Open('Grid2', optionsFrame, unpack(optionsFrame:GetUserData('basepath') or {}))
+	end
+
+	local function SetList(self, values)
+		-- sort values
+		for key, desc in pairs(values) do
+			sorttable[#sorttable+1] = key
+		end
+		table.sort(sorttable, function(a,b) return values[a]<values[b] end )
+		-- create checkboxes
+		local children = {}
+		self:PauseLayout()
+		self:SetFullWidth(true)
+		self:SetLayout("Flow")
+		self:SetUserData('children',children)
+		for idx,key in ipairs(sorttable) do
+			local check = AceGUI:Create("CheckBox")
+			check:SetUserData("value", key)
+			check:SetWidth(225)
+			check:SetCallback("OnValueChanged", Execute)
+			check:SetLabel(values[key])
+			check:SetValue(false)
+			check:SetHeight(18)
+			self:AddChild(check)
+			children[key] = check
+		end
+		self:ResumeLayout()
+		-- clean up
+		wipe(sorttable)
+	end
+
+	local function SetItemValue (self, key, value)
+		local check = self:GetUserData('children')[key]
+		if check and check.checked ~= value then
+			check:SetValue(value)
+		end
+	end
+
+	AceGUI:RegisterWidgetType( WidgetType, function()
+		local widget = AceGUI:Create("SimpleGroup")
+		widget.type = WidgetType
+		widget.SetList = SetList
+		widget.SetItemValue = SetItemValue
+		widget.SetMultiselect = dummy
+		widget.SetDisabled = dummy
+		widget.SetLabel = dummy
+		return widget
+	end , 1)
 end
