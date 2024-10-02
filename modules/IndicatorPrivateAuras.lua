@@ -5,6 +5,8 @@ local Grid2 = Grid2
 local wipe = wipe
 local strmatch = strmatch
 
+local tooltipFrame
+
 if not C_UnitAuras then return end
 local AddPrivateAuraAnchor = C_UnitAuras.AddPrivateAuraAnchor
 local RemovePrivateAuraAnchor = C_UnitAuras.RemovePrivateAuraAnchor
@@ -32,7 +34,7 @@ local function Icon_Update(self, parent, unit)
 		iconAnchor.offsetX = 0
 		iconAnchor.offsetY = 0
 		local auraAnchor = self.auraAnchor
-		auraAnchor.parent = f
+		auraAnchor.parent = self.tooltipFrame or f
 		auraAnchor.unitToken = unit
 		auraAnchor.auraIndex = self.auraIndex
 		auraAnchor.iconInfo.iconWidth = f.iconSize
@@ -96,6 +98,14 @@ local function Icon_UpdateDB(self)
 		self.verMult = 0
 		self.colCount = self.maxIcons
 		self.rowCount = 1
+	end
+	if self.dbx.disableTooltip then
+		tooltipFrame = tooltipFrame or CreateFrame("Frame")
+		self.tooltipFrame = tooltipFrame
+		tooltipFrame:Show()
+	else
+		self.tooltipFrame = nil
+		if tooltipFrame then tooltipFrame:Hide() end
 	end
 end
 
