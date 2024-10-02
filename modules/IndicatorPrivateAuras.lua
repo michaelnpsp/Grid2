@@ -99,7 +99,7 @@ local function Icon_UpdateDB(self)
 		self.colCount = self.maxIcons
 		self.rowCount = 1
 	end
-	if self.dbx.disableTooltip then
+	if dbx.disableTooltip then
 		tooltipFrame = tooltipFrame or CreateFrame("Frame")
 		self.tooltipFrame = tooltipFrame
 		tooltipFrame:Show()
