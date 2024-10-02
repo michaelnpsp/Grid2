@@ -12,6 +12,19 @@ local AddPrivateAuraAnchor = C_UnitAuras.AddPrivateAuraAnchor
 local RemovePrivateAuraAnchor = C_UnitAuras.RemovePrivateAuraAnchor
 if not AddPrivateAuraAnchor then return end
 
+local function AcquireTooltipFrame()
+	GetHideTooltipFrame = function() tooltipFrame:Show(); return tooltipFrame end
+	tooltipFrame = CreateFrame("Frame", nil , Grid2LayoutFrame)
+	tooltipFrame:SetFrameStrata("TOOLTIP")
+	tooltipFrame:SetFrameLevel(255)
+	return tooltipFrame
+end
+
+local function ReleaseTooltipFrame()
+	if tooltipFrame then tooltipFrame:Hide() end
+	return nil
+end
+
 local function ClearFrameAuraAnchors(f)
 	local auraHandles = f.auraHandles
 	for i=1,#auraHandles do
@@ -99,14 +112,7 @@ local function Icon_UpdateDB(self)
 		self.colCount = self.maxIcons
 		self.rowCount = 1
 	end
-	if dbx.disableTooltip then
-		tooltipFrame = tooltipFrame or CreateFrame("Frame")
-		self.tooltipFrame = tooltipFrame
-		tooltipFrame:Show()
-	else
-		self.tooltipFrame = nil
-		if tooltipFrame then tooltipFrame:Hide() end
-	end
+	self.tooltipFrame = dbx.disableTooltip and AcquireTooltipFrame() or ReleaseTooltipFrame()
 end
 
 Grid2.setupFunc["privateauras"] = function(indicatorKey, dbx)
