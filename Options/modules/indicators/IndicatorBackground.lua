@@ -11,7 +11,7 @@ function Grid2Options:MakeIndicatorBackgroundOptions(indicator,options)
 	options.headerback = {
 			type = "header",
 			order = 21,
-			name = L["Background Indicator"],
+			name = L["Main Background"],
 	}
 	options.backTexture = {
 			type = "select", dialogControl = "LSM30_Statusbar",

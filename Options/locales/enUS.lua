@@ -35,6 +35,9 @@ L["Sets the hightlight color of each unit frame"] = true
 L["Highlight Texture"] = true
 L["Sets the highlight border texture of each unit frame"] = true
 
+L["Main Background"] = true
+L["Secondary Background"] = true
+
 L["Background Texture"] = true
 L["Select the frame background texture."] = true
 
@@ -1221,6 +1224,7 @@ L["Start the animation only when the indicator is activated, not on updates."] =
 L["Origin"] = true
 L["Zoom origin point"] = true
 L["This indicator cannot be changed from here: go to indicators section to assign/unassign statuses to this indicator."] = true
+L["Apply alpha to"] = true
 L["Default Alpha"] = true
 L["Default Alpha Value"] = true
 L["Alpha/opacity when the indicator is not activated.\n0 = full transparent\n1 = full opaque"] = true

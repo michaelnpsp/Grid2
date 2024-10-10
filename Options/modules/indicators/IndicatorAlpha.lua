@@ -25,7 +25,7 @@ function Grid2Options:MakeIndicatorAlphaOptions(indicator,options)
 	options.header0 = { type = "header", order = 1, name = L["General"] }
 	options.indicator = {
 		type = "select",
-		name = L["Apply transparency to"],
+		name = L["Apply alpha to"],
 		desc = L["Optionally you can choose to change the transparency of a specific indicator instead of the whole unit frame. Only bar style indicators are supported."],
 		order = 5,
 		get = function() return indicator.dbx.anchorTo or 0 end,

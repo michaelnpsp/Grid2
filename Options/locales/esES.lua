@@ -36,6 +36,9 @@ L["Sets the hightlight color of each unit frame"] = "Ajusta el color de resaltad
 L["Highlight Texture"] = "Textura Resaltado"
 L["Sets the highlight border texture of each unit frame"] = "Ajusta la textura del borde de la celda cuando el raton esta sobre ella"
 
+L["Main Background"] = "Fondo Principal"
+L["Secondary Background"] = "Fondo Secundario"
+
 L["Background Texture"] = "Textura del Fondo"
 L["Select the frame background texture."] = "Elige la textura del fondo de las celdas"
 
@@ -1234,6 +1237,7 @@ L["Start the animation only when the indicator is activated, not on updates."] =
 L["Origin"] = "Origen"
 L["Zoom origin point"] = "Punto origen Zoom"
 L["This indicator cannot be changed from here: go to indicators section to assign/unassign statuses to this indicator."] = "Este indicator no se puede cambiar desde aqui."
+L["Apply alpha to"] = "Aplicar transparencia a"
 L["Default Alpha"] = "Transparencia predeterminada"
 L["Default Alpha Value"] = "Valor predeterminado de la transparencia"
 L["Alpha/opacity when the indicator is not activated.\n0 = full transparent\n1 = full opaque"] = "Transparencia cuando el indicator no está activado\n0 = transparente\n1 = opaco"

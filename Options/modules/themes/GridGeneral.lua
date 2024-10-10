@@ -638,7 +638,7 @@ local layoutOptions2 =  { displayheader = {
 local frameOptions2 = { headerback = {
 		type = "header",
 		order = 21,
-		name = L["Background Indicator"],
+		name = L["Main Background"],
 }, backTexture = {
 		type = "select", dialogControl = "LSM30_Statusbar",
 		order = 22,
