@@ -223,7 +223,7 @@ function Grid2Layout:OnModuleInitialize()
 	-- custom defaults
 	self.customDefaults = self.db.global.customDefaults
 	-- avoid insecure headers in release versions
-	self.useInsecureHeaders = (Grid2.isDevelop and self.db.global.useInsecureHeaders) or nil
+	self.useInsecureHeaders = (Grid2.debugging or Grid2.isVanilla) and self.db.global.useInsecureHeaders or nil
 	-- add custom layouts
 	self:AddCustomLayouts()
 end
