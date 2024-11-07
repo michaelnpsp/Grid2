@@ -13,11 +13,15 @@ local RemovePrivateAuraAnchor = C_UnitAuras.RemovePrivateAuraAnchor
 if not AddPrivateAuraAnchor then return end
 
 local function AcquireTooltipFrame()
-	AcquireTooltipFrame = function() tooltipFrame:Show(); return tooltipFrame end
-	tooltipFrame = CreateFrame("Frame", nil , Grid2LayoutFrame)
+	AcquireTooltipFrame = function()
+		tooltipFrame:SetScale(Grid2Layout.db.profile.ScaleSize)
+		tooltipFrame:Show()
+		return tooltipFrame
+	end
+	tooltipFrame = CreateFrame("Frame", "Grid2PrivateAurasTooltipAnchorFrame", UIParent)
 	tooltipFrame:SetFrameStrata("TOOLTIP")
-	tooltipFrame:SetFrameLevel(255)
-	return tooltipFrame
+	tooltipFrame:SetFrameLevel(127)
+	return AcquireTooltipFrame()
 end
 
 local function ReleaseTooltipFrame()
