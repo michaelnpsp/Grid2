@@ -7,6 +7,7 @@ local Grid2Layout = Grid2:NewModule("Grid2Layout")
 local Grid2 = Grid2
 local GetSetupValue = Grid2.GetSetupValue
 local UnitExists = UnitExists
+local InCombatLockdown = InCombatLockdown
 local math, pairs, ipairs, next, strmatch, strsplit = math, pairs, ipairs, next, strmatch, strsplit
 
 --{{{ Frame config function for secure headers
@@ -359,7 +360,7 @@ function Grid2Layout:FixRoster()
 end
 
 function Grid2Layout:StartMoveFrame(button)
-	if button == "LeftButton" and (self.testLayoutName or not self.db.profile.FrameLock)  then
+	if button == "LeftButton" and (self.testLayoutName or not self.db.profile.FrameLock) then
 		self.frame:StartMoving()
 		self.frame.isMoving = true
 		self:StartHeaderTracking(self.frame)
@@ -372,7 +373,7 @@ function Grid2Layout:StopMoveFrame()
 		self.frame.isMoving = false
 		self:SearchSnapToNearestHeader(self.frame, true)
 		self:SavePosition()
-		if not InCombatLockdown() then self:RestorePosition() end
+		self:RestorePosition()
 	end
 end
 
@@ -423,7 +424,9 @@ function Grid2Layout:SetTestMode(enabled, themeIndex, layoutName, maxPlayers)
 		self:ReloadTextIndicatorsDB()
 		self:ReloadLayout(true)
 	end
-	self:EnableMouse( enabled or not self.db.profile.FrameLock )
+	if not InCombatLockdown() then
+		self:EnableMouse( enabled or not self.db.profile.FrameLock )
+	end
 end
 
 --{{{ ConfigMode support
@@ -883,6 +886,7 @@ end
 -- even if the WoW UI Scale or Grid2 window Scale was changed (assuming the screen aspect ratio has not changed).
 -- It does not restore detached headers positions, Grid2Layout:RestorePositions() can be used instead.
 function Grid2Layout:RestorePosition()
+	if InCombatLockdown() then return end
 	local p = self.db.profile
 	-- foreground frame
 	local f = self.frame
@@ -966,6 +970,7 @@ function Grid2Layout:SaveHeaderPositionForFirstTime(i, frame, anchor, relPoint, 
 end
 
 function Grid2Layout:RestoreHeaderPosition(header)
+	if InCombatLockdown() then return end
 	local p = self.db.profile
 	local pos = p.Positions[header.headerPosKey]
 	if pos then
@@ -1016,7 +1021,7 @@ function Grid2Layout:SnapHeaderToPoint(a1, header1, a2, x2, y2, intersect)
 end
 
 function Grid2Layout:SearchSnapToNearestHeader(header, adjust)
-	if IsShiftKeyDown() or not self.layoutHasDetached then return end
+	if IsShiftKeyDown() or not self.layoutHasDetached or InCombatLockdown() then return end
 	local frameBack = header.frameBack
 	local x1, x2, y1, y2, xx1, xx2, yy1, yy2, intersect = frameBack:GetLeft(), frameBack:GetRight(), frameBack:GetTop(), frameBack:GetBottom()
 	local function Check(a1,xxx1,yyy1,a2,xxx2,yyy2)
@@ -1093,7 +1098,7 @@ do
 			HighlightHeader(trackedHeader, newHeader~=nil, newOverlap )
 			nearestHeader, nearestOverlap = newHeader, newOverlap
 		end
-		if trackedHeader.isMoving then
+		if trackedHeader.isMoving and not InCombatLockdown() then
 			C_Timer.After( .2, TrackHeader )
 		end
 	end
@@ -1106,7 +1111,7 @@ do
 	end
 
 	function Grid2Layout:StartMoveHeader(button) -- called from frame event so: self == header.frameBack ~= Grid2Layout
-		if button == "LeftButton" and (Grid2Layout.testLayoutName or not Grid2Layout.db.profile.FrameLock)  then
+		if button == "LeftButton" and (Grid2Layout.testLayoutName or not Grid2Layout.db.profile.FrameLock) then
 			self.header:StartMoving()
 			self.header.isMoving = true
 			Grid2Layout:StartHeaderTracking(self.header)
