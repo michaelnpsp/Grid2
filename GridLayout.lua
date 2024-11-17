@@ -65,13 +65,15 @@ local GridLayoutHeaderClass = {
 		return frame
 	end,
 	template = function(self, dbx, insecure)
+		local temp
 		if dbx.type=='custom' then
-			return SPECIAL_HEADERS[dbx.unitsFilter] or 'Grid2InsecureGroupCustomHeaderTemplate'
+			temp = SPECIAL_HEADERS[dbx.unitsFilter] or 'Grid2InsecureGroupCustomHeaderTemplate'
 		elseif insecure or (dbx.nameList and (dbx.roleFilter or dbx.groupFilter)) then
-			return dbx.type=='pet' and 'Grid2InsecureGroupPetHeaderTemplate' or 'Grid2InsecureGroupHeaderTemplate'
+			temp = dbx.type=='pet' and 'Grid2InsecureGroupPetHeaderTemplate' or 'Grid2InsecureGroupHeaderTemplate'
 		else
-			return dbx.type=='pet' and 'SecureGroupPetHeaderTemplate' or 'SecureGroupHeaderTemplate'
+			temp = dbx.type=='pet' and 'SecureGroupPetHeaderTemplate' or 'SecureGroupHeaderTemplate'
 		end
+		return temp, dbx.headerName and temp..dbx.headerName or temp
 	end,
 }
 
@@ -584,15 +586,15 @@ end
 
 --{{ Header management
 function Grid2Layout:AddHeader(dbx, defaults, setupIndex, headerName)
-	local template = self.layoutHeaderClass:template(dbx, self.useInsecureHeaders or self.testLayoutName)
-	local index    = self.indexes[template] + 1
-	local headers  = self.groups[template]
+	local template, groupType = self.layoutHeaderClass:template(dbx, self.useInsecureHeaders or self.testLayoutName)
+	local index    = self.indexes[groupType] + 1
+	local headers  = self.groups[groupType]
 	local header   = headers[index]
 	if not header then
 		header = self.layoutHeaderClass:new(template)
 		headers[index] = header
 	end
-	self.indexes[template] = index
+	self.indexes[groupType] = index
 	self.groupsUsed[#self.groupsUsed+1] = header
 	self:SetHeaderProperties(header, dbx, setupIndex, headerName)
 	self:SetHeaderAttributes(header, defaults)

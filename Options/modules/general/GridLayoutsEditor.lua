@@ -29,7 +29,7 @@ local SORTBYN_VALUES= { INDEX = L["Index"], NAME = L["Name"], NAMELIST = L["List
 
 local SORTBY_VALUES= { INDEX = L["Index"], NAME = L["Name"], NIL = L["Def."] }
 
-local HEADER_TYPES = { player = true, pet = true, custom = true, self = true, target = true, focus = true, boss = true }
+local HEADER_TYPES = { player = true, pet = true, custom = true, self = true, target = true, focus = true, boss = true, targettarget = true, focustarget = true }
 
 --=====================================================================================
 
@@ -218,18 +218,15 @@ headerOptions = {
 		order = 1,
 		width = "full",
 		name = L["Header Type"],
-		name = L["Header Type"],
-		-- desc = L["You can customize the header type. The specified name can be used to filter indicators using the unit type condition."],
+		desc = L["You can customize the header type. The specified name can be used to filter indicators using the unit type condition in the indicator Load tab."],
 		get = function()
 			return (editedHeader.headerName or editedHeader.type or 'player'):gsub('^player$','players'):gsub('^pet$','pets')
 		end,
-		set = function(_, v)
+		set = function(_, v) -- TODO, sanity check, custom header name not used in another layout header.
 			v = strtrim(v):gsub('^players$','player'):gsub('^pets$','pet')
-			if not HEADER_TYPES[v] or v==editedHeader.type then
-				editedHeader.headerName = strlen(v)>1 and v or nil
-				Grid2Options:RefreshHeaderTypes()
-				RefreshLayout()
-			end
+			editedHeader.headerName = (strlen(v)>1 and HEADER_TYPES[v]==nil) and v or nil
+			Grid2Options:RefreshIndicatorsLoadFilter(editedLayoutName)
+			RefreshLayout()
 		end,
 		hidden = false,
 	},
