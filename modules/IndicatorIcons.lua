@@ -75,8 +75,12 @@ local function Icon_OnFrameUpdate(f)
 					aura.text:SetText(count>1 and count or "")
 				end
 				if showCool then
-					local expiration, duration = status:GetExpirationTime(unit) or 0, status:GetDuration(unit) or 0
-					aura.cooldown:SetCooldown(expiration - duration, duration)
+					local expiration, duration = status:GetExpirationTime(unit), status:GetDuration(unit)
+					if expiration and duration then
+						aura.cooldown:SetCooldown(expiration - duration, duration)
+					else
+						aura.cooldown:SetCooldown(0, 0)
+					end
 				end
 				aura:Show()
 				i = i + 1

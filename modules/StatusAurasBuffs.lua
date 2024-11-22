@@ -21,7 +21,7 @@ local durations = {}
 -- missing buffs
 local mcounts = {1}
 local mexpirations = {0}
-local mdurations = {1073741824}
+local mdurations = mexpirations
 
 -- strict filter management functions
 local function GenSpellsMask(spells)
