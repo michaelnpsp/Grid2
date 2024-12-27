@@ -56,7 +56,7 @@ end
 local function GetInstanceName(module, instance)
 	if module and instance then
 		local info = RDDB[module][instance][1]
-		local name = info and (info.id and EJ_GetInstanceInfo(info.id) or info.name) or EJ_GetInstanceInfo(instance) or string.format( "unknown(%d)", instance )
+		local name = info and (info.id and EJ_GetInstanceInfo(info.id) or (info.name and L[info.name])) or EJ_GetInstanceInfo(instance) or string.format( "unknown(%d)", instance )
 		local key  = string.format( '%s%s<<%d>>', info and info.raid and "R" or "G", name, instance )
 		return name, key
 	end
@@ -126,7 +126,7 @@ do
 		for i,boss in ipairs(bosses) do
 			local ejid = GetBossTag(boss, "ejid") or 0
 			bossesIndexes[boss] = i
-			bossesNames[boss] = ejid>0 and EJ_GetEncounterInfo(ejid) or boss
+			bossesNames[boss] = ejid>0 and EJ_GetEncounterInfo(ejid) or L[boss]
 		end
 	end
 	LoadModuleInstance = function(force)

@@ -46,8 +46,8 @@ RDDB["Classic"] = {
 		},
 		["Huhuran"] = {
 		order = 3, ejid = nil,
-		26180, -- AguijÛn de dracoleÛn
-		26050, -- Gapo ·cido
+		26180, -- Aguij√≥n de dracole√≥n
+		26050, -- Gapo √°cido
 		},
 		["Ouro"] = {
 		order = 4, ejid = nil,
@@ -58,7 +58,7 @@ RDDB["Classic"] = {
 		},
 		["Skeram"] = {
 		order = 6, ejid = nil,
-		785, -- ConsecuciÈn veraz
+		785, -- Consecuci√©n veraz
 		},
 		["ThreeBugs"] = {
 		order = 7, ejid = nil,
@@ -69,9 +69,9 @@ RDDB["Classic"] = {
 		},
 		["Viscidus"] = {
 		order = 9, ejid = nil,
-		26034, -- VÌscido ralentizado
-		26036, -- VÌscida m·s ralentizado
-		25937, -- CongelaciÛn vÌscida
+		26034, -- V√≠scido ralentizado
+		26036, -- V√≠scida m√°s ralentizado
+		25937, -- Congelaci√≥n v√≠scida
 		},
 	},
 	[100409] = {
@@ -86,7 +86,7 @@ RDDB["Classic"] = {
 		},
 		["Gehennas"] = {
 		order = 3, ejid = nil,
-		20277, -- PuÒo de Ragnaros
+		20277, -- Pu√±o de Ragnaros
 		},
 		["Golemagg"] = {
 		order = 4, ejid = nil,
@@ -98,7 +98,7 @@ RDDB["Classic"] = {
 		},
 		["Magmadar"] = {
 		order = 6, ejid = nil,
-		19451, -- FrenesÌ
+		19451, -- Frenes√≠
 		},
 		["Majordomo"] = {
 		order = 7, ejid = nil,
@@ -126,12 +126,12 @@ RDDB["Classic"] = {
 		},
 		["Chromaggus"] = {
 		order = 2, ejid = nil,
-		23155, -- AflicciÛn del enjambre: rojo
-		23169, -- AflicciÛn del enjambre: verde
-		23153, -- AflicciÛn del enjambre: azul
-		23154, -- AflicciÛn del enjambre: negro
-		23170, -- AflicciÛn del enjambre: bronce
-		23128, -- FrenesÌ
+		23155, -- Aflicci√≥n del enjambre: rojo
+		23169, -- Aflicci√≥n del enjambre: verde
+		23153, -- Aflicci√≥n del enjambre: azul
+		23154, -- Aflicci√≥n del enjambre: negro
+		23170, -- Aflicci√≥n del enjambre: bronce
+		23128, -- Frenes√≠
 		23537, -- Enfurecer
 		},
 		["Ebonroc"] = {
@@ -151,7 +151,7 @@ RDDB["Classic"] = {
 		},
 		["Razorgore"] = {
 		order = 7, ejid = nil,
-		23023, -- ConflagraciÛn
+		23023, -- Conflagraci√≥n
 		},
 		["Vaelastrasz"] = {
 		order = 8, ejid = nil,
@@ -210,7 +210,7 @@ RDDB["Classic"] = {
 		["Thekal"] = {
 		order = 9, ejid = nil,
 		21060, -- Ceguera
-		12540, -- IncapacitaciÛn
+		12540, -- Incapacitaci√≥n
 		},
 		["Venoxis"] = {
 		order = 10, ejid = nil,
