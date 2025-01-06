@@ -339,6 +339,7 @@ do
 		elseif class == 'MAGE' then
 			func = function()
 				dispel.Curse = IsPlayerSpell(475)
+				dispel.Magic = Grid2.isSoD and IsSpellKnownOrOverridesKnown(412113) or nil -- Remove Greater Curse from Advanced Warding Rune
 			end
 		elseif class == 'WARLOCK' then
 			func = function()
