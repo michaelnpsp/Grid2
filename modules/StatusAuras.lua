@@ -9,7 +9,7 @@ local GetTime = GetTime
 local isClassic = Grid2.isClassic
 local UnitAura = Grid2.UnitAuraLite
 local GetSpellInfo = Grid2.API.GetSpellInfo
-local Bleeds = LibStub("LibDispel-1.0"):GetBleedList()
+local Bleeds = LibStub("LibDispel-1.0", true):GetBleedList() or {}
 
 -- Local variables
 local Statuses = {}
