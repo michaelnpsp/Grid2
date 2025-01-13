@@ -390,6 +390,7 @@ do
 				dispel.Curse   = IsPlayerSpell(374251)
 				dispel.Poison  = IsPlayerSpell(360823) or IsPlayerSpell(365585)
 				dispel.Disease = IsPlayerSpell(374251)
+				dispel.Bleed   = IsPlayerSpell(365585)
 			end
 		end
 	end

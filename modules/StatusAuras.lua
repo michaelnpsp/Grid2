@@ -9,6 +9,7 @@ local GetTime = GetTime
 local isClassic = Grid2.isClassic
 local UnitAura = Grid2.UnitAuraLite
 local GetSpellInfo = Grid2.API.GetSpellInfo
+local Bleeds = LibStub("LibDispel-1.0"):GetBleedList()
 
 -- Local variables
 local Statuses = {}
@@ -18,8 +19,8 @@ local Debuffs = {}
 local DebuffTypes = {}
 local DebuffGroups = {}
 local debuffTypeColors = {}
-local debuffTypesKeys = { 'Magic', 'Curse', 'Disease', 'Poison', 'Typeless', 'Boss' }
-local debuffDispelTypes = { Magic = true, Curse = true, Disease = true, Poison = true }
+local debuffTypesKeys = { 'Magic', 'Curse', 'Disease', 'Poison', 'Typeless', 'Boss', 'Bleed' }
+local debuffDispelTypes = { Magic = true, Curse = true, Disease = true, Poison = true, Bleed = true }
 
 -- UNIT_AURA event management
 -- s.seen = nil aura was removed, linked indicators must be updated
@@ -37,7 +38,8 @@ do
 	local a, nam, tex, cnt, typ, dur, exp, cas, sid, bos, _
 	local GetAura = GetAuraDataByIndex and function(unit, index, filter) -- for retail
 		a = GetAuraDataByIndex(unit, index, filter)
-		if a then fill, nam, typ, cas, sid, bos = true, a.name, a.dispelName, a.sourceUnit, a.spellId, a.isBossAura; return true; end
+		if a then
+			fill, nam, typ, cas, sid, bos = true, a.name, a.dispelName or Bleeds[sid] and "Bleed", a.sourceUnit, a.spellId, a.isBossAura; return true; end
 	end or function(unit, index, filter) -- for classic
 		nam, tex, cnt, typ, dur, exp, cas, _, _, sid, _, bos, _, _, _, val[1], val[2], val[3] = UnitAura(unit, index, filter)
 		if nam then if cnt==0 then cnt=1 end; return true end
@@ -626,7 +628,7 @@ local statusTypesDT = { "color", "icon", "icons", "text", "tooltip" }
 
 local function CreateAura(baseKey, dbx)
 	local status = Grid2.statusPrototype:new(baseKey, false)
-	return CreateStatusAura( status, basekey, dbx, dbx.type, dbx.type=='debuffType' and statusTypesDT or statusTypesBD )
+	return CreateStatusAura( status, baseKey, dbx, dbx.type, dbx.type=='debuffType' and statusTypesDT or statusTypesBD )
 end
 
 Grid2.setupFunc["buff"]       = CreateAura
@@ -634,6 +636,7 @@ Grid2.setupFunc["debuff"]     = CreateAura
 Grid2.setupFunc["debuffType"] = CreateAura
 
 Grid2:DbSetStatusDefaultValue( "debuff-Boss",     {type = "debuffType", subType = "Boss",     color1 = {r=1, g=0, b=0,a=1 }} )
+Grid2:DbSetStatusDefaultValue( "debuff-Bleed",    {type = "debuffType", subType = "Bleed",    color1 = {r=1, g=.2, b=.6,a=1 }} )
 Grid2:DbSetStatusDefaultValue( "debuff-Magic",    {type = "debuffType", subType = "Magic",    color1 = {r=.2,g=.6,b=1,a=1 }} )
 Grid2:DbSetStatusDefaultValue( "debuff-Poison",   {type = "debuffType", subType = "Poison",   color1 = {r=0, g=.6,b=0,a=1 }} )
 Grid2:DbSetStatusDefaultValue( "debuff-Curse",    {type = "debuffType", subType = "Curse",    color1 = {r=.6,g=0, b=1,a=1 }} )
@@ -676,7 +679,7 @@ Grid2.debuffDispelTypes = debuffDispelTypes
 	color2 = { r=1,g=1,b=0,a=1 }
 --
 	type = "debuffType"
-	subType = "Magic"|"Curse"|"Poison"|"Disease"
+	subType = "Magic"|"Curse"|"Poison"|"Disease"|"Bleed"
 	debuffFilter = { "Chill" = true, "Fear" = true }
 	color1 = { r=1,g=1,b=1,a=1 }
 --]]

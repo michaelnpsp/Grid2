@@ -31,6 +31,7 @@ Libs\AceConsole-3.0\AceConsole-3.0.xml
 Libs\AceLocale-3.0\AceLocale-3.0.xml
 Libs\LibSharedMedia-3.0\LibSharedMedia-3.0.lua
 Libs\LibCustomGlow-1.0\LibCustomGlow-1.0.lua
+Libs\LibDispel\LibDispel.lua
 #@version-classic@
 Libs\LibClassicDurations\LibClassicDurations.xml
 #@end-version-classic@
