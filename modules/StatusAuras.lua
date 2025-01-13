@@ -41,7 +41,6 @@ do
 		if a then fill, nam, typ, cas, sid, bos = true, a.name, a.dispelName or Bleeds[a.spellId] and "Bleed", a.sourceUnit, a.spellId, a.isBossAura; return true; end
 	end or function(unit, index, filter) -- for classic
 		nam, tex, cnt, typ, dur, exp, cas, _, _, sid, _, bos, _, _, _, val[1], val[2], val[3] = UnitAura(unit, index, filter)
-		typ = typ or Bleeds[sid] and "Bleed"
 		if nam then if cnt==0 then cnt=1 end; return true end
 	end
 	AuraFrame_OnEvent = function(_, event, u)
