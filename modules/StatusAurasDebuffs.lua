@@ -2,9 +2,9 @@
 local Grid2 = Grid2
 local wipe = wipe
 local SpellGetVisibilityInfo = SpellGetVisibilityInfo
-local UnitAura = Grid2.UnitAuraLite
-local typeColors = Grid2.debuffTypeColors
+local UnitAura = Grid2.API.UnitAuraLite
 local GetSpellInfo = Grid2.API.GetSpellInfo
+local typeColors = Grid2.debuffTypeColors
 
 local emptyTable = {}
 local textures = {}

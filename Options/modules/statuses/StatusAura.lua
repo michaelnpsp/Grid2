@@ -540,7 +540,10 @@ Grid2Options:RegisterStatusOptions("debuffType", "debuff", function(self, status
 	self:MakeStatusDebuffTypeColorsOptions(status, options, optionParams)
 	self:MakeStatusDebuffTypeFilterOptions(status, options, optionParams)
 end,{
-	groupOrder = function(status) return (status.name=='debuff-Typeless' and 12) or (status.name=='debuff-Boss' and 10) or 11; end
+	groupOrder = function(status)
+		local typ = status.dbx.subType
+		return (typ=='Typeless' and 13) or (typ=='Boss' and 10) or (typ=='Bleed' and 11) or 12
+	end
 } )
 
 -- }}

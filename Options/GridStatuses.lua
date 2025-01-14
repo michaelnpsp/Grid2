@@ -39,6 +39,7 @@ Grid2Options.debuffTypeIcons = {
 	Curse   = "Interface\\Icons\\Spell_nature_removedisease",
 	Typeless= "Interface\\Icons\\Spell_holy_harmundeadaura",
 	Boss    = "Interface\\Icons\\Ability_Creature_Cursed_05",
+	Bleed   = "Interface\\Icons\\Spell_Druid_BloodyThrash",
 	Default = "Interface\\Icons\\Spell_holy_harmundeadaura",
 }
 -- status.dbx.type -> categoryKey
@@ -73,7 +74,7 @@ end
 
 -- Grid2Options:GetStatusSetupFunc()
 function Grid2Options:GetStatusSetupFunc(status)
-	local key = status.dbx.type
+	local key = type(status)=='string' and status or status.dbx.type
 	return self.typeMakeOptions[key] or self.MakeStatusStandardOptions, self.optionParams[key]
 end
 

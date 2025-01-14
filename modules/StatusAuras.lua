@@ -6,9 +6,10 @@ local next = next
 local rawget = rawget
 local max = math.max
 local GetTime = GetTime
-local isClassic = Grid2.isClassic
-local UnitAura = Grid2.UnitAuraLite
+local UnitAura = UnitAura
 local GetSpellInfo = Grid2.API.GetSpellInfo
+local GetAuraDataByIndex = C_UnitAuras and C_UnitAuras.GetAuraDataByIndex
+local isClassic = Grid2.isClassic
 
 -- Local variables
 local Statuses = {}
@@ -17,9 +18,18 @@ local Buffs = {}
 local Debuffs = {}
 local DebuffTypes = {}
 local DebuffGroups = {}
+local debuffTypeSpells = {}
 local debuffTypeColors = {}
-local debuffTypesKeys = { 'Magic', 'Curse', 'Disease', 'Poison', 'Typeless', 'Boss' }
-local debuffDispelTypes = { Magic = true, Curse = true, Disease = true, Poison = true }
+
+-- Publish functions/data needed by other modules
+Grid2.debuffTypeSpells = debuffTypeSpells
+Grid2.debuffTypeColors = debuffTypeColors
+Grid2.API.UnitAuraLite = GetAuraDataByIndex==nil and UnitAura or function(unit, index, filter)
+	local a = GetAuraDataByIndex(unit, index, filter)
+	if a then -- warning is lite because it does not return aura custom values (16,17,18)
+		return a.name, a.icon, a.applications, a.dispelName or debuffTypeSpells[a.spellId], a.duration, a.expirationTime, a.sourceUnit, nil, nil, a.spellId, a.canApplyAura, a.isBossAura
+	end
+end
 
 -- UNIT_AURA event management
 -- s.seen = nil aura was removed, linked indicators must be updated
@@ -27,17 +37,25 @@ local debuffDispelTypes = { Magic = true, Curse = true, Disease = true, Poison =
 -- s.seen = -1  aura was not changed, do nothing
 local AuraFrame_OnEvent
 do
-	local GetAuraDataByIndex = C_UnitAuras and C_UnitAuras.GetAuraDataByIndex
 	local myUnits  = Grid2.roster_my_units
 	local roUnits  = Grid2.roster_guids
 	local myFrames = Grid2Frame.frames_of_unit
+	local debuffTypeSpells = Grid2.debuffTypeSpells
 	local indicators = {}
 	local val = {0,0,0}
 	local fill = (GetAuraDataByIndex~=nil)
 	local a, nam, tex, cnt, typ, dur, exp, cas, sid, bos, _
 	local GetAura = GetAuraDataByIndex and function(unit, index, filter) -- for retail
 		a = GetAuraDataByIndex(unit, index, filter)
-		if a then fill, nam, typ, cas, sid, bos = true, a.name, a.dispelName, a.sourceUnit, a.spellId, a.isBossAura; return true; end
+		if a then
+			fill = true
+			nam  = a.name
+			sid  = a.spellId
+			cas  = a.sourceUnit
+			bos  = a.isBossAura
+			typ  = a.dispelName or debuffTypeSpells[sid]
+			return true
+		end
 	end or function(unit, index, filter) -- for classic
 		nam, tex, cnt, typ, dur, exp, cas, _, _, sid, _, bos, _, _, _, val[1], val[2], val[3] = UnitAura(unit, index, filter)
 		if nam then if cnt==0 then cnt=1 end; return true end
@@ -170,15 +188,6 @@ do
 	Grid2.RegisterMessage( Statuses, "Grid_FakedUnitsUpdate", UpdateFakedUnitsAuras)
 end
 
--- Load colors cache for debuff types
-local function LoadDebuffTypeColors()
-	local statuses = Grid2.db.profile.statuses
-	for _,typ in ipairs(debuffTypesKeys) do
-		local status = statuses['debuff-'..typ]
-		debuffTypeColors[typ] = status and status.color1
-	end
-end
-
 -- EnableAuraEvents() DisableAuraEvents()
 local EnableAuraEvents, DisableAuraEvents
 do
@@ -192,7 +201,6 @@ do
 				LibStub("LibClassicDurations"):Register(Grid2)
 				UnitAura = LibStub("LibClassicDurations").UnitAuraDirect
 			end
-			LoadDebuffTypeColors()
 		end
 	end
 	DisableAuraEvents = function(status)
@@ -618,35 +626,50 @@ do
 end
 
 --===============================================================================
--- buff, debuff, debuffType statuses
+-- buff, debuff
 --===============================================================================
 
-local statusTypesBD = { "color", "icon", "icons", "percent", "text", "tooltip" }
-local statusTypesDT = { "color", "icon", "icons", "text", "tooltip" }
+do
+	local statusTypesBD = { "color", "icon", "icons", "percent", "text", "tooltip" }
 
-local function CreateAura(baseKey, dbx)
-	local status = Grid2.statusPrototype:new(baseKey, false)
-	return CreateStatusAura( status, basekey, dbx, dbx.type, dbx.type=='debuffType' and statusTypesDT or statusTypesBD )
+	Grid2.CreateStatusAura = CreateStatusAura
+
+	local function CreateAura(baseKey, dbx)
+		local status = Grid2.statusPrototype:new(baseKey, false)
+		return CreateStatusAura( status, basekey, dbx, dbx.type, statusTypesBD )
+	end
+
+	Grid2.setupFunc["buff"] = CreateAura
+	Grid2.setupFunc["debuff"] = CreateAura
 end
 
-Grid2.setupFunc["buff"]       = CreateAura
-Grid2.setupFunc["debuff"]     = CreateAura
-Grid2.setupFunc["debuffType"] = CreateAura
-
-Grid2:DbSetStatusDefaultValue( "debuff-Boss",     {type = "debuffType", subType = "Boss",     color1 = {r=1, g=0, b=0,a=1 }} )
-Grid2:DbSetStatusDefaultValue( "debuff-Magic",    {type = "debuffType", subType = "Magic",    color1 = {r=.2,g=.6,b=1,a=1 }} )
-Grid2:DbSetStatusDefaultValue( "debuff-Poison",   {type = "debuffType", subType = "Poison",   color1 = {r=0, g=.6,b=0,a=1 }} )
-Grid2:DbSetStatusDefaultValue( "debuff-Curse",    {type = "debuffType", subType = "Curse",    color1 = {r=.6,g=0, b=1,a=1 }} )
-Grid2:DbSetStatusDefaultValue( "debuff-Disease",  {type = "debuffType", subType = "Disease",  color1 = {r=.6,g=.4,b=0,a=1 }} )
-Grid2:DbSetStatusDefaultValue( "debuff-Typeless", {type = "debuffType", subType = "Typeless", color1 = {r=0, g=0, b=0,a=1 }} )
-
 --===============================================================================
--- Publish some functions & tables
+-- debuffType
 --===============================================================================
 
-Grid2.CreateStatusAura = CreateStatusAura
-Grid2.debuffTypeColors = debuffTypeColors
-Grid2.debuffDispelTypes = debuffDispelTypes
+do
+	local statusTypesDT = { "color", "icon", "icons", "text", "tooltip" }
+
+	Grid2.setupFunc["debuffType"] = function(baseKey, dbx, debuffs)
+		local typeKey = dbx.subType
+		Grid2.debuffTypeColors[typeKey] = dbx.color1
+		if debuffs then -- store a list of spellID debuffs, currently used only for custom Bleed debuffType
+			local debuffTypeSpells = Grid2.debuffTypeSpells
+			for spellID in next, debuffs do
+				debuffTypeSpells[spellID] = typeKey
+			end
+		end
+		local status = Grid2.statusPrototype:new(baseKey, false)
+		return CreateStatusAura( status, basekey, dbx, dbx.type, statusTypesDT )
+	end
+
+	Grid2:DbSetStatusDefaultValue( "debuff-Boss",     {type = "debuffType", subType = "Boss",     color1 = {r=1, g= 0, b=0, a=1 }} )
+	Grid2:DbSetStatusDefaultValue( "debuff-Magic",    {type = "debuffType", subType = "Magic",    color1 = {r=.2,g=.6, b=1, a=1 }} )
+	Grid2:DbSetStatusDefaultValue( "debuff-Poison",   {type = "debuffType", subType = "Poison",   color1 = {r=0, g=.6, b=0, a=1 }} )
+	Grid2:DbSetStatusDefaultValue( "debuff-Curse",    {type = "debuffType", subType = "Curse",    color1 = {r=.6,g= 0, b=1, a=1 }} )
+	Grid2:DbSetStatusDefaultValue( "debuff-Disease",  {type = "debuffType", subType = "Disease",  color1 = {r=.6,g=.4, b=0, a=1 }} )
+	Grid2:DbSetStatusDefaultValue( "debuff-Typeless", {type = "debuffType", subType = "Typeless", color1 = {r=0, g= 0, b=0, a=1 }} )
+end
 
 --[[ statuses database configurations
 	type = "buff"

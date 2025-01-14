@@ -11,7 +11,7 @@ local strfind = strfind
 local GetTime = GetTime
 local UnitGUID = UnitGUID
 local isClassic = Grid2.isClassic
-local UnitAura = Grid2.UnitAuraLite
+local UnitAura = Grid2.API.UnitAuraLite
 
 local GetSpellInfo = Grid2.API.GetSpellInfo
 local LoadAddOn = C_AddOns and C_AddOns.LoadAddOn or LoadAddOn;

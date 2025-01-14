@@ -5,7 +5,7 @@ local SpellIsSelfBuff = SpellIsSelfBuff
 local UnitAffectingCombat = UnitAffectingCombat
 local SpellGetVisibilityInfo = SpellGetVisibilityInfo
 local myUnits = Grid2.roster_my_units
-local UnitAura = Grid2.UnitAuraLite
+local UnitAura = Grid2.API.UnitAuraLite
 
 -- all buffs
 local textures = {}

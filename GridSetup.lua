@@ -45,7 +45,7 @@ end
 function Grid2:SetupStatuses(setup)
 	-- add new statuses
 	for baseKey, dbx in pairs(setup) do
-		local setupFunc = self.setupFunc[dbx.type]
+		local setupFunc = self.setupFunc[dbx.setupFunc or dbx.type]
 		if setupFunc then
 			setupFunc(baseKey, dbx)
         else
