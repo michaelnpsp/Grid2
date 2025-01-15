@@ -279,7 +279,7 @@ end
 -- dispellable by player spells types tracking
 do
 	local IsPlayerSpell = IsPlayerSpell
-	local class, dispel, func  = Grid2.playerClass, {}, nil
+	local class, dispel, func  = Grid2.playerClass, {}, Grid2.Dummy
 	if Grid2.isCata then -- cataclysm
 		if class == 'DRUID' then
 			func = function()
