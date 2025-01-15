@@ -18,6 +18,7 @@ local Buffs = {}
 local Debuffs = {}
 local DebuffTypes = {}
 local DebuffGroups = {}
+
 local debuffTypeSpells = {}
 local debuffTypeColors = {}
 
@@ -40,7 +41,6 @@ do
 	local myUnits  = Grid2.roster_my_units
 	local roUnits  = Grid2.roster_guids
 	local myFrames = Grid2Frame.frames_of_unit
-	local debuffTypeSpells = Grid2.debuffTypeSpells
 	local indicators = {}
 	local val = {0,0,0}
 	local fill = (GetAuraDataByIndex~=nil)
@@ -650,15 +650,27 @@ end
 do
 	local statusTypesDT = { "color", "icon", "icons", "text", "tooltip" }
 
-	Grid2.setupFunc["debuffType"] = function(baseKey, dbx, debuffs)
-		local typeKey = dbx.subType
-		Grid2.debuffTypeColors[typeKey] = dbx.color1
-		if debuffs then -- store a list of spellID debuffs, currently used only for custom Bleed debuffType
-			local debuffTypeSpells = Grid2.debuffTypeSpells
-			for spellID in next, debuffs do
-				debuffTypeSpells[spellID] = typeKey
+	function Grid2:RegisterDebuffTypeSpells(typeKey, debuffs, indexed)
+		if debuffs then -- register a list of spellID debuffs, currently used only for custom Bleed debuffType
+			for i,j in next, debuffs do
+				debuffTypeSpells[indexed and j or i] = typeKey
 			end
 		end
+	end
+
+	function Grid2:UnregisterDebuffTypeSpells(typeKey, debuffs, indexed)
+		if debuffs then
+			for i,j in next, debuffs do
+				local spellID = indexed and j or i
+				if debuffTypeSpells[spellID] == typeKey then
+					debuffTypeSpells[spellID] = nil
+				end
+			end
+		end
+	end
+
+	Grid2.setupFunc["debuffType"] = function(baseKey, dbx)
+		debuffTypeColors[dbx.subType] = dbx.color1
 		local status = Grid2.statusPrototype:new(baseKey, false)
 		return CreateStatusAura( status, basekey, dbx, dbx.type, statusTypesDT )
 	end

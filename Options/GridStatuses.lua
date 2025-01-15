@@ -74,8 +74,8 @@ end
 
 -- Grid2Options:GetStatusSetupFunc()
 function Grid2Options:GetStatusSetupFunc(status)
-	local key = type(status)=='string' and status or status.dbx.type
-	return self.typeMakeOptions[key] or self.MakeStatusStandardOptions, self.optionParams[key]
+	local key, func = status.dbx.type, status.dbx.setupFunc
+	return self.typeMakeOptions[func] or self.typeMakeOptions[key] or self.MakeStatusStandardOptions, self.optionParams[func] or self.optionParams[key]
 end
 
 -- Grid2Options:GetStatusCategory()

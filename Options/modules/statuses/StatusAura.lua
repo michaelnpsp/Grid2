@@ -406,11 +406,11 @@ end
 function Grid2Options:MakeStatusDebuffTypeFilterOptions(status, options, optionParams)
 	self:MakeHeaderOptions( options, "DebuffFilter" )
 	options.debuffFilter = {
-		type = "input", dialogControl = "Grid2ExpandedEditBox",
+		type = "input", dialogControl = optionParams.dialogControl,
 		order = 180,
 		width = "full",
 		name = "",
-		multiline = status.dbx.debuffFilter and math.max(#status.dbx.debuffFilter,3) or 3,
+		multiline = status.dbx.debuffFilter and math.max(#status.dbx.debuffFilter,8) or 8,
 		get = function()
 				if status.dbx.debuffFilter then
 					local debuffs= {}
@@ -441,6 +441,42 @@ function Grid2Options:MakeStatusDebuffTypeFilterOptions(status, options, optionP
 			end
 			status:UpdateDB()
 			status:UpdateAllUnits()
+		end,
+	}
+end
+
+function Grid2Options:MakeStatusDebuffTypeExtraOptions(status, options, optionParams)
+	options.extraHeader = { type = "header", order = 200, name = L["Allowed debuffs"] }
+	options.extraDebuffs = {
+		type = "input", dialogControl = "Grid2ExpandedEditBox",
+		order = 210,
+		width = "full",
+		name = "",
+		multiline = 8,
+		get = function()
+			local auras = {}
+			if status.dbx.debuffsList then
+				for _,spellID in pairs(status.dbx.debuffsList) do
+					auras[#auras+1] = string.format("%s <%d>", GetSpellInfo(spellID) or UNKNOWN or L["Unknown"], spellID)
+				end
+			end
+			return table.concat( auras, "\n" )
+		end,
+		set = function(_, v)
+			Grid2:UnregisterDebuffTypeSpells(status.dbx.subType, status.dbx.debuffsList, true)
+			local debuffsList = {}
+			local auras = { strsplit("\n", strtrim(v)) }
+			for _,name in pairs(auras) do
+				local prefix, links = string.match(name,"^(.-)(|c.*)")
+				local aura = strtrim(prefix or name)
+				if #aura>0 then
+					local spellID = tonumber(aura) or tonumber(strmatch(aura,'^.+<(%d+)'))
+					if spellID then table.insert(debuffsList, spellID) end
+				end
+			end
+			status.dbx.debuffsList = #debuffsList>0 and debuffsList or nil
+			Grid2:RegisterDebuffTypeSpells(status.dbx.subType, status.dbx.debuffsList, true)
+			status:Refresh()
 		end,
 	}
 end
@@ -509,6 +545,12 @@ function Grid2Options:MakeStatusAuraListOptions(status, options, optionParams)
 	return options
 end
 
+function Grid2Options:MakeStatusCustomDebuffTypeOptions(status, options, optionParams)
+	self:MakeStatusDebuffTypeColorsOptions(status, options, optionParams)
+	self:MakeStatusDebuffTypeFilterOptions(status, options, optionParams)
+	self:MakeStatusDebuffTypeExtraOptions(status, options, optionParams)
+end
+
 -- {{ Register
 Grid2Options:RegisterStatusOptions("buff", "buff", function(self, status, options, optionParams)
 	self:MakeStatusAuraUseSpellIdOptions(status, options, optionParams)
@@ -540,10 +582,11 @@ Grid2Options:RegisterStatusOptions("debuffType", "debuff", function(self, status
 	self:MakeStatusDebuffTypeColorsOptions(status, options, optionParams)
 	self:MakeStatusDebuffTypeFilterOptions(status, options, optionParams)
 end,{
+	dialogControl = "Grid2ExpandedEditBox",
 	groupOrder = function(status)
 		local typ = status.dbx.subType
 		return (typ=='Typeless' and 13) or (typ=='Boss' and 10) or (typ=='Bleed' and 11) or 12
-	end
+	end,
 } )
 
 -- }}

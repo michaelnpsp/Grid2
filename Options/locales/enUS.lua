@@ -627,6 +627,7 @@ L["Debuff"] = true
 L["Buffs Group"] = true
 L["Debuffs Group"] = true
 L["Filtered debuffs"] = true
+L["Allowed debuffs"] = true
 L["Listed debuffs will be ignored."] = true
 L["AURAVALUE_DESC"] = "Select an aura value to track. Auras can provide up to 3 values, but not all auras have additional values. Examples of auras providing additional values are: priest shields (shield amount is stored in Value1) or DeathKnight purgatory debuff."
 L["Enabled for"] = true
@@ -724,6 +725,7 @@ L["Curse"] = true
 L["Poison"] = true
 L["Disease"] = true
 L["Magic"] = true
+L["Bleed"] = true
 
 L["raid-debuffs"]  = "Raid Debuffs"
 L["raid-debuffs2"] = "Raid Debuffs(2)"
