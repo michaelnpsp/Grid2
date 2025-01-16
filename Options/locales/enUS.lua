@@ -725,6 +725,7 @@ L["Curse"] = true
 L["Poison"] = true
 L["Disease"] = true
 L["Magic"] = true
+L["Boss"] = true
 L["Bleed"] = true
 
 L["raid-debuffs"]  = "Raid Debuffs"

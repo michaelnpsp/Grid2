@@ -721,6 +721,7 @@ L["Curse"] = "Maldicion"
 L["Poison"] = "Veneno"
 L["Disease"] = "Enfermedad"
 L["Magic"] = "Magia"
+L["Boss"] = "Jefe"
 L["Bleed"] = "Sangrado"
 
 L["raid-debuffs"] = "Debuffs de Raid"
