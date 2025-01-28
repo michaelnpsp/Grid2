@@ -3,6 +3,7 @@ local AOEM = Grid2:GetModule("Grid2AoeHeals")
 local L = Grid2Options.L
 local select = select
 local GetSpellInfo = Grid2.API.GetSpellInfo
+local GetSpellName = C_Spell and C_Spell.GetSpellName or GetSpellInfo
 
 local classHeals = Grid2.isClassic and {
 	SHAMAN  = { 1064 }, -- Chain Heal
@@ -30,31 +31,30 @@ local dmgEvents = {
 	SPELL_BUILDING_DAMAGE = true,
 }
 
+local spells_cache = {}
+
 -- Misc util functions
-local function GetSpellID(name, defaultSpells)
-	if tonumber(name) then
-		return tonumber(name)
-	end
-	for _,spells in next, defaultSpells do
-		for _,spell in next, spells do
-			local spellName = GetSpellInfo(spell)
-			if spellName == name then
-				return spell
-			end
+local function InitCache()
+	for _,spells in next, classHeals do
+		for _,id in next, spells do
+			spells_cache[ GetSpellInfo(id) or 0 ] = id
 		end
 	end
-	local id = 0
-	local texture = select(3, GetSpellInfo(name))
-	for i=300000, 1, -1  do
-		if GetSpellInfo(i) == name then
-			id = i
-			local _,_,tex = GetSpellInfo(i)
-			if tex == texture then
-				return i
-			end
+end
+
+local function FindCache(name)
+	if not spells_cache[name] and not spells_cache[-1] then
+		for i=300000, 1, -1  do
+			local name = GetSpellName(i)
+			if name then spells_cache[name] = i	end
 		end
+		spells_cache[-1] = true
 	end
-	return id
+	return spells_cache[name] or 0
+end
+
+local function GetSpellID(name)
+	return tonumber(name) or select(7, GetSpellInfo(name)) or FindCache(name)
 end
 
 local function SetSpellsByCategory(typ, tab)
@@ -134,6 +134,7 @@ local function MakeStatusOutgoingOptions(self, status, options)
 				for _,spell in pairs(status.dbx.spellList) do
 					local name = GetSpellInfo(spell)
 					if name then
+						spells_cache[name] = spell
 						auras[#auras+1] = name
 					end
 				end
@@ -142,6 +143,7 @@ local function MakeStatusOutgoingOptions(self, status, options)
 		set = function(_, v)
 			wipe(status.dbx.spellList)
 			local auras = { strsplit("\n,", v) }
+			local t1=debugprofilestop()
 			for i,v in pairs(auras) do
 				local aura = strtrim(v)
 				if #aura>0 then
@@ -149,20 +151,22 @@ local function MakeStatusOutgoingOptions(self, status, options)
 					if spellID then
 						spellID = GetSpellInfo(spellID) and spellID or 0
 					else
-						spellID = GetSpellID(aura, classHeals)
+						spellID = GetSpellID(aura)
 					end
 					if spellID > 0 then
 						table.insert(status.dbx.spellList, spellID)
 					end
 				end
 			end
+			print( ">>>", debugprofilestop() - t1 )
 			status:UpdateDB()
 		end,
 	}
+	options.eventsSpacer = { type = "header", order = 45, name = L["Activation conditions"] }
 	if status.dbx.type=='aoe-heals' then
 		options.addSpells = {
 			type = "select",
-			order = 45,
+			order = 44,
 			name = L["Add heal spells"],
 			desc = L[""],
 			get = function () end,
@@ -172,18 +176,66 @@ local function MakeStatusOutgoingOptions(self, status, options)
 			end,
 			values = GetSpellsByCategory,
 		}
-	else
-		if status.dbx.events==nil then status.dbx.events = {} end
-		options.eventsSpacer = { type = "header", order = 45, name = L["Activation conditions"] }
 		options.eventsHeal = {
 			type = "toggle",
 			order = 46,
 			width = 0.62,
-			name = L["Healing"],
+			name = L["Direct Heal"],
 			desc = L["Enable the status when a spell is healing a player."],
-			get = function () return status.dbx.events.SPELL_HEAL end,
+			get = function () return status.dbx.events==nil or status.dbx.events.SPELL_HEAL end,
+			set = function (_, v)
+				local dbx = status.dbx
+				dbx.events = dbx.events or { SPELL_HEAL = true, SPELL_PERIODIC_HEAL = true }
+				dbx.events.SPELL_HEAL = v or nil
+				if not next(dbx.events) then
+					dbx.events.SPELL_PERIODIC_HEAL = true
+				elseif dbx.events.SPELL_HEAL and dbx.events.SPELL_PERIODIC_HEAL then
+					dbx.events = nil
+				end
+				status:UpdateDB()
+			end,
+		}
+		options.eventsHealPeriodic = {
+			type = "toggle",
+			order = 46.5,
+			width = 0.62,
+			name = L["Periodic Heal"],
+			desc = L["Enable the status when a spell is healing a player."],
+			get = function () return status.dbx.events==nil or status.dbx.events.SPELL_PERIODIC_HEAL end,
+			set = function (_, v)
+				local dbx = status.dbx
+				dbx.events = dbx.events or { SPELL_HEAL = true, SPELL_PERIODIC_HEAL = true }
+				dbx.events.SPELL_PERIODIC_HEAL = v or nil
+				if not next(dbx.events) then
+					dbx.events.SPELL_HEAL = true
+				elseif dbx.events.SPELL_HEAL and dbx.events.SPELL_PERIODIC_HEAL then
+					dbx.events = nil
+				end
+				status:UpdateDB()
+			end,
+		}
+	else
+		status.dbx.events = status.dbx.events or {}
+		options.eventsHeal = {
+			type = "toggle",
+			order = 46,
+			width = 0.62,
+			name = L["Direct Heal"],
+			desc = L["Enable the status when a spell is healing a player."],
+			get = function () return status.dbx.events==nil or status.dbx.events.SPELL_HEAL end,
 			set = function (_, v)
 				status.dbx.events.SPELL_HEAL = v or nil
+				status:UpdateDB()
+			end,
+		}
+		options.eventsHealPeriodic = {
+			type = "toggle",
+			order = 46.5,
+			width = 0.62,
+			name = L["Periodic Heal"],
+			desc = L["Enable the status when a spell is healing a player."],
+			get = function () return status.dbx.events==nil or status.dbx.events.SPELL_PERIODIC_HEAL end,
+			set = function (_, v)
 				status.dbx.events.SPELL_PERIODIC_HEAL = v or nil
 				status:UpdateDB()
 			end,
@@ -203,18 +255,6 @@ local function MakeStatusOutgoingOptions(self, status, options)
 				status:UpdateDB()
 			end,
 		}
-		--[[options.eventsCastStart = {
-			type = "toggle",
-			order = 48,
-			width = 0.62,
-			name = L["Cast Start"],
-			desc = L["Enable the status when a spell cast starts."],
-			get = function () return status.dbx.events.SPELL_CAST_START	end,
-			set = function (_, v)
-				status.dbx.events.SPELL_CAST_START = v or nil
-				status:UpdateDB()
-			end,
-		}--]]
 		options.eventsCastSuccess = {
 			type = "toggle",
 			order = 49,
@@ -232,6 +272,7 @@ end
 
 -- MakeCategoryOptions()
 local function MakeCategoryOptions()
+	InitCache()
 	local NewStatusName, NewClassHeals, NewSpellType
 	return {
 		newOutgoingStatusName = {
