@@ -388,7 +388,55 @@ RDDB["The War Within"] = {
 		449154, -- Molten Mortar
 		445207, -- Piercing Wail
 		464879, -- Concussive Smash
-		425974, -- Ground Pound		
+		425974, -- Ground Pound
+		},
+	},
+	[1298] = {
+		{ id = 1298, name = "Operation: Floodgate" },
+		["Big M.O.M.M.A."] = {
+		order = 1, ejid = 2648,
+		460156, --Jumpstart
+		473287, --Excessive Electrification
+		471585, --Mobilize Mechadrones
+		1214780, --Maximum Distortion
+		460393, --Shoot
+		472452, --Doom Storm
+		473351, --Electrocrush
+		473220, --Sonic Boom
+		469981, --Kill-o-Block Barrier
+		},
+		["Demolition Duo"] = {
+		order = 2, ejid = 2649,
+		460867, --Big Bada BOOM!
+		460787, --Deflagration
+		472755, --Shrapnel
+		1217653, --B.B.B.F.G.
+		460602, --Quick Shot
+		473690, --Kinetic Explosive Gel
+		459779, --Barreling Charge
+		459799, --Wallop
+		470090, --Divided Duo
+		},
+		["Swampface"] = {
+		order = 3, ejid = 2650,
+		470039, --Razorchoke Vines
+		473070, --Awaken the Swamp
+		473047, --Skewering Root
+		473052, --Rushing Tide
+		473112, --Mudslide
+		469478, --Sludge Claws
+		},
+		["Geezle Gigazap"] = {
+		order = 4, ejid = 2651,
+		465456, --Turbo Charge
+		466088, --Turbo Bolt
+		468276, --Dam!
+		468261, --Dam Water
+		468661, --Shock Water
+		468606, --Dam Rubble
+		468846, --Leaping Sparks
+		468812, --Gigazap
+		466197, --Thunder Punch
 		},
 	},
 	-- Raid instances
@@ -666,6 +714,269 @@ RDDB["The War Within"] = {
 		443396, --Gloom Splatter
 		445268, --Dreadful Presence
 		451832, --Cataclysmic Evolution
+		},
+	},
+	[1296] = {
+		{ id = 1296, name = "Liberation of Undermine", raid = true },
+		["Vexie and the Geargrinders"] = {
+		order = 1, ejid = 2639,
+		466615, --Protective Plating
+		471403, --Unrelenting CAR-nage
+		459943, --Call Bikers
+		1216731, --Oil Canister
+		473507, --Soaked in Oil
+		459679, --Oil Slick
+		459453, --Blaze of Glory
+		460625, --Burning Shrapnel
+		459994, --Hot Wheels
+		459666, --Spew Oil
+		468207, --Incendiary Fire
+		459974, --Bomb Voyage!
+		459627, --Tank Buster
+		468147, --Exhaust Fumes
+		460603, --Mechanical Breakdown
+		460386, --Backfire
+		460116, --Tune-Up
+		473636, --High Maintenance
+		460153, --Repair
+		},
+		["Cauldron of Carnage"] = {
+		order = 2, ejid = 2640,
+		465833, --Colossal Clash
+		463800, --Zapbolt
+		465446, --Fiery Wave
+		1221826, --Tiny Tussle
+		471660, --Raised Guard
+		471557, --King of Carnage
+		472220, --Blistering Spite
+		473650, --Scrapbomb
+		1214039, --Molten Pool
+		1213688, --Molten Phlegm
+		472231, --Blastburn Roarcannon
+		1214190, --Eruption Stomp
+		472223, --Galvanized Spite
+		1218088, --Tempest Unleashed
+		473951, --Static Charge
+		473983, --Static Discharge
+		463840, --Thunderdrum Salvo
+		1213994, --Voltaic Image
+		463925, --Lingering Electricity
+		466178, --Lightning Bash
+		},
+		["Rik Reverb"] = {
+		order = 3, ejid = 2641,
+		473748, --Amplification!
+		1214829, --Feedback Nullifier
+		1217120, --Lingering Voltage
+		468119, --Resonant Echoes
+		1214598, --Entranced
+		465795, --Noise Pollution
+		466093, --Haywire
+		466866, --Echoing Chant
+		467606, --Sound Cannon
+		466961, --Faulty Zap
+		467297, --Static Jolt
+		472306, --Sparkblast Ignition
+		472294, --Grand Finale
+		1214164, --Excitement
+		466128, --Resonance
+		464488, --Sonic Blast
+		464518, --Tinnitus
+		466722, --Blowout!
+		1213817, --Sound Cloud
+		467991, --Blaring Drop
+		473655, --Hype Fever!
+		},
+		["Stix Bunkjunker"] = {
+		order = 4, ejid = 2642,
+		464399, --Electromagnetic Sorting
+		461536, --Rolling Rubbish
+		465741, --Garbage Dump
+		1217685, --Messed Up
+		465611, --Rolled!
+		464854, --Garbage Pile
+		464865, --Discarded Doomsplosive
+		1217975, --Doomsploded
+		465747, --Muffled Doomsplosion
+		473066, --Territorial
+		473115, --Short Fuse
+		1218706, --Prototype Powercoil
+		1218708, --Hypercharged
+		1219384, --Scrap Rockets
+		466742, --Dumpster Dive
+		1220752, --The Recycler
+		466748, --Infected Bite
+		464149, --Incinerator
+		472893, --Incineration
+		464248, --Hot Garbage
+		1218343, --Toxic Fumes
+		464112, --Demolish
+		1217954, --Meltdown
+		467117, --Overdrive
+		467149, --Overcharged Bolt
+		467135, --Trash Compactor
+		473227, --Maximum Output
+		},
+		["Sprocketmonger Lockenstock"] = {
+		order = 5, ejid = 2653,
+		473276, --Activate Inventions!
+		1216414, --Blazing Beam
+		1216525, --Rocket Barrage
+		1215858, --Mega Magnetize
+		1216674, --Jumbo Void Beam
+		1216699, --Void Barrage
+		1217673, --Voidsplash
+		1216802, --Polarization Generator
+		1216911, --Posi-Polarization
+		1216934, --Nega-Polarization
+		1216965, --Polarization Blast
+		1217083, --Foot-Blasters
+		1219047, --Polarized Catastro-Blast
+		1216406, --Unstable Explosion
+		1218342, --Unstable Shrapnel
+		466235, --Wire Transfer
+		1216508, --Screw Up
+		1217261, --Screwed!
+		465232, --Sonic Ba-Boom
+		471308, --Blisterizer Mk. II
+		1214872, --Pyro Party Pack
+		465917, --Gravi-Gunk
+		466765, --Beta Launch
+		466860, --Bleeding Edge
+		1218319, --Voidsplosion
+		1214265, --Black Bloodsplatter
+		1218344, --Upgraded Bloodtech
+		},
+		["The One-Armed Bandit"] = {
+		order = 6, ejid = 2644,
+		461060, --Spin To Win!
+		461068, --Fraud Detected!
+		461083, --Reward: Shock and Flame
+		474731, --Traveling Flames
+		473009, --Explosive Shrapnel
+		461091, --Reward: Shock and Bomb
+		467870, --Explosive Gaze
+		461176, --Reward: Flame and Bomb
+		472178, --Burning Blast
+		461389, --Reward: Flame and Coin
+		461101, --Reward: Coin and Shock
+		474665, --Coin Magnet
+		461395, --Reward: Coin and Bomb
+		460973, --Dark Lined Cuirass
+		460582, --Overload!
+		472197, --Withering Flames
+		460847, --Electric Blast
+		464705, --Golden Ticket
+		460181, --Pay-Line
+		460444, --High Roller!
+		460430, --Crushed!
+		472718, --Up the Ante
+		460164, --Foul Exhaust
+		460472, --The Big Hit
+		460474, --Shocking Field
+		465309, --Cheat to Win!
+		465432, --Linked Machines
+		473178, --Voltaic Streak
+		465322, --Hot Hot Heat
+		465580, --Scattered Payout
+		465587, --Explosive Jackpot
+		},
+		["Mug'Zee, Heads of Security"] = {
+		order = 7, ejid = 2645,
+		466376, --Head Honcho
+		466385, --Moxie
+		468658, --Elemental Carnage
+		468663, --Elemental Calamity
+		468694, --Uncontrolled Destruction
+		469715, --Uncontrolled Burn
+		1216142, --Double-Minded Fury
+		472631, --Earthshaker Gaol
+		1214623, --Enraged
+		472659, --Shakedown
+		472782, --Pay Respects
+		470910, --Gaol Break
+		474554, --Shaken Earth
+		466476, --Frostshatter Boots
+		466480, --Frostshatter Spear
+		466509, --Stormfury Finger Gun
+		466516, --Stormfury Cloud
+		466518, --Molten Gold Knuckles
+		467202, --Golden Drip
+		467225, --Solid Gold
+		470089, --Molten Gold Pool
+		466539, --Unstable Crawler Mines
+		469043, --Searing Shrapnel
+		1219283, --Experimental Plating
+		1220551, --Unstable Cluster Bomb
+		467381, --Goblin-guided Rocket
+		1215488, --Disintegration Beam
+		1216202, --Rocket Jump
+		472057, --Hot Mess
+		469076, --Radiation Sickness
+		466545, --Spray and Pray
+		1214991, --Surging Arc
+		1215591, --Faulty Wiring
+		1222948, --Electro-Charged Shield
+		469490, --Double Whammy Shot
+		469391, --Perforating Wound
+		469375, --Explosive Payload
+		1216495, --Electrocution Matrix
+		1215953, --Static Charge
+		471574, --Bulletstorm
+		463967, --Bloodlust
+		},
+		["Chrome King Gallywix"] = {
+		order = 8, ejid = 2646,
+		466340, --Scatterblast Canisters
+		1220761, --Mechengineer's Canisters
+		474447, --Canister Detonation
+		465952, --Big Bad Buncha Bombs
+		466154, --Blast Burns
+		466153, --Bad Belated Boom
+		466158, --Sapper's Satchel
+		1217290, --Another in the Bag
+		466165, --1500-Pound "Dud"
+		466246, --Focused Detonation
+		1217292, --Time-Release Crackle
+		466338, --Zagging Zizzler
+		467182, --Suppression
+		466751, --Venting Heat
+		466753, --Overheating
+		471225, --Gatling Cannon
+		1220290, --Trick Shots
+		469286, --Giga Coils
+		469327, --Giga Blast
+		469404, --Giga BOOM!
+		469297, --Sabotaged Controls
+		1220846, --Control Meltdown
+		1215209, --Sabotage Zone
+		1219313, --Overloaded Bolts
+		466341, --Fused Canisters
+		469362, --Charged Giga Bomb
+		469363, --Fling Giga Bomb
+		469767, --Giga Bomb Detonation
+		471352, --Juice It!
+		1223126, --Party Crashing Rocket
+		466834, --Shock Barrage
+		1216845, --Wrench
+		1216852, --Lumbering Rage
+		1214226, --Cratering
+		1214229, --Armageddon-class Plating
+		1219319, --Radiant Electricity
+		1219278, --Gallybux Pest Eliminator
+		1214369, --TOTAL DESTRUCTION!!!
+		1214607, --Bigger Badder Bomb Blast
+		1214755, --Overloaded Rockets
+		466342, --Tick-Tock Canisters
+		1219333, --Gallybux Finale Blast
+		466958, --Ego Check
+		467064, --Checked Ego
+		1217987, --Combination Canisters
+		1218504, --Giga Blast Residue
+		1218992, --Discharged Giga Bomb
+		1220784, --Auto-Locking Cuff Bomb
+		1219039, --Ionization
+		1219041, --Static Zap
 		},
 	},
 }
