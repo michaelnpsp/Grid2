@@ -74,6 +74,10 @@ function RDO:Init()
 	self:InitGeneralOptions()
 end
 
+-- Needed by mythic+ module, override later
+function RDO:UpdateMythicPlusModule()
+end
+
 -- Enable/Disable Raid Debuffs Autodetect
 function RDO:SetAutodetect(v)
 	if v then

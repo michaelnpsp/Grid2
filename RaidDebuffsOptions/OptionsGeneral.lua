@@ -152,7 +152,7 @@ do
 	end
 	local function set(info,state)
 		local module = info[#info]
-		local mpdata = (module=="Mythic+ Dungeons" or RDO:IsModuleEnabled("Mythic+ Dungeons")) and Grid2Options.UpdateMythicPlusModule
+		local mpdata = (module=="Mythic+ Dungeons" or RDO:IsModuleEnabled("Mythic+ Dungeons")) and RDO:UpdateMythicPlusModule()
 		RDO.db.profile.enabledModules[module] = state or nil
 		for instance, data in pairs(RDO.RDDB[module]) do
 			local skip = mpdata and mpdata[instance] and (module~="Mythic+ Dungeons" or RDO:IsModuleEnabled(mpdata[instance])) -- if the instance is shared with another enabled module do not enable/disable the debuffs
