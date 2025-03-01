@@ -9,7 +9,7 @@
 ## Notes: Load on demand Options for Grid2RaidDebuffs.
 ## Notes-esES: Opciones de configuracion para el modulo Grid2RaidDebuffs.
 ## Author: Michael
-## Dependencies: Grid2, Grid2RaidDebuffs
+## Dependencies: Grid2
 ## LoadOnDemand: 1
 ## Version: @project-version@
 ## IconTexture: Interface/AddOns/Grid2/media/iconsmall.tga
