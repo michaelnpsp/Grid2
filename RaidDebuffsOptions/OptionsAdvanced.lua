@@ -294,6 +294,12 @@ local function DisplayCurrentInstance()
 	end
 end
 
+local function UpdateMythicPlusModule()
+	if Grid2Options.UpdateMythicPlusModule then
+		Grid2Options:UpdateMythicPlusModule()
+	end
+end
+
 function RDO:RefreshAdvancedOptions()
 	MakeRaidDebuffsOptions(true)
 end
@@ -401,6 +407,7 @@ do
 		order = 0,
 		name = "",
 		hidden = function()
+			UpdateMythicPlusModule()
 			DisplayCurrentInstance()
 			return true
 		end
