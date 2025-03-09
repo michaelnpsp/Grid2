@@ -41,7 +41,7 @@ local auto_encounter
 local auto_debuffs
 local auto_blacklist = { [160029] = true, [36032] = true, [6788] = true, [80354] = true, [95223] = true, [114216] = true, [57723] = true, [225080] = true, [25771] = true }
 
--- Fix some bugged maps (EJ_GetInstanceInfo does not return valid instanceID for the listed maps)
+-- Fix some bugged maps (EJ_GetInstanceForMap does not return valid instanceID for the listed maps)
 -- We replace bugged mapIDs with another non-bugged mapIDs of the same instance.
 local bugged_maps = {
 	-- Fix for Uldir map 1150 (ticket #588)
@@ -54,6 +54,10 @@ local bugged_maps = {
 	[1582] = 1581,
 	-- Spires of Ascension
 	[1692] = 1693,
+	-- The Rookery (CF ticket #1333)
+	[2315] = 2319,
+	[2317] = 2319,
+	[2318] = 2319,
 }
 
 -- LDB Tooltip
@@ -193,7 +197,7 @@ end
 function GSRD:RegisterEncounter(encounterName)
 	encounterName  = encounterName or auto_boss or self:GetBossName()
 	auto_encounter = encounterName
-	auto_instance  = IsInInstance() and instance_ej_id or instance_map_id
+	auto_instance  = (IsInInstance() and instance_ej_id~=0) and instance_ej_id or instance_map_id
 	local debuffs  = self.db.profile.debuffs[auto_instance]
 	if not debuffs then
 		debuffs = { { id = auto_instance, name = instance_map_name, raid = IsInRaid() or nil } }
