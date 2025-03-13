@@ -33,7 +33,7 @@ local RDDB, RDO = Grid2Options:GetRaidDebuffsTable()
 RDDB["Mythic+ Dungeons"] = {}
 
 -- GetCurrentSeason() only works after calling RequestMapInfo() and waiting some time on first login, so we need
--- to delay the module initialization: this function is called from OptionsAdvanced.lua when advanced options are displayed.
+-- to delay the module initialization: this function is called from OptionsAdvanced.lua
 function RDO:UpdateMythicPlusModule() -- Create the M+ dungeons module using data from other modules
 	local instances = DB[C_MythicPlus.GetCurrentSeason()] or DB[SEASON_LAST]
 	if instances then
