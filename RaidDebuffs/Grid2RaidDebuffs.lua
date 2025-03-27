@@ -58,6 +58,8 @@ local bugged_maps = {
 	[2315] = 2319,
 	[2317] = 2319,
 	[2318] = 2319,
+	-- Liberation of Undermine (CF ticket #1338)
+	[2428] = 2406,
 }
 
 -- LDB Tooltip
