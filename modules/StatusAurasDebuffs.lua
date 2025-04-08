@@ -19,6 +19,7 @@ local code_standard = [[
 local spells = Grid2.statuses["%s"].spells
 local dispel = Grid2.debuffPlayerDispelTypes
 local IsRelevantDebuff = Grid2.IsRelevantDebuff
+local IsRaidDebuff = Grid2.IsRaidDebuff
 return function(self, unit, sid, name, count, duration, caster, boss, typ)
 	return %s
 end ]]
@@ -27,6 +28,7 @@ local code_stacks = [[
 local spells = Grid2.statuses["%s"].spells
 local dispel = Grid2.debuffPlayerDispelTypes
 local IsRelevantDebuff = Grid2.IsRelevantDebuff
+local IsRaidDebuff = Grid2.IsRaidDebuff
 return function(self, unit, sid, name, count, duration, caster, boss, typ)
 	if not (%s) then return end
 	if not self.seen then self.currentName=name; return true; end
@@ -45,6 +47,22 @@ end
 -- code to manage dbx.filterRelevant debuffs filter
 local raidFilter = "RAID_OUTOFCOMBAT"
 local raid_statuses = {}
+
+function Grid2.IsRaidDebuff(spellName)
+	-- Function which fetches the raid debuff
+	-- names that are loaded for the current zone
+	if Grid2.GetRaidDebuffs == nil then
+		return false
+	end
+
+	-- {spell_name: index}
+	raidDebuffs = Grid2.GetRaidDebuffs()
+	if raidDebuffs == nil then
+		return false
+	end
+
+	return raidDebuffs[spellName] ~= nil
+end
 
 function Grid2.IsRelevantDebuff(spellId, caster)
 	local hasCustom, alwaysShowMine, showForMySpec = SpellGetVisibilityInfo(spellId, raidFilter)
@@ -101,6 +119,9 @@ local function CompileUpdateStateFilter(self, lazy, useSpellId, code)
 	end
 	if dbx.filterRelevant~=nil then
 		t[#t+1] = string.format( "%s IsRelevantDebuff(sid, caster)", dbx.filterRelevant and 'not' or '' )
+	end
+	if dbx.filterRaidDebuffs~=nil then
+		t[#t+1] = "not IsRaidDebuff(name)"
 	end
 	local q -- special case for black/white lists because they are always strict (non lazy).
 	if dbx.useWhiteList then
