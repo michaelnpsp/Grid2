@@ -893,14 +893,14 @@ function Grid2Layout:RestorePosition()
 	-- foreground frame
 	local f = self.frame
 	f:SetScale(p.ScaleSize)
-	local a, x, y = self:GetFramePosition(f)
+	local a, x, y, k = self:GetFramePosition(f)
 	f:ClearAllPoints()
 	f:SetPoint(a, x, y)
 	-- background frame
 	local b = f.frameBack
 	b:ClearAllPoints()
 	b:SetPoint(p.groupAnchor) -- Using groupAnchor instead of anchor, see ticket #442.
-	self:Debug("Restored Position", a, p.ScaleSize, x, y)
+	self:Debug("Restored Position", a, p.ScaleSize, x, y, k)
 end
 
 function Grid2Layout:ResetPosition()
@@ -1000,7 +1000,7 @@ function Grid2Layout:GetFramePosition(f)
 	local s = f:GetEffectiveScale()
 	if f.headerPosKey then
 		local pos = p.Positions[f.headerPosKey]
-		if pos then	return pos[1], pos[2]/s, pos[3]/s end
+		if pos then	return pos[1], pos[2]/s, pos[3]/s, f.headerPosKey end
 		p.Positions[f.headerPosKey] = { p.anchor, p.PosX, p.PosY }
 	end
 	return p.anchor, p.PosX/s, p.PosY/s
