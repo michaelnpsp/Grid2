@@ -9,7 +9,7 @@ local Grid2Layout = Grid2:GetModule("Grid2Layout")
 
 --=====================================================================================
 
-local SUPPORT_ROLES = Grid2.versionCli>=30000
+local SUPPORT_ROLES = true -- Grid2.versionCli>=30000
 
 local EDITOR_IDENTIFIER = "LayoutEditor"
 

@@ -1,18 +1,10 @@
 -- statuses with very simple options has been grouped in this file
 
 local L = Grid2Options.L
-
-Grid2Options:RegisterStatusOptions("afk", "misc", nil, {
-	titleIcon = "Interface\\ICONS\\Spell_nature_sleep"
-})
+local LG = Grid2Options.LG
 
 Grid2Options:RegisterStatusOptions("voice", "misc", nil, {
 	titleIcon = "Interface\\COMMON\\VOICECHAT-SPEAKER"
-})
-
-Grid2Options:RegisterStatusOptions("offline", "misc", nil, {
-	titleIcon = "Interface\\CharacterFrame\\Disconnect-Icon",
-	titleIconCoords = {0.3,0.7,0.2,0.8},
 })
 
 Grid2Options:RegisterStatusOptions("target", "target", nil, {
@@ -22,6 +14,52 @@ Grid2Options:RegisterStatusOptions("target", "target", nil, {
 
 Grid2Options:RegisterStatusOptions("self", "target", nil, {
 	titleIcon = "Interface\\Icons\\Inv_wand_12",
+})
+
+Grid2Options:RegisterStatusOptions("afk", "misc", function(self, status, options, optionParams)
+	self:MakeStatusColorOptions(status, options, optionParams)
+	self:MakeSpacerOptions(options, 40)
+	options.customText = {
+		type = "input",
+		order = 50,
+		name = L["Text"],
+		desc = L["Leave blank to use the default text."],
+		get = function ()
+			return status.dbx.text or LG["AFK"]
+		end,
+		set = function (_, v)
+			v = strtrim(v)
+			status.dbx.text = (v~='' and v~=LG["AFK"]) and v or nil
+			print(">", status.dbx.text)
+			status:UpdateDB()
+			status:UpdateAllUnits()
+		end,
+	}
+end, {
+	titleIcon = "Interface\\ICONS\\Spell_nature_sleep"
+})
+
+Grid2Options:RegisterStatusOptions("offline", "misc", function(self, status, options, optionParams)
+	self:MakeStatusColorOptions(status, options, optionParams)
+	self:MakeSpacerOptions(options, 40)
+	options.customText = {
+		type = "input",
+		order = 50,
+		name = L["Text"],
+		desc = L["Leave blank to use the default text."],
+		get = function ()
+			return status.dbx.text or LG["Offline"]
+		end,
+		set = function (_, v)
+			v = strtrim(v)
+			status.dbx.text = (v~='' and v~=LG["Offline"]) and v or nil
+			status:UpdateDB()
+			status:UpdateAllUnits()
+		end,
+	}
+end, {
+	titleIcon = "Interface\\CharacterFrame\\Disconnect-Icon",
+	titleIconCoords = {0.3,0.7,0.2,0.8},
 })
 
 Grid2Options:RegisterStatusOptions("resurrection", "combat", function(self, status, options, optionParams)
