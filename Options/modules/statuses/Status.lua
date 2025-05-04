@@ -7,7 +7,7 @@ do
 	local UNIT_REACTIONS = {
 		friendly = L['Friendly'],
 		hostile  = L['Hostile'],
-	}
+		}
 
 	local GROUP_TYPES = {
 		solo  = L['Solo'],
@@ -390,6 +390,13 @@ do
 				L["Unit Type"],
 				L["Load the status only for the specified unit types."],
 				true
+			)
+			SetFilterBooleanOptions( status, options, 90,
+				'unitPlayer',
+				true,
+				L["Unit is Me"],
+				L["Load the status only if the unit is my character."],
+				NOYES_TYPES
 			)
 		end
 		return options

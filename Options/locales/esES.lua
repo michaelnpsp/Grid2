@@ -1535,6 +1535,9 @@ L["Active Theme"] = "Tema Activo"
 L["Load the indicator only for the specified themes."] = "Carga el indicator solo para los temas indicados."
 L["Unit Alive"] = "Unidad: Viva"
 L["Load the status only if the unit is alive/dead."] = "Carga el estado solo si la unidad esta viva/muerta."
+L["Unit is Me"] = "Unidad: Yo"
+L["Load the status only if the unit is my character."] = "Carga el estado solo si la unidad representa mi personaje."
+
 
 L["Select layouts for different Raid types."] = "Elige los diseños para diferentes tipos de raid."
 L["Use Blizzard Unit Frames"] = "Usar Marcos de Unidades de Blizzard"
