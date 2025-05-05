@@ -279,6 +279,57 @@ do
 	} }
 end
 
+-- db maintenance
+do
+	local function IsZoneEnabled(zoneID) -- check if the zone belongs to any enabled module.
+		for module in pairs(RDO.db.profile.enabledModules) do
+			local zones = RDO.RDDB[module]
+			if zones and zones[zoneID] then
+				return true
+			end
+		end
+		return RDO.RDDB['[Custom Debuffs]'][zoneID] ~= nil
+	end
+
+	local function RemoveDisabledZones()
+		local delete, zcount, dcount = {}, 0, 0
+		for _,status in ipairs(RDO.statuses) do
+			local debuffs = status.dbx.debuffs
+			for zone in pairs(debuffs) do
+				if not IsZoneEnabled(zone) then
+					delete[zone] = debuffs
+					zcount = zcount + 1
+					dcount = dcount + #debuffs[zone]
+				end
+			end
+		end
+		if zcount>0 or dcount>0 then
+			Grid2Options:ConfirmDialog(string.format(L["Raid Debuffs Warning:\n %d zones and %d orphan raid debuffs has been detectetd. Do you want to remove this information ?"], zcount, dcount), function()
+				for zone, debuffs in pairs(delete) do
+					debuffs[zone] = nil
+				end
+				RDO:UpdateZoneSpells()
+				RDO:RefreshAdvancedOptions()
+				print("Grid2RaidDebuffs database maintenance finished.")
+			end)
+		else
+			Grid2Options:MessageDialog(L["Raid debuffs database is OK, nothing to clean."])
+		end
+	end
+
+	options.maintenance = { type = "group", order = 20,	name = L["Maintenance"], inline= true, args = {
+		clean = {
+			type = "execute",
+			order = 10,
+			name = L["Clean Database"],
+			desc = L["Clean the database removing orphan raid debuffs."],
+			func = function(info)
+				RemoveDisabledZones()
+			end,
+		}
+	} }
+end
+
 ----------------------------------------------------------------------
 --
 ----------------------------------------------------------------------

@@ -342,7 +342,8 @@ local function StatusDisableDebuff(spellId)
 	local status = debuffsStatuses[spellId]
 	if status then
 		local index = debuffsIndexes[spellId]
-		DbDelTableValue( spellId, status.dbx.debuffs, visibleInstance)
+		DbDelTableValue(spellId, status.dbx.debuffs, visibleInstance)
+		DbDelTableValue(-spellId, status.dbx.debuffs, visibleInstance)
 		debuffsStatuses[spellId] = nil
 		debuffsIndexes[spellId] = nil
 		for k,v in pairs(debuffsStatuses) do
