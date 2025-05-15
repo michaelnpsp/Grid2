@@ -139,8 +139,8 @@ Grid2.setupFunc["shields-overflow"] = Create
 
 Grid2:DbSetStatusDefaultValue( "shields-overflow", { type = "shields-overflow", color1 = {r=1, g=1, b=1, a=1} } )
 
--- Cataclysm classic, implementation of missing UnitGetTotalAbsorbs()
-if not Grid2.isCata then return end
+-- Cataclysm & MoP classic, implementation of missing UnitGetTotalAbsorbs()
+if Grid2.versionCli>=60000 then return end -- only cata and MoP
 
 local next  = next
 local CalcUnitShield
