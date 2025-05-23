@@ -32,6 +32,9 @@ ignore:
  - RaidDebuffsOptions/RaidDebuffsBfA.lua
  - RaidDebuffsOptions/RaidDebuffsLegion.lua
  - RaidDebuffsOptions/RaidDebuffsShadowlands.lua
+ - RaidDebuffsOptions/RaidDebuffsDragonflight.lua
+ - RaidDebuffsOptions/RaidDebuffsTheWarWithin.lua
+ - RaidDebuffsOptions/RaidDebuffsMythicPlus.lua
 
 move-folders:
  Grid2/Options: Grid2Options
