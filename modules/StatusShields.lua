@@ -7,6 +7,7 @@ local min   = math.min
 local fmt   = string.format
 local UnitHealthMax = UnitHealthMax
 local UnitGetTotalAbsorbs = UnitGetTotalAbsorbs
+local IsEventValid = C_EventUtils.IsEventValid
 local unit_is_valid = Grid2.roster_guids
 
 -- Shields
@@ -227,7 +228,7 @@ end
 function Overflow:OnEnable()
 	RegisterShieldEvents(self)
 	self:RegisterEvent("UNIT_HEALTH", "UpdateUnit")
-	self:RegisterEvent("UNIT_HEALTH_FREQUENT", "UpdateUnit")
+	if IsEventValid('UNIT_HEALTH_FREQUENT') then self:RegisterEvent("UNIT_HEALTH_FREQUENT", "UpdateUnit") end
 	self:RegisterEvent("UNIT_MAXHEALTH","UpdateUnit")
 	self:RegisterMessage("Grid_UnitUpdated", "UpdateUnit")
 end
@@ -235,8 +236,8 @@ end
 function Overflow:OnDisable()
 	UnregisterShieldEvents(self)
 	self:UnregisterEvent("UNIT_HEALTH")
-	self:UnregisterEvent("UNIT_HEALTH_FREQUENT")
 	self:UnregisterEvent("UNIT_MAXHEALTH")
+	if IsEventValid('UNIT_HEALTH_FREQUENT') then self:UnregisterEvent("UNIT_HEALTH_FREQUENT") end
 	self:UnregisterMessage("Grid_UnitUpdated")
 end
 

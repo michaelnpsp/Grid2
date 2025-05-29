@@ -105,6 +105,9 @@ if not isRangeAvail then
 		elseif playerClass == 'DEATHKNIGHT' then
 			getHostile  = function() return IVS(47541) or IVS(49576) end -- Death Coil, Death Grip
 			getFriendly = function() return IVS(47541) end -- Death Coil
+		elseif playerClass == 'MONK' then
+			getHostile  = function() return 115546 end -- Provoke
+			getFriendly = function() return 116670 end -- Vivify
 		end
 	end
 
