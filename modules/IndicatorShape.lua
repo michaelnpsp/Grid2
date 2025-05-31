@@ -6,7 +6,6 @@ local unpack = unpack
 local function Shape_Create(self, parent)
 	local f = self:Acquire("Frame", parent)
 	local Icon = f.Icon or f:CreateTexture(nil, "ARTWORK")
-	Icon:SetTexture("Interface\\Addons\\Grid2\\media\\shapes")
 	Icon:SetAllPoints()
 	Icon:Show()
 	f.Icon = Icon
@@ -27,14 +26,15 @@ local function Shape_Layout(self, parent)
 	f:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
 	f:SetFrameLevel(level)
 	f:SetSize( self.iconSize, self.iconSize )
-	f.Icon:SetTexCoord( unpack(self.iconCoords) )
+	f.Icon:SetTexCoord( unpack(self.iconCoord) )
+	f.Icon:SetTexture( self.iconPath )
 	if self.dbx.shadowEnabled then
 		local IconShadow = f.IconShadow or f:CreateTexture(nil, "BORDER")
 		IconShadow:ClearAllPoints()
 		IconShadow:SetPoint("CENTER", self.shadowX, self.shadowY)
 		IconShadow:SetSize(self.shadowSize, self.shadowSize)
-		IconShadow:SetTexture("Interface\\Addons\\Grid2\\media\\shapes")
-		IconShadow:SetTexCoord( unpack(self.iconCoords) )
+		IconShadow:SetTexture(self.iconPath)
+		IconShadow:SetTexCoord( unpack(self.iconCoord) )
 		IconShadow:SetVertexColor(self.color.r, self.color.g, self.color.b, self.color.a)
 		IconShadow:Show()
 		f.IconShadow = IconShadow
@@ -63,13 +63,21 @@ local function Shape_UpdateDB(self)
 	self.color      = Grid2:MakeColor(dbx.shadowColor, "BLACK")
 	self.frameLevel = dbx.level or 4
 	self.iconSize   = dbx.size or 14
+	self.iconPath   = dbx.iconPath or "Interface\\Addons\\Grid2\\media\\shapes"
 	-- shape selection and rotation
+	local i, j, u, v
 	local r = dbx.iconRotation or 0
-	local i = (dbx.iconIndex or 0) / 8
-	local j = i + 1/8
+	local k = dbx.iconIndex or 0
+	if k>=0 then
+		i, j, u, v = k/8, (k+1)/8, 0, 1
+	elseif dbx.iconCoord then
+		i, j, u, v = unpack(dbx.iconCoord)
+	else
+		i, j, u, v = 0, 1, 0, 1
+	end
 	local x = { i,j,j,i, i,j,j,i }
-	local y = { 0,0,1,1, 0,0,1,1 }
-	self.iconCoords = { x[5-r],y[5-r], x[8-r],y[8-r], x[6-r],y[6-r], x[7-r],y[7-r] }
+	local y = { u,u,v,v, u,u,v,v }
+	self.iconCoord = { x[5-r],y[5-r], x[8-r],y[8-r], x[6-r],y[6-r], x[7-r],y[7-r] }
 	-- shadow
 	if dbx.shadowEnabled then
 		self.shadowSize = self.iconSize + (dbx.shadowSize or 0)
