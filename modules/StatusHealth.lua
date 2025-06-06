@@ -35,6 +35,7 @@ local heals_enabled = false
 local heals_required = 0
 local heals_minimum = 1
 local heals_multiplier = 1
+local heals_excludeflag = 0xFF
 local heals_bitflag
 local heals_timeband
 local heals_cache = setmetatable( {}, {__index = function() return 0 end} )
@@ -109,7 +110,7 @@ do
 		if not Events[event] then
 			if IsEventValid(event) then
 				frame:RegisterEvent(event)
-			elseif event=='UNIT_ABSORB_AMOUNT_CHANGED' and Grid2.isCata then -- cataclysm shields
+			elseif event=='UNIT_ABSORB_AMOUNT_CHANGED' and (Grid2.isCata or Grid2.isMoP)then -- cataclysm/MoP shields
 				UnitGetTotalAbsorbs = Grid2:RegisterCustomAbsorbsEvent(FireEvent)
 			end
 		end
@@ -121,7 +122,7 @@ do
 				local event = select(i,...)
 				if IsEventValid(event) then
 					if Events[event] then frame:UnregisterEvent(event) end
-				elseif event=='UNIT_ABSORB_AMOUNT_CHANGED' and Grid2.isCata then -- cataclysm shields
+				elseif event=='UNIT_ABSORB_AMOUNT_CHANGED' and (Grid2.isCata or Grid2.isMoP) then -- cataclysm/MoP shields
 					Grid2:UnregisterCustomAbsorbsEvent(FireEvent)
 				end
 				Events[event] = nil
@@ -611,6 +612,9 @@ do
 		RegisterEvent = RegisterEvent,
 		UnregisterEvent = UnregisterEvent,
 		UnitGetMyIncomingHeals = UnitGetIncomingHeals,
+		Init = function(self)
+			return self
+		end,
 		HealsPlayer = function(unit)
 			return UnitGetIncomingHeals(unit) or 0
 		end,
@@ -630,10 +634,16 @@ end
 
 -- LibHealComm-4 heals API
 local HealComm
-if Grid2.versionCli<40000 then -- HealComm only available for vanilla and burning crusade and wrath
+if Grid2.versionCli<40000 then -- HealComm only available for vanilla/burning crusade/wrath
 	local UnitGUID = UnitGUID
+	local UnitGetIncomingHeals = UnitGetIncomingHeals
 	local playerGUID = UnitGUID('player')
 	local roster_units = Grid2.roster_units
+	local function InitHealCom(self)
+		heals_excludeflag = self.ExcludeFlags
+		HealComm = LibStub("LibHealComm-4.0",true)
+		return HealComm and self or APIHeals.Blizzard
+	end
 	local function HealUpdated(event, casterGUID, spellID, healType, endTime, ...)
 		for i=select("#", ...),1,-1 do
 			HealsUpdateEvent( roster_units[select(i, ...)] )
@@ -642,27 +652,30 @@ if Grid2.versionCli<40000 then -- HealComm only available for vanilla and burnin
 	local function HealModifier(event, guid)
 		HealsUpdateEvent( roster_units[guid] )
 	end
-	APIHeals.HealCom = {
-		Init = function(self)
-			if not Grid2.db.global.HealsUseBlizAPI then
-				HealComm = LibStub("LibHealComm-4.0",true)
-				return HealComm and self
-			end
-		end,
-		RegisterEvent = function(event, func)
-			HealComm.RegisterCallback( Grid2, "HealComm_HealStarted", HealUpdated )
-			HealComm.RegisterCallback( Grid2, "HealComm_HealUpdated", HealUpdated )
-			HealComm.RegisterCallback( Grid2, "HealComm_HealStopped", HealUpdated )
-			HealComm.RegisterCallback( Grid2, "HealComm_HealDelayed", HealUpdated )
-			HealComm.RegisterCallback( Grid2, "HealComm_ModifierChanged", HealModifier)
-		end,
-		UnregisterEvent = function(event)
-			HealComm.UnregisterCallback( Grid2, "HealComm_HealStarted" )
-			HealComm.UnregisterCallback( Grid2, "HealComm_HealUpdated" )
-			HealComm.UnregisterCallback( Grid2, "HealComm_HealStopped" )
-			HealComm.UnregisterCallback( Grid2, "HealComm_HealDelayed" )
-			HealComm.UnregisterCallback( Grid2, "HealComm_ModifierChanged")
-		end,
+	local function RegisterHealCom(event, func)
+		HealComm.RegisterCallback( Grid2, "HealComm_HealStarted", HealUpdated )
+		HealComm.RegisterCallback( Grid2, "HealComm_HealUpdated", HealUpdated )
+		HealComm.RegisterCallback( Grid2, "HealComm_HealStopped", HealUpdated )
+		HealComm.RegisterCallback( Grid2, "HealComm_HealDelayed", HealUpdated )
+		HealComm.RegisterCallback( Grid2, "HealComm_ModifierChanged", HealModifier)
+	end
+	local function UnregisterHealCom(event)
+		HealComm.UnregisterCallback( Grid2, "HealComm_HealStarted" )
+		HealComm.UnregisterCallback( Grid2, "HealComm_HealUpdated" )
+		HealComm.UnregisterCallback( Grid2, "HealComm_HealStopped" )
+		HealComm.UnregisterCallback( Grid2, "HealComm_HealDelayed" )
+		HealComm.UnregisterCallback( Grid2, "HealComm_ModifierChanged")
+	end
+	local function Dummy()
+		return 0
+	end
+	APIHeals.HealCom = { -- healcom only heals
+		ExcludeFlags = 0xFF,
+		Init = InitHealCom,
+		HealsAbsorbPlayer = Dummy,
+		HealsAbsorbNoPlayer = Dummy,
+		RegisterEvent = RegisterHealCom,
+		UnregisterEvent = UnregisterHealCom,
 		UnitGetMyIncomingHeals = function(unit)
 			local guid = UnitGUID(unit)
 			return (HealComm:GetHealAmount(guid, myheals_bitflag, myheals_timeband and GetTime()+myheals_timeband, playerGUID) or 0) * (HealComm:GetHealModifier(guid) or 1)
@@ -675,11 +688,37 @@ if Grid2.versionCli<40000 then -- HealComm only available for vanilla and burnin
 			local guid = UnitGUID(unit)
 			return (HealComm:GetOthersHealAmount(guid, heals_bitflag, heals_timeband and GetTime()+heals_timeband) or 0) * (HealComm:GetHealModifier(guid) or 1)
 		end,
-		HealsAbsorbPlayer = function(unit)
-			return 0
+	}
+	APIHeals.HealComBliz = { -- direct heals from blizzard api, hots+channeled from healcom
+		ExcludeFlags = 0xFE,
+		Init = InitHealCom,
+		HealsAbsorbPlayer = Dummy,
+		HealsAbsorbNoPlayer = Dummy,
+		RegisterEvent = function(event, func)
+			RegisterEvent(event,func)
+			RegisterHealCom()
 		end,
-		HealsAbsorbNoPlayer = function(unit, myheal)
-			return 0
+		UnregisterEvent = function(event)
+			UnregisterEvent(event)
+			UnregisterHealCom()
+		end,
+		UnitGetMyIncomingHeals = function(unit)
+			local guid = UnitGUID(unit)
+			local v = (HealComm:GetHealAmount(guid, myheals_bitflag, myheals_timeband and GetTime()+myheals_timeband, playerGUID) or 0) * (HealComm:GetHealModifier(guid) or 1)
+			local w = UnitGetIncomingHeals(unit, "player") or 0
+			return v+w
+		end,
+		HealsPlayer = function (unit)
+			local guid = UnitGUID(unit)
+			local v = (HealComm:GetHealAmount(guid, heals_bitflag, heals_timeband and GetTime()+heals_timeband) or 0 ) * (HealComm:GetHealModifier(guid) or 1)
+			local w = UnitGetIncomingHeals(unit) or 0
+			return v+w
+		end,
+		HealsNoPlayer = function(unit, myheal)
+			local guid = UnitGUID(unit)
+			local v = (HealComm:GetOthersHealAmount(guid, heals_bitflag, heals_timeband and GetTime()+heals_timeband) or 0) * (HealComm:GetHealModifier(guid) or 1)
+			local w = (UnitGetIncomingHeals(unit) or 0) - (UnitGetIncomingHeals(unit, "player") or 0)
+			return v+w
 		end,
 	}
 end
@@ -696,7 +735,8 @@ local RegisterEvent
 local UnregisterEvent
 
 HealsInitialize = function()
-	local API = APIHeals.HealCom and APIHeals.HealCom:Init() or APIHeals.Blizzard
+	local typ = Grid2.db.global.HealsUseBlizAPI
+	local API = ( (typ==nil and APIHeals.HealCom) or (typ==false and APIHeals.HealComBliz) or APIHeals.Blizzard ):Init()
 	RegisterEvent = API.RegisterEvent
 	UnregisterEvent = API.UnregisterEvent
 	UnitGetMyIncomingHeals = API.UnitGetMyIncomingHeals
@@ -774,7 +814,7 @@ function Heals:UpdateDB()
 		HealsGetAmount = self.dbx.includePlayerHeals and HealsPlayer or HealsNoPlayer
 	end
 	if Grid2.isClassic then
-		heals_bitflag  = self.dbx.healTypeFlags or 0x17
+		heals_bitflag  = bit.band( self.dbx.healTypeFlags or 0x17, heals_excludeflag)
 		heals_timeband = self.dbx.healTimeBand
 	end
 	self.GetText = self.dbx.displayRawNumbers and self.GetText2 or self.GetText1
@@ -909,7 +949,7 @@ function MyHeals:UpdateDB()
 	myheals_minimum = (m and m>1 and m ) or 1
 	myheals_multiplier = self.dbx.multiplier or 1
 	if Grid2.isClassic then
-		myheals_bitflag  = self.dbx.healTypeFlags or 0x17
+		myheals_bitflag  = bit.band( self.dbx.healTypeFlags or 0x17, heals_excludeflag )
 		myheals_timeband = self.dbx.healTimeBand
 	end
 	self.GetText = self.dbx.displayRawNumbers and self.GetText2 or self.GetText1

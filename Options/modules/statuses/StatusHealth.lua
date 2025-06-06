@@ -1,7 +1,7 @@
 local L = Grid2Options.L
 
 if Grid2.isClassic then
-	local APIS = { [0] = 'Blizzard API', [1] = 'LibHealComm-4' }
+	local APIS = { [0] = 'Blizzard API', [1] = 'LibHealComm-4', [2] = 'LibHealComm-4 + Blizzard API' }
 	local TIME_VALUES = { [0] = L['None'] }
 	for i=1,15 do TIME_VALUES[i] = string.format(L["%d seconds"], i)	end
 	local COMM_ERROR = L['|cFFe0e000\nWarning: LibHealComm-4 is not installed, Blizzard API will be used instead. You must install the LibHealComm-4.0 addon to enable LibHealComm-4 API.']
@@ -25,6 +25,7 @@ if Grid2.isClassic then
 				order = 300,
 				name = L["Heal Types"],
 				get = function(info, value)
+					if Grid2.db.global.HealsUseBlizAPI==false and value==1 then return true end -- direct heals always enabled for this api
 					return bit.band(status.dbx.healTypeFlags or LHC.ALL_HEALS, value) ~= 0
 				end,
 				set = function(info, value)
@@ -32,7 +33,7 @@ if Grid2.isClassic then
 					if status.dbx.healTypeFlags == LHC.ALL_HEALS then status.dbx.healTypeFlags = nil end
 					status:UpdateDB()
 				end,
-				values = { [LHC.DIRECT_HEALS] = L['Casted'], [LHC.CHANNEL_HEALS] = L['Channeled'], [LHC.HOT_HEALS]=L['HOTs'], [LHC.BOMB_HEALS] = L['Bomb'] }
+				values = { [LHC.DIRECT_HEALS] = L['Casted'], [LHC.CHANNEL_HEALS] = L['Channeled'], [LHC.HOT_HEALS]=L['HOTs'], [LHC.BOMB_HEALS] = L['Bomb'] },
 			}
 		end
 		options.shortenNumbers = {
@@ -54,26 +55,31 @@ if Grid2.isClassic then
 				type = "select",
 				name = L["Heals API"],
 				desc = L["Select which API should be invoked to get the incoming heals."],
+				width = 1.5,
 				order = 360,
 				get = function()
-					return Grid2.db.global.HealsUseBlizAPI and 0 or 1
+					local t = Grid2.db.global.HealsUseBlizAPI
+					return (t and 0) or (t==false and 2) or 1
 				end,
 				set = function(_, v)
 					if v==0 then -- Blizzard API
 						Grid2.db.global.HealsUseBlizAPI = true
-					elseif LHC then -- LibHealComm
+					elseif not LHC then
+						self:MessageDialog(COMM_ERROR); return
+					elseif v==1 then  -- LibHealComm
 						Grid2.db.global.HealsUseBlizAPI = nil
-					else
-						self:MessageDialog(COMM_ERROR)
+					else  -- LibHealComm + Blizzard
+						Grid2.db.global.HealsUseBlizAPI = false
 					end
-					if LHC then ReloadUI() end
+					status.dbx.healTypeFlags = nil
+					ReloadUI()
 				end,
 				values = APIS,
 				confirm = function() return LHC and L["UI will be reloaded to change this option. Are you sure?"] or nil end,
 			}
 			options.healsApiWarning = {
 				type = "description",
-				order = 365,
+				order = 370,
 				name = COMM_ERROR,
 				hidden = function()
 					return LHC~=nil or Grid2.db.global.HealsUseBlizAPI
