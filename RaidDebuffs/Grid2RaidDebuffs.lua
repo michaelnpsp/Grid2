@@ -75,6 +75,12 @@ local unit_in_roster = Grid2.roster_guids
 -- debuffs type colors table
 local debuffTypeColors = Grid2.debuffTypeColors
 
+-- Surface method to fetch raid debuffs from main addon
+local function GetRaidDebuffs()
+	return spells_order
+end
+Grid2.GetRaidDebuffs = GetRaidDebuffs
+
 -- GSRD
 local function RefreshAuras(self, event, unit)
 	if unit_in_roster[unit] then

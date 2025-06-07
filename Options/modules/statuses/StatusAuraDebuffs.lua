@@ -1,6 +1,6 @@
 local L = Grid2Options.L
 
-local FILTERS = { 'filterDispelDebuffs', 'filterTyped', 'filterBossDebuffs', 'filterPermaDebuffs', 'filterLongDebuffs', 'filterCaster', 'filterRelevant' }
+local FILTERS = { 'filterDispelDebuffs', 'filterTyped', 'filterBossDebuffs', 'filterPermaDebuffs', 'filterLongDebuffs', 'filterCaster', 'filterRelevant', 'filterRaidDebuffs' }
 local MT = {
 	['nil']   = { [1] = true, [2] = false }, -- nil   setting
 	['false'] = { [1] = true, [2] = nil   }, -- false setting
@@ -100,6 +100,24 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 		"Non Self Casted",
 		"Display non self debuffs"
 	)
+	options.filterRaidDebuffs = {
+		type = "toggle",
+		name = L["Remove Raid Debuffs"],
+		desc = L["Do not display debuffs found in the Raid Debuffs module."],
+		order = order + 0.1,
+		get = function ()
+		   return status.dbx.filterRaidDebuffs
+		end,
+		set = function (_, v)
+			if v then
+				status.dbx.filterRaidDebuffs = true
+			else
+				status.dbx.filterRaidDebuffs = nil
+			end
+		    status:Refresh()
+		end,
+		hidden = IsHidden,
+	}
 	options.useWhiteList = {
 		type = "toggle",
 		name = L["Whitelist"],
