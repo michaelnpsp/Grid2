@@ -69,6 +69,9 @@ Grid2.tooltipFunc['RaidDebuffsCount'] = function(tooltip)
 	end
 end
 
+-- debuffs statuses integration
+Grid2.raidDebuffsLoaded = spells_order
+
 -- roster units
 local unit_in_roster = Grid2.roster_guids
 

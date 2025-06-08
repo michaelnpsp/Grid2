@@ -42,7 +42,7 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 			hidden = IsHidden,
 		}
 		options[key..'3'] = { type = "description", name = "", order = order + 0.2, hidden = IsHidden }
-		order = order + 1
+		order = order + 0.5
 	end
 	self:MakeHeaderOptions( options, "Display" )
 	options.strictFiltering = {
@@ -100,6 +100,14 @@ function Grid2Options:MakeStatusDebuffsFilterOptions(status, options, optionPara
 		"Non Self Casted",
 		"Display non self debuffs"
 	)
+	if Grid2.raidDebuffsLoaded then
+		MakeCondition('filterRaidDebuffs', false,
+			"Raid Debuffs",
+			"Display debuffs enabled in the Raid Debuffs module.",
+			"Non-Raid Debuffs",
+			"Display other debuffs not enabled in the Raid Debuffs module."
+		)
+	end
 	options.useWhiteList = {
 		type = "toggle",
 		name = L["Whitelist"],
