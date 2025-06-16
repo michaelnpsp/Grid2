@@ -1,5 +1,5 @@
 -- Heals absorb status, created by Michael
-if Grid2.versionCli<50000 then return end -- only MoP or retail
+if Grid2.versionCli<50000 or not UnitGetTotalHealAbsorbs then return end -- only MoP or retail
 
 local Shields = Grid2.statusPrototype:new("heal-absorbs")
 
