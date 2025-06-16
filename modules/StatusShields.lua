@@ -140,8 +140,8 @@ Grid2.setupFunc["shields-overflow"] = Create
 
 Grid2:DbSetStatusDefaultValue( "shields-overflow", { type = "shields-overflow", color1 = {r=1, g=1, b=1, a=1} } )
 
--- Cataclysm & MoP classic, implementation of missing UnitGetTotalAbsorbs()
-if Grid2.versionCli>=60000 then return end -- only cata and MoP
+-- Cataclysm implementation of missing UnitGetTotalAbsorbs()
+if Grid2.versionCli>=50000 then return end -- only cata
 
 local next  = next
 local CalcUnitShield
@@ -252,4 +252,3 @@ function Grid2:UnregisterCustomAbsorbsEvent(func)
 	FireEvent = nil
 	UnregisterShieldEvents(func)
 end
-
