@@ -6,8 +6,16 @@ local Grid2 = Grid2
 
 local colorTable = {}
 
-local function BorderGlow_GetFrame(parent)
+local function BorderGlow_Create(self, parent)
+	parent[self.name] = parent
+end
+
+local function BorderGlow_GetFrame(self, parent)
 	return parent
+end
+
+local function BorderGlow_GetFrameFilter(self, parent)
+	return parent[self.name]
 end
 
 local function BorderGlow_OnUpdate(self, parent, unit, status)
@@ -47,6 +55,15 @@ local function BorderGlow_UpdateDB(self)
 	self.particlesCount = dbx.particlesCount or 4
 	self.particlesScale = dbx.particlesScale or 1
 	self.GlowStop = (self.effect==1 and LCG.PixelGlow_Stop) or (self.effect==2 and LCG.AutoCastGlow_Stop) or LCG.ButtonGlow_Stop
+	if dbx.load then
+		self.Create = BorderGlow_Create
+		self.GetFrame = BorderGlow_GetFrameFilter
+		self.Destroy = BorderGlow_Disable
+	else
+		self.Create = Grid2.Dummy
+		self.GetFrame = BorderGlow_GetFrame
+		self.Destroy = nil
+	end
 end
 
 

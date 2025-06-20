@@ -23,13 +23,14 @@ local function SetCoord(indicator, index, value, default)
 end
 
 Grid2Options:RegisterIndicatorOptions("shape", true, function(self, indicator)
-	local statuses, options =  {}, {}
+	local statuses, options, filter =  {}, {}, {}
 	self:MakeIndicatorTypeLevelOptions(indicator, options)
 	self:MakeIndicatorLocationOptions(indicator, options)
 	self:MakeIndicatorHighlightEffectOptions(indicator, options)
 	self:MakeIndicatorShapeCustomOptions(indicator, options)
 	self:MakeIndicatorStatusOptions(indicator, statuses)
-	self:AddIndicatorOptions(indicator, statuses, options )
+	self:MakeIndicatorLoadOptions(indicator, filter)
+	self:AddIndicatorOptions(indicator, statuses, options, nil, filter)
 end)
 
 function Grid2Options:MakeIndicatorShapeCustomOptions(indicator, options)
