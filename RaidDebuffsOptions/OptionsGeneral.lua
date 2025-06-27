@@ -213,10 +213,10 @@ do
 			values = {
 				[14] = PLAYER_DIFFICULTY1, -- Normal
 				[15] = PLAYER_DIFFICULTY2, -- Heroic
-				[16] = PLAYER_DIFFICULTY6, -- Mythic
-				[17] = PLAYER_DIFFICULTY3  -- LFR
+				[16] = Grid2.isWoW90 and PLAYER_DIFFICULTY6 or nil, -- Mythic
+				[17] = Grid2.isWoW90 and PLAYER_DIFFICULTY3 or nil, -- LFR
 			},
-			hidden = function() return Grid2.isClassic end,
+			hidden = function() return Grid2.versionCli<50000 end,
 		},
 		syncInstance = {
 			type = "toggle",

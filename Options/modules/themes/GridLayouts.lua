@@ -535,7 +535,7 @@ local generalOptions = {
 		set = function(info,v)
 			SetupSpecialHeader('boss', v)
 		end,
-		hidden = function() return Grid2.isClassic end,
+		hidden = function() return Grid2.versionCli<50000 end,
 	},
 
 }

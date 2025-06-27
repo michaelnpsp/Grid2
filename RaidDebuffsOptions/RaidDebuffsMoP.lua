@@ -3,6 +3,117 @@ if Grid2.versionCli<50000 then return end
 local RDDB = Grid2Options:GetRaidDebuffsTable()
 RDDB["Mists of Pandaria"] = {
 	-- 5 man instances
+	[303] = {
+		{ id = 303, name = "Gate of the Setting Sun" },
+		["Saboteur Kip'tilak"] = {
+		order = 1, ejid = 655,
+		},
+		["Striker Ga'dok"] = {
+		order = 2, ejid = 675,
+		},
+		["Commander Ri'mok"] = {
+		order = 3, ejid = 676,
+		},
+		["Raigonn"] = {
+		order = 4, ejid = 649,
+		},
+	},
+	[321] = {
+		{ id = 321, name = "Mogu'shan Palace" },
+		["Trial of the King"] = {
+		order = 1, ejid = 708,
+		},
+		["Gekkan"] = {
+		order = 2, ejid = 690,
+		},
+		["Xin the Weaponmaster"] = {
+		order = 3, ejid = 698,
+		},
+	},
+	[311] = {
+		{ id = 311, name = "Scarlet Halls" },
+		["Houndmaster Braun"] = {
+		order = 1, ejid = 660,
+		},
+		["Armsmaster Harlan"] = {
+		order = 2, ejid = 654,
+		},
+		["Flameweaver Koegler"] = {
+		order = 3, ejid = 656,
+		},
+	},
+	[316] = {
+		{ id = 316, name = "Scarlet Monastery" },
+		["Thalnos the Soulrender"] = {
+		order = 1, ejid = 688,
+		},
+		["Brother Korloff"] = {
+		order = 2, ejid = 671,
+		},
+		["High Inquisitor Whitemane"] = {
+		order = 3, ejid = 674,
+		},
+	},
+	[246] = {
+		{ id = 246, name = "Scholomance" },
+		["Instructor Chillheart"] = {
+		order = 1, ejid = 659,
+		},
+		["Jandice Barov"] = {
+		order = 2, ejid = 663,
+		},
+		["Rattlegore"] = {
+		order = 3, ejid = 665,
+		},
+		["Lilian Voss"] = {
+		order = 4, ejid = 666,
+		},
+		["Darkmaster Gandling"] = {
+		order = 5, ejid = 684,
+		},
+	},
+	[312] = {
+		{ id = 312, name = "Shado-Pan Monastery" },
+		["Gu Cloudstrike"] = {
+		order = 1, ejid = 673,
+		},
+		["Master Snowdrift"] = {
+		order = 2, ejid = 657,
+		},
+		["Sha of Violence"] = {
+		order = 3, ejid = 685,
+		},
+		["Taran Zhu"] = {
+		order = 4, ejid = 686,
+		},
+	},
+	[324] = {
+		{ id = 324, name = "Siege of Niuzao Temple" },
+		["Vizier Jin'bak"] = {
+		order = 1, ejid = 693,
+		},
+		["Commander Vo'jak"] = {
+		order = 2, ejid = 738,
+		},
+		["General Pa'valak"] = {
+		order = 3, ejid = 692,
+		},
+		["Wing Leader Ner'onok"] = {
+		order = 4, ejid = 727,
+		},
+	},
+	[302] = {
+		{ id = 302, name = "Stormstout Brewery" },
+		["Ook-Ook"] = {
+		order = 1, ejid = 668,
+		},
+		["Hoptallus"] = {
+		order = 2, ejid = 669,
+		},
+		["Yan-Zhu the Uncasked"] = {
+		order = 3, ejid = 670,
+		},
+	},
 	[313] = {
 		{ id = 313, name = "Temple of the Jade Serpent" },
 		["Wise Mari"] = {
