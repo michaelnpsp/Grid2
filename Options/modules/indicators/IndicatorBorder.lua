@@ -1,10 +1,9 @@
 local L = Grid2Options.L
 
 Grid2Options:RegisterIndicatorOptions("border", false, function(self, indicator)
-	local statuses, options, filter = {}, {}, {}
+	local statuses, options = {}, {}
 	self:MakeIndicatorBorderCustomOptions(indicator, options)
 	self:MakeIndicatorStatusOptions(indicator, statuses)
-	self:MakeIndicatorLoadOptions(indicator, filter)
 	self:AddIndicatorOptions(indicator, statuses, options, nil, filter)
 end)
 
