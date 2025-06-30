@@ -14,10 +14,9 @@ local function GetAvailableIndicatorValues()
 end
 
 Grid2Options:RegisterIndicatorOptions("alpha",  false, function(self, indicator)
-	local options, statuses, filter = {}, {}, {}
+	local options, statuses = {}, {}
 	self:MakeIndicatorAlphaOptions(indicator, options)
 	self:MakeIndicatorStatusOptions(indicator, statuses)
-	self:MakeIndicatorLoadOptions(indicator,filter)
 	self:AddIndicatorOptions(indicator, statuses, options, nil, filter)
 end)
 
