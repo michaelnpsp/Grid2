@@ -91,7 +91,7 @@ if not isRangeAvail then
 			getHostile  = function() return 686 end -- Shadow Bolt
 			getFriendly = function() return IVS(20707) end -- Soulstone
 		elseif playerClass == 'WARRIOR' then
-			getHostile  = function() return IVS(355) or 772 end  -- Taunt, Rend
+			getHostile  = function() return IVS(355) or IVS(772) end  -- Taunt, Rend
 			getFriendly = function() return nil end  -- no avail
 		elseif playerClass == 'HUNTER' then
 			getHostile  = function() return IVS(3044) or IVS(1978) end -- Arcane Shot, Serpent Sting
