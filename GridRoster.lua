@@ -47,7 +47,7 @@ Grid2.GetSpecialization = GetSpecialization or (Grid2.versionCli>=30000 and GetA
 	return 0
 end
 
-Grid2.GetNumSpecializations = GetNumSpecializations or function()
+Grid2.GetNumSpecializations = Grid2.isWoW90 and GetNumSpecializations or function()
 	return 2
 end
 
