@@ -430,7 +430,7 @@ do
 	layoutOptions1.boss  = {
 		type = "group", order = 3, name = L['Bosses'],
 		args = layoutAnchorOptions,
-		disabled = function() return Grid2.isClassic or theme.layout.specialHeaders==nil or theme.layout.specialHeaders.boss==nil end
+		disabled = function() return Grid2.versionCli<50000 or theme.layout.specialHeaders==nil or theme.layout.specialHeaders.boss==nil end
 	}
 	layoutOptions1.self  = {
 		type = "group", order = 4, name = L['Player'],
