@@ -4,6 +4,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 local Grid2 = Grid2
 local UnitClass = UnitClass
 local UnitIsEnemy= UnitIsEnemy
+local UnitIsPlayer = UnitIsPlayer
 local UnitReaction = UnitReaction
 local UnitIsCharmed= UnitIsCharmed
 local UnitCanAttack = UnitCanAttack
@@ -176,6 +177,14 @@ function ReactionColor:IsActiveNG(unit)
 	return not grouped_units[unit]
 end
 
+function ReactionColor:IsActiveNP(unit)
+	return not UnitIsPlayer(unit)
+end
+
+function ReactionColor:IsActiveNGP(unit)
+	return not ( grouped_units[unit] or UnitIsPlayer(unit) )
+end
+
 function ReactionColor:UnitColor(unit)
 	if UnitIsTapDenied(unit) then
 		return R2C[9]
@@ -185,7 +194,8 @@ function ReactionColor:UnitColor(unit)
 end
 
 function ReactionColor:UpdateDB()
-	local colors = self.dbx.colors
+	local dbx = self.dbx
+	local colors = dbx.colors
 	R2C[1] = colors.hostile
 	R2C[2] = colors.hostile
 	R2C[3] = colors.hostile
@@ -195,7 +205,10 @@ function ReactionColor:UpdateDB()
 	R2C[7] = colors.friendly
 	R2C[8] = colors.friendly
 	R2C[9] = colors.tapped
-	self.IsActive = self.dbx.disableGrouped and self.IsActiveNG or Color.IsActive
+	self.IsActive = (dbx.disableGrouped and dbx.disablePlayers and self.IsActiveNGP) or
+					(dbx.disableGrouped and self.IsActiveNG) or
+					(dbx.disablePlayers and self.IsActiveNP) or
+					Color.IsActive
 end
 
 Grid2.setupFunc["reactioncolor"] = function(baseKey, dbx)

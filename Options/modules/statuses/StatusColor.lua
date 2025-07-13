@@ -96,6 +96,10 @@ Grid2Options:RegisterStatusOptions("reactioncolor", "color", function(self, stat
 		name = "Disabled for grouped units",
 		desc = "Disable the status for units in your group or raid.",
 	}, true )
+	MakeCheckColorOption(status, options, 'disablePlayers', {
+		name = "Disabled for players",
+		desc = "Disable the status for player characters.",
+	}, true )
 	MakeResetColorsOption(status, options)
 end)
 
