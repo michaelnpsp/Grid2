@@ -312,6 +312,44 @@ do
 				dispel.Magic = IsPlayerSpell(19505)
 			end
 		end
+	elseif Grid2.isMoP then -- Pandaria
+		if class == 'DRUID' then
+			func = function()
+				dispel.Magic  = IsPlayerSpell(88423)
+				dispel.Curse  = IsPlayerSpell(88423) or IsPlayerSpell(2782)
+				dispel.Poison = IsPlayerSpell(88423) or IsPlayerSpell(2782)
+			end
+		elseif class == 'PALADIN' then
+			func = function()
+				dispel.Magic   = IsPlayerSpell(53551)
+				dispel.Disease = IsPlayerSpell(4987)
+				dispel.Poison  = IsPlayerSpell(4987)
+			end
+		elseif class == 'PRIEST' then
+			func = function()
+				dispel.Magic   = IsPlayerSpell(528)
+				dispel.Disease = IsPlayerSpell(527)
+			end
+		elseif class == 'SHAMAN' then
+			func = function()
+				dispel.Magic = IsPlayerSpell(77130)
+				dispel.Curse = IsPlayerSpell(77130) or IsPlayerSpell(51886)
+			end
+		elseif class == 'MAGE' then
+			func = function()
+				dispel.Curse = IsPlayerSpell(475)
+			end
+		elseif class == 'WARLOCK' then
+			func = function()
+				dispel.Magic = IsPlayerSpell(19505)
+			end
+		elseif class == 'MONK' then
+			func = function()
+				dispel.Magic   = IsPlayerSpell(115451) -- internal medicine
+				dispel.Disease = IsPlayerSpell(115450) -- detox
+				dispel.Poison  = IsPlayerSpell(115450) -- detox
+			end
+		end
 	elseif Grid2.isClassic then -- vanilla/tbc/wotlk
 		if class == 'DRUID' then
 			func = function()
