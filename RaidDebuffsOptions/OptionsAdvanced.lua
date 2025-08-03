@@ -531,7 +531,7 @@ do
 		end
 	}
 
-	if not isClassic then
+	if Grid2.versionCli>=50000 then -- MoP or superior
 		options.link = {
 			type = "execute",
 			order = 20,

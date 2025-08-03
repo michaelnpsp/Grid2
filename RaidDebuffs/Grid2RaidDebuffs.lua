@@ -10,7 +10,7 @@ local ipairs = ipairs
 local strfind = strfind
 local GetTime = GetTime
 local UnitGUID = UnitGUID
-local isClassic = Grid2.isClassic
+local isClassic = Grid2.versionCli<50000 -- for this module MoP is not considered classic because supports EncounterJournal IDs
 local UnitAura = Grid2.API.UnitAuraLite
 
 local GetSpellInfo = Grid2.API.GetSpellInfo
