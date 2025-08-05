@@ -15,6 +15,7 @@ local GetPartyAssignment = GetPartyAssignment
 local UnitGroupRolesAssigned = Grid2.UnitGroupRolesAssigned
 local GetTexCoordsForRoleSmallCircle = Grid2.API.GetTexCoordsForRoleSmallCircle
 local GetTexCoordsForRoleSmall = Grid2.API.GetTexCoordsForRoleSmall
+local GetLootMethod = C_PartyInfo and C_PartyInfo.GetLootMethod or GetLootMethod
 local UnitIsUnit = UnitIsUnit
 local MAIN_TANK = MAIN_TANK
 local MAIN_ASSIST = MAIN_ASSIST
