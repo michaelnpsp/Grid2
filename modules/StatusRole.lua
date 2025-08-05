@@ -303,7 +303,7 @@ end
 
 function MasterLooter:CalculateMasterLooter()
 	local method, partyID, raidID = GetLootMethod()
-	if method=='master' then
+	if method=='master' or method==2 then -- 2 => masterlooter in retail
 		if raidID then
 			return 'raid'..raidID
 		elseif partyID then
