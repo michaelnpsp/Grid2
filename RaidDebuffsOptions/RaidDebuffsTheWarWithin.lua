@@ -439,6 +439,42 @@ RDDB["The War Within"] = {
 		466197, --Thunder Punch
 		},
 	},
+	[1303] = {
+		{ id = 1303, name = "Eco-Dome Al'dani" },
+		["Azhiccar"] = {
+		order = 1, ejid = 2675,
+		1217232, --Devour
+		1217241, --Feast
+		1217327, --Invading Shriek
+		1231811, --Uncontrolled
+		1217381, --Engorge
+		1217436, --Toxic Regurgitation
+		1217446, --Digestive Spittle
+		1217664, --Thrash
+		},
+		["Taah'bat and A'wazj"] = {
+		order = 2, ejid = 2676,
+		1219417, --Beastmaster's Bond
+		1219700, --Arcane Blitz
+		1219457, --Incorporeal
+		1219731, --Destabilized
+		1220497, --Arcane Overload
+		1227137, --Warp Strike
+		1219536, --Binding Javelin
+		1219482, --Rift Claws
+		},
+		["Soul-Scribe"] = {
+		order = 3, ejid = 2677,
+		1224793, --Whispers of Fate
+		1224865, --Fatebound
+		1236703, --Eternal Weave
+		1237184, --Splinters of Fate
+		1225218, --Dread of the Unknown
+		1226444, --Wounded Fate
+		1225162, --Ceremonial Dagger
+		1242000, --Echoes of Fate
+		},
+	},
 	-- Raid instances
 	[1278] = {
 		{ id = 1278, name = "Khaz Algar", raid = true },
@@ -977,6 +1013,264 @@ RDDB["The War Within"] = {
 		1220784, --Auto-Locking Cuff Bomb
 		1219039, --Ionization
 		1219041, --Static Zap
+		},
+	},
+	[1302] = {
+		{ id = 1302, name = "Manaforge Omega", raid = true },
+		["Plexus Sentinel"] = {
+		order = 1, ejid = 2684,
+		1218148, --Phase Blink
+		1217649, --Arcanomatrix Atomizer
+		1219223, --Atomize
+		1219248, --Arcane Radiation
+		1227794, --Arcane Lightning
+		1234733, --Cleanse the Chamber
+		1219532, --Eradicating Salvo
+		1219450, --Manifest Matrices
+		1218626, --Displacement Matrix
+		1219354, --Potent Mana Residue
+		1219263, --Obliteration Arcanocannon
+		1223364, --Powered Automaton
+		1220489, --Protocol: Purge
+		1218669, --Energy Cutter
+		1233110, --Purging Lightning
+		1219471, --Expulsion Zone
+		1235816, --Energy Overload
+		},
+		["Loom'ithar"] = {
+		order = 2, ejid = 2686,
+		1237272, --Lair Weaving
+		1238502, --Woven Ward
+		1247672, --Infusion Pylons
+		1247029, --Excess Nova
+		1247045, --Hyper Infusion
+		1226315, --Infusion Tether
+		1226366, --Living Silk
+		1226721, --Silken Snare
+		1226395, --Overinfusion Burst
+		1226867, --Primal Spellstorm
+		1231408, --Arcane Overflow
+		1227263, --Piercing Strand
+		1231403, --Silk Blast
+		1228059, --Unbound Rage
+		1243771, --Arcane Ichor
+		1227782, --Arcane Outrage
+		1227226, --Writhing Wave
+		1242303, --Writhing Swathe
+		},
+		["Soulbinder Naazindhri"] = {
+		order = 3, ejid = 2685,
+		1225582, --Soul Calling
+		1239988, --Soulweave
+		1227048, --Voidblade Ambush
+		1227052, --Void Burst
+		1242018, --Void Resonance
+		1235576, --Phase Blades
+		1227848, --Essence Implosion
+		1227276, --Soulfray Annihilation
+		1246530, --Arcane Sigils
+		1246775, --Shatterpulse
+		1223859, --Arcane Expulsion
+		1242086, --Arcane Energy
+		1225616, --Soulfire Convergence
+		1226827, --Soulrend Orb
+		1240754, --Spellburn
+		1241100, --Mystic Lash
+		},
+		["Forgeweaver Araz"] = {
+		order = 4, ejid = 2687,
+		1231720, --Invoke Collector
+		1228214, --Astral Harvest
+		1236207, --Astral Surge
+		1237322, --Prime Sequence
+		1228103, --Arcane Siphon
+		1231726, --Arcane Barrier
+		1248171, --Void Tear
+		1245640, --Power Manifested
+		1228218, --Arcane Obliteration
+		1238867, --Echoing Invocation
+		1238874, --Echoing Tempest
+		1228454, --Mark of Power
+		1228219, --Astral Mark
+		1228188, --Silencing Tempest
+		1228502, --Overwhelming Power
+		1227631, --Arcane Expulsion
+		1248009, --Dark Terminus
+		1240705, --Astral Burn
+		1232409, --Unstable Surge
+		1234328, --Photon Blast
+		1226260, --Arcane Convergence
+		1243272, --Containment Breach
+		1232738, --Hardened Shell
+		1238266, --Ramping Power
+		1233415, --Mana Splinter
+		1232412, --Focusing Iris
+		1233076, --Dark Singularity
+		1233074, --Crushing Darkness
+		1243901, --Void Harvest
+		1243641, --Void Surge
+		1232221, --Death Throes
+		},
+		["The Soul Hunters"] = {
+		order = 5, ejid = 2688,
+		1222232, --Devourer's Ire
+		1234565, --Consume
+		1222310, --Unending Hunger
+		1227355, --Voidstep
+		1227685, --Hungering Slash
+		1235045, --Encroaching Oblivion
+		1245743, --Eradicate
+		1227809, --The Hunt
+		1247415, --Weakened Prey
+		1241306, --Blade Dance
+		1218103, --Eye Beam
+		1221490, --Fel-Singed
+		1225127, --Felblade
+		1223725, --Fel Inferno
+		1241833, --Fracture
+		1226493, --Shattered Soul
+		1241917, --Frailty
+		1242259, --Spirit Bomb
+		1242284, --Soulcrush
+		1242304, --Expulsed Soul
+		1240891, --Sigil of Chains
+		1225154, --Immolation Aura
+		1249198, --Unstable Soul
+		1233093, --Collapsing Star
+		1233105, --Dark Residue
+		1233968, --Event Horizon
+		1245978, --Soul Tether
+		1233863, --Fel Rush
+		1227113, --Infernal Strike
+		1227117, --Fel Devastation
+		1233381, --Withering Flames
+		},
+		["Fractillus"] = {
+		order = 6, ejid = 2747,
+		1233657, --Nether Prism
+		1226089, --Crystal Nexus
+		1232130, --Nexus Shrapnel
+		1236784, --Brittle Nexus
+		1232760, --Crystal Lacerations
+		1236785, --Void-Infused Nexus
+		1247424, --Null Consumption
+		1247495, --Null Explosion
+		1233917, --Crystaline Overcharge
+		1224414, --Crystalline Shockwave
+		1220394, --Shattering Backhand
+		1227373, --Shattershell
+		1227378, --Crystal Encasement
+		1231871, --Shockwave Slam
+		},
+		["Nexus-King Salhadaar"] = {
+		order = 7, ejid = 2690,
+		1224731, --Decree: Oath-Bound
+		1224767, --King's Thrall
+		1224764, --Oath-Breaker
+		1224906, --Invoke the Oath
+		1238975, --Vengeful Oath
+		1224776, --Subjugation Rule
+		1224787, --Conquer
+		1224812, --Vanquish
+		1227529, --Banishment
+		1224822, --Tyranny
+		1225099, --Fractal Images
+		1247215, --Fractal Claw
+		1224827, --Behead
+		1231097, --Cosmic Rip
+		1227330, --Besiege
+		1227891, --Coalesce Voidwing
+		1228113, --Netherbreaker
+		1228163, --Dimension Breath
+		1234539, --Dimension Glare
+		1234529, --Cosmic Maw
+		1228065, --Rally the Shadowguard
+		1230302, --Self-Destruct
+		1232399, --Dread Mortar
+		1237105, --Twilight Barrier
+		1228075, --Nexus Beams
+		1230261, --Netherblast
+		1237107, --Twilight Massacre
+		1250044, --Taking Aim
+		1228053, --Reap
+		1232327, --Seal the Forge
+		1228284, --Royal Ward
+		1228265, --King's Hunger
+		1226648, --Galactic Smash
+		1248137, --Dark Star
+		1225444, --Atomized
+		1225645, --Twilight Spikes
+		1226384, --Dark Orbit
+		1226879, --Stars Collide
+		1234906, --Nexus Collapse
+		1226362, --Twilight Scar
+		1226417, --Starshattered
+		1226347, --Starkiller Swing
+		1226042, --Starkiller Nova
+		1225634, --World in Twilight
+		},
+		["Dimensius, the All-Devouring"] = {
+		order = 8, ejid = 2691,
+		1229327, --Oblivion
+		1230087, --Massive Smash
+		1231005, --Fission
+		1228206, --Excess Mass
+		1228207, --Collective Gravity
+		1230168, --Mortal Fragility
+		1248240, --Infinite Possibilities
+		1229038, --Devour
+		1229674, --Growing Hunger
+		1230979, --Dark Matter
+		1231002, --Dark Energy
+		1243690, --Shattered Space
+		1243704, --Antimatter
+		1243699, --Spatial Fragment
+		1243577, --Reverse Gravity
+		1243609, --Airborne
+		1250614, --Anomalous Force
+		1227665, --Fists of the Voidlord
+		1228367, --Cosmic Radiation
+		1235114, --Soaring Reshii
+		1235467, --Umbral Gate
+		1241188, --Endless Darkness
+		1237080, --Broken World
+		1235490, --Astrophysical Jet
+		1232987, --Black Hole
+		1230674, --Spaghettification
+		1246930, --Stellar Core
+		1246948, --Shooting Star
+		1238765, --Extinction
+		1237319, --Gamma Burst
+		1234242, --Gravitational Distortion
+		1234243, --Crushing Gravity
+		1234251, --Crushed
+		1234244, --Inverse Gravity
+		1237690, --Eclipse
+		1237694, --Mass Ejection
+		1237696, --Debris Field
+		1249423, --Mass Destruction
+		1239262, --Conqueror's Cross
+		1239270, --Voidwarding
+		1246537, --Entropic Unity
+		1246541, --Null Binding
+		1249248, --Boundless
+		1246143, --Touch of Oblivion
+		1237695, --Stardust Nova
+		1249454, --Starshard Nova
+		1254385, --Starshard
+		1254384, --Star Burst
+		1245292, --Destabilized
+		1233292, --Accretion Disk
+		1231716, --Extinguish The Stars
+		1232394, --Gravity Well
+		1248479, --Stellar Overload
+		1233557, --Density
+		1232973, --Supernova
+		1234052, --Darkened Sky
+		1234054, --Shadowquake
+		1234263, --Cosmic Collapse
+		1234266, --Cosmic Fragility
+		1250055, --Voidgrasp
 		},
 	},
 }

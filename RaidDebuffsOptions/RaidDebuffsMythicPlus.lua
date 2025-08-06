@@ -1,7 +1,7 @@
 -- Raid debuffs module for Mythic+ Dungeons
 if Grid2.isClassic then return end
 
-local SEASON_LAST = 14
+local SEASON_LAST = 15
 
 local DB = {
 	[13] = { -- TWW Season 1
@@ -23,7 +23,17 @@ local DB = {
 		[1012] = "Battle for Azeroth", -- The MOTHERLODE!!
 		[1178] = "Battle for Azeroth", -- Operation: Mechagon
 		[1187] = "Shadowlands",        -- Theater of Pain
+	},
+	[15] = { -- TWW Season 3
+		[1271] = "The War Within",     -- Ara-Kara, City of Echoes
+		[1270] = "The War Within",     -- The Dawnbreaker
+		[1303] = "The War Within",     -- Eco-Dome Al'dani
+		[1298] = "The War Within",     -- Operation: Floodgate
+		[1267] = "The War Within",     -- Priory of the Sacred Flame
+		[1185] = "Shadowlands",        -- Halls of Atonement
+		[1194] = "Shadowlands",        -- Tazavesh, the Veiled Market
 	}
+
 }
 
 C_MythicPlus.RequestMapInfo()
