@@ -149,7 +149,7 @@ Grid2Options:RegisterStatusOptions("health-current", "health", function(self, st
 			end,
 		}
 	end
-	if Grid2.isWoW90 or Grid2.isCata then
+	if Grid2.versionCli>=40000 then -- cataclysm or superior
 		options.healthPercentShield = {
 			type = "toggle",
 			tristate = false,

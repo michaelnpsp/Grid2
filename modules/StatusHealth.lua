@@ -348,7 +348,7 @@ function HealthCurrent:UpdateDB()
 		else
 			self.GetText = dbx.addAmountShield and HealthCurrent_GetTextRetailShield or HealthCurrent_GetTextRetail
 		end
-	elseif Grid2.isCata then
+	elseif Grid2.versionCli>=40000  then -- cataclysm or superior
 		self.addShield = (dbx.addPercentShield or dbx.addAmountShield) or nil
 		self.GetPercentText = dbx.addPercentShield and HealthCurrent_GetPercentTextShield or nil
 		if dbx.displayRawNumbers then
