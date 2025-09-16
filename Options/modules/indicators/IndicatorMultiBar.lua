@@ -2,6 +2,7 @@
 
 local Grid2Options = Grid2Options
 local L = Grid2Options.L
+local BLEND_VALUES = { L["Default"] , L["Additive"] }
 
 Grid2Options:RegisterIndicatorOptions("multibar", true, function(self, indicator)
 	local layout, filter = {}, {}, {}
@@ -489,6 +490,31 @@ do
 			end,
 			values = TILE_BAR_VALUES,
 			hidden = false,
+		},
+
+		-------------------------------------------------------------------------
+
+		headerAppearance = {
+			type = "header",
+			hidden = function() return not barDbx.glowLine end,
+			order = 14,
+			name = L["Appearance"]
+		},
+
+		lineBlendMode = {
+			type = "select",
+			hidden = function() return not barDbx.glowLine end,
+			order = 15,
+			name = L["Blend Mode"],
+			desc = L["Select how to mix the texture with the background."],
+			get = function () return (barDbx.lineBlendMode=='BLEND') and 1 or 2 end,
+			set = function (_, v)
+				barDbx.lineBlendMode = (v==2) and 'ADD' or 'BLEND'
+				self:RefreshIndicator(indicator, "Layout")
+				if v==2 then barDbx.lineBlendMode = nil end
+				self:RefreshIndicator(indicator, "Layout")
+			end,
+			values = BLEND_VALUES,
 		},
 
 		-------------------------------------------------------------------------
