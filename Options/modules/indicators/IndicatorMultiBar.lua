@@ -207,6 +207,7 @@ do
 					barDbx.glowLine = 6
 					barDbx.texture = orientation=='HORIZONTAL' and 'Grid2 GlowV' or 'Grid2 GlowH'
 				end
+				self:RefreshIndicator(indicator, "Layout" )
 			end,
 			values = TYPE_VALUES,
 			disabled = function() return barIndex<=0 end,
