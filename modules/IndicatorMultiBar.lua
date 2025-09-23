@@ -162,7 +162,7 @@ local function Bar_Layout(self, parent)
 		texture:SetHorizTile(setup.horWrap~='CLAMP')
 		texture:SetVertTile(setup.verWrap~='CLAMP')
 		texture:SetDrawLayer("ARTWORK", setup.sublayer)
-		texture:SetBlendMode(setup.lineSize and 'ADD' or 'BLEND')
+		texture:SetBlendMode(setup.lineBlend or 'BLEND')
 		local c = setup.color
 		if c then
 			texture:SetVertexColor( c.r, c.g, c.b, setup.opacity )
@@ -258,6 +258,7 @@ local function Bar_UpdateDB(self)
 			verAdjust = setup.verTile=='CLAMP',
 			sublayer  = setup.glowLine and 7 or i,
 			lineSize  = setup.glowLine,
+			lineBlend = setup.glowLine and (setup.blendMode or 'ADD') or nil,
 			lineAdjust= setup.glowLine and (setup.glowLineAdjust or 0) or nil,
 		}
 	end

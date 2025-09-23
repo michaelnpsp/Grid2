@@ -136,6 +136,9 @@ Grid2Options.raidSizeValues = {
 	[3] = L["Number of players in raid"],
 }
 
+-- blend options used in square and multibar indicators options
+Grid2Options.blendSimpleValues = { L["Default"] , L["Additive"] }
+
 -- safe get value from table, returns def value if array table does not exist
 function Grid2Options.GetTableValueSafe(t, k, def)
 	if t then

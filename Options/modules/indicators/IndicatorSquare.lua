@@ -1,7 +1,5 @@
 local L = Grid2Options.L
 
-local BLEND_VALUES = { L["Default"] , L["Additive"] }
-
 Grid2Options:RegisterIndicatorOptions("square", true, function(self, indicator)
 	local layout, statuses, filter = {}, {}, {}
 	self:MakeIndicatorTypeLevelOptions(indicator, layout)
@@ -68,7 +66,7 @@ function Grid2Options:MakeIndicatorSquareSizeOptions(indicator, options)
 			if v==1 then indicator.dbx.blend = nil end
 			self:RefreshIndicator(indicator, "Layout")
 		end,
-		values = BLEND_VALUES,
+		values = Grid2Options.blendSimpleValues,
 	}
 	options.size = {
 		type = "range",

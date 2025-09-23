@@ -201,6 +201,7 @@ do
 				if v==1 then
 					barDbx.glowLine = nil
 					barDbx.glowLineAdjust = nil
+					barDbx.blendMode = nil
 				else
 					local orientation  = indicator.dbx.orientation or Grid2Frame.db.profile.orientation or 'HORIZONTAL'
 					barDbx.glowLine = 6
@@ -444,7 +445,7 @@ do
 		barTexture = {
 			type = "select", dialogControl = "LSM30_Statusbar",
 			order = 11,
-			width = 1.15,
+			width = function()	return barDbx.glowLine and 0.9 or 1.15 end,
 			name = L["Texture"],
 			desc = L["Select bar texture."],
 			get = function (info) return barDbx.texture or indicator.dbx.texture or self.MEDIA_VALUE_DEFAULT end,
@@ -460,7 +461,7 @@ do
 		barHorTile= {
 			type = "select",
 			order = 12,
-			width = 0.7,
+			width = function()	return barDbx.glowLine and 0.6 or 0.7 end,
 			name = L["Horizontal Fit"],
 			desc = L["Select howto adjust the texture horizontally."],
 			get = function()
@@ -477,7 +478,7 @@ do
 		barVerTile = {
 			type = "select",
 			order = 13,
-			width = 0.7,
+			width = function()	return barDbx.glowLine and 0.6 or 0.7 end,
 			name = L["Vertical Fit"],
 			desc = L["Select howto adjust the texture vertically."],
 			get = function()
@@ -489,6 +490,23 @@ do
 			end,
 			values = TILE_BAR_VALUES,
 			hidden = false,
+		},
+
+		lineBlendMode = {
+			type = "select",
+			hidden = function() return not barDbx.glowLine end,
+			order = 14,
+			width = 0.5,
+			name = L["Blend Mode"],
+			desc = L["Select how to mix the texture with the background."],
+			get = function () return (barDbx.blendMode=='BLEND') and 1 or 2 end,
+			set = function (_, v)
+				barDbx.blendMode = (v==2) and 'ADD' or 'BLEND'
+				self:RefreshIndicator(indicator, "Layout")
+				if v==2 then barDbx.blendMode = nil end
+				self:RefreshIndicator(indicator, "Layout")
+			end,
+			values = Grid2Options.blendSimpleValues,
 		},
 
 		-------------------------------------------------------------------------
