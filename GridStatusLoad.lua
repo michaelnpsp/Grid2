@@ -267,7 +267,7 @@ do
 			RegisterMsgFilter( self, "unitFilter", "Grid_UnitUpdated", ClearUnitFilters,  filtered )
 			RegisterMsgFilter( self, "unitAlive", "Grid_UnitDeadUpdated", RefreshAliveFilter,  load.unitAlive~=nil and filtered )
 			RegisterMsgFilter( self, "unitRole", "Grid_PlayerRolesAssigned", RefreshRoleFilter, load.unitRole and filtered )
-			RegisterEventFilter( self, "cooldown", "SPELL_UPDATE_USABLE", RefreshCooldownFilter, load.cooldown and filtered )
+			RegisterEventFilter( self, "cooldown", "SPELL_UPDATE_COOLDOWN", RefreshCooldownFilter, load.cooldown and filtered )
 		end
 	end
 
@@ -277,7 +277,7 @@ do
 			RegisterMsgFilter( self, "unitFilter", "Grid_UnitUpdated" )
 			RegisterMsgFilter( self, "unitAlive", "Grid_UnitDeadUpdated" )
 			RegisterMsgFilter( self, "unitRole", "Grid_PlayerRolesAssigned" )
-			RegisterEventFilter( self, "cooldown", "SPELL_UPDATE_USABLE" )
+			RegisterEventFilter( self, "cooldown", "SPELL_UPDATE_COOLDOWN" )
 			wipe(filtered).source = load
 		end
 	end
