@@ -87,8 +87,8 @@ L["Declined"] = "거절됨"
 
 --Layouts
 L["None"] = "없음"
-L["Solo"] = "솔로"
-L["Solo w/Pet"] = "솔로 (+소환수)"
+L["Solo"] = "솔로잉"
+L["Solo w/Pet"] = "솔로잉 (+소환수)"
 L["Party"] = "파티"
 L["Party w/Pets"] = "파티 (+소환수)"
 L["By Role"] = "역할별"
