@@ -9,6 +9,7 @@ local UnitExists = UnitExists
 local UnitIsUnit = UnitIsUnit
 local UnitIsFriend = UnitIsFriend
 local GetInstanceInfo = GetInstanceInfo
+local C_Timer_After = C_Timer.After
 local GetSpellCooldown = Grid2.API.GetSpellCooldown
 local UnitGroupRolesAssigned = Grid2.UnitGroupRolesAssigned
 local roster_types = Grid2.roster_types
@@ -152,11 +153,13 @@ end
 
 local FilterU_Register, FilterU_Unregister, FilterU_Enable, FilterU_Disable, FilterU_Refresh
 do
+	local coolExpireTimer
+
 	local function IsSpellInCooldown(spellID)
 		local start, duration = GetSpellCooldown(spellID)
 		if start~=0 then
 			local gcdStart, gcdDuration = GetSpellCooldown(61304)
-			return start ~= gcdStart or duration ~= gcdDuration
+			return start ~= gcdStart or duration ~= gcdDuration, start+duration
 		end
 		return false
 	end
@@ -233,18 +236,27 @@ do
 		end
 	end
 
-	local function RefreshCooldownFilter()
+	local function RefreshCooldownFilter(_, eventSpellID)
+		coolExpireTimer = eventSpellID and coolExpireTimer or 2147483647
+		local newExpire = coolExpireTimer
 		for status, filtered in next, statuses.cooldown do
 			local load = status.dbx.load
 			local spellID = load.cooldown
-			local cool = IsSpellInCooldown(spellID)
-			if cool ~= rawget( cooldowns_mt, spellID ) then
-				cooldowns_mt[spellID] = cool
-				wipe(filtered).source = load
-				for unit in next, status.idx do
-					status:UpdateIndicators(unit)
+			if spellID==(eventSpellID or spellID) then
+				local cool, expire = IsSpellInCooldown(spellID)
+				if cool ~= rawget( cooldowns_mt, spellID ) then
+					cooldowns_mt[spellID] = cool
+					wipe(filtered).source = load
+					status:UpdateAllUnits()
+				end
+				if cool and expire<newExpire then
+					newExpire = coolExpireTimer
 				end
 			end
+		end
+		if newExpire<coolExpireTimer then
+			coolExpireTimer = newExpire
+			C_Timer_After( newExpire - GetTime() + 0.05, RefreshCooldownTimer)
 		end
 	end
 
