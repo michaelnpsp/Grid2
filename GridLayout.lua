@@ -708,6 +708,13 @@ function Grid2Layout:FixHeaderAttributes(header, index)
 			header:SetAttribute("groupFilter", groupFilter)
 		end
 	end
+	-- adjust role order
+	if p.groupingOrderOverride then
+		local custom = self.customLayouts
+		if (custom==nil or custom[self.layoutName]==nil) and header:GetAttribute("groupingOrder")=='TANK,HEALER,DAMAGER,NONE' then
+			header:SetAttribute("groupingOrder", p.groupingOrderOverride)
+		end
+	end
 	-- workaround to blizzard pet bug
 	if header.dbx.type == 'pet' then -- force these so that the bug in SecureGroupPetHeader_Update doesn't trigger
 		header:SetAttribute("filterOnPet", true)

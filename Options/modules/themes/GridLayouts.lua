@@ -538,7 +538,51 @@ local generalOptions = {
 		hidden = function() return Grid2.versionCli<50000 end,
 	},
 
+	desc3 = {
+		order = 199,
+		type = "description",
+		name = L["Roles Order."] .. "\n"
+	},
+
 }
+
+do
+	local default = 'TANK,HEALER,DAMAGER,NONE'
+	local roles  = { "TANK", "HEALER", "DAMAGER", "NONE", TANK=1, HEALER=2, DAMAGER=3, NONE=4 }
+	local values = { L["Tank"], L["Healer"], L["Damager"], L["None"] }
+	local function get(info)
+		local role = select(info.arg, strsplit(",", theme.layout.groupingOrderOverride or default) )
+		return roles[role]
+	end
+	local function set(info,value)
+		local index   = info.arg
+		local tbl     = { strsplit(",", theme.layout.groupingOrderOverride or default) }
+		local oldrole = tbl[index]
+		local newrole = roles[value]
+		for i=1,#tbl do
+			if tbl[i]==newrole then
+				tbl[i] = oldrole
+			end
+		end
+		tbl[index] = newrole
+		local neworder = table.concat( tbl, "," )
+		theme.layout.groupingOrderOverride = neworder~=default and neworder or nil
+		Grid2Layout:ReloadLayout(true)
+	end
+	for i,role in ipairs(roles) do
+		generalOptions['roleorder'..i] =  {
+			type   = 'select',
+			order  = 199+i,
+			width  = 0.55,
+			name   = "",
+			desc   = "",
+			get    = get,
+			set    = set,
+			values = values,
+			arg    = i,
+		}
+	end
+end
 
 --===================================================================================================
 
