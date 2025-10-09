@@ -1169,9 +1169,6 @@ function Grid2Layout:AddCustomLayouts()
 		for n,l in pairs(self.customLayouts) do
 			for _,h in ipairs(l) do
 				h.type = strmatch(h.type or '', 'pet') or h.type -- conversion from old format
-				if Grid2.versionCli<30000 and h.groupBy == 'ASSIGNEDROLE' then -- convert non existant roles in vanilla&bcc
-					h.groupBy, h.groupingOrder = 'ROLE', 'MAINTANK,MAINASSIST,NONE'
-				end
 			end
 			self:AddLayout(n,l)
 		end
