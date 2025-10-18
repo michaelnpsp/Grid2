@@ -627,13 +627,14 @@ end
 -- Display special units
 do
 	local template = { type = 'custom', detachHeader = true }
-	local headers = { -- headerName, units/column, unitsFilter
+	local headers = { -- headerName, units/column, unitsFilter | template
 		{ 'self',   1, 'player' },
 		{ 'target', 1, 'target' },
 		{ 'focus',  1, 'focus'  },
 		{ 'targettarget', 1, 'targettarget' },
 		{ 'focustarget',  1, 'focustarget'  },
 		{ 'boss',   8, 'boss1,boss2,boss3,boss4,boss5,boss6,boss7,boss8' },
+		{ 'tanks',  5, { type = "player", roleFilter = "TANK", strictFiltering = true, groupFilter = "auto", detachHeader = true } },
 	}
 	function Grid2Layout:AddSpecialHeaders()
 		local specialHeaders = self.db.profile.specialHeaders
@@ -642,11 +643,12 @@ do
 				local name = data[1]
 				local showEmpty = specialHeaders[name]
 				if showEmpty ~= nil then
-					template.unitsFilter = data[3]
-					template.unitsPerColumn = self.db.profile.unitsPerColumns[name] or data[2]
-					template.maxColumns = math.ceil(8/template.unitsPerColumn)
-					template.hideEmptyUnits = not showEmpty or nil
-					self:AddHeader( template, nil, index+10000, name )
+					local temp = type(data[3])=='string' and template or data[3]
+					temp.unitsFilter = (temp.type=='custom' and data[3]) or nil
+					temp.hideEmptyUnits = (temp.type=='custom' and not showEmpty) or nil
+					temp.unitsPerColumn = self.db.profile.unitsPerColumns[name] or data[2]
+					temp.maxColumns = math.ceil(8/temp.unitsPerColumn)
+					self:AddHeader( temp, nil, index+10000, name )
 				end
 			end
 		end
@@ -655,13 +657,13 @@ end
 
 -- Calculate and store effective values for some header properties
 do
-	local BuiltInHeaders = { player = 'player', pet = 'pet', self = 'self', target = 'target', focus = 'focus', boss = 'boss', targettarget = 'targettarget', focustarget = 'focustarget' }
+	local BuiltInHeaders = { player = 'player', pet = 'pet', self = 'self', target = 'target', focus = 'focus', boss = 'boss', targettarget = 'targettarget', focustarget = 'focustarget', tanks = 'tanks' }
 
 	function Grid2Layout:SetHeaderProperties(header, dbx, setupIndex, headerName)
 		local p = self.db.profile
 		header.dbx = dbx
 		header.headerType = dbx.type or 'player' -- player, pet, custom
-		header.headerName = headerName or dbx.headerName or header.headerType -- player, pet, self, target, focus, boss, custom or user defined
+		header.headerName = headerName or dbx.headerName or header.headerType -- player, pet, self, target, focus, boss, tanks, custom or user defined
 		header.headerClass = BuiltInHeaders[header.headerName] or 'other'
 		header.wasDetached = header.isDetached
 		header.isDetached = setupIndex>1 and (dbx.detachHeader or p.detachedHeaders=='player' or p.detachedHeaders==header.headerType) or nil

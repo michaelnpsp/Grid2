@@ -190,8 +190,8 @@ local layoutOptions1 =  { positionheader = {
 
 do
 	local key, def
-	local defUPC = { player = 5, pet = 5, boss =  8, other = 5 }
-	local extraHeaders = { boss = true, self = true, target = true, targettarget = true, focus = true, focustarget = true, other = true }
+	local defUPC = { player = 5, pet = 5, boss =  8, tanks = 5, other = 5 }
+	local extraHeaders = { tanks = true, boss = true, self = true, target = true, targettarget = true, focus = true, focustarget = true, other = true }
 	local headerAnchorPoints = { [''] = L['Default'], CENTER = L["CENTER"], TOP = L["TOP"], BOTTOM = L["BOTTOM"], LEFT = L["LEFT"], RIGHT = L["RIGHT"], TOPLEFT = L["TOPLEFT"], TOPRIGHT = L["TOPRIGHT"], BOTTOMLEFT = L["BOTTOMLEFT"], BOTTOMRIGHT = L["BOTTOMRIGHT"] }
 	local groupAnchorPoints  = { [''] = L['Default'], TOPLEFT = L["TOPLEFT"], TOPRIGHT = L["TOPRIGHT"], BOTTOMLEFT = L["BOTTOMLEFT"], BOTTOMRIGHT = L["BOTTOMRIGHT"] }
 
@@ -414,7 +414,7 @@ do
 				theme.layout.specialHeaders[key] = not theme.layout.specialHeaders[key]
 				Grid2Layout:RefreshLayout()
 			end,
-			hidden = function() return not extraHeaders[key] or key=='other' end,
+			hidden = function() return not extraHeaders[key] or key=='tanks' or key=='other' end,
 		},
 
 	}
@@ -427,38 +427,43 @@ do
 		type = "group", order = 2, name = L['Pets'],
 		args = layoutAnchorOptions,
 	}
-	layoutOptions1.boss  = {
-		type = "group", order = 3, name = L['Bosses'],
-		args = layoutAnchorOptions,
-		disabled = function() return Grid2.versionCli<50000 or theme.layout.specialHeaders==nil or theme.layout.specialHeaders.boss==nil end
-	}
 	layoutOptions1.self  = {
-		type = "group", order = 4, name = L['Player'],
+		type = "group", order = 3, name = L['Player'],
 		args = layoutAnchorOptions,
 		disabled = function() return theme.layout.specialHeaders==nil or theme.layout.specialHeaders.self==nil end
 	}
 	layoutOptions1.target = {
-	    type = "group", order = 5, name = L['Target'],
+	    type = "group", order = 4, name = L['Target'],
 		args = layoutAnchorOptions,
 		disabled = function() return theme.layout.specialHeaders==nil or theme.layout.specialHeaders.target==nil end,
 	}
 	layoutOptions1.targettarget = {
-	    type = "group", order = 6, name = L['Target of Target'],
+	    type = "group", order = 5, name = L['Target of Target'],
 		args = layoutAnchorOptions,
 		disabled = function() return theme.layout.specialHeaders==nil or theme.layout.specialHeaders.targettarget==nil end,
 	}
 	layoutOptions1.focus  = {
-		type = "group", order = 7, name = L['Focus'],
+		type = "group", order = 6, name = L['Focus'],
 		args = layoutAnchorOptions,
 		disabled = function() return Grid2.isVanilla or theme.layout.specialHeaders==nil or theme.layout.specialHeaders.focus==nil end
 	}
 	layoutOptions1.focustarget  = {
-		type = "group", order = 8, name = L['Target of Focus'],
+		type = "group", order = 7, name = L['Target of Focus'],
 		args = layoutAnchorOptions,
 		disabled = function() return Grid2.isVanilla or theme.layout.specialHeaders==nil or theme.layout.specialHeaders.focustarget==nil end
 	}
+	layoutOptions1.tanks  = {
+		type = "group", order = 8, name = L['Tanks'],
+		args = layoutAnchorOptions,
+		disabled = function() return theme.layout.specialHeaders==nil or theme.layout.specialHeaders.tanks==nil end
+	}
+	layoutOptions1.boss  = {
+		type = "group", order = 9, name = L['Bosses'],
+		args = layoutAnchorOptions,
+		disabled = function() return Grid2.versionCli<50000 or theme.layout.specialHeaders==nil or theme.layout.specialHeaders.boss==nil end
+	}
 	layoutOptions1.other  = {
-		type = "group", order = 9, name = L['Others'],
+		type = "group", order = 10, name = L['Others'],
 		args = layoutAnchorOptions,
 		disabled = function() return not (Grid2Layout.db.global.customLayouts and next(Grid2Layout.db.global.customLayouts)) end
 	}

@@ -13,40 +13,56 @@ local SetTableValue = Grid2Options.SetTableValueSafe
 -- enable test mode
 local TestMode
 do
-	local frame, text, textbg
-	local function DisplayTestInfo(self)
-		frame = CreateFrame("Frame",nil, self.frame)
+	local textFrames, countFrames = {}, 0
+	local function AcquireText(parent, msg)
+		countFrames = countFrames + 1
+		textFrames[countFrames] = textFrames[countFrames] or CreateFrame("Frame",nil, parent)
+		local frame = textFrames[countFrames]
+		frame:SetParent(parent)
 		frame:SetFrameStrata('DIALOG')
-		frame:SetPoint("BOTTOMLEFT", self.frame, "TOPLEFT", 0, -4)
-		frame:SetPoint("BOTTOMRIGHT", self.frame, "TOPRIGHT", 0, -4)
+		frame:SetPoint("BOTTOMLEFT", parent, "TOPLEFT", 0, -4)
+		frame:SetPoint("BOTTOMRIGHT", parent, "TOPRIGHT", 0, -4)
 		frame:SetHeight(24)
-		frame:SetScript("OnMouseUp", Grid2Layout.frame:GetScript("OnMouseUp") )
-		frame:SetScript("OnMouseDown", Grid2Layout.frame:GetScript("OnMouseDown") )
-		frame:SetScript("OnEnter", Grid2Layout.frame:GetScript("OnEnter") )
+		frame:SetScript("OnMouseUp", parent:GetScript("OnMouseUp") )
+		frame:SetScript("OnMouseDown", parent:GetScript("OnMouseDown") )
+		frame:SetScript("OnEnter", parent:GetScript("OnEnter") )
 		frame:EnableMouse(true)
-		textbg = frame:CreateTexture(nil, "OVERLAY")
-		textbg:SetPoint('CENTER')
-		textbg:SetColorTexture( .1, .1, .1, 1)
-		text = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-		text:SetPoint('CENTER')
-		DisplayTestInfo = function(self)
-			if Grid2Frame.dba.profile.extraThemes~=nil then
-				text:SetFormattedText("|cFFffffff%s:|r %s |cFFffffff%s:|r %s", L["Theme"], select(2,Grid2:GetCurrentTheme()), L["Layout"], LG[self.layoutName])
-			else
-				text:SetFormattedText("|cFFffffff%s:|r %s", L["Layout"], LG[self.layoutName])
-			end
-			textbg:SetWidth( text:GetWidth() + 8 )
-			textbg:SetHeight( text:GetHeight() + 4 )
-			frame:Show()
-		end
-		DisplayTestInfo(self)
+		frame.textbg = frame.textbg or frame:CreateTexture(nil, "OVERLAY")
+		frame.textbg:SetPoint('CENTER')
+		frame.textbg:SetColorTexture( .1, .1, .1, 1)
+		frame.text = frame.text or frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+		frame.text:SetPoint('CENTER')
+		frame:Show()
+		frame.text:SetText(msg)
+		frame.textbg:SetWidth( frame.text:GetWidth() + 8 )
+		frame.textbg:SetHeight( frame.text:GetHeight() + 4 )
+		frame.header = parent.header
 	end
-
-	local function SetupTestInfo(enabled)
-		if enabled then
-			DisplayTestInfo(Grid2Layout)
-		elseif frame then
+	local function ReleaseTexts()
+		for i=1,countFrames do
+			local frame = textFrames[i]
+			frame.header = nil
 			frame:Hide()
+			frame:SetParent(nil)
+			frame:ClearAllPoints()
+		end
+		countFrames = 0
+	end
+	local function GetText(header)
+		local group = (header.headerClass=='player') and tonumber( header:GetAttribute("groupFilter") )
+		return  (group and string.format(L["Group %d"], group)) or header.headerName or 'unknow'
+	end
+	local function SetTexts(self, enabled)
+		ReleaseTexts()
+		if enabled then
+			if Grid2Frame.dba.profile.extraThemes~=nil then
+				AcquireText(self.frame, string.format("|cFFffffff%s:|r %s |cFFffffff%s:|r %s", L["Theme"], select(2,Grid2:GetCurrentTheme()), L["Layout"], LG[self.layoutName]) )
+			else
+				AcquireText(self.frame, string.format("|cFFffffff%s:|r %s", L["Layout"], LG[self.layoutName]) )
+			end
+			for _, frame in self:IterateHeaders(true) do -- detached headers
+				AcquireText( frame.frameBack, GetText(frame) )
+			end
 		end
 	end
 
@@ -61,13 +77,20 @@ do
 		end
 		local enabled = (not Grid2.testMaxPlayers) or (theme.index~=Grid2.testThemeIndex or layoutName~=Grid2Layout.testLayoutName or maxPlayers~=Grid2.testMaxPlayers)
 		Grid2Layout:SetTestMode(enabled, theme.index, layoutName, maxPlayers)
-		SetupTestInfo(enabled)
+		SetTexts(Grid2Layout, enabled)
 	end
 
 	function Grid2Options:SetLayoutTestMode(enabled)
 		if enabled == nil then enabled = not Grid2.testMaxPlayers end
 		Grid2Layout:SetTestMode( enabled, Grid2.currentTheme or 0, Grid2Layout.layoutName, math.max(select(3,Grid2:GetGroupType()),5) )
-		SetupTestInfo(enabled)
+		SetTexts(Grid2Layout, enabled)
+	end
+
+	function Grid2Options:RefreshLayout()
+		Grid2Layout:ReloadLayout(true)
+		if Grid2Layout.testLayoutName then
+			SetTexts(Grid2Layout, true)
+		end
 	end
 end
 
@@ -84,7 +107,7 @@ local function SetupSpecialHeader(key, enabled)
 	elseif not next(theme.layout.specialHeaders) then
 		theme.layout.specialHeaders = nil
 	end
-	Grid2Layout:RefreshLayout()
+	Grid2Options:RefreshLayout()
 end
 
 -- MakeLayoutsOptions()
@@ -103,7 +126,7 @@ do
 	end
 	local function SetLayout(info,v)
 		theme.layout.layouts[info.arg] = (v~="default") and v or nil
-		Grid2Layout:ReloadLayout()
+		Grid2Options:RefreshLayout()
 	end
 
 	function MakeLayoutsOptions(forGroupType)
@@ -346,14 +369,14 @@ local generalOptions = {
 
 	desc1 = {
 		order = 0,
-		type = "description",
-		name = L["Default settings applied to all user defined layouts and some built-in layouts."] .. "\n"
+		type = "header",
+		name = L["Default settings"]
 	},
 
 	insecureHeaders = {
 		order = 1,
 		type = "toggle",
-		name = "|cffffd200".. L["Use Blizzard Unit Frames"] .."|r",
+		name = L["Use Blizzard Unit Frames"],
 		desc = L["Disable this option to use custom unit frames instead of blizzard frames. This fixes some bugs in blizzard code, but units cannot join/leave the roster while in combat."],
 		width = "full",
 		get = function(info)
@@ -363,7 +386,7 @@ local generalOptions = {
 			v = (not v) or nil
 			Grid2Layout.db.global.useInsecureHeaders = v
 			Grid2Layout.useInsecureHeaders = v
-			Grid2Layout:RefreshLayout()
+			Grid2Options:RefreshLayout()
 		end,
 		hidden = function() return 	not (Grid2.isVanilla or Grid2.debugging or Grid2Layout.db.global.useInsecureHeaders) end,
 		confirm = function(info, v) return not v and L["Warning, this is an experimental option. Are you sure you want to disable blizzard frames?"] or nil end
@@ -372,7 +395,7 @@ local generalOptions = {
 	sortMethod = {
 		order = 2,
 		type = "toggle",
-		name = "|cffffd200".. L["Sort units by name"] .."|r",
+		name = L["Sort units by name"],
 		desc = L["Sort the units by player name, if unchecked the units will be displayed in raid order. Not all layouts will obey this setting."],
 		width = "full",
 		get = function()
@@ -380,14 +403,14 @@ local generalOptions = {
 		end,
 		set = function(info,v)
 			Grid2Layout.customDefaults.sortMethod = (v and "NAME") or nil
-			Grid2Layout:RefreshLayout()
+			Grid2Options:RefreshLayout()
 		end,
 	},
 
 	vehicle = {
 		order = 3,
 		type = "toggle",
-		name = "|cffffd200".. L["Toggle for vehicle"] .."|r",
+		name = L["Toggle for vehicle"],
 		desc = L["When the player is in a vehicle replace the player frame with the vehicle frame."],
 		width = "full",
 		get = function()
@@ -395,14 +418,14 @@ local generalOptions = {
 		end,
 		set = function(info,v)
 			Grid2Layout.customDefaults.toggleForVehicle = v
-			Grid2Layout:RefreshLayout()
+			Grid2Options:RefreshLayout()
 		end,
 	},
 
 	allGroups = {
 		order = 4,
 		type = "toggle",
-		name = "|cffffd200".. L["Display all groups"] .."|r",
+		name = L["Display all groups"],
 		desc = L["Display all raid groups, if unchecked the groups will by filtered according to the instance size. Not all layouts will obey this setting."],
 		width = "full",
 		get = function(info)
@@ -410,14 +433,14 @@ local generalOptions = {
 		end,
 		set = function(info,v)
 			theme.layout.displayAllGroups= v or nil
-			Grid2Layout:RefreshLayout()
+			Grid2Options:RefreshLayout()
 		end,
 	},
 
 	detachedAllHeaders = {
 		order = 5,
 		type = "toggle",
-		name = "|cffffd200".. L["Detach all groups"] .."|r",
+		name = L["Detach all groups"],
 		desc = L["Enable this option to detach unit frame groups, so each group can be moved individually."],
 		width = "full",
 		get = function(info)
@@ -425,14 +448,14 @@ local generalOptions = {
 		end,
 		set = function(info,v)
 			theme.layout.detachedHeaders = v and 'player' or nil
-			Grid2Layout:RefreshLayout()
+			Grid2Options:RefreshLayout()
 		end,
 	},
 
 	detachedPetHeaders = {
 		order = 6,
 		type = "toggle",
-		name = "|cffffd200".. L["Detach pets groups"] .."|r",
+		name = L["Detach pets groups"],
 		desc = L["Enable this option to detach the pets group, so pets group can be moved individually."],
 		width = "full",
 		get = function(info)
@@ -440,23 +463,22 @@ local generalOptions = {
 		end,
 		set = function(info,v)
 			theme.layout.detachedHeaders = v and 'pet' or nil
-			Grid2Layout:RefreshLayout()
+			Grid2Options:RefreshLayout()
 		end,
 		disabled = function() return theme.layout.detachedHeaders=='player' end,
 	},
 
 	desc2 = {
 		order = 99,
-		type = "description",
-		name = L["Special units headers visibility."] .. "\n"
+		type = "header",
+		name = L["Special units headers visibility."]
 	},
 
 	displayPlayer = {
 		order = 100,
 		type = "toggle",
-		name = "|cffffd200".. L["Display Player unit"] .."|r",
+		name = L["Player"],
 		desc = L["Enable this option to display the player unit."],
-		width = "full",
 		get = function(info)
 			return theme.layout.specialHeaders and theme.layout.specialHeaders.self~=nil
 		end,
@@ -468,9 +490,8 @@ local generalOptions = {
 	displayTarget = {
 		order = 105,
 		type = "toggle",
-		name = "|cffffd200".. L["Display Target unit"] .."|r",
+		name = L["Target"],
 		desc = L["Enable this option to display the target unit."],
-		width = "full",
 		get = function(info)
 			return theme.layout.specialHeaders and theme.layout.specialHeaders.target~=nil
 		end,
@@ -479,12 +500,38 @@ local generalOptions = {
 		end,
 	},
 
-	displayTargetTarget = {
+	displayTanks = {
 		order = 110,
 		type = "toggle",
-		name = "|cffffd200".. L["Display Target of Target unit"] .."|r",
+		name = L["Tanks"],
+		desc = L["Enable this option to display tanks units."],
+		get = function(info)
+			return theme.layout.specialHeaders and theme.layout.specialHeaders.tanks~=nil
+		end,
+		set = function(info,v)
+			SetupSpecialHeader('tanks', v)
+		end,
+	},
+
+	displayBosses = {
+		order = 115,
+		type = "toggle",
+		name = L["Bosses"],
+		desc = L["Enable this option to display bosses units."],
+		get = function(info)
+			return theme.layout.specialHeaders and theme.layout.specialHeaders.boss~=nil
+		end,
+		set = function(info,v)
+			SetupSpecialHeader('boss', v)
+		end,
+		hidden = function() return Grid2.versionCli<50000 end,
+	},
+
+	displayTargetTarget = {
+		order = 120,
+		type = "toggle",
+		name = L["Target of Target"],
 		desc = L["Enable this option to display the target of target unit."],
-		width = "full",
 		get = function(info)
 			return theme.layout.specialHeaders and theme.layout.specialHeaders.targettarget~=nil
 		end,
@@ -494,11 +541,10 @@ local generalOptions = {
 	},
 
 	displayFocus = {
-		order = 115,
+		order = 125,
 		type = "toggle",
-		name = "|cffffd200".. L["Display Focus unit"] .."|r",
+		name = L["Focus unit"],
 		desc = L["Enable this option to display the focus unit."],
-		width = "full",
 		get = function(info)
 			return theme.layout.specialHeaders and theme.layout.specialHeaders.focus~=nil
 		end,
@@ -509,11 +555,10 @@ local generalOptions = {
 	},
 
 	displayFocusTarget = {
-		order = 120,
+		order = 130,
 		type = "toggle",
-		name = "|cffffd200".. L["Display Target of Focus unit"] .."|r",
+		name = L["Target of Focus"],
 		desc = L["Enable this option to display the target of focus unit."],
-		width = "full",
 		get = function(info)
 			return theme.layout.specialHeaders and theme.layout.specialHeaders.focustarget~=nil
 		end,
@@ -523,25 +568,10 @@ local generalOptions = {
 		hidden = function() return Grid2.isVanilla end,
 	},
 
-	displayBosses = {
-		order = 125,
-		type = "toggle",
-		name = "|cffffd200".. L["Display Bosses units"] .."|r",
-		desc = L["Enable this option to display bosses units."],
-		width = "full",
-		get = function(info)
-			return theme.layout.specialHeaders and theme.layout.specialHeaders.boss~=nil
-		end,
-		set = function(info,v)
-			SetupSpecialHeader('boss', v)
-		end,
-		hidden = function() return Grid2.versionCli<50000 end,
-	},
-
 	desc3 = {
 		order = 199,
-		type = "description",
-		name = L["Roles Order."] .. "\n"
+		type = "header",
+		name = L["Roles Order."]
 	},
 
 }
