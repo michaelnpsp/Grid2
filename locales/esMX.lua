@@ -4,7 +4,7 @@ if not L then return end
 --{{{ Actually used
 L["Border"] = "Borde"
 L["Charmed"] = "Controlado"
-L["Default"] = "Default"
+L["Default"] = "Predeterminado"
 L["Grid2"] = "Grid2"
 L["Beast"] = "Bestia"
 L["Demon"] = "Demonio"
@@ -20,7 +20,7 @@ L["Offline"] = "Desc."
 --}}}
 
 --{{{ Pvp
--- L["PvP"] = ""
+L["PvP"] = "JcJ"
 -- L["FFA"] = ""
 --}}}
 
@@ -65,13 +65,13 @@ L["Revived"] = "Revivido"
 ---}}}
 
 --{{{ Self
--- L["Me"] = ""
+L["Me"] = "Yo"
 ---}}}
 
 --{{{ Summon
--- L["Pending"] = ""
--- L["Accepted"] = ""
--- L["Declined"] = ""
+L["Pending"] = "Pendiente"
+L["Accepted"] = "Aceptado"
+L["Declined"] = "Rechazado"
 ---}}}
 
 --Layouts
@@ -98,6 +98,6 @@ L["By Group 40"] = "Por Grupo 40"
 L["By Group 25 Tanks First"] = "Por Grupo 25 tanques primero"
 L["By Group 10 Tanks First"] = "Por Grupo 10 tanques primero"
 L["Select Layout"] = "Elige Diseño"
--- L["By Group & Class"] = ""
--- L["By Group & Class w/Pets"] = ""
--- L["By Group & Role w/Pets"] = ""
+L["By Group & Class"] = "Por Grupo y Clase"
+L["By Group & Class w/Pets"] = "Por Grupo y Clase con Mascotas"
+L["By Group & Role w/Pets"] = "Por Grupo y Rol con Mascotas"
