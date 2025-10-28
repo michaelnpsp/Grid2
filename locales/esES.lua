@@ -16,7 +16,7 @@ L["Elemental"] = "Elemental"
 L["DEAD"] = "Muerto"
 L["GHOST"] = "Fantasma"
 L["FD"] = "F.M."
-L["Offline"] = "Desc"
+L["Offline"] = "Desc."
 --}}}
 
 --{{{ Pvp
@@ -55,8 +55,8 @@ L["DAMAGER"] = "Daño"
 
 --{{{ SpecRole
 L["Tank"] = "Tanque"
-L["Healer"] = "Healer"
-L["Melee"] = "Melee"
+L["Healer"] = "Curador"
+L["Melee"] = "Corpo a Corpo"
 L["Ranged"] = "Rango"
 --}}}
 
