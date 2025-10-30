@@ -10,6 +10,12 @@ L["Beast"] = "Bestia"
 L["Demon"] = "Demonio"
 L["Humanoid"] = "Humanoide"
 L["Elemental"] = "Elemental"
+L["Profile"] = "Perfil"
+L["Theme"] = "Tema"
+L["Layout"] = "Diseño"
+L["Left Click to open configuration"] = "Haz clic izquierdo para abrir la configuración"
+L["Right Click to open layouts menu"] = "Haz clic derecho para abrir el menú de diseño"
+L["By Group"] = "Por grupo"
 --}}}
 
 --{{{ Health
