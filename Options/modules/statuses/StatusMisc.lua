@@ -208,3 +208,7 @@ Grid2Options:RegisterStatusOptions("unit-index", "misc", function(self, status, 
 end, {
 	titleIcon = "Interface\\BUTTONS\\UI-GuildButton-PublicNote-Up"
 })
+
+Grid2Options:RegisterStatusOptions("tortos-crystal-shell", "misc", nil, {
+	titleIcon = "Interface\\ICONS\\INV_DataCrystal01"
+})
