@@ -2,10 +2,10 @@
 
 local CrystalShell = Grid2.statusPrototype:new("tortos-crystal-shell")
 
-local UnitHealthMax = UnitHealthMax
-local UnitDebuff = UnitDebuff
 local fmt = string.format
-local CrystalShell_AuraName = GetSpellInfo(137633)
+local UnitHealthMax = UnitHealthMax
+local GetAuraDataByIndex = C_UnitAuras.GetAuraDataByIndex
+local CrystalShell_AuraName = Grid2.API.GetSpellInfo(137633)
 
 local CrystalShell_cache = {}
 
@@ -15,8 +15,15 @@ function CrystalShell:OnEnable()
 end
 
 function CrystalShell:UNIT_AURA(_, unit)
-	local old_amount = CrystalShell_cache[unit]
-	local new_amount = select(16, UnitDebuff(unit, CrystalShell_AuraName))
+	local old_amount, new_amount = CrystalShell_cache[unit], nil
+	for i=1,40 do
+		local a = GetAuraDataByIndex(unit, i, 'HARMFUL')
+		if not a then break end
+		if a.name==CrystalShell_AuraName then
+			new_amount = a.points[1]
+			break
+		end
+	end
 	if old_amount ~= new_amount then
 		CrystalShell_cache[unit] = new_amount
 		CrystalShell:UpdateIndicators(unit)
