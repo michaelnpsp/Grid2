@@ -99,7 +99,7 @@ function Grid2Options:MakeStatusAuraColorsThresholdOptions(status, options, opti
 	if thresholds then
 		self:MakeHeaderOptions(options, "Thresholds")
 		local colorKey = L["Color"]
-		local maxValue = status.dbx.colorThresholdValue and 200000 or 30
+		local maxValue = status.dbx.colorThresholdValue and 500000 or 30
 		local step     = status.dbx.colorThresholdValue and 50 or 0.1
 		for i=1,#thresholds do
 			options[ "colorThreshold" .. i ] = {
@@ -118,10 +118,10 @@ function Grid2Options:MakeStatusAuraColorsThresholdOptions(status, options, opti
 					local min,max
 					if status.dbx.colorThresholdElapsed then
 						min = status.dbx.colorThreshold[i-1] or 0
-						max = status.dbx.colorThreshold[i+1] or maxValue
+						max = status.dbx.colorThreshold[i+1] or maxValue*10
 					else
 						min = status.dbx.colorThreshold[i+1] or 0
-						max = status.dbx.colorThreshold[i-1] or maxValue
+						max = status.dbx.colorThreshold[i-1] or maxValue*10
 					end
 					if v>=min and v<=max then
 						status.dbx.colorThreshold[i] = v
@@ -353,7 +353,7 @@ function Grid2Options:MakeStatusAuraValueOptions(status, options, optionParams)
 		name = L["Maximum Value"],
 		desc = L["Value used by bar indicators. Select zero to use players Maximum Health."],
 		min = 0,
-		softMax = 200000,
+		softMax = 500000,
 		bigStep = 1000,
 		step = 1,
 		get = function () return status.dbx.valueMax or 0 end,
