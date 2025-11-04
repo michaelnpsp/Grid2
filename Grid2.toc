@@ -115,6 +115,7 @@ modules\StatusUnitIndex.lua
 modules\StatusPhased.lua
 modules\StatusShields.lua
 modules\StatusHealAbsorbs.lua
+modules\StatusTortosCrystalShell.lua
 #@retail@
 modules\StatusVehicle.lua
 modules\StatusSummon.lua
