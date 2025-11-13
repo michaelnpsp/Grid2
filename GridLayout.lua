@@ -239,6 +239,7 @@ function Grid2Layout:OnModuleEnable()
 	self:RegisterMessage("Grid_RosterUpdate")
 	self:RegisterMessage("Grid_GroupTypeChanged")
 	self:RegisterMessage("Grid_UpdateLayoutSize")
+	self:RegisterEvent("PLAYER_REGEN_DISABLED")
 	if not Grid2.isClassic then
 		self:RegisterEvent("PET_BATTLE_OPENING_START", "PetBattleTransition")
 		self:RegisterEvent("PET_BATTLE_CLOSE", "PetBattleTransition")
@@ -251,6 +252,7 @@ function Grid2Layout:OnModuleDisable()
 	self:UnregisterMessage("Grid_RosterUpdate")
 	self:UnregisterMessage("Grid_GroupTypeChanged")
 	self:UnregisterMessage("Grid_UpdateLayoutSize")
+	self:UnregisterEvent("PLAYER_REGEN_DISABLED")
 	if not Grid2.isClassic then
 		self:UnregisterEvent("PET_BATTLE_OPENING_START")
 		self:UnregisterEvent("PET_BATTLE_CLOSE")
@@ -361,10 +363,15 @@ function Grid2Layout:FixRoster()
 	end
 end
 
+function Grid2Layout:FramesCanBeMoved()
+	return (not InCombatLockdown()) and (self.testLayoutName or not self.db.profile.FrameLock)
+end
+
 function Grid2Layout:StartMoveFrame(button)
-	if button == "LeftButton" and (self.testLayoutName or not self.db.profile.FrameLock) then
+	if button == "LeftButton" and Grid2Layout:FramesCanBeMoved() then
 		self.frame:StartMoving()
 		self.frame.isMoving = true
+		self.movingHeader = self.frame
 		self:StartHeaderTracking(self.frame)
 	end
 end
@@ -373,6 +380,7 @@ function Grid2Layout:StopMoveFrame()
 	if self.frame.isMoving then
 		self.frame:StopMovingOrSizing()
 		self.frame.isMoving = false
+		self.movingHeader = nil
 		self:SearchSnapToNearestHeader(self.frame, true)
 		self:SavePosition()
 		self:RestorePosition()
@@ -1122,9 +1130,10 @@ do
 	end
 
 	function Grid2Layout:StartMoveHeader(button) -- called from frame event so: self == header.frameBack ~= Grid2Layout
-		if button == "LeftButton" and (Grid2Layout.testLayoutName or not Grid2Layout.db.profile.FrameLock) then
+		if button == "LeftButton" and Grid2Layout:FramesCanBeMoved() then
 			self.header:StartMoving()
 			self.header.isMoving = true
+			Grid2Layout.movingHeader = self.header
 			Grid2Layout:StartHeaderTracking(self.header)
 		end
 	end
@@ -1133,11 +1142,24 @@ do
 		if self.header.isMoving then
 			self.header:StopMovingOrSizing()
 			self.header.isMoving = nil
+			Grid2Layout.movingHeader = nil
 			Grid2Layout:SearchSnapToNearestHeader(self.header, true)
 			Grid2Layout:SaveHeaderPosition(self.header)
 			Grid2Layout:RestoreHeaderPosition(self.header)
 		end
 	end
+
+	function Grid2Layout:PLAYER_REGEN_DISABLED() -- Cancel dragging if combat starts
+		local header = self.movingHeader
+		if header and header.isMoving then
+			if header == self.frame then
+				self:StopMoveFrame()
+			else
+				self.StopMoveHeader(header.frameBack)
+			end
+		end
+	end
+
 end
 --}}}
 
