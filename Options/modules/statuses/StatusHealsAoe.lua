@@ -1,4 +1,5 @@
-local AOEM = Grid2:GetModule("Grid2AoeHeals")
+local AOEM = Grid2:GetModule("Grid2AoeHeals", true)
+if not AOEM then return end
 
 local L = Grid2Options.L
 local select = select

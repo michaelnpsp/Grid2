@@ -1,3 +1,5 @@
+if Grid2.secretsEnabled then return end
+
 -- Status: Aoe-Heals
 
 local AOEM = Grid2:NewModule( "Grid2AoeHeals", "AceEvent-3.0")

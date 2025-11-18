@@ -1,3 +1,5 @@
+if Grid2.secretsEnabled then return end
+
 --[[ Created by Grid2 original authors, modified by Michael ]]--
 
 local Grid2 = Grid2

@@ -13,6 +13,9 @@ local tremove = table.remove
 -- Dummy function
 Grid2.Dummy = function() end
 
+-- Midnight Secrets check
+Grid2.issecretvalue = issecretvalue or function() return false end
+
 -- Fetch LibSharedMedia resources
 function Grid2:MediaFetch(mediatype, key, def)
 	return (key and media:Fetch(mediatype, key)) or (def and media:Fetch(mediatype, def))
@@ -93,8 +96,10 @@ end
 
 -- UTF8 string truncate
 do
+	local issecretvalue = Grid2.issecretvalue
 	local strbyte = string.byte
 	function Grid2.strcututf8(s, c)
+		if issecretvalue(s) then return s end
 		local l, i = #s, 1
 		while c>0 and i<=l do
 			local b = strbyte(s, i)

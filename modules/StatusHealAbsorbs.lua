@@ -1,3 +1,5 @@
+if Grid2.secretsEnabled then return end
+
 -- Heals absorb status, created by Michael
 if Grid2.versionCli<50000 or not UnitGetTotalHealAbsorbs then return end -- only MoP or retail
 

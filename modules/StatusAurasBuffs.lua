@@ -1,3 +1,5 @@
+if Grid2.secretsEnabled then return end
+
 -- Group of Buffs status
 local Grid2 = Grid2
 local bit_bor= bit.bor

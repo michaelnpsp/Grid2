@@ -1,3 +1,5 @@
+if Grid2.secretsEnabled then return end
+
 -- banzai & banzai-threat statuses ( created by Michael )
 
 local Banzai

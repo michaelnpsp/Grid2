@@ -133,6 +133,10 @@ if not isRangeAvail then
 		end
 	end
 
+	if Grid2.secretsEnabled then -- midnight
+		UnitInRange = CheckInteractDistance
+	end
+
 end
 
 ------------------------------------------------------------------------
@@ -219,7 +223,6 @@ local Ranges = {
 			end
 		end
 	end,
-
 }
 
 local function Update(timer)

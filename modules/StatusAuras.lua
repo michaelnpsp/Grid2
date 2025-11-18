@@ -1,3 +1,5 @@
+if Grid2.secretsEnabled then return end
+
 -- Auras management
 local Grid2 = Grid2
 local Grid2Frame = Grid2Frame

@@ -28,6 +28,9 @@ Grid2.isWoW90   = versionCli>=90000
 Grid2.isDevelop = versionToc=='\@project-version\@'
 Grid2.versionstring = "Grid2 v"..(Grid2.isDevelop and 'Dev' or versionToc)
 
+--
+Grid2.secretsEnabled = issecretvalue~=nil
+
 -- debug messages
 Grid2.debugFrame = Grid2DebugFrame or ChatFrame1
 function Grid2:Debug(s, ...)

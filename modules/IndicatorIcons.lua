@@ -6,6 +6,7 @@ local wipe = wipe
 local pairs = pairs
 local ipairs = ipairs
 local format = string.format
+local issecretvalue = Grid2.issecretvalue
 
 local function Icon_Create(self, parent)
 	local f = self:Acquire("Frame", parent)
@@ -45,7 +46,7 @@ local function Icon_OnFrameUpdate(f)
 					end
 					if showStack then
 						local count = counts[j]
-						aura.text:SetText(count>1 and count or "")
+						aura.text:SetText( (issecretvalue(count) or count>1) and count or "")
 					end
 					if showCool then
 						local expiration, duration = expirations[j], durations[j]
@@ -72,7 +73,7 @@ local function Icon_OnFrameUpdate(f)
 				end
 				if showStack then
 					local count = status:GetCount(unit)
-					aura.text:SetText(count>1 and count or "")
+					aura.text:SetText( (issecretvalue(count) or count>1) and count or "")
 				end
 				if showCool then
 					local expiration, duration = status:GetExpirationTime(unit), status:GetDuration(unit)

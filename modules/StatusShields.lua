@@ -1,4 +1,4 @@
-if Grid2.versionCli<40000 then return end -- only cataclysm or retail
+if Grid2.secretsEnabled or Grid2.versionCli<40000 then return end -- only cataclysm or retail
 
 -- Shields absorb status, created by Michael
 

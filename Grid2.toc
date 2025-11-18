@@ -121,3 +121,6 @@ modules\StatusVehicle.lua
 modules\StatusSummon.lua
 modules\StatusStagger.lua
 #@end-retail@
+
+modules\StatusMidnightHealth.lua
+modules\StatusMidnightBuffs.lua

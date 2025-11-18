@@ -1,5 +1,7 @@
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
+local issecretvalue = Grid2.issecretvalue
+
 local Target = Grid2.statusPrototype:new("target")
 
 local Grid2 = Grid2
@@ -11,7 +13,7 @@ local guiTarget, curTarget, oldTarget
 local function UpdateTarget()
 	guiTarget = UnitGUID("target")
 	oldTarget = curTarget
-	curTarget = guiTarget and roster_units[guiTarget]
+	curTarget = not issecretvalue(guiTarget) and roster_units[guiTarget]
 end
 
 function Target:OnEnable()

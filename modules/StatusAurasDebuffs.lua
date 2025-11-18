@@ -1,3 +1,5 @@
+if Grid2.secretsEnabled then return end
+
 -- Group of Debuffs status
 local Grid2 = Grid2
 local wipe = wipe
