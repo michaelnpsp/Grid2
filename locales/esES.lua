@@ -10,13 +10,19 @@ L["Beast"] = "Bestia"
 L["Demon"] = "Demonio"
 L["Humanoid"] = "Humanoide"
 L["Elemental"] = "Elemental"
+L["Profile"] = "Perfil"
+L["Theme"] = "Tema"
+L["Layout"] = "Diseño"
+L["Left Click to open configuration"] = "Haz clic izquierdo para abrir la configuración"
+L["Right Click to open layouts menu"] = "Haz clic derecho para abrir el menú de diseño"
+L["By Group"] = "Por grupo"
 --}}}
 
 --{{{ Health
 L["DEAD"] = "Muerto"
 L["GHOST"] = "Fantasma"
 L["FD"] = "F.M."
-L["Offline"] = "Desc"
+L["Offline"] = "Desc."
 --}}}
 
 --{{{ Pvp
@@ -55,8 +61,8 @@ L["DAMAGER"] = "Daño"
 
 --{{{ SpecRole
 L["Tank"] = "Tanque"
-L["Healer"] = "Healer"
-L["Melee"] = "Melee"
+L["Healer"] = "Curador"
+L["Melee"] = "Corpo a Corpo"
 L["Ranged"] = "Rango"
 --}}}
 
