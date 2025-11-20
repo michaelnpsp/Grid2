@@ -7,6 +7,10 @@ local pairs = pairs
 local ipairs = ipairs
 local format = string.format
 local issecretvalue = Grid2.issecretvalue
+local canaccessvalue = Grid2.canaccessvalue
+
+-- hackish way to display count stacks
+local alphaFrame, alphaSet, pcall = Grid2:GetAlphaFrame()
 
 local function Icon_Create(self, parent)
 	local f = self:Acquire("Frame", parent)
@@ -46,11 +50,15 @@ local function Icon_OnFrameUpdate(f)
 					end
 					if showStack then
 						local count = counts[j]
-						aura.text:SetText( (issecretvalue(count) or count>1) and count or "")
+						if canaccessvalue(count) then
+							aura.text:SetText( count>1 and count or "" )
+						else
+							aura.text:SetText( pcall(alphaSet, alphaFrame, count) and '' or count )
+						end
 					end
 					if showCool then
 						local expiration, duration = expirations[j], durations[j]
-						aura.cooldown:SetCooldown(expiration - duration, duration)
+						aura.cooldown:SetCooldown(expiration - (canaccessvalue(duration) and duration or 0), duration)
 					end
 					aura:Show()
 					i = i + 1

@@ -14,7 +14,7 @@ status.__index = status
 -- constructor
 function status:new(name, embed)
 	local e = setmetatable({}, self)
-	if embed ~= false then LibStub("AceEvent-3.0"):Embed(e)	end
+	if embed ~= false then LibStub("AceEvent-3.0"):Embed(e) end
 	e.name = name
 	e.indicators = {}
 	e.priorities = {}

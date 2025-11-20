@@ -15,6 +15,15 @@ Grid2.Dummy = function() end
 
 -- Midnight Secrets check
 Grid2.issecretvalue = issecretvalue or function() return false end
+Grid2.canaccessvalue = canaccessvalue or function() return true end
+
+-- Midnight alpha frame to check 0-1 value range for some secrets
+do
+	local alphaFrame = CreateFrame('frame')
+	function Grid2:GetAlphaFrame()
+		return alphaFrame, alphaFrame.SetAlpha, pcall
+	end
+end
 
 -- Fetch LibSharedMedia resources
 function Grid2:MediaFetch(mediatype, key, def)

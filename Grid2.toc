@@ -1,5 +1,5 @@
-﻿## Interface: 110205
-## Interface-Retail: 110205
+﻿## Interface: 120000
+## Interface-Retail: 120000
 ## Interface-Classic: 11508
 ## Interface-BCC: 20504
 ## Interface-Wrath: 30403
@@ -122,5 +122,6 @@ modules\StatusSummon.lua
 modules\StatusStagger.lua
 #@end-retail@
 
+modules\IndicatorMidnightBar.lua
+modules\StatusMidnightAuras.lua
 modules\StatusMidnightHealth.lua
-modules\StatusMidnightBuffs.lua
