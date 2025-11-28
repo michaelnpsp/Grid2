@@ -203,11 +203,17 @@ local function Icon_Layout(self, parent)
 		if self.showCooldown then
 			frame.cooldown = frame.cooldown or CreateFrame("Cooldown", frameName and frameName..i or nil, frame, "CooldownFrameTemplate")
 			frame.cooldown:SetAllPoints()
-			frame.cooldown:SetHideCountdownNumbers(true)
-			frame.cooldown:SetDrawEdge(self.dbx.disableOmniCC~=nil)
+			frame.cooldown:SetAlpha(1)
+			frame.cooldown:SetHideCountdownNumbers(not self.showCoolText)
+			frame.cooldown:SetDrawEdge(not self.dbx.disableOmniCC)
+			frame.cooldown:SetDrawSwipe(self.showSwipe)
 			frame.cooldown.noCooldownCount = self.dbx.disableOmniCC
 			frame.cooldown:SetReverse(self.dbx.reverseCooldown)
-			frame.cooldown:SetAlpha(self.coolAnimAlpha)
+			if self.showCoolText then
+				local color, text = self.ctColor, frame.cooldown:GetCountdownFontString()
+				text:SetFont(self.ctFont, self.ctFontSize, self.ctFontFlags)
+				text:SetTextColor(color.r, color.g, color.b, color.a)
+			end
 			frame.cooldown:Show()
 		elseif frame.cooldown then
 			frame.cooldown:Hide()
@@ -263,14 +269,14 @@ local function Icon_UpdateDB(self)
 		self.uy, self.vy = self.vy, self.uy
 		self.pw, self.ph = self.ph, self.pw
 	end
-	self.coolAnimAlpha   = dbx.disableCooldownAnim and 0 or 1
-	self.showCooldown    = not dbx.disableCooldown
+	self.showSwipe       = not (dbx.disableCooldown or dbx.disableCooldownAnim)
+	self.showCoolText    = dbx.enableCooldownText
+	self.showCooldown    = dbx.enableCooldownText or not dbx.disableCooldown or not dbx.disableOmniCC
 	self.showStack       = not dbx.disableStack
 	self.showIcons       = not dbx.disableIcons
 	self.useStatusColor  = dbx.useStatusColor
 	self.borderOpacity   = dbx.borderOpacity  or 1
 	self.colorBorder     = Grid2:MakeColor(dbx.color1, "WHITE")
-	self.colorStack      = Grid2:MakeColor(dbx.colorStack, "WHITE")
 	-- stacks text
 	local jV,jH = dbx.fontJustifyV or 'MIDDLE', dbx.fontJustifyH or 'CENTER'
 	self.fontPoint       = (jV=='MIDDLE' and jH) or (jH=='CENTER' and jV) or jV..jH
@@ -279,6 +285,12 @@ local function Icon_UpdateDB(self)
 	self.fontFlags       = dbx.fontFlags or "OUTLINE"
 	self.fontSize        = dbx.fontSize or 9
 	self.font            = Grid2:MediaFetch("font", dbx.font or theme.font) or STANDARD_TEXT_FONT
+	self.colorStack      = Grid2:MakeColor(dbx.colorStack, "WHITE")
+	-- cooldown text
+	self.ctFontFlags     = dbx.ctFontFlags or "OUTLINE"
+	self.ctFontSize      = dbx.ctFontSize or 9
+	self.ctFont          = Grid2:MediaFetch("font", dbx.ctFont or theme.font) or STANDARD_TEXT_FONT
+	self.ctColor         = Grid2:MakeColor(dbx.ctColor, "WHITE")
 	-- backdrop
 	self.backdrop = self.borderSize>0 and Grid2:GetBackdropTable("Interface\\Addons\\Grid2\\media\\white16x16", self.borderSize) or nil
 end

@@ -288,6 +288,8 @@ do
 		Display    = { type = "header", order = 80,  name = L["Display"]    },
 		StackText  = { type = "header", order = 90,  name = L["Stack Text"] },
 		Cooldown   = { type = "header", order = 125, name = L["Cooldown"]	},
+		CoolAnim   = { type = "header", order = 125, name = L["Cooldown Animation"] },
+		CoolText   = { type = "header", order = 135, name = L["Cooldown Text"]	},
 		Tooltip    = { type = "header", order = 150, name = L["Tooltip"]	},
 		Highlight  = { type = "header", order = 200, name = L["Highlight"]	},
 		-- statuses headers

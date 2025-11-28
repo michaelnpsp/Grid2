@@ -548,6 +548,11 @@ end
 
 -- Grid2Options:MakeIndicatorCooldownOptions()
 function Grid2Options:MakeIndicatorCooldownOptions(indicator, options)
+	if Grid2.secretsEnabled then
+		self:MakeIndicatorCooldownAnimOptions(indicator, options)
+		self:MakeIndicatorCooldownTextOptions(indicator, options)
+		return
+	end
 	self:MakeHeaderOptions( options, "Cooldown" )
 	options.disableCooldown = {
 		type = "toggle",
@@ -601,6 +606,144 @@ function Grid2Options:MakeIndicatorCooldownOptions(indicator, options)
 		end,
 		disabled = function() return indicator.dbx.disableOmniCC end,
 		hidden= function() return indicator.dbx.disableCooldown end,
+	}
+end
+
+-- Grid2Options:MakeIndicatorCooldownAnimOptions()
+function Grid2Options:MakeIndicatorCooldownAnimOptions(indicator, options)
+	self:MakeHeaderOptions( options, "CoolAnim" )
+	options.disableCooldown = {
+		type = "toggle",
+		order = 130,
+		name = L["Show Animation"],
+		desc = L["Show the Cooldown Animation Texture"],
+		tristate = false,
+		get = function () return not indicator.dbx.disableCooldown end,
+		set = function (_, v)
+			indicator.dbx.disableCooldownAnim = nil -- reset setting not used in midnight
+			indicator.dbx.disableCooldown = not v or nil
+			self:RefreshIndicator(indicator, "Create")
+		end,
+	}
+	options.reverseCooldown = {
+		type = "toggle",
+		order = 131,
+		name = L["Reverse Animation"],
+		desc = L["Set cooldown to become darker over time instead of lighter."],
+		tristate = false,
+		get = function () return indicator.dbx.reverseCooldown end,
+		set = function (_, v)
+			indicator.dbx.reverseCooldown = v or nil
+			self:RefreshIndicator(indicator, "Create")
+		end,
+		hidden= function() return indicator.dbx.disableCooldown end,
+	}
+end
+
+-- Grid2Options:MakeIndicatorCountdownTextOptions()
+function Grid2Options:MakeIndicatorCooldownTextOptions(indicator, options)
+	self:MakeHeaderOptions( options, "CoolText" )
+	options.disableCooldownText = {
+		type = "toggle",
+		order = 136,
+		name = L["Show Countdown Text"],
+		desc = L["Show the Countdown Text"],
+		tristate = false,
+		get = function () return indicator.dbx.enableCooldownText end,
+		set = function (_, v)
+			indicator.dbx.disableOmniCC = true
+			indicator.dbx.enableCooldownText = v or nil
+			self:RefreshIndicator(indicator, "Create")
+		end,
+	}
+	options.disableOmniCC = {
+		type = "toggle",
+		order = 137,
+		name = L["Disable OmniCC"],
+		desc = L["Don't let OmniCC Addon to display countdown texts on this indicator"],
+		tristate = false,
+		get = function () return indicator.dbx.disableOmniCC end,
+		set = function (_, v)
+			indicator.dbx.disableCooldownAnim = nil
+			indicator.dbx.disableOmniCC = v or nil
+			self:RefreshIndicator(indicator, "Create")
+		end,
+		hidden = function() return indicator.dbx.enableCooldownText end,
+	}
+	options.ctFont = {
+		type = "select", dialogControl = "LSM30_Font",
+		order = 139,
+		name = L["Font"],
+		desc = L["Adjust the font settings"],
+		get = function (info) return indicator.dbx.cfFont or self.MEDIA_VALUE_DEFAULT end,
+		set = function (info, v)
+			indicator.dbx.ctFont = self.MEDIA_VALUE_DEFAULT~=v and v or nil
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		values = self.GetFontValues,
+		hidden= function() return indicator.dbx.enableCooldownText==nil end,
+	}
+	options.ctFontFlags = {
+		type = "select",
+		order = 140,
+		name = L["Font Border"],
+		desc = L["Set the font border type."],
+		get = function ()
+			local flags = indicator.dbx.fontFlags
+			return (flags == nil and "OUTLINE") or (flags == "" and "NONE") or flags
+		end,
+		set = function (_, v)
+			indicator.dbx.fontFlags =  v ~= "NONE" and v or ""
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		values = Grid2Options.fontFlagsValues,
+		hidden= function() return indicator.dbx.enableCooldownText==nil end,
+	}
+	options.ctFontsize1 = {
+		type = "range",
+		order = 138,
+		name = L["Font Size"],
+		desc = L["Adjust the font size."],
+		softMin = 0,
+		softMax = 32,
+		step = 1,
+		get = function () return indicator.dbx.ctFontSize or 9 end,
+		set = function (_, v)
+			if v==0 then v = 0.25 end
+			indicator.dbx.ctFontSize = v
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		hidden= function() return indicator.dbx.enableCooldownText==nil or (indicator.dbx.ctFontSize or 9)<1 end,
+	}
+	options.ctFontsize2 = {
+		type = "range",
+		order = 138,
+		name = L["Font Size"],
+		desc = L["Adjust the font size."],
+		min = 0.01,
+		max = 1,
+		step = 0.01,
+		isPercent = true,
+		get = function () return indicator.dbx.ctFontSize end,
+		set = function (_, v)
+			if v>=1 then v = 9 end
+			indicator.dbx.ctFontSize = v
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		hidden= function() return indicator.dbx.enableCooldownText==nil or (indicator.dbx.ctFontSize or 9)>=1 end,
+	}
+	options.ctFontColor = {
+		type = "color",
+		order = 143,
+		name = L["Color"],
+		desc = L["Color"],
+		hasAlpha = true,
+		get = function() return self:UnpackColor( indicator.dbx.ctColor, "WHITE" ) end,
+		set = function( info, r,g,b,a )
+			self:PackColor( r,g,b,a, indicator.dbx, "ctColor" )
+			self:RefreshIndicator(indicator, "Layout" )
+		 end,
+		hidden= function() return indicator.dbx.enableCooldownText==nil end,
 	}
 end
 

@@ -20,6 +20,7 @@ Grid2Options:RegisterIndicatorOptions("icons", true, function(self, indicator)
 	self:MakeIndicatorAuraIconsBorderOptions(indicator, options)
 	self:MakeIndicatorTooltipsOptions(indicator, options)
 	self:MakeIndicatorAuraIconsCustomOptions(indicator, options)
+	self:MakeIndicatorCooldownOptions(indicator, options)
 	self:MakeIndicatorStatusOptions(indicator, statuses)
 	self:MakeIndicatorLoadOptions(indicator, filter)
 	self:AddIndicatorOptions(indicator, statuses, options, nil, filter)
@@ -330,59 +331,5 @@ function Grid2Options:MakeIndicatorAuraIconsCustomOptions(indicator, options)
 			self:RefreshIndicator(indicator, "Layout" )
 		 end,
 		hidden= function() return indicator.dbx.disableStack end,
-	}
-	self:MakeHeaderOptions( options, "Cooldown" )
-	options.disableCooldown = {
-		type = "toggle",
-		order = 130,
-		name = L["Disable Cooldown"],
-		desc = L["Disable the Cooldown Frame"],
-		tristate = false,
-		get = function () return indicator.dbx.disableCooldown end,
-		set = function (_, v)
-			indicator.dbx.disableCooldown = v or nil
-			self:RefreshIndicator(indicator, "Layout" )
-		end,
-	}
-	options.reverseCooldown = {
-		type = "toggle",
-		order = 131,
-		name = L["Reverse Cooldown"],
-		desc = L["Set cooldown to become darker over time instead of lighter."],
-		tristate = false,
-		get = function () return indicator.dbx.reverseCooldown end,
-		set = function (_, v)
-			indicator.dbx.reverseCooldown = v or nil
-			self:RefreshIndicator(indicator, "Layout" )
-		end,
-		hidden= function() return indicator.dbx.disableCooldown end,
-	}
-	options.disableOmniCC = {
-		type = "toggle",
-		order = 132,
-		name = L["Disable OmniCC"],
-		desc = L["Disable OmniCC"],
-		tristate = false,
-		get = function () return indicator.dbx.disableOmniCC end,
-		set = function (_, v)
-			indicator.dbx.disableCooldownAnim = nil
-			indicator.dbx.disableOmniCC = v or nil
-			self:RefreshIndicator(indicator, "Layout")
-		end,
-		hidden= function() return indicator.dbx.disableCooldown end,
-	}
-	options.disableCooldownAnim = {
-		type = "toggle",
-		order = 133,
-		name = L["Hide Animation"],
-		desc = L["Hide the Cooldown Animation Texture"],
-		tristate = false,
-		get = function () return indicator.dbx.disableCooldownAnim end,
-		set = function (_, v)
-			indicator.dbx.disableCooldownAnim = v or nil
-			self:RefreshIndicator(indicator, "Create")
-		end,
-		disabled = function() return indicator.dbx.disableOmniCC end,
-		hidden= function() return indicator.dbx.disableCooldown end,
 	}
 end
