@@ -1,3 +1,5 @@
+if Grid2.secretsEnabled then return end
+
 local L = Grid2Options.L
 
 local GetSpellInfo = Grid2.API.GetSpellInfo

@@ -1,3 +1,5 @@
+if Grid2.secretsEnabled then return end
+
 -- Buffs & Debuffs predictors used by AceGUI-3.0-Search-EditBox
 local ipairs = ipairs
 local strlower = string.lower

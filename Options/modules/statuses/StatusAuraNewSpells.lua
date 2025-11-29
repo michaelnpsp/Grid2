@@ -1,3 +1,5 @@
+if Grid2.secretsEnabled then return end
+
 -- Players Buffs & Debuffs, used by StatusAuraNewPredictor.lua
 -- Grid2Options.PlayerBuffs: Updated 28/12/23
 Grid2Options.PlayerBuffs = {

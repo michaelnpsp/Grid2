@@ -21,8 +21,8 @@ Grid2Options.statusTypesIcons = {
 }
 -- categories
 Grid2Options.categories = {
-	buff   = { name = L["Buffs"],               order = 10, icon = "Interface\\Icons\\Spell_Holy_HealingAura.",     title = L["New Buff"],   },
-	debuff = { name = L["Debuffs"], 			order = 20, icon = "Interface\\Icons\\Ability_creature_disease_05", title = L["New Debuff"], },
+	buff   = { name = L["Buffs"],      			order = 10, icon = "Interface\\Icons\\Spell_Holy_HealingAura.",     title = L["New Buff"],   },
+	debuff = { name = L["Debuffs"], 		    order = 20, icon = "Interface\\Icons\\Ability_creature_disease_05", title = L["New Debuff"], },
 	color  = { name = L["Colors"], 				order = 30, icon = "Interface\\Addons\\Grid2\\media\\icon",         title = L["New Color"],  },
 	health = { name = L["Health&Heals"], 		order = 40, icon = "Interface\\Icons\\INV_Potion_167", },
 	mana   = { name = L["Mana&Power"], 			order = 50, icon = "Interface\\Icons\\INV_Potion_168", },

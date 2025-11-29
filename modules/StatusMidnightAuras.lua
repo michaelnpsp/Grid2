@@ -9,7 +9,6 @@ local GetAuraDataByIndex = C_UnitAuras.GetAuraDataByIndex
 local IsAuraFilteredOutByInstanceID = C_UnitAuras.IsAuraFilteredOutByInstanceID
 local GetAuraDurationRemainingByAuraInstanceID = C_UnitAuras.GetAuraDurationRemainingByAuraInstanceID
 
-
 -- shared functions and variables
 
 local Buffs = {}
@@ -143,7 +142,7 @@ function Debuffs:IsActive(unit)
 end
 
 function Debuffs:UpdateDB()
-	self.aura_filter = self.dbx.aura_filter or 'HELPFUL'
+	self.aura_filter = self.dbx.aura_filter or 'HARMFUL'
 end
 
 -- Registration
