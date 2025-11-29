@@ -11,7 +11,6 @@ local function Icon_Create(self, parent)
 	Icon:SetTexCoord(0.05, 0.95, 0.05, 0.95)
 	Icon:SetAllPoints()
 	Icon:Show()
-
 	if not self.disableCooldown then
 		local Cooldown
 		if self.dbx.disableOmniCC then
@@ -25,7 +24,8 @@ local function Icon_Create(self, parent)
 			Cooldown:SetDrawEdge(false) -- Without this omnicc uses only "Recharges color"
 		end
 		Cooldown:SetReverse(self.dbx.reverseCooldown)
-		Cooldown:SetHideCountdownNumbers(true)
+		Cooldown:SetDrawSwipe(self.showSwipe)
+		Cooldown:SetHideCountdownNumbers(not self.showCoolText)
 		Cooldown:Hide()
 		f.Cooldown = Cooldown
 	end
@@ -130,11 +130,10 @@ local function Icon_Layout(self, parent)
 	end
 	f:SetSize(size,size)
 
-	if f.Cooldown then
-		f.Cooldown:SetAlpha(self.coolAnimAlpha)
-		if self.disableIcon then
-			f.Cooldown:SetSwipeTexture(0)
-		end
+	if self.showCoolText then
+		local color, text = self.ctColor, f.Cooldown:GetCountdownFontString()
+		text:SetFont(self.ctFont, self.ctFontSize, self.ctFontFlags)
+		text:SetTextColor(color.r, color.g, color.b, color.a)
 	end
 
 	if not self.disableStack then
@@ -144,7 +143,6 @@ local function Icon_Layout(self, parent)
 		CooldownText:SetPoint(self.textPoint, self.textOffsetX, self.textOffsetY)
 		if self.fontSize<1 then CooldownText.fontSize = self.fontSize*size end	-- we cannot set font here, see github issue #152
 	end
-
 end
 
 local function Icon_Disable(self, parent)
@@ -164,7 +162,9 @@ local function Icon_UpdateDB(self)
 	self.offsetx   = l.x
 	self.offsety   = l.y
 	-- misc variables
-	self.disableCooldown = dbx.disableCooldown
+	self.showSwipe       = not (dbx.disableCooldown or dbx.disableCooldownAnim or dbx.disableIcon)
+	self.showCoolText    = dbx.enableCooldownText
+	self.disableCooldown = dbx.disableCooldown and dbx.disableOmniCC and not dbx.enableCooldownText
 	self.disableStack    = dbx.disableStack
 	self.frameLevel      = dbx.level
 	self.borderSize      = dbx.borderSize
@@ -180,7 +180,11 @@ local function Icon_UpdateDB(self)
 	self.textfont    = Grid2:MediaFetch("font", dbx.font or theme.font) or STANDARD_TEXT_FONT
 	-- ignore icon and use a solid square texture
 	self.disableIcon  = dbx.disableIcon
-	self.coolAnimAlpha = dbx.disableCooldownAnim and 0 or 1
+	-- cooldown text
+	self.ctFontFlags     = dbx.ctFontFlags or "OUTLINE"
+	self.ctFontSize      = dbx.ctFontSize or 9
+	self.ctFont          = Grid2:MediaFetch("font", dbx.ctFont or theme.font) or STANDARD_TEXT_FONT
+	self.ctColor         = Grid2:MakeColor(dbx.ctColor, "WHITE")
 	-- backdrop
 	self.backdrop = Grid2:GetBackdropTable("Interface\\Addons\\Grid2\\media\\white16x16", self.borderSize or 1)
 end

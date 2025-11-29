@@ -4,6 +4,10 @@ local Grid2 = Grid2
 local UnitExists = UnitExists
 local GetRaidTargetIndex = GetRaidTargetIndex
 local rawget = rawget
+local issecretvalue = issecretvalue or function() return false end
+
+-- indicator compatibility
+local indicatorTypes
 
 -- Star, Circle, Diamond, Triangle, Moon, Square, Cross, Skull
 local iconColors = {
@@ -49,7 +53,7 @@ function RaidIcon:UpdateAllUnits()
 		old = rawget( cache, unit )
 		cache[unit] = nil
 		new = cache[unit]
-		if new ~= old then
+		if issecretvalue(new) or issecretvalue(old) or new ~= old then
 			self:UpdateIndicators(unit)
 		end
 	end
@@ -60,33 +64,61 @@ function RaidIcon:UpdateUnit(_, unit)
 	self:UpdateIndicators(unit)
 end
 
-function RaidIcon:IsActive(unit)
-	local index = self.cache[unit]
-	return index and index < 9
-end
+if Grid2.secretsEnabled then -- midnight
 
-function RaidIcon:GetColor(unit)
-	local c = self.dbx[ "color" .. self.cache[unit] ]
-	return c.r, c.g, c.b, c.a --self.dbx.opacity or 1
-end
+	local frame = CreateFrame("frame")
+	local tex = frame:CreateTexture()
+	frame:Hide()
+	tex:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcons")
 
-function RaidIcon:GetTexCoord()
-	return 0, 1, 0, 1
-end
-
-function RaidIcon:GetIcon(unit)
-	return iconTexture[ self.cache[unit] ]
-end
-
-function RaidIcon:GetText(unit)
-	return iconText[ self.cache[unit] ]
-end
-
-function RaidIcon:SetGlobalOpacity(opacity)
-	local dbx = self.dbx
-	for i=1, 8 do
-		dbx["color"..i].a = opacity
+	function RaidIcon:GetTexCoord(unit)
+		tex:SetSpriteSheetCell( self.cache[unit], 4, 4, 64, 64)
+		return tex:GetTexCoord()
 	end
+
+	function RaidIcon:GetIcon(unit)
+		return 'Interface\\TargetingFrame\\UI-RaidTargetingIcons'
+	end
+
+	function RaidIcon:IsActive(unit)
+		return issecretvalue( self.cache[unit] )
+	end
+
+	indicatorTypes = {"icon"}
+
+else -- classic, tww
+
+	function RaidIcon:GetTexCoord()
+		return 0, 1, 0, 1
+	end
+
+	function RaidIcon:GetIcon(unit)
+		return iconTexture[ self.cache[unit] ]
+	end
+
+	function RaidIcon:GetColor(unit)
+		local c = self.dbx[ "color" .. self.cache[unit] ]
+		return c.r, c.g, c.b, c.a --self.dbx.opacity or 1
+	end
+
+	function RaidIcon:IsActive(unit)
+		local index = self.cache[unit]
+		return index and index < 9
+	end
+
+	function RaidIcon:GetText(unit)
+		return iconText[ self.cache[unit] ]
+	end
+
+	function RaidIcon:SetGlobalOpacity(opacity)
+		local dbx = self.dbx
+		for i=1, 8 do
+			dbx["color"..i].a = opacity
+		end
+	end
+
+	indicatorTypes = {"color", "icon", "text"}
+
 end
 
 function RaidIcon:OnEnable()
@@ -114,7 +146,7 @@ end
 
 local function Create(baseKey, dbx)
 	local status = statuses[baseKey]
-	Grid2:RegisterStatus(status, {"color", "icon", "text"}, baseKey, dbx)
+	Grid2:RegisterStatus(status, indicatorTypes, baseKey, dbx)
 	return status
 end
 

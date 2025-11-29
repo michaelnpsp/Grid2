@@ -13,7 +13,7 @@ local optionParams = {
 	titleIconCoords = { 0.5, 1, 0, 0.5},
 }
 
-local function MakeOptions(self, status, options, optionParams)
+local MakeOptions = Grid2.secretsEnabled and Grid2.Dummy or function(self, status, options, optionParams)
 	self:MakeStatusStandardOptions(status, options, optionParams)
 	self:MakeSpacerOptions(options, 30)
 	options.opacity = {
