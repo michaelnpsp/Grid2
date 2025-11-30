@@ -18,7 +18,6 @@
 <Script file="modules\statuses\StatusAuraNew.lua"/>
 <Script file="modules\statuses\StatusAuraNewSpells.lua"/>
 <Script file="modules\statuses\StatusAuraNewPredictor.lua"/>
-<Script file="modules\statuses\StatusAuraNewMidnight.lua"/>
 <Script file="modules\statuses\StatusBanzai.lua"/>
 <Script file="modules\statuses\StatusColor.lua"/>
 <Script file="modules\statuses\StatusColorNew.lua"/>
@@ -36,6 +35,8 @@
 <Script file="modules\statuses\StatusCombat.lua"/>
 <Script file="modules\statuses\StatusMisc.lua"/>
 <Script file="modules\statuses\StatusName.lua"/>
+
+<Script file="modules\statuses\StatusAuraMidnight.lua"/>
 
 <Script file="modules\indicators\Indicator.lua"/>
 <Script file="modules\indicators\IndicatorAlpha.lua"/>
