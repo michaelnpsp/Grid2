@@ -116,11 +116,9 @@ local function Bar_Disable(self, parent)
 	bar:Hide()
 	bar:SetParent(nil)
 	bar:ClearAllPoints()
-	tdestroy(bar)
 end
 
 local function Bar_Destroy(self, parent, bar)
-	tdestroy(bar)
 	bar.indicator = nil
 end
 
