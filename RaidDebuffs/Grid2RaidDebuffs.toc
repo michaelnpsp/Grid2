@@ -5,6 +5,7 @@
 ## Interface-Wrath: 30403
 ## Interface-Cata: 40402
 ## Interface-Mists: 50502
+## Interface-Titan: 38000
 ## Title: Grid2 |cd1ff7d0aRaidDebuffs|r
 ## Notes: Adds a Raid Boss debuff status.
 ## Notes-esES: Muestra los debuffs de Bosses de Raid en el Grid2.
