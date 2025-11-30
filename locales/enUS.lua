@@ -110,3 +110,17 @@ L["Select Layout"] = true
 L["By Group & Class"] = true
 L["By Group & Class w/Pets"] = true
 L["By Group & Role w/Pets"] = true
+
+--LDB
+L["Profile"] = true
+L["Theme"] = true
+L["Layout"] = true
+L["Select Layout"] = true
+L["Never"] = true
+L["Raid"] = true
+L["Grouped"] = true
+L["Always"] = true
+L["Grid2 Visibility"] = true
+L["Grid2 Movement"] = true
+L["Locked"] = true
+L["|cFFff4040Left Click|r to open configuration\n|cFFff4040Right Click|r to open layouts menu"] = true

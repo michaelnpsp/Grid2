@@ -30,7 +30,7 @@ local Grid2LDB = DataBroker:NewDataObject("Grid2", {
 		for _,func in pairs(Grid2.tooltipFunc) do
 			func(tooltip)
 		end
-		tooltip:AddLine("|cFFff4040Left Click|r to open configuration\n|cFFff4040Right Click|r to open layouts menu", 0.2, 1, 0.2)
+		tooltip:AddLine(L["|cFFff4040Left Click|r to open configuration\n|cFFff4040Right Click|r to open layouts menu"], 0.2, 1, 0.2)
 	end,
 })
 
