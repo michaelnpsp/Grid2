@@ -50,7 +50,14 @@ Buffs.GetColor = Grid2.statusLibrary.GetColor
 Buffs.PLAYER_REGEN_DISABLED = Grid2.statusLibrary.UpdateAllUnits
 Buffs.PLAYER_REGEN_ENABLED = Grid2.statusLibrary.UpdateAllUnits
 
-local function Buffs_DisplayCheck(aura) -- only out of combat on friendly units
+-- This is the logic used by blizzard raid frames to show/hide buffs.
+-- SpellGetVisibilityInfo(spellId, n) where n:
+-- 0 => in combat
+-- 1 => only out of combat
+-- 2 => for enemy targets
+-- SpellGetVisiblityInfo() cannot be used in combat in midnight so 0,2 options are useless
+-- Maybe use this code on buffs.
+local function Buffs_DisplayCheck(aura)
 	local hasCustom, alwaysShowMine, showForMySpec = SpellGetVisibilityInfo(aura.spellId, 1)
 	if hasCustom  then
 		return showForMySpec or (alwaysShowMine and myUnits[a.sourceUnit])
@@ -63,7 +70,8 @@ function Buffs:GetIcons(unit, max)
 	if self.filter_enemy and UnitIsEnemy("player", unit) then
 		return GetIcons(self, unit, max, self.filter_enemy)
 	else
-		return GetIcons(self, unit, max, self.filter_friend, not UnitAffectingCombat("player") and self.display_check)
+		return GetIcons(self, unit, max, self.filter_friend)
+		-- return GetIcons(self, unit, max, self.filter_friend, not UnitAffectingCombat("player") and self.display_check)
 	end
 end
 

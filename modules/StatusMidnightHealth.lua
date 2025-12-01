@@ -5,14 +5,15 @@ local Heals = Grid2.statusPrototype:new("heals-incoming")
 local MyHeals = Grid2.statusPrototype:new("my-heals-incoming")
 local Death = Grid2.statusPrototype:new("death")
 
-local AbbreviateLargeNumbers = AbbreviateLargeNumbers
 local UnitHealth = UnitHealth
 local UnitHealthMax = UnitHealthMax
 local UnitHealthPercent = UnitHealthPercent
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitGetIncomingHeals = UnitGetIncomingHeals
-
+local AbbreviateLargeNumbers = AbbreviateLargeNumbers
 local unit_is_valid = Grid2.roster_guids
+local format = string.format
+local fmtPercent = "%.0f%%"
 
 -- hackish way to check if a secret value>1
 local alphaFrame, alphaSet, pcall = Grid2:GetAlphaFrame()
@@ -40,7 +41,11 @@ function Health:OnDisable()
 end
 
 function Health:GetText(unit)
-	return AbbreviateLargeNumbers( UnitHealth(unit) )
+	return UnitExists(unit) and AbbreviateLargeNumbers( UnitHealth(unit) ) or ''
+end
+
+function Health:GetPercentText(unit)
+	return format( fmtPercent, (deadAsFullHealth and UnitIsDeadOrGhost(unit) and 100) or UnitHealthPercent(unit, true, true) )
 end
 
 function Health:GetPercent(unit)
@@ -48,12 +53,8 @@ function Health:GetPercent(unit)
 	return UnitHealthPercent(unit, true, false)
 end
 
-function Health:GetPercent100(unit)
-	if deadAsFullHealth and UnitIsDeadOrGhost(unit) then return 100 end
-	return UnitHealthPercent(unit, true, true)
-end
-
 function Health:UpdateDB()
+	fmtPercent = Grid2.db.profile.formatting.percentFormat
 	deadAsFullHealth = self.dbx.deadAsFullHealth
 end
 
@@ -85,15 +86,15 @@ function Heals:OnDisable()
 end
 
 function Heals:GetValueMinMax(unit)
-	return UnitGetIncomingHeals(unit), 0, UnitHealthMax(unit)
+	return UnitGetIncomingHeals(unit) or 0, 0, UnitHealthMax(unit)
 end
 
 function Heals:GetText(unit)
-	return AbbreviateLargeNumbers( UnitGetIncomingHeals(unit) )
+	return AbbreviateLargeNumbers( UnitGetIncomingHeals(unit) or 0 )
 end
 
 function Heals:IsActive(unit)
-	return not pcall(alphaSet, alphaFrame, UnitGetIncomingHeals(unit))
+	return not pcall(alphaSet, alphaFrame, UnitGetIncomingHeals(unit) or 0)
 end
 
 local function CreateHeals(baseKey, dbx)
@@ -124,15 +125,15 @@ function MyHeals:OnDisable()
 end
 
 function MyHeals:GetValueMinMax(unit)
-	return UnitGetIncomingHeals(unit), 0, UnitHealthMax(unit)
+	return UnitGetIncomingHeals(unit) or 0, 0, UnitHealthMax(unit)
 end
 
 function MyHeals:GetText(unit)
-	return AbbreviateLargeNumbers( UnitGetIncomingHeals(unit,'player') )
+	return AbbreviateLargeNumbers( UnitGetIncomingHeals(unit,'player') or 0 )
 end
 
 function MyHeals:IsActive(unit)
-	return not pcall(alphaSet, alphaFrame, UnitGetIncomingHeals(unit,'player'))
+	return not pcall(alphaSet, alphaFrame, UnitGetIncomingHeals(unit,'player') or 0)
 end
 
 local function CreateMyHeals(baseKey, dbx)

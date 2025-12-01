@@ -195,15 +195,11 @@ local function Text_OnUpdateP(self, parent, unit, status)
 		local percent, per100, text
 		if status.GetPercentText then
 			text = status:GetPercentText(unit)
-		elseif status.GetPercent100 then
-			per100, text = status:GetPercent100(unit)
 		else
 			percent, text = status:GetPercent(unit)
 		end
 		if text then
 			Text:SetText( text )
-		elseif per100 then
-			Text:SetFormattedText( FmtPercent, per100 )
 		elseif percent then
 			Text:SetFormattedText( FmtPercent, percent*100 )
 		else
