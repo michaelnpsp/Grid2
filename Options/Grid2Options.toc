@@ -36,4 +36,9 @@ GridStatuses.lua
 GridThemes.lua
 GridProfiles.lua
 
+#@retail@
+profiles\ProfileModern.lua
+profiles\ProfileBlizzard.lua
+#@end-retail@
+
 modules.xml

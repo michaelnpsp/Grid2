@@ -1,6 +1,3 @@
---[[ Created by Michael, based on Grid2Options\GridDefaults.lua from original Grid2 authors --]]
-if not Grid2.isMidnight then return end
-
 local Grid2 = Grid2
 local Location = Grid2.CreateLocation
 local defaultFont = "Friz Quadrata TT"
@@ -9,8 +6,8 @@ local function MakeDatabaseDefaults()
 
 	-- cells apearance
 	local pf = Grid2.db:GetNamespace('Grid2Frame').profile
-	pf.frameHeight = 60
-	pf.frameWidth  = 60
+	pf.frameHeight = 46
+	pf.frameWidth  = 66
 
 	-- statuses
 	Grid2:DbSetValue( "statuses", "buffs-Default", { type = "mbuffs", aura_filter = 'HELPFUL|RAID|PLAYER', aura_filter_enemy = 'HELPFUL', color1 = {r=0, g=1, b=0, a=1} })
@@ -71,8 +68,8 @@ local function MakeDatabaseDefaults()
 
 end
 
-Grid2:DbRegisterProfile( { -- Register the basic profile
-	name = 'Classic',
-	desc = 'Basic Unit Frames with minimal features.',
+Grid2:DbRegisterProfile( { -- Only test purpose, TODO, move to Grid2Options/profiles folder
+	name = 'Modern',
+	desc = 'Modern unit frames profile.',
 	func = MakeDatabaseDefaults,
-}, 0)
+})

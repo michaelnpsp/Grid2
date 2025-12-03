@@ -1,3 +1,9 @@
+--
+-- Dialog to select a profile template to update a new created profile.
+-- Selected profile template index is is stored in Grid2.defaultProfileIndex and used later
+-- by Grid2:MakeDatabaseDefaults() to add settings,indicators,statuses in the new profile.
+--
+
 local L  = LibStub("AceLocale-3.0"):GetLocale("Grid2Options")
 
 local Options = {}
@@ -16,7 +22,6 @@ Options.RootTable = {
 					return "Select a profile template to apply to your new profile:"
 				end
 			end,
-			fontSize = "small",
 		},
 		separator = {
 			type = "header",
@@ -48,7 +53,8 @@ Options.ProfileTable = {
 		type = "description",
 		name = "",
 		image = function()
-			return "Interface\\Calendar\\MeetingIcon"
+			local index = Options.selectedProfile
+			return type(index)=='number' and Grid2.defaultProfiles[index].image or "Interface\\Calendar\\MeetingIcon"
 		end,
 	},
 }
@@ -59,7 +65,7 @@ function Options:Initialize(firstBoot)
 	for key,data in pairs(args) do -- wipe old data
 		if data.order>=10 then args[key] = nil end
 	end
-	for index,info in pairs(Grid2.defaultProfiles) do
+	for index,info in pairs(Grid2.defaultProfiles) do -- add default profile templates
 		args[tostring(index)] = {
 			order = 10+index,
 			type = "group",
@@ -67,7 +73,7 @@ function Options:Initialize(firstBoot)
 			args = self.ProfileTable,
 		}
 	end
-	if firstBoot then
+	if firstBoot then -- if first boot for the character, add already created profiles
 		local curProfile = Grid2.db:GetCurrentProfile()
 		for index,profileName in pairs(Grid2.db:GetProfiles()) do
 			if profileName~=curProfile then
@@ -83,7 +89,7 @@ function Options:Initialize(firstBoot)
 	return self.RootTable
 end
 
--- Open profiles templates dialog used from new profile option
+-- Open profiles templates dialog, called from "new profile" option
 function Grid2Options:OpenProfilesDialog(newProfileName)
 	self:OpenAdvancedDialog('Grid2ProfilesDialog', Options:Initialize(false), 500, 250, function()
 		Grid2.defaultProfileIndex = Options.selectedProfile or 0
@@ -99,7 +105,7 @@ function Grid2Options:OpenFirstBootProfilesDialog()
 		if type(profile)=='number' then -- update current profile with the selected default profile template
 			Grid2.defaultProfileIndex = profile
 			Grid2:ProfileChanged()
-		else -- An already existing profile was selected, change profile and remove current profile
+		else -- An already existing profile was selected, change to the existing profile and remove current profile
 			local oldProfile = Grid2.db:GetCurrentProfile()
 			Grid2.db:SetProfile(profile)
 			Grid2.db:DeleteProfile(oldProfile)

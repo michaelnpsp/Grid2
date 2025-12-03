@@ -62,18 +62,14 @@ end
 -- Advanced default profiles management
 function Grid2:MakeDatabaseDefaults()
 	local defaultProfile = self.defaultProfileIndex
-
-	print(">>>>>>>", defaultProfile, self.defaultProfileIndex)
-
 	self.defaultProfileIndex = nil
-	if not defaultProfile then
-		defaultProfile = 0
-		if Grid2Options or C_AddOns.LoadAddOn('Grid2Options') then
-			Grid2Options:OpenFirstBootProfilesDialog()
-			return true
-		end
+	if not defaultProfile and (Grid2Options or C_AddOns.LoadAddOn('Grid2Options')) then
+		Grid2Options:OpenFirstBootProfilesDialog()
+		return true
+	else
+		self.defaultProfiles[defaultProfile or 0].func(self)
+		return false
 	end
-	self.defaultProfiles[defaultProfile].func(self)
 end
 
 -- Plugins can hook this function to initialize or update values in database
