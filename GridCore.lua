@@ -25,6 +25,7 @@ Grid2.isWrath   = versionCli>=30000 and versionCli<40000
 Grid2.isCata    = versionCli>=40000 and versionCli<50000
 Grid2.isMoP     = versionCli>=50000 and versionCli<60000
 Grid2.isWoW90   = versionCli>=90000
+Grid2.isMidnight= versionCli>=120000
 Grid2.isDevelop = versionToc=='\@project-version\@'
 Grid2.versionstring = "Grid2 v"..(Grid2.isDevelop and 'Dev' or versionToc)
 
@@ -51,6 +52,9 @@ Grid2.instMaxGroup   = 1
 
 -- player class cache
 Grid2.playerClass = select(2, UnitClass("player"))
+
+-- store profiles/database defaults, call Grid2:DbRegisterProfile(info) to register new defaults
+Grid2.defaultProfiles = {}
 
 -- plugins can add functions to this table to add extra lines to the minimap popup menu
 Grid2.tooltipFunc = {}
@@ -367,7 +371,7 @@ function Grid2:OpenGrid2Options()
 end
 
 function Grid2:RefreshOptions()
-	if Grid2Options then
+	if Grid2Options and not Grid2Options.Initialize then
 		Grid2Options:MakeOptions()
 	end
 end

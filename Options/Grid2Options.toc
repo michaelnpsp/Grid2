@@ -34,5 +34,6 @@ GridGeneral.lua
 GridIndicators.lua
 GridStatuses.lua
 GridThemes.lua
+GridProfiles.lua
 
 modules.xml

@@ -58,6 +58,97 @@ do
 end
 
 -------------------------------------------------------------------------------------------------
+-- Grid2 Dialog Widget:
+-- A Modified AceGUI "Frame" widget see: AceGUIContainer-Frame.lua
+-------------------------------------------------------------------------------------------------
+do
+	local WidgetType = "Grid2DialogFrame"
+
+	local dialogFrame, funcAction1, funcAction2
+
+	local function FindCloseButton(...)
+		for i=1,select('#',...) do
+			local child = select(i,...)
+			if child:GetObjectType()=='Button' and child:GetText()==CLOSE then
+				return child
+			end
+		end
+	end
+
+	local function Frame_OnClose(frame)
+		AceGUI:Release(frame.obj)
+		Grid2Options.dialogFrame = nil
+	end
+
+	local function Button1_OnClick(frame)
+		if funcAction1 then funcAction1() end
+		frame.obj:Hide()
+	end
+
+	local function Button2_OnClick(frame)
+		if funcAction2 then funcAction2() end
+		frame.obj:Hide()
+	end
+
+	local function SetActions(widget, fAccept, fCancel)
+		if fCancel then
+			funcAction1, funcAction2 = fAccept, fCancel
+			widget.buttonAction1:SetText( ACCEPT )
+			widget.buttonAction1:Show()
+			widget.buttonAction2:SetText( CANCEL )
+			widget.buttonAction2:Show()
+			widget.statusbg:SetPoint("BOTTOMRIGHT", -132*2+16, 15)
+		else
+			funcAction1, funcAction2 = nil, fAccept
+			widget.buttonAction1:Hide()
+			widget.buttonAction2:SetText( ACCEPT )
+			widget.buttonAction2:Show()
+			widget.statusbg:SetPoint("BOTTOMRIGHT", -132, 15)
+		end
+	end
+
+	AceGUI:RegisterWidgetType( WidgetType, function()
+		assert(dialogFrame==nil, "Error: Only one Grid2 Dialog frame can be created.")
+		local widget = AceGUI:Create("Frame")
+		widget.type = WidgetType
+		widget.frame:SetScript("OnHide", Frame_OnClose)
+		-- min frame size
+		if widget.frame.SetResizeBounds then
+			widget.frame:SetResizeBounds(570, 200)
+		else
+			widget.frame:SetMinResize(570, 200)
+		end
+		-- changing button status text widget position and width to make room for a test button
+		widget.statusbg = widget.statustext:GetParent()
+		-- changing height of down sizer frame to avoid overlap with the Test Layout button
+		widget.sizer_s:SetHeight(16)
+		-- first button
+		local button = CreateFrame("Button", nil, widget.frame, "UIPanelButtonTemplate")
+		button:SetPoint("BOTTOMRIGHT", -132, 17)
+		button:SetHeight(20)
+		button:SetWidth(100)
+		button:SetText( Grid2Options.L["Accept"] )
+		button:SetScript("OnClick", Button1_OnClick)
+		button.obj = widget
+		widget.buttonAction1 = button
+		-- second button
+		widget.buttonAction2 = FindCloseButton(widget.frame:GetChildren())
+		widget.buttonAction2:SetScript("OnClick", Button2_OnClick)
+		--
+		widget.sizer_se:SetScript("OnMouseDown",nil)
+		widget.sizer_se:SetScript("OnMouseUp", nil)
+		widget.sizer_s:SetScript("OnMouseDown",nil)
+		widget.sizer_s:SetScript("OnMouseUp", nil)
+		widget.sizer_e:SetScript("OnMouseDown",nil)
+		widget.sizer_e:SetScript("OnMouseUp", nil)
+		--
+		widget.SetActions = SetActions
+		dialogFrame = widget
+		return widget
+	end , 1)
+end
+
+-------------------------------------------------------------------------------------------------
 -- Modified Multiline Editbox that vertical fills the parent container even in AceConfigDialog Flow layouts.
 -- The multiline editbox must be the last defined element in an AceConfigTable.
 -------------------------------------------------------------------------------------------------

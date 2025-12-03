@@ -120,7 +120,13 @@ options.new = {
 	type = "input",
 	order = 20,
 	get = false,
-	set = function(_, v) Grid2.db:SetProfile(v) end,
+	set = function(_, v)
+		if Grid2Options.OpenProfilesDialog then
+			Grid2Options:OpenProfilesDialog(v)
+		else
+			Grid2.db:SetProfile(v)
+		end
+	end,
 }
 
 --==============

@@ -658,6 +658,19 @@ do
 	end
 end
 
+-- Advanced Confirm Dialog Frame
+function Grid2Options:OpenAdvancedDialog(dialogName, options, width, height, fAccept, fCancel)
+	if not LibStub("AceConfigRegistry-3.0"):GetOptionsTable(dialogName) then
+		LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable(dialogName, options, true)
+	end
+	LibStub("AceConfigDialog-3.0"):SetDefaultSize(dialogName, width, height)
+	if not self.dialogFrame then
+		self.dialogFrame = LibStub("AceGUI-3.0"):Create('Grid2DialogFrame')
+		self.dialogFrame:SetActions(fAccept, fCancel)
+		LibStub("AceConfigDialog-3.0"):Open(dialogName, self.dialogFrame)
+	end
+end
+
 -- Functions to interact with AceConfigDialog options
 do
 	-- We cannot used AceConfigRegistry:NotifyChange() and AceConfigDialog:SelectGroup() because they breaks everything when

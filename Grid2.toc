@@ -64,6 +64,7 @@ GridSetup.lua
 GridDefaults.lua
 #@retail@
 GridDefaultsRetail.lua
+GridDefaultsMidnight.lua
 #@end-retail@
 #@non-retail@
 GridDefaultsClassic.lua

@@ -148,3 +148,8 @@ do
 		Grid2:DbSetMap( "border", "debuff-Curse"  , 60)
 	end else Grid2.MakeDefaultsClass= function() end end
 end
+
+function Grid2:MakeDatabaseDefaults()
+	self:MakeDefaultsCommon()
+	self:MakeDefaultsClass()
+end

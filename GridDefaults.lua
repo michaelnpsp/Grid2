@@ -50,14 +50,39 @@ function Grid2:DbSetMap(indicatorName, statusName, priority)
 	end
 end
 
+-- Register new database defaults
+-- info.name   = profile name
+-- info.desc   = profile description
+-- info.image  = example image
+-- info.update = function that must store profile settings in a new created profile.
+function Grid2:DbRegisterProfile(info, index)
+	self.defaultProfiles[index or #self.defaultProfiles+1] = info
+end
+
+-- Advanced default profiles management
+function Grid2:MakeDatabaseDefaults()
+	local defaultProfile = self.defaultProfileIndex
+
+	print(">>>>>>>", defaultProfile, self.defaultProfileIndex)
+
+	self.defaultProfileIndex = nil
+	if not defaultProfile then
+		defaultProfile = 0
+		if Grid2Options or C_AddOns.LoadAddOn('Grid2Options') then
+			Grid2Options:OpenFirstBootProfilesDialog()
+			return true
+		end
+	end
+	self.defaultProfiles[defaultProfile].func(self)
+end
+
 -- Plugins can hook this function to initialize or update values in database
 function Grid2:UpdateDefaults()
 
 	local version = Grid2:DbGetValue("versions","Grid2") or 0
 	if version>=DB_VERSION then return end
-	if version==0 then
-		self:MakeDefaultsCommon()
-		self:MakeDefaultsClass()
+	if version==0 and self:MakeDatabaseDefaults() then
+		return
 	else
 		local health = Grid2:DbGetValue("indicators", "health")
 		local heals  = Grid2:DbGetValue("indicators", "heals")

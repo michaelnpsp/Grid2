@@ -1,5 +1,5 @@
 --[[ Created by Michael, based on Grid2Options\GridDefaults.lua from original Grid2 authors --]]
-if Grid2.isClassic then return end
+if Grid2.isClassic or Grid2.isMidnight then return end
 
 local Grid2 = Grid2
 local type, pairs = type, pairs
@@ -220,4 +220,9 @@ do
 		Grid2:DbSetMap( "border", "debuff-Curse"  , 70)
 		Grid2:DbSetMap( "border", "debuff-Disease", 60)
 	end else Grid2.MakeDefaultsClass= function() end end
+end
+
+function Grid2:MakeDatabaseDefaults()
+	self:MakeDefaultsCommon()
+	self:MakeDefaultsClass()
 end

@@ -115,7 +115,7 @@ Grid2.setupFunc["mbuffs"] = function(baseKey, dbx)
 	return status
 end
 
-Grid2:DbSetStatusDefaultValue("midnight-buffs", { type = "mbuffs", aura_filter = 'HELPFUL|RAID|PLAYER', aura_filter_enemy = 'HELPFUL', color1 = {r=0, g=1, b=0, a=1} })
+-- Grid2:DbSetStatusDefaultValue("midnight-buffs", { type = "mbuffs", aura_filter = 'HELPFUL|RAID|PLAYER', aura_filter_enemy = 'HELPFUL', color1 = {r=0, g=1, b=0, a=1} })
 
 -------------------------------------------------------------------------------
 -- midnight-debuffs status
@@ -161,4 +161,4 @@ Grid2.setupFunc["mdebuffs"] = function(baseKey, dbx)
 	return status
 end
 
-Grid2:DbSetStatusDefaultValue("midnight-debuffs", { type = "mdebuffs", aura_filter = 'HARMFUL', color1 = {r=1, g=0, b=0, a=1} })
+-- Grid2:DbSetStatusDefaultValue("midnight-debuffs", { type = "mdebuffs", aura_filter = 'HARMFUL', color1 = {r=1, g=0, b=0, a=1} })
