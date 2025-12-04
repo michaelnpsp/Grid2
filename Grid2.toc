@@ -124,5 +124,6 @@ modules\StatusStagger.lua
 #@end-retail@
 
 modules\IndicatorMidnightBar.lua
+modules\IndicatorMidnightMultiBar.lua
 modules\StatusMidnightAuras.lua
 modules\StatusMidnightHealth.lua
