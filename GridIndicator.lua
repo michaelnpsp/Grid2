@@ -23,6 +23,9 @@ Grid2.indicatorPrototype = {}
 local indicator = Grid2.indicatorPrototype
 indicator.__index = indicator
 
+indicator.EnableTooltips = Grid2.Dummy
+indicator.DisableTooltips = Grid2.Dummy
+
 function indicator:new(name)
 	local e = setmetatable({}, self)
 	local p = {}

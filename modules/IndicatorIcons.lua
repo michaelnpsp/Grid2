@@ -8,9 +8,7 @@ local ipairs = ipairs
 local format = string.format
 local issecretvalue = Grid2.issecretvalue
 local canaccessvalue = Grid2.canaccessvalue
-
--- hackish way to display count stacks
-local alphaFrame, alphaSet, pcall = Grid2:GetAlphaFrame()
+local TruncateWhenZero = C_StringUtil.TruncateWhenZero
 
 local function Icon_Create(self, parent)
 	local f = self:Acquire("Frame", parent)
@@ -53,12 +51,16 @@ local function Icon_OnFrameUpdate(f)
 						if canaccessvalue(count) then
 							aura.text:SetText( count>1 and count or "" )
 						else
-							aura.text:SetText( pcall(alphaSet, alphaFrame, count) and '' or count )
+							aura.text:SetText( TruncateWhenZero(count) )
 						end
 					end
 					if showCool then
 						local expiration, duration = expirations[j], durations[j]
-						aura.cooldown:SetCooldown(expiration - (canaccessvalue(duration) and duration or 0), duration)
+						if canaccessvalue(duration) then
+							aura.cooldown:SetCooldown(expiration-duration, duration)
+						else
+							aura.cooldown:SetCooldownFromExpirationTime(expiration, duration)
+						end
 					end
 					aura:Show()
 					i = i + 1
@@ -205,7 +207,8 @@ local function Icon_Layout(self, parent)
 			frame.cooldown:SetAllPoints()
 			frame.cooldown:SetAlpha(1)
 			frame.cooldown:SetHideCountdownNumbers(not self.showCoolText)
-			frame.cooldown:SetDrawEdge(not self.dbx.disableOmniCC)
+			-- frame.cooldown:SetDrawEdge(not self.dbx.disableOmniCC)
+			frame.cooldown:SetDrawEdge(false)
 			frame.cooldown:SetDrawSwipe(self.showSwipe)
 			frame.cooldown.noCooldownCount = self.dbx.disableOmniCC
 			frame.cooldown:SetReverse(self.dbx.reverseCooldown)

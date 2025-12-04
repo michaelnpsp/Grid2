@@ -17,14 +17,6 @@ Grid2.Dummy = function() end
 Grid2.issecretvalue = issecretvalue or function() return false end
 Grid2.canaccessvalue = canaccessvalue or function() return true end
 
--- Midnight alpha frame to check 0-1 value range for some secrets
-do
-	local alphaFrame = CreateFrame('frame')
-	function Grid2:GetAlphaFrame()
-		return alphaFrame, alphaFrame.SetAlpha, pcall
-	end
-end
-
 -- Fetch LibSharedMedia resources
 function Grid2:MediaFetch(mediatype, key, def)
 	return (key and media:Fetch(mediatype, key)) or (def and media:Fetch(mediatype, def))
@@ -165,7 +157,7 @@ end
 
 -- Creates a location table, used by GridDefaults.lua
 function Grid2.CreateLocation(a,b,c,d)
-    local p = a or "TOPLEFT"
+	local p = a or "TOPLEFT"
 	if type(b)=="string" then
 		return { relPoint = p, point = b, x = c or 0, y = d or 0 }
 	else

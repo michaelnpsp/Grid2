@@ -42,9 +42,9 @@ Options.ProfileTable = {
 		type = "description",
 		name = function()
 			if type(Options.selectedProfile)=='number' then
-				return Grid2.defaultProfiles[Options.selectedProfile].desc
+				return Grid2.defaultProfiles[Options.selectedProfile].desc .. ' \n \n'
 			else
-				return "This is an already existing profile from other character.\nClick Accept button if you want to use this profile for your new character."
+				return "This is an already existing profile from other character.\nClick Accept button if you want to use this profile for your new character.\n"
 			end
 		end,
 	},
@@ -52,9 +52,15 @@ Options.ProfileTable = {
 		order = 2,
 		type = "description",
 		name = "",
+		fontSize = 'large',
 		image = function()
 			local index = Options.selectedProfile
-			return type(index)=='number' and Grid2.defaultProfiles[index].image or "Interface\\Calendar\\MeetingIcon"
+			if type(index)=='number' then
+				local pf = Grid2.defaultProfiles[index]
+				return pf.image, pf.imageWidth, pf.imageHeight
+			else
+				return "Interface\\Calendar\\MeetingIcon"
+			end
 		end,
 	},
 }
@@ -91,7 +97,7 @@ end
 
 -- Open profiles templates dialog, called from "new profile" option
 function Grid2Options:OpenProfilesDialog(newProfileName)
-	self:OpenAdvancedDialog('Grid2ProfilesDialog', Options:Initialize(false), 500, 250, function()
+	self:OpenAdvancedDialog('Grid2ProfilesDialog', Options:Initialize(false), 600, 275, function()
 		Grid2.defaultProfileIndex = Options.selectedProfile or 0
 		Grid2.db:SetProfile(newProfileName)
 		Grid2Options:NotifyChange()
@@ -100,7 +106,7 @@ end
 
 -- Open first boot profiles templates dialog
 function Grid2Options:OpenFirstBootProfilesDialog()
-	self:OpenAdvancedDialog('Grid2ProfilesDialog', Options:Initialize(true), 500, 250, function()
+	self:OpenAdvancedDialog('Grid2ProfilesDialog', Options:Initialize(true), 600, 275, function()
 		local profile = Options.selectedProfile
 		if type(profile)=='number' then -- update current profile with the selected default profile template
 			Grid2.defaultProfileIndex = profile

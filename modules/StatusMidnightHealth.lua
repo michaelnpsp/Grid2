@@ -15,9 +15,6 @@ local unit_is_valid = Grid2.roster_guids
 local format = string.format
 local fmtPercent = "%.0f%%"
 
--- hackish way to check if a secret value>1
-local alphaFrame, alphaSet, pcall = Grid2:GetAlphaFrame()
-
 -- health-current status
 local deadAsFullHealth
 
@@ -94,7 +91,7 @@ function Heals:GetText(unit)
 end
 
 function Heals:IsActive(unit)
-	return not pcall(alphaSet, alphaFrame, UnitGetIncomingHeals(unit) or 0)
+	return true
 end
 
 local function CreateHeals(baseKey, dbx)
@@ -125,7 +122,7 @@ function MyHeals:OnDisable()
 end
 
 function MyHeals:GetValueMinMax(unit)
-	return UnitGetIncomingHeals(unit) or 0, 0, UnitHealthMax(unit)
+	return UnitGetIncomingHeals(unit,'player') or 0, 0, UnitHealthMax(unit)
 end
 
 function MyHeals:GetText(unit)
@@ -133,7 +130,7 @@ function MyHeals:GetText(unit)
 end
 
 function MyHeals:IsActive(unit)
-	return not pcall(alphaSet, alphaFrame, UnitGetIncomingHeals(unit,'player') or 0)
+	return true
 end
 
 local function CreateMyHeals(baseKey, dbx)

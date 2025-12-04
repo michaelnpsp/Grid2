@@ -4,7 +4,7 @@ local defaultFont = "Friz Quadrata TT"
 
 local function MakeDatabaseDefaults()
 
-	-- cells apearance
+	-- frame apearance
 	local pf = Grid2.db:GetNamespace('Grid2Frame').profile
 	pf.frameHeight = 46
 	pf.frameWidth  = 66

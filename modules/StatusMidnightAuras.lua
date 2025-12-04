@@ -28,13 +28,8 @@ local function GetIcons(self, unit, max, filter, displayFunc)
 		if not a then break end
 		textures[j], counts[j], colors[j], slots[j] = a.icon, a.applications, color, i
 		if not displayFunc or displayFunc(a) then
-			if canaccessvalue(a.expirationTime) then
-				durations[j] = a.duration
-				expirations[j] = a.expirationTime
-			else
-				durations[j] = GetAuraDurationRemainingByAuraInstanceID(unit, a.auraInstanceID)
-				expirations[j] = GetTime()
-			end
+			durations[j] = a.duration
+			expirations[j] = a.expirationTime
 			j = j + 1
 		end
 		i = i + 1

@@ -2,12 +2,15 @@ local Grid2 = Grid2
 local Location = Grid2.CreateLocation
 local defaultFont = "Friz Quadrata TT"
 
+-- 116 x 58
+-- 72 x 36
+
 local function MakeDatabaseDefaults()
 
 	-- cells apearance
 	local pf = Grid2.db:GetNamespace('Grid2Frame').profile
-	pf.frameHeight = 46
-	pf.frameWidth  = 76
+	pf.frameWidth  = 116
+	pf.frameHeight = 58
 
 	-- statuses
 	Grid2:DbSetValue( "statuses", "buffs-Default", { type = "mbuffs", aura_filter = 'HELPFUL|RAID|PLAYER', aura_filter_enemy = 'HELPFUL', color1 = {r=0, g=1, b=0, a=1} })
@@ -60,10 +63,10 @@ local function MakeDatabaseDefaults()
 	Grid2:DbSetValue( "indicators",  "text-down-color", {type = "text-color"})
 	Grid2:DbSetMap( "text-down-color", "classcolor", 99)
 
-	Grid2:DbSetValue( "indicators",  "buffs", {type = "icons", level = 8, location = Location("BOTTOMLEFT") } )
+	Grid2:DbSetValue( "indicators",  "buffs", {type = "icons", level = 8, location = Location("BOTTOMRIGHT") } )
 	Grid2:DbSetMap( "buffs", "buffs-Default", 100)
 
-	Grid2:DbSetValue( "indicators",  "debuffs", {type = "icons", level = 8, location = Location("TOPLEFT")} )
+	Grid2:DbSetValue( "indicators",  "debuffs", {type = "icons", level = 8, location = Location("BOTTOMLEFT")} )
 	Grid2:DbSetMap( "debuffs", "debuffs-Default", 100)
 
 end
