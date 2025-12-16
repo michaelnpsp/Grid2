@@ -9,14 +9,16 @@ local max = max
 local pairs = pairs
 local ipairs = ipairs
 
+local OpositePoint = { LEFT = 'RIGHT', RIGHT = 'LEFT', TOP = 'BOTTOM', BOTTOM = 'TOP' }
+
 local AlignPoints = {
 	HORIZONTAL = {
-		[true]  = { "LEFT", "RIGHT" }, -- normal Fill
-		[false] = { "RIGHT", "LEFT" }, -- reverse Fill
+		[true]  = "LEFT", -- normal Fill
+		[false] = "RIGHT", -- reverse Fill
 	},
 	VERTICAL   = {
-		[true]  = { "BOTTOM", "TOP" }, -- normal Fill
-		[false] = { "TOP", "BOTTOM" }, -- reverse Fill
+		[true]  = "BOTTOM", -- normal Fill
+		[false] = "TOP", -- reverse Fill
 	}
 }
 
@@ -29,13 +31,14 @@ end
 local function SetBarStatusValue(self, unit, frame, status)
 	local index = self.priorities[status]
 	local bar   = frame.myTextures[index]
-	if status.GetValueMinMax then
+	if bar.glowLine then
+		bar:SetValue(status:IsActive(unit) and 1 or 0)
+	elseif status.GetValueMinMax then
 		local value, min, max = status:GetValueMinMax(unit)
 		bar:SetMinMaxValues(min, max)
 		bar:SetValue(value)
 	else
-		local value = status:GetPercent(unit) or 0
-		bar:SetValue(value)
+		bar:SetValue( status:GetPercent(unit) or 0 )
 	end
 end
 
@@ -67,14 +70,16 @@ local function Bar_Layout(self, parent)
 	frame:SetFrameLevel(frameLevel)
 	frame:SetSize(width, height)
 	frame:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
-	-- extra bars
+	-- bars
+	local prevTex = frame
+	local prevPnt = self.alignPoint
     local barCount = #self.bars
 	local textures = frame.myTextures or {}
 	local ctextures
-	local texPrev
 	for i=1,barCount do
 		local setup = self.bars[i]
 		local texture = textures[i] or CreateFrame("StatusBar", nil, frame)
+		texture.glowLine = setup.lineSize
 		texture.myReverse = setup.reverse  -- texture is a StatusBar frame not a texture
 		texture.myOpacity = setup.opacity
 		texture.myNoOverlap = setup.noOverlap
@@ -82,18 +87,18 @@ local function Bar_Layout(self, parent)
 		texture.myVerAdjust = setup.verAdjust
 		texture:Hide()
 		texture:ClearAllPoints()
-		texture:SetFrameLevel(frameLevel)
-		texture:SetOrientation(self.orientation)
-		texture:SetStatusBarTexture(setup.texture)
-		texture:SetReverseFill(self.reverseFill)
 		texture:SetValue(0)
 		texture:SetMinMaxValues(0, 1)
+		texture:SetFrameLevel(frameLevel)
+		texture:SetOrientation(self.orientation)
+		texture:SetReverseFill(setup.reverse)
+		texture:SetStatusBarTexture(setup.texture, "ARTWORK", setup.sublayer)
+		local textureReal = texture:GetStatusBarTexture()
 		-- texture:SetTexCoord(0,1,0,1)
 		-- texture:SetTexture(setup.texture, setup.horWrap, setup.verWrap)
-		-- texture:SetHorizTile(setup.horWrap~='CLAMP')
-		-- texture:SetVertTile(setup.verWrap~='CLAMP')
-		-- texture:SetDrawLayer("ARTWORK", setup.sublayer)
-		-- texture:SetBlendMode(setup.lineBlend or 'BLEND')
+		textureReal:SetHorizTile(setup.horWrap~='CLAMP')
+		textureReal:SetVertTile(setup.verWrap~='CLAMP')
+		textureReal:SetBlendMode(setup.lineBlend or 'BLEND')
 		local c = setup.color
 		if c then
 			texture:SetStatusBarColor( c.r, c.g, c.b, setup.opacity )
@@ -101,21 +106,24 @@ local function Bar_Layout(self, parent)
 			ctextures = ctextures or {}; ctextures[#ctextures+1] = texture
 		end
 		if setup.background then
+			texture:SetValue(1)
 			texture:SetAllPoints()
-			texture:Show()
 		elseif setup.lineSize then
-			texture.myLineAdjust = setup.lineAdjust
-			texture:SetWidth ( self.orientation == "HORIZONTAL" and setup.lineSize or width )
-			texture:SetHeight( self.orientation ~= "HORIZONTAL" and setup.lineSize or height)
-		elseif texPrev then
-			texture:SetSize(width, height)
-			texture:SetPoint( alignPoints[1], texPrev:GetStatusBarTexture(), alignPoints[2] )
+			if self.orientation == "HORIZONTAL" then
+				texture:SetSize( setup.lineSize, height )
+				texture:SetPoint( setup.pointFrom, prevTex, prevPnt, setup.lineAdjust, 0 )
+			else
+				texture:SetSize( width, setup.lineSize )
+				texture:SetPoint( setup.pointFrom, prevTex, prevPnt, 0, setup.lineAdjust )
+			end
 		else
-			texture:SetAllPoints()
+			texture:SetSize( width, height )
+			texture:SetPoint( setup.pointFrom, prevTex, prevPnt )
+			prevTex = textureReal
+			prevPnt = setup.pointTo
 		end
-		texture:Show()
 		textures[i] = texture
-		texPrev = texture
+		texture:Show()
 	end
 	for i=barCount+1,#textures do
 		textures[i]:Hide()
@@ -153,9 +161,10 @@ local function Bar_UpdateDB(self)
 	local orientation  = dbx.orientation or theme.orientation
 	local backColor    = dbx.backColor
 	local texColor     = dbx.textureColor.r and dbx.textureColor
+	local alignPoint   = AlignPoints[orientation][not dbx.reverseFill]
 	self.foreColor     = dbx.invertColor and backColor or texColor
 	self.orientation   = orientation
-	self.alignPoints   = AlignPoints[orientation][not dbx.reverseFill]
+	self.alignPoint    = alignPoint
 	self.frameLevel    = dbx.level or 1
 	self.anchor        = l.point
 	self.anchorRel     = l.relPoint
@@ -169,7 +178,9 @@ local function Bar_UpdateDB(self)
 	self.backAnchor    = dbx.backAnchor
 	self.bars          = bars
 	local mainBar = {
-		reverse   = dbx.reverseMainBar,
+		reverse  = not not dbx.reverseMainBar,
+		pointFrom = self.reverseFill and OpositePoint[alignPoint] or alignPoint,
+		pointTo   = self.reverseFill and alignPoint or OpositePoint[alignPoint],
 		opacity   = dbx.textureColor.a,
 		color     = self.foreColor,
 		texture   = Grid2:MediaFetch("statusbar", dbx.texture or theme.barTexture, "Gradient"),
@@ -182,7 +193,9 @@ local function Bar_UpdateDB(self)
 	bars[1] = mainBar
 	for i,setup in ipairs(dbx) do
 		bars[#bars+1] = {
-			reverse   = setup.reverse,
+			reverse  = not not setup.reverse,
+			pointFrom = setup.reverse and OpositePoint[alignPoint] or alignPoint,
+			pointTo   = setup.reverse and alignPoint or OpositePoint[alignPoint],
 			noOverlap = setup.noOverlap,
 			opacity   = setup.color.a,
 			color     = setup.color.r and setup.color or self.foreColor,

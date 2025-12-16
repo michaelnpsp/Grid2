@@ -6,20 +6,33 @@ local SpellIsSelfBuff = SpellIsSelfBuff
 local UnitAffectingCombat = UnitAffectingCombat
 local SpellGetVisibilityInfo = C_Spell.GetVisibilityInfo
 local GetAuraDataByIndex = C_UnitAuras.GetAuraDataByIndex
+local GetAuraDispelTypeColor = C_UnitAuras.GetAuraDispelTypeColor
 local IsAuraFilteredOutByInstanceID = C_UnitAuras.IsAuraFilteredOutByInstanceID
 local GetAuraDurationRemainingByAuraInstanceID = C_UnitAuras.GetAuraDurationRemainingByAuraInstanceID
 
--- shared functions and variables
 
+-- shared functions and variables
 local Buffs = {}
 local Debuffs = {}
 local slots = {}
 local color = {}
-local colors = {color, color, color, color, color, color, color, color}
+local colors = {color, color, color, color, color, color, color, color, color, color, color, color}
 local counts = {}
 local textures = {}
 local durations = {}
 local expirations = {}
+
+local dispelColorCurve = C_CurveUtil.CreateColorCurve()
+do
+	dispelColorCurve:SetType(Enum.LuaCurveType.Step)
+    dispelColorCurve:AddPoint( 0  , DEBUFF_TYPE_NONE_COLOR )
+    dispelColorCurve:AddPoint( 1  , DEBUFF_TYPE_MAGIC_COLOR )
+    dispelColorCurve:AddPoint( 2  , DEBUFF_TYPE_CURSE_COLOR )
+    dispelColorCurve:AddPoint( 3  , DEBUFF_TYPE_DISEASE_COLOR )
+    dispelColorCurve:AddPoint( 4  , DEBUFF_TYPE_POISON_COLOR )
+    dispelColorCurve:AddPoint( 9  , DEBUFF_TYPE_BLEED_COLOR ) -- enrage
+    dispelColorCurve:AddPoint( 11 , DEBUFF_TYPE_BLEED_COLOR )
+end
 
 local function GetIcons(self, unit, max, filter, displayFunc)
 	local color, i, j = self.dbx.color1, 1, 1
@@ -30,6 +43,7 @@ local function GetIcons(self, unit, max, filter, displayFunc)
 		if not displayFunc or displayFunc(a) then
 			durations[j] = a.duration
 			expirations[j] = a.expirationTime
+			colors[j] = GetAuraDispelTypeColor(unit, a.auraInstanceID, dispelColorCurve)
 			j = j + 1
 		end
 		i = i + 1

@@ -14,6 +14,7 @@ local AbbreviateLargeNumbers = AbbreviateLargeNumbers
 local unit_is_valid = Grid2.roster_guids
 local format = string.format
 local fmtPercent = "%.0f%%"
+local ScaleTo100 = CurveConstants.ScaleTo100
 
 -- health-current status
 local deadAsFullHealth
@@ -42,12 +43,12 @@ function Health:GetText(unit)
 end
 
 function Health:GetPercentText(unit)
-	return format( fmtPercent, (deadAsFullHealth and UnitIsDeadOrGhost(unit) and 100) or UnitHealthPercent(unit, true, true) )
+	return format( fmtPercent, (deadAsFullHealth and UnitIsDeadOrGhost(unit) and 100) or UnitHealthPercent(unit, true, ScaleTo100) )
 end
 
 function Health:GetPercent(unit)
 	if deadAsFullHealth and UnitIsDeadOrGhost(unit) then return 1 end
-	return UnitHealthPercent(unit, true, false)
+	return UnitHealthPercent(unit, true)
 end
 
 function Health:UpdateDB()

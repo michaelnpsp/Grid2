@@ -124,8 +124,9 @@ function Power:GetColor(unit)
 end
 
 if Grid2.secretsEnabled then
+	-- local ScaleTo100 = CurveConstants.ScaleTo100
 	function Power:GetPercent(unit)
-		return UnitPowerPercent(unit,nil,false,false)
+		return UnitPowerPercent(unit,nil,false)
 	end
 	function Power:GetText(unit)
 		return AbbreviateLargeNumbers( UnitPower(unit) )
