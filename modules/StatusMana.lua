@@ -66,7 +66,7 @@ end
 
 if Grid2.secretsEnabled then
 	function PowerAlt:GetPercent(unit)
-		return UnitPowerPercent(unit,10,false,false)
+		return UnitPowerPercent(unit,10,false)
 	end
 	function PowerAlt:GetText(unit)
 		return AbbreviateLargeNumbers( UnitPower(unit,10) )
@@ -222,7 +222,7 @@ end
 local Mana_GetPercent, Mana_GetText
 if Grid2.secretsEnabled then
 	function Mana_GetPercent(self, unit)
-		return UnitPowerPercent(unit,0,false,false)
+		return UnitPowerPercent(unit,0,false)
 	end
 	function Mana_GetText(self, unit)
 		return AbbreviateLargeNumbers( UnitPower(unit,0) )
