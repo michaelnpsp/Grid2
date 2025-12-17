@@ -66,6 +66,16 @@ Grid2.setupFunc["health-current"] = Create
 Grid2:DbSetStatusDefaultValue( "health-current", {type = "health-current", color1 = {r=0,g=1,b=0,a=1} } )
 
 -- heals-incoming status
+local HealsCalculator = CreateUnitHealPredictionCalculator()
+local UnitGetDetailedHealPrediction = UnitGetDetailedHealPrediction
+local GetIncomingHealsForUnit = UnitGetIncomingHeals
+
+local function UnitGetIncomingHealsNoPlayer(unit)
+	UnitGetDetailedHealPrediction(unit, "player", HealsCalculator)
+	local _, _, incomingHealsFromOthers = HealsCalculator:GetIncomingHeals()
+	return incomingHealsFromOthers
+end
+
 Heals.IsActive = Grid2.statusLibrary.IsActive
 Heals.GetColor = Grid2.statusLibrary.GetColor
 
@@ -84,15 +94,20 @@ function Heals:OnDisable()
 end
 
 function Heals:GetValueMinMax(unit)
-	return UnitGetIncomingHeals(unit) or 0, 0, UnitHealthMax(unit)
+	return GetIncomingHealsForUnit(unit) or 0, 0, UnitHealthMax(unit)
 end
 
 function Heals:GetText(unit)
-	return AbbreviateLargeNumbers( UnitGetIncomingHeals(unit) or 0 )
+	return AbbreviateLargeNumbers( GetIncomingHealsForUnit(unit) or 0 )
 end
 
 function Heals:IsActive(unit)
 	return true
+end
+
+function Heals:UpdateDB()
+	HealsCalculator:SetHealAbsorbMode(self.dbx.includeHealAbsorbs and 0 or 1)
+	GetIncomingHealsForUnit = self.dbx.includePlayerHeals and UnitGetIncomingHeals or UnitGetIncomingHealsNoPlayer
 end
 
 local function CreateHeals(baseKey, dbx)

@@ -247,7 +247,8 @@ Grid2Options:RegisterStatusOptions("heals-incoming", "health", function(self, st
 		set = function (_, v)
 			status.dbx.includePlayerHeals = v or nil
 			status:Refresh()
-			Grid2:GetStatusByName('overhealing'):Refresh()
+			local overhealing = Grid2:GetStatusByName('overhealing')
+			if overhealing then overhealing:Refresh() end
 		end,
 	}
 	options.minimumValue = {
@@ -263,6 +264,7 @@ Grid2Options:RegisterStatusOptions("heals-incoming", "health", function(self, st
 			status.dbx.flags = tonumber(v) or nil
 			status:Refresh()
 		end,
+		hidden = function() return Grid2.secretsEnabled end,
 	}
 	options.multiplier = {
 		type = "range",
@@ -278,6 +280,7 @@ Grid2Options:RegisterStatusOptions("heals-incoming", "health", function(self, st
 			status.dbx.multiplier = tonumber(v) or 1
 			status:Refresh()
 		end,
+		hidden = function() return Grid2.secretsEnabled end,
 	}
 end, {
 	titleIcon = Grid2.isClassic and "Interface\\Icons\\Spell_Holy_Heal" or "Interface\\Icons\\Spell_Holy_DivineProvidence"
@@ -298,6 +301,7 @@ Grid2Options:RegisterStatusOptions("my-heals-incoming", "health", function(self,
 			status.dbx.flags = tonumber(v) or nil
 			status:Refresh()
 		end,
+		hidden = function() return Grid2.secretsEnabled end,
 	}
 	options.multiplier = {
 		type = "range",
@@ -313,6 +317,7 @@ Grid2Options:RegisterStatusOptions("my-heals-incoming", "health", function(self,
 			status.dbx.multiplier = tonumber(v) or 1
 			status:Refresh()
 		end,
+		hidden = function() return Grid2.secretsEnabled end,
 	}
 	if Grid2.isClassic then
 		self:MakeStatusHealsClassicOptions(status, options)

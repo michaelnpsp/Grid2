@@ -37,8 +37,9 @@ local function SetBarStatusValue(self, unit, frame, status)
 end
 --]]
 
+-- value assignments for different types of bars/statuses
 local function SetMultibarLineValue(bar, unit, status)
-	bar:SetValue(status:IsActive(unit) and 1 or 0)
+	bar:SetAlphaFromBoolean(status:IsActive(unit), 1, 0)
 end
 
 local function SetMultibarPercentValue(bar, unit, status)
@@ -93,6 +94,7 @@ local function Bar_Layout(self, parent)
 	for i=1,barCount do
 		local setup = barSetup[i]
 		local texture = textures[i] or CreateFrame("StatusBar", nil, frame) -- texture is a StatusBar frame, not a texture
+		texture.myIndex = i
 		texture.myOpacity = setup.opacity
 		texture:Hide()
 		texture:ClearAllPoints()
@@ -224,6 +226,7 @@ local function Bar_UpdateDB(self)
 			lineSize  = setup.glowLine,
 			lineBlend = setup.glowLine and (setup.blendMode or 'ADD') or nil,
 			lineAdjust= setup.glowLine and (setup.glowLineAdjust or 0) or nil,
+			defValue  = setup.glowLine and 1 or nil,
 		}
 	end
 	if backColor then

@@ -10,7 +10,6 @@ local GetAuraDispelTypeColor = C_UnitAuras.GetAuraDispelTypeColor
 local IsAuraFilteredOutByInstanceID = C_UnitAuras.IsAuraFilteredOutByInstanceID
 local GetAuraDurationRemainingByAuraInstanceID = C_UnitAuras.GetAuraDurationRemainingByAuraInstanceID
 
-
 -- shared functions and variables
 local Buffs = {}
 local Debuffs = {}
@@ -76,12 +75,7 @@ local function Buffs_DisplayCheck(aura)
 end
 
 function Buffs:GetIcons(unit, max)
-	if self.filter_enemy and UnitIsEnemy("player", unit) then
-		return GetIcons(self, unit, max, self.filter_enemy)
-	else
-		return GetIcons(self, unit, max, self.filter_friend)
-		-- return GetIcons(self, unit, max, self.filter_friend, not UnitAffectingCombat("player") and self.display_check)
-	end
+	return GetIcons(self, unit, max, self.aura_filter)
 end
 
 function Buffs:GetTooltip(unit, tip, slotID)
@@ -111,9 +105,7 @@ function Buffs:IsActive(unit)
 end
 
 function Buffs:UpdateDB()
-	self.filter_friend = self.dbx.aura_filter or 'HELPFUL'
-	self_filter_enemy  = self.dbx.aura_filter_enemy
-	self.display_check = Buffs_DisplayCheck
+	self.aura_filter = self.dbx.aura_filter or 'HELPFUL'
 end
 
 -- Registration
@@ -124,7 +116,7 @@ Grid2.setupFunc["mbuffs"] = function(baseKey, dbx)
 	return status
 end
 
--- Grid2:DbSetStatusDefaultValue("midnight-buffs", { type = "mbuffs", aura_filter = 'HELPFUL|RAID|PLAYER', aura_filter_enemy = 'HELPFUL', color1 = {r=0, g=1, b=0, a=1} })
+-- Grid2:DbSetStatusDefaultValue("midnight-buffs", { type = "mbuffs", aura_filter = 'HELPFUL|RAID|PLAYER', color1 = {r=0, g=1, b=0, a=1} })
 
 -------------------------------------------------------------------------------
 -- midnight-debuffs status
