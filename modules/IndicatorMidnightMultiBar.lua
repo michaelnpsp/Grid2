@@ -9,17 +9,10 @@ local max = max
 local pairs = pairs
 local ipairs = ipairs
 
-local OpositePoint = { LEFT = 'RIGHT', RIGHT = 'LEFT', TOP = 'BOTTOM', BOTTOM = 'TOP' }
-
-local AlignPoints = {
-	HORIZONTAL = {
-		[true]  = "LEFT", -- normal Fill
-		[false] = "RIGHT", -- reverse Fill
-	},
-	VERTICAL   = {
-		[true]  = "BOTTOM", -- normal Fill
-		[false] = "TOP", -- reverse Fill
-	}
+local POINTS = {
+	HORIZONTAL = { [true] = "LEFT",   [false] = "RIGHT" }, -- normal, reverse fill
+	VERTICAL   = { [true] = "BOTTOM", [false] = "TOP"   }, -- normal, reverse fill
+	OPOSITE    = { LEFT = 'RIGHT', RIGHT = 'LEFT', TOP = 'BOTTOM', BOTTOM = 'TOP' },
 }
 
 local function Bar_CreateHH(self, parent)
@@ -27,6 +20,7 @@ local function Bar_CreateHH(self, parent)
 	bar:SetClipsChildren(true)
 end
 
+--[[
 -- sets bar value using status data
 local function SetBarStatusValue(self, unit, frame, status)
 	local index = self.priorities[status]
@@ -41,17 +35,36 @@ local function SetBarStatusValue(self, unit, frame, status)
 		bar:SetValue( status:GetPercent(unit) or 0 )
 	end
 end
+--]]
+
+local function SetMultibarLineValue(bar, unit, status)
+	bar:SetValue(status:IsActive(unit) and 1 or 0)
+end
+
+local function SetMultibarPercentValue(bar, unit, status)
+	bar:SetValue(status:GetPercent(unit) or 0)
+end
+
+local function SetMultibarMinMaxValue(bar, unit, status)
+	local value, min, max = status:GetValueMinMax(unit)
+	bar:SetMinMaxValues(min, max)
+	bar:SetValue(value)
+end
 
 -- Warning: This is an overrided indicator:Update() NOT the standard indicator:OnUpdate()
 local function Bar_Update(self, parent, unit, status)
 	if unit then
 		local frame = parent[self.name]
 		if frame then
+			local textures = frame.myTextures
+			local priorities = self.priorities
 			if status then
-				SetBarStatusValue(self, unit, frame, status)
+				local bar = textures[ priorities[status] ]
+				bar:SetMultibarValue(unit, status)
 			else -- update due a layout or groupType change not from a status notifying a change
 				for i, status in ipairs(self.statuses) do
-					SetBarStatusValue(self, unit, frame, status)
+					local bar = textures[ priorities[status] ]
+					bar:SetMultibarValue(unit, status)
 				end
 			end
 		end
@@ -73,42 +86,47 @@ local function Bar_Layout(self, parent)
 	-- bars
 	local prevTex = frame
 	local prevPnt = self.alignPoint
-    local barCount = #self.bars
+	local barSetup = self.bars
+    local barCount = #barSetup
 	local textures = frame.myTextures or {}
 	local ctextures
 	for i=1,barCount do
-		local setup = self.bars[i]
-		local texture = textures[i] or CreateFrame("StatusBar", nil, frame)
-		texture.glowLine = setup.lineSize
-		texture.myReverse = setup.reverse  -- texture is a StatusBar frame not a texture
+		local setup = barSetup[i]
+		local texture = textures[i] or CreateFrame("StatusBar", nil, frame) -- texture is a StatusBar frame, not a texture
 		texture.myOpacity = setup.opacity
-		texture.myNoOverlap = setup.noOverlap
-		texture.myHorAdjust = setup.horAdjust
-		texture.myVerAdjust = setup.verAdjust
 		texture:Hide()
 		texture:ClearAllPoints()
-		texture:SetValue(0)
+		texture:SetValue(setup.defValue or 0)
 		texture:SetMinMaxValues(0, 1)
 		texture:SetFrameLevel(frameLevel)
 		texture:SetOrientation(self.orientation)
 		texture:SetReverseFill(setup.reverse)
-		texture:SetStatusBarTexture(setup.texture, "ARTWORK", setup.sublayer)
+		texture:SetStatusBarTexture(setup.texture) -- , "ARTWORK", setup.sublayer)
 		local textureReal = texture:GetStatusBarTexture()
-		-- texture:SetTexCoord(0,1,0,1)
-		-- texture:SetTexture(setup.texture, setup.horWrap, setup.verWrap)
+		textureReal:SetTexCoord(0,1,0,1)
+		textureReal:SetTexture(setup.texture, setup.horWrap, setup.verWrap)
 		textureReal:SetHorizTile(setup.horWrap~='CLAMP')
 		textureReal:SetVertTile(setup.verWrap~='CLAMP')
 		textureReal:SetBlendMode(setup.lineBlend or 'BLEND')
+		textureReal:SetDrawLayer("ARTWORK", setup.sublayer)
 		local c = setup.color
 		if c then
 			texture:SetStatusBarColor( c.r, c.g, c.b, setup.opacity )
 		else
 			ctextures = ctextures or {}; ctextures[#ctextures+1] = texture
 		end
+		local prevBarIndex = setup.prevBar
+		if prevBarIndex then
+			if textures[prevBarIndex] then
+				prevTex, prevPnt = textures[prevBarIndex], barSetup[prevBarIndex].pointTo
+			else
+				prevTex, prevPnt = frame, self.alignPoint -- prevBarIndex==0 => attach to main frame
+			end
+		end
 		if setup.background then
-			texture:SetValue(1)
 			texture:SetAllPoints()
 		elseif setup.lineSize then
+			texture.SetMultibarValue = SetMultibarLineValue
 			if self.orientation == "HORIZONTAL" then
 				texture:SetSize( setup.lineSize, height )
 				texture:SetPoint( setup.pointFrom, prevTex, prevPnt, setup.lineAdjust, 0 )
@@ -117,6 +135,8 @@ local function Bar_Layout(self, parent)
 				texture:SetPoint( setup.pointFrom, prevTex, prevPnt, 0, setup.lineAdjust )
 			end
 		else
+			local status = self.statuses[i]
+			texture.SetMultibarValue = (status and status.GetValueMinMax and SetMultibarMinMaxValue) or SetMultibarPercentValue
 			texture:SetSize( width, height )
 			texture:SetPoint( setup.pointFrom, prevTex, prevPnt )
 			prevTex = textureReal
@@ -131,7 +151,6 @@ local function Bar_Layout(self, parent)
 	end
 	frame.myTextures = textures
 	frame.myCTextures = ctextures
-	frame.myMaxIndex = #self.statuses
 	frame:Show()
 end
 
@@ -161,7 +180,8 @@ local function Bar_UpdateDB(self)
 	local orientation  = dbx.orientation or theme.orientation
 	local backColor    = dbx.backColor
 	local texColor     = dbx.textureColor.r and dbx.textureColor
-	local alignPoint   = AlignPoints[orientation][not dbx.reverseFill]
+	local alignPoint   = POINTS[orientation][not dbx.reverseFill]
+	local opositePoint = POINTS.OPOSITE
 	self.foreColor     = dbx.invertColor and backColor or texColor
 	self.orientation   = orientation
 	self.alignPoint    = alignPoint
@@ -179,31 +199,27 @@ local function Bar_UpdateDB(self)
 	self.bars          = bars
 	local mainBar = {
 		reverse  = not not dbx.reverseMainBar,
-		pointFrom = self.reverseFill and OpositePoint[alignPoint] or alignPoint,
-		pointTo   = self.reverseFill and alignPoint or OpositePoint[alignPoint],
+		pointFrom = dbx.reverseMainBar and opositePoint[alignPoint] or alignPoint,
+		pointTo   = dbx.reverseMainBar and alignPoint or opositePoint[alignPoint],
 		opacity   = dbx.textureColor.a,
 		color     = self.foreColor,
 		texture   = Grid2:MediaFetch("statusbar", dbx.texture or theme.barTexture, "Gradient"),
 		horWrap   = dbx.horTile or 'CLAMP',
 		verWrap   = dbx.verTile or 'CLAMP',
-		horAdjust = dbx.horTile==nil,
-		verAdjust = dbx.verTile==nil,
 		sublayer  = 0,
 	}
 	bars[1] = mainBar
 	for i,setup in ipairs(dbx) do
 		bars[#bars+1] = {
 			reverse  = not not setup.reverse,
-			pointFrom = setup.reverse and OpositePoint[alignPoint] or alignPoint,
-			pointTo   = setup.reverse and alignPoint or OpositePoint[alignPoint],
-			noOverlap = setup.noOverlap,
+			prevBar   = setup.prevBar,
+			pointFrom = setup.reverse and opositePoint[alignPoint] or alignPoint,
+			pointTo   = setup.reverse and alignPoint or opositePoint[alignPoint],
 			opacity   = setup.color.a,
 			color     = setup.color.r and setup.color or self.foreColor,
 			texture   = setup.texture and Grid2:MediaFetch("statusbar", setup.texture) or mainBar.texture,
 			horWrap   = setup.horTile or 'CLAMP',
 			verWrap   = setup.verTile or 'CLAMP',
-			horAdjust = setup.horTile=='CLAMP',
-			verAdjust = setup.verTile=='CLAMP',
 			sublayer  = setup.glowLine and 7 or i,
 			lineSize  = setup.glowLine,
 			lineBlend = setup.glowLine and (setup.blendMode or 'ADD') or nil,
@@ -212,6 +228,9 @@ local function Bar_UpdateDB(self)
 	end
 	if backColor then
 	    bars[#bars+1] = {
+			reverse = false,
+			pointFrom = alignPoint,
+			pointTo   = opositePoint[alignPoint],
 			texture = dbx.backTexture and Grid2:MediaFetch("statusbar", dbx.backTexture) or mainBar.texture,
 			horWrap = dbx.backHorTile or 'CLAMP',
 			verWrap = dbx.backVerTile or 'CLAMP',
@@ -219,6 +238,7 @@ local function Bar_UpdateDB(self)
 			opacity = backColor.a,
 			background = not self.backAnchor,
 			sublayer = -1,
+			defValue = 1,
 		}
 	end
 end

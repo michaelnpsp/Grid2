@@ -40,7 +40,8 @@ local function Icon_OnFrameUpdate(f)
 						aura.icon:SetTexture(textures[j])
 						if useStatus then
 							local c = colors[j]
-							aura:SetBackdropBorderColor(c.r, c.g, c.b, min(c.a,self.borderOpacity) )
+							-- aura:SetBackdropBorderColor(c.r, c.g, c.b, min(c.a,self.borderOpacity) )
+							aura:SetBackdropBorderColor(c.r, c.g, c.b, self.borderOpacity ) -- color is secret we cannot use min()
 						end
 					else
 						local c = colors[j]

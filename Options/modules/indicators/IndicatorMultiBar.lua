@@ -92,7 +92,7 @@ do
 	local emptyTable, tmpTable = {}, {}
 	local TYPE_VALUES = { L["Bar"] , L["Line"] }
 	local ANCHOR_VALUES = { L["Previous Bar"], L["Topmost Bar"], L["Prev. Bar & Reverse"] }
-    local BANCHOR_VALUES =	{ [0]= L["Whole Background"], [1]= L["Main Bar"], [2]= L["Topmost Bar"] }
+    local BANCHOR_VALUES =	{ [0]= L["Whole Background"], [1]= L["Main Bar"], [2]= not Grid2.secretsEnabled and L["Topmost Bar"] or nil }
 	local DIRECTION_VALUES = { L['Normal'], L['Reverse'] }
 	local MAINBAR_COLOR_SOURCES = { L["Status Color"], L["Custom Color"] }
 	local EXTRABAR_COLOR_SOURCES = { L["Main Bar Color"], L["Custom Color"] }
@@ -100,6 +100,7 @@ do
 	local TILE_BACK_VALUES = { [2] = L["Stretch"], [3] = L["Tile Repeat"] }
 	local TILE_MAIN_TRANS  = { [1] = nil, [2] = 'CLAMP',  [3] = 'REPEAT', [4] = 'MIRROR', CLAMP = 2, EMPTY = 1, REPEAT = 3, MIRROR = 4 }
 	local TILE_EXTRA_TRANS = { [1] = 'CLAMP', [2] = nil,  [3] = 'REPEAT', [4] = 'MIRROR', CLAMP = 1, EMPTY = 2 ,REPEAT = 3, MIRROR = 4 }
+	local MIDNIGHT_ANCHOR_VALUES = { [0] = L["None"], [1] = L["Main Bar"], [100] = L["Previous Bar"],  }
 
 	-- edited indicator & bar
 
@@ -178,7 +179,6 @@ do
 		-------------------------------------------------------------------------
 
 		headerMain = { type = "header", order = 1,  name = function(info)
-
 			if not barIndex or barIndex==0 then
 				return L["Main Bar"]
 			elseif barDbx.glowLine then
@@ -216,7 +216,7 @@ do
 		barStatus = {
 			type = "select",
 			order = 2,
-			width = 1.2,
+			width = Grid2.secretsEnabled and 1 or 1.2,
 			name = L["Status"],
 			desc = L["Select the status to display in this bar."],
 			get = function()
@@ -249,7 +249,7 @@ do
 			disabled = function() return barIndex>0 and not GetIndicatorStatusName(indicator, barIndex) end,
 			hidden = false,
 		},
-
+		--
 		barMainDirection = {
 			type = "select",
 			order = 3,
@@ -264,7 +264,7 @@ do
 				self:RefreshIndicator(indicator, "Layout" )
 			end,
 			values = DIRECTION_VALUES,
-			hidden = function() return barIndex~=0 end,
+			hidden = function() return barIndex~=0 or Grid2.secretsEnabled end,
 		},
 
 		barExtraDirection = {
@@ -282,7 +282,45 @@ do
 				self:RefreshIndicator(indicator, "Layout")
 			end,
 			values = ANCHOR_VALUES,
-			hidden = function() return barIndex==0 end,
+			hidden = function() return barIndex==0 or Grid2.secretsEnabled end,
+		},
+		--
+		barMidnightDirection = {
+			type = "select",
+			order = 3,
+			width = 0.50,
+			name = L["Direction"],
+			desc = L["Select the grow direction of the bar."],
+			get = function()
+				return barDbx[barIndex==0 and 'reverseMainBar' or 'reverse'] and 2 or 1
+			end,
+			set = function(_, v)
+				barDbx[barIndex==0 and 'reverseMainBar' or 'reverse'] = (v==2) or nil
+				self:RefreshIndicator(indicator, "Layout")
+			end,
+			values = DIRECTION_VALUES,
+			hidden = function() return not Grid2.secretsEnabled  end,
+		},
+
+		barMidnightAnchor = {
+			type = "select",
+			order = 3.1,
+			width = 0.65,
+			name = L["Anchor"],
+			desc = L["Select where to attach this bar."],
+			get = function ()
+				return (barIndex==0 and 0) or barDbx.prevBar or 100  -- prevBar==1 => mainBar, prevBar==2 => bar1, etc
+			end,
+			set = function (_, v)
+				barDbx.prevBar = (v~=100) and v or nil
+				self:RefreshIndicator(indicator, "Layout" )
+			end,
+			values = function()
+				for i=1,9 do MIDNIGHT_ANCHOR_VALUES[i+1] = i<barIndex and L['Bar']..i or nil; end
+				return MIDNIGHT_ANCHOR_VALUES
+			end,
+			disabled = function() return barIndex==0 end,
+			hidden = function() return not Grid2.secretsEnabled end,
 		},
 
 		-------------------------------------------------------------------------
