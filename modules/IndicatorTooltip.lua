@@ -1,5 +1,4 @@
 --[[ Created by Grid2 original authors, modified by Michael ]]--
-if true then return true end
 
 local Grid2 = Grid2
 local Tooltip = Grid2.indicatorPrototype:new("tooltip")

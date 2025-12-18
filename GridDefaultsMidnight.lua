@@ -49,8 +49,8 @@ local function MakeDatabaseDefaults()
 	Grid2:DbSetValue( "indicators",  "health-color", {type = "bar-color"})
 	Grid2:DbSetMap( "health-color", "classcolor", 99)
 
-	Grid2:DbSetValue( "indicators",  "corner-bottom-left", {type = "square", level = 5, location = Loc("BOTTOMLEFT"), size = 5, color1 = {r=1,g=1,b=1,a=1},})
-	Grid2:DbSetMap( "corner-bottom-left", "threat", 99)
+	Grid2:DbSetValue( "indicators",  "corner-bottom", {type = "square", level = 5, location = Loc("BOTTOM",0,2), size = 7, color1 = {r=1,g=1,b=1,a=1},})
+	Grid2:DbSetMap( "corner-bottom", "threat", 99)
 
 	Grid2:DbSetValue( "indicators",  "icon-center", {type = "icon", level = 9, location = Loc("CENTER"), size = 20, fontSize = 8})
 	Grid2:DbSetMap( "icon-center", "death", 155)
@@ -67,7 +67,6 @@ local function MakeDatabaseDefaults()
 
 	Grid2:DbSetValue( "indicators",  "debuffs", Copy(iconsDefault,{location = Loc("CENTER"), iconSize = 24, smartCenter = true}) )
 	Grid2:DbSetMap( "debuffs", "debuffs-Default", 100)
-
 
 	Grid2:DbSetValue( "indicators",  "text-up", {type = "text", level = 7, location = Loc("TOP",0,-8) , textlength = 6, fontSize = 8 })
 	Grid2:DbSetMap( "text-up", "feign-death", 96)

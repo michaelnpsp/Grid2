@@ -72,12 +72,13 @@ Enum.UnitAuraSortRule.NameOnly - Pure comparison on name only.
 local function GetIconsSorted(self, unit, max, filter, sortRule, sortDir)
 	local auras = GetUnitAuras(unit, filter, max, sortRule, sortDir)
 	for j, a in ipairs(auras) do
+		local auraInstanceID = a.auraInstanceID
 		textures[j] = a.icon
 		counts[j] = a.applications
 		durations[j] = a.duration
 		expirations[j] = a.expirationTime
-		slots[j] = j
-		colors[j] = GetAuraDispelTypeColor(unit, a.auraInstanceID, dispelColorCurve)
+		slots[j] = auraInstanceID
+		colors[j] = GetAuraDispelTypeColor(unit, auraInstanceID, dispelColorCurve)
 	end
 	return #auras, textures, counts, expirations, durations, colors, slots
 end
@@ -112,7 +113,7 @@ end
 
 function Buffs:GetTooltip(unit, tip, slotID)
 	if slotID then
-		tip:SetUnitBuff(unit, slotID)
+		tip:SetUnitAuraByAuraInstanceID(unit, slotID)
 	end
 end
 
@@ -164,7 +165,7 @@ end
 
 function Debuffs:GetTooltip(unit, tip, slotID)
 	if slotID then
-		tip:SetUnitBuff(unit, slotID)
+		tip:SetUnitAuraByAuraInstanceID(unit, slotID)
 	end
 end
 

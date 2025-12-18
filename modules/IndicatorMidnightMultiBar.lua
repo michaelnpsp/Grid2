@@ -94,7 +94,6 @@ local function Bar_Layout(self, parent)
 	for i=1,barCount do
 		local setup = barSetup[i]
 		local texture = textures[i] or CreateFrame("StatusBar", nil, frame) -- texture is a StatusBar frame, not a texture
-		texture.myIndex = i
 		texture.myOpacity = setup.opacity
 		texture:Hide()
 		texture:ClearAllPoints()
@@ -215,7 +214,7 @@ local function Bar_UpdateDB(self)
 		bars[#bars+1] = {
 			reverse  = not not setup.reverse,
 			prevBar   = setup.prevBar,
-			pointFrom = setup.reverse and opositePoint[alignPoint] or alignPoint,
+			pointFrom = (setup.glowLine and 'CENTER') or (setup.reverse and opositePoint[alignPoint] or alignPoint),
 			pointTo   = setup.reverse and alignPoint or opositePoint[alignPoint],
 			opacity   = setup.color.a,
 			color     = setup.color.r and setup.color or self.foreColor,
