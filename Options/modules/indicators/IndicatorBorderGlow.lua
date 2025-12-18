@@ -16,22 +16,22 @@ end
 
 local function MakeBorderGlowOptions(self, indicator,options)
 	options.colorSource = {
-			type = "select",
-			order = 10,
-			name = L["Glow Color"],
-			desc = L["Choose how to colorize the glow border."],
-			get = function ()
-				return indicator.dbx.glowColor and 2 or 1
-			end,
-			set = function (_, v)
-				if v==1 then
-					indicator.dbx.glowColor = nil
-				else
-					indicator.dbx.glowColor = { r=0.95, g=0.95, b=0.32, a=1 }
-				end
-				if not indicator.suspended then	indicator:UpdateDB() end
-			end,
-			values= COLOR_VALUES,
+		type = "select",
+		order = 10,
+		name = L["Glow Color"],
+		desc = L["Choose how to colorize the glow border."],
+		get = function ()
+			return indicator.dbx.glowColor and 2 or 1
+		end,
+		set = function (_, v)
+			if v==1 then
+				indicator.dbx.glowColor = nil
+			else
+				indicator.dbx.glowColor = { r=0.95, g=0.95, b=0.32, a=1 }
+			end
+			if not indicator.suspended then	indicator:UpdateDB() end
+		end,
+		values= COLOR_VALUES,
 	}
 	options.glowColor = {
 		type = "color",

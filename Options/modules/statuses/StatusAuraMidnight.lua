@@ -11,6 +11,16 @@ local tinsert = table.insert
 local tconcat = table.concat
 local tcontains = tContains
 
+local SORT_VALUES = {
+	[0] = L["Unsorted"],
+	[1] = L["Default"],
+	[2] = L["Big Defensive"],
+	[3] = L["Expiration"],
+	[4] = L["Expiration Only"],
+	[5] = L["Name"],
+	[6] = L["Name Only"],
+}
+
 local function filter_toggle(filter, value, default)
 	default = default or ''
 	local t = { strsplit('|', filter or default) }
@@ -140,6 +150,33 @@ function Grid2Options:MakeMidnightBuffsOptions(status, options)
 			refresh_aura_status(status)
 		end,
 	}
+	options.sort_rule = {
+		type = "select",
+		order = 50,
+		name = "Sorting",
+		desc = L["Choose how to sort the auras."],
+		get = function()
+			return status.dbx.aura_sortRule or 0
+		end,
+		set = function(_, v)
+			status.dbx.aura_sortRule = (v~=0) and v or nil
+			refresh_aura_status(status)
+		end,
+		values = SORT_VALUES,
+	}
+	options.sort_dir = {
+		type = "toggle",
+		order = 60,
+		width = "full",
+		name = L["Reverse Sorting"],
+		get = function()
+			return status.dbx.aura_sortDir == 1
+		end,
+		set = function(_, v)
+			status.dbx.aura_sortDir = v and 1 or nil
+			refresh_aura_status(status)
+		end,
+	}
 end
 
 Grid2Options:MakeMidnightBuffsOptions(NewBuffsOptions.arg, NewBuffsOptions)
@@ -231,6 +268,33 @@ function Grid2Options:MakeMidnightDebuffsOptions(status, options)
 		end,
 		set = function()
 			status.dbx.aura_filter = filter_toggle( status.dbx.aura_filter, 'RAID', 'HARMFUL' )
+			refresh_aura_status(status)
+		end,
+	}
+	options.sort_rule = {
+		type = "select",
+		order = 50,
+		name = "Sorting",
+		desc = L["Choose how to sort the auras."],
+		get = function()
+			return status.dbx.aura_sortRule or 0
+		end,
+		set = function(_, v)
+			status.dbx.aura_sortRule = (v~=0) and v or nil
+			refresh_aura_status(status)
+		end,
+		values = SORT_VALUES,
+	}
+	options.sort_dir = {
+		type = "toggle",
+		order = 60,
+		width = "full",
+		name = L["Reverse Sorting"],
+		get = function()
+			return status.dbx.aura_sortDir == 1
+		end,
+		set = function(_, v)
+			status.dbx.aura_sortDir = v and 1 or nil
 			refresh_aura_status(status)
 		end,
 	}

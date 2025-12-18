@@ -5,6 +5,7 @@ local canaccessvalue = Grid2.canaccessvalue
 local SpellIsSelfBuff = SpellIsSelfBuff
 local UnitAffectingCombat = UnitAffectingCombat
 local SpellGetVisibilityInfo = C_Spell.GetVisibilityInfo
+local GetUnitAuras = C_UnitAuras.GetUnitAuras
 local GetAuraDataByIndex = C_UnitAuras.GetAuraDataByIndex
 local GetAuraDispelTypeColor = C_UnitAuras.GetAuraDispelTypeColor
 local IsAuraFilteredOutByInstanceID = C_UnitAuras.IsAuraFilteredOutByInstanceID
@@ -50,6 +51,37 @@ local function GetIcons(self, unit, max, filter, displayFunc)
 	return j-1, textures, counts, expirations, durations, colors, slots
 end
 
+
+--[[
+Farmer Meorawr (✿◠◡◠) 🦆: Sorting is implemented through extra optional parameters to C_UnitAuras.GetUnitAuras/GetUnitAuraInstanceIDs:
+
+The sorting is applied on all auras for the unit matching the supplied filter, and after sorting the result list is truncated to maxCount if specified.
+
+Sort rules are as follows:
+
+Enum.UnitAuraSortRule.Default - equivalent to AuraUtil.DefaultAuraCompare
+Enum.UnitAuraSortRule.BigDefensive - equivalent to AuraUtil.BigDefensiveAuraCompare
+Enum.UnitAuraSortRule.Expiration - equivalent to Default with an added comparison for expiration time before the aura instance ID fallback. Unlike SecureAuraHeaderTemplate, this sorts permanent duration auras to the end of the list (ie. as-if they had an infinite expiry time).
+Enum.UnitAuraSortRule.ExpirationOnly - Pure comparison on expiration time only. Same note about permanent aura durations applies.
+Enun.UnitAuraSortRule.Name - equivalent to Default with an added comparison for (unicode-aware) name-based sorting before the aura instance ID fallback.
+Enum.UnitAuraSortRule.NameOnly - Pure comparison on name only.
+
+--]]
+
+-- Enum.UnitAuraSortRule.Default, Enum.UnitAuraSortDirection.Reverse)
+local function GetIconsSorted(self, unit, max, filter, sortRule, sortDir)
+	local auras = GetUnitAuras(unit, filter, max, sortRule, sortDir)
+	for j, a in ipairs(auras) do
+		textures[j] = a.icon
+		counts[j] = a.applications
+		durations[j] = a.duration
+		expirations[j] = a.expirationTime
+		slots[j] = j
+		colors[j] = GetAuraDispelTypeColor(unit, a.auraInstanceID, dispelColorCurve)
+	end
+	return #auras, textures, counts, expirations, durations, colors, slots
+end
+
 -------------------------------------------------------------------------------
 -- midnight-buffs status
 -------------------------------------------------------------------------------
@@ -75,7 +107,7 @@ local function Buffs_DisplayCheck(aura)
 end
 
 function Buffs:GetIcons(unit, max)
-	return GetIcons(self, unit, max, self.aura_filter)
+	return GetIconsSorted(self, unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir)
 end
 
 function Buffs:GetTooltip(unit, tip, slotID)
@@ -106,6 +138,8 @@ end
 
 function Buffs:UpdateDB()
 	self.aura_filter = self.dbx.aura_filter or 'HELPFUL'
+	self.aura_sortRule = self.dbx.aura_sortRule or 0
+	self.aura_sortDir = self.dbx.aura_sortDir or 0
 end
 
 -- Registration
@@ -125,7 +159,7 @@ end
 Debuffs.GetColor = Grid2.statusLibrary.GetColor
 
 function Debuffs:GetIcons(unit, max)
-	return GetIcons(self, unit, max, self.aura_filter)
+	return GetIconsSorted(self, unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir)
 end
 
 function Debuffs:GetTooltip(unit, tip, slotID)
@@ -152,6 +186,8 @@ end
 
 function Debuffs:UpdateDB()
 	self.aura_filter = self.dbx.aura_filter or 'HARMFUL'
+	self.aura_sortRule = self.dbx.aura_sortRule or 0
+	self.aura_sortDir = self.dbx.aura_sortDir or 0
 end
 
 -- Registration
