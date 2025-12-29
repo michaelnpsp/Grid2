@@ -34,24 +34,6 @@ do
     dispelColorCurve:AddPoint( 11 , DEBUFF_TYPE_BLEED_COLOR )
 end
 
-local function GetIcons(self, unit, max, filter, displayFunc)
-	local color, i, j = self.dbx.color1, 1, 1
-	repeat
-		local a = GetAuraDataByIndex(unit, i, filter)
-		if not a then break end
-		textures[j], counts[j], colors[j], slots[j] = a.icon, a.applications, color, i
-		if not displayFunc or displayFunc(a) then
-			durations[j] = a.duration
-			expirations[j] = a.expirationTime
-			colors[j] = GetAuraDispelTypeColor(unit, a.auraInstanceID, dispelColorCurve)
-			j = j + 1
-		end
-		i = i + 1
-	until j>max
-	return j-1, textures, counts, expirations, durations, colors, slots
-end
-
-
 --[[
 Sort rules are as follows:
 Enum.UnitAuraSortRule.Default - equivalent to AuraUtil.DefaultAuraCompare
@@ -63,19 +45,23 @@ Enum.UnitAuraSortRule.NameOnly - Pure comparison on name only.
 Enum.UnitAuraSortRule.Default, Enum.UnitAuraSortDirection.Reverse
 --]]
 
-
-local function GetIconsSorted(self, unit, max, filter, sortRule, sortDir)
-	local auras = GetUnitAuras(unit, filter, max, sortRule, sortDir)
-	for j, a in ipairs(auras) do
-		local auraInstanceID = a.auraInstanceID
-		textures[j] = a.icon
-		counts[j] = a.applications
-		durations[j] = a.duration
-		expirations[j] = a.expirationTime
-		slots[j] = auraInstanceID
-		colors[j] = GetAuraDispelTypeColor(unit, auraInstanceID, dispelColorCurve)
+local function GetIconsSorted(self, unit, max, filter, sortRule, sortDir, displayFunc)
+	local i = 0
+	local auras = GetUnitAuras(unit, filter, displayFunc and max or 40, sortRule, sortDir)
+	for _, a in ipairs(auras) do
+		if not displayFunc or displayFunc(a) then
+			i = i + 1
+			local auraInstanceID = a.auraInstanceID
+			textures[i] = a.icon
+			counts[i] = a.applications
+			durations[i] = a.duration
+			expirations[i] = a.expirationTime
+			slots[i] = auraInstanceID
+			colors[i] = GetAuraDispelTypeColor(unit, auraInstanceID, dispelColorCurve)
+			if i>=max then break end
+		end
 	end
-	return #auras, textures, counts, expirations, durations, colors, slots
+	return i, textures, counts, expirations, durations, colors, slots
 end
 
 -------------------------------------------------------------------------------
@@ -133,9 +119,10 @@ function Buffs:IsActive(unit)
 end
 
 function Buffs:UpdateDB()
-	self.aura_filter = self.dbx.aura_filter or 'HELPFUL'
-	self.aura_sortRule = self.dbx.aura_sortRule or 0
-	self.aura_sortDir = self.dbx.aura_sortDir or 0
+	local filter = self.dbx.aura_filter or {}
+	self.aura_filter   = filter.filter or 'HELPFUL'
+	self.aura_sortRule = filter.sortRule or 0
+	self.aura_sortDir  = filter.sortDir or 0
 end
 
 -- Registration
@@ -146,16 +133,25 @@ Grid2.setupFunc["mbuffs"] = function(baseKey, dbx)
 	return status
 end
 
--- Grid2:DbSetStatusDefaultValue("midnight-buffs", { type = "mbuffs", aura_filter = 'HELPFUL|RAID|PLAYER', color1 = {r=0, g=1, b=0, a=1} })
+--[[ mbuffs database format
+ type = "mbuffs",
+ aura_filter = { filter='HELPFUL|RAID|PLAYER', sortRule=3, sortDir=0 },
+ color1 = {r=0, g=1, b=0, a=1}
+--]]
 
 -------------------------------------------------------------------------------
 -- midnight-debuffs status
 -------------------------------------------------------------------------------
 
+local filterTypedFuncs = {
+	[false] = function(aura) return aura.dispelName==nil; end,
+	[true] = function(aura) return aura.dispelName~=nil; end,
+}
+
 Debuffs.GetColor = Grid2.statusLibrary.GetColor
 
 function Debuffs:GetIcons(unit, max)
-	return GetIconsSorted(self, unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir)
+	return GetIconsSorted(self, unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.aura_display)
 end
 
 function Debuffs:GetTooltip(unit, tip, slotID)
@@ -181,9 +177,11 @@ function Debuffs:IsActive(unit)
 end
 
 function Debuffs:UpdateDB()
-	self.aura_filter = self.dbx.aura_filter or 'HARMFUL'
-	self.aura_sortRule = self.dbx.aura_sortRule or 0
-	self.aura_sortDir = self.dbx.aura_sortDir or 0
+	local filter = self.dbx.aura_filter or {}
+	self.aura_filter   = filter.filter or 'HARMFUL'
+	self.aura_sortRule = filter.sortRule or 0
+	self.aura_sortDir  = filter.sortDir or 0
+	self.aura_display  = filterTypedFuncs[filter.typed]
 end
 
 -- Registration
@@ -194,4 +192,8 @@ Grid2.setupFunc["mdebuffs"] = function(baseKey, dbx)
 	return status
 end
 
--- Grid2:DbSetStatusDefaultValue("midnight-debuffs", { type = "mdebuffs", aura_filter = 'HARMFUL', color1 = {r=1, g=0, b=0, a=1} })
+--[[ mdebuffs database format
+	type = "mdebuffs",
+	aura_filter = { filter= 'HARMFUL' ],
+	color1 = {r=1, g=0, b=0, a=1}
+--]]

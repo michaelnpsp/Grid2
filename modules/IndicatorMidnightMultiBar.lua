@@ -20,23 +20,6 @@ local function Bar_CreateHH(self, parent)
 	bar:SetClipsChildren(true)
 end
 
---[[
--- sets bar value using status data
-local function SetBarStatusValue(self, unit, frame, status)
-	local index = self.priorities[status]
-	local bar   = frame.myTextures[index]
-	if bar.glowLine then
-		bar:SetValue(status:IsActive(unit) and 1 or 0)
-	elseif status.GetValueMinMax then
-		local value, min, max = status:GetValueMinMax(unit)
-		bar:SetMinMaxValues(min, max)
-		bar:SetValue(value)
-	else
-		bar:SetValue( status:GetPercent(unit) or 0 )
-	end
-end
---]]
-
 -- value assignments for different types of bars/statuses
 local function SetMultibarLineValue(bar, unit, status)
 	bar:SetAlphaFromBoolean(status:IsActive(unit), 1, 0)
@@ -119,7 +102,7 @@ local function Bar_Layout(self, parent)
 		local prevBarIndex = setup.prevBar
 		if prevBarIndex then
 			if textures[prevBarIndex] then
-				prevTex, prevPnt = textures[prevBarIndex], barSetup[prevBarIndex].pointTo
+				prevTex, prevPnt = textures[prevBarIndex]:GetStatusBarTexture(), barSetup[prevBarIndex].pointTo
 			else
 				prevTex, prevPnt = frame, self.alignPoint -- prevBarIndex==0 => attach to main frame
 			end

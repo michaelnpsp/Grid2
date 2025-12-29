@@ -15,8 +15,8 @@ local s, i, m = db.statuses, db.indicators, db.statusMap
 db.__template = 'Classic'
 
 s["heals-incoming"] = { includePlayerHeals=true }
-s["buffs-Default"] = { type="mbuffs", aura_sortRule=3, aura_filter="HELPFUL|PLAYER|RAID", aura_filter_enemy="HELPFUL", color1={a=1,r=0,g=1,b=0} }
-s["debuffs-Default"] = { aura_sortRule=3, type="mdebuffs", aura_filter="HARMFUL|RAID", color1={a=1,r=1,g=0,b=0} }
+s["buffs-Default"] = { type="mbuffs", aura_filter={filter="HELPFUL|PLAYER|RAID",sortRule=3}, aura_filter_enemy={filter="HELPFUL"}, color1={a=1,r=0,g=1,b=0} }
+s["debuffs-Default"] = { type="mdebuffs", aura_filter= {filter="HARMFUL|RAID", sortRule=3}, color1={a=1,r=1,g=0,b=0} }
 
 i["icons-debuffs"] = { fontSize=9, borderOpacity=1, disableCooldown=true, fontJustifyV="TOP", borderSize=1, iconSize=24, level=8, tooltipAnchor="ANCHOR_BOTTOMRIGHT", type="icons", enableCooldownText=true, reverseCooldown=true, color1={a=1,b=1,g=1,r=1}, tooltipEnabled=true, ctFontSize=10, disableOmniCC=true, useStatusColor=true, fontJustifyH="RIGHT", location={y=-2,relPoint="CENTER",point="CENTER",x=0}, smartCenter=true }
 m["icons-debuffs"] = { ["debuffs-Default"]=50 }

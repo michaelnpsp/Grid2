@@ -21,26 +21,48 @@ local SORT_VALUES = {
 	[6] = L["Name Only"],
 }
 
-local function filter_toggle(filter, value, default)
-	default = default or ''
-	local t = { strsplit('|', filter or default) }
+local function refresh_aura_status(status)
+	if status.Refresh then
+		status:Refresh()
+	end
+end
+
+local function filter_get_value(status, key, subkey, default)
+	local t = status.dbx[key]
+	local v =  (type(t)=='table' and t or {})[subkey]
+	if v==nil then
+		return default
+	else
+		return v
+	end
+end
+
+local function filter_set_value(status, key, subkey, value, default)
+	local t = status.dbx[key]
+	status.dbx[key] = type(t)=='table' and t or {}
+	if value~=default then
+		status.dbx[key][subkey] = value
+	else
+		status.dbx[key][subkey] = nil
+	end
+	refresh_aura_status(status)
+end
+
+local function filter_toggle_substring(status, key, subkey, value, default)
+	local filter = filter_get_value(status, key, subkey, default or '')
+	local t = { strsplit('|', filter) }
 	if tcontains(t,value) then
 		tdelete(t,value)
 	else
 		tinsert(t,value)
 	end
 	filter = tconcat(t, '|')
-	return filter~=default and filter or nil
+	filter_set_value(status, key, subkey, filter, default)
 end
 
-local function filter_exists(filter, value)
-	return strfind(filter or '', value)~=nil
-end
-
-local function refresh_aura_status(status)
-	if status.Refresh then
-		status:Refresh()
-	end
+local function filter_exists_substring(status, key, subkey, value)
+	local filter = filter_get_value(status, key, subkey, default or '')
+	return strfind(filter, value)~=nil
 end
 
 local function get_new_aura_status_key(data)
@@ -117,11 +139,10 @@ function Grid2Options:MakeMidnightBuffsOptions(status, options)
 		width = "full",
 		name = L["Display all buffs"],
 		get = function(info)
-			return (status.dbx.aura_filter or 'HELPFUL') == 'HELPFUL'
+			return filter_get_value(status, 'aura_filter', 'filter', 'HELPFUL') == 'HELPFUL'
 		end,
-		set = function()
-			status.dbx.aura_filter = not status.dbx.aura_filter and 'HELPFUL|PLAYER|RAID' or nil
-			refresh_aura_status(status)
+		set = function(info, v)
+			filter_set_value(status, 'aura_filter', 'filter',  (not v) and 'HELPFUL|PLAYER|RAID' or nil)
 		end,
 	}
 	options.filter_player = {
@@ -130,11 +151,10 @@ function Grid2Options:MakeMidnightBuffsOptions(status, options)
 		width = "full",
 		name = L["Only buffs applied by me"],
 		get = function(info)
-			return filter_exists( status.dbx.aura_filter, 'PLAYER' )
+			return filter_exists_substring( status, 'aura_filter', 'filter', 'PLAYER' )
 		end,
 		set = function()
-			status.dbx.aura_filter = filter_toggle( status.dbx.aura_filter, 'PLAYER', 'HELPFUL' )
-			refresh_aura_status(status)
+			filter_toggle_substring( status, 'aura_filter', 'filter', 'PLAYER', 'HELPFUL' )
 		end,
 	}
 	options.filter_raid = {
@@ -143,11 +163,10 @@ function Grid2Options:MakeMidnightBuffsOptions(status, options)
 		width = "full",
 		name = L["Only buffs that are relevant for your player class"],
 		get = function()
-			return filter_exists( status.dbx.aura_filter, 'RAID' )
+			return filter_exists_substring( status, 'aura_filter', 'filter', 'RAID' )
 		end,
 		set = function()
-			status.dbx.aura_filter = filter_toggle( status.dbx.aura_filter, 'RAID', 'HELPFUL' )
-			refresh_aura_status(status)
+			filter_toggle_substring( status, 'aura_filter', 'filter', 'RAID', 'HELPFUL' )
 		end,
 	}
 	options.sort_rule = {
@@ -156,25 +175,22 @@ function Grid2Options:MakeMidnightBuffsOptions(status, options)
 		name = "Sorting",
 		desc = L["Choose how to sort the auras."],
 		get = function()
-			return status.dbx.aura_sortRule or 0
+			return filter_get_value( status, 'aura_filter', 'sortRule', 0 )
 		end,
 		set = function(_, v)
-			status.dbx.aura_sortRule = (v~=0) and v or nil
-			refresh_aura_status(status)
+			filter_set_value( status, 'aura_filter', 'sortRule', v, 0 )
 		end,
 		values = SORT_VALUES,
 	}
 	options.sort_dir = {
 		type = "toggle",
 		order = 60,
-		width = "full",
 		name = L["Reverse Sorting"],
 		get = function()
-			return status.dbx.aura_sortDir == 1
+			return filter_get_value( status, 'aura_filter', 'sortDir' ) == 1
 		end,
 		set = function(_, v)
-			status.dbx.aura_sortDir = v and 1 or nil
-			refresh_aura_status(status)
+			filter_set_value( status, 'aura_filter', 'sortDir', v and 1 or nil )
 		end,
 	}
 end
@@ -238,11 +254,11 @@ function Grid2Options:MakeMidnightDebuffsOptions(status, options)
 		width = "full",
 		name = L["Display all debuffs"],
 		get = function(info)
-			return (status.dbx.aura_filter or 'HARMFUL') == 'HARMFUL'
+			return filter_get_value(status, 'aura_filter', 'filter', 'HARMFUL') == 'HARMFUL' and filter_get_value(status, 'aura_filter', 'typed')==nil
 		end,
-		set = function()
-			status.dbx.aura_filter = not status.dbx.aura_filter and 'HARMFUL|PLAYER|RAID' or nil
-			refresh_aura_status(status)
+		set = function(info, v)
+			filter_set_value(status, 'aura_filter', 'filter',  (not v) and 'HARMFUL|PLAYER|RAID' or nil)
+			filter_set_value(status, 'aura_filter', 'typed', nil)
 		end,
 	}
 	options.filter_player = {
@@ -251,11 +267,10 @@ function Grid2Options:MakeMidnightDebuffsOptions(status, options)
 		width = "full",
 		name = L["Only debuffs applied by me"],
 		get = function(info)
-			return filter_exists( status.dbx.aura_filter, 'PLAYER' )
+			return filter_exists_substring( status, 'aura_filter', 'filter', 'PLAYER' )
 		end,
 		set = function()
-			status.dbx.aura_filter = filter_toggle( status.dbx.aura_filter, 'PLAYER', 'HARMFUL' )
-			refresh_aura_status(status)
+			filter_toggle_substring( status, 'aura_filter', 'filter', 'PLAYER', 'HARMFUL' )
 		end,
 	}
 	options.filter_raid = {
@@ -264,38 +279,65 @@ function Grid2Options:MakeMidnightDebuffsOptions(status, options)
 		width = "full",
 		name = L["Only debuffs that are relevant in combat or raid"],
 		get = function()
-			return filter_exists( status.dbx.aura_filter, 'RAID' )
+			return filter_exists_substring( status, 'aura_filter', 'filter', 'RAID' )
 		end,
 		set = function()
-			status.dbx.aura_filter = filter_toggle( status.dbx.aura_filter, 'RAID', 'HARMFUL' )
-			refresh_aura_status(status)
+			filter_toggle_substring( status, 'aura_filter', 'filter', 'RAID', 'HARMFUL' )
+		end,
+	}
+	options.debuffs_typed = {
+		type = "toggle",
+		order = 50,
+		width = "full",
+		name = L["Only typed debuffs"],
+		desc = L["Display only Magic, Curse, Poison, Disease or Bleed Debuffs."],
+		get = function()
+			return filter_get_value(status, 'aura_filter', 'typed')==true
+		end,
+		set = function(info, v)
+			filter_set_value( status, 'aura_filter', 'typed', v, false)
+		end,
+	}
+	options.debuffs_typeless = {
+		type = "toggle",
+		order = 60,
+		width = "full",
+		name = L["Only typeless debuffs"],
+		desc = L["Display only debuffs with no dispell type."],
+		get = function()
+			return filter_get_value(status, 'aura_filter', 'typed')==false
+		end,
+		set = function(info, v)
+			if v then
+				v = false
+			else
+				v = nil
+			end
+			filter_set_value( status, 'aura_filter', 'typed', v)
 		end,
 	}
 	options.sort_rule = {
 		type = "select",
-		order = 50,
+		order = 70,
 		name = "Sorting",
 		desc = L["Choose how to sort the auras."],
 		get = function()
-			return status.dbx.aura_sortRule or 0
+			return filter_get_value( status, 'aura_filter', 'sortRule', 0 )
 		end,
 		set = function(_, v)
-			status.dbx.aura_sortRule = (v~=0) and v or nil
-			refresh_aura_status(status)
+			filter_set_value( status, 'aura_filter', 'sortRule', v, 0 )
 		end,
 		values = SORT_VALUES,
 	}
 	options.sort_dir = {
 		type = "toggle",
-		order = 60,
-		width = "full",
+		order = 80,
 		name = L["Reverse Sorting"],
 		get = function()
-			return status.dbx.aura_sortDir == 1
+			return filter_get_value( status, 'aura_filter', 'sortDir' ) == 1
 		end,
 		set = function(_, v)
-			status.dbx.aura_sortDir = v and 1 or nil
-			refresh_aura_status(status)
+			filter_set_value( status, 'aura_filter', 'sortDir', v and 1 or nil )
 		end,
 	}
 end
