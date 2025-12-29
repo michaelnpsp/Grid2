@@ -299,7 +299,6 @@ local function Create(indicatorKey, dbx)
 	Bar.UpdateDB        = Bar_UpdateDB
 	Bar.UpdateO         = Bar_Update -- special case used by multibar and icons indicator
 	Grid2:RegisterIndicator(Bar, { "percent" })
-	EnableDelayedUpdates()
 
 	local BarColor      = Grid2.indicatorPrototype:new(indicatorKey.."-color")
 	BarColor.dbx        = dbx

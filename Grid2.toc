@@ -128,3 +128,4 @@ modules\IndicatorMidnightMultiBar.lua
 modules\StatusMidnightAuras.lua
 modules\StatusMidnightHealth.lua
 modules\StatusMidnightShields.lua
+modules\StatusMidnightHealAbsorbs.lua
