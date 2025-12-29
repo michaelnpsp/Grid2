@@ -196,7 +196,7 @@ local function Bar_UpdateDB(self)
 	for i,setup in ipairs(dbx) do
 		bars[#bars+1] = {
 			reverse  = not not setup.reverse,
-			prevBar   = setup.prevBar,
+			prevBar   = (setup.prevBar and setup.prevBar<=i and setup.prevBar) or nil,
 			pointFrom = (setup.glowLine and 'CENTER') or (setup.reverse and opositePoint[alignPoint] or alignPoint),
 			pointTo   = setup.reverse and alignPoint or opositePoint[alignPoint],
 			opacity   = setup.color.a,

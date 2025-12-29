@@ -578,6 +578,11 @@ do
 					local priority = barIndex+1
 					UnregisterIndicatorStatus( indicator, GetIndicatorStatusName(indicator, priority) )
 					table.remove(indicator.dbx, barIndex)
+					for i,bar in ipairs(indicator.dbx) do
+						if bar.prevBar and bar.prevBar>i then
+							bar.prevBar = nil
+						end
+					end
 					for statusName, index in next, GetIndicatorStatusMap(indicator) do
 						if index>priority then
 							SetIndicatorStatusPriority(indicator, statusName, index-1)
