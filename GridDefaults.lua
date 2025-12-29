@@ -16,6 +16,14 @@ function Grid2:DbSetStatusDefaultValue(name, value)
 	end
 end
 
+function Grid2:DbUpdateStatusesDefaults()
+	local defaults = self.defaults.profile.statuses
+	for k,v in pairs(self.db.profile.statuses) do
+		local d =  defaults[k]
+		if d then Grid2.CopyTable( d, v ) end
+	end
+end
+
 function Grid2:DbSetValue(section, name, value)
   self.db.profile[section][name]= value
 end
@@ -50,13 +58,28 @@ function Grid2:DbSetMap(indicatorName, statusName, priority)
 	end
 end
 
--- Register new database defaults
+-- Register new database profile defaults
 -- info.name   = profile name
 -- info.desc   = profile description
 -- info.image  = example image
 -- info.update = function that must store profile settings in a new created profile.
+-- params:
+-- index = nil|0  0 => registering the default profile for Grid2
 function Grid2:DbRegisterProfile(info, index)
-	self.defaultProfiles[index or #self.defaultProfiles+1] = info
+	if not index or self.defaultProfiles[index] then
+		index = #self.defaultProfiles+1
+	end
+	self.defaultProfiles[index] = info
+end
+
+function Grid2:DbGetRegisteredProfileByName(name)
+	if name then
+		for index,info in pairs(self.defaultProfiles) do
+			if name == info.name then
+				return info, index
+			end
+		end
+	end
 end
 
 -- Advanced default profiles management
@@ -67,7 +90,8 @@ function Grid2:MakeDatabaseDefaults()
 		Grid2Options:OpenFirstBootProfilesDialog()
 		return true
 	else
-		self.defaultProfiles[defaultProfile or 0].func(self)
+		local info = self.defaultProfiles[defaultProfile or 0]
+		info.func(self, info)
 		return false
 	end
 end

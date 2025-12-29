@@ -57,4 +57,4 @@ end
 
 Grid2.setupFunc["threat"] = Create
 
-Grid2:DbSetStatusDefaultValue( "threat", {type = "threat", blinkThreshold = true, colorCount = 3, color1 = {r=1,g=0,b=0,a=1}, color2 = {r=.5,g=1,b=1,a=1}, color3 = {r=1,g=1,b=1,a=1}} )
+Grid2:DbSetStatusDefaultValue( "threat", {type = "threat", blinkThreshold = true, colorCount = 3, color1 = {r=1,g=.94, b=0,a=1}, color2 = {r=1,g=.5,b=0,a=1}, color3 = {r=1,g=0, b=0,a=1}} )

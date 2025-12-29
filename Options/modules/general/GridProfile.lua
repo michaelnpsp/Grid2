@@ -222,6 +222,24 @@ options.default = {
 
 --==============================
 
+options.export2luadesc = {
+	order = 70,
+	type = "description",
+	name = "\n" .. L["Export selected profile to Lua Code. Developer only option."],
+}
+
+options.export2lua = {
+	type   = "select",
+	name   = L['Export to Lua'],
+	order  = 75,
+	get    = false,
+	set    = function(_, v) Grid2Options:ExportProfileToLua(v) end,
+	values = GetUnusedProfiles,
+	hidden = function() return not Grid2.isDevelop end,
+}
+
+--==============================
+
 Grid2Options:AddGeneralOptions("Profiles", nil, {
 	type = "group",
 	childGroups = "tab",
