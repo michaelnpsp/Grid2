@@ -460,7 +460,7 @@ do
 			r = "Grid2:DbRegisterProfile( {\n"
 			r = string.format("%sname = '%s',\n", r, info.name or 'Unknow')
 			r = string.format("%sdesc = '%s',\n", r, info.desc or info.name or 'nil')
-			if info.image then r = string.format("%simage = '%s',\n", r, info.image) end
+			if info.image then r = string.format("%simage = [[%s]],\n", r, info.image) end
 			if info.imageWidth then r = string.format("%simageWidth = %s,\n", r, info.imageWidth or 'nil') end
 			if info.imageHeight then r = string.format("%simageHeight = %s,\n", r, info.imageHeight or 'nil') end
 			r = string.format("%sfunc = MakeDatabaseDefaults,\n}, %s)",r, index==0 and "0" or "nil")
