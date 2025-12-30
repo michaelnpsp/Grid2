@@ -1,14 +1,18 @@
 if not Grid2.secretsEnabled then return end
 
+local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
+
 local Health = Grid2.statusPrototype:new("health-current")
 local Heals = Grid2.statusPrototype:new("heals-incoming")
 local MyHeals = Grid2.statusPrototype:new("my-heals-incoming")
 local Death = Grid2.statusPrototype:new("death")
+local FeignDeath = Grid2.statusPrototype:new("feign-death")
 
 local UnitHealth = UnitHealth
 local UnitHealthMax = UnitHealthMax
 local UnitHealthPercent = UnitHealthPercent
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
+local UnitIsFeignDeath = UnitIsFeignDeath
 local UnitGetIncomingHeals = UnitGetIncomingHeals
 local AbbreviateLargeNumbers = AbbreviateLargeNumbers
 local unit_is_valid = Grid2.roster_guids
@@ -211,3 +215,49 @@ end
 Grid2.setupFunc["death"] = CreateDeath
 
 Grid2:DbSetStatusDefaultValue( "death", {type = "death", color1 = {r=1,g=1,b=1,a=1}})
+
+-- feign-death status
+local feign_cache = {}
+
+FeignDeath.GetColor = Grid2.statusLibrary.GetColor
+
+function FeignDeath:UNIT_AURA(_, unit)
+	if unit_is_valid[unit] then
+		local feign = UnitIsFeignDeath(unit)
+		if feign~=feign_cache[unit] then
+			feign_cache[unit] = feign
+			FeignDeath:UpdateIndicators(unit)
+		end
+	end
+end
+
+function FeignDeath:OnEnable()
+	self:RegisterEvent("UNIT_AURA")
+end
+
+function FeignDeath:OnDisable()
+	self:UnregisterEvent("UNIT_AURA")
+	wipe(feign_cache)
+end
+
+function FeignDeath:IsActive(unit)
+	return UnitIsFeignDeath(unit)
+end
+
+local feignText = L["FD"]
+function FeignDeath:GetText(unit)
+	return feignText
+end
+
+function FeignDeath:GetPercent(unit)
+	return self.dbx.color1.a, feignText
+end
+
+local function CreateFeignDeath(baseKey, dbx)
+	Grid2:RegisterStatus(FeignDeath, {"color", "percent", "text"}, baseKey, dbx)
+	return FeignDeath
+end
+
+Grid2.setupFunc["feign-death"] = CreateFeignDeath
+
+Grid2:DbSetStatusDefaultValue( "feign-death", {type = "feign-death", color1 = {r=1,g=.5,b=1,a=1}})
