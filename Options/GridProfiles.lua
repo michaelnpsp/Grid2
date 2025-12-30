@@ -14,6 +14,9 @@ Options.RootTable = {
 	args = {
 		title = {
 			type = "description",
+			image = "Interface\\Addons\\Grid2\\media\\icon",
+			imageWidth = 16,
+			imageHeight = 16,
 			order = 1,
 			name = function()
 				if Options.isFirstBoot then
@@ -57,7 +60,7 @@ Options.ProfileTable = {
 			local index = Options.selectedProfile
 			if type(index)=='number' then
 				local pf = Grid2.defaultProfiles[index]
-				return pf.image, pf.imageWidth, pf.imageHeight
+				return pf.image, pf.imageWidth or 352, pf.imageHeight or 87
 			else
 				return "Interface\\Calendar\\MeetingIcon"
 			end
@@ -95,6 +98,17 @@ function Options:Initialize(firstBoot)
 	return self.RootTable
 end
 
+
+function Grid2Options:SelectDialogGroup(dialogName, ...)
+	local ACD = LibStub("AceConfigDialog-3.0")
+	ACD:SelectGroup(dialogName, ...)
+	C_Timer.After(0, function()
+		local frame = self.dialogFrame
+		local user = frame:GetUserDataTable()
+		ACD:Open(dialogName, frame, unpack(user.basepath or {}))
+	end)
+end
+
 -- Open profiles templates dialog, called from "new profile" option
 function Grid2Options:OpenProfilesDialog(newProfileName)
 	self:OpenAdvancedDialog('Grid2ProfilesDialog', Options:Initialize(false), 600, 275, function()
@@ -102,6 +116,7 @@ function Grid2Options:OpenProfilesDialog(newProfileName)
 		Grid2.db:SetProfile(newProfileName)
 		Grid2Options:NotifyChange()
 	end, Grid2.Dummy)
+	self:SelectDialogGroup( 'Grid2ProfilesDialog', "1" )
 end
 
 -- Open first boot profiles templates dialog
@@ -119,4 +134,5 @@ function Grid2Options:OpenFirstBootProfilesDialog()
 			Grid2.db:DeleteProfile(oldProfile)
 		end
 	end)
+	self:SelectDialogGroup( 'Grid2ProfilesDialog', "1" )
 end

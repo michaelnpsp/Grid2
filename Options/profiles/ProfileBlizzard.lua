@@ -69,6 +69,8 @@ local function MakeDatabaseDefaults()
 	Grid2:DbSetValue( "indicators",  "debuffs", {type = "icons", level = 8, location = Location("BOTTOMLEFT")} )
 	Grid2:DbSetMap( "debuffs", "debuffs-Default", 100)
 
+	Grid2:DbUpdateStatusesDefaults()
+
 end
 
 Grid2:DbRegisterProfile( { -- Only test purpose, TODO, move to Grid2Options/profiles folder

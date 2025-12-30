@@ -37,6 +37,7 @@ GridThemes.lua
 GridProfiles.lua
 
 #@retail@
+profiles\ProfileClassic.lua
 profiles\ProfileModern.lua
 profiles\ProfileBlizzard.lua
 #@end-retail@

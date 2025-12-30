@@ -436,12 +436,12 @@ do
 		end
 		-- statuses
 		r = r .. "\n"
-		for k,v in pairs(db.statuses) do
+		for k,v in pairs(db.statuses or {}) do
 			r = r .. string.format( 's["%s"] = %s\n', k, Serialize(v) )
 		end
 		-- indicators & mapping
 		r = r .. "\n"
-		for k,v in pairs(db.indicators) do
+		for k,v in pairs(db.indicators or {}) do
 			if not e[k] and not strfind(k,'-color$') then
 				ExportIndicator(k)
 				ExportIndicator(k..'-color')
@@ -458,12 +458,12 @@ do
 		local info, index = Grid2:DbGetRegisteredProfileByName(db.__template)
 		if info then
 			r = "Grid2:DbRegisterProfile( {\n"
-			r = string.format("%sname = '%s',\n", r, info.name)
-			r = string.format("%sdesc = '%s',\n", r, info.desc)
-			r = string.format("%simage = '%s',\n", r, info.image)
-			r = string.format("%simageWidth = %s,\n", r, info.imageWidth or 'nil')
-			r = string.format("%simageHeight = %s,\n", r, info.imageHeight or 'nil')
-			r = string.format("%sfunc = MakeDatabaseDefaults,\n}, %s)",r, index==0 and "0" or nil)
+			r = string.format("%sname = '%s',\n", r, info.name or 'Unknow')
+			r = string.format("%sdesc = '%s',\n", r, info.desc or info.name or 'nil')
+			if info.image then r = string.format("%simage = '%s',\n", r, info.image) end
+			if info.imageWidth then r = string.format("%simageWidth = %s,\n", r, info.imageWidth or 'nil') end
+			if info.imageHeight then r = string.format("%simageHeight = %s,\n", r, info.imageHeight or 'nil') end
+			r = string.format("%sfunc = MakeDatabaseDefaults,\n}, %s)",r, index==0 and "0" or "nil")
 		end
 		return r or ''
 	end

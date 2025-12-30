@@ -664,7 +664,7 @@ function Grid2Options:OpenAdvancedDialog(dialogName, options, width, height, fAc
 		LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable(dialogName, options, true)
 	end
 	LibStub("AceConfigDialog-3.0"):SetDefaultSize(dialogName, width, height)
-	if not self.dialogFrame then
+	if not self.dialogFrame then -- self.dialogFrame is set to nil on dialog close in GridWidgets.lua
 		self.dialogFrame = LibStub("AceGUI-3.0"):Create('Grid2DialogFrame')
 		self.dialogFrame:SetActions(fAccept, fCancel)
 		LibStub("AceConfigDialog-3.0"):Open(dialogName, self.dialogFrame)
