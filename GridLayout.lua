@@ -869,6 +869,7 @@ function Grid2Layout:UpdateVisibility()
 		local fd, pt = self.db.profile.FrameDisplay, Grid2:GetGroupType()
 		self.frame:SetShown(
 			self.testLayoutName~=nil or (
+				Grid2.firstBootDialogEnabled==nil and
 				fd~='Never' and
 				( (fd == "Always") or (fd == "Grouped" and pt ~= "solo") or (fd == "Raid" and pt == "raid" ) ) and
 				not (self.db.profile.HideInPetBattle and self.inBattlePet)

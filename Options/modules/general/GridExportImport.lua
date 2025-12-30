@@ -458,8 +458,9 @@ do
 		local info, index = Grid2:DbGetRegisteredProfileByName(db.__template)
 		if info then
 			r = "Grid2:DbRegisterProfile( {\n"
-			r = string.format("%sdesc = '%s',\n", r, info.name)
-			r = string.format("%simage = '%s',\n", r, info.desc)
+			r = string.format("%sname = '%s',\n", r, info.name)
+			r = string.format("%sdesc = '%s',\n", r, info.desc)
+			r = string.format("%simage = '%s',\n", r, info.image)
 			r = string.format("%simageWidth = %s,\n", r, info.imageWidth or 'nil')
 			r = string.format("%simageHeight = %s,\n", r, info.imageHeight or 'nil')
 			r = string.format("%sfunc = MakeDatabaseDefaults,\n}, %s)",r, index==0 and "0" or nil)

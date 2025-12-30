@@ -106,7 +106,9 @@ end
 
 -- Open first boot profiles templates dialog
 function Grid2Options:OpenFirstBootProfilesDialog()
+	Grid2.firstBootDialogEnabled = true -- used by Grid2Layout to hide main grid2 window
 	self:OpenAdvancedDialog('Grid2ProfilesDialog', Options:Initialize(true), 600, 275, function()
+		Grid2.firstBootDialogEnabled = nil
 		local profile = Options.selectedProfile
 		if type(profile)=='number' then -- update current profile with the selected default profile template
 			Grid2.defaultProfileIndex = profile

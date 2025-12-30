@@ -61,7 +61,6 @@ local function Bar_Layout(self, parent)
 	local width = self.width  or parent.container:GetWidth()
 	local height = self.height or parent.container:GetHeight()
 	local frameLevel = parent:GetFrameLevel() + self.frameLevel
-	local alignPoints = self.alignPoints
 	frame:SetParent(parent)
 	frame:ClearAllPoints()
 	frame:SetFrameLevel(frameLevel)
@@ -103,8 +102,8 @@ local function Bar_Layout(self, parent)
 		if prevBarIndex then
 			if textures[prevBarIndex] then
 				prevTex, prevPnt = textures[prevBarIndex]:GetStatusBarTexture(), barSetup[prevBarIndex].pointTo
-			else
-				prevTex, prevPnt = frame, self.alignPoint -- prevBarIndex==0 => attach to main frame
+			else -- prevBarIndex==0 => attach to frame start, prevBarIndex==-1 attach to frame end
+				prevTex, prevPnt = frame, prevBarIndex==0 and self.alignPoint or self.alignPointOp
 			end
 		end
 		if setup.background then
@@ -169,6 +168,7 @@ local function Bar_UpdateDB(self)
 	self.foreColor     = dbx.invertColor and backColor or texColor
 	self.orientation   = orientation
 	self.alignPoint    = alignPoint
+	self.alignPointOp  = opositePoint[alignPoint]
 	self.frameLevel    = dbx.level or 1
 	self.anchor        = l.point
 	self.anchorRel     = l.relPoint

@@ -100,7 +100,7 @@ do
 	local TILE_BACK_VALUES = { [2] = L["Stretch"], [3] = L["Tile Repeat"] }
 	local TILE_MAIN_TRANS  = { [1] = nil, [2] = 'CLAMP',  [3] = 'REPEAT', [4] = 'MIRROR', CLAMP = 2, EMPTY = 1, REPEAT = 3, MIRROR = 4 }
 	local TILE_EXTRA_TRANS = { [1] = 'CLAMP', [2] = nil,  [3] = 'REPEAT', [4] = 'MIRROR', CLAMP = 1, EMPTY = 2 ,REPEAT = 3, MIRROR = 4 }
-	local MIDNIGHT_ANCHOR_VALUES = { [0] = L["None"], [1] = L["Main Bar"], [100] = L["Previous Bar"],  }
+	local MIDNIGHT_ANCHOR_VALUES = { [-1] = L["Frame Ending"], [0] = L["Frame Origin"], [1] = L["Main Bar"], [100] = L["Previous Bar"],  }
 
 	-- edited indicator & bar
 
@@ -306,7 +306,7 @@ do
 			type = "select",
 			order = 3.1,
 			width = 0.65,
-			name = L["Anchor"],
+			name = L["Anchor to"],
 			desc = L["Select where to attach this bar."],
 			get = function ()
 				return (barIndex==0 and 0) or barDbx.prevBar or 100  -- prevBar==1 => mainBar, prevBar==2 => bar1, etc
