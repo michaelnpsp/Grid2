@@ -20,7 +20,7 @@ Options.RootTable = {
 			order = 1,
 			name = function()
 				if Options.isFirstBoot then
-					return "This is the first time Grid2 is running for this character. You must select a profile configuration for this character:"
+					return "This is the first time Grid2 is running for this character. You must select a profile configuration:"
 				else
 					return "Select a profile template to apply to your new profile:"
 				end

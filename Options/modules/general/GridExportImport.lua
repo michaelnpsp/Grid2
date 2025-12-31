@@ -473,6 +473,8 @@ do
 		r = r .. 'local function MakeDatabaseDefaults()\n\n'
 		r = r .. ExportNamespace("Grid2Frame", profileName)
 		r = r .. "\n"
+		r = r .. ExportNamespace("Grid2Layout", profileName)
+		r = r .. "\n"
 		r = r .. ExportProfile(profileName)
 		r = r .. "Grid2:DbUpdateStatusesDefaults()\n\nend\n\n"
 		r = r .. RegisterProfile(profileName)
