@@ -35,4 +35,7 @@ Grid2:DbRegisterProfile( {
 name = 'Empty',
 desc = 'Minimalistic profile. For advanced users that want to setup a custom profile from scratch.',
 func = MakeDatabaseDefaults,
+image = [[Interface\Addons\Grid2\media\icon]],
+imageWidth = 64,
+imageHeight = 64,
 }, 0)

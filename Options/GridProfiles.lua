@@ -20,9 +20,9 @@ Options.RootTable = {
 			order = 1,
 			name = function()
 				if Options.isFirstBoot then
-					return "This is the first time Grid2 is running for this character. You must select a profile configuration:"
+					return L["Welcome to Grid2. Select a configuration profile for your character:"]
 				else
-					return "Select a profile template to apply to your new profile:"
+					return L["Select a configuration template to use for your new profile:"]
 				end
 			end,
 		},
@@ -37,7 +37,7 @@ Options.RootTable = {
 Options.ProfileTable = {
 	__load = { type = "header", order = 0, name = "", hidden = function(info)
 		local key = info[#info-1]
-		Options.selectedProfile = tonumber(key) or key -- and index in Grid2.defaultProfiles or a profileName
+		Options.selectedProfile = tonumber(key) or key -- index in Grid2.defaultProfiles or a profileName
 		return true
 	end },
 	desc = {
@@ -45,9 +45,9 @@ Options.ProfileTable = {
 		type = "description",
 		name = function()
 			if type(Options.selectedProfile)=='number' then
-				return Grid2.defaultProfiles[Options.selectedProfile].desc .. ' \n \n'
+				return Grid2.defaultProfiles[Options.selectedProfile].desc .. " \n \n"
 			else
-				return "This is an already existing profile from other character.\nClick Accept button if you want to use this profile for your new character.\n"
+				return L["This is an already existing profile from other character."] .. " \n \n"
 			end
 		end,
 	},
@@ -60,9 +60,9 @@ Options.ProfileTable = {
 			local index = Options.selectedProfile
 			if type(index)=='number' then
 				local pf = Grid2.defaultProfiles[index]
-				return pf.image, pf.imageWidth or 352, pf.imageHeight or 87
+				return pf.image, pf.imageWidth or 64, pf.imageHeight or 64
 			else
-				return "Interface\\Calendar\\MeetingIcon"
+				return "Interface\\Calendar\\MeetingIcon", 64, 64
 			end
 		end,
 	},

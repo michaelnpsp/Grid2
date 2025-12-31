@@ -86,6 +86,8 @@ modules\IndicatorPortrait.lua
 modules\IndicatorShape.lua
 #@retail@
 modules\IndicatorPrivateAuras.lua
+modules\IndicatorMidnightBar.lua
+modules\IndicatorMidnightMultiBar.lua
 #@end-retail@
 
 # Statuses
@@ -121,11 +123,8 @@ modules\StatusTortosCrystalShell.lua
 modules\StatusVehicle.lua
 modules\StatusSummon.lua
 modules\StatusStagger.lua
-#@end-retail@
-
-modules\IndicatorMidnightBar.lua
-modules\IndicatorMidnightMultiBar.lua
 modules\StatusMidnightAuras.lua
 modules\StatusMidnightHealth.lua
 modules\StatusMidnightShields.lua
 modules\StatusMidnightHealAbsorbs.lua
+#@end-retail@

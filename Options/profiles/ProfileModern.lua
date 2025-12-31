@@ -51,8 +51,6 @@ m["health-bar"] = { ["heal-absorbs"]=2, shields=4, ["heals-incoming"]=3, ["healt
 i["health-bar-color"] = { type="multibar-color" }
 m["health-bar-color"] = { classcolor=50 }
 
-i["tooltip"] = { showDefault=true, type="tooltip" }
-
 i["alpha"] = { type="alpha" }
 m["alpha"] = { range=99 }
 
@@ -62,8 +60,6 @@ m["buffs-icons"] = { ["buffs-Relevant"]=100 }
 i["corner-bottom"] = { type="square", color1={a=0.616,b=0,g=0,r=0}, location={y=4,relPoint="BOTTOM",point="BOTTOM",x=0}, level=9, borderSize=1, size=8 }
 m["corner-bottom"] = { threat=99 }
 
-i["background"] = { type="background" }
-
 i["power-bar"] = { type="bar", backColor={a=1,r=0,g=0,b=0}, color1={a=1,b=0,g=0,r=0}, hideWhenInactive=true, backTexture="Grid2 Flat", location={y=0,relPoint="BOTTOM",point="BOTTOM",x=0}, height=3, level=5, orientation="HORIZONTAL", texture="Gradient" }
 m["power-bar"] = { power=50 }
 i["power-bar-color"] = { type="bar-color" }
@@ -72,6 +68,12 @@ m["power-bar-color"] = { power=51 }
 i["debuffs-icons"] = { fontSize=9, borderOpacity=1, disableCooldown=true, fontJustifyV="TOP", borderSize=1, iconSize=22, level=8, tooltipAnchor="ANCHOR_BOTTOMRIGHT", type="icons", enableCooldownText=true, reverseCooldown=true, color1={a=1,r=1,g=1,b=1}, ctFontSize=10, location={y=0,relPoint="BOTTOMLEFT",point="BOTTOMLEFT",x=0}, useStatusColor=true, fontJustifyH="RIGHT", disableOmniCC=true, tooltipEnabled=true }
 m["debuffs-icons"] = { ["debuffs-Relevant"]=50 }
 
+i["private-auras"] = { maxIcons=1, type="privateauras", location={y=0,relPoint="BOTTOMRIGHT",point="BOTTOMRIGHT",x=0}, level=9, load={unitType={self=true,player=true}}, iconSize=22 }
+
+i["tooltip"] = { showDefault=true, type="tooltip" }
+
+i["background"] = { type="background" }
+
 Grid2:DbUpdateStatusesDefaults()
 
 end
@@ -79,6 +81,8 @@ end
 Grid2:DbRegisterProfile( {
 name = 'Modern',
 desc = 'Modern unit frames with horizontal health bars and a compact design.',
-image = [[Interface\Addons\Grid2Options\media\profile-classic]],
+image = [[Interface\Addons\Grid2Options\media\profile-modern]],
+imageWidth = 257,
+imageHeight = 60,
 func = MakeDatabaseDefaults,
 } )

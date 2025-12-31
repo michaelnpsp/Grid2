@@ -82,16 +82,23 @@ function Grid2:DbGetRegisteredProfileByName(name)
 	end
 end
 
--- Advanced default profiles management
-function Grid2:MakeDatabaseDefaults()
-	local defaultProfile = self.defaultProfileIndex
-	self.defaultProfileIndex = nil
-	if not defaultProfile and (Grid2Options or C_AddOns.LoadAddOn('Grid2Options')) then
-		Grid2Options:OpenFirstBootProfilesDialog()
-		return false
-	else
-		local info = self.defaultProfiles[defaultProfile or 0]
-		info.func(self, info)
+if Grid2.isMidnight then
+	function Grid2:MakeDatabaseDefaults()
+		local defaultProfile = self.defaultProfileIndex
+		self.defaultProfileIndex = nil
+		if not defaultProfile and (Grid2Options or C_AddOns.LoadAddOn('Grid2Options')) then
+			Grid2Options:OpenFirstBootProfilesDialog()
+			return false
+		else
+			local info = self.defaultProfiles[defaultProfile or 0]
+			info.func(self, info)
+			return true
+		end
+	end
+else
+	function Grid2:MakeDatabaseDefaults()
+		self:MakeDefaultsCommon()
+		self:MakeDefaultsClass()
 		return true
 	end
 end
