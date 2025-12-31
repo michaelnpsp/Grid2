@@ -88,11 +88,11 @@ function Grid2:MakeDatabaseDefaults()
 	self.defaultProfileIndex = nil
 	if not defaultProfile and (Grid2Options or C_AddOns.LoadAddOn('Grid2Options')) then
 		Grid2Options:OpenFirstBootProfilesDialog()
-		return true
+		return false
 	else
 		local info = self.defaultProfiles[defaultProfile or 0]
 		info.func(self, info)
-		return false
+		return true
 	end
 end
 
@@ -101,8 +101,10 @@ function Grid2:UpdateDefaults()
 
 	local version = Grid2:DbGetValue("versions","Grid2") or 0
 	if version>=DB_VERSION then return end
-	if version==0 and self:MakeDatabaseDefaults() then
-		return
+	if version==0 then
+		if not self:MakeDatabaseDefaults() then
+			return -- first boot dialog
+		end
 	else
 		local health = Grid2:DbGetValue("indicators", "health")
 		local heals  = Grid2:DbGetValue("indicators", "heals")
