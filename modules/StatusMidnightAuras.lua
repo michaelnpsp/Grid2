@@ -244,12 +244,19 @@ do
 		end
 	end
 
+	function DebuffsDispell:Grid_UnitUpdated(_, unit)
+		dispel_cache[unit] = nil
+	end
+
+
 	function DebuffsDispell:OnEnable()
 		self:RegisterEvent("UNIT_AURA")
+		self:RegisterMessage( "Grid_UnitUpdated" )
 	end
 
 	function DebuffsDispell:OnDisable()
 		self:UnregisterEvent("UNIT_AURA")
+		self:UnregisterMessage( "Grid_UnitUpdated" )
 	end
 
 	function DebuffsDispell:IsActive(unit)

@@ -57,7 +57,7 @@ m["health-bar-color"] = { classcolor=50 }
 i["alpha"] = { type="alpha" }
 m["alpha"] = { range=99 }
 
-i["buffs-icons"] = { tooltipAnchor="ANCHOR_TOPRIGHT", fontSize=9, borderOpacity=1, tooltipEnabled=true, fontJustifyH="RIGHT", disableOmniCC=true, fontJustifyV="TOP", enableCooldownText=true, borderSize=1, ctFontSize=10, reverseCooldown=true, location={y=0,relPoint="TOPLEFT",point="TOPLEFT",x=0}, level=8, color1={a=1,r=0,g=0,b=0}, type="icons" }
+i["buffs-icons"] = { tooltipAnchor="ANCHOR_TOPRIGHT", fontSize=9, borderOpacity=1, tooltipEnabled=true, fontJustifyH="RIGHT", disableCooldown=true, disableOmniCC=true, fontJustifyV="TOP", enableCooldownText=true, borderSize=1, ctFontSize=10, reverseCooldown=true, location={y=0,relPoint="TOPLEFT",point="TOPLEFT",x=0}, level=8, color1={a=1,r=0,g=0,b=0}, type="icons" }
 m["buffs-icons"] = { ["buffs-Relevant"]=100 }
 
 i["corner-bottom"] = { type="square", color1={a=0.616,b=0,g=0,r=0}, location={y=4,relPoint="BOTTOM",point="BOTTOM",x=0}, level=9, borderSize=1, size=8 }

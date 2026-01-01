@@ -59,7 +59,7 @@ i["tooltip"] = { showDefault=true, type="tooltip" }
 i["alpha"] = { type="alpha" }
 m["alpha"] = { range=99 }
 
-i["buffs-icons"] = { tooltipAnchor="ANCHOR_RIGHT", fontSize=9, enableCooldownText=true, tooltipEnabled=true, reverseCooldown=true, disableOmniCC=true, color1={a=1,r=0,g=0,b=0}, borderOpacity=1, borderSize=1, ctFontSize=10, fontJustifyH="RIGHT", location={y=4,relPoint="BOTTOMRIGHT",point="BOTTOMRIGHT",x=-1}, level=8, fontJustifyV="TOP", type="icons" }
+i["buffs-icons"] = { tooltipAnchor="ANCHOR_RIGHT", fontSize=9, disableCooldown=true, enableCooldownText=true, tooltipEnabled=true, reverseCooldown=true, disableOmniCC=true, color1={a=1,r=0,g=0,b=0}, borderOpacity=1, borderSize=1, ctFontSize=10, fontJustifyH="RIGHT", location={y=4,relPoint="BOTTOMRIGHT",point="BOTTOMRIGHT",x=-1}, level=8, fontJustifyV="TOP", type="icons" }
 m["buffs-icons"] = { ["buffs-Relevant"]=100 }
 
 i["role-icons"] = { disableStack=true, type="icons", disableCooldown=true, level=9, iconSize=12, location={y=0,relPoint="TOPRIGHT",point="TOPRIGHT",x=-1} }
