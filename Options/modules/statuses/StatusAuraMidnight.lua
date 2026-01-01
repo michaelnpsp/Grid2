@@ -277,7 +277,7 @@ function Grid2Options:MakeMidnightDebuffsOptions(status, options)
 		type = "toggle",
 		order = 40,
 		width = "full",
-		name = L["Only debuffs that are relevant in combat or raid"],
+		name = L["Only debuffs that i can dispel"],
 		get = function()
 			return filter_exists_substring( status, 'aura_filter', 'filter', 'RAID' )
 		end,
@@ -351,4 +351,14 @@ Grid2Options:RegisterStatusOptions("mdebuffs", "debuff", function(self, status, 
 end,{
 	groupOrder = 10, isDeletable = true,
 	titleIcon = "Interface\\Icons\\Spell_deathknight_strangulate",
+})
+
+--==============================================
+--
+--==============================================
+
+Grid2Options:RegisterStatusOptions("mdebuffType", "debuff", function(self, status, options, optionParams)
+
+end,{
+	groupOrder = 5,
 })

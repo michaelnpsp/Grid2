@@ -76,7 +76,6 @@ local function Bar_Layout(self, parent)
 	for i=1,barCount do
 		local setup = barSetup[i]
 		local texture = textures[i] or CreateFrame("StatusBar", nil, frame) -- texture is a StatusBar frame, not a texture
-		texture.myOpacity = setup.opacity
 		texture:Hide()
 		texture:ClearAllPoints()
 		texture:SetValue(setup.defValue or 0)
@@ -86,6 +85,7 @@ local function Bar_Layout(self, parent)
 		texture:SetReverseFill(setup.reverse)
 		texture:SetStatusBarTexture(setup.texture) -- , "ARTWORK", setup.sublayer)
 		local textureReal = texture:GetStatusBarTexture()
+		textureReal.myOpacity = setup.opacity
 		textureReal:SetTexCoord(0,1,0,1)
 		textureReal:SetTexture(setup.texture, setup.horWrap, setup.verWrap)
 		textureReal:SetHorizTile(setup.horWrap~='CLAMP')
@@ -94,9 +94,9 @@ local function Bar_Layout(self, parent)
 		textureReal:SetDrawLayer("ARTWORK", setup.sublayer)
 		local c = setup.color
 		if c then
-			texture:SetStatusBarColor( c.r, c.g, c.b, setup.opacity )
+			textureReal:SetVertexColor( c.r, c.g, c.b, setup.opacity )
 		else
-			ctextures = ctextures or {}; ctextures[#ctextures+1] = texture
+			ctextures = ctextures or {}; ctextures[#ctextures+1] = textureReal
 		end
 		local prevBarIndex = setup.prevBar
 		if prevBarIndex then
@@ -244,8 +244,8 @@ local function BarColor_SetBarColor(self, parent, r, g, b, a)
 		local textures = frame.myCTextures
 		if textures then
 			for i=#textures,1,-1 do
-				local bar = textures[i]
-				bar:SetStatusBarColor( r, g, b, min(bar.myOpacity, a or 1) )
+				local tex = textures[i]
+				tex:SetVertexColor( r, g, b, tex.myOpacity )
 			end
 		end
 	end
@@ -256,7 +256,7 @@ local function BarColor_SetBarColorInverted(self, parent, r, g, b, a)
 	if frame then
 		local textures = frame.myTextures
 		if textures then
-			textures[#textures]:SetStatusBarColor(r, g, b, a)
+			textures[#textures]:GetStatusBarTexture():SetVertexColor(r, g, b, a)
 		end
 	end
 end

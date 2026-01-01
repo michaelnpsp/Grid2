@@ -1,6 +1,8 @@
 -- buffs and debuffs statuses for midnight
 
+
 local myUnits = Grid2.roster_my_units
+local rosterUnits = Grid2.roster_guids
 local canaccessvalue = Grid2.canaccessvalue
 local SpellIsSelfBuff = SpellIsSelfBuff
 local UnitAffectingCombat = UnitAffectingCombat
@@ -67,70 +69,75 @@ end
 -------------------------------------------------------------------------------
 -- midnight-buffs status
 -------------------------------------------------------------------------------
+do
 
-Buffs.GetColor = Grid2.statusLibrary.GetColor
-Buffs.PLAYER_REGEN_DISABLED = Grid2.statusLibrary.UpdateAllUnits
-Buffs.PLAYER_REGEN_ENABLED = Grid2.statusLibrary.UpdateAllUnits
+	Buffs.GetColor = Grid2.statusLibrary.GetColor
+	Buffs.PLAYER_REGEN_DISABLED = Grid2.statusLibrary.UpdateAllUnits
+	Buffs.PLAYER_REGEN_ENABLED = Grid2.statusLibrary.UpdateAllUnits
 
--- This is the logic used by blizzard raid frames to show/hide buffs.
--- SpellGetVisibilityInfo(spellId, n) where n:
--- 0 => in combat
--- 1 => only out of combat
--- 2 => for enemy targets
--- SpellGetVisiblityInfo() cannot be used in combat in midnight so 0,2 options are useless
--- Maybe use this code on buffs.
-local function Buffs_DisplayCheck(aura)
-	local hasCustom, alwaysShowMine, showForMySpec = SpellGetVisibilityInfo(aura.spellId, 1)
-	if hasCustom  then
-		return showForMySpec or (alwaysShowMine and myUnits[a.sourceUnit])
-	else
-		return aura.canApplyAura and myUnits[aura.sourceUnit] and not SpellIsSelfBuff(aura.spellId)
+	-- This is the logic used by blizzard raid frames to show/hide buffs.
+	-- SpellGetVisibilityInfo(spellId, n) where n:
+	-- 0 => in combat
+	-- 1 => only out of combat
+	-- 2 => for enemy targets
+	-- SpellGetVisiblityInfo() cannot be used in combat in midnight so 0,2 options are useless
+	-- Maybe use this code on buffs.
+	local function Buffs_DisplayCheck(aura)
+		local hasCustom, alwaysShowMine, showForMySpec = SpellGetVisibilityInfo(aura.spellId, 1)
+		if hasCustom  then
+			return showForMySpec or (alwaysShowMine and myUnits[a.sourceUnit])
+		else
+			return aura.canApplyAura and myUnits[aura.sourceUnit] and not SpellIsSelfBuff(aura.spellId)
+		end
 	end
-end
 
-function Buffs:GetIcons(unit, max)
-	return GetIconsSorted(self, unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir)
-end
-
-function Buffs:GetTooltip(unit, tip, slotID)
-	if slotID then
-		tip:SetUnitAuraByAuraInstanceID(unit, slotID)
+	function Buffs:GetIcons(unit, max)
+		return GetIconsSorted(self, unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir)
 	end
-end
 
-function Buffs:UNIT_AURA(_, unit)
-	self:UpdateIndicators(unit)
-end
+	function Buffs:GetTooltip(unit, tip, slotID)
+		if slotID then
+			tip:SetUnitAuraByAuraInstanceID(unit, slotID)
+		end
+	end
 
-function Buffs:OnEnable()
-	self:RegisterEvent("UNIT_AURA")
-	self:RegisterEvent("PLAYER_REGEN_ENABLED")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED")
-end
+	function Buffs:UNIT_AURA(_, unit)
+		if rosterUnits[unit] then
+			self:UpdateIndicators(unit)
+		end
+	end
 
-function Buffs:OnDisable()
-	self:UnregisterEvent("UNIT_AURA")
-	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
-	self:UnregisterEvent("PLAYER_REGEN_DISABLED")
-end
+	function Buffs:OnEnable()
+		self:RegisterEvent("UNIT_AURA")
+		self:RegisterEvent("PLAYER_REGEN_ENABLED")
+		self:RegisterEvent("PLAYER_REGEN_DISABLED")
+	end
 
-function Buffs:IsActive(unit)
-	return true
-end
+	function Buffs:OnDisable()
+		self:UnregisterEvent("UNIT_AURA")
+		self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+		self:UnregisterEvent("PLAYER_REGEN_DISABLED")
+	end
 
-function Buffs:UpdateDB()
-	local filter = self.dbx.aura_filter or {}
-	self.aura_filter   = filter.filter or 'HELPFUL'
-	self.aura_sortRule = filter.sortRule or 0
-	self.aura_sortDir  = filter.sortDir or 0
-end
+	function Buffs:IsActive(unit)
+		return true
+	end
 
--- Registration
-Grid2.setupFunc["mbuffs"] = function(baseKey, dbx)
-	local status = Grid2.statusPrototype:new(baseKey)
-	status:Inject(Buffs)
-	Grid2:RegisterStatus(status, { "icons" }, baseKey, dbx)
-	return status
+	function Buffs:UpdateDB()
+		local filter = self.dbx.aura_filter or {}
+		self.aura_filter   = filter.filter or 'HELPFUL'
+		self.aura_sortRule = filter.sortRule or 0
+		self.aura_sortDir  = filter.sortDir or 0
+	end
+
+	-- Registration
+	Grid2.setupFunc["mbuffs"] = function(baseKey, dbx)
+		local status = Grid2.statusPrototype:new(baseKey)
+		status:Inject(Buffs)
+		Grid2:RegisterStatus(status, { "icons" }, baseKey, dbx)
+		return status
+	end
+
 end
 
 --[[ mbuffs database format
@@ -142,54 +149,58 @@ end
 -------------------------------------------------------------------------------
 -- midnight-debuffs status
 -------------------------------------------------------------------------------
+do
+	local filterTypedFuncs = {
+		[false] = function(aura) return aura.dispelName==nil; end,
+		[true] = function(aura) return aura.dispelName~=nil; end,
+	}
 
-local filterTypedFuncs = {
-	[false] = function(aura) return aura.dispelName==nil; end,
-	[true] = function(aura) return aura.dispelName~=nil; end,
-}
+	Debuffs.GetColor = Grid2.statusLibrary.GetColor
 
-Debuffs.GetColor = Grid2.statusLibrary.GetColor
-
-function Debuffs:GetIcons(unit, max)
-	return GetIconsSorted(self, unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.aura_display)
-end
-
-function Debuffs:GetTooltip(unit, tip, slotID)
-	if slotID then
-		tip:SetUnitAuraByAuraInstanceID(unit, slotID)
+	function Debuffs:GetIcons(unit, max)
+		return GetIconsSorted(self, unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.aura_display)
 	end
-end
 
-function Debuffs:UNIT_AURA(_, unit)
-	self:UpdateIndicators(unit)
-end
+	function Debuffs:GetTooltip(unit, tip, slotID)
+		if slotID then
+			tip:SetUnitAuraByAuraInstanceID(unit, slotID)
+		end
+	end
 
-function Debuffs:OnEnable()
-	self:RegisterEvent("UNIT_AURA")
-end
+	function Debuffs:UNIT_AURA(_, unit)
+		if rosterUnits[unit] then
+			self:UpdateIndicators(unit)
+		end
+	end
 
-function Debuffs:OnDisable()
-	self:UnregisterEvent("UNIT_AURA")
-end
+	function Debuffs:OnEnable()
+		self:RegisterEvent("UNIT_AURA")
+	end
 
-function Debuffs:IsActive(unit)
-	return true
-end
+	function Debuffs:OnDisable()
+		self:UnregisterEvent("UNIT_AURA")
+	end
 
-function Debuffs:UpdateDB()
-	local filter = self.dbx.aura_filter or {}
-	self.aura_filter   = filter.filter or 'HARMFUL'
-	self.aura_sortRule = filter.sortRule or 0
-	self.aura_sortDir  = filter.sortDir or 0
-	self.aura_display  = filterTypedFuncs[filter.typed]
-end
+	function Debuffs:IsActive(unit)
+		return true
+	end
 
--- Registration
-Grid2.setupFunc["mdebuffs"] = function(baseKey, dbx)
-	local status = Grid2.statusPrototype:new(baseKey)
-	status:Inject(Debuffs)
-	Grid2:RegisterStatus(status, { "icons" }, baseKey, dbx)
-	return status
+	function Debuffs:UpdateDB()
+		local filter = self.dbx.aura_filter or {}
+		self.aura_filter   = filter.filter or 'HARMFUL'
+		self.aura_sortRule = filter.sortRule or 0
+		self.aura_sortDir  = filter.sortDir or 0
+		self.aura_display  = filterTypedFuncs[filter.typed]
+	end
+
+	-- Registration
+	Grid2.setupFunc["mdebuffs"] = function(baseKey, dbx)
+		local status = Grid2.statusPrototype:new(baseKey)
+		status:Inject(Debuffs)
+		Grid2:RegisterStatus(status, { "icons" }, baseKey, dbx)
+		return status
+	end
+
 end
 
 --[[ mdebuffs database format
@@ -197,3 +208,59 @@ end
 	aura_filter = { filter= 'HARMFUL' ],
 	color1 = {r=1, g=0, b=0, a=1}
 --]]
+
+-------------------------------------------------------------------------------
+-- midnight debuffs-dispellablebyme status
+-------------------------------------------------------------------------------
+do
+
+	local DebuffsDispell = Grid2.statusPrototype:new("debuffs-DispellableByMe")
+
+	local dispel_cache = {}
+
+	function DebuffsDispell:GetColor(unit)
+		local c = dispel_cache[unit]
+		return c.r, c.g, c.b, c.a
+	end
+
+	function DebuffsDispell:GetIcons(unit, max)
+		return GetIconsSorted(self, unit, max,"HARMFUL|RAID")
+	end
+
+	function DebuffsDispell:GetTooltip(unit, tip, slotID)
+		if slotID then
+			tip:SetUnitAuraByAuraInstanceID(unit, slotID)
+		end
+	end
+
+	function DebuffsDispell:UNIT_AURA(_, unit)
+		if rosterUnits[unit] then
+			local aura = GetUnitAuras(unit, "HARMFUL|RAID", 1)[1]
+			local active = aura~=nil
+			if active or active ~= (dispel_cache[unit]~=nil) then
+				dispel_cache[unit] = active and GetAuraDispelTypeColor(unit, aura.auraInstanceID, dispelColorCurve) or nil
+				self:UpdateIndicators(unit)
+			end
+		end
+	end
+
+	function DebuffsDispell:OnEnable()
+		self:RegisterEvent("UNIT_AURA")
+	end
+
+	function DebuffsDispell:OnDisable()
+		self:UnregisterEvent("UNIT_AURA")
+	end
+
+	function DebuffsDispell:IsActive(unit)
+		return dispel_cache[unit]~=nil
+	end
+
+	-- Registration
+	Grid2.setupFunc["mdebuffType"] = function(baseKey, dbx)
+		Grid2:RegisterStatus(DebuffsDispell, { "icons", "color" }, baseKey, dbx)
+		return DebuffsDispell
+	end
+
+	Grid2:DbSetStatusDefaultValue( "debuffs-DispellableByMe", {type = "mdebuffType", subType = "DispellableByMe", color1 = {r=1, g= 0, b=0, a=1 }} )
+end

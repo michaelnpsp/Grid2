@@ -66,6 +66,7 @@ local function Bar_Layout(self, parent)
 			bgTex:Hide()
 		end
 	end
+	Bar.fgTex = Bar:GetStatusBarTexture()
 	Bar:Show()
 end
 
@@ -148,7 +149,7 @@ local function BarColor_OnUpdate(self, parent, unit, status)
 	if bar then
 		if status then
 			local r, g, b, a = status:GetColor(unit)
-			bar:SetStatusBarColor(r, g, b, min(self.opacity, a or 1) )
+			bar.fgTex:SetVertexColor(r, g, b, self.opacity)
 		else
 			bar:SetStatusBarColor(0,0,0,0)
 		end
@@ -165,7 +166,7 @@ local function BarColor_OnUpdateInverted(self, parent, unit, status)
 			r, g, b, a = 0, 0, 0, 0
 		end
 		local c = self.backColor
-		bar:SetStatusBarColor(c.r, c.g, c.b, min(self.opacity, 0.8))
+		bar.fgTex:SetVertexColor(c.r, c.g, c.b, min(self.opacity, 0.8))
 		bar.bgTex:SetVertexColor(r, g, b, (a or 1)*c.a)
 	end
 end
