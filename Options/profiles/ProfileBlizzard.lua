@@ -37,7 +37,7 @@ i["icon-left"] = { type="icon", disableCooldown=true, location={y=0,relPoint="LE
 m["icon-left"] = { ["raid-icon-player"]=156 }
 
 i["border"] = { color1={a=0,b=0,g=0,r=0}, type="border" }
-m["border"] = { target=50, ["debuffs-DispellableByMe"]=51 }
+m["border"] = { target=50, threat=51, ["debuffs-DispellableByMe"]=52 }
 
 i["background"] = { type="background" }
 
