@@ -25,9 +25,12 @@ local s, i, m = db.statuses, db.indicators, db.statusMap
 
 db.__template = 'Modern'
 
-s["buffs-Relevant"] = { type="mbuffs", color1={a=1,b=0,g=1,r=0}, aura_filter={sortRule=3,filter="HELPFUL|RAID"} }
+s["leader"] = { hideInCombat=true }
+s["dungeon-role"] = { hideInCombat=true }
+s["master-looter"] = { hideInCombat=true }
 s["heals-incoming"] = { includePlayerHeals=true }
-s["debuffs-Relevant"] = { type="mdebuffs", color1={a=1,b=0,g=0,r=1}, aura_filter={filter="HARMFUL|RAID",sortRule=3} }
+s["buffs-Relevant"] = { type="mbuffs", color1={a=1,b=0,g=1,r=0}, aura_filter={sortRule=3,filter="HELPFUL|RAID"} }
+s["debuffs-Relevant"] = { type="mdebuffs", color1={a=1,b=0,g=0,r=1}, aura_filter={sortRule=3} }
 
 i["text-center"] = { type="text", fontSize=10, location={y=0,relPoint="CENTER",point="CENTER",x=0}, level=7, textlength=6, percent=true }
 m["text-center"] = { ["feign-death"]=96, offline=97, name=70, death=98 }
@@ -38,7 +41,7 @@ i["icon-left"] = { type="icon", location={y=0,relPoint="LEFT",point="LEFT",x=-2}
 m["icon-left"] = { leader=155, ["raid-icon-player"]=156 }
 
 i["border"] = { color1={a=0,b=0,g=0,r=0}, type="border" }
-m["border"] = { target=50 }
+m["border"] = { target=50, ["debuffs-DispellableByMe"]=51 }
 
 i["icon-center"] = { type="icon", location={y=0,relPoint="CENTER",point="CENTER",x=0}, level=9, fontSize=8, size=20 }
 m["icon-center"] = { phased=50, resurrection=54, death=53, ["ready-check"]=55, offline=52, summon=51 }
@@ -46,7 +49,7 @@ m["icon-center"] = { phased=50, resurrection=54, death=53, ["ready-check"]=55, o
 i["icon-right"] = { type="icon", location={y=0,relPoint="RIGHT",point="RIGHT",x=2}, level=8, fontSize=8, size=12 }
 m["icon-right"] = { ["dungeon-role"]=150, ["raid-icon-target"]=151 }
 
-i["health-bar"] = { [1]={horTile="REPEAT",reverse=true,color={a=0.7,b=0.737,g=0,r=1},texture="Grid2 Shield",verTile="REPEAT"}, [2]={color={a=0.7}}, [3]={horTile="REPEAT",color={a=0.7},texture="Grid2 Shield",prevBar=1,verTile="REPEAT"}, [4]={color={a=1,b=1,g=0.992,r=0.965},prevBar=-1,glowLine=6,texture="Grid2 GlowH"}, location={y=0,relPoint="CENTER",point="CENTER",x=0}, type="multibar", level=3, textureColor={a=1} }
+i["health-bar"] = { [1]={horTile="REPEAT",reverse=true,color={a=0.7,b=0.737,g=0,r=1},texture="Grid2 Shield",verTile="REPEAT"}, [2]={color={a=0.7}}, [3]={horTile="REPEAT",color={a=0.7},texture="Grid2 Shield",prevBar=1,verTile="REPEAT"}, [4]={color={a=1,b=1,g=0.992,r=0.965},prevBar=-1,glowLine=6,texture="Grid2 GlowV"}, location={y=0,relPoint="CENTER",point="CENTER",x=0}, type="multibar", level=3, textureColor={a=1} }
 m["health-bar"] = { ["heal-absorbs"]=2, shields=4, ["heals-incoming"]=3, ["health-current"]=1, ["shields-overflow"]=5 }
 i["health-bar-color"] = { type="multibar-color" }
 m["health-bar-color"] = { classcolor=50 }
