@@ -36,6 +36,8 @@ jobs:
         uses: BigWigsMods/packager@master
         with:
           args: -g retail -m .pkgmeta-retail
+        env:
+          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create MoP Package
         if: ${{ inputs.mists }}
