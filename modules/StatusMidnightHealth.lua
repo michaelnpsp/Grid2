@@ -23,6 +23,7 @@ local ScaleTo100 = CurveConstants.ScaleTo100
 -- health-current status
 local deadAsFullHealth
 
+Health.colorCurve = C_CurveUtil.CreateColorCurve()
 Health.IsActive = Grid2.statusLibrary.IsActive
 Health.GetColor  = Grid2.statusLibrary.GetColor
 
@@ -55,9 +56,18 @@ function Health:GetPercent(unit)
 	return UnitHealthPercent(unit, true)
 end
 
+function Health:GetColor(unit)
+	return UnitHealthPercent(unit, true, self.colorCurve):GetRGB()
+end
+
 function Health:UpdateDB()
 	fmtPercent = Grid2.db.profile.formatting.percentFormat
 	deadAsFullHealth = self.dbx.deadAsFullHealth
+    self.colorCurve:ClearPoints()
+	self.colorCurve:SetType(Enum.LuaCurveType.Linear)
+	self.colorCurve:AddPoint( 0  , self.dbx.color3 )
+	self.colorCurve:AddPoint( 0.5, self.dbx.color2 )
+	self.colorCurve:AddPoint( 1  , self.dbx.color1 )
 end
 
 local function Create(baseKey, dbx)
@@ -67,7 +77,7 @@ end
 
 Grid2.setupFunc["health-current"] = Create
 
-Grid2:DbSetStatusDefaultValue( "health-current", {type = "health-current", color1 = {r=0,g=1,b=0,a=1} } )
+Grid2:DbSetStatusDefaultValue( "health-current", {type = "health-current", colorCount=3, color1 = {r=0,g=1,b=0,a=1}, color2 = {r=1,g=1,b=0,a=1}, color3 = {r=1,g=0,b=0,a=1} } )
 
 -- heals-incoming status
 local HealsCalculator = CreateUnitHealPredictionCalculator()

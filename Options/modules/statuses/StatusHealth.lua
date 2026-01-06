@@ -107,6 +107,9 @@ if Grid2.secretsEnabled then
 		}
 	end, {
 		width = "full",
+		color1 = L["Full Health"],
+		color2 = L["Medium Health"],
+		color3 = L["Low Health"],
 		titleIcon = "Interface\\Icons\\Inv_potion_51",
 	})
 else
