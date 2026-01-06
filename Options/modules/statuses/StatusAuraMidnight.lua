@@ -195,7 +195,7 @@ function Grid2Options:MakeMidnightBuffsOptions(status, options)
 	}
 end
 
-Grid2Options:MakeMidnightBuffsOptions(NewBuffsOptions.arg, NewBuffsOptions)
+-- Grid2Options:MakeMidnightBuffsOptions(NewBuffsOptions.arg, NewBuffsOptions)
 
 Grid2Options:RegisterStatusCategoryOptions("buff", NewBuffsOptions)
 
@@ -342,7 +342,7 @@ function Grid2Options:MakeMidnightDebuffsOptions(status, options)
 	}
 end
 
-Grid2Options:MakeMidnightDebuffsOptions(NewDebuffsOptions.arg, NewDebuffsOptions)
+-- Grid2Options:MakeMidnightDebuffsOptions(NewDebuffsOptions.arg, NewDebuffsOptions)
 
 Grid2Options:RegisterStatusCategoryOptions("debuff", NewDebuffsOptions)
 
@@ -357,8 +357,40 @@ end,{
 --
 --==============================================
 
-Grid2Options:RegisterStatusOptions("mdebuffType", "debuff", function(self, status, options, optionParams)
+function Grid2Options:MakeMidnightDispellableByMeOptions(status, options, optionParams)
+	for typ,v in pairs(status.defaultColors) do
+		local idx, color = unpack(v)
+		if idx~=0 then
+			options[typ] = {
+				type = "color",
+				width = "full",
+				order = idx,
+				name = L[typ],
+				get = function()
+					local c = status.dbx.colors[typ] or color
+					return c.r, c.g, c.b, c.a
+				end,
+				set = function(info, r, g, b, a)
+					local c = status.dbx.colors[typ] or {}
+					c.r, c.g, c.b, c.a = r, g, b, a
+					status.dbx.colors[typ] = c
+					status:Refresh()
+				end,
+			}
+		end
+	end
+	options.reset = {
+		type = "execute",
+		order = 100,
+		name = L["Reset Colors"],
+		desc = L["Reset status settings to the default values."],
+		func = function () 	wipe(status.dbx.colors); status:Refresh() end,
+		confirm = true,
+	}
+end
 
+Grid2Options:RegisterStatusOptions("mdebuffType", "debuff", function(self, status, options, optionParams)
+	self:MakeMidnightDispellableByMeOptions(status, options, optionParams)
 end,{
 	groupOrder = 5,
 })

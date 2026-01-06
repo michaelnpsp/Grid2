@@ -216,7 +216,19 @@ do
 
 	local DebuffsDispell = Grid2.statusPrototype:new("debuffs-DispellableByMe")
 
+	local colorCurve = C_CurveUtil.CreateColorCurve()
+
 	local dispel_cache = {}
+
+	DebuffsDispell.defaultColors = {
+		-- None    = { 0,  DEBUFF_TYPE_NONE_COLOR    },
+		Magic   = { 1,  DEBUFF_TYPE_MAGIC_COLOR   },
+		Curse   = { 2,  DEBUFF_TYPE_CURSE_COLOR   },
+		Disease = { 3,  DEBUFF_TYPE_DISEASE_COLOR },
+		Poison  = { 4,  DEBUFF_TYPE_POISON_COLOR  },
+		Enrage  = { 9,  DEBUFF_TYPE_BLEED_COLOR   },
+		Bleed   = { 11, DEBUFF_TYPE_BLEED_COLOR   },
+	}
 
 	function DebuffsDispell:GetColor(unit)
 		local c = dispel_cache[unit]
@@ -238,7 +250,7 @@ do
 			local aura = GetUnitAuras(unit, "HARMFUL|RAID", 1)[1]
 			local active = aura~=nil
 			if active or active ~= (dispel_cache[unit]~=nil) then
-				dispel_cache[unit] = active and GetAuraDispelTypeColor(unit, aura.auraInstanceID, dispelColorCurve) or nil
+				dispel_cache[unit] = active and GetAuraDispelTypeColor(unit, aura.auraInstanceID, colorCurve) or nil
 				self:UpdateIndicators(unit)
 			end
 		end
@@ -247,7 +259,6 @@ do
 	function DebuffsDispell:Grid_UnitUpdated(_, unit)
 		dispel_cache[unit] = nil
 	end
-
 
 	function DebuffsDispell:OnEnable()
 		self:RegisterEvent("UNIT_AURA")
@@ -263,11 +274,21 @@ do
 		return dispel_cache[unit]~=nil
 	end
 
+	function DebuffsDispell:UpdateDB()
+		colorCurve:ClearPoints()
+		colorCurve:SetType(Enum.LuaCurveType.Step)
+		colorCurve:AddPoint( 0,  Grid2.defaultColors.TRANSPARENT )
+		local colors = self.dbx.colors
+		for typ, def in pairs(self.defaultColors) do
+			colorCurve:AddPoint( def[1], colors[typ] or def[2])
+		end
+	end
+
 	-- Registration
 	Grid2.setupFunc["mdebuffType"] = function(baseKey, dbx)
 		Grid2:RegisterStatus(DebuffsDispell, { "icons", "color" }, baseKey, dbx)
 		return DebuffsDispell
 	end
 
-	Grid2:DbSetStatusDefaultValue( "debuffs-DispellableByMe", {type = "mdebuffType", subType = "DispellableByMe", color1 = {r=1, g= 0, b=0, a=1 }} )
+	Grid2:DbSetStatusDefaultValue( "debuffs-DispellableByMe", {type = "mdebuffType", subType = "DispellableByMe", colors = {}} )
 end
