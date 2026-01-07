@@ -24,6 +24,20 @@ local textures = {}
 local durations = {}
 local expirations = {}
 
+-------------------------------------------------------------------------------
+-- Dispel Type colors
+-------------------------------------------------------------------------------
+
+Grid2.DispelCurveDefaults = {
+	None    = { 0,  DEBUFF_TYPE_NONE_COLOR    },
+	Magic   = { 1,  DEBUFF_TYPE_MAGIC_COLOR   },
+	Curse   = { 2,  DEBUFF_TYPE_CURSE_COLOR   },
+	Disease = { 3,  DEBUFF_TYPE_DISEASE_COLOR },
+	Poison  = { 4,  DEBUFF_TYPE_POISON_COLOR  },
+	Enrage  = { 9,  DEBUFF_TYPE_BLEED_COLOR   },
+	Bleed   = { 11, DEBUFF_TYPE_BLEED_COLOR   },
+}
+
 local dispelColorCurve = C_CurveUtil.CreateColorCurve()
 do
 	dispelColorCurve:SetType(Enum.LuaCurveType.Step)
@@ -47,8 +61,9 @@ Enum.UnitAuraSortRule.NameOnly - Pure comparison on name only.
 Enum.UnitAuraSortRule.Default, Enum.UnitAuraSortDirection.Reverse
 --]]
 
-local function GetIconsSorted(self, unit, max, filter, sortRule, sortDir, displayFunc)
+local function GetIconsSorted(self, unit, max, filter, sortRule, sortDir, colorCurve, displayFunc)
 	local i = 0
+	local color = colorCurve.r and colorCurve or nil
 	local auras = GetUnitAuras(unit, filter, displayFunc and max or 40, sortRule, sortDir)
 	for _, a in ipairs(auras) do
 		if not displayFunc or displayFunc(a) then
@@ -59,7 +74,7 @@ local function GetIconsSorted(self, unit, max, filter, sortRule, sortDir, displa
 			durations[i] = a.duration
 			expirations[i] = a.expirationTime
 			slots[i] = auraInstanceID
-			colors[i] = GetAuraDispelTypeColor(unit, auraInstanceID, dispelColorCurve)
+			colors[i] = color or GetAuraDispelTypeColor(unit, auraInstanceID, colorCurve)
 			if i>=max then break end
 		end
 	end
@@ -92,7 +107,7 @@ do
 	end
 
 	function Buffs:GetIcons(unit, max)
-		return GetIconsSorted(self, unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir)
+		return GetIconsSorted(self, unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.aura_color)
 	end
 
 	function Buffs:GetTooltip(unit, tip, slotID)
@@ -128,6 +143,7 @@ do
 		self.aura_filter   = filter.filter or 'HELPFUL'
 		self.aura_sortRule = filter.sortRule or 0
 		self.aura_sortDir  = filter.sortDir or 0
+		self.aura_color    = self.dbx.color1
 	end
 
 	-- Registration
@@ -158,7 +174,7 @@ do
 	Debuffs.GetColor = Grid2.statusLibrary.GetColor
 
 	function Debuffs:GetIcons(unit, max)
-		return GetIconsSorted(self, unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.aura_display)
+		return GetIconsSorted(self, unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.colorCurve, self.aura_display)
 	end
 
 	function Debuffs:GetTooltip(unit, tip, slotID)
@@ -191,12 +207,19 @@ do
 		self.aura_sortRule = filter.sortRule or 0
 		self.aura_sortDir  = filter.sortDir or 0
 		self.aura_display  = filterTypedFuncs[filter.typed]
+		self.colorCurve:ClearPoints()
+		local colors = self.dbx.colors or {}
+		for typ, def in pairs(Grid2.DispelCurveDefaults) do
+			self.colorCurve:AddPoint( def[1], colors[typ] or def[2])
+		end
 	end
 
 	-- Registration
 	Grid2.setupFunc["mdebuffs"] = function(baseKey, dbx)
 		local status = Grid2.statusPrototype:new(baseKey)
 		status:Inject(Debuffs)
+		status.colorCurve = C_CurveUtil.CreateColorCurve()
+		status.colorCurve:SetType(Enum.LuaCurveType.Step)
 		Grid2:RegisterStatus(status, { "icons" }, baseKey, dbx)
 		return status
 	end
@@ -206,7 +229,7 @@ end
 --[[ mdebuffs database format
 	type = "mdebuffs",
 	aura_filter = { filter= 'HARMFUL' ],
-	color1 = {r=1, g=0, b=0, a=1}
+	colors = {}
 --]]
 
 -------------------------------------------------------------------------------
@@ -236,7 +259,7 @@ do
 	end
 
 	function DebuffsDispell:GetIcons(unit, max)
-		return GetIconsSorted(self, unit, max,"HARMFUL|RAID")
+		return GetIconsSorted(self, unit, max, "HARMFUL|RAID", nil, nil, colorCurve)
 	end
 
 	function DebuffsDispell:GetTooltip(unit, tip, slotID)
@@ -276,16 +299,15 @@ do
 
 	function DebuffsDispell:UpdateDB()
 		colorCurve:ClearPoints()
-		colorCurve:SetType(Enum.LuaCurveType.Step)
-		colorCurve:AddPoint( 0,  Grid2.defaultColors.TRANSPARENT )
-		local colors = self.dbx.colors
-		for typ, def in pairs(self.defaultColors) do
+		local colors = self.dbx.colors or {}
+		for typ, def in pairs(Grid2.DispelCurveDefaults) do
 			colorCurve:AddPoint( def[1], colors[typ] or def[2])
 		end
 	end
 
 	-- Registration
 	Grid2.setupFunc["mdebuffType"] = function(baseKey, dbx)
+		colorCurve:SetType(Enum.LuaCurveType.Step)
 		Grid2:RegisterStatus(DebuffsDispell, { "icons", "color" }, baseKey, dbx)
 		return DebuffsDispell
 	end

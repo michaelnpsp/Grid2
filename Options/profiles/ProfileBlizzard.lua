@@ -30,7 +30,7 @@ s["leader"] = { hideInCombat=true }
 s["dungeon-role"] = { hideInCombat=true }
 s["master-looter"] = { hideInCombat=true }
 s["heals-incoming"] = { includePlayerHeals=true }
-s["debuffs-Relevant"] = { type="mdebuffs", color1={a=1,b=0,g=0,r=1}, aura_filter={sortRule=3} }
+s["debuffs-Relevant"] = { type="mdebuffs", colors={}, aura_filter={sortRule=3} }
 s["buffs-Relevant"] = { type="mbuffs", color1={a=1,b=0,g=1,r=0}, aura_filter={sortRule=3,filter="HELPFUL|RAID"} }
 
 i["icon-left"] = { type="icon", disableCooldown=true, location={y=0,relPoint="LEFT",point="LEFT",x=-2}, level=8, fontSize=8, size=12 }

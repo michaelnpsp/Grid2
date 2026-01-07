@@ -92,6 +92,83 @@ local function create_aura_status(data)
 	end
 end
 
+local function make_colortype_option(status, options, key, order, defColor, params)
+	if order then
+		options[key] = {
+			type = "color",
+			width = params and params.width or "full",
+			order = order,
+			name = L[key],
+			get = function()
+				status.dbx.colors = status.dbx.colors or {}
+				local c = status.dbx.colors[key] or defColor
+				return c.r, c.g, c.b, c.a
+			end,
+			set = function(info, r, g, b, a)
+				local c = status.dbx.colors[key] or {}
+				c.r, c.g, c.b, c.a = r, g, b, a
+				status.dbx.colors[key] = c
+				refresh_aura_status(status)
+			end,
+		}
+	end
+end
+
+local function make_color_option(status, options, key, order, name, params)
+	options[key] = {
+		type = "color",
+		width = params and params.width or "full",
+		order = order,
+		name = L[name or "Color"],
+		get = function()
+			local c = status.dbx[key]
+			return c.r, c.g, c.b, c.a
+		end,
+		set = function(info, r, g, b, a)
+			local c = status.dbx[key]
+			c.r, c.g, c.b, c.a = r, g, b, a
+			status.dbx[key] = c
+			refresh_aura_status(status)
+		end,
+	}
+end
+
+local function make_colortype_option(status, options, key, order, defColor, params)
+	if order then
+		options[key] = {
+			type = "color",
+			width = params and params.width or "full",
+			order = order,
+			name = L[key],
+			get = function()
+				status.dbx.colors = status.dbx.colors or {}
+				local c = status.dbx.colors[key] or defColor
+				return c.r, c.g, c.b, c.a
+			end,
+			set = function(info, r, g, b, a)
+				local c = status.dbx.colors[key] or {}
+				c.r, c.g, c.b, c.a = r, g, b, a
+				status.dbx.colors[key] = c
+				refresh_aura_status(status)
+			end,
+		}
+	end
+end
+
+local function make_colors_reset_option(status, options, newline)
+	if newline then
+		options.reset_header = { type = "description", width = "full", order = 499, name = "" }
+	end
+	options.reset_colors = {
+		type = "execute",
+		order = 500,
+		name = L["Reset"],
+		desc = L["Reset colors to the default values."],
+		func = function () 	wipe(status.dbx.colors); refresh_aura_status(status) end,
+		confirm = true,
+	}
+end
+
 --==============================================
 --
 --==============================================
@@ -127,11 +204,11 @@ do
 	}
 end
 
-function Grid2Options:MakeMidnightBuffsOptions(status, options)
+local function MakeBuffsOptions(status, options)
 	options.filter_header = {
 		type = "header",
 		order = 10,
-		name = L["Select which buffs must be displayed:"],
+		name = L["Buffs to display:"],
 	}
 	options.filter_all = {
 		type = "toggle",
@@ -195,12 +272,18 @@ function Grid2Options:MakeMidnightBuffsOptions(status, options)
 	}
 end
 
+local function MakeBuffsColorOptions( status, options, optionParams )
+	options.cheader = { type = "header", order = 99, name = L["Buffs Color"] }
+	make_color_option(status, options, "color1", 100)
+end
+
 -- Grid2Options:MakeMidnightBuffsOptions(NewBuffsOptions.arg, NewBuffsOptions)
 
 Grid2Options:RegisterStatusCategoryOptions("buff", NewBuffsOptions)
 
 Grid2Options:RegisterStatusOptions("mbuffs", "buff", function(self, status, options, optionParams)
-	self:MakeMidnightBuffsOptions(status, options, optionParams)
+	MakeBuffsOptions(status, options, optionParams)
+	MakeBuffsColorOptions(status, options, optionParams)
 end,{
 	groupOrder = 10, isDeletable = true,
 	titleIcon = "Interface\\Icons\\Inv_enchant_shardbrilliantsmall",
@@ -242,11 +325,11 @@ do
 	}
 end
 
-function Grid2Options:MakeMidnightDebuffsOptions(status, options)
+local function MakeDebuffsFilterOptions(status, options)
 	options.filter_header = {
 		type = "header",
 		order = 10,
-		name = L["Select which debuffs must be displayed:"],
+		name = L["Debuffs to display:"],
 	}
 	options.filter_all = {
 		type = "toggle",
@@ -342,12 +425,22 @@ function Grid2Options:MakeMidnightDebuffsOptions(status, options)
 	}
 end
 
+local function MakeDebuffsColorsOptions( status, options, optionParams)
+	options.cheader = { type = "header", order = 99, name = L["Debuff Type Colors"] }
+	for typ,v in pairs(Grid2.DispelCurveDefaults) do
+		local idx, color = unpack(v)
+		make_colortype_option(status, options, typ, idx==0 and 199 or idx+100, color, optionParams)
+	end
+	make_colors_reset_option(status, options, true)
+end
+
 -- Grid2Options:MakeMidnightDebuffsOptions(NewDebuffsOptions.arg, NewDebuffsOptions)
 
 Grid2Options:RegisterStatusCategoryOptions("debuff", NewDebuffsOptions)
 
 Grid2Options:RegisterStatusOptions("mdebuffs", "debuff", function(self, status, options, optionParams)
-	self:MakeMidnightDebuffsOptions(status, options, optionParams)
+	MakeDebuffsFilterOptions( status, options)
+	MakeDebuffsColorsOptions( status, options, {width = "normal"} )
 end,{
 	groupOrder = 10, isDeletable = true,
 	titleIcon = "Interface\\Icons\\Spell_deathknight_strangulate",
@@ -357,36 +450,12 @@ end,{
 --
 --==============================================
 
-function Grid2Options:MakeMidnightDispellableByMeOptions(status, options, optionParams)
-	for typ,v in pairs(status.defaultColors) do
+function Grid2Options:MakeMidnightDispellableByMeOptions(status, options)
+	for typ,v in pairs(Grid2.DispelCurveDefaults) do
 		local idx, color = unpack(v)
-		if idx~=0 then
-			options[typ] = {
-				type = "color",
-				width = "full",
-				order = idx,
-				name = L[typ],
-				get = function()
-					local c = status.dbx.colors[typ] or color
-					return c.r, c.g, c.b, c.a
-				end,
-				set = function(info, r, g, b, a)
-					local c = status.dbx.colors[typ] or {}
-					c.r, c.g, c.b, c.a = r, g, b, a
-					status.dbx.colors[typ] = c
-					status:Refresh()
-				end,
-			}
-		end
+		make_colortype_option(status, options, typ, idx~=0 and idx, color)
 	end
-	options.reset = {
-		type = "execute",
-		order = 100,
-		name = L["Reset Colors"],
-		desc = L["Reset status settings to the default values."],
-		func = function () 	wipe(status.dbx.colors); status:Refresh() end,
-		confirm = true,
-	}
+	make_colors_reset_option(status, options)
 end
 
 Grid2Options:RegisterStatusOptions("mdebuffType", "debuff", function(self, status, options, optionParams)

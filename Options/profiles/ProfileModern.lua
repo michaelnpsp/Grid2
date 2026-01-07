@@ -30,7 +30,7 @@ s["dungeon-role"] = { hideInCombat=true }
 s["master-looter"] = { hideInCombat=true }
 s["heals-incoming"] = { includePlayerHeals=true }
 s["buffs-Relevant"] = { type="mbuffs", color1={a=1,b=0,g=1,r=0}, aura_filter={sortRule=3,filter="HELPFUL|RAID"} }
-s["debuffs-Relevant"] = { type="mdebuffs", color1={a=1,b=0,g=0,r=1}, aura_filter={sortRule=3} }
+s["debuffs-Relevant"] = { type="mdebuffs", colors={}, aura_filter={sortRule=3} }
 
 i["text-center"] = { type="text", fontSize=10, location={y=0,relPoint="CENTER",point="CENTER",x=0}, level=7, textlength=6, percent=true }
 m["text-center"] = { ["feign-death"]=96, offline=97, name=70, death=98 }

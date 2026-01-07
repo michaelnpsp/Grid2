@@ -17,7 +17,7 @@ db.__template = 'Classic'
 s["dungeon-role"] = { hideInCombat=true }
 s["heals-incoming"] = { includePlayerHeals=true }
 s["buffs-Relevant"] = { type="mbuffs", aura_filter={filter="HELPFUL|RAID",sortRule=3}, color1={a=1,r=0,g=1,b=0} }
-s["debuffs-Relevant"] = { type="mdebuffs", aura_filter={sortRule=3}, color1={a=1,r=1,g=0,b=0} }
+s["debuffs-Relevant"] = { type="mdebuffs", colors= {}, aura_filter={sortRule=3} }
 
 i["text-down"] = { type="text", location={y=4,relPoint="BOTTOM",point="BOTTOM",x=0}, level=6, textlength=6, fontSize=10 }
 m["text-down"] = { name=99 }
