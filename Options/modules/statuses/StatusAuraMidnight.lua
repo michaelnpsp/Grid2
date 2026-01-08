@@ -440,7 +440,7 @@ Grid2Options:RegisterStatusCategoryOptions("debuff", NewDebuffsOptions)
 
 Grid2Options:RegisterStatusOptions("mdebuffs", "debuff", function(self, status, options, optionParams)
 	MakeDebuffsFilterOptions( status, options)
-	MakeDebuffsColorsOptions( status, options, {width = "normal"} )
+	MakeDebuffsColorsOptions( status, options, {width = 0.65} )
 end,{
 	groupOrder = 10, isDeletable = true,
 	titleIcon = "Interface\\Icons\\Spell_deathknight_strangulate",
