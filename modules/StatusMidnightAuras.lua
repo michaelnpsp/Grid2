@@ -38,18 +38,6 @@ Grid2.DispelCurveDefaults = {
 	Bleed   = { 11, DEBUFF_TYPE_BLEED_COLOR   },
 }
 
-local dispelColorCurve = C_CurveUtil.CreateColorCurve()
-do
-	dispelColorCurve:SetType(Enum.LuaCurveType.Step)
-    dispelColorCurve:AddPoint( 0  , DEBUFF_TYPE_NONE_COLOR )
-    dispelColorCurve:AddPoint( 1  , DEBUFF_TYPE_MAGIC_COLOR )
-    dispelColorCurve:AddPoint( 2  , DEBUFF_TYPE_CURSE_COLOR )
-    dispelColorCurve:AddPoint( 3  , DEBUFF_TYPE_DISEASE_COLOR )
-    dispelColorCurve:AddPoint( 4  , DEBUFF_TYPE_POISON_COLOR )
-    dispelColorCurve:AddPoint( 9  , DEBUFF_TYPE_BLEED_COLOR ) -- enrage
-    dispelColorCurve:AddPoint( 11 , DEBUFF_TYPE_BLEED_COLOR )
-end
-
 --[[
 Sort rules are as follows:
 Enum.UnitAuraSortRule.Default - equivalent to AuraUtil.DefaultAuraCompare
@@ -124,14 +112,14 @@ do
 
 	function Buffs:OnEnable()
 		self:RegisterEvent("UNIT_AURA")
-		self:RegisterEvent("PLAYER_REGEN_ENABLED")
-		self:RegisterEvent("PLAYER_REGEN_DISABLED")
+		-- self:RegisterEvent("PLAYER_REGEN_ENABLED")
+		-- self:RegisterEvent("PLAYER_REGEN_DISABLED")
 	end
 
 	function Buffs:OnDisable()
 		self:UnregisterEvent("UNIT_AURA")
-		self:UnregisterEvent("PLAYER_REGEN_ENABLED")
-		self:UnregisterEvent("PLAYER_REGEN_DISABLED")
+		-- self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+		-- self:UnregisterEvent("PLAYER_REGEN_DISABLED")
 	end
 
 	function Buffs:IsActive(unit)
