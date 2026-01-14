@@ -5,6 +5,7 @@ local myUnits = Grid2.roster_my_units
 local rosterUnits = Grid2.roster_guids
 local canaccessvalue = Grid2.canaccessvalue
 local SpellIsSelfBuff = SpellIsSelfBuff
+local UnitIsFriend = UnitIsFriend
 local UnitAffectingCombat = UnitAffectingCombat
 local SpellGetVisibilityInfo = C_Spell.GetVisibilityInfo
 local GetUnitAuras = C_UnitAuras.GetUnitAuras
@@ -258,7 +259,10 @@ do
 
 	function DebuffsDispell:UNIT_AURA(_, unit)
 		if rosterUnits[unit] then
-			local aura = GetUnitAuras(unit, "HARMFUL|RAID", 1)[1]
+			local aura
+			if UnitIsFriend("player", unit) then
+				aura = GetUnitAuras(unit, "HARMFUL|RAID", 1)[1]
+			end
 			local active = aura~=nil
 			if active or active ~= (dispel_cache[unit]~=nil) then
 				dispel_cache[unit] = active and GetAuraDispelTypeColor(unit, aura.auraInstanceID, colorCurve) or nil

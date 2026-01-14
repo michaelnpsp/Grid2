@@ -15,6 +15,7 @@ local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local GetRaidRosterInfo = GetRaidRosterInfo
 local GetNumGroupMembers = GetNumGroupMembers
 local UnitGroupRolesAssigned = UnitGroupRolesAssigned
+local issecretvalue = Grid2.issecretvalue
 local isClassic = Grid2.isClassic
 local isVanilla = Grid2.isVanilla
 
@@ -89,22 +90,26 @@ do
 	local function UpdateUnit(unit)
 		local modified
 		local guid = UnitGUID(unit)
-		if guid ~= roster_guids[unit] then
+		local secret = issecretvalue(guid)
+		if secret or guid ~= roster_guids[unit] then
 			if pet_of_unit[unit] then
 				local old_guid = roster_guids[unit]
-				if unit == roster_units[old_guid] then
+				if not issecretvalue(old_guid) and unit == roster_units[old_guid] then
 					roster_units[old_guid] = nil
 				end
-				roster_units[guid] = unit
+				if not secret then
+					roster_units[guid] = unit
+				end
 			end
 			roster_guids[unit] = guid
 			modified = true
 		end
 		local name, realm = UnitName(unit)
+
 		if name == UNKNOWNOBJECT then
 			roster_unknowns = true
 		end
-		if name ~= roster_names[unit] then
+		if issecretvalue(name) or name ~= roster_names[unit] then
 			roster_names[unit] = name
 			modified = true
 		end
@@ -149,7 +154,7 @@ do
 		elseif grouped_pets[unit] then
 			roster_pets[unit] = nil
 		end
-		if unit == roster_units[guid] then
+		if not issecretvalue(guid) and unit == roster_units[guid] then
 			roster_units[guid] = nil
 		end
 		roster_faked[unit] = nil

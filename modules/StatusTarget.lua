@@ -13,7 +13,11 @@ local guiTarget, curTarget, oldTarget
 local function UpdateTarget()
 	guiTarget = UnitGUID("target")
 	oldTarget = curTarget
-	curTarget = not issecretvalue(guiTarget) and roster_units[guiTarget]
+	if issecretvalue(guiTarget) then
+		guiTarget, curTarget = nil, nil
+	else
+		curTarget = roster_units[guiTarget]
+	end
 end
 
 function Target:OnEnable()
