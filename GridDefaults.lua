@@ -5,7 +5,7 @@ Created by Michael, based on Grid2Options\GridDefaults.lua from original Grid2 a
 local Grid2 = Grid2
 
 -- Latest database profile version
-local DB_VERSION = 15
+local DB_VERSION = Grid2.isMidnight and 100 or 14
 
 -- Database manipulation functions
 function Grid2:DbSetStatusDefaultValue(name, value)
