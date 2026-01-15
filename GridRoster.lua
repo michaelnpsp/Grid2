@@ -106,7 +106,7 @@ do
 		end
 		local name, realm = UnitName(unit)
 
-		if name == UNKNOWNOBJECT then
+		if not issecretvalue(name) and name == UNKNOWNOBJECT then
 			roster_unknowns = true
 		end
 		if issecretvalue(name) or name ~= roster_names[unit] then
