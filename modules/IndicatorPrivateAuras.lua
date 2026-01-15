@@ -12,6 +12,8 @@ local AddPrivateAuraAnchor = C_UnitAuras.AddPrivateAuraAnchor
 local RemovePrivateAuraAnchor = C_UnitAuras.RemovePrivateAuraAnchor
 if not AddPrivateAuraAnchor then return end
 
+local Bug30Fix = true
+
 local function AcquireTooltipFrame()
 	AcquireTooltipFrame = function()
 		tooltipFrame:SetScale(Grid2Layout.db.profile.ScaleSize)
@@ -71,6 +73,7 @@ local function Icon_Layout(self, parent)
 	local l = dbx.location
 	local f = parent[self.name]
 	local iconSize = self.iconSize>1 and self.iconSize or self.iconSize * parent:GetHeight()
+	if Bug30Fix then f:SetScale(iconSize/30); iconSize = 30; end -- Workaround to icon border bug (it does not obey iconSize and its always 30 pixels width).
 	local sizeFull = iconSize + (dbx.iconSpacing or 1)
 	f:SetParent(parent)
 	f:ClearAllPoints()
