@@ -226,7 +226,7 @@ local function MakeBuffsOptions(status, options)
 		type = "toggle",
 		order = 30,
 		width = "full",
-		name = L["Only buffs applied by me"],
+		name = L["Buffs applied by me"],
 		get = function(info)
 			return filter_exists_substring( status, 'aura_filter', 'filter', 'PLAYER' )
 		end,
@@ -238,7 +238,7 @@ local function MakeBuffsOptions(status, options)
 		type = "toggle",
 		order = 40,
 		width = "full",
-		name = L["Only buffs that are relevant for your player class"],
+		name = L["Buffs that are relevant for your player class"],
 		get = function()
 			return filter_exists_substring( status, 'aura_filter', 'filter', 'RAID' )
 		end,
@@ -246,9 +246,22 @@ local function MakeBuffsOptions(status, options)
 			filter_toggle_substring( status, 'aura_filter', 'filter', 'RAID', 'HELPFUL' )
 		end,
 	}
+	options.filter_defensives = {
+		type = "toggle",
+		order = 50,
+		width = "full",
+		name = L["External defensive buffs"],
+		get = function()
+			return filter_exists_substring( status, 'aura_filter', 'filter', 'EXTERNAL_DEFENSIVE' )
+		end,
+		set = function()
+			filter_toggle_substring( status, 'aura_filter', 'filter', 'EXTERNAL_DEFENSIVE', 'HELPFUL' )
+		end,
+	}
+
 	options.sort_rule = {
 		type = "select",
-		order = 50,
+		order = 100,
 		name = "Sorting",
 		desc = L["Choose how to sort the auras."],
 		get = function()
@@ -261,7 +274,7 @@ local function MakeBuffsOptions(status, options)
 	}
 	options.sort_dir = {
 		type = "toggle",
-		order = 60,
+		order = 110,
 		name = L["Reverse Sorting"],
 		get = function()
 			return filter_get_value( status, 'aura_filter', 'sortDir' ) == 1
@@ -273,8 +286,8 @@ local function MakeBuffsOptions(status, options)
 end
 
 local function MakeBuffsColorOptions( status, options, optionParams )
-	options.cheader = { type = "header", order = 99, name = L["Buffs Color"] }
-	make_color_option(status, options, "color1", 100)
+	options.cheader = { type = "header", order = 199, name = L["Buffs Color"] }
+	make_color_option(status, options, "color1", 200)
 end
 
 -- Grid2Options:MakeMidnightBuffsOptions(NewBuffsOptions.arg, NewBuffsOptions)
@@ -348,7 +361,7 @@ local function MakeDebuffsFilterOptions(status, options)
 		type = "toggle",
 		order = 30,
 		width = "full",
-		name = L["Only debuffs applied by me"],
+		name = L["Debuffs applied by me"],
 		get = function(info)
 			return filter_exists_substring( status, 'aura_filter', 'filter', 'PLAYER' )
 		end,
@@ -360,7 +373,7 @@ local function MakeDebuffsFilterOptions(status, options)
 		type = "toggle",
 		order = 40,
 		width = "full",
-		name = L["Only debuffs that i can dispel"],
+		name = L["Debuffs that i can dispel"],
 		get = function()
 			return filter_exists_substring( status, 'aura_filter', 'filter', 'RAID' )
 		end,
@@ -368,11 +381,23 @@ local function MakeDebuffsFilterOptions(status, options)
 			filter_toggle_substring( status, 'aura_filter', 'filter', 'RAID', 'HARMFUL' )
 		end,
 	}
-	options.debuffs_typed = {
+	options.filter_nameplate = {
 		type = "toggle",
 		order = 50,
 		width = "full",
-		name = L["Only typed debuffs"],
+		name = L["Debuffs that should be shown on nameplates"],
+		get = function()
+			return filter_exists_substring( status, 'aura_filter', 'filter', 'INCLUDE_NAME_PLATE_ONLY' )
+		end,
+		set = function()
+			filter_toggle_substring( status, 'aura_filter', 'filter', 'INCLUDE_NAME_PLATE_ONLY', 'HARMFUL' )
+		end,
+	}
+	options.debuffs_typed = {
+		type = "toggle",
+		order = 60,
+		width = "full",
+		name = L["Typed debuffs"],
 		desc = L["Display only Magic, Curse, Poison, Disease or Bleed Debuffs."],
 		get = function()
 			return filter_get_value(status, 'aura_filter', 'typed')==true
@@ -383,9 +408,9 @@ local function MakeDebuffsFilterOptions(status, options)
 	}
 	options.debuffs_typeless = {
 		type = "toggle",
-		order = 60,
+		order = 70,
 		width = "full",
-		name = L["Only typeless debuffs"],
+		name = L["Typeless debuffs"],
 		desc = L["Display only debuffs with no dispell type."],
 		get = function()
 			return filter_get_value(status, 'aura_filter', 'typed')==false
@@ -401,7 +426,7 @@ local function MakeDebuffsFilterOptions(status, options)
 	}
 	options.sort_rule = {
 		type = "select",
-		order = 70,
+		order = 100,
 		name = "Sorting",
 		desc = L["Choose how to sort the auras."],
 		get = function()
@@ -414,7 +439,7 @@ local function MakeDebuffsFilterOptions(status, options)
 	}
 	options.sort_dir = {
 		type = "toggle",
-		order = 80,
+		order = 110,
 		name = L["Reverse Sorting"],
 		get = function()
 			return filter_get_value( status, 'aura_filter', 'sortDir' ) == 1
@@ -426,10 +451,10 @@ local function MakeDebuffsFilterOptions(status, options)
 end
 
 local function MakeDebuffsColorsOptions( status, options, optionParams)
-	options.cheader = { type = "header", order = 99, name = L["Debuff Type Colors"] }
+	options.cheader = { type = "header", order = 199, name = L["Debuff Type Colors"] }
 	for typ,v in pairs(Grid2.DispelCurveDefaults) do
 		local idx, color = unpack(v)
-		make_colortype_option(status, options, typ, idx==0 and 199 or idx+100, color, optionParams)
+		make_colortype_option(status, options, typ, idx==0 and 299 or idx+200, color, optionParams)
 	end
 	make_colors_reset_option(status, options, true)
 end
