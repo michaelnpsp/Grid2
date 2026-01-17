@@ -4,6 +4,8 @@ local Grid2 = Grid2
 local GetTime = GetTime
 local fmt = string.format
 
+local canaccessvalue = Grid2.canaccessvalue
+
 local function Icon_Create(self, parent)
 	local f = self:Acquire("Frame", parent, "BackdropTemplate")
 	local Icon = f.Icon or f:CreateTexture(nil, "ARTWORK")
@@ -95,7 +97,11 @@ local function Icon_OnUpdate(self, parent, unit, status)
 	if not self.disableCooldown then
 		local expiration, duration = status:GetExpirationTime(unit), status:GetDuration(unit)
 		if expiration and duration then
-			Frame.Cooldown:SetCooldown(expiration - duration, duration)
+			if canaccessvalue(duration) then
+				Frame.Cooldown:SetCooldown(expiration - duration, duration)
+			else
+				Frame.Cooldown:SetCooldownFromExpirationTime(expiration, duration)
+			end
 			Frame.Cooldown:Show()
 		else
 			Frame.Cooldown:Hide()
