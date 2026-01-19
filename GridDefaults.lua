@@ -214,6 +214,9 @@ function Grid2:UpdateDefaults()
 				dbx.hideBlizzard.party = (hid==true or hid==1) or nil
 			end
 		end
+		if DB_VERSION>=100 and version<100 then
+			Grid2:DbSetValue("versions","Grid2Prev",version)
+		end
 	end
 	-- Set database version
 	Grid2:DbSetValue("versions","Grid2",DB_VERSION)

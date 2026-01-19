@@ -38,6 +38,7 @@ jobs:
           args: -g retail -m .pkgmeta-retail
         env:
           GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
 
       - name: Create MoP Package
         if: ${{ inputs.mists }}
