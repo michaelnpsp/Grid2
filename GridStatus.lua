@@ -160,7 +160,11 @@ function Grid2:GetStatusByName(name)
 end
 
 function Grid2:IterateStatuses(type)
-	return next, type and self.statusTypes[type] or self.statuses
+	if type then
+		return next, self.statusTypes[type] or self.EmptyTable
+	else
+		return next, self.statuses
+	end
 end
 
 function Grid2:SetupStatusPrototype()

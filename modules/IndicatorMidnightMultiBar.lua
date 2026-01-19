@@ -25,6 +25,10 @@ local function SetMultibarLineValue(bar, unit, status)
 	bar:SetAlphaFromBoolean(status:IsActive(unit), 1, 0)
 end
 
+local function SetMultibarLineValueSecret(bar, unit, status) -- hackish, only used by shields-overflow
+	bar:SetAlphaFromBoolean(status:IsActiveSecret(unit), 1, 0)
+end
+
 local function SetMultibarPercentValue(bar, unit, status)
 	bar:SetValue(status:GetPercent(unit) or 0)
 end
@@ -109,7 +113,8 @@ local function Bar_Layout(self, parent)
 		if setup.background then
 			texture:SetAllPoints()
 		elseif setup.lineSize then
-			texture.SetMultibarValue = SetMultibarLineValue
+			local status = self.statuses[i]
+			texture.SetMultibarValue = (status and status.IsActiveSecret and SetMultibarLineValueSecret) or SetMultibarLineValue
 			if self.orientation == "HORIZONTAL" then
 				texture:SetSize( setup.lineSize, height )
 				texture:SetPoint( setup.pointFrom, prevTex, prevPnt, setup.lineAdjust, 0 )

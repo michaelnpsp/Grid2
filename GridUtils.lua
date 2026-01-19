@@ -12,6 +12,8 @@ local tremove = table.remove
 
 -- Dummy function
 Grid2.Dummy = function() end
+-- Empty table
+Grid2.EmptyTable = {}
 
 -- Midnight Secrets check
 Grid2.issecretvalue = issecretvalue or function() return false end
