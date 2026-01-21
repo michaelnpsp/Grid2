@@ -21,6 +21,9 @@ on:
       classic:
         type: boolean
         description: Classic
+      retailtest:
+        type: boolean
+        description: Retail Test
 
 jobs:
   build:
@@ -32,7 +35,7 @@ jobs:
           fetch-depth: 200
 
       - name: Retail Test Package
-        if: ${{ inputs.retail }}
+        if: ${{ inputs.retailtest }}
         uses: BigWigsMods/packager@master
         with:
           args: -g retail -m .pkgmeta-retail
