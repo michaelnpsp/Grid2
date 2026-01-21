@@ -7,6 +7,15 @@ Grid2Options:RegisterStatusOptions("shields-overflow", "health", nil, {
 	titleIcon = "Interface\\ICONS\\Spell_Holy_PowerWordShield"
 })
 
+if Grid2.isMidnight then
+	Grid2Options:RegisterStatusOptions("shields", "health", nil, {
+		title = L["display remaining amount of damage absorb shields"],
+		titleIcon = "Interface\\ICONS\\Spell_Holy_PowerWordShield",
+		colorCount = 1,
+	})
+	return
+end
+
 Grid2Options:RegisterStatusOptions("shields", "health", function(self, status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, {
 		color1 = L["Normal"], colorDesc1 = L["Normal shield color"],

@@ -449,7 +449,7 @@ do
 		status:UpdateAllUnits()
 	end
 	function Grid2Options:MakeStatusColorOptions(status, options, optionParams)
-		local colorCount = status.dbx.colorCount or 1
+		local colorCount = (optionParams and optionParams.colorCount) or status.dbx.colorCount or 1
 		local name  = L["Color"]
 		local desc  = L["Color for %s."]:format(status.name)
 		local width = optionParams and optionParams.width or "half"

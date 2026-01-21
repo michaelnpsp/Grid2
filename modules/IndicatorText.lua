@@ -192,7 +192,7 @@ local FmtPercent
 local function Text_OnUpdateP(self, parent, unit, status)
 	local Text = parent[self.name].Text
 	if status then
-		local percent, per100, text
+		local percent, text
 		if status.GetPercentText then
 			text = status:GetPercentText(unit)
 		else

@@ -188,6 +188,7 @@ do
 			order = 5,
 			width = "full",
 			name = L["New Buffs Group Name"],
+			desc = L["Type a descriptive text for your group of buffs."],
 			get = function() return status.name or '' end,
 			set = function(_,v) status.name = v end,
 		},
@@ -348,6 +349,7 @@ do
 			order = 1,
 			width = "full",
 			name = L["New Debuffs Group Name"],
+			desc = L["Type a descriptive text for your group of debuffs."],
 			get = function(info) return status.name or '' end,
 			set = function(info,v) status.name = v end,
 

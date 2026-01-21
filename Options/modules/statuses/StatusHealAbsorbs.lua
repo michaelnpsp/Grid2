@@ -1,5 +1,14 @@
 local L = Grid2Options.L
 
+if Grid2.isMidnight then
+	Grid2Options:RegisterStatusOptions("heal-absorbs", "health", nil, {
+		title = L["display remaining amount of heal absorb shields"],
+		titleIcon = "Interface\\Icons\\spell_fire_ragnaros_lavabolt",
+		colorCount = 1,
+	})
+	return
+end
+
 local MAX_ABSORB = Grid2.isClassic and 200000 or 5000000
 
 Grid2Options:RegisterStatusOptions("heal-absorbs", "health", function(self, status, options, optionParams)
