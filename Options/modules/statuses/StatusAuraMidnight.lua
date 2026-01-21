@@ -266,8 +266,8 @@ local function MakeBuffsOptions(status, options)
 		type = "toggle",
 		order = 60,
 		width = "full",
-		name = L["Blizzard Raid Frames Buffs"],
-		desc = L["Show the same buffs displayed by the Blizzard raid frames"],
+		name = L["Buffs from Blizzard Unit Frames"],
+		desc = L["Show the same buffs displayed by the Blizzard unit frames"],
 		get = function()
 			return filter_get_value(status, 'aura_filter', 'blizFilter')=='HELPFUL|RAID'
 		end,
@@ -280,8 +280,8 @@ local function MakeBuffsOptions(status, options)
 		type = "toggle",
 		order = 70,
 		width = "full",
-		name = L["Blizzard Raid Frames Defensive Buff"],
-		desc = L["Show the same defensive buff displayed by the Blizzard raid frames"],
+		name = L["Defensive Buff from Blizzard Unit Frames"],
+		desc = L["Show the same defensive buff displayed by the Blizzard unit frames"],
 		get = function()
 			return filter_get_value(status, 'aura_filter', 'blizFilter')=='HELPFUL|EXTERNAL_DEFENSIVE'
 		end,

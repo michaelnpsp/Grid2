@@ -120,7 +120,7 @@ do
 		self.aura_filter   = filter.blizFilter or filter.filter or 'HELPFUL'
 		self.aura_sortRule = filter.sortRule or 0
 		self.aura_sortDir  = filter.sortDir or 0
-		self.aura_func     = filter.blizFilter and (strfind(self.aura_filter,"EXTERNAL_DEFENSIVE") and LBA.GetUnitDefensives or LBA.GetUnitBuffs) or nil
+		self.aura_func     = filter.blizFilter and LBA.GetUnitAuras or nil
 		self.aura_color    = self.dbx.color1
 		if self.enabled then self:OnEnabled() end
 	end
