@@ -35,10 +35,9 @@ Libs\LibCustomGlow-1.0\LibCustomGlow-1.0.lua
 #@version-classic@
 Libs\LibClassicDurations\LibClassicDurations.xml
 #@end-version-classic@
-#@version-bcc@
-#@end-version-bcc@
-#@version-wrath@
-#@end-version-wrath@
+#@retail@
+Libs\LibGrid2BlizFramesAuras-1.0\LibGrid2BlizFramesAuras-1.0.lua
+#@end-retail@
 #@end-no-lib-strip@
 
 #Locales

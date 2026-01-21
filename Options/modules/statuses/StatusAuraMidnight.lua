@@ -216,10 +216,11 @@ local function MakeBuffsOptions(status, options)
 		width = "full",
 		name = L["Display all buffs"],
 		get = function(info)
-			return filter_get_value(status, 'aura_filter', 'filter', 'HELPFUL') == 'HELPFUL'
+			return filter_get_value(status, 'aura_filter', 'filter', 'HELPFUL')=='HELPFUL' and filter_get_value(status, 'aura_filter', 'blizFilter')==nil
 		end,
 		set = function(info, v)
 			filter_set_value(status, 'aura_filter', 'filter',  (not v) and 'HELPFUL|PLAYER|RAID' or nil)
+			filter_set_value(status, 'aura_filter', 'blizFilter', nil)
 		end,
 	}
 	options.filter_player = {
@@ -232,6 +233,7 @@ local function MakeBuffsOptions(status, options)
 		end,
 		set = function()
 			filter_toggle_substring( status, 'aura_filter', 'filter', 'PLAYER', 'HELPFUL' )
+			filter_set_value(status, 'aura_filter', 'blizFilter', nil)
 		end,
 	}
 	options.filter_raid = {
@@ -244,6 +246,7 @@ local function MakeBuffsOptions(status, options)
 		end,
 		set = function()
 			filter_toggle_substring( status, 'aura_filter', 'filter', 'RAID', 'HELPFUL' )
+			filter_set_value(status, 'aura_filter', 'blizFilter', nil)
 		end,
 	}
 	options.filter_defensives = {
@@ -256,9 +259,37 @@ local function MakeBuffsOptions(status, options)
 		end,
 		set = function()
 			filter_toggle_substring( status, 'aura_filter', 'filter', 'EXTERNAL_DEFENSIVE', 'HELPFUL' )
+			filter_set_value(status, 'aura_filter', 'blizFilter', nil)
 		end,
 	}
-
+	options.filter_bliz_auras = {
+		type = "toggle",
+		order = 60,
+		width = "full",
+		name = L["Blizzard Raid Frames Buffs"],
+		desc = L["Show the same buffs displayed by the Blizzard raid frames"],
+		get = function()
+			return filter_get_value(status, 'aura_filter', 'blizFilter')=='HELPFUL|RAID'
+		end,
+		set = function(_, v)
+			filter_set_value( status, 'aura_filter', 'blizFilter', v and 'HELPFUL|RAID' or nil )
+			filter_set_value( status, 'aura_filter', 'filter',  nil)
+		end,
+	}
+	options.filter_bliz_defensives = {
+		type = "toggle",
+		order = 70,
+		width = "full",
+		name = L["Blizzard Raid Frames Defensive Buff"],
+		desc = L["Show the same defensive buff displayed by the Blizzard raid frames"],
+		get = function()
+			return filter_get_value(status, 'aura_filter', 'blizFilter')=='HELPFUL|EXTERNAL_DEFENSIVE'
+		end,
+		set = function(_, v)
+			filter_set_value(status, 'aura_filter', 'blizFilter', v and 'HELPFUL|EXTERNAL_DEFENSIVE' or nil)
+			filter_set_value(status, 'aura_filter', 'filter',  nil)
+		end,
+	}
 	options.sort_rule = {
 		type = "select",
 		order = 100,

@@ -1,6 +1,5 @@
 -- buffs and debuffs statuses for midnight
 
-
 local myUnits = Grid2.roster_my_units
 local rosterUnits = Grid2.roster_guids
 local canaccessvalue = Grid2.canaccessvalue
@@ -50,10 +49,10 @@ Enum.UnitAuraSortRule.NameOnly - Pure comparison on name only.
 Enum.UnitAuraSortRule.Default, Enum.UnitAuraSortDirection.Reverse
 --]]
 
-local function GetIconsSorted(self, unit, max, filter, sortRule, sortDir, colorCurve, displayFunc)
+local function GetIconsSorted(self, unit, max, filter, sortRule, sortDir, colorCurve, aurasFunc, displayFunc)
 	local i = 0
 	local color = colorCurve.r and colorCurve or nil
-	local auras = GetUnitAuras(unit, filter, displayFunc and max or 40, sortRule, sortDir)
+	local auras = (aurasFunc or GetUnitAuras)(unit, filter, displayFunc and 40 or max, sortRule, sortDir)
 	for _, a in ipairs(auras) do
 		if not displayFunc or displayFunc(a) then
 			i = i + 1
@@ -75,28 +74,12 @@ end
 -------------------------------------------------------------------------------
 do
 
-	Buffs.GetColor = Grid2.statusLibrary.GetColor
-	Buffs.PLAYER_REGEN_DISABLED = Grid2.statusLibrary.UpdateAllUnits
-	Buffs.PLAYER_REGEN_ENABLED = Grid2.statusLibrary.UpdateAllUnits
+	local LBA = LibStub("LibGrid2BlizFramesAuras-1.0")
 
-	-- This is the logic used by blizzard raid frames to show/hide buffs.
-	-- SpellGetVisibilityInfo(spellId, n) where n:
-	-- 0 => in combat
-	-- 1 => only out of combat
-	-- 2 => for enemy targets
-	-- SpellGetVisiblityInfo() cannot be used in combat in midnight so 0,2 options are useless
-	-- Maybe use this code on buffs.
-	local function Buffs_DisplayCheck(aura)
-		local hasCustom, alwaysShowMine, showForMySpec = SpellGetVisibilityInfo(aura.spellId, 1)
-		if hasCustom  then
-			return showForMySpec or (alwaysShowMine and myUnits[a.sourceUnit])
-		else
-			return aura.canApplyAura and myUnits[aura.sourceUnit] and not SpellIsSelfBuff(aura.spellId)
-		end
-	end
+	Buffs.GetColor = Grid2.statusLibrary.GetColor
 
 	function Buffs:GetIcons(unit, max)
-		return GetIconsSorted(self, unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.aura_color)
+		return GetIconsSorted(self, unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.aura_color, self.aura_func)
 	end
 
 	function Buffs:GetTooltip(unit, tip, slotID)
@@ -112,15 +95,19 @@ do
 	end
 
 	function Buffs:OnEnable()
-		self:RegisterEvent("UNIT_AURA")
-		-- self:RegisterEvent("PLAYER_REGEN_ENABLED")
-		-- self:RegisterEvent("PLAYER_REGEN_DISABLED")
+		if self.aura_func then
+			LBA.RegisterCallback(self, "UNIT_AURA")
+		else
+			self:RegisterEvent("UNIT_AURA")
+		end
 	end
 
 	function Buffs:OnDisable()
-		self:UnregisterEvent("UNIT_AURA")
-		-- self:UnregisterEvent("PLAYER_REGEN_ENABLED")
-		-- self:UnregisterEvent("PLAYER_REGEN_DISABLED")
+		if self.aura_func then
+			LBA.UnregisterCallback(self, "UNIT_AURA")
+		else
+			self:UnregisterEvent("UNIT_AURA")
+		end
 	end
 
 	function Buffs:IsActive(unit)
@@ -128,11 +115,14 @@ do
 	end
 
 	function Buffs:UpdateDB()
+		if self.enabled then self:OnDisable() end
 		local filter = self.dbx.aura_filter or {}
-		self.aura_filter   = filter.filter or 'HELPFUL'
+		self.aura_filter   = filter.blizFilter or filter.filter or 'HELPFUL'
 		self.aura_sortRule = filter.sortRule or 0
 		self.aura_sortDir  = filter.sortDir or 0
+		self.aura_func     = filter.blizFilter and (strfind(self.aura_filter,"EXTERNAL_DEFENSIVE") and LBA.GetUnitDefensives or LBA.GetUnitBuffs) or nil
 		self.aura_color    = self.dbx.color1
+		if self.enabled then self:OnEnabled() end
 	end
 
 	-- Registration
