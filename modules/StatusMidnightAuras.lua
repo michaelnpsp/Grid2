@@ -1,5 +1,7 @@
 -- buffs and debuffs statuses for midnight
 
+local LBA = LibStub("LibGrid2BlizFramesAuras-1.0")
+
 local myUnits = Grid2.roster_my_units
 local rosterUnits = Grid2.roster_guids
 local canaccessvalue = Grid2.canaccessvalue
@@ -74,8 +76,6 @@ end
 -------------------------------------------------------------------------------
 do
 
-	local LBA = LibStub("LibGrid2BlizFramesAuras-1.0")
-
 	Buffs.GetColor = Grid2.statusLibrary.GetColor
 
 	function Buffs:GetIcons(unit, max)
@@ -115,14 +115,12 @@ do
 	end
 
 	function Buffs:UpdateDB()
-		if self.enabled then self:OnDisable() end
 		local filter = self.dbx.aura_filter or {}
 		self.aura_filter   = filter.blizFilter or filter.filter or 'HELPFUL'
 		self.aura_sortRule = filter.sortRule or 0
 		self.aura_sortDir  = filter.sortDir or 0
 		self.aura_func     = filter.blizFilter and LBA.GetUnitAuras or nil
 		self.aura_color    = self.dbx.color1
-		if self.enabled then self:OnEnabled() end
 	end
 
 	-- Registration
@@ -153,7 +151,7 @@ do
 	Debuffs.GetColor = Grid2.statusLibrary.GetColor
 
 	function Debuffs:GetIcons(unit, max)
-		return GetIconsSorted(self, unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.colorCurve, nil, self.aura_display)
+		return GetIconsSorted(self, unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.colorCurve, self.aura_func, self.aura_display)
 	end
 
 	function Debuffs:GetTooltip(unit, tip, slotID)
@@ -169,11 +167,19 @@ do
 	end
 
 	function Debuffs:OnEnable()
-		self:RegisterEvent("UNIT_AURA")
+		if self.aura_func then
+			LBA.RegisterCallback(self, "UNIT_AURA")
+		else
+			self:RegisterEvent("UNIT_AURA")
+		end
 	end
 
 	function Debuffs:OnDisable()
-		self:UnregisterEvent("UNIT_AURA")
+		if self.aura_func then
+			LBA.UnregisterCallback(self, "UNIT_AURA")
+		else
+			self:UnregisterEvent("UNIT_AURA")
+		end
 	end
 
 	function Debuffs:IsActive(unit)
@@ -186,6 +192,7 @@ do
 		self.aura_sortRule = filter.sortRule or 0
 		self.aura_sortDir  = filter.sortDir or 0
 		self.aura_display  = filterTypedFuncs[filter.typed]
+		self.aura_func     = filter.blizFilter and LBA.GetUnitAuras or nil
 		self.colorCurve:ClearPoints()
 		local colors = self.dbx.colors or {}
 		for typ, def in pairs(Grid2.DispelCurveDefaults) do
