@@ -153,7 +153,7 @@ do
 	Debuffs.GetColor = Grid2.statusLibrary.GetColor
 
 	function Debuffs:GetIcons(unit, max)
-		return GetIconsSorted(self, unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.colorCurve, self.aura_display)
+		return GetIconsSorted(self, unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.colorCurve, nil, self.aura_display)
 	end
 
 	function Debuffs:GetTooltip(unit, tip, slotID)

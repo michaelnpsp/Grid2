@@ -31,6 +31,14 @@ jobs:
         with:
           fetch-depth: 200
 
+      - name: Retail Test Package
+        if: ${{ inputs.retail }}
+        uses: BigWigsMods/packager@master
+        with:
+          args: -g retail -m .pkgmeta-retail
+        env:
+          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create Retail Package
         if: ${{ inputs.retail }}
         uses: BigWigsMods/packager@master
