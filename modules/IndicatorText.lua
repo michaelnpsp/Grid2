@@ -216,8 +216,7 @@ end
 local function Text_OnUpdate(self, parent, unit, status)
 	local Text = parent[self.name].Text
 	if status then
-		-- Text:SetText( string_cut(status:GetText(unit) or "", self.textlength and 128) )
-		Text:SetText( "En un lugar de la mancha de cuyo nombre no quiero acordarme" )
+		Text:SetText( string_cut(status:GetText(unit) or "", self.textlength) )
 		Text:Show()
 	else
 		Text:Hide()
