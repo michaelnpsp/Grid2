@@ -33,7 +33,7 @@ end
 
 local function anchorToDisabled(info)
 	local _, empty = GetValues(info)
-	return empty
+	return Grid2.isMidnight or empty
 end
 
 local function SetParent(info,v)
@@ -63,7 +63,7 @@ function Grid2Options:MakeIndicatorBarAnchorOptions(indicator,options)
 		order  = 1.91,
 		name   = L["Anchor to"],
 		desc   = L["Anchor the indicator to the selected bar."],
-		get    = function () return indicator.dbx.anchorTo or "NONE" end,
+		get    = function () return (not Grid2.isMidnight and indicator.dbx.anchorTo) or "NONE" end,
 		set    = SetParent,
 		values = GetValues,
 		disabled = anchorToDisabled,
