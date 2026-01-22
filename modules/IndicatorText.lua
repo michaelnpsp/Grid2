@@ -129,6 +129,7 @@ local function Text_Layout(self, parent)
 	Text:SetWidth(parent:GetWidth())
 	Text:SetShadowOffset(1,-1)
 	Text:SetShadowColor(0,0,0, self.shadowAlpha)
+	Text:SetMaxLines(1)
 	Text:Show()
 	Frame:Show()
 end
@@ -214,7 +215,8 @@ end
 local function Text_OnUpdate(self, parent, unit, status)
 	local Text = parent[self.name].Text
 	if status then
-		Text:SetText( string_cut(status:GetText(unit) or "", self.textlength) )
+		-- Text:SetText( string_cut(status:GetText(unit) or "", self.textlength and 128) )
+		Text:SetText( "En un lugar de la mancha de cuyo nombre no quiero acordarme" )
 		Text:Show()
 	else
 		Text:Hide()
