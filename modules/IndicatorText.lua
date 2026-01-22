@@ -3,6 +3,7 @@
 local Grid2 = Grid2
 local GetTime = GetTime
 local string_cut = Grid2.strcututf8
+local canaccessvalue = Grid2.canaccessvalue
 local min = math.min
 local next = next
 
@@ -139,7 +140,7 @@ local function Text_OnUpdateDE(self, parent, unit, status)
 	if status then
 		Text:Show()
 		local expiration = status:GetExpirationTime(unit)
-		if expiration then
+		if expiration and canaccessvalue(expiration) then
 			curTime = GetTime() -- not local because is used later by self.updateFunc
 			if expiration > curTime then
 				if self.stack then
