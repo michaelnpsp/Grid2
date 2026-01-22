@@ -38,7 +38,7 @@ do
 	local PLAYER_ROLES = { TANK = L['Tank'], HEALER = L['Healer'], DAMAGER = L['Damager'], NONE = L['None'] }
 
 	local CLASSES_SPECS = {}
-	if Grid2.versionCli>=30000 then
+	if Grid2.versionCli>=20000 then
 		for classID = 1, 30 do
 		  local info = C_CreatureInfo.GetClassInfo(classID)
 		  if info then
@@ -316,7 +316,7 @@ do
 			L["Player Class"],
 			L["Load the status only if your toon belong to the specified class."]
 		)
-		if Grid2.versionCli>=30000 then
+		if Grid2.versionCli>=20000 then
 			SetFilterOptions( status, options, 20,
 				'playerClassSpec',
 				CLASSES_SPECS,

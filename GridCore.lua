@@ -158,7 +158,7 @@ function Grid2:OnEnable()
 	end
 	if self.isWoW90 then
 		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
-	elseif self.versionCli>=30000 then
+	elseif self.versionCli>=20000 then
 		self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED", "PLAYER_SPECIALIZATION_CHANGED")
 	end
 

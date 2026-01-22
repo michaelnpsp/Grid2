@@ -135,7 +135,7 @@ do
 		CONDITIONS_VALUES[classKey] = classDesc
 		CONDITIONS_NAMES[classKey]  = classDesc
 		-- current class + specs
-		if Grid2.versionCli>=30000 then
+		if Grid2.versionCli>=20000 then
 			local CONDITIONS_EXCLUDE = { TANK = true, HEALER = true, DAMAGER = true, NONE = true }
 			local count = Grid2.GetNumSpecializations()
 			for i=1,count do

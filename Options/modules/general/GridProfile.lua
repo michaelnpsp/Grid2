@@ -65,7 +65,7 @@ options.reset = {
 }
 
 --==============
-if Grid2.versionCli>=30000 then
+if Grid2.versionCli>=20000 then
 
 	options.proenabled = {
 		type = "toggle",

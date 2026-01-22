@@ -459,7 +459,7 @@ end
 -- Enable or disable profiles per specialization
 function Grid2:EnableProfilesPerSpec(enabled)
 	local db = self.profiles.char
-	if not enabled ~= not (db[1] and db.enabled) and self.versionCli>=30000 then
+	if not enabled ~= not (db[1] and db.enabled) and self.versionCli>=20000 then
 		wipe(db)
 		db.enabled = enabled or nil
 		if enabled then
