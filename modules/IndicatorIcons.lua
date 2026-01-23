@@ -30,80 +30,78 @@ local function Icon_OnFrameUpdate(f)
 	local useStatus = self.useStatusColor
 	local i = 1
 	for _, status in ipairs(self.statuses) do
-		if status:IsActive(unit) then
-			if status.GetIcons then
-				local k, textures, counts, expirations, durations, colors, slots = status:GetIcons(unit,max)
-				for j=1,k do
-					local aura = auras[i]
-					aura.status, aura.slotID = status, slots[j]
-					if showIcons then
-						aura.icon:SetTexture(textures[j])
-						if useStatus then
-							local c = colors[j]
-							-- aura:SetBackdropBorderColor(c.r, c.g, c.b, min(c.a,self.borderOpacity) )
-							aura:SetBackdropBorderColor(c.r, c.g, c.b, self.borderOpacity ) -- color is secret we cannot use min()
-						end
-					else
-						local c = colors[j]
-						aura.icon:SetColorTexture(c.r, c.g, c.b)
-					end
-					if showStack then
-						local count = counts[j]
-						if canaccessvalue(count) then
-							aura.text:SetText( count>1 and count or "" )
-						else
-							aura.text:SetText( TruncateWhenZero(count) )
-						end
-					end
-					if showCool then
-						local expiration, duration = expirations[j], durations[j]
-						if canaccessvalue(duration) then
-							aura.cooldown:SetCooldown(expiration-duration, duration)
-						else
-							aura.cooldown:SetCooldownFromExpirationTime(expiration, duration)
-						end
-					end
-					aura:Show()
-					i = i + 1
-				end
-				max = max - k
-			else
+		if status.GetIcons then
+			local k, textures, counts, expirations, durations, colors, slots = status:GetIcons(unit,max)
+			for j=1,k do
 				local aura = auras[i]
-				aura.status, aura.slotID = status, nil
+				aura.status, aura.slotID = status, slots[j]
 				if showIcons then
-					aura.icon:SetTexture(status:GetIcon(unit))
-					aura.icon:SetTexCoord(status:GetTexCoord(unit))
-					aura.icon:SetVertexColor(status:GetVertexColor(unit))
+					aura.icon:SetTexture(textures[j])
 					if useStatus then
-						local r,g,b,a = status:GetColor(unit)
-						aura:SetBackdropBorderColor(r,g,b, min(a or 1,self.borderOpacity) )
+						local c = colors[j]
+						-- aura:SetBackdropBorderColor(c.r, c.g, c.b, min(c.a,self.borderOpacity) )
+						aura:SetBackdropBorderColor(c.r, c.g, c.b, self.borderOpacity ) -- color is secret we cannot use min()
 					end
 				else
-					local r,g,b = status:GetColor(unit)
-					aura.icon:SetColorTexture(r,g,b)
+					local c = colors[j]
+					aura.icon:SetColorTexture(c.r, c.g, c.b)
 				end
 				if showStack then
-					local count = status:GetCount(unit)
-					aura.text:SetText( (issecretvalue(count) or count>1) and count or "")
+					local count = counts[j]
+					if canaccessvalue(count) then
+						aura.text:SetText( count>1 and count or "" )
+					else
+						aura.text:SetText( TruncateWhenZero(count) )
+					end
 				end
 				if showCool then
-					local expiration, duration = status:GetExpirationTime(unit), status:GetDuration(unit)
-					if expiration and duration then
-						if canaccessvalue(duration) then
-							aura.cooldown:SetCooldown(expiration-duration, duration)
-						else
-							aura.cooldown:SetCooldownFromExpirationTime(expiration, duration)
-						end
+					local expiration, duration = expirations[j], durations[j]
+					if canaccessvalue(duration) then
+						aura.cooldown:SetCooldown(expiration-duration, duration)
 					else
-						aura.cooldown:SetCooldown(0, 0)
+						aura.cooldown:SetCooldownFromExpirationTime(expiration, duration)
 					end
 				end
 				aura:Show()
 				i = i + 1
-				max = max - 1
 			end
-			if max<=0 then break end
+			max = max - k
+		elseif status:IsActive(unit) then
+			local aura = auras[i]
+			aura.status, aura.slotID = status, nil
+			if showIcons then
+				aura.icon:SetTexture(status:GetIcon(unit))
+				aura.icon:SetTexCoord(status:GetTexCoord(unit))
+				aura.icon:SetVertexColor(status:GetVertexColor(unit))
+				if useStatus then
+					local r,g,b,a = status:GetColor(unit)
+					aura:SetBackdropBorderColor(r,g,b, min(a or 1,self.borderOpacity) )
+				end
+			else
+				local r,g,b = status:GetColor(unit)
+				aura.icon:SetColorTexture(r,g,b)
+			end
+			if showStack then
+				local count = status:GetCount(unit)
+				aura.text:SetText( (issecretvalue(count) or count>1) and count or "")
+			end
+			if showCool then
+				local expiration, duration = status:GetExpirationTime(unit), status:GetDuration(unit)
+				if expiration and duration then
+					if canaccessvalue(duration) then
+						aura.cooldown:SetCooldown(expiration-duration, duration)
+					else
+						aura.cooldown:SetCooldownFromExpirationTime(expiration, duration)
+					end
+				else
+					aura.cooldown:SetCooldown(0, 0)
+				end
+			end
+			aura:Show()
+			i = i + 1
+			max = max - 1
 		end
+		if max<=0 then break end
 	end
 	for j=i,f.visibleCount do
 		local aura = auras[j]

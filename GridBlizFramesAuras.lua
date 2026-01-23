@@ -7,6 +7,7 @@ local next = next
 local strfind = strfind
 local min = math.min
 local GetUnitAuras = C_UnitAuras.GetUnitAuras
+local GetAuraDataByIndex = C_UnitAuras.GetAuraDataByIndex
 local GetUnitAuraInstanceIDs = C_UnitAuras.GetUnitAuraInstanceIDs
 local GetAuraDataByAuraInstanceID = C_UnitAuras.GetAuraDataByAuraInstanceID
 
@@ -14,6 +15,15 @@ local enabled
 local callbacks = {}
 local unit2frame = {}
 local resultTable = {}
+
+local FILTER2BLIZKEY = {
+	["HELPFUL"] = "buffFrames",
+	["HELPFUL|PLAYER"] = "buffFrames",
+	["HELPFUL|RAID"] = "buffFrames",
+	["HELPFUL|EXTERNAL_DEFENSIVE"] = "CenterDefensiveBuff",
+	["HARMFUL"] = "debuffFrames",
+	["HARMFUL|RAID"] = "dispelDebuffFrames",
+}
 
 --------------------------------------------------------------------------
 -- Init & Update
@@ -85,7 +95,47 @@ function lib.UnregisterCallback(obj)
 end
 
 --------------------------------------------------------------------------
--- Functions to access Blizzard unit frames Get Auras
+-- Functions to check Blizzard unit frames Auras
+--------------------------------------------------------------------------
+
+local function HasAuras(unit, key, filter)
+	local frame = unit2frame[unit]
+	if frame then
+		local aurasFrame = frame[key]
+		local auraInstanceID = aurasFrame.auraInstanceID
+		if #aurasFrame>0 then -- buffs or debuffs
+			return aurasFrame[1]:IsShown()
+		else -- defensive single buff
+			return aurasFrame.auraInstanceID~=nil
+		end
+	elseif filter then -- fallback to standard filter
+		return GetAuraDataByIndex(unit, 1, filter)~=nil
+	end
+	return nil
+end
+
+function lib.UnitHasBuffs(unit, filter)
+	return HasAuras(unit, "buffFrames", filter)
+end
+
+function lib.UnitHasBuffsDefensive(unit, filter)
+	return HasAuras(unit, "CenterDefensiveBuff", filter)
+end
+
+function lib.UnitHasDebuffs(unit, filter)
+	return HasAuras(unit, "debuffFrames", filter)
+end
+
+function lib.UnitHasDebuffsDispellable(unit, filter)
+	return HasAuras(unit, "dispelDebuffFrames", filter)
+end
+
+function lib.UnitHasAuras(unit, filter)
+	return HasAuras(unit, FILTER2BLIZKEY[filter] or "buffFrames", filter)
+end
+
+--------------------------------------------------------------------------
+-- Functions to get Blizzard unit frames Auras
 --------------------------------------------------------------------------
 
 local function GetAuras(unit, key, filter, max, sortRule, sortDir, onlyIDs, result)
@@ -136,18 +186,8 @@ function lib.GetUnitDebuffsDispellable(unit, filter, max, sortRule, sortDir, onl
 	return GetAuras(unit, "dispelDebuffFrames", filter, max, sortRule, sortDir, onlyIDs, result)
 end
 
-local FILTER2FUNC = {
-	["HELPFUL"] = lib.GetUnitBuffs,
-	["HELPFUL|PLAYER"] = lib.GetUnitBuffs,
-	["HELPFUL|RAID"] = lib.GetUnitBuffs,
-	["HELPFUL|EXTERNAL_DEFENSIVE"] = lib.GetUnitBuffsDefensive,
-	["HARMFUL"] = lib.GetUnitDebuffs,
-	["HARMFUL|RAID"] = lib.GetUnitDebuffsDispellable,
-}
-
 function lib.GetUnitAuras(unit, filter, max, sortRule, sortDir, onlyIDs, result)
-	local func = FILTER2FUNC[filter] or lib.GetUnitBuffs
-	return func(unit, filter, max, sortRule, sortDir, onlyIDs, result)
+	return GetAuras(unit, FILTER2BLIZKEY[filter] or "buffFrames", filter, max, sortRule, sortDir, onlyIDs, result)
 end
 
 -- Publish our internal library

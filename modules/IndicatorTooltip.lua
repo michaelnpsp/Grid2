@@ -59,7 +59,7 @@ function Grid2.indicatorPrototype:EnableTooltips()
 	if self.dbx.tooltipEnabled then
 		if not next(indicators) then
 			Tooltip:SetMouseHooks(true)
-			timer = Grid2:CreateTimer( TimerEvent, 0.2 )
+			timer = Grid2:CreateTimer( TimerEvent, 0.25 )
 		end
 		indicators[self] = self.GetMouseOverStatus or self.GetCurrentStatus
 	end

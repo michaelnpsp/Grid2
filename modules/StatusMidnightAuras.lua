@@ -51,7 +51,7 @@ Enum.UnitAuraSortRule.NameOnly - Pure comparison on name only.
 Enum.UnitAuraSortRule.Default, Enum.UnitAuraSortDirection.Reverse
 --]]
 
-local function GetIconsSorted(self, unit, max, filter, sortRule, sortDir, colorCurve, aurasFunc, displayFunc)
+local function GetIconsSorted(unit, max, filter, sortRule, sortDir, colorCurve, aurasFunc, displayFunc)
 	local i = 0
 	local color = colorCurve.r and colorCurve or nil
 	local auras = (aurasFunc or GetUnitAuras)(unit, filter, displayFunc and 40 or max, sortRule, sortDir)
@@ -79,12 +79,14 @@ do
 	Buffs.GetColor = Grid2.statusLibrary.GetColor
 
 	function Buffs:GetIcons(unit, max)
-		return GetIconsSorted(self, unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.aura_color, self.aura_func)
+		return GetIconsSorted(unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.aura_color, self.aura_func)
 	end
 
 	function Buffs:GetTooltip(unit, tip, slotID)
 		if slotID then
 			tip:SetUnitAuraByAuraInstanceID(unit, slotID)
+		else
+			tip:SetUnitAuraByAuraInstanceID(unit, select(6,self:GetIconData(unit)) )
 		end
 	end
 
@@ -110,24 +112,34 @@ do
 		end
 	end
 
-	function Buffs:IsActive(unit)
-		return true
+	function Buffs:IsActiveDef(unit)
+		return GetAuraDataByIndex(unit, 1, self.aura_filter)~=nil
+	end
+
+	function Buffs:IsActiveLBA(unit)
+		return LBA.UnitHasAuras(unit, self.aura_filter)
+	end
+
+	function Buffs:GetIconData(unit)
+		local _, tex, cnt, exp, dur, col, slots = GetIconsSorted(unit, 1, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.aura_color, self.aura_func)
+		return tex[1], cnt[1], exp[1], dur[1], col[1], slots[1]
 	end
 
 	function Buffs:UpdateDB()
 		local filter = self.dbx.aura_filter or {}
+		self.aura_color    = self.dbx.color1
 		self.aura_filter   = filter.blizFilter or filter.filter or 'HELPFUL'
 		self.aura_sortRule = filter.sortRule or 0
 		self.aura_sortDir  = filter.sortDir or 0
 		self.aura_func     = filter.blizFilter and LBA.GetUnitAuras or nil
-		self.aura_color    = self.dbx.color1
+		self.IsActive      = filter.blizFilter and self.IsActiveLBA or self.IsActiveDef
 	end
 
 	-- Registration
 	Grid2.setupFunc["mbuffs"] = function(baseKey, dbx)
 		local status = Grid2.statusPrototype:new(baseKey)
 		status:Inject(Buffs)
-		Grid2:RegisterStatus(status, { "icons" }, baseKey, dbx)
+		Grid2:RegisterStatus(status, { "icons", "icon", "tooltip" }, baseKey, dbx)
 		return status
 	end
 
@@ -151,7 +163,7 @@ do
 	Debuffs.GetColor = Grid2.statusLibrary.GetColor
 
 	function Debuffs:GetIcons(unit, max)
-		return GetIconsSorted(self, unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.colorCurve, self.aura_func, self.aura_display)
+		return GetIconsSorted(unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.colorCurve, self.aura_func, self.aura_display)
 	end
 
 	function Debuffs:GetTooltip(unit, tip, slotID)
@@ -245,7 +257,7 @@ do
 	end
 
 	function DebuffsDispell:GetIcons(unit, max)
-		return GetIconsSorted(self, unit, max, "HARMFUL|RAID", nil, nil, colorCurve)
+		return GetIconsSorted(unit, max, "HARMFUL|RAID", nil, nil, colorCurve)
 	end
 
 	function DebuffsDispell:GetTooltip(unit, tip, slotID)

@@ -4,7 +4,9 @@ local Grid2 = Grid2
 local GetTime = GetTime
 local fmt = string.format
 
+local issecretvalue = Grid2.issecretvalue
 local canaccessvalue = Grid2.canaccessvalue
+local TruncateWhenZero = C_StringUtil.TruncateWhenZero
 
 local function Icon_Create(self, parent)
 	local f = self:Acquire("Frame", parent, "BackdropTemplate")
@@ -53,61 +55,79 @@ local function Icon_Create(self, parent)
 	end
 end
 
+
 local function Icon_OnUpdate(self, parent, unit, status)
 	local Frame = parent[self.name]
 	if not status then Frame:Hide(); return; end
-
 	local Icon = Frame.Icon
-	local r,g,b,a = status:GetColor(unit)
-
-	if self.disableIcon then
-		Icon:SetColorTexture(r,g,b)
-	else
-		Icon:SetTexture(status:GetIcon(unit))
-	end
 	Icon:SetTexCoord(status:GetTexCoord(unit))
 	Icon:SetVertexColor(status:GetVertexColor(unit))
-
-	local border = status:GetBorder()
-	if border==1 or self.useStatusColor then 	-- border=1 => always draw a border with the status color
-		Frame:SetBackdropBorderColor(r,g,b,a)
-	elseif border and self.borderSize then   	-- border=0 => status supports a border
-		local c = self.color
-		Frame:SetBackdropBorderColor(c.r, c.g, c.b, c.a)
-	else										-- border=nil => never draw a border for the status
-		Frame:SetBackdropBorderColor(0,0,0,0)
-	end
-	Icon:SetAlpha(a or 1)
-
-	if not self.disableStack then
-		local CooldownText = Frame.CooldownText
-		local count = status:GetCount(unit)
-		if count>1 then
+	if status.GetIconData then
+		local tex, cnt, exp, dur, color = status:GetIconData(unit)
+		if self.disableIcon then
+			Icon:SetColorTexture(color.r, color.g, color.b)
+		else
+			Icon:SetTexture(tex)
+		end
+		if self.borderSize then
+			local c = self.useStatusColor and color or self.color
+			Frame:SetBackdropBorderColor(c.r, c.g, c.b, c.a)
+		end
+		Icon:SetAlpha(color.a or 1)
+		if not self.disableStack then
+			Frame.CooldownText:SetText( TruncateWhenZero(cnt) )
+		end
+		if not self.disableCooldown and exp and dur then
+			Frame.Cooldown:SetCooldownFromExpirationTime(exp, dur)
+		end
+	else
+		local r,g,b,a = status:GetColor(unit)
+		if self.disableIcon then
+			Icon:SetColorTexture(r,g,b)
+		else
+			Icon:SetTexture(status:GetIcon(unit))
+		end
+		local border = status:GetBorder()
+		if border==1 or self.useStatusColor then 	-- border=1 => always draw a border with the status color
+			Frame:SetBackdropBorderColor(r,g,b,a)
+		elseif border and self.borderSize then   	-- border=0 => status supports a border
+			local c = self.color
+			Frame:SetBackdropBorderColor(c.r, c.g, c.b, c.a)
+		else										-- border=nil => never draw a border for the status
+			Frame:SetBackdropBorderColor(0,0,0,0)
+		end
+		Icon:SetAlpha(a or 1)
+		if not self.disableStack then
+			local CooldownText = Frame.CooldownText
 			if CooldownText.fontSize then -- This is a ugly fix for github issue #152
 				CooldownText:SetFont(self.textfont, CooldownText.fontSize, self.dbx.fontFlags or "OUTLINE" )
 				CooldownText.fontSize = nil
 			end
-			CooldownText:SetText( count )
-			CooldownText:Show()
-		else
-			CooldownText:Hide()
-		end
-	end
-
-	if not self.disableCooldown then
-		local expiration, duration = status:GetExpirationTime(unit), status:GetDuration(unit)
-		if expiration and duration then
-			if canaccessvalue(duration) then
-				Frame.Cooldown:SetCooldown(expiration - duration, duration)
+			local count = status:GetCount(unit)
+			if issecretvalue(count) then
+				CooldownText:SetText( TruncateWhenZero(count) )
+				CooldownText:Show()
+			elseif count>1 then
+				CooldownText:SetText( count )
+				CooldownText:Show()
 			else
-				Frame.Cooldown:SetCooldownFromExpirationTime(expiration, duration)
+				CooldownText:Hide()
 			end
-			Frame.Cooldown:Show()
-		else
-			Frame.Cooldown:Hide()
+		end
+		if not self.disableCooldown then
+			local expiration, duration = status:GetExpirationTime(unit), status:GetDuration(unit)
+			if expiration and duration then
+				if canaccessvalue(duration) then
+					Frame.Cooldown:SetCooldown(expiration - duration, duration)
+				else
+					Frame.Cooldown:SetCooldownFromExpirationTime(expiration, duration)
+				end
+				Frame.Cooldown:Show()
+			else
+				Frame.Cooldown:Hide()
+			end
 		end
 	end
-
 	Frame:Show()
 end
 
