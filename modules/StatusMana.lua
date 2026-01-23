@@ -14,6 +14,7 @@ local UnitPowerType = UnitPowerType
 local UnitPower = UnitPower
 local UnitPowerMax = UnitPowerMax
 local unit_is_valid = Grid2.roster_guids
+local canaccessvalue = Grid2.canaccessvalue
 
 local statuses = {}  -- Enabled statuses
 
@@ -61,7 +62,8 @@ function PowerAlt:UpdateUnitPower(unit, powerType)
 end
 
 function PowerAlt:IsActive(unit)
-	return UnitPowerMax(unit,10)>0
+	local power = UnitPowerMax(unit,10)
+	return canaccessvalue(power) and power>0
 end
 
 if Grid2.secretsEnabled then

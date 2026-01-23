@@ -221,6 +221,7 @@ local function Icon_Layout(self, parent)
 				local color, text = self.ctColor, frame.cooldown:GetCountdownFontString()
 				text:SetFont(self.ctFont, self.ctFontSize, self.ctFontFlags)
 				text:SetTextColor(color.r, color.g, color.b, color.a)
+				text:SetMaxLines(1)
 			end
 			frame.cooldown:Show()
 		elseif frame.cooldown then
