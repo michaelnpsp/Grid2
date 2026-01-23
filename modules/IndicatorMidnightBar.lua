@@ -5,7 +5,6 @@ if not Grid2.secretsEnabled then return end
 local Grid2 = Grid2
 local Grid2Frame = Grid2Frame
 local min = min
-
 local AlignPoints = Grid2.AlignPoints
 local defaultBackColor = { r=0, g=0, b=0, a=1 }
 
@@ -31,78 +30,80 @@ local function Bar_Layout(self, parent)
 	Bar:SetOrientation(orient)
 	Bar:SetStatusBarTexture(self.texture)
 	Bar:SetReverseFill(self.reverseFill)
-	local parentName = self.parentName
-	if parentName then
-		local PBar = parent[parentName]
-		Bar:SetFrameLevel( PBar:GetFrameLevel() )
-		Bar:SetSize( PBar:GetWidth(), PBar:GetHeight() )
-		Bar:SetPoint( points[1], PBar:GetStatusBarTexture(), points[2], 0, 0)
-		Bar:SetPoint( points[3], PBar:GetStatusBarTexture(), points[4], 0, 0)
-		if bgTex then bgTex:Hide() end
-	else
-		local w = self.width  or parent.container:GetWidth()
-		local h = self.height or parent.container:GetHeight()
-		Bar:SetFrameLevel(level)
-		Bar:SetSize(w, h)
-		Bar:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
-		local color = self.backColor
-		if color then
-			local tex = Bar:GetStatusBarTexture()
-			local layer, sublayer = tex:GetDrawLayer()
-			bgTex:SetDrawLayer(layer, sublayer-1)
-			bgTex:SetTexture(self.backTexture)
-			bgTex:ClearAllPoints()
-			if self.dbx.invertColor then
-				bgTex:SetAllPoints(Bar)
-			else
-				bgTex:SetPoint( points[1], tex, points[2], 0, 0)
-				bgTex:SetPoint( points[3], tex, points[4], 0, 0)
-				bgTex:SetPoint( points[2], Bar, points[2], 0, 0)
-				bgTex:SetPoint( points[4], Bar, points[4], 0, 0)
-				bgTex:SetVertexColor( color.r, color.g, color.b, color.a )
-			end
-			bgTex:Show()
-		elseif bgTex then
-			bgTex:Hide()
+	local w = self.width  or parent.container:GetWidth()
+	local h = self.height or parent.container:GetHeight()
+	Bar:SetFrameLevel(level)
+	Bar:SetSize(w, h)
+	Bar:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
+	local color = self.backColor
+	if color then
+		local tex = Bar:GetStatusBarTexture()
+		local layer, sublayer = tex:GetDrawLayer()
+		bgTex:SetDrawLayer(layer, sublayer-1)
+		bgTex:SetTexture(self.backTexture)
+		bgTex:ClearAllPoints()
+		if self.dbx.invertColor then
+			bgTex:SetAllPoints(Bar)
+		else
+			bgTex:SetPoint( points[1], tex, points[2], 0, 0)
+			bgTex:SetPoint( points[3], tex, points[4], 0, 0)
+			bgTex:SetPoint( points[2], Bar, points[2], 0, 0)
+			bgTex:SetPoint( points[4], Bar, points[4], 0, 0)
+			bgTex:SetVertexColor( color.r, color.g, color.b, color.a )
 		end
+		bgTex:Show()
+	elseif bgTex then
+		bgTex:Hide()
+	end
+	if self.direction then
+		Bar.durationObject = Bar.durationObject or C_DurationUtil.CreateDuration()
 	end
 	Bar.fgTex = Bar:GetStatusBarTexture()
 	Bar:Show()
 end
 
--- normal setvalue function
-local function Bar_SetValue(self, parent, value, min, max)
-	local bar = parent[self.name]
-	bar:SetMinMaxValues(min or 0, max or 1)
-	bar:SetValue(value)
-end
-
 --{{{ Bar OnUpdate
 -- normal updates
 local function Bar_OnUpdate(self, parent, unit, status)
+	local bar = parent[self.name]
 	if status then
 		if status.GetValueMinMax then
-			self:SetValue( parent, status:GetValueMinMax(unit) )
+			local value, min, max = status:GetValueMinMax(unit)
+			bar:SetMinMaxValues(min or 0, max or 1)
+			bar:SetValue(value)
 		else
-			self:SetValue( parent, (status:GetPercent(unit)) )
+			bar:SetMinMaxValues(0, 1)
+			bar:SetValue( (status:GetPercent(unit)) )
 		end
+		if self.hideInactive then bar:Show() end
+	elseif self.hideInactive then
+		bar:Hide()
 	else
-		self:SetValue( parent, 0 )
+		bar:SetValue(0)
 	end
 end
 
--- updates when background is enabled, bar hidden if no status active
-local function Bar_OnUpdate2(self, parent, unit, status)
+local function Bar_OnUpdateD(self, parent, unit, status)
+	local bar = parent[self.name]
 	if status then
-		if status.GetValueMinMax then
-			self:SetValue( parent, status:GetValueMinMax(unit) )
-		else
-			self:SetValue( parent, (status:GetPercent(unit)) )
+		local duration = status:GetDuration(unit)
+		if duration then
+			local expiration =	status:GetExpirationTime(unit)
+			if expiration then
+				bar.durationObject:SetTimeFromEnd(expiration, duration)
+			else
+				bar.durationObject:SetTimeFromStart(status:GetStartTime(unit) or GetTime(), duration)
+			end
+			bar:SetTimerDuration(bar.durationObject, 0, self.direction)
+			if self.hideInactive then bar:Show() end
+			return
 		end
-		parent[self.name]:Show()
+	end
+	if self.hideInactive then
+		bar:Hide()
 	else
-		self:SetValue( parent, 0 )
-		parent[self.name]:Hide()
+		bar:SetMinMaxValues(0,1)
+		bar:SetValue(0)
 	end
 end
 --}}}
@@ -139,9 +140,10 @@ local function Bar_UpdateDB(self)
 	self.height      = dbx.height
 	self.reverseFill = not not dbx.reverseFill
 	self.backColor   = dbx.backColor or (dbx.invertColor and defaultBackColor) or nil
-	self.OnUpdate    = dbx.hideWhenInactive and Bar_OnUpdate2 or Bar_OnUpdate
-	self.SetValue    = Bar_SetValue
 	self.CanCreate   = self.prototype.CanCreate
+	self.hideInactive= dbx.hideWhenInactive
+	self.direction   = (dbx.duration==true and 1) or (dbx.duration==false and 0) or nil
+	self.OnUpdate    = dbx.duration~=nil and Bar_OnUpdateD or Bar_OnUpdate
 end
 
 local function BarColor_OnUpdate(self, parent, unit, status)

@@ -252,28 +252,63 @@ function Grid2Options:MakeIndicatorBarMiscOptions(indicator, options)
 		end,
 	}
 	self:MakeHeaderOptions( options, "Display" )
-	options.duration = {
-		type = "toggle",
-		name = L["Show duration"],
-		desc = L["Show the time remaining."],
-		order = 81,
-		tristate = false,
-		get = function () return indicator.dbx.duration	end,
-		set = function (_, v)
-			indicator.dbx.duration = v or nil
-			self:RefreshIndicator(indicator, "Update")
-		end,
-	}
-	options.stack = {
-		type = "toggle",
-		name = L["Show stack"],
-		desc = L["Show the number of stacks."],
-		order = 85,
-		tristate = false,
-		get = function () return indicator.dbx.stack end,
-		set = function (_, v)
-			indicator.dbx.stack = v or nil
-			self:RefreshIndicator(indicator, "Update")
-		end,
-	}
+	if Grid2.isMidnight then
+		options.remaining = {
+			type = "toggle",
+			name = L["Remaining time"],
+			desc = L["Show the remaining time."],
+			order = 81,
+			tristate = false,
+			get = function () return indicator.dbx.duration==true end,
+			set = function (_, v)
+				if v then
+					indicator.dbx.duration = true
+				else
+					indicator.dbx.duration = nil
+				end
+				self:RefreshIndicator(indicator, "Layout")
+			end,
+		}
+		options.elapsed = {
+			type = "toggle",
+			name = L["Elapsed time"],
+			desc = L["Show the elapsed time."],
+			order = 82,
+			tristate = false,
+			get = function () return indicator.dbx.duration==false end,
+			set = function (_, v)
+				if v then
+					indicator.dbx.duration = false
+				else
+					indicator.dbx.duration = nil
+				end
+				self:RefreshIndicator(indicator, "Layout")
+			end,
+		}
+	else
+		options.duration = {
+			type = "toggle",
+			name = L["Show Duration"],
+			desc = L["Show the remaining time."],
+			order = 81,
+			tristate = false,
+			get = function () return indicator.dbx.duration end,
+			set = function (_, v)
+				indicator.dbx.duration = v or nil
+				self:RefreshIndicator(indicator, "Update")
+			end,
+		}
+		options.stack = {
+			type = "toggle",
+			name = L["Show stack"],
+			desc = L["Show the number of stacks."],
+			order = 85,
+			tristate = false,
+			get = function () return indicator.dbx.stack end,
+			set = function (_, v)
+				indicator.dbx.stack = v or nil
+				self:RefreshIndicator(indicator, "Update")
+			end,
+		}
+	end
 end
