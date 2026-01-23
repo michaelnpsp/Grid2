@@ -1,6 +1,6 @@
 -- buffs and debuffs statuses for midnight
 
-local LBA = LibStub("LibGrid2BlizFramesAuras-1.0")
+local LBA = Grid2.BlizFramesAuras
 
 local myUnits = Grid2.roster_my_units
 local rosterUnits = Grid2.roster_guids

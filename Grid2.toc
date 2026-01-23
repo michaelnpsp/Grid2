@@ -36,7 +36,6 @@ Libs\LibCustomGlow-1.0\LibCustomGlow-1.0.lua
 Libs\LibClassicDurations\LibClassicDurations.xml
 #@end-version-classic@
 #@retail@
-Libs\LibGrid2BlizFramesAuras-1.0\LibGrid2BlizFramesAuras-1.0.lua
 #@end-retail@
 #@end-no-lib-strip@
 
@@ -64,6 +63,7 @@ GridDefaults.lua
 #@retail@
 GridDefaultsRetail.lua
 GridDefaultsMidnight.lua
+GridBlizFramesAuras.lua
 #@end-retail@
 #@non-retail@
 GridDefaultsClassic.lua
