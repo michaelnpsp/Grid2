@@ -27,7 +27,6 @@ local UnitInRange = UnitInRange
 local UnitIsVisible = UnitIsVisible
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitGroupRolesAssigned = Grid2.UnitGroupRolesAssigned
-local grouped = Grid2.grouped_units
 return function(unit, mouseover) return (%s) end
 ]]
 
@@ -36,7 +35,7 @@ local function UpdateDirections()
 	if x1 then
 		local facing = GetPlayerFacing()
 		if facing then
-			for unit,guid in Grid2:IterateRosterUnits() do
+			for unit,guid in Grid2:IterateGroupedPlayers() do
 				local direction, distance, update
 				if not UnitIsUnit(unit, "player") and UnitCheck(unit, mouseover) then
 					local x2,y2, _, map2 = UnitPosition(unit)
@@ -87,7 +86,7 @@ end
 function Direction:UpdateDB()
 	local dbx, t, u = self.dbx, {}, {}
 	SetMouseoverHooks(dbx.StickyMouseover)
-	if dbx.ShowOutOfRange  then u[#u+1]= "(grouped[unit] and not UnitInRange(unit))" end
+	if dbx.ShowOutOfRange  then u[#u+1]= "not UnitInRange(unit)" end
 	if dbx.ShowVisible 	   then u[#u+1]= "UnitIsVisible(unit)" end
 	if dbx.ShowDead 	   then u[#u+1]= "UnitIsDeadOrGhost(unit) " end
 	if #u>0                then t[#t+1]= table.concat(u, dbx.lazyFilter and ' or ' or ' and '); wipe(u) end
