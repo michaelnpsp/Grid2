@@ -17,8 +17,9 @@ local roster_units = Grid2.roster_units
 local timer
 local colors
 local distances
-local mouseover = ""
+local mouseover
 local directions = {}
+local rangecache
 local UnitCheck
 
 local CODE = [[
@@ -27,7 +28,7 @@ local UnitInRange = UnitInRange
 local UnitIsVisible = UnitIsVisible
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitGroupRolesAssigned = Grid2.UnitGroupRolesAssigned
-return function(unit, mouseover) return (%s) end
+return function(unit, mouseover, crange) return (%s) end
 ]]
 
 local function UpdateDirections()
@@ -37,7 +38,7 @@ local function UpdateDirections()
 		if facing then
 			for unit,guid in Grid2:IterateGroupedPlayers() do
 				local direction, distance, update
-				if not UnitIsUnit(unit, "player") and UnitCheck(unit, mouseover) then
+				if not UnitIsUnit(unit, "player") and UnitCheck(unit, mouseover, rangecache) then
 					local x2,y2, _, map2 = UnitPosition(unit)
 					if map1 == map2 then
 						if x2 then
@@ -73,25 +74,25 @@ do
 	end
 
 	local function OnMouseLeave()
-		mouseover = ""
+		mouseover = nil
 	end
 
 	SetMouseoverHooks = function(enable)
 		Grid2Frame:SetEventHook( 'OnEnter', OnMouseEnter, enable )
 		Grid2Frame:SetEventHook( 'OnLeave', OnMouseLeave, enable )
-		if not enable then mouseover = "" end
+		if not enable then mouseover = nil end
 	end
 end
 
 function Direction:UpdateDB()
 	local dbx, t, u = self.dbx, {}, {}
 	SetMouseoverHooks(dbx.StickyMouseover)
-	if dbx.ShowOutOfRange  then u[#u+1]= "not UnitInRange(unit)" end
+	if dbx.ShowOutOfRange  then u[#u+1]= Grid2.secretsEnabled and "not crange[unit]" or "not UnitInRange(unit)" end
 	if dbx.ShowVisible 	   then u[#u+1]= "UnitIsVisible(unit)" end
 	if dbx.ShowDead 	   then u[#u+1]= "UnitIsDeadOrGhost(unit) " end
 	if #u>0                then t[#t+1]= table.concat(u, dbx.lazyFilter and ' or ' or ' and '); wipe(u) end
 	if dbx.StickyTarget	   then u[#u+1]= "UnitIsUnit(unit,'target')" end
-	if dbx.StickyMouseover then u[#u+1]= "UnitIsUnit(unit,mouseover)" end
+	if dbx.StickyMouseover then u[#u+1]= "(mouseover and UnitIsUnit(unit,mouseover))" end
 	if dbx.StickyFocus	   then u[#u+1]= "UnitIsUnit(unit,'focus')" end
 	if dbx.StickyTanks	   then u[#u+1]= "UnitGroupRolesAssigned(unit)=='TANK'" end
 	if #u>0                then t[#t+1]= table.concat(u, ' or '); wipe(u) end
@@ -107,6 +108,7 @@ function Direction:UpdateDB()
 		distances = nil
 		self.GetVertexColor = Grid2.statusLibrary.GetColor
 	end
+	rangecache = Grid2:GetStatusByName('range').cache -- used in Midnight because UnitInRange() return secrets
 end
 
 function Direction:OnEnable()
