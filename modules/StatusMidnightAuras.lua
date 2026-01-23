@@ -82,6 +82,11 @@ do
 		return GetIconsSorted(unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.aura_color, self.aura_func)
 	end
 
+	function Buffs:GetIconData(unit)
+		local _, tex, cnt, exp, dur, col, slots = GetIconsSorted(unit, 1, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.aura_color, self.aura_func)
+		return tex[1], cnt[1], exp[1], dur[1], col[1], slots[1]
+	end
+
 	function Buffs:GetTooltip(unit, tip, slotID)
 		if slotID then
 			tip:SetUnitAuraByAuraInstanceID(unit, slotID)
@@ -118,11 +123,6 @@ do
 
 	function Buffs:IsActiveLBA(unit)
 		return LBA.UnitHasAuras(unit, self.aura_filter)
-	end
-
-	function Buffs:GetIconData(unit)
-		local _, tex, cnt, exp, dur, col, slots = GetIconsSorted(unit, 1, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.aura_color, self.aura_func)
-		return tex[1], cnt[1], exp[1], dur[1], col[1], slots[1]
 	end
 
 	function Buffs:UpdateDB()
@@ -166,9 +166,16 @@ do
 		return GetIconsSorted(unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.colorCurve, self.aura_func, self.aura_display)
 	end
 
+	function Debuffs:GetIconData(unit)
+		local _, tex, cnt, exp, dur, col, slots = GetIconsSorted(unit, 1, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.colorCurve, self.aura_func, self.aura_display)
+		return tex[1], cnt[1], exp[1], dur[1], col[1], slots[1]
+	end
+
 	function Debuffs:GetTooltip(unit, tip, slotID)
 		if slotID then
 			tip:SetUnitAuraByAuraInstanceID(unit, slotID)
+		else
+			tip:SetUnitAuraByAuraInstanceID(unit, select(6,self:GetIconData(unit)) )
 		end
 	end
 
@@ -194,8 +201,12 @@ do
 		end
 	end
 
-	function Debuffs:IsActive(unit)
-		return true
+	function Debuffs:IsActiveDef(unit)
+		return GetAuraDataByIndex(unit, 1, self.aura_filter)~=nil
+	end
+
+	function Debuffs:IsActiveLBA(unit)
+		return LBA.UnitHasAuras(unit, self.aura_filter)
 	end
 
 	function Debuffs:UpdateDB()
@@ -205,6 +216,7 @@ do
 		self.aura_sortDir  = filter.sortDir or 0
 		self.aura_display  = filterTypedFuncs[filter.typed]
 		self.aura_func     = filter.blizFilter and LBA.GetUnitAuras or nil
+		self.IsActive      = filter.blizFilter and self.IsActiveLBA or self.IsActiveDef
 		self.colorCurve:ClearPoints()
 		local colors = self.dbx.colors or {}
 		for typ, def in pairs(Grid2.DispelCurveDefaults) do
@@ -218,7 +230,7 @@ do
 		status:Inject(Debuffs)
 		status.colorCurve = C_CurveUtil.CreateColorCurve()
 		status.colorCurve:SetType(Enum.LuaCurveType.Step)
-		Grid2:RegisterStatus(status, { "icons" }, baseKey, dbx)
+		Grid2:RegisterStatus(status, { "icons", "icon", "tooltip" }, baseKey, dbx)
 		return status
 	end
 
