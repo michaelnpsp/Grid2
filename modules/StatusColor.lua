@@ -10,6 +10,7 @@ local UnitIsCharmed= UnitIsCharmed
 local UnitCanAttack = UnitCanAttack
 local UnitCreatureType= UnitCreatureType
 local UnitIsTapDenied = UnitIsTapDenied
+local canaccessvalue = Grid2.canaccessvalue
 
 -- Simple static color status
 local Color = {
@@ -66,7 +67,7 @@ function CreatureColor:UnitColor(unit)
 		return p.colors.HOSTILE
 	else
 		local colors, color = p.colors, UnitCreatureType(unit)
-		return colors[color or "UNKNOWN_UNIT"] or colors.UNKNOWN_UNIT
+		return colors[canaccessvalue(color) and color or "UNKNOWN_UNIT"] or colors.UNKNOWN_UNIT
 	end
 end
 
