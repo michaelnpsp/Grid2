@@ -760,7 +760,7 @@ function Grid2Options:MakeIndicatorTooltipsOptions(indicator, options)
 			indicator.dbx.enableTooltips = nil -- remove old unused setting
 			indicator.dbx.tooltipAnchor = nil
 			indicator.dbx.tooltipEnabled = v or nil
-			indicator:DisableTooltips(); indicator:EnableTooltips()
+			self:RefreshIndicator( indicator, "Create" )
 		end,
 	}
 	options.tooltipAnchor = {

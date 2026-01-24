@@ -33,7 +33,6 @@ local function Icon_Create(self, parent)
 		Cooldown:Hide()
 		f.Cooldown = Cooldown
 	end
-
 	if not self.disableStack then
 		local TextFrame
 		if self.disableCooldown then
@@ -53,6 +52,7 @@ local function Icon_Create(self, parent)
 		CooldownText:Hide()
 		f.CooldownText = CooldownText
 	end
+	self:EnableFrameTooltips(f, self.dbx.tooltipEnabled)
 end
 
 

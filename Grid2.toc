@@ -87,6 +87,7 @@ modules\IndicatorShape.lua
 modules\IndicatorPrivateAuras.lua
 modules\IndicatorMidnightBar.lua
 modules\IndicatorMidnightMultiBar.lua
+modules\IndicatorMidnightTooltip.lua
 #@end-retail@
 
 # Statuses
