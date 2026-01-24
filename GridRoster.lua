@@ -90,14 +90,13 @@ do
 	local function UpdateUnit(unit)
 		local modified
 		local guid = UnitGUID(unit)
-		local secret = issecretvalue(guid)
-		if secret or guid ~= roster_guids[unit] then
+		local old_guid = roster_guids[unit]
+		if issecretvalue(guid) or issecretvalue(old_guid) or guid ~= roster_guids[unit] then
 			if pet_of_unit[unit] then
-				local old_guid = roster_guids[unit]
 				if not issecretvalue(old_guid) and unit == roster_units[old_guid] then
 					roster_units[old_guid] = nil
 				end
-				if not secret then
+				if not issecretvalue(guid) then
 					roster_units[guid] = unit
 				end
 			end
@@ -109,7 +108,7 @@ do
 		if not issecretvalue(name) and name == UNKNOWNOBJECT then
 			roster_unknowns = true
 		end
-		if issecretvalue(name) or name ~= roster_names[unit] then
+		if issecretvalue(name) or issecretvalue(roster_names[unit]) or name ~= roster_names[unit] then
 			roster_names[unit] = name
 			modified = true
 		end

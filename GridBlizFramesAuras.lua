@@ -103,13 +103,13 @@ local function HasAuras(unit, key, filter)
 	if frame then
 		local aurasFrame = frame[key]
 		local auraInstanceID = aurasFrame.auraInstanceID
-		if #aurasFrame>0 then -- buffs or debuffs
-			return aurasFrame[1]:IsShown()
-		else -- defensive single buff
-			return aurasFrame.auraInstanceID~=nil
+		if #aurasFrame>0 then -- buffs & debuffs otherwise DefensiveBuff
+			aurasFrame = aurasFrame[1]
 		end
+		return aurasFrame:IsShown() and aurasFrame.auraInstanceID
 	elseif filter then -- fallback to standard filter
-		return GetAuraDataByIndex(unit, 1, filter)~=nil
+		local aura = GetAuraDataByIndex(unit, 1, filter)
+		return aura and aura.auraInstanceID
 	end
 	return nil
 end

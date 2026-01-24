@@ -524,9 +524,25 @@ end,{
 --==============================================
 
 function Grid2Options:MakeMidnightDispellableByMeOptions(status, options)
+	options.bliz_filter = {
+		type = "toggle",
+		order = 1,
+		width = "full",
+		name = L["Get Dispellable debuffs from Blizzard Unit Frames"],
+		get = function() return status.dbx.blizFilter~=nil end,
+		set = function(_, v)
+			status.dbx.blizFilter = v and "HARMFUL|RAID" or nil
+			refresh_aura_status(status)
+		end,
+	}
+	options.colors_header = {
+		type = "header",
+		order = 2,
+		name = L["Debuff Type Colors"],
+	}
 	for typ,v in pairs(Grid2.DispelCurveDefaults) do
 		local idx, color = unpack(v)
-		make_colortype_option(status, options, typ, idx~=0 and idx, color)
+		make_colortype_option(status, options, typ, idx~=0 and idx+100, color)
 	end
 	make_colors_reset_option(status, options)
 end

@@ -269,20 +269,30 @@ do
 	end
 
 	function DebuffsDispell:GetIcons(unit, max)
-		return GetIconsSorted(unit, max, "HARMFUL|RAID", nil, nil, colorCurve)
+		return GetIconsSorted(unit, max, "HARMFUL|RAID", nil, nil, colorCurve, self.aura_func)
+	end
+
+	function Debuffs:GetIconData(unit)
+		local _, tex, cnt, exp, dur, col, slots = GetIconsSorted(unit, 1, "HARMFUL|RAID", nil, nil, colorCurve, self.aura_func)
+		return tex[1], cnt[1], exp[1], dur[1], col[1], slots[1]
 	end
 
 	function DebuffsDispell:GetTooltip(unit, tip, slotID)
 		if slotID then
 			tip:SetUnitAuraByAuraInstanceID(unit, slotID)
+		else
+			tip:SetUnitAuraByAuraInstanceID(unit, select(6,self:GetIconData(unit)) )
 		end
 	end
 
 	function DebuffsDispell:UNIT_AURA(_, unit)
 		if rosterUnits[unit] then
-			local aura
 			if UnitIsFriend("player", unit) then
-				aura = GetUnitAuras(unit, "HARMFUL|RAID", 1)[1]
+				if self.aura_func then
+					aura = LBA.GetUnitDebuffsDispellable(unit, "HARMFUL|RAID", 1)[1]
+				else
+					aura = GetAuraDataByIndex(unit, 1, "HARMFUL|RAID")
+				end
 			end
 			local active = aura~=nil
 			if active or active ~= (dispel_cache[unit]~=nil) then
@@ -297,13 +307,21 @@ do
 	end
 
 	function DebuffsDispell:OnEnable()
-		self:RegisterEvent("UNIT_AURA")
-		self:RegisterMessage( "Grid_UnitUpdated" )
+		if self.aura_func then
+			LBA.RegisterCallback(self, "UNIT_AURA")
+		else
+			self:RegisterEvent("UNIT_AURA")
+			self:RegisterMessage( "Grid_UnitUpdated" )
+		end
 	end
 
 	function DebuffsDispell:OnDisable()
-		self:UnregisterEvent("UNIT_AURA")
-		self:UnregisterMessage( "Grid_UnitUpdated" )
+		if self.aura_func then
+			LBA.UnregisterCallback(self, "UNIT_AURA")
+		else
+			self:UnregisterEvent("UNIT_AURA")
+			self:UnregisterMessage( "Grid_UnitUpdated" )
+		end
 	end
 
 	function DebuffsDispell:IsActive(unit)
@@ -311,6 +329,7 @@ do
 	end
 
 	function DebuffsDispell:UpdateDB()
+		self.aura_func = self.dbx.blizFilter and LBA.GetUnitAuras or nil
 		colorCurve:ClearPoints()
 		local colors = self.dbx.colors or {}
 		for typ, def in pairs(Grid2.DispelCurveDefaults) do
@@ -321,7 +340,7 @@ do
 	-- Registration
 	Grid2.setupFunc["mdebuffType"] = function(baseKey, dbx)
 		colorCurve:SetType(Enum.LuaCurveType.Step)
-		Grid2:RegisterStatus(DebuffsDispell, { "icons", "color" }, baseKey, dbx)
+		Grid2:RegisterStatus(DebuffsDispell, { "icons", "icon", "color", "tooltip" }, baseKey, dbx)
 		return DebuffsDispell
 	end
 
