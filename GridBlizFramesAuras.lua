@@ -102,12 +102,15 @@ local function HasAuras(unit, key, filter)
 	local frame = unit2frame[unit]
 	if frame then
 		local aurasFrame = frame[key]
-		local auraInstanceID = aurasFrame.auraInstanceID
-		if #aurasFrame>0 then -- buffs & debuffs otherwise DefensiveBuff
-			aurasFrame = aurasFrame[1]
+		if aurasFrame then
+			local auraInstanceID = aurasFrame.auraInstanceID
+			if #aurasFrame>0 then -- buffs & debuffs otherwise DefensiveBuff
+				aurasFrame = aurasFrame[1]
+			end
+			return aurasFrame:IsShown() and aurasFrame.auraInstanceID
 		end
-		return aurasFrame:IsShown() and aurasFrame.auraInstanceID
-	elseif filter then -- fallback to standard filter
+	end
+	if filter then -- fallback to standard filter
 		local aura = GetAuraDataByIndex(unit, 1, filter)
 		return aura and aura.auraInstanceID
 	end
@@ -144,23 +147,27 @@ local function GetAuras(unit, key, filter, max, sortRule, sortDir, onlyIDs, resu
 	local frame = unit2frame[unit]
 	if frame then
 		local aurasFrame = frame[key]
-		local count = min(#aurasFrame, max or 8)
-		if count>0 then
-			for i=1, count do
-				local auraFrame = aurasFrame[i]
-				if not auraFrame:IsShown() then break end
-				local auraInstanceID = auraFrame.auraInstanceID
+		if aurasFrame then
+			local count = min(#aurasFrame, max or 8)
+			if count>0 then
+				for i=1, count do
+					local auraFrame = aurasFrame[i]
+					if not auraFrame:IsShown() then break end
+					local auraInstanceID = auraFrame.auraInstanceID
+					if auraInstanceID then
+						result[#result+1] = onlyIDs and auraInstanceID or GetAuraDataByAuraInstanceID(unit, auraInstanceID)
+					end
+				end
+			else
+				local auraInstanceID = aurasFrame.auraInstanceID
 				if auraInstanceID then
-					result[#result+1] = onlyIDs and auraInstanceID or GetAuraDataByAuraInstanceID(unit, auraInstanceID)
+					result[1] = onlyIDs and auraInstanceID or GetAuraDataByAuraInstanceID(unit, auraInstanceID)
 				end
 			end
-		else
-			local auraInstanceID = aurasFrame.auraInstanceID
-			if auraInstanceID then
-				result[1] = onlyIDs and auraInstanceID or GetAuraDataByAuraInstanceID(unit, auraInstanceID)
-			end
+			return result
 		end
-	elseif filter then -- fallback to standard filter
+	end
+	if filter then -- fallback to standard filter
 		if onlyIDs then
 			return GetUnitAuraInstanceIDs(unit, filter, max or 8, sortRule, sortDir)
 		else
