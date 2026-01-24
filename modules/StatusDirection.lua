@@ -108,10 +108,11 @@ function Direction:UpdateDB()
 		distances = nil
 		self.GetVertexColor = Grid2.statusLibrary.GetColor
 	end
-	rangecache = Grid2:GetStatusByName('range').cache -- used in Midnight because UnitInRange() return secrets
+
 end
 
 function Direction:OnEnable()
+	rangecache = Grid2:GetStatusByName('range').cache -- used in Midnight because UnitInRange() return secrets
 	timer = timer or Grid2:CreateTimer(UpdateDirections)
 	timer:SetDuration(self.dbx.updateRate or 0.2)
 	timer:Play()

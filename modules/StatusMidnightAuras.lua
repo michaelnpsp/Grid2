@@ -285,17 +285,17 @@ do
 		end
 	end
 
-	function DebuffsDispell:UNIT_AURA(_, unit)
+	function DebuffsDispell:UNIT_AURA(event, unit)
 		if rosterUnits[unit] then
 			if UnitIsFriend("player", unit) then
-				if self.aura_func then
-					aura = LBA.GetUnitDebuffsDispellable(unit, "HARMFUL|RAID", 1)[1]
-				else
+				if event=='UNIT_AURA' then
 					aura = GetAuraDataByIndex(unit, 1, "HARMFUL|RAID")
+				else
+					aura = LBA.GetUnitDebuffsDispellable(unit, "HARMFUL|RAID", 1)[1]
 				end
 			end
 			local active = aura~=nil
-			if active or active ~= (dispel_cache[unit]~=nil) then
+			if active or active ~= (dispel_cache[unit]~=nil) then -- TODO: this is wrong, if an aura is replaced by another ahora we need to update the color and the indicators
 				dispel_cache[unit] = active and GetAuraDispelTypeColor(unit, aura.auraInstanceID, colorCurve) or nil
 				self:UpdateIndicators(unit)
 			end

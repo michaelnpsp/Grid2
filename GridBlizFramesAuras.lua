@@ -78,12 +78,12 @@ function lib.RegisterCallback(obj, func)
 	end
 	if type(obj)=='table' then
 		if type(func)=='string' then
-			callbacks[obj] = function(unit) obj[func](obj, "LBF_UNIT_AURA", unit) end
+			callbacks[obj] = function(unit) obj[func](obj, "LBA_UNIT_AURA", unit) end
 		else
-			callbacks[obj] = function(unit) func(obj, "LBF_UNIT_AURA", unit) end
+			callbacks[obj] = function(unit) func(obj, "LBA_UNIT_AURA", unit) end
 		end
 	else
-		callbacks[obj] = function(unit) func("LBF_UNIT_AURA", unit) end
+		callbacks[obj] = function(unit) func("LBA_UNIT_AURA", unit) end
 	end
 end
 
