@@ -560,8 +560,10 @@ do
 		if not CompactRaidFrameManager then return end
 		local function HideFrames()
 			CompactRaidFrameManager:SetAlpha(0)
-			CompactRaidFrameManager:UnregisterAllEvents()
-			CompactRaidFrameContainer:UnregisterAllEvents()
+			if not Grid2.secretsEnabled then
+				CompactRaidFrameManager:UnregisterAllEvents()
+				CompactRaidFrameContainer:UnregisterAllEvents()
+			end
 			if not InCombatLockdown() then
 				CompactRaidFrameManager:Hide()
 				local shown = CompactRaidFrameManager_GetSetting('IsShown')
