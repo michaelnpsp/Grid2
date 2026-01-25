@@ -133,7 +133,7 @@ do
 		local status = Grid2.statusPrototype:new(baseKey)
 		status:Inject(Shared)
 		status.UpdateDB = Buffs_UpdateDB
-		Grid2:RegisterStatus(status, { "icons", "icon", "tooltip" }, baseKey, dbx)
+		Grid2:RegisterStatus(status, { "icons", "icon", "color", "tooltip" }, baseKey, dbx)
 		return status
 	end
 
@@ -178,7 +178,7 @@ do
 		status.UpdateDB = Debuffs_UpdateDB
 		status.aura_color = C_CurveUtil.CreateColorCurve()
 		status.aura_color:SetType(Enum.LuaCurveType.Step)
-		Grid2:RegisterStatus(status, { "icons", "icon", "tooltip" }, baseKey, dbx)
+		Grid2:RegisterStatus(status, { "icons", "icon", "color", "tooltip" }, baseKey, dbx)
 		return status
 	end
 
