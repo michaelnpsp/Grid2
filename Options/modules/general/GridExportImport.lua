@@ -63,9 +63,9 @@ local function MoveTableKeys(src,dst)
 	end
 end
 
--- Serialize current profile table into a string variable
+-- Export, serialize current profile table into a string variable
 -- Hex:  true/Encode in plain hexadecimal   false/Encode to be transmited by addon comm channel
-local function SerializeCurrentProfile(Hex, exportCustomLayouts )
+local function ExportCurrentProfile(Hex, exportCustomLayouts)
 	local config= { ["Grid2"] = Grid2.db.profile }
 	for name, module in Grid2:IterateModules() do
 		local data = Grid2.db:GetNamespace(name,true)
@@ -138,7 +138,7 @@ local function ValidateProfileName(profileName)
 end
 
 -- Unserialize a profile string into a new AceDB profile
-local function ImportProfile(sender, data, Hex, importCustomLayouts)
+local function ImportCurrentProfile(sender, data, Hex, importCustomLayouts)
 	if type(data)~="string" then
 		print("Grid2 Import profile failed, data supplied must be a string")
 		return false
@@ -218,7 +218,7 @@ local function ShowSerializeFrame(title,subtitle,data)
 		editbox.button:SetScript("OnClick",
 								function()
 									frame:Hide()
-									ImportProfile(nil, editbox:GetText(), true, includeCustomLayouts)
+									ImportCurrentProfile(nil, editbox:GetText(), true, includeCustomLayouts)
 									collectgarbage()
 								end)
 	end
@@ -278,7 +278,7 @@ function Comm:OnCommReceived(prefix, message, distribution, sender)
 	Grid2Options:ConfirmDialog(
 		string.format(L["\"%s\" has sent you a profile configuration. Do you want to activate received profile ?"],sender or "unknow"),
 		function()
-			ImportProfile(sender, message)
+			ImportCurrentProfile(sender, message)
 			collectgarbage()
 		end
 	)
@@ -510,7 +510,7 @@ Grid2Options.AdvancedProfileOptions = { type = "group", order= 200, name = L["Im
 		func = function (info)
 			ShowSerializeFrame(	L["This is your current profile in text format"],
 								L["Press CTRL-C to copy the configuration to your clipboard"],
-								SerializeCurrentProfile(true, includeCustomLayouts) )
+								ExportCurrentProfile(true, includeCustomLayouts) )
 		end,
 	},
 	incLayouts = {
@@ -548,7 +548,7 @@ Grid2Options.AdvancedProfileOptions = { type = "group", order= 200, name = L["Im
 		name = L["Send current profile"],
 		func = function ()
 			if Comm.target and Comm.target~="" then
-				local message = SerializeCurrentProfile()
+				local message = ExportCurrentProfile()
 				Comm:SendMessage(message, Comm.target)
 			end
 		end,
@@ -576,3 +576,13 @@ Grid2Options.AdvancedProfileOptions = { type = "group", order= 200, name = L["Im
 	},
 } }
 -- }}
+
+-- Publish Export & Import functions
+function Grid2Options:ExportCurrentProfile(includeCustomLayouts)
+	return ExportCurrentProfile(true, includeCustomLayouts)
+end
+
+function Grid2Options:ImportCurrentProfile(data, importCustomLayouts)
+	return ImportCurrentProfile(nil, data, true, importCustomLayouts)
+end
+
