@@ -60,6 +60,7 @@ GridStatus.lua
 GridStatusLoad.lua
 GridSetup.lua
 GridDefaults.lua
+GridBlizFramesHide.lua
 #@retail@
 GridDefaultsRetail.lua
 GridDefaultsMidnight.lua
