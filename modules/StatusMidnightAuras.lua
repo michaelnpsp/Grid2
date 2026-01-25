@@ -2,22 +2,13 @@
 
 local LBA = Grid2.BlizFramesAuras
 
-local myUnits = Grid2.roster_my_units
 local rosterUnits = Grid2.roster_guids
-local canaccessvalue = Grid2.canaccessvalue
-local SpellIsSelfBuff = SpellIsSelfBuff
 local UnitIsFriend = UnitIsFriend
-local UnitAffectingCombat = UnitAffectingCombat
-local SpellGetVisibilityInfo = C_Spell.GetVisibilityInfo
 local GetUnitAuras = C_UnitAuras.GetUnitAuras
 local GetAuraDataByIndex = C_UnitAuras.GetAuraDataByIndex
 local GetAuraDispelTypeColor = C_UnitAuras.GetAuraDispelTypeColor
-local IsAuraFilteredOutByInstanceID = C_UnitAuras.IsAuraFilteredOutByInstanceID
-local GetAuraDurationRemainingByAuraInstanceID = C_UnitAuras.GetAuraDurationRemainingByAuraInstanceID
 
--- shared functions and variables
-local Buffs = {}
-local Debuffs = {}
+-- temporary results variables
 local slots = {}
 local color = {}
 local colors = {color, color, color, color, color, color, color, color, color, color, color, color}
@@ -40,16 +31,9 @@ Grid2.DispelCurveDefaults = {
 	Bleed   = { 11, DEBUFF_TYPE_BLEED_COLOR   },
 }
 
---[[
-Sort rules are as follows:
-Enum.UnitAuraSortRule.Default - equivalent to AuraUtil.DefaultAuraCompare
-Enum.UnitAuraSortRule.BigDefensive - equivalent to AuraUtil.BigDefensiveAuraCompare
-Enum.UnitAuraSortRule.Expiration - equivalent to Default with an added comparison for expiration time before the aura instance ID fallback. Unlike SecureAuraHeaderTemplate, this sorts permanent duration auras to the end of the list (ie. as-if they had an infinite expiry time).
-Enum.UnitAuraSortRule.ExpirationOnly - Pure comparison on expiration time only. Same note about permanent aura durations applies.
-Enun.UnitAuraSortRule.Name - equivalent to Default with an added comparison for (unicode-aware) name-based sorting before the aura instance ID fallback.
-Enum.UnitAuraSortRule.NameOnly - Pure comparison on name only.
-Enum.UnitAuraSortRule.Default, Enum.UnitAuraSortDirection.Reverse
---]]
+-------------------------------------------------------------------------------
+-- shared functions
+-------------------------------------------------------------------------------
 
 local function GetIconsSorted(unit, max, filter, sortRule, sortDir, colorCurve, aurasFunc, displayFunc)
 	local i = 0
@@ -72,65 +56,74 @@ local function GetIconsSorted(unit, max, filter, sortRule, sortDir, colorCurve, 
 end
 
 -------------------------------------------------------------------------------
+-- shared methods
+-------------------------------------------------------------------------------
+
+local Shared = { GetColor = Grid2.statusLibrary.GetColor }
+
+function Shared:GetIcons(unit, max)
+	return GetIconsSorted(unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.aura_color, self.aura_func, self.aura_display)
+end
+
+function Shared:GetIconData(unit)
+	local _, tex, cnt, exp, dur, col, slots = self:GetIcons(unit, 1)
+	return tex[1], cnt[1], exp[1], dur[1], col[1], slots[1]
+end
+
+function Shared:GetTooltip(unit, tip, slotID)
+	if slotID then
+		tip:SetUnitAuraByAuraInstanceID(unit, slotID)
+	else
+		tip:SetUnitAuraByAuraInstanceID(unit, select(6,self:GetIconData(unit)) )
+	end
+end
+
+function Shared:UNIT_AURA(_, unit)
+	if rosterUnits[unit] then
+		self:UpdateIndicators(unit)
+	end
+end
+
+function Shared:LBA_UNIT_AURA(_, unit)
+	self:UpdateIndicators(unit)
+end
+
+function Shared:OnEnable()
+	if self.aura_func then
+		LBA.RegisterCallback(self, "LBA_UNIT_AURA")
+	else
+		self:RegisterEvent("UNIT_AURA")
+	end
+end
+
+function Shared:OnDisable()
+	if self.aura_func then
+		LBA.UnregisterCallback(self, "LBA_UNIT_AURA")
+	else
+		self:UnregisterEvent("UNIT_AURA")
+	end
+end
+
+function Shared:IsActiveDef(unit)
+	return GetAuraDataByIndex(unit, 1, self.aura_filter)~=nil
+end
+
+function Shared:IsActiveLBA(unit)
+	return LBA.UnitHasAuras(unit, self.aura_filter)
+end
+
+-------------------------------------------------------------------------------
 -- midnight-buffs status
 -------------------------------------------------------------------------------
+
 do
 
-	Buffs.GetColor = Grid2.statusLibrary.GetColor
-
-	function Buffs:GetIcons(unit, max)
-		return GetIconsSorted(unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.aura_color, self.aura_func)
-	end
-
-	function Buffs:GetIconData(unit)
-		local _, tex, cnt, exp, dur, col, slots = GetIconsSorted(unit, 1, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.aura_color, self.aura_func)
-		return tex[1], cnt[1], exp[1], dur[1], col[1], slots[1]
-	end
-
-	function Buffs:GetTooltip(unit, tip, slotID)
-		if slotID then
-			tip:SetUnitAuraByAuraInstanceID(unit, slotID)
-		else
-			tip:SetUnitAuraByAuraInstanceID(unit, select(6,self:GetIconData(unit)) )
-		end
-	end
-
-	function Buffs:UNIT_AURA(_, unit)
-		if rosterUnits[unit] then
-			self:UpdateIndicators(unit)
-		end
-	end
-
-	function Buffs:OnEnable()
-		if self.aura_func then
-			LBA.RegisterCallback(self, "UNIT_AURA")
-		else
-			self:RegisterEvent("UNIT_AURA")
-		end
-	end
-
-	function Buffs:OnDisable()
-		if self.aura_func then
-			LBA.UnregisterCallback(self, "UNIT_AURA")
-		else
-			self:UnregisterEvent("UNIT_AURA")
-		end
-	end
-
-	function Buffs:IsActiveDef(unit)
-		return GetAuraDataByIndex(unit, 1, self.aura_filter)~=nil
-	end
-
-	function Buffs:IsActiveLBA(unit)
-		return LBA.UnitHasAuras(unit, self.aura_filter)
-	end
-
-	function Buffs:UpdateDB()
+	local function Buffs_UpdateDB(self)
 		local filter = self.dbx.aura_filter or {}
 		self.aura_color    = self.dbx.color1
-		self.aura_filter   = filter.blizFilter or filter.filter or 'HELPFUL'
 		self.aura_sortRule = filter.sortRule or 0
 		self.aura_sortDir  = filter.sortDir or 0
+		self.aura_filter   = filter.blizFilter or filter.filter or 'HELPFUL'
 		self.aura_func     = filter.blizFilter and LBA.GetUnitAuras or nil
 		self.IsActive      = filter.blizFilter and self.IsActiveLBA or self.IsActiveDef
 	end
@@ -138,7 +131,8 @@ do
 	-- Registration
 	Grid2.setupFunc["mbuffs"] = function(baseKey, dbx)
 		local status = Grid2.statusPrototype:new(baseKey)
-		status:Inject(Buffs)
+		status:Inject(Shared)
+		status.UpdateDB = Buffs_UpdateDB
 		Grid2:RegisterStatus(status, { "icons", "icon", "tooltip" }, baseKey, dbx)
 		return status
 	end
@@ -154,62 +148,15 @@ end
 -------------------------------------------------------------------------------
 -- midnight-debuffs status
 -------------------------------------------------------------------------------
+
 do
+
 	local filterTypedFuncs = {
 		[false] = function(aura) return aura.dispelName==nil; end,
 		[true] = function(aura) return aura.dispelName~=nil; end,
 	}
 
-	Debuffs.GetColor = Grid2.statusLibrary.GetColor
-
-	function Debuffs:GetIcons(unit, max)
-		return GetIconsSorted(unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.colorCurve, self.aura_func, self.aura_display)
-	end
-
-	function Debuffs:GetIconData(unit)
-		local _, tex, cnt, exp, dur, col, slots = GetIconsSorted(unit, 1, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.colorCurve, self.aura_func, self.aura_display)
-		return tex[1], cnt[1], exp[1], dur[1], col[1], slots[1]
-	end
-
-	function Debuffs:GetTooltip(unit, tip, slotID)
-		if slotID then
-			tip:SetUnitAuraByAuraInstanceID(unit, slotID)
-		else
-			tip:SetUnitAuraByAuraInstanceID(unit, select(6,self:GetIconData(unit)) )
-		end
-	end
-
-	function Debuffs:UNIT_AURA(_, unit)
-		if rosterUnits[unit] then
-			self:UpdateIndicators(unit)
-		end
-	end
-
-	function Debuffs:OnEnable()
-		if self.aura_func then
-			LBA.RegisterCallback(self, "UNIT_AURA")
-		else
-			self:RegisterEvent("UNIT_AURA")
-		end
-	end
-
-	function Debuffs:OnDisable()
-		if self.aura_func then
-			LBA.UnregisterCallback(self, "UNIT_AURA")
-		else
-			self:UnregisterEvent("UNIT_AURA")
-		end
-	end
-
-	function Debuffs:IsActiveDef(unit)
-		return GetAuraDataByIndex(unit, 1, self.aura_filter)~=nil
-	end
-
-	function Debuffs:IsActiveLBA(unit)
-		return LBA.UnitHasAuras(unit, self.aura_filter)
-	end
-
-	function Debuffs:UpdateDB()
+	local function Debuffs_UpdateDB(self)
 		local filter = self.dbx.aura_filter or {}
 		self.aura_filter   = filter.filter or 'HARMFUL'
 		self.aura_sortRule = filter.sortRule or 0
@@ -217,19 +164,20 @@ do
 		self.aura_display  = filterTypedFuncs[filter.typed]
 		self.aura_func     = filter.blizFilter and LBA.GetUnitAuras or nil
 		self.IsActive      = filter.blizFilter and self.IsActiveLBA or self.IsActiveDef
-		self.colorCurve:ClearPoints()
+		self.aura_color:ClearPoints()
 		local colors = self.dbx.colors or {}
 		for typ, def in pairs(Grid2.DispelCurveDefaults) do
-			self.colorCurve:AddPoint( def[1], colors[typ] or def[2])
+			self.aura_color:AddPoint( def[1], colors[typ] or def[2])
 		end
 	end
 
 	-- Registration
 	Grid2.setupFunc["mdebuffs"] = function(baseKey, dbx)
 		local status = Grid2.statusPrototype:new(baseKey)
-		status:Inject(Debuffs)
-		status.colorCurve = C_CurveUtil.CreateColorCurve()
-		status.colorCurve:SetType(Enum.LuaCurveType.Step)
+		status:Inject(Shared)
+		status.UpdateDB = Debuffs_UpdateDB
+		status.aura_color = C_CurveUtil.CreateColorCurve()
+		status.aura_color:SetType(Enum.LuaCurveType.Step)
 		Grid2:RegisterStatus(status, { "icons", "icon", "tooltip" }, baseKey, dbx)
 		return status
 	end
@@ -249,12 +197,9 @@ do
 
 	local DebuffsDispell = Grid2.statusPrototype:new("debuffs-DispellableByMe")
 
-	local colorCurve = C_CurveUtil.CreateColorCurve()
-
 	local dispel_cache = {}
 
 	DebuffsDispell.defaultColors = {
-		-- None    = { 0,  DEBUFF_TYPE_NONE_COLOR    },
 		Magic   = { 1,  DEBUFF_TYPE_MAGIC_COLOR   },
 		Curse   = { 2,  DEBUFF_TYPE_CURSE_COLOR   },
 		Disease = { 3,  DEBUFF_TYPE_DISEASE_COLOR },
@@ -263,65 +208,48 @@ do
 		Bleed   = { 11, DEBUFF_TYPE_BLEED_COLOR   },
 	}
 
+	DebuffsDispell.aura_color = C_CurveUtil.CreateColorCurve()
+	DebuffsDispell.aura_color:SetType(Enum.LuaCurveType.Step)
+
+	DebuffsDispell:Inject(Shared)
+
+	function DebuffsDispell:UpdateCache(unit, aura)
+		local active = aura~=nil
+		if active or active ~= (dispel_cache[unit]~=nil) then -- TODO: this is wrong, if an aura is replaced by another ahora we need to update the color and the indicators
+			dispel_cache[unit] = active and GetAuraDispelTypeColor(unit, aura.auraInstanceID, self.aura_color) or nil
+			self:UpdateIndicators(unit)
+		end
+	end
+
 	function DebuffsDispell:GetColor(unit)
 		local c = dispel_cache[unit]
 		return c.r, c.g, c.b, c.a
 	end
 
-	function DebuffsDispell:GetIcons(unit, max)
-		return GetIconsSorted(unit, max, "HARMFUL|RAID", nil, nil, colorCurve, self.aura_func)
-	end
-
-	function Debuffs:GetIconData(unit)
-		local _, tex, cnt, exp, dur, col, slots = GetIconsSorted(unit, 1, "HARMFUL|RAID", nil, nil, colorCurve, self.aura_func)
-		return tex[1], cnt[1], exp[1], dur[1], col[1], slots[1]
-	end
-
-	function DebuffsDispell:GetTooltip(unit, tip, slotID)
-		if slotID then
-			tip:SetUnitAuraByAuraInstanceID(unit, slotID)
-		else
-			tip:SetUnitAuraByAuraInstanceID(unit, select(6,self:GetIconData(unit)) )
-		end
+	function DebuffsDispell:LBA_UNIT_AURA(event, unit)
+		self:UpdateCache( unit, UnitIsFriend("player", unit) and LBA.GetUnitDebuffsDispellable(unit, "HARMFUL|RAID", 1)[1] or nil )
 	end
 
 	function DebuffsDispell:UNIT_AURA(event, unit)
 		if rosterUnits[unit] then
-			if UnitIsFriend("player", unit) then
-				if event=='UNIT_AURA' then
-					aura = GetAuraDataByIndex(unit, 1, "HARMFUL|RAID")
-				else
-					aura = LBA.GetUnitDebuffsDispellable(unit, "HARMFUL|RAID", 1)[1]
-				end
-			end
-			local active = aura~=nil
-			if active or active ~= (dispel_cache[unit]~=nil) then -- TODO: this is wrong, if an aura is replaced by another ahora we need to update the color and the indicators
-				dispel_cache[unit] = active and GetAuraDispelTypeColor(unit, aura.auraInstanceID, colorCurve) or nil
-				self:UpdateIndicators(unit)
-			end
+			self:UpdateCache( unit, UnitIsFriend("player", unit) and GetAuraDataByIndex(unit, 1, "HARMFUL|RAID") or nil )
 		end
 	end
 
 	function DebuffsDispell:Grid_UnitUpdated(_, unit)
-		dispel_cache[unit] = nil
+		if not self.aura_func then
+			dispel_cache[unit] = nil
+		end
 	end
 
 	function DebuffsDispell:OnEnable()
-		if self.aura_func then
-			LBA.RegisterCallback(self, "UNIT_AURA")
-		else
-			self:RegisterEvent("UNIT_AURA")
-			self:RegisterMessage( "Grid_UnitUpdated" )
-		end
+		Shared.OnEnable(self)
+		self:RegisterMessage("Grid_UnitUpdated")
 	end
 
 	function DebuffsDispell:OnDisable()
-		if self.aura_func then
-			LBA.UnregisterCallback(self, "UNIT_AURA")
-		else
-			self:UnregisterEvent("UNIT_AURA")
-			self:UnregisterMessage( "Grid_UnitUpdated" )
-		end
+		Shared.OnDisable(self)
+		self:UnregisterMessage("Grid_UnitUpdated")
 	end
 
 	function DebuffsDispell:IsActive(unit)
@@ -330,16 +258,15 @@ do
 
 	function DebuffsDispell:UpdateDB()
 		self.aura_func = self.dbx.blizFilter and LBA.GetUnitAuras or nil
-		colorCurve:ClearPoints()
+		self.aura_color:ClearPoints()
 		local colors = self.dbx.colors or {}
 		for typ, def in pairs(Grid2.DispelCurveDefaults) do
-			colorCurve:AddPoint( def[1], colors[typ] or def[2])
+			self.aura_color:AddPoint( def[1], colors[typ] or def[2])
 		end
 	end
 
 	-- Registration
 	Grid2.setupFunc["mdebuffType"] = function(baseKey, dbx)
-		colorCurve:SetType(Enum.LuaCurveType.Step)
 		Grid2:RegisterStatus(DebuffsDispell, { "icons", "icon", "color", "tooltip" }, baseKey, dbx)
 		return DebuffsDispell
 	end

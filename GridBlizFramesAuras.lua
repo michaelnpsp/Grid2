@@ -11,6 +11,8 @@ local GetAuraDataByIndex = C_UnitAuras.GetAuraDataByIndex
 local GetUnitAuraInstanceIDs = C_UnitAuras.GetUnitAuraInstanceIDs
 local GetAuraDataByAuraInstanceID = C_UnitAuras.GetAuraDataByAuraInstanceID
 
+local rosterUnits = Grid2.roster_guids
+
 local enabled
 local callbacks = {}
 local unit2frame = {}
@@ -34,8 +36,10 @@ function lib.UpdateUnit(frame)
 		local unit = frame.unit
 		if unit and not strfind(unit, "^nameplate") then -- skip nameplates
 			unit2frame[unit] = frame
-			for _, func in next, callbacks do
-				func(unit)
+			if rosterUnits[unit] then
+				for _, func in next, callbacks do
+					func(unit)
+				end
 			end
 		end
 	end
