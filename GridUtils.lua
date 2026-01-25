@@ -9,6 +9,8 @@ local type = type
 local pairs = pairs
 local tonumber = tonumber
 local tremove = table.remove
+local InCombatLockdown = InCombatLockdown
+local secretsEnabled = Grid2.secretsEnabled
 
 -- Dummy function
 Grid2.Dummy = function() end
@@ -512,7 +514,8 @@ end
 
 -- Hide blizzard frames
 do
-	local hiddenFrame
+	local hiddenFrame = CreateFrame('Frame')
+	hiddenFrame:Hide()
 
 	local function rehide(self)
 		if not InCombatLockdown() then self:Hide() end
@@ -542,8 +545,6 @@ do
 	-- party frames, only for retail
 	local function HidePartyFrames()
 		if not PartyFrame then return end
-		hiddenFrame = hiddenFrame or CreateFrame('Frame')
-		hiddenFrame:Hide()
 		hideFrame(PartyFrame)
 		for frame in PartyFrame.PartyMemberFramePool:EnumerateActive() do
 			hideFrame(frame)
@@ -558,28 +559,29 @@ do
 	-- raid frames
 	local function HideRaidFrames()
 		if not CompactRaidFrameManager then return end
-		local function HideFrames()
-			CompactRaidFrameManager:SetAlpha(0)
-			if not Grid2.secretsEnabled then
-				CompactRaidFrameManager:UnregisterAllEvents()
-				CompactRaidFrameContainer:UnregisterAllEvents()
-			end
-			if not InCombatLockdown() then
-				CompactRaidFrameManager:Hide()
-				local shown = CompactRaidFrameManager_GetSetting('IsShown')
-				if shown and shown ~= '0' then
-					CompactRaidFrameManager_SetSetting('IsShown', '0')
+		local function HideFrame(frame)
+			pcall(function()
+				frame:SetAlpha(0)
+				if not InCombatLockdown() then
+					frame:SetScale(0.001)
+					frame:Hide()
 				end
+			end)
+			if not secretsEnabled then
+				pcall(function() frame:UnregisterAllEvents() end)
 			end
 		end
-		hiddenFrame = hiddenFrame or CreateFrame('Frame')
-		hiddenFrame:Hide()
+		local function HideFrames()
+			HideFrame(CompactRaidFrameContainer)
+			HideFrame(CompactRaidFrameManager)
+		end
 		hooksecurefunc('CompactRaidFrameManager_UpdateShown', HideFrames)
 		CompactRaidFrameManager:HookScript('OnShow', HideFrames)
 		CompactRaidFrameContainer:HookScript('OnShow', HideFrames)
 		HideFrames()
 	end
 
+	-- public method
 	function Grid2:UpdateBlizzardFrames()
 		local hide = self.db.profile.hideBlizzard
 		if hide then
