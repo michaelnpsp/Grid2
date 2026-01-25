@@ -257,6 +257,7 @@ do
 	end
 
 	function DebuffsDispell:UpdateDB()
+		self.aura_filter = 'HARMFUL|RAID'
 		self.aura_func = self.dbx.blizFilter and LBA.GetUnitAuras or nil
 		self.aura_color:ClearPoints()
 		local colors = self.dbx.colors or {}
