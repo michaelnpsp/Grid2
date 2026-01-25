@@ -119,7 +119,9 @@ local function Icon_UpdateDB(self)
 		self.colCount = self.maxIcons
 		self.rowCount = 1
 	end
-	self.tooltipFrame = dbx.disableTooltip and AcquireTooltipFrame() or ReleaseTooltipFrame()
+	if not Grid2.secretsEnabled then
+		self.tooltipFrame = dbx.disableTooltip and AcquireTooltipFrame() or ReleaseTooltipFrame()
+	end
 end
 
 Grid2.setupFunc["privateauras"] = function(indicatorKey, dbx)

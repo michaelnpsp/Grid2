@@ -639,11 +639,13 @@ do
 		{ 'self',   1, 'player' },
 		{ 'target', 1, 'target' },
 		{ 'focus',  1, 'focus'  },
-		{ 'targettarget', 1, 'targettarget' },
-		{ 'focustarget',  1, 'focustarget'  },
-		{ 'boss',   8, 'boss1,boss2,boss3,boss4,boss5,boss6,boss7,boss8' },
 		{ 'tanks',  5, { type = "player", roleFilter = "TANK", strictFiltering = true, groupFilter = "auto", detachHeader = true } },
 	}
+	if not Grid2.secretsEnabled then
+		headers[#headers+1] = { 'targettarget', 1, 'targettarget' }
+		headers[#headers+1] = { 'focustarget',  1, 'focustarget'  }
+		headers[#headers+1] = { 'boss',   8, 'boss1,boss2,boss3,boss4,boss5,boss6,boss7,boss8' }
+	end
 	function Grid2Layout:AddSpecialHeaders()
 		local specialHeaders = self.db.profile.specialHeaders
 		if specialHeaders then

@@ -524,7 +524,7 @@ local generalOptions = {
 		set = function(info,v)
 			SetupSpecialHeader('boss', v)
 		end,
-		hidden = function() return Grid2.versionCli<50000 end,
+		hidden = function() return Grid2.versionCli<50000 or Grid2.secretsEnabled end,
 	},
 
 	displayTargetTarget = {
@@ -538,6 +538,7 @@ local generalOptions = {
 		set = function(info,v)
 			SetupSpecialHeader('targettarget', v)
 		end,
+		hidden = function() return Grid2.secretsEnabled end,
 	},
 
 	displayFocus = {
@@ -565,7 +566,7 @@ local generalOptions = {
 		set = function(info,v)
 			SetupSpecialHeader('focustarget', v)
 		end,
-		hidden = function() return Grid2.isVanilla end,
+		hidden = function() return Grid2.isVanilla	or Grid2.secretsEnabled end,
 	},
 
 	desc3 = {

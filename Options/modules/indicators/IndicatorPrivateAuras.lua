@@ -142,16 +142,18 @@ function Grid2Options:MakeIndicatorPrivateAurasCustomOptions( indicator, options
 		end,
 		hidden = function() return indicator.dbx.disableCooldown end,
 	}
-	self:MakeHeaderOptions( options, "Tooltip" )
-	options.tooltipEnabled = {
-		type = "toggle",
-		order = 155,
-		name = L["Enable Tooltips"],
-		desc = L["Display a tooltip when the mouse is over a private aura icon."],
-		get = function () return not indicator.dbx.disableTooltip end,
-		set = function (_, v)
-			indicator.dbx.disableTooltip = (not v) or nil
-			self:RefreshIndicator(indicator, "Layout")
-		end,
-	}
+	if not Grid2.secretsEnabled then
+		self:MakeHeaderOptions( options, "Tooltip" )
+		options.tooltipEnabled = {
+			type = "toggle",
+			order = 155,
+			name = L["Enable Tooltips"],
+			desc = L["Display a tooltip when the mouse is over a private aura icon."],
+			get = function () return not indicator.dbx.disableTooltip end,
+			set = function (_, v)
+				indicator.dbx.disableTooltip = (not v) or nil
+				self:RefreshIndicator(indicator, "Layout")
+			end,
+		}
+	end
 end
