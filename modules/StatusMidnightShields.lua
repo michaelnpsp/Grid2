@@ -7,6 +7,7 @@ local min   = math.min
 local fmt   = string.format
 local UnitHealthMax = UnitHealthMax
 local UnitGetTotalAbsorbs = UnitGetTotalAbsorbs
+local AbbreviateLargeNumbers = AbbreviateLargeNumbers
 local unit_is_valid = Grid2.roster_guids
 
 -- Shields
