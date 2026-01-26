@@ -3,6 +3,7 @@ if not Grid2.secretsEnabled then return end
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 local Health = Grid2.statusPrototype:new("health-current")
+local HealthDeficit = Grid2.statusPrototype:new("health-deficit")
 local Heals = Grid2.statusPrototype:new("heals-incoming")
 local MyHeals = Grid2.statusPrototype:new("my-heals-incoming")
 local Death = Grid2.statusPrototype:new("death")
@@ -11,6 +12,7 @@ local FeignDeath = Grid2.statusPrototype:new("feign-death")
 local UnitHealth = UnitHealth
 local UnitHealthMax = UnitHealthMax
 local UnitHealthPercent = UnitHealthPercent
+local UnitHealthMissing = UnitHealthMissing
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitIsFeignDeath = UnitIsFeignDeath
 local UnitGetIncomingHeals = UnitGetIncomingHeals
@@ -78,6 +80,46 @@ end
 Grid2.setupFunc["health-current"] = Create
 
 Grid2:DbSetStatusDefaultValue( "health-current", {type = "health-current", colorCount=3, color1 = {r=0,g=1,b=0,a=1}, color2 = {r=1,g=1,b=0,a=1}, color3 = {r=1,g=0,b=0,a=1} } )
+
+-- health-deficit status
+HealthDeficit.GetColor  = Grid2.statusLibrary.GetColor
+
+local function HealthDeficitChangedEvent(_, unit)
+	if unit_is_valid[unit] then
+		HealthDeficit:UpdateIndicators(unit)
+	end
+end
+
+function HealthDeficit:OnEnable()
+	self:RegisterEvent("UNIT_MAXHEALTH", HealthDeficitChangedEvent)
+	self:RegisterEvent("UNIT_HEALTH", HealthDeficitChangedEvent)
+end
+
+function HealthDeficit:OnDisable()
+	self:UnregisterEvent("UNIT_MAXHEALTH")
+	self:UnregisterEvent("UNIT_HEALTH")
+end
+
+function HealthDeficit:IsActive(unit)
+	return true
+end
+
+function HealthDeficit:GetText(unit)
+	return UnitExists(unit) and AbbreviateLargeNumbers(UnitHealthMissing(unit)) or ''
+end
+
+function HealthDeficit:GetValueMinMax(unit)
+	return UnitHealthMissing(unit) or 0, 0, UnitHealthMax(unit)
+end
+
+local function CreateHealthDeficit(baseKey, dbx)
+	Grid2:RegisterStatus(HealthDeficit, {"percent", "text", "color"}, baseKey, dbx)
+	return HealthDeficit
+end
+
+Grid2.setupFunc["health-deficit"] = CreateHealthDeficit
+
+Grid2:DbSetStatusDefaultValue( "health-deficit", {type = "health-deficit", color1 = {r=1,g=1,b=1,a=1} })
 
 -- heals-incoming status
 local HealsCalculator = CreateUnitHealPredictionCalculator()
