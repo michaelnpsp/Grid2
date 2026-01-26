@@ -2,6 +2,7 @@
 
 local LBA = Grid2.BlizFramesAuras
 
+local Grid2 = Grid2
 local rosterUnits = Grid2.roster_guids
 local UnitIsFriend = UnitIsFriend
 local GetUnitAuras = C_UnitAuras.GetUnitAuras
@@ -151,10 +152,17 @@ end
 
 do
 
+	local defColor = Grid2.defaultColors.TRANSPARENT
 	local filterTypedFuncs = {
 		[false] = function(aura) return aura.dispelName==nil; end,
 		[true] = function(aura) return aura.dispelName~=nil; end,
 	}
+
+	local function Debuffs_GetColor(self, unit)
+		local aura = GetAuraDataByIndex(unit, 1, self.aura_filter)
+		local c = aura and GetAuraDispelTypeColor(unit, aura.auraInstanceID, self.aura_color) or defColor
+		return c.r, c.g, c.b, c.a
+	end
 
 	local function Debuffs_UpdateDB(self)
 		local filter = self.dbx.aura_filter or {}
@@ -167,7 +175,7 @@ do
 		self.aura_color:ClearPoints()
 		local colors = self.dbx.colors or {}
 		for typ, def in pairs(Grid2.DispelCurveDefaults) do
-			self.aura_color:AddPoint( def[1], colors[typ] or def[2])
+			self.aura_color:AddPoint( def[1], colors[typ] or def[2] )
 		end
 	end
 
@@ -175,6 +183,7 @@ do
 	Grid2.setupFunc["mdebuffs"] = function(baseKey, dbx)
 		local status = Grid2.statusPrototype:new(baseKey)
 		status:Inject(Shared)
+		status.GetColor = Debuffs_GetColor
 		status.UpdateDB = Debuffs_UpdateDB
 		status.aura_color = C_CurveUtil.CreateColorCurve()
 		status.aura_color:SetType(Enum.LuaCurveType.Step)

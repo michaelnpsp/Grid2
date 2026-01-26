@@ -81,9 +81,6 @@ local function HideRaidFrames()
 	CompactRaidFrameManager:HookScript('OnShow', HideFrames)
 	CompactRaidFrameContainer:HookScript('OnShow', HideFrames)
 	HideFrames()
-
-	print("Frames Disabled!!!!")
-
 end
 
 -- public method

@@ -120,6 +120,7 @@ end
 local function make_color_option(status, options, key, order, name, params)
 	options[key] = {
 		type = "color",
+		hasAlpha = true,
 		width = params and params.width or "full",
 		order = order,
 		name = L[name or "Color"],
@@ -140,6 +141,7 @@ local function make_colortype_option(status, options, key, order, defColor, para
 	if order then
 		options[key] = {
 			type = "color",
+			hasAlpha = true,
 			width = params and params.width or "full",
 			order = order,
 			name = L[key],
