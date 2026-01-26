@@ -8,6 +8,7 @@ local Grid2 = Grid2
 local GetTime = GetTime
 local UnitGUID = UnitGUID
 local UnitIsAFK = UnitIsAFK
+local canaccessvalue = Grid2.canaccessvalue
 
 local afk_cache = setmetatable({}, {__index = function(t,k) local v=GetTime(); t[k]=v; return v end})
 
@@ -15,10 +16,14 @@ AFK.GetColor = Grid2.statusLibrary.GetColor
 
 local function UpdateUnit(_, unit)
 	if unit then
-		if not UnitIsAFK(unit) then -- only clear cache, afk_cache is already assigned when metatable lookup fails in GetStartTime()
-			afk_cache[ UnitGUID(unit) or 0 ] = nil
+		local afk = UnitIsAFK(unit)
+		local guid = UnitGUID(unit) or 0
+		if canaccessvalue(afk) then
+			if not afk and canaccessvalue(guid) then
+				afk_cache[guid] = nil
+			end
+			AFK:UpdateIndicators(unit)
 		end
-		AFK:UpdateIndicators(unit)
 	end
 end
 
@@ -44,7 +49,8 @@ function AFK:OnDisable()
 end
 
 function AFK:IsActive(unit)
-	return UnitIsAFK(unit)
+	local afk = UnitIsAFK(unit)
+	return canaccessvalue(afk) and afk
 end
 
 function AFK:GetStartTime(unit)
