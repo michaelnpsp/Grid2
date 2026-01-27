@@ -1,4 +1,4 @@
-if Grid2.isClassic then return end
+if Grid2.isClassic or true then return end -- TODO refactor for midnight
 
 -- Stagger monk status, created by Michael
 local Stagger = Grid2.statusPrototype:new("monk-stagger")
