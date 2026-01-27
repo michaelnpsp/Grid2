@@ -98,12 +98,9 @@ function Overflow:IsActive(unit) -- this is wrong, but due to game restrictions 
 	return false
 end
 
-function Overflow:GetPercent(unit) -- this is wrong, but due to game restrictions we cannot calculate overflow value
-	return 0
-end
 
 local function Create(baseKey, dbx)
-	Grid2:RegisterStatus(Overflow, { "percent" }, baseKey, dbx)
+	Grid2:RegisterStatus(Overflow, { "secret" }, baseKey, dbx)
 	return Overflow
 end
 

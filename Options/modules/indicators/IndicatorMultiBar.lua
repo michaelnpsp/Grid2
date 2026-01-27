@@ -241,7 +241,9 @@ do
 				local usedStatuses  = GetIndicatorStatusMap(indicator)
 				for statusKey, status in Grid2:IterateStatuses() do
 					if self:IsCompatiblePair(indicator, status) and (curStatusName or not usedStatuses[statusKey])  then
-						tmpTable[statusKey] = self.LocalizeStatus(status)
+						if not status.IsActiveSecret or barDbx.glowLine then -- special case for shields-overflow status, due to secret activation
+							tmpTable[statusKey] = self.LocalizeStatus(status)
+						end
 					end
 				end
 				return tmpTable
