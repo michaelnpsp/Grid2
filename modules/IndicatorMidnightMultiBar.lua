@@ -181,13 +181,12 @@ local function Bar_UpdateDB(self)
 	self.offsety       = l.y
 	self.width         = dbx.width
 	self.height        = dbx.height
-	self.direction     = dbx.reverseFill and -1 or 1
 	self.horizontal    = (orientation == "HORIZONTAL")
 	self.reverseFill   = not not dbx.reverseFill
 	self.backAnchor    = dbx.backAnchor
 	self.bars          = bars
 	local mainBar = {
-		reverse  = not not dbx.reverseMainBar,
+		reverse  =  not ( not self.reverseFill == not dbx.reverseMainBar ),
 		pointFrom = dbx.reverseMainBar and opositePoint[alignPoint] or alignPoint,
 		pointTo   = dbx.reverseMainBar and alignPoint or opositePoint[alignPoint],
 		opacity   = dbx.textureColor.a,
@@ -200,7 +199,7 @@ local function Bar_UpdateDB(self)
 	bars[1] = mainBar
 	for i,setup in ipairs(dbx) do
 		bars[#bars+1] = {
-			reverse  = not not setup.reverse,
+			reverse  = not ( not self.reverseFill == not setup.reverse ),
 			prevBar   = (setup.prevBar and setup.prevBar<=i and setup.prevBar) or nil,
 			pointFrom = (setup.glowLine and 'CENTER') or (setup.reverse and opositePoint[alignPoint] or alignPoint),
 			pointTo   = setup.reverse and alignPoint or opositePoint[alignPoint],
