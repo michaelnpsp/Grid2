@@ -407,48 +407,52 @@ end, {
 })
 
 Grid2Options:RegisterStatusOptions("health-deficit", "health", function(self, status, options, optionParams)
-	Grid2Options:MakeStatusColorThresholdOptions(status, options, optionParams)
-	options.addIncomingHeals = {
-		type = "toggle",
-		order = 99,
-		width = "full",
-		name = L["Add Incoming Heals"],
-		desc = L["Add incoming heals to health deficit."],
-		tristate = false,
-		get = function () return status.dbx.addIncomingHeals end,
-		set = function (_, v)
-			status.dbx.addIncomingHeals = v or nil
-			status:Refresh()
-		end,
-	}
-	if Grid2.isClassic then
-		options.healthShorten = {
+	if Grid2.secretsEnabled then
+		Grid2Options:MakeStatusColorOptions(status, options, optionParams)
+	else
+		Grid2Options:MakeStatusColorThresholdOptions(status, options, optionParams)
+		options.addIncomingHeals = {
+			type = "toggle",
+			order = 99,
+			width = "full",
+			name = L["Add Incoming Heals"],
+			desc = L["Add incoming heals to health deficit."],
+			tristate = false,
+			get = function () return status.dbx.addIncomingHeals end,
+			set = function (_, v)
+				status.dbx.addIncomingHeals = v or nil
+				status:Refresh()
+			end,
+		}
+		if Grid2.isClassic then
+			options.healthShorten = {
+				type = "toggle",
+				tristate = false,
+				width = "full",
+				order = 100,
+				name = L["Shorten Health Numbers"],
+				desc = L["Shorten Health Numbers"],
+				get = function () return not status.dbx.displayRawNumbers end,
+				set = function (_, v)
+					status.dbx.displayRawNumbers = not v or nil
+					status:Refresh()
+				end,
+			}
+		end
+		options.displayPercent = {
 			type = "toggle",
 			tristate = false,
 			width = "full",
-			order = 100,
-			name = L["Shorten Health Numbers"],
-			desc = L["Shorten Health Numbers"],
-			get = function () return not status.dbx.displayRawNumbers end,
+			order = 110,
+			name = L["Display health percent text for enemies"],
+			desc = L["Display health percent text instead of health deficit for non friendly units."],
+			get = function () return status.dbx.displayPercentEnemies end,
 			set = function (_, v)
-				status.dbx.displayRawNumbers = not v or nil
+				status.dbx.displayPercentEnemies = v or nil
 				status:Refresh()
 			end,
 		}
 	end
-	options.displayPercent = {
-		type = "toggle",
-		tristate = false,
-		width = "full",
-		order = 110,
-		name = L["Display health percent text for enemies"],
-		desc = L["Display health percent text instead of health deficit for non friendly units."],
-		get = function () return status.dbx.displayPercentEnemies end,
-		set = function (_, v)
-			status.dbx.displayPercentEnemies = v or nil
-			status:Refresh()
-		end,
-	}
 end, {
 	titleIcon = "Interface\\Icons\\Spell_shadow_lifedrain"
 })
