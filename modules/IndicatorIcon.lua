@@ -160,6 +160,8 @@ local function Icon_Layout(self, parent)
 		local color, text = self.ctColor, f.Cooldown:GetCountdownFontString()
 		text:SetFont(self.ctFont, self.ctFontSize, self.ctFontFlags)
 		text:SetTextColor(color.r, color.g, color.b, color.a)
+		text:ClearAllPoints()
+		text:SetPoint(self.ctFontPoint, self.ctFontOffsetX, self.ctFontOffsetY)
 	end
 
 	if not self.disableStack then
@@ -207,10 +209,14 @@ local function Icon_UpdateDB(self)
 	-- ignore icon and use a solid square texture
 	self.disableIcon  = dbx.disableIcon
 	-- cooldown text
+	local ctJV,ctJH      = dbx.ctFontJustifyV or 'MIDDLE', dbx.ctFontJustifyH or 'CENTER'
 	self.ctFontFlags     = dbx.ctFontFlags or "OUTLINE"
 	self.ctFontSize      = dbx.ctFontSize or 9
 	self.ctFont          = Grid2:MediaFetch("font", dbx.ctFont or theme.font) or STANDARD_TEXT_FONT
 	self.ctColor         = Grid2:MakeColor(dbx.ctColor, "WHITE")
+	self.ctFontPoint     = (ctJV=='MIDDLE' and ctJH) or (ctJH=='CENTER' and ctJV) or ctJV..ctJH
+	self.ctFontOffsetX   = dbx.ctFontOffsetX or 0
+	self.ctFontOffsetY   = dbx.ctFontOffsetY or 0
 	-- backdrop
 	self.backdrop = Grid2:GetBackdropTable("Interface\\Addons\\Grid2\\media\\white16x16", self.borderSize or 1)
 end
