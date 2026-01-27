@@ -75,7 +75,7 @@ local function Icon_OnUpdate(self, parent, unit, status)
 		end
 		Icon:SetAlpha(color.a or 1)
 		if not self.disableStack then
-			Frame.CooldownText:SetText( TruncateWhenZero(cnt) )
+			Frame.CooldownText:SetText( TruncateWhenZero(cnt or 0) )
 		end
 		if not self.disableCooldown and exp and dur then
 			Frame.Cooldown:SetCooldownFromExpirationTime(exp, dur)
