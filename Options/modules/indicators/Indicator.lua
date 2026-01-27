@@ -745,55 +745,6 @@ function Grid2Options:MakeIndicatorCooldownTextOptions(indicator, options)
 		 end,
 		hidden= function() return indicator.dbx.enableCooldownText==nil end,
 	}
-	options.ctFontJustify = {
-		type = 'select',
-		order = 144,
-		name = L["Text Location"],
-		desc = L["Text Location"],
-		values = Grid2Options.pointValueList,
-		get = function()
-            local JustifyH = indicator.dbx.ctFontJustifyH or "CENTER"
-            local JustifyV = indicator.dbx.ctFontJustifyV or "MIDDLE"
-            return self.pointMapText[ JustifyH..JustifyV ]
-		end,
-		set = function(_, v)
-            local justify =  self.pointMapText[v]
-            indicator.dbx.ctFontJustifyH = justify[1]
-            indicator.dbx.ctFontJustifyV = justify[2]
-            self:RefreshIndicator( indicator, "Layout")
-		end,
-		hidden= function() return indicator.dbx.enableCooldownText==nil end,
-	}
-	options.ctFontOffsetX = {
-		type = "range",
-		order = 145,
-		name = L["X Offset"],
-		desc = L["Adjust the horizontal offset of the text"],
-		softMin  = -50,
-		softMax = 50,
-		step = 1,
-		get = function () return indicator.dbx.ctFontOffsetX or 0	end,
-		set = function (_, v)
-			indicator.dbx.ctFontOffsetX = v
-			self:RefreshIndicator(indicator, "Layout")
-		end,
-		hidden= function() return indicator.dbx.enableCooldownText==nil end,
-	}
-	options.ctFontOffsetY = {
-		type = "range",
-		order = 146,
-		name = L["Y Offset"],
-		desc = L["Adjust the vertical offset of the text"],
-		softMin  = -50,
-		softMax = 50,
-		step = 1,
-		get = function () return indicator.dbx.ctFontOffsetY or 0	end,
-		set = function (_, v)
-			indicator.dbx.ctFontOffsetY = v
-			self:RefreshIndicator(indicator, "Layout")
-		end,
-		hidden= function() return indicator.dbx.enableCooldownText==nil end,
-	}
 end
 
 -- Grid2Options:MakeIndicatorTooltipsOptions()
