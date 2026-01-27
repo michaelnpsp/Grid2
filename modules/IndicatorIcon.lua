@@ -160,6 +160,8 @@ local function Icon_Layout(self, parent)
 		local color, text = self.ctColor, f.Cooldown:GetCountdownFontString()
 		text:SetFont(self.ctFont, self.ctFontSize, self.ctFontFlags)
 		text:SetTextColor(color.r, color.g, color.b, color.a)
+		text:ClearAllPoints()
+		text:SetPoint(self.ctFontPoint, self.ctFontOffsetX, self.ctFontOffsetY)
 	end
 
 	if not self.disableStack then
