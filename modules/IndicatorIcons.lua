@@ -306,7 +306,7 @@ local function Icon_UpdateDB(self)
 	self.ctColor         = Grid2:MakeColor(dbx.ctColor, "WHITE")
 	self.ctFontPoint     = (ctJV=='MIDDLE' and ctJH) or (ctJH=='CENTER' and ctJV) or ctJV..ctJH
 	self.ctFontOffsetX   = dbx.ctFontOffsetX or 0
-	self.ctFontOffsetY   = dbx.ctFontOffsetY or 0
+	self.ctFontOffsetY   = dbx.ctFontOffsetY or -1
 	-- backdrop
 	self.backdrop = self.borderSize>0 and Grid2:GetBackdropTable("Interface\\Addons\\Grid2\\media\\white16x16", self.borderSize) or nil
 end
