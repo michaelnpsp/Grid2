@@ -52,7 +52,7 @@ local GridLayoutHeaderClass = {
 		for name, func in pairs(self.prototype) do
 			frame[name] = func
 		end
-		if ClickCastHeader and not self.isInsecure then
+		if Clique and not self.isInsecure then
 			frame:SetAttribute("template", FRAMEC_TEMPLATE)
 			SecureHandler_OnLoad(frame)
 			frame:SetFrameRef("clickcast_header", Clique.header)
