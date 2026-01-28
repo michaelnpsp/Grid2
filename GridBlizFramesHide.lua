@@ -1,4 +1,5 @@
 -- Hide blizzard frames
+local pcall = pcall
 local InCombatLockdown = InCombatLockdown
 local secretsEnabled = Grid2.secretsEnabled
 local grouped_units = Grid2.grouped_units
