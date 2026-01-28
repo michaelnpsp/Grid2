@@ -22,9 +22,13 @@ local FILTER2BLIZKEY = {
 	["HELPFUL"] = "buffFrames",
 	["HELPFUL|PLAYER"] = "buffFrames",
 	["HELPFUL|RAID"] = "buffFrames",
+	["HELPFUL|RAID_IN_COMBAT"] = "buffFrames",
+	["HELPFUL|PLAYER|RAID_IN_COMBAT"] = "buffFrames",
+	["HELPFUL|RAID_IN_COMBAT|PLAYER"] = "buffFrames",
 	["HELPFUL|EXTERNAL_DEFENSIVE"] = "CenterDefensiveBuff",
 	["HARMFUL"] = "debuffFrames",
 	["HARMFUL|RAID"] = "dispelDebuffFrames",
+	['HARMFUL|RAID_PLAYER_DISPELLABLE'] = "dispelDebuffFrames",
 }
 
 --------------------------------------------------------------------------

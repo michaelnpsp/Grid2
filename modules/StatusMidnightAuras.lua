@@ -236,12 +236,12 @@ do
 	end
 
 	function DebuffsDispell:LBA_UNIT_AURA(event, unit)
-		self:UpdateCache( unit, UnitIsFriend("player", unit) and LBA.GetUnitDebuffsDispellable(unit, "HARMFUL|RAID", 1)[1] or nil )
+		self:UpdateCache( unit, UnitIsFriend("player", unit) and LBA.GetUnitDebuffsDispellable(unit, self.aura_filter, 1)[1] or nil )
 	end
 
 	function DebuffsDispell:UNIT_AURA(event, unit)
 		if rosterUnits[unit] then
-			self:UpdateCache( unit, UnitIsFriend("player", unit) and GetAuraDataByIndex(unit, 1, "HARMFUL|RAID") or nil )
+			self:UpdateCache( unit, UnitIsFriend("player", unit) and GetAuraDataByIndex(unit, 1, self.aura_filter) or nil )
 		end
 	end
 

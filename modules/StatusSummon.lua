@@ -41,18 +41,32 @@ function status:GetColor(unit)
 	return color.r, color.g, color.b, color.a
 end
 
-function status:GetIcon(unit)
-	return "2470702"
-end
-
-function status:GetTexCoord(unit)
-	local state = IncomingSummonStatus(unit)
-	if state == 3 then -- declined(3)
-		return 0.3234375, 0.4734375, 0.115625, 0.415625
-	elseif state == 2 then -- accepted(2)
-		return 0.0578125, 0.2078125, 0.115625,  0.415625
-	else -- pending(1)
-		return 0.5890625, 0.7390625, 0.115625,  0.415625
+if Grid2.isMidnight then
+	local SummonCoords = {
+		{0.54296875, 0.71484375, 0.2890625, 0.6328125}, --pending
+	    {0.36328125, 0.53515625, 0.2890625, 0.6328125}, --accepted
+		{0.36328125, 0.53515625, 0.6484375, 0.9921875}, --declined
+	}
+	function status:GetIcon(unit)
+		return "7526019"
+	end
+	function status:GetTexCoord(unit)
+		local c = SummonCoords[ IncomingSummonStatus(unit) ] or SummonCoords[1]
+		return c[1], c[2], c[3], c[4]
+	end
+else
+	function status:GetIcon(unit)
+		return "2470702"
+	end
+	function status:GetTexCoord(unit)
+		local state = IncomingSummonStatus(unit)
+		if state == 3 then -- declined(3)
+			return 0.3234375, 0.4734375, 0.115625, 0.415625
+		elseif state == 2 then -- accepted(2)
+			return 0.0578125, 0.2078125, 0.115625,  0.415625
+		else -- pending(1)
+			return 0.5890625, 0.7390625, 0.115625,  0.415625
+		end
 	end
 end
 
