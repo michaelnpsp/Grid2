@@ -258,7 +258,7 @@ function Leader:OnDisable()
 end
 
 function Leader:IsActive(unit)
-	return raidLeader and UnitIsUnit( unit, raidLeader )
+	return unit==raidLeader
 end
 
 function Leader:GetIcon(unit)
@@ -327,7 +327,7 @@ function MasterLooter:OnDisable()
 end
 
 function MasterLooter:IsActive(unit)
-	return masterLooter and UnitIsUnit( unit, masterLooter )
+	return unit==masterLooter
 end
 
 function MasterLooter:GetIcon(unit)
