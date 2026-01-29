@@ -159,6 +159,7 @@ local function MakeRangeOptions(self, status, options, optionParams)
 		values = function() return GetPlayerSpells(status, true) end,
 		hidden = function() return rangeDB.range~='spell' end,
 	}
+	--[[
 	options.newline2 = {
 		order = 79,
 		type = "description",
@@ -178,6 +179,7 @@ local function MakeRangeOptions(self, status, options, optionParams)
 		end,
 		hidden = function() return tonumber(rangeDB.range)~=nil end,
 	}
+	--]]
 end
 
 Grid2Options:RegisterStatusOptions("range", "target", MakeRangeOptions, { groupOrder = 201 } )

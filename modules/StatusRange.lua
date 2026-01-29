@@ -5,223 +5,119 @@ local RangeAlt = Grid2.statusPrototype:new("rangealt")
 
 local Grid2 = Grid2
 local tonumber = tonumber
-local tostring = tostring
-local IsInInstance = IsInInstance
 local UnitIsUnit = UnitIsUnit
-local UnitInRange = UnitInRange
 local UnitCanAttack = UnitCanAttack
-local UnitCanAssist = UnitCanAssist
 local InCombatLockdown = InCombatLockdown
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
-local CheckInteractOriginal = CheckInteractDistance
 local CheckInteractDistance = CheckInteractDistance
-local CheckHostileDistance  = CheckInteractDistance
-local UnitPhaseReason = UnitPhaseReason or Grid2.Dummy
-
-local grouped_units = Grid2.grouped_units
 local playerClass = Grid2.playerClass
-local isRangeAvail = false -- all versions for now
-
 local GetSpellInfo = Grid2.API.GetSpellInfo
 local IsSpellInRange = Grid2.API.IsSpellInRange
 
 -------------------------------------------------------------------------
--- CheckInteractDistance() replacements
+--  Check Range Spells Info
 -------------------------------------------------------------------------
-
-if not isRangeAvail then
-	-- range spells data
+local spellHostile, spellFriendly = nil, nil
+do
+	local function IVS(spellID) return IsPlayerSpell(spellID) and spellID end
 	local getHostile, getFriendly
-	local function IVS(spellID)	return IsPlayerSpell(spellID) and spellID end
-	if Grid2.isWoW90 then -- retail
-		if playerClass == 'DRUID' then
-			getHostile  = function() return 8921 end -- Moonfire
-			getFriendly = function() return 8936 end -- Regrowth
-		elseif playerClass == 'PRIEST' then
-			getHostile  = function() return 585  end  -- Smite
-			getFriendly = function() return 2061 end  -- Flash Heal
-		elseif playerClass == 'SHAMAN' then
-			getHostile  = function() return 188196  end -- Lightning Bolt
-			getFriendly = function() return 8004 end    -- Healing Surge
-		elseif playerClass == 'PALADIN' then
-			getHostile  = function() return 62124 end -- Hand of Reckoning
-			getFriendly = function() return 19750 end -- Flash of light
-		elseif playerClass == 'MONK' then
-			getHostile  = function() return 115546 end -- Provoke
-			getFriendly = function() return 116670 end -- Vivify
-		elseif playerClass == 'EVOKER' then
-			getHostile  = function() return 361469 end -- Living flame
-			getFriendly = function() return 355913 end -- Emerald Blossom
-		elseif playerClass == 'WARLOCK' then
-			getHostile  = function() return 686 end   -- Shadow Bolt
-			getFriendly = function() return 20707 end -- Soulstone
-		elseif playerClass == 'WARRIOR' then
-			getHostile  = function() return 355 end  -- Taunt
-			getFriendly = function() return nil end  -- no avail
-		elseif playerClass == 'DEMONHUNTER' then
-			getHostile  = function() return 185123 end -- Throw Glaive
-			getFriendly = function() return nil    end -- no avail
-		elseif playerClass == 'HUNTER' then
-			getHostile  = function() return IVS(193455) or IVS(19434) or IVS(132031) end -- Cobra Shot, Aimed Short, Steady shot
-			getFriendly = function() return nil end -- no avail
-		elseif playerClass == 'ROGUE' then
-			getHostile  = function() return IVS(36554) or IVS(6770) end -- Shadowstep, Sap
-			getFriendly = function() return IVS(36554) end -- Shadowstep
-		elseif playerClass == 'DEATHKNIGHT' then
-			getHostile  = function() return IVS(47541) or IVS(49576) end -- Death Coil, Death Grip
-			getFriendly = function() return IVS(47541) end -- Death Coil
-		elseif playerClass == 'MAGE' then
-			getHostile  = function() return IVS(116) or IVS(30451) or IVS(133) end -- Frostbolt, Arcane Blast, Fireball
-			getFriendly = function() return 1459 end -- Arcane intellect
-		end
-	else -- classic
-		if playerClass == 'DRUID' then
-			getHostile  = function() return 5176 end -- Wrath
-			getFriendly = function() return 5185 end -- Healing Touchaw
-		elseif playerClass == 'PRIEST' then
-			getHostile  = function() return 585  end -- Smite
-			getFriendly = function() return 2050 end -- Lesser Heal
-		elseif playerClass == 'SHAMAN' then
-			getHostile  = function() return 403  end -- Lightning Bolt
-			getFriendly = function() return 331  end -- Healing Wave
-		elseif playerClass == 'PALADIN' then
-			getHostile  = function() return IVS(20271) end -- Judgement
-			getFriendly = function() return 635 end -- Holy Light
-		elseif playerClass == 'WARLOCK' then
-			getHostile  = function() return 686 end -- Shadow Bolt
-			getFriendly = function() return IVS(20707) end -- Soulstone
-		elseif playerClass == 'WARRIOR' then
-			getHostile  = function() return IVS(355) or IVS(772) end  -- Taunt, Rend
-			getFriendly = function() return nil end  -- no avail
-		elseif playerClass == 'HUNTER' then
-			getHostile  = function() return IVS(3044) or IVS(1978) end -- Arcane Shot, Serpent Sting
-			getFriendly = function() return nil end -- no avail
-		elseif playerClass == 'ROGUE' then
-			getHostile  = function() return IVS(1752) end -- Sinister Strike
-			getFriendly = function() return nil end -- no avail
-		elseif playerClass == 'MAGE' then
-			getHostile  = function() return IVS(116) or IVS(133)  end -- Frostbolt, Fireball
-			getFriendly = function() return IVS(1459) end -- Arcane intellect
-		elseif playerClass == 'DEATHKNIGHT' then
-			getHostile  = function() return IVS(47541) or IVS(49576) end -- Death Coil, Death Grip
-			getFriendly = function() return IVS(47541) end -- Death Coil
-		elseif playerClass == 'MONK' then
-			getHostile  = function() return 115546 end -- Provoke
-			getFriendly = function() return 116670 end -- Vivify
-		end
+	if playerClass == 'DRUID' then
+		getHostile  = function() return 8921 end -- Moonfire
+		getFriendly = function() return 8936 end -- Regrowth
+	elseif playerClass == 'PRIEST' then
+		getHostile  = function() return 585  end  -- Smite
+		getFriendly = function() return 2061 end  -- Flash Heal
+	elseif playerClass == 'SHAMAN' then
+		getHostile  = function() return 188196  end -- Lightning Bolt
+		getFriendly = function() return 8004 end    -- Healing Surge
+	elseif playerClass == 'PALADIN' then
+		getHostile  = function() return 62124 end -- Hand of Reckoning
+		getFriendly = function() return 19750 end -- Flash of light
+	elseif playerClass == 'MONK' then
+		getHostile  = function() return 115546 end -- Provoke
+		getFriendly = function() return 116670 end -- Vivify
+	elseif playerClass == 'EVOKER' then
+		getHostile  = function() return 361469 end -- Living flame
+		getFriendly = function() return 355913 end -- Emerald Blossom
+	elseif playerClass == 'WARLOCK' then
+		getHostile  = function() return 686 end   -- Shadow Bolt
+		getFriendly = function() return 20707 end -- Soulstone
+	elseif playerClass == 'WARRIOR' then
+		getHostile  = function() return 355 end  -- Taunt
+		getFriendly = function() return nil end  -- no avail
+	elseif playerClass == 'DEMONHUNTER' then
+		getHostile  = function() return 185123 end -- Throw Glaive
+		getFriendly = function() return nil    end -- no avail
+	elseif playerClass == 'HUNTER' then
+		getHostile  = function() return IVS(193455) or IVS(19434) or IVS(132031) end -- Cobra Shot, Aimed Short, Steady shot
+		getFriendly = function() return nil end -- no avail
+	elseif playerClass == 'ROGUE' then
+		getHostile  = function() return IVS(36554) or IVS(6770) end -- Shadowstep, Sap
+		getFriendly = function() return IVS(36554) end -- Shadowstep
+	elseif playerClass == 'DEATHKNIGHT' then
+		getHostile  = function() return IVS(47541) or IVS(49576) end -- Death Coil, Death Grip
+		getFriendly = function() return IVS(47541) end -- Death Coil
+	elseif playerClass == 'MAGE' then
+		getHostile  = function() return IVS(116) or IVS(30451) or IVS(133) end -- Frostbolt, Arcane Blast, Fireball
+		getFriendly = function() return 1459 end -- Arcane intellect
 	end
-
-	-- update range spells, called from Grid2.lua
-	local spellHostile, spellFriendly = nil, nil
+	-- update range spells, called from GridCore.lua
 	function Grid2:UpdatePlayerRangeSpells()
 		spellHostile  = GetSpellInfo( getHostile() )
 		spellFriendly = GetSpellInfo( getFriendly() )
 	end
-
-	-- overrided functions
-	CheckHostileDistance = function(unit)
-		return spellHostile == nil or IsSpellInRange(spellHostile, unit) == 1
-	end
-
-	CheckInteractDistance = function(unit)
-		if UnitCanAttack('player', unit) then
-			return spellHostile == nil or IsSpellInRange(spellHostile, unit) == 1
-		elseif spellFriendly then
-			return IsSpellInRange(spellFriendly, unit) == 1
-		else
-			return InCombatLockdown() or CheckInteractOriginal(unit,4)
-		end
-	end
-
-	if Grid2.secretsEnabled then -- midnight
-		UnitInRange = CheckInteractDistance
-	end
-
 end
 
 ------------------------------------------------------------------------
 -- Range status
 -------------------------------------------------------------------------
 
-local worldRange40  -- special case to be able to see in range grouped players of the other faction in open world
 local friendlySpell -- friendly spell configured by the user (spell name)
+
 local hostileSpell  -- hostile spell configured by the user (spell name)
 
-local rezSpellID = ({ -- classic has the same spellIDs
-		DRUID       = 20484,
-		PRIEST      = 2006,
-		PALADIN     = 7328,
-		SHAMAN      = 2008,
-		MONK        = 115178,
-		DEATHKNIGHT = 61999,
-		WARLOCK     = 20707,
-		EVOKER      = 361227,
-	})[playerClass]
-local rezSpell = rezSpellID and GetSpellInfo(rezSpellID)
+local playerCanHeal = ({DRUID=true,PRIEST=true,SHAMAN=true,PALADIN=true,MONK=true,EVOKER=true})[playerClass]
 
-local rangeSpellID = ({
-		DRUID   = Grid2.isClassic and 774   or 8936,
-		PRIEST  = Grid2.isClassic and 2050  or 2061,
-		SHAMAN  = Grid2.isClassic and 25357 or 8004,
-		PALADIN = Grid2.isClassic and 635   or 19750,
-		MONK    = 116670,
-		EVOKER  = 355913,
-	})[playerClass]
-local rangeSpell = rangeSpellID and GetSpellInfo(rangeSpellID)
+local rezSpellID = ({DRUID=20484,PRIEST=2006,PALADIN=7328,SHAMAN=2008,MONK=115178,DEATHKNIGHT=61999,WARLOCK=20707,EVOKER=361227})[playerClass]
+
+local rezSpell = rezSpellID and GetSpellInfo(rezSpellID)
 
 local Ranges = {
 	[99] = UnitIsVisible,
-	[10] = isRangeAvail and function(unit)
-		return CheckInteractDistance(unit,3)
-	end or nil,
-	[28] = isRangeAvail and function(unit)
-		return CheckInteractDistance(unit,4)
-	end or nil,
 	[38] = function(unit)
 		if UnitIsUnit(unit,"player") then
 			return true
-		elseif grouped_units[unit] and unit~='pet' then
-			return UnitInRange(unit)
+		elseif UnitCanAttack('player', unit) then
+			return spellHostile == nil or IsSpellInRange(spellHostile, unit) == 1
+		elseif spellFriendly then
+			return IsSpellInRange(spellFriendly, unit) == 1
 		else
-			return CheckInteractDistance(unit,4) -- 28 yards for non grouped units: target/focus/bossX or when solo (because UnitInRange() does not work for pet when solo)
+			return InCombatLockdown() or CheckInteractDistance(unit,4)
 		end
 	end,
 	["heal"] = function(unit)
-		if UnitPhaseReason(unit) then
-			return
-		elseif UnitIsUnit(unit,'player') then
+		if UnitIsUnit(unit, 'player') then
 			return true
 		elseif UnitCanAttack('player', unit) then
-			return CheckHostileDistance(unit,4) -- 28y for enemies
-		elseif worldRange40 and grouped_units[unit] then
-			return UnitInRange(unit)
+			return spellHostile == nil or IsSpellInRange(spellHostile, unit) == 1
 		else
-			return IsSpellInRange(UnitIsDeadOrGhost(unit) and rezSpell or rangeSpell,unit) == 1
+			return IsSpellInRange(UnitIsDeadOrGhost(unit) and rezSpell or spellFriendly, unit) == 1
 		end
 	end,
 	["spell"] = function(unit)
-		if not UnitPhaseReason(unit) then
-			if not UnitCanAttack('player', unit) then
-				if UnitIsUnit(unit,'player') then
-					return true
-				elseif worldRange40 and grouped_units[unit] then
-					return UnitInRange(unit)
-				elseif rezSpell and UnitIsDeadOrGhost(unit) then
-					return IsSpellInRange(rezSpell,unit)==1
-				elseif friendlySpell then
-					return IsSpellInRange(friendlySpell,unit)==1
-				end
-			elseif hostileSpell then
-				local range = IsSpellInRange(hostileSpell,unit)
-				if range then
-					return range==1
-				else
-					return CheckHostileDistance(unit,4) -- 28y for enemies
-				end
-			else
-				return CheckHostileDistance(unit,4) -- 28y for enemies
+		if not UnitCanAttack('player', unit) then
+			if UnitIsUnit(unit,'player') then
+				return true
+			elseif rezSpell and UnitIsDeadOrGhost(unit) then
+				return IsSpellInRange(rezSpell, unit) == 1
+			elseif friendlySpell then
+				return IsSpellInRange(friendlySpell, unit) == 1
 			end
+		elseif hostileSpell then
+			local range = IsSpellInRange(hostileSpell, unit)
+			if range then return range == 1 end
 		end
+		return spellHostile == nil or IsSpellInRange(spellHostile, unit) == 1
 	end,
 }
 
@@ -231,7 +127,6 @@ local function Update(timer)
 	local UnitRangeCheck = self.UnitRangeCheck
 	hostileSpell = self.hostileSpell
 	friendlySpell = self.friendlySpell
-	worldRange40 = self.worldRange40 and not IsInInstance()
 	for unit in Grid2:IterateRosterUnits() do
 		local value = UnitRangeCheck(unit) and 1 or false
 		if value ~= cache[unit] then
@@ -293,10 +188,9 @@ function Range:UpdateDB()
 	local dbr = dbx.ranges and dbx.ranges[playerClass] or dbx
 	self.hostileSpell = dbr.hostileSpellID  and GetSpellInfo(dbr.hostileSpellID)
 	self.friendlySpell = dbr.friendlySpellID and GetSpellInfo(dbr.friendlySpellID)
-	self.curRange = tonumber(dbr.range) or (dbr.range=='spell' and 'spell') or (rangeSpell and 'heal') or 38
+	self.curRange = tonumber(dbr.range) or (dbr.range=='spell' and 'spell') or (playerCanHeal and 'heal') or 38
 	self.UnitRangeCheck = Ranges[self.curRange] or Ranges[38]
 	self.curAlpha = dbx.default or 0.25
-	self.worldRange40 = dbx.worldRange40
 	self.timer = self.timer or Grid2:CreateTimer( Update )
 	if self.timer then
 		self.timer:SetDuration(dbx.elapsed or 0.25)
@@ -336,4 +230,4 @@ Grid2.setupFunc["rangealt"] = function(baseKey, dbx)
 	return RangeAlt
 end
 
-Grid2:DbSetStatusDefaultValue( "rangealt", {type = "rangealt", color1 = {r=1, g=0, b=0, a=1}, range= (isRangeAvail and 28 or 38), default = 0.25, elapsed = 0.5} )
+Grid2:DbSetStatusDefaultValue( "rangealt", {type = "rangealt", color1 = {r=1, g=0, b=0, a=1}, range= 38, default = 0.25, elapsed = 0.5} )
