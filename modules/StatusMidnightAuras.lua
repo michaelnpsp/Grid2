@@ -195,7 +195,7 @@ end
 
 --[[ mdebuffs database format
 	type = "mdebuffs",
-	aura_filter = { filter= 'HARMFUL' ],
+	aura_filter = { filter = 'HARMFUL' ],
 	colors = {}
 --]]
 
@@ -266,7 +266,7 @@ do
 	end
 
 	function DebuffsDispell:UpdateDB()
-		self.aura_filter = 'HARMFUL|RAID'
+		self.aura_filter = 'HARMFUL|RAID_PLAYER_DISPELLABLE'
 		self.aura_func = self.dbx.blizFilter and LBA.GetUnitAuras or nil
 		self.aura_color:ClearPoints()
 		local colors = self.dbx.colors or {}

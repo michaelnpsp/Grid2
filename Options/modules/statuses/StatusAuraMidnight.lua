@@ -65,7 +65,7 @@ end
 
 local function filter_exists_substring(status, key, subkey, value)
 	local filter = filter_get_value(status, key, subkey, default or '')
-	return strfind(filter, value)~=nil
+	return tcontains( { strsplit('|', filter) }, value)
 end
 
 local function get_new_aura_status_key(data)
@@ -225,7 +225,9 @@ local function MakeBuffsOptions(status, options)
 			return filter_get_value(status, 'aura_filter', 'filter', 'HELPFUL')=='HELPFUL' and filter_get_value(status, 'aura_filter', 'blizFilter')==nil
 		end,
 		set = function(info, v)
-			filter_set_value(status, 'aura_filter', 'filter',  (not v) and 'HELPFUL|PLAYER|RAID' or nil)
+			if v then
+				filter_set_value(status, 'aura_filter', 'filter',  (not v) and 'HELPFUL|PLAYER|RAID' or nil)
+			end
 		end,
 	}
 	options.filter_player = {
@@ -240,11 +242,24 @@ local function MakeBuffsOptions(status, options)
 			filter_toggle_substring( status, 'aura_filter', 'filter', 'PLAYER', 'HELPFUL' )
 		end,
 	}
-	options.filter_raid = {
+	options.filter_raid_combat = {
 		type = "toggle",
 		order = 40,
 		width = "full",
-		name = L["Buffs that are relevant for your player class"],
+		name = L["Buffs relevant for your class"],
+		get = function()
+			return filter_exists_substring( status, 'aura_filter', 'filter', 'RAID_IN_COMBAT' )
+		end,
+		set = function()
+			filter_toggle_substring( status, 'aura_filter', 'filter', 'RAID_IN_COMBAT', 'HELPFUL' )
+		end,
+		hidden = function() return Grid2.versionCli<=120000 end,
+	}
+	options.filter_raid = {
+		type = "toggle",
+		order = 43,
+		width = "full",
+		name = L["Buffs relevant for your class (light version)"],
 		get = function()
 			return filter_exists_substring( status, 'aura_filter', 'filter', 'RAID' )
 		end,
@@ -252,7 +267,19 @@ local function MakeBuffsOptions(status, options)
 			filter_toggle_substring( status, 'aura_filter', 'filter', 'RAID', 'HELPFUL' )
 		end,
 	}
-	options.filter_defensives = {
+	options.filter_defensive = {
+		type = "toggle",
+		order = 45,
+		width = "full",
+		name = L["Big defensive buff"],
+		get = function()
+			return filter_exists_substring( status, 'aura_filter', 'filter', 'BIG_DEFENSIVE' )
+		end,
+		set = function()
+			filter_toggle_substring( status, 'aura_filter', 'filter', 'BIG_DEFENSIVE', 'HELPFUL' )
+		end,
+	}
+	options.filter_external_defensives = {
 		type = "toggle",
 		order = 50,
 		width = "full",
@@ -278,7 +305,7 @@ local function MakeBuffsOptions(status, options)
 			filter_set_value(status, 'aura_filter', 'blizFilter', v and 'HELPFUL|RAID' or nil)
 		end,
 	}
-	options.filter_bliz_defensives = {
+	options.filter_bliz_defensive = {
 		type = "toggle",
 		order = 70,
 		width = "full",
@@ -389,8 +416,10 @@ local function MakeDebuffsFilterOptions(status, options)
 					filter_get_value(status, 'aura_filter', 'blizFilter')==nil
 		end,
 		set = function(info, v)
-			filter_set_value(status, 'aura_filter', 'filter',  (not v) and 'HARMFUL|PLAYER|RAID' or nil)
-			filter_set_value(status, 'aura_filter', 'typed', nil)
+			if v then
+				filter_set_value(status, 'aura_filter', 'filter',  (not v) and 'HARMFUL|PLAYER|RAID' or nil)
+				filter_set_value(status, 'aura_filter', 'typed', nil)
+			end
 		end,
 	}
 	options.filter_player = {
@@ -405,16 +434,16 @@ local function MakeDebuffsFilterOptions(status, options)
 			filter_toggle_substring( status, 'aura_filter', 'filter', 'PLAYER', 'HARMFUL' )
 		end,
 	}
-	options.filter_raid = {
+	options.filter_raid_dispel = {
 		type = "toggle",
 		order = 40,
 		width = "full",
 		name = L["Debuffs that i can dispel"],
 		get = function()
-			return filter_exists_substring( status, 'aura_filter', 'filter', 'RAID' )
+			return filter_exists_substring( status, 'aura_filter', 'filter', Grid2.versionCli<=120000 and 'RAID' or 'RAID_PLAYER_DISPELLABLE' )
 		end,
 		set = function()
-			filter_toggle_substring( status, 'aura_filter', 'filter', 'RAID', 'HARMFUL' )
+			filter_toggle_substring( status, 'aura_filter', 'filter', Grid2.versionCli<=120000 and 'RAID' or 'RAID_PLAYER_DISPELLABLE', 'HARMFUL' )
 		end,
 	}
 	options.filter_nameplate = {
@@ -429,7 +458,7 @@ local function MakeDebuffsFilterOptions(status, options)
 			filter_toggle_substring( status, 'aura_filter', 'filter', 'INCLUDE_NAME_PLATE_ONLY', 'HARMFUL' )
 		end,
 	}
-	options.debuffs_typed = {
+	options.filter_typed = {
 		type = "toggle",
 		order = 60,
 		width = "full",
@@ -442,7 +471,7 @@ local function MakeDebuffsFilterOptions(status, options)
 			filter_set_value( status, 'aura_filter', 'typed', v, false)
 		end,
 	}
-	options.debuffs_typeless = {
+	options.filter_typeless = {
 		type = "toggle",
 		order = 70,
 		width = "full",
@@ -459,6 +488,20 @@ local function MakeDebuffsFilterOptions(status, options)
 			end
 			filter_set_value( status, 'aura_filter', 'typed', v)
 		end,
+	}
+	options.filter_control = {
+		type = "toggle",
+		order = 75,
+		width = "full",
+		name = L["Crowd control debuffs"],
+		desc = L["Display only debuffs that limit mobility or actions."],
+		get = function()
+			return filter_exists_substring( status, 'aura_filter', 'filter', 'CROWD_CONTROL' )
+		end,
+		set = function()
+			filter_toggle_substring( status, 'aura_filter', 'filter', 'CROWD_CONTROL', 'HARMFUL' )
+		end,
+		hidden = function() return Grid2.versionCli<=120000 end, -- available only on midnight beta
 	}
 	options.filter_bliz_debuffs = {
 		type = "toggle",
@@ -533,7 +576,7 @@ function Grid2Options:MakeMidnightDispellableByMeOptions(status, options)
 		name = L["Get Dispellable debuffs from Blizzard Unit Frames"],
 		get = function() return status.dbx.blizFilter~=nil end,
 		set = function(_, v)
-			status.dbx.blizFilter = v and "HARMFUL|RAID" or nil
+			status.dbx.blizFilter = v and "HARMFUL|RAID_PLAYER_DISPELLABLE" or nil
 			refresh_aura_status(status)
 		end,
 	}
