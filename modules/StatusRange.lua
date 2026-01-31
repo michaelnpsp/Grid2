@@ -15,7 +15,7 @@ local GetSpellInfo = Grid2.API.GetSpellInfo
 local IsSpellInRange = Grid2.API.IsSpellInRange
 
 -------------------------------------------------------------------------
---  Check Range Spells Info
+--  Range check spells initialization
 -------------------------------------------------------------------------
 local spellHostile, spellFriendly = nil, nil
 do
@@ -82,6 +82,9 @@ local rezSpellID = ({DRUID=20484,PRIEST=2006,PALADIN=7328,SHAMAN=2008,MONK=11517
 
 local rezSpell = rezSpellID and GetSpellInfo(rezSpellID)
 
+-- These range functions can be called before Grid2:UpdatePlayerRangeSpells() is executed because SPELLS_CHANGED
+-- event is executed after PLAYER_ENTERING_WORLD, it should not be a problem because those functions are checking
+-- if spellFriendly/spellHostile are not nil before calling IsSpellInRange()
 local Ranges = {
 	[99] = UnitIsVisible,
 	[38] = function(unit)
@@ -100,8 +103,12 @@ local Ranges = {
 			return true
 		elseif UnitCanAttack('player', unit) then
 			return spellHostile == nil or IsSpellInRange(spellHostile, unit) == 1
+		elseif rezSpell and UnitIsDeadOrGhost(unit) then
+			return IsSpellInRange(rezSpell, unit) == 1
+		elseif spellFriendly then
+			return IsSpellInRange(spellFriendly, unit) == 1
 		else
-			return IsSpellInRange(UnitIsDeadOrGhost(unit) and rezSpell or spellFriendly, unit) == 1
+			return InCombatLockdown() or CheckInteractDistance(unit,4)
 		end
 	end,
 	["spell"] = function(unit)
