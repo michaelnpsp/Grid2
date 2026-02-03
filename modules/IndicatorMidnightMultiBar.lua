@@ -25,10 +25,6 @@ local function SetMultibarLineValue(bar, unit, status)
 	bar:SetAlphaFromBoolean(status:IsActive(unit), 1, 0)
 end
 
-local function SetMultibarLineValueSecret(bar, unit, status) -- hackish, only used by shields-overflow
-	bar:SetAlphaFromBoolean(status:IsActiveSecret(unit), 1, 0)
-end
-
 local function SetMultibarPercentValue(bar, unit, status)
 	bar:SetValue(status:GetPercent(unit) or 0)
 end
@@ -114,7 +110,7 @@ local function Bar_Layout(self, parent)
 			texture:SetAllPoints()
 		elseif setup.lineSize then
 			local status = self.statuses[i]
-			texture.SetMultibarValue = (status and status.IsActiveSecret and SetMultibarLineValueSecret) or SetMultibarLineValue
+			texture.SetMultibarValue = SetMultibarLineValue
 			if self.orientation == "HORIZONTAL" then
 				texture:SetSize( setup.lineSize, height )
 				texture:SetPoint( setup.pointFrom, prevTex, prevPnt, setup.lineAdjust, 0 )
@@ -285,7 +281,7 @@ local function Create(indicatorKey, dbx)
 	Bar.Layout          = Bar_Layout
 	Bar.UpdateDB        = Bar_UpdateDB
 	Bar.UpdateO         = Bar_Update -- special case used by multibar and icons indicator
-	Grid2:RegisterIndicator(Bar, { "percent", "secret" })
+	Grid2:RegisterIndicator(Bar, { "percent", "color" })
 
 	local BarColor      = Grid2.indicatorPrototype:new(indicatorKey.."-color")
 	BarColor.dbx        = dbx

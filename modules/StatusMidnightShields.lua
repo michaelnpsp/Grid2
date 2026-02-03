@@ -88,19 +88,14 @@ function Overflow:UpdateUnit(_, unit)
 	end
 end
 
-function Overflow:IsActiveSecret(unit) -- hackish, only used by multibar indicator
+function Overflow:IsActive(unit) -- hackish, only used by multibar indicator
 	UnitGetDetailedHealPrediction(unit, "player", OverflowCalculator)
 	local _, excess = OverflowCalculator:GetDamageAbsorbs()
 	return excess
 end
 
-function Overflow:IsActive(unit) -- this is wrong, but due to game restrictions we cannot check if overflow exists or not
-	return false
-end
-
-
 local function Create(baseKey, dbx)
-	Grid2:RegisterStatus(Overflow, { "secret" }, baseKey, dbx)
+	Grid2:RegisterStatus(Overflow, { "color" }, baseKey, dbx)
 	return Overflow
 end
 

@@ -12,6 +12,7 @@ local GetInstanceInfo = GetInstanceInfo
 local C_Timer_After = C_Timer.After
 local GetSpellCooldown = Grid2.API.GetSpellCooldown
 local UnitGroupRolesAssigned = Grid2.UnitGroupRolesAssigned
+local issecretvalue = Grid2.issecretvalue
 local roster_types = Grid2.roster_types
 local roster_deads = Grid2.roster_deads
 local empty = {}
@@ -323,8 +324,9 @@ do
 			local Update = status.UpdateIndicators
 			status.IsActive = load.combat == inCombat and IsActive or IsNotActive
 			for unit in Grid2:IterateGroupedPlayers() do
-				if IsActive(status,unit) then
-					Update(status,unit)
+				local state = IsActive(status,unit)
+				if issecretvalue(state) or state then
+					Update(status, unit)
 				end
 			end
 		end
