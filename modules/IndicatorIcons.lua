@@ -66,7 +66,7 @@ local function Icon_OnFrameUpdate(f)
 				i = i + 1
 			end
 			max = max - k
-		elseif status:IsActive(unit) then
+		elseif status:IsActive(unit) then -- TODO secret test maybe
 			local aura = auras[i]
 			aura.status, aura.slotID = status, nil
 			if showIcons then

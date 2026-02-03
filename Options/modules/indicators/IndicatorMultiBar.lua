@@ -239,11 +239,10 @@ do
 				wipe(tmpTable)
 				local curStatusName = GetIndicatorStatusName(indicator, barIndex+1)
 				local usedStatuses  = GetIndicatorStatusMap(indicator)
+				local type = barDbx.glowLine and 'color' or 'percent'
 				for statusKey, status in Grid2:IterateStatuses() do
-					if self:IsCompatiblePair(indicator, status) and (curStatusName or not usedStatuses[statusKey])  then
-						if not status.IsActiveSecret or barDbx.glowLine then -- special case for shields-overflow status, due to secret activation
-							tmpTable[statusKey] = self.LocalizeStatus(status)
-						end
+					if self:IsCompatiblePair(indicator, status) and self:IsCompatibleStatus(status, type) and (curStatusName or not usedStatuses[statusKey]) then
+						tmpTable[statusKey] = self.LocalizeStatus(status)
 					end
 				end
 				return tmpTable

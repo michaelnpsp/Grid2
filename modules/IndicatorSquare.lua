@@ -6,9 +6,12 @@ local function Square_Create(self, parent)
 	self:Acquire("Frame", parent, "BackdropTemplate")
 end
 
-local function Square_OnUpdate(self, parent, unit, status)
+local function Square_OnUpdate(self, parent, unit, status, state, secret)
 	local Square = parent[self.name]
-	if status then
+	if secret then
+		Square:SetBackdropColor(status:GetColor(unit))
+		Square:SetAlphaFromBoolean(state, 1, 0)
+	elseif status then
 		Square:SetBackdropColor(status:GetColor(unit))
 		Square:SetAlpha(1)
 	else
@@ -16,9 +19,12 @@ local function Square_OnUpdate(self, parent, unit, status)
 	end
 end
 
-local function Square_OnUpdateBorder(self, parent, unit, status)
+local function Square_OnUpdateBorder(self, parent, unit, status, state, secret)
 	local Square = parent[self.name]
-	if status then
+	if secret then
+		Square:SetBackdropBorderColor(status:GetColor(unit))
+		Square:SetAlphaFromBoolean(state, 1, 0)
+	elseif status then
 		Square:SetBackdropBorderColor(status:GetColor(unit))
 		Square:SetAlpha(1)
 	else
@@ -53,7 +59,7 @@ local function Square_Layout(self, parent)
 	if mode then
 		Square.Center:SetBlendMode(mode)
 		Square:SetBorderBlendMode(mode)
-	end	
+	end
 	Square:Show()
 end
 

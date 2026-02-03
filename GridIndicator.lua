@@ -10,9 +10,10 @@ local tinsert = table.insert
 local tremove = table.remove
 local setmetatable = setmetatable
 local tdelete = Grid2.TableRemoveByValue
+local issecretvalue = Grid2.issecretvalue
 local BackdropTemplateMixin = BackdropTemplateMixin
-
 local framePool = setmetatable( {}, {__index = function (t,k) local r = {}; t[k] = r; return r; end} )
+
 
 Grid2.indicators = {}
 Grid2.indicatorSorted = {}
@@ -158,10 +159,11 @@ function indicator:GetCurrentStatus(unit)
 	if unit then
 		local statuses= self.statuses
 		for i=1,#statuses do
-			local status= statuses[i]
+			local status = statuses[i]
 			local state = status:IsActive(unit)
-			if state then
-				return status, state
+			local secret = issecretvalue(state)
+			if secret or state then
+				return status, state, secret
 			end
 		end
 	end

@@ -437,6 +437,16 @@ function Grid2Options:IsCompatiblePair(indicator, status)
 	end
 end
 
+-- checking if a status supports the specified indicator type
+function Grid2Options:IsCompatibleStatus(status, type)
+	for _, s in Grid2:IterateStatuses(type) do
+		if status == s then
+			return true
+		end
+	end
+end
+
+
 -- Check if status is compatible with the specified indicator type
 function Grid2Options:IsCompatibleStatus(status, type)
 	for _,istatus in ipairs(Grid2.statusTypes[type]) do
