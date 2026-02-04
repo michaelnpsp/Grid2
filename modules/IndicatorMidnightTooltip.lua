@@ -20,12 +20,14 @@ local tooltipDefault
 local tooltipCheck
 local tooltipOwner  -- default frame to anchor the tooltip if no indicator is provided
 local tooltipDisplayed
+local tooltipHookEnabled
 -- whole unit frame
 local tooltipFrame  -- unit frame under the mouse, usually parent in indicators code
 local OnFrameEnter
 local OnFrameLeave
 -- indicator under the mouse
 local tooltipIndicatorFrame -- indicator frame under the mouse, usually parent[indicator.name]
+local tooltipIndicatorEnabled
 local OnFrameIndicatorEnter
 local OnFrameIndicatorLeave
 local ShowFrameTooltip
@@ -67,6 +69,10 @@ function Grid2.indicatorPrototype:EnableFrameTooltips(frame, enabled)
 	frame:SetMouseClickEnabled(false)
 	frame:SetScript("OnEnter", enabled and OnFrameIndicatorEnter or nil)
 	frame:SetScript("OnLeave", enabled and OnFrameIndicatorLeave or nil)
+	if enabled then
+		Tooltip:SetMouseHooks(true)
+		tooltipIndicatorEnabled = enabled
+	end
 end
 
 -- tooltip for indicator frames
@@ -142,9 +148,11 @@ function Tooltip:OnUpdate(parent, unit, status)
 end
 
 function Tooltip:SetMouseHooks(flag)
-	if flag==nil then flag = self.dbx.showTooltip~=1 end
-	Grid2Frame:SetEventHook( 'OnEnter', OnFrameEnter, flag )
-	Grid2Frame:SetEventHook( 'OnLeave', OnFrameLeave, flag )
+	if flag~=tooltipHookEnabled and (flag or not tooltipIndicatorEnabled) then -- if another indicator has tooltips we cannot disable the unit frame event hook
+		Grid2Frame:SetEventHook( 'OnEnter', OnFrameEnter, flag )
+		Grid2Frame:SetEventHook( 'OnLeave', OnFrameLeave, flag )
+		tooltipHookEnabled = flag
+	end
 end
 
 function Tooltip:OnSuspend()
@@ -157,7 +165,7 @@ function Tooltip:UpdateDB()
 	tooltipDefault = dbx.showDefault
 	tooltipCheck = TooltipCheck[dbx.showTooltip or 4]
 	tooltipOwner = Grid2Layout.frame.frameBack
-	self:SetMouseHooks( dbx.showTooltip~=1 or next(indicators) )
+	self:SetMouseHooks(dbx.showTooltip~=1)
 end
 
 local function Create(indicatorKey, dbx)
