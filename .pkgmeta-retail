@@ -20,12 +20,6 @@ externals:
  LDB/Libs/LibDBIcon-1.0: https://repos.curseforge.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
  LDB/Libs/LibDataBroker-1.1: https://github.com/tekkub/libdatabroker-1-1
 
-ignore:
- - Libs/LibHealComm-4.0
- - GridDefaultsClassic.lua
- - RaidDebuffs
- - RaidDebuffsOptions
-
 move-folders:
  Grid2/Options: Grid2Options
  Grid2/LDB: Grid2LDB

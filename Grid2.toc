@@ -32,11 +32,6 @@ Libs\AceConsole-3.0\AceConsole-3.0.xml
 Libs\AceLocale-3.0\AceLocale-3.0.xml
 Libs\LibSharedMedia-3.0\LibSharedMedia-3.0.lua
 Libs\LibCustomGlow-1.0\LibCustomGlow-1.0.lua
-#@version-classic@
-Libs\LibClassicDurations\LibClassicDurations.xml
-#@end-version-classic@
-#@retail@
-#@end-retail@
 #@end-no-lib-strip@
 
 #Locales
@@ -60,15 +55,9 @@ GridStatus.lua
 GridStatusLoad.lua
 GridSetup.lua
 GridDefaults.lua
-GridBlizFramesHide.lua
-#@retail@
 GridDefaultsRetail.lua
-GridDefaultsMidnight.lua
+GridBlizFramesHide.lua
 GridBlizFramesAuras.lua
-#@end-retail@
-#@non-retail@
-GridDefaultsClassic.lua
-#@end-non-retail@
 
 # Indicators
 modules\IndicatorAlpha.lua
@@ -84,15 +73,12 @@ modules\IndicatorSquare.lua
 modules\IndicatorTooltip.lua
 modules\IndicatorPortrait.lua
 modules\IndicatorShape.lua
-#@retail@
 modules\IndicatorPrivateAuras.lua
-modules\IndicatorMidnightBar.lua
-modules\IndicatorMidnightMultiBar.lua
-modules\IndicatorMidnightTooltip.lua
-#@end-retail@
 
 # Statuses
 modules\StatusHealth.lua
+modules\StatusShields.lua
+modules\StatusHealAbsorbs.lua
 modules\StatusMana.lua
 modules\StatusColor.lua
 modules\StatusName.lua
@@ -107,25 +93,13 @@ modules\StatusRaidIcon.lua
 modules\StatusAFK.lua
 modules\StatusBanzai.lua
 modules\StatusRes.lua
-modules\StatusHealsAoe.lua
 modules\StatusSelf.lua
 modules\StatusDirection.lua
 modules\StatusCombat.lua
-modules\StatusAuras.lua
-modules\StatusAurasBuffs.lua
-modules\StatusAurasDebuffs.lua
 modules\StatusThreat.lua
 modules\StatusUnitIndex.lua
 modules\StatusPhased.lua
-modules\StatusShields.lua
-modules\StatusHealAbsorbs.lua
-modules\StatusTortosCrystalShell.lua
-#@retail@
 modules\StatusVehicle.lua
 modules\StatusSummon.lua
 modules\StatusStagger.lua
-modules\StatusMidnightAuras.lua
-modules\StatusMidnightHealth.lua
-modules\StatusMidnightShields.lua
-modules\StatusMidnightHealAbsorbs.lua
-#@end-retail@
+modules\StatusAuras.lua

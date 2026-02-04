@@ -1,4 +1,4 @@
-if Grid2.secretsEnabled or Grid2.versionCli<40000 then return end -- only cataclysm or retail
+if not Grid2.secretsEnabled then return end -- only midnight
 
 -- Shields absorb status, created by Michael
 
@@ -7,11 +7,13 @@ local min   = math.min
 local fmt   = string.format
 local UnitHealthMax = UnitHealthMax
 local UnitGetTotalAbsorbs = UnitGetTotalAbsorbs
-local IsEventValid = C_EventUtils.IsEventValid
+local AbbreviateLargeNumbers = AbbreviateLargeNumbers
 local unit_is_valid = Grid2.roster_guids
 
 -- Shields
 local Shields = Grid2.statusPrototype:new("shields")
+
+Shields.GetColor = Grid2.statusLibrary.GetColor
 
 function Shields:OnEnable()
 	self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED", "UpdateUnit")
@@ -29,54 +31,25 @@ function Shields:UpdateUnit(_,unit)
 	end
 end
 
-function Shields:GetColor(unit)
-	local c
-	local amount = UnitGetTotalAbsorbs(unit) or 0
-	local dbx = self.dbx
-	if amount > dbx.thresholdMedium then
-		c = dbx.color1
-	elseif amount > dbx.thresholdLow then
-		c = dbx.color2
-	else
-		c = dbx.color3
-	end
-	return c.r, c.g, c.b, c.a
-end
-
 function Shields:GetText(unit)
-	return fmt("%.1fk", (UnitGetTotalAbsorbs(unit) or 0) / 1000 )
+	return AbbreviateLargeNumbers( UnitGetTotalAbsorbs(unit) or 0 )
 end
 
--- Using a user defined max shield value (used by bar indicators)
-local function GetPercentCustomMax(self, unit)
-	return (UnitGetTotalAbsorbs(unit) or 0) / self.maxShieldValue
-end
--- Use unit maximum health as max shield value (used by bar indicators)
-local function GetPercentHealthMax(_, unit)
-	local m = UnitHealthMax(unit)
-	return m>0 and (UnitGetTotalAbsorbs(unit) or 0) / m  or 0
+function Shields:GetValueMinMaxCustom(unit)
+	return UnitGetTotalAbsorbs(unit) or 0, 0, self.maxShieldValue
 end
 
-local function IsActiveNormal(_, unit)
-	return (UnitGetTotalAbsorbs(unit) or 0)>0
+function Shields:GetValueMinMaxHealth(unit)
+	return UnitGetTotalAbsorbs(unit) or 0, 0, UnitHealthMax(unit)
 end
 
-local function IsActiveBLink(self, unit)
-	local value = UnitGetTotalAbsorbs(unit) or 0
-	if value>0 then
-		if value>self.blinkThreshold then
-			return true
-		else
-			return "blink"
-		end
-	end
+function Shields:IsActive()
+	return true
 end
 
 function Shields:UpdateDB()
 	self.maxShieldValue = self.dbx.maxShieldValue
-	self.blinkThreshold = self.dbx.blinkThreshold
-	self.GetPercent     = self.maxShieldValue and GetPercentCustomMax or GetPercentHealthMax
-	self.IsActive       = self.blinkThreshold and IsActiveBLink or IsActiveNormal
+	self.GetValueMinMax = self.maxShieldValue and self.GetValueMinMaxCustom or self.GetValueMinMaxHealth
 end
 
 local function Create(baseKey, dbx)
@@ -86,17 +59,14 @@ end
 
 Grid2.setupFunc["shields"] = Create
 
-Grid2:DbSetStatusDefaultValue( "shields", { type = "shields", thresholdMedium = 50000, thresholdLow = 25000,  colorCount = 3,
-	color1 = { r = 0, g = 1,   b = 0, a=1 },
-	color2 = { r = 1, g = 0.5, b = 0, a=1 },
-	color3 = { r = 1, g = 1,   b = 0, a=1 },
-} )
+Grid2:DbSetStatusDefaultValue( "shields", { type = "shields", color1 = { r=0, g=1, b=0, a=1} } )
 
 -- Shields Overflow
+local UnitGetDetailedHealPrediction = UnitGetDetailedHealPrediction
+local OverflowCalculator = CreateUnitHealPredictionCalculator()
+OverflowCalculator:SetDamageAbsorbClampMode(1) -- missing health
 
 local Overflow = Grid2.statusPrototype:new("shields-overflow")
-
-local overflow_cache = {}
 
 Overflow.GetColor = Grid2.statusLibrary.GetColor
 
@@ -104,151 +74,31 @@ function Overflow:OnEnable()
 	self:RegisterEvent("UNIT_MAXHEALTH", "UpdateUnit")
 	self:RegisterEvent("UNIT_HEALTH", "UpdateUnit")
 	self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED", "UpdateUnit")
-	self:RegisterMessage("Grid_UnitUpdated", "UpdateUnit")
 end
 
 function Overflow:OnDisable()
 	self:UnregisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
 	self:UnregisterEvent("UNIT_MAXHEALTH")
 	self:UnregisterEvent("UNIT_HEALTH")
-	self:UnregisterMessage("Grid_UnitUpdated")
 end
 
-function Overflow:UpdateUnit(event, unit)
+function Overflow:UpdateUnit(_, unit)
 	if unit_is_valid[unit] then
-		local v = UnitHealth(unit) + (UnitGetTotalAbsorbs(unit) or 0)
-		local m = UnitHealthMax(unit)
-		overflow_cache[unit] = v>m and (v-m)/m or nil
-		if event~='Grid_UnitUpdated' then self:UpdateIndicators(unit) end
+		self:UpdateIndicators(unit)
 	end
 end
 
-function Overflow:GetPercent(unit)
-	return overflow_cache[unit]
-end
-
-function Overflow:IsActive(unit)
-	return overflow_cache[unit]~=nil
+function Overflow:IsActive(unit) -- hackish, only used by multibar indicator
+	UnitGetDetailedHealPrediction(unit, "player", OverflowCalculator)
+	local _, excess = OverflowCalculator:GetDamageAbsorbs()
+	return excess
 end
 
 local function Create(baseKey, dbx)
-	Grid2:RegisterStatus(Overflow, { "color", "percent" }, baseKey, dbx)
+	Grid2:RegisterStatus(Overflow, { "color" }, baseKey, dbx)
 	return Overflow
 end
 
 Grid2.setupFunc["shields-overflow"] = Create
 
 Grid2:DbSetStatusDefaultValue( "shields-overflow", { type = "shields-overflow", color1 = {r=1, g=1, b=1, a=1} } )
-
--- Cataclysm implementation of missing UnitGetTotalAbsorbs()
-if Grid2.versionCli>=50000 then return end -- only cata
-
-local next  = next
-local CalcUnitShield
-local FireEvent
-local GetAuraDataByIndex = C_UnitAuras.GetAuraDataByIndex
-local shield_units = Grid2.roster_guids
-local shield_statuses = {}
-local shield_cache = setmetatable( {}, { __index = function(t,u) t[u]=CalcUnitShield(u); return t[u]; end } )
-local shield_spells = {
-	[1463]  = 1, -- Mana Shield (Mage)
-	[11426] = 1, -- Ice Barrier (Mage)
-	[17]    = 1, -- Power Word: Shield (Priest)
-	[47753] = 1, -- Divine Aegis (Priest)
-	[86273] = 1, -- Iluminated Healing (Paladin)
-	[96263] = 1, -- Sacred Shield (Paladin)
-	[88063] = 1, -- Guarded by the Light (Paladin)
-	-- [77535] = 1, -- Blood Shield (DK) / Physical
-	-- [62606] = 1, -- Savage-defense (Druid) / Physical
-}
-
-function UnitGetTotalAbsorbs(unit) -- overriding UnitGetTotalAbsorbs() function
-	return shield_cache[unit]
-end
-
-function CalcUnitShield(unit)
-	local shield_value = 0
-	for i=1,40 do
-		local data = GetAuraDataByIndex(unit, i, 'HELPFUL')
-		if not data then break end
-		if shield_spells[data.spellId] then shield_value = shield_value + data.points[1] end
-	end
-	return shield_value
-end
-
-local function RegisterShieldEvents(status)
-	if not next(shield_statuses) then
-		Shields:RegisterEvent("UNIT_AURA")
-		Shields:RegisterMessage("Grid_UnitUpdated", "ClearUnit")
-	end
-	shield_statuses[status] = true
-end
-
-local function UnregisterShieldEvents(status)
-	shield_statuses[status] = nil
-	if not next(shield_statuses) then
-		Shields:UnregisterEvent("UNIT_AURA")
-		Shields:UnregisterMessage("Grid_UnitUpdated")
-		wipe(shield_cache)
-	end
-end
-
-function Shields:UNIT_AURA(_, unit)
-	if shield_units[unit] then
-		local shield_value = CalcUnitShield(unit)
-		if shield_value~=shield_cache[unit] then
-			shield_cache[unit] = shield_value
-			if Shields.enabled then
-				Shields:UpdateIndicators(unit)
-			end
-			if Overflow.enabled then
-				Overflow:UpdateUnit(nil, unit)
-			end
-			if FireEvent then
-				FireEvent('UNIT_ABSORB_AMOUNT_CHANGED',unit)
-			end
-		end
-	end
-end
-
-function Shields:ClearUnit(_,unit)
-	shield_cache[unit] = nil
-end
-
-function Shields:OnEnable()
-	RegisterShieldEvents(self)
-	self:RegisterEvent("UNIT_MAXHEALTH","UpdateUnit")
-end
-
-function Shields:OnDisable()
-	UnregisterShieldEvents(self)
-	self:UnregisterEvent("UNIT_MAXHEALTH")
-end
-
-function Overflow:OnEnable()
-	RegisterShieldEvents(self)
-	self:RegisterEvent("UNIT_HEALTH", "UpdateUnit")
-	if IsEventValid('UNIT_HEALTH_FREQUENT') then self:RegisterEvent("UNIT_HEALTH_FREQUENT", "UpdateUnit") end
-	self:RegisterEvent("UNIT_MAXHEALTH","UpdateUnit")
-	self:RegisterMessage("Grid_UnitUpdated", "UpdateUnit")
-end
-
-function Overflow:OnDisable()
-	UnregisterShieldEvents(self)
-	self:UnregisterEvent("UNIT_HEALTH")
-	self:UnregisterEvent("UNIT_MAXHEALTH")
-	if IsEventValid('UNIT_HEALTH_FREQUENT') then self:UnregisterEvent("UNIT_HEALTH_FREQUENT") end
-	self:UnregisterMessage("Grid_UnitUpdated")
-end
-
--- Publish, needed by health-current status
-function Grid2:RegisterCustomAbsorbsEvent(func)
-	FireEvent = func
-	RegisterShieldEvents(func)
-	return UnitGetTotalAbsorbs
-end
-
-function Grid2:UnregisterCustomAbsorbsEvent(func)
-	FireEvent = nil
-	UnregisterShieldEvents(func)
-end

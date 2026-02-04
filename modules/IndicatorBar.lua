@@ -1,12 +1,10 @@
+if not Grid2.secretsEnabled then return end
+
 --[[ Created by Grid2 original authors, modified by Michael ]]--
 
 local Grid2 = Grid2
 local Grid2Frame = Grid2Frame
-local GetTime = GetTime
 local min = min
-local TimerCreate  = Grid2.CreateTimer
-local TimerDestroy = Grid2.CancelTimer
-
 local AlignPoints = Grid2.AlignPoints
 local defaultBackColor = { r=0, g=0, b=0, a=1 }
 
@@ -21,10 +19,6 @@ local function Bar_CreateHH(self, parent)
 	end
 end
 
-function Bar_CanCreateChild(self, parent)
-	return parent[self.parentName]~=nil
-end
-
 local function Bar_Layout(self, parent)
 	local Bar    = parent[self.name]
 	local bgTex  = Bar.bgTex
@@ -36,162 +30,81 @@ local function Bar_Layout(self, parent)
 	Bar:SetOrientation(orient)
 	Bar:SetStatusBarTexture(self.texture)
 	Bar:SetReverseFill(self.reverseFill)
-	local parentName = self.parentName
-	if parentName then
-		local PBar = parent[parentName]
-		Bar:SetFrameLevel( PBar:GetFrameLevel() )
-		Bar:SetSize( PBar:GetWidth(), PBar:GetHeight() )
-		Bar:SetPoint( points[1], PBar:GetStatusBarTexture(), points[2], 0, 0)
-		Bar:SetPoint( points[3], PBar:GetStatusBarTexture(), points[4], 0, 0)
-		if bgTex then bgTex:Hide() end
-	else
-		local w = self.width  or parent.container:GetWidth()
-		local h = self.height or parent.container:GetHeight()
-		Bar:SetFrameLevel(level)
-		Bar:SetSize(w, h)
-		Bar:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
-		local color = self.backColor
-		if color then
-			local tex = Bar:GetStatusBarTexture()
-			local layer, sublayer = tex:GetDrawLayer()
-			bgTex:SetDrawLayer(layer, sublayer-1)
-			bgTex:SetTexture(self.backTexture)
-			bgTex:ClearAllPoints()
-			if self.dbx.invertColor then
-				bgTex:SetAllPoints(Bar)
-			else
-				bgTex:SetPoint( points[1], tex, points[2], 0, 0)
-				bgTex:SetPoint( points[3], tex, points[4], 0, 0)
-				bgTex:SetPoint( points[2], Bar, points[2], 0, 0)
-				bgTex:SetPoint( points[4], Bar, points[4], 0, 0)
-				bgTex:SetVertexColor( color.r, color.g, color.b, color.a )
-			end
-			bgTex:Show()
-		elseif bgTex then
-			bgTex:Hide()
+	local w = self.width  or parent.container:GetWidth()
+	local h = self.height or parent.container:GetHeight()
+	Bar:SetFrameLevel(level)
+	Bar:SetSize(w, h)
+	Bar:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
+	local color = self.backColor
+	if color then
+		local tex = Bar:GetStatusBarTexture()
+		local layer, sublayer = tex:GetDrawLayer()
+		bgTex:SetDrawLayer(layer, sublayer-1)
+		bgTex:SetTexture(self.backTexture)
+		bgTex:ClearAllPoints()
+		if self.dbx.invertColor then
+			bgTex:SetAllPoints(Bar)
+		else
+			bgTex:SetPoint( points[1], tex, points[2], 0, 0)
+			bgTex:SetPoint( points[3], tex, points[4], 0, 0)
+			bgTex:SetPoint( points[2], Bar, points[2], 0, 0)
+			bgTex:SetPoint( points[4], Bar, points[4], 0, 0)
+			bgTex:SetVertexColor( color.r, color.g, color.b, color.a )
 		end
+		bgTex:Show()
+	elseif bgTex then
+		bgTex:Hide()
 	end
+	if self.direction then
+		Bar.durationObject = Bar.durationObject or C_DurationUtil.CreateDuration()
+	end
+	Bar.fgTex = Bar:GetStatusBarTexture()
 	Bar:Show()
 end
 
--- normal setvalue function
-local function Bar_SetValue(self, parent, value)
-	parent[self.name]:SetValue(value)
-end
-
-local function Bar_SetValueParent(self, parent, value)
-	parent[self.name]:SetValue(value)
-	local barChild = parent[self.childName]
-	local childValue = barChild.realValue or 0
-	if childValue>0 then
-		barChild:SetValue(value+childValue>1 and 1-value or childValue)
-	end
-end
-
-local function Bar_SetValueChild(self, parent, value)
-	local parentIndicator = parent[self.parentName]
-	if parentIndicator then
-		local parentValue = parentIndicator:GetValue()
-		local barChild = parent[self.name]
-		barChild:SetValue(value+parentValue>1 and 1-parentValue or value)
-		barChild.realValue = value
-	end
-end
-
 --{{{ Bar OnUpdate
-local timers = {}
-local function tdestroy(bar)
-	local timer = timers[bar]
-	if timer then
-		timers[bar], timer._bar = nil, nil
-		TimerDestroy(nil, timer)
-	end
-end
-local function tevent(timer)
-	local bar = timer._bar
-	local timeLeft = bar._expiration - GetTime()
-	if timeLeft>0 then
-		timeLeft = timeLeft / bar._duration
-	else
-		timeLeft = 0; tdestroy(bar)
-	end
-	bar.indicator:SetValue( bar:GetParent(), timeLeft )
-end
-local function tcreate(bar, duration, expiration)
-	local delay = duration>3 and 0.2 or 0.1
-	local timer = timers[bar]
-	if not timer then
-		timer = TimerCreate(nil, tevent, delay)
-		timer._bar = bar
-		timers[bar] = timer
-	elseif duration<=3 then
-		timer:SetDuration(delay)
-	end
-	bar._duration   = duration
-	bar._expiration = expiration
-	return timer
-end
-
--- standard updates, bar always visible
-local function Bar_OnUpdateD(self, parent, unit, status)
-	local bar,value = parent[self.name],0
-	if status then
-		local expiration = status:GetExpirationTime(unit)
-		if expiration then
-			local timeLeft = expiration - GetTime()
-			if timeLeft>0 then
-				local duration = status:GetDuration(unit) or timeLeft
-				value = timeLeft / duration
-				tcreate(bar, duration, expiration)
-			else
-				tdestroy(bar)
-			end
-		end
-	else
-		tdestroy(bar)
-	end
-	self:SetValue(parent,value)
-end
-
-local function Bar_OnUpdateS(self, parent, unit, status)
-	self:SetValue( parent, status and status:GetCount(unit)/status:GetCountMax(unit) or 0)
-end
-
+-- normal updates
 local function Bar_OnUpdate(self, parent, unit, status)
-	self:SetValue(parent, status and status:GetPercent(unit) or 0)
-end
-
--- special updates when background is enabled, bar hidden if no status active
-local function Bar_OnUpdateD2(self, parent, unit, status)
-	local bar,value = parent[self.name],0
+	local bar = parent[self.name]
 	if status then
-		local expiration = status:GetExpirationTime(unit)
-		if expiration then
-			local timeLeft = expiration - GetTime()
-			if timeLeft>0 then
-				local duration = status:GetDuration(unit) or timeLeft
-				value = timeLeft / duration
-				tcreate(bar, duration, expiration)
-			else
-				tdestroy(bar)
-			end
+		if status.GetValueMinMax then
+			local value, min, max = status:GetValueMinMax(unit)
+			bar:SetMinMaxValues(min or 0, max or 1)
+			bar:SetValue(value)
+		else
+			bar:SetMinMaxValues(0, 1)
+			bar:SetValue( (status:GetPercent(unit)) )
 		end
-		self:SetValue(parent,value)
-		bar:Show()
-	else
-		tdestroy(bar)
+		if self.hideInactive then bar:Show() end
+	elseif self.hideInactive then
 		bar:Hide()
+	else
+		bar:SetValue(0)
 	end
 end
 
-local function Bar_OnUpdateS2(self, parent, unit, status)
-	self:SetValue( parent, status and status:GetCount(unit)/status:GetCountMax(unit) or 0)
-	parent[self.name]:SetShown(status~=nil)
-end
-
-local function Bar_OnUpdate2(self, parent, unit, status)
-	self:SetValue(parent, status and status:GetPercent(unit) or 0)
-	parent[self.name]:SetShown(status~=nil)
+local function Bar_OnUpdateD(self, parent, unit, status)
+	local bar = parent[self.name]
+	if status then
+		local duration = status:GetDuration(unit)
+		if duration then
+			local expiration =	status:GetExpirationTime(unit)
+			if expiration then
+				bar.durationObject:SetTimeFromEnd(expiration, duration)
+			else
+				bar.durationObject:SetTimeFromStart(status:GetStartTime(unit) or GetTime(), duration)
+			end
+			bar:SetTimerDuration(bar.durationObject, 0, self.direction)
+			if self.hideInactive then bar:Show() end
+			return
+		end
+	end
+	if self.hideInactive then
+		bar:Hide()
+	else
+		bar:SetMinMaxValues(0,1)
+		bar:SetValue(0)
+	end
 end
 --}}}
 
@@ -205,11 +118,9 @@ local function Bar_Disable(self, parent)
 	bar:Hide()
 	bar:SetParent(nil)
 	bar:ClearAllPoints()
-	tdestroy(bar)
 end
 
 local function Bar_Destroy(self, parent, bar)
-	tdestroy(bar)
 	bar.indicator = nil
 end
 
@@ -229,28 +140,10 @@ local function Bar_UpdateDB(self)
 	self.height      = dbx.height
 	self.reverseFill = not not dbx.reverseFill
 	self.backColor   = dbx.backColor or (dbx.invertColor and defaultBackColor) or nil
-	if dbx.hideWhenInactive then
-		self.OnUpdate = (dbx.duration and Bar_OnUpdateD2) or (dbx.stack and Bar_OnUpdateS2) or Bar_OnUpdate2
-	else
-		self.OnUpdate = (dbx.duration and Bar_OnUpdateD) or (dbx.stack and Bar_OnUpdateS) or Bar_OnUpdate
-	end
-	if dbx.anchorTo then
-		local barParent = Grid2.indicators[dbx.anchorTo]
-		barParent.childName = self.name
-		barParent.SetValue  = Bar_SetValueParent
-		self.SetValue       = Bar_SetValueChild
-		self.CanCreate      = Bar_CanCreateChild
-		self.parentName     = dbx.anchorTo
-		self.reverseFill    = barParent.reverseFill
-		self.orientation    = barParent.orientation
-	else
-		self.SetValue = self.childName and Bar_SetValueParent or Bar_SetValue
-		self.CanCreate = self.prototype.CanCreate
-		self.parentName = nil
-		if self.childName then -- fix changing orientation on themes, CF issue #1227
-			Grid2.indicators[self.childName].orientation = self.orientation
-		end
-	end
+	self.CanCreate   = self.prototype.CanCreate
+	self.hideInactive= dbx.hideWhenInactive
+	self.direction   = (dbx.duration==true and 1) or (dbx.duration==false and 0) or nil
+	self.OnUpdate    = dbx.duration~=nil and Bar_OnUpdateD or Bar_OnUpdate
 end
 
 local function BarColor_OnUpdate(self, parent, unit, status)
@@ -258,7 +151,7 @@ local function BarColor_OnUpdate(self, parent, unit, status)
 	if bar then
 		if status then
 			local r, g, b, a = status:GetColor(unit)
-			bar:SetStatusBarColor(r, g, b, min(self.opacity, a or 1) )
+			bar.fgTex:SetVertexColor(r, g, b, self.opacity)
 		else
 			bar:SetStatusBarColor(0,0,0,0)
 		end
@@ -275,10 +168,8 @@ local function BarColor_OnUpdateInverted(self, parent, unit, status)
 			r, g, b, a = 0, 0, 0, 0
 		end
 		local c = self.backColor
-		bar:SetStatusBarColor(c.r, c.g, c.b, min(self.opacity, 0.8))
-		if not self.dbx.anchorTo then
-			bar.bgTex:SetVertexColor(r, g, b, (a or 1)*c.a)
-		end
+		bar.fgTex:SetVertexColor(c.r, c.g, c.b, min(self.opacity, 0.8))
+		bar.bgTex:SetVertexColor(r, g, b, (a or 1)*c.a)
 	end
 end
 
