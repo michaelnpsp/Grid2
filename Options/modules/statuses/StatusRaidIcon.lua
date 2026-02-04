@@ -10,28 +10,8 @@ local optionParams = {
 	color7 = RAID_TARGET_7,
 	color8 = RAID_TARGET_8,
 	titleIcon = "Interface\\TARGETINGFRAME\\UI-RaidTargetingIcons",
-	titleIconCoords = { 0.5, 1, 0, 0.5},
+	titleIconCoords = { 0.5, 1, 0, 0.5 },
 }
 
-local MakeOptions = Grid2.secretsEnabled and Grid2.Dummy or function(self, status, options, optionParams)
-	self:MakeStatusStandardOptions(status, options, optionParams)
-	self:MakeSpacerOptions(options, 30)
-	options.opacity = {
-		type = "range",
-		order = 150,
-		name = L["Opacity"],
-		desc = L["Set the opacity."],
-		min = 0,
-		max = 1,
-		step = 0.01,
-		get = function(info) return status.dbx.opacity or false end,
-		set = function(info, v)
-			status.dbx.opacity = v
-			status:SetGlobalOpacity(v)
-			status:UpdateAllUnits()
-		end,
-	}
-end
-
-Grid2Options:RegisterStatusOptions("raid-icon-player", "target", MakeOptions, optionParams)
-Grid2Options:RegisterStatusOptions("raid-icon-target", "target", MakeOptions, optionParams)
+Grid2Options:RegisterStatusOptions("raid-icon-player", "target", Grid2.Dummy, optionParams)
+Grid2Options:RegisterStatusOptions("raid-icon-target", "target", Grid2.Dummy, optionParams)

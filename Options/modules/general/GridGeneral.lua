@@ -245,28 +245,6 @@ Grid2Options:AddGeneralOptions( "General", "Text Formatting", {
 })
 
 --==========================================================================
--- Classic Auras Duration
---==========================================================================
-
-if Grid2.isVanilla then
-	Grid2Options:AddGeneralOptions( "General", "Auras", {
-		classicDurations = {
-			type = "toggle",
-			name = L["Enable Durations"],
-			desc = L["Check this option to be able to display auras duration & expiration time."],
-			width = "full",
-			order = 115,
-			get = function () return not Grid2.db.global.disableDurations end,
-			set = function (_, v)
-				Grid2.db.global.disableDurations = (not v) or nil
-				ReloadUI()
-			end,
-			confirm = function() return L["UI must be reloaded to change this option. Are you sure?"] end,
-		},
-	})
-end
-
---==========================================================================
 -- Target on mouse down
 --==========================================================================
 
@@ -315,15 +293,6 @@ do
 	local IsAddOnLoaded = C_AddOns and C_AddOns.IsAddOnLoaded or IsAddOnLoaded
 	local EnableAddOn   = C_AddOns and C_AddOns.EnableAddOn or EnableAddOn
 	local order = 0
-	local function Fix(k,v)
-		if k=='party' and GetCVar("useCompactPartyFrames") then
-			SetCVar("useCompactPartyFrames", v and '1' or '0') -- special case for parties in classic because PartyFrame does not exist
-		end
-		-- if not IsAddOnLoaded("Blizzard_CompactRaidFrames") then
-		-- 	EnableAddOn("Blizzard_CompactRaidFrames") -- reenabling CompactRaidFrames addon because in dragonflight it cannot be disabled
-		--	EnableAddOn("Blizzard_CUFProfiles")
-		-- end
-	end
 	local function Reload()
 		Grid2Options:ConfirmDialog(L['Changes will take effect on next UI reload. Do you want to reload the UI now ?'], ReloadUI)
 	end
@@ -347,7 +316,7 @@ do
 			name = L[text],
 			desc = L[text],
 			get = function () return Get(key) end,
-			set = function (_, v) Fix(key,v); Set(key,v); Reload(); end,
+			set = function (_, v) Set(key,v); Reload(); end,
 		}
 	end
 	Grid2Options:AddGeneralOptions( "General", "Hide Blizzard Frames", {
@@ -363,6 +332,7 @@ end
 --==========================================================================
 -- Load on demand
 --==========================================================================
+
 --[[
 Grid2Options:AddGeneralOptions( "General", "Options management", {
 	loadOnDemand = {

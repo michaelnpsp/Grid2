@@ -1,6 +1,6 @@
 local L = Grid2Options.L
 
-local CLASSES_MANA = { PRIEST = true, DRUID = true, MAGE = true,  WARLOCK = true, PALADIN = true, SHAMAN = true, MONK = true, EVOKER = true, HUNTER = Grid2.isClassic or nil }
+local CLASSES_MANA = { PRIEST = true, DRUID = true, MAGE = true,  WARLOCK = true, PALADIN = true, SHAMAN = true, MONK = true, EVOKER = true }
 for class in pairs(CLASSES_MANA) do
 	CLASSES_MANA[class] = LOCALIZED_CLASS_NAMES_MALE[class]
 end

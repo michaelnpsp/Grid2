@@ -372,7 +372,7 @@ do
 
 	local options = {}
 
-	Grid2Options:MakeTitleOptions( options, L["indicators"], L["indicators management"], nil, Grid2.isClassic and "Interface\\ICONS\\INV_Misc_Rune_07" or "Interface\\ICONS\\INV_Misc_EngGizmos_26")
+	Grid2Options:MakeTitleOptions( options, L["indicators"], L["indicators management"], nil, "Interface\\ICONS\\INV_Misc_EngGizmos_26")
 
 	options.newIndicatorName = {
 		type = "input",

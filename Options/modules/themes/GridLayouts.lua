@@ -566,7 +566,7 @@ local generalOptions = {
 		set = function(info,v)
 			SetupSpecialHeader('focustarget', v)
 		end,
-		hidden = function() return Grid2.isVanilla	or Grid2.secretsEnabled end,
+		hidden = function() return Grid2.secretsEnabled end,
 	},
 
 	desc3 = {

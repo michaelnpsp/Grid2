@@ -178,7 +178,7 @@ Grid2Options:RegisterStatusOptions( "direction", "target", function(self, status
 		order = 300,
 		fontSize = "medium",
 		name = "\n|cffFF0000" .. L["Error: Range status must be enabled to use the Out of Range option."],
-		hidden = function() return not (Grid2.secretsEnabled and status.dbx.ShowOutOfRange and not Grid2:GetStatusByName('range').enabled) end
+		hidden = function() return not (status.dbx.ShowOutOfRange and not Grid2:GetStatusByName('range').enabled) end
 	}
 end, {
 	title = L["arrows pointing to each raid member"],

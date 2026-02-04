@@ -9,7 +9,7 @@ Grid2Options:RegisterStatusOptions("voice", "misc", nil, {
 
 Grid2Options:RegisterStatusOptions("target", "target", nil, {
 	title = L["highlights your target"],
-	titleIcon = Grid2.isClassic and "Interface\\Icons\\Ability_Hunter_SniperShot" or "Interface\\Icons\\Ability_hunter_mastermarksman",
+	titleIcon = "Interface\\Icons\\Ability_hunter_mastermarksman",
 })
 
 Grid2Options:RegisterStatusOptions("self", "target", nil, {

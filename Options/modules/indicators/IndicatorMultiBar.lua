@@ -92,7 +92,7 @@ do
 	local emptyTable, tmpTable = {}, {}
 	local TYPE_VALUES = { L["Bar"] , L["Line"] }
 	local ANCHOR_VALUES = { L["Previous Bar"], L["Topmost Bar"], L["Prev. Bar & Reverse"] }
-    local BANCHOR_VALUES =	{ [0]= L["Whole Background"], [1]= L["Main Bar"], [2]= not Grid2.secretsEnabled and L["Topmost Bar"] or nil }
+    local BANCHOR_VALUES =	{ [0]= L["Whole Background"], [1]= L["Main Bar"] }
 	local DIRECTION_VALUES = { L['Normal'], L['Reverse'] }
 	local MAINBAR_COLOR_SOURCES = { L["Status Color"], L["Custom Color"] }
 	local EXTRABAR_COLOR_SOURCES = { L["Main Bar Color"], L["Custom Color"] }
@@ -216,7 +216,7 @@ do
 		barStatus = {
 			type = "select",
 			order = 2,
-			width = Grid2.secretsEnabled and 1 or 1.2,
+			width = 1,
 			name = L["Status"],
 			desc = L["Select the status to display in this bar."],
 			get = function()
@@ -251,41 +251,6 @@ do
 			hidden = false,
 		},
 		--
-		barMainDirection = {
-			type = "select",
-			order = 3,
-			width = 0.85,
-			name = L["Direction"],
-			desc = L["Select the direction of the main bar."],
-			get = function ()
-				return indicator.dbx.reverseMainBar and 2 or 1
-			end,
-			set = function (_, v)
-				indicator.dbx.reverseMainBar = (v==2) or nil
-				self:RefreshIndicator(indicator, "Layout" )
-			end,
-			values = DIRECTION_VALUES,
-			hidden = function() return barIndex~=0 or Grid2.secretsEnabled end,
-		},
-
-		barExtraDirection = {
-			type = "select",
-			order = 3,
-			width = 0.85,
-			name = L["Anchor & Direction"],
-			desc = L["Select where to anchor the bar and optional you can reverse the grow direction."],
-			get = function()
-				return (barDbx.reverse and 3) or (barDbx.noOverlap and 2) or 1
-			end,
-			set = function(_, v)
-				barDbx.reverse = (v==3) or nil
-				barDbx.noOverlap = (v==2) or nil
-				self:RefreshIndicator(indicator, "Layout")
-			end,
-			values = ANCHOR_VALUES,
-			hidden = function() return barIndex==0 or Grid2.secretsEnabled end,
-		},
-		--
 		barMidnightDirection = {
 			type = "select",
 			order = 3,
@@ -300,9 +265,7 @@ do
 				self:RefreshIndicator(indicator, "Layout")
 			end,
 			values = DIRECTION_VALUES,
-			hidden = function() return not Grid2.secretsEnabled  end,
 		},
-
 		barMidnightAnchor = {
 			type = "select",
 			order = 3.1,
@@ -321,7 +284,6 @@ do
 				return MIDNIGHT_ANCHOR_VALUES
 			end,
 			disabled = function() return barIndex==0 end,
-			hidden = function() return not Grid2.secretsEnabled end,
 		},
 
 		-------------------------------------------------------------------------

@@ -1,5 +1,3 @@
-if not Grid2.secretsEnabled then return end
-
 local L = Grid2Options.L
 
 --==============================================
