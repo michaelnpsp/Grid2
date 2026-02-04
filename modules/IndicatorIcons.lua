@@ -160,7 +160,11 @@ local function Icon_Layout(self, parent)
 	f:SetFrameLevel(level)
 	self.cellSize = size
 	if not self.smartCenter then
-		f:SetSize( size*self.pw, size*self.ph )
+		if size>0 then
+			f:SetSize( size*self.pw, size*self.ph )
+		else
+			f:SetSize( iconSize, iconSize ) -- to avoid 0 size frame when using a negative spacing: iconSize+iconSpacing==0
+		end
 	elseif self.vertical then
 		f:SetWidth(iconSize)
 		f.SetSmartSize = f.SetHeight
