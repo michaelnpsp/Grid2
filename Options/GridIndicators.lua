@@ -62,8 +62,8 @@ do
 		local name = indicator.name
 		Grid2Options.LI[name] = nil
 		Grid2:DbSetIndicator(name,nil)
-		if indicator.dbx.sideKick then
-			Grid2:DbSetIndicator(indicator.dbx.sideKick.name, nil)
+		if indicator.sideKick then
+			Grid2:DbSetIndicator(indicator.sideKick.name, nil)
 		end
 		for _,t in pairs(Grid2.db.profile.themes.indicators) do
 			t[name] = nil

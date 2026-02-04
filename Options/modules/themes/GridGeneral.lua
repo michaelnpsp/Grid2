@@ -151,7 +151,7 @@ local layoutOptions1 =  { positionheader = {
 		name = L["Frame Width"],
 		desc = L["Adjust the width of each unit's frame."],
 		min = 10,
-		softMax = 100,
+		softMax = 200,
 		step = 1,
 		get = function ()
 			return theme.frame.frameWidth
@@ -168,7 +168,7 @@ local layoutOptions1 =  { positionheader = {
 		name = L["Frame Height"],
 		desc = L["Adjust the height of each unit's frame."],
 		min = 10,
-		softMax = 100,
+		softMax = 200,
 		step = 1,
 		get = function ()
 			return theme.frame.frameHeight
