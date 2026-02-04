@@ -7,15 +7,20 @@ local function Shape_Create(self, parent)
 	local f = self:Acquire("Frame", parent)
 	local Icon = f.Icon or f:CreateTexture(nil, "ARTWORK")
 	Icon:SetAllPoints()
-	Icon:Show()
 	f.Icon = Icon
 end
 
-local function Shape_OnUpdate(self, parent, unit, status)
-	local Frame = parent[self.name]
-	if not status then Frame:Hide(); return end
-	Frame.Icon:SetVertexColor( status:GetColor(unit) )
-	Frame:Show()
+local function Shape_OnUpdate(self, parent, unit, status, state, secret)
+	local f = parent[self.name]
+	if secret then
+		f.Icon:SetVertexColor(status:GetColor(unit))
+		f:SetAlphaFromBoolean(state, 1, 0)
+	elseif status then
+		f.Icon:SetVertexColor(status:GetColor(unit))
+		f:SetAlpha(1)
+	else
+		f:SetAlpha(0)
+	end
 end
 
 local function Shape_Layout(self, parent)
@@ -28,6 +33,7 @@ local function Shape_Layout(self, parent)
 	f:SetSize( self.iconSize, self.iconSize )
 	f.Icon:SetTexCoord( unpack(self.iconCoord) )
 	f.Icon:SetTexture( self.iconPath )
+	f.Icon:Show()
 	if self.dbx.shadowEnabled then
 		local IconShadow = f.IconShadow or f:CreateTexture(nil, "BORDER")
 		IconShadow:ClearAllPoints()
@@ -41,6 +47,8 @@ local function Shape_Layout(self, parent)
 	elseif f.IconShadow then
 		f.IconShadow:Hide()
 	end
+	f:SetAlpha(0)
+	f:Show()
 end
 
 local function Shape_Disable(self, parent)
