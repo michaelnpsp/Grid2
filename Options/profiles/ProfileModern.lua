@@ -57,7 +57,7 @@ m["health-bar-color"] = { classcolor=50 }
 i["alpha"] = { type="alpha" }
 m["alpha"] = { range=99 }
 
-i["buffs-icons"] = { tooltipAnchor="ANCHOR_TOPRIGHT", fontSize=9, borderOpacity=1, tooltipEnabled=true, fontJustifyH="RIGHT", disableCooldown=true, disableOmniCC=true, fontJustifyV="TOP", enableCooldownText=true, borderSize=1, ctFontSize=10, reverseCooldown=true, location={y=0,relPoint="TOPLEFT",point="TOPLEFT",x=0}, level=8, color1={a=1,r=0,g=0,b=0}, type="icons" }
+i["buffs-icons"] = { tooltipAnchor="ANCHOR_TOPRIGHT", fontSize=9, borderOpacity=1, tooltipEnabled=true, fontJustifyH="RIGHT", disableCooldown=true, fontJustifyV="TOP", enableCooldownText=true, borderSize=1, ctFontSize=10, reverseCooldown=true, location={y=0,relPoint="TOPLEFT",point="TOPLEFT",x=0}, level=8, color1={a=1,r=0,g=0,b=0}, type="icons" }
 m["buffs-icons"] = { ["buffs-Relevant"]=100 }
 
 i["corner-bottom"] = { type="square", color1={a=0.616,b=0,g=0,r=0}, location={y=4,relPoint="BOTTOM",point="BOTTOM",x=0}, level=9, borderSize=1, size=8 }
@@ -68,7 +68,7 @@ m["power-bar"] = { power=50 }
 i["power-bar-color"] = { type="bar-color" }
 m["power-bar-color"] = { power=51 }
 
-i["debuffs-icons"] = { fontSize=9, borderOpacity=1, disableCooldown=true, fontJustifyV="TOP", borderSize=1, iconSize=22, level=8, tooltipAnchor="ANCHOR_BOTTOMRIGHT", type="icons", enableCooldownText=true, reverseCooldown=true, color1={a=1,r=1,g=1,b=1}, ctFontSize=10, location={y=0,relPoint="BOTTOMLEFT",point="BOTTOMLEFT",x=0}, useStatusColor=true, fontJustifyH="RIGHT", disableOmniCC=true, tooltipEnabled=true }
+i["debuffs-icons"] = { fontSize=9, borderOpacity=1, disableCooldown=true, fontJustifyV="TOP", borderSize=1, iconSize=22, level=8, tooltipAnchor="ANCHOR_BOTTOMRIGHT", type="icons", enableCooldownText=true, reverseCooldown=true, color1={a=1,r=1,g=1,b=1}, ctFontSize=10, location={y=0,relPoint="BOTTOMLEFT",point="BOTTOMLEFT",x=0}, useStatusColor=true, fontJustifyH="RIGHT", tooltipEnabled=true }
 m["debuffs-icons"] = { ["debuffs-Relevant"]=50 }
 
 i["private-auras"] = { maxIcons=1, type="privateauras", location={y=0,relPoint="BOTTOMRIGHT",point="BOTTOMRIGHT",x=0}, level=9, load={unitType={self=true,player=true}}, iconSize=22 }

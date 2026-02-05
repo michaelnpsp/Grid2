@@ -9,6 +9,7 @@ local format = string.format
 local issecretvalue = Grid2.issecretvalue
 local canaccessvalue = Grid2.canaccessvalue
 local UpdateCooldownColorCurve = Grid2.UpdateCooldownColorCurve
+local RemoveCooldownColorCurve = Grid2.RemoveCooldownColorCurve
 local CreateDuration = C_DurationUtil.CreateDuration
 local TruncateWhenZero = C_StringUtil.TruncateWhenZero
 
@@ -221,7 +222,6 @@ local function Icon_Layout(self, parent)
 			cooldown:SetHideCountdownNumbers(not self.showCoolText)
 			cooldown:SetDrawEdge(false)
 			cooldown:SetDrawSwipe(self.showSwipe)
-			cooldown.noCooldownCount = self.dbx.disableOmniCC
 			cooldown:SetReverse(self.dbx.reverseCooldown)
 			if self.showCoolText then
 				local color, text = self.ctColor, cooldown:GetCountdownFontString()
@@ -233,6 +233,8 @@ local function Icon_Layout(self, parent)
 				if self.showColors then
 					cooldown.colorCurveObject = self.ctColorCurve
 					cooldown.durationObject = cooldown.durationObject or CreateDuration()
+				elseif cooldown.durationObject then  -- executed only if the user changed the settings to remove possible color update timer
+					RemoveCooldownColorCurve(cooldown)
 				end
 			end
 			cooldown:Show()
@@ -294,11 +296,8 @@ local function Icon_UpdateDB(self)
 		self.pw, self.ph = self.ph, self.pw
 	end
 	self.showSwipe       = not (dbx.disableCooldown or dbx.disableCooldownAnim)
-
-	print(">>>", self.name, self.showSwipe)
-
 	self.showCoolText    = dbx.enableCooldownText
-	self.showCooldown    = dbx.enableCooldownText or not dbx.disableCooldown or not dbx.disableOmniCC
+	self.showCooldown    = dbx.enableCooldownText or not dbx.disableCooldown
 	self.showStack       = not dbx.disableStack
 	self.showIcons       = not dbx.disableIcons
 	self.useStatusColor  = dbx.useStatusColor

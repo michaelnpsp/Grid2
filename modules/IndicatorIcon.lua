@@ -7,6 +7,7 @@ local fmt = string.format
 local issecretvalue = Grid2.issecretvalue
 local canaccessvalue = Grid2.canaccessvalue
 local UpdateCooldownColorCurve = Grid2.UpdateCooldownColorCurve
+local RemoveCooldownColorCurve = Grid2.RemoveCooldownColorCurve
 local CreateDuration = C_DurationUtil.CreateDuration
 local TruncateWhenZero = C_StringUtil.TruncateWhenZero
 
@@ -111,19 +112,20 @@ local function Icon_OnUpdate(self, parent, unit, status)
 			end
 		end
 		if not self.disableCooldown then
+			local Cooldown = Frame.Cooldown
 			local expiration, duration = status:GetExpirationTime(unit), status:GetDuration(unit)
 			if expiration and duration then
 				if canaccessvalue(duration) then
-					Frame.Cooldown:SetCooldown(expiration - duration, duration)
+					Cooldown:SetCooldown(expiration - duration, duration)
 				else
-					Frame.Cooldown:SetCooldownFromExpirationTime(expiration, duration)
+					Cooldown:SetCooldownFromExpirationTime(expiration, duration)
 				end
 				if self.showColors then
-					UpdateCooldownColorCurve(Frame.Cooldown, expiration, duration)
+					UpdateCooldownColorCurve(Cooldown, expiration, duration)
 				end
-				Frame.Cooldown:Show()
+				Cooldown:Show()
 			else
-				Frame.Cooldown:Hide()
+				Cooldown:Hide()
 			end
 		end
 	end
@@ -156,14 +158,18 @@ local function Icon_Layout(self, parent)
 	f:SetSize(size,size)
 
 	if self.showCoolText then
+		local Cooldown = f.Cooldown
 		local color, text = self.ctColor, f.Cooldown:GetCountdownFontString()
 		text:SetFont(self.ctFont, self.ctFontSize, self.ctFontFlags)
 		text:SetTextColor(color.r, color.g, color.b, color.a)
 		text:ClearAllPoints()
 		text:SetPoint(self.ctFontPoint, self.ctFontOffsetX, self.ctFontOffsetY)
+		text:SetMaxLines(1)
 		if self.showColors then
-			f.Cooldown.colorCurveObject = self.ctColorCurve
-			f.Cooldown.durationObject = f.Cooldown.durationObject or CreateDuration()
+			Cooldown.colorCurveObject = self.ctColorCurve
+			Cooldown.durationObject = Cooldown.durationObject or CreateDuration()
+		elseif Cooldown.durationObject then -- executed only if the user changed the settings to remove possible color update timer
+			RemoveCooldownColorCurve(Cooldown)
 		end
 	end
 
@@ -195,7 +201,7 @@ local function Icon_UpdateDB(self)
 	-- misc variables
 	self.showSwipe       = not (dbx.disableCooldown or dbx.disableCooldownAnim or dbx.disableIcon)
 	self.showCoolText    = dbx.enableCooldownText
-	self.disableCooldown = dbx.disableCooldown and dbx.disableOmniCC and not dbx.enableCooldownText
+	self.disableCooldown = dbx.disableCooldown and not dbx.enableCooldownText
 	self.disableStack    = dbx.disableStack
 	self.frameLevel      = dbx.level
 	self.borderSize      = dbx.borderSize

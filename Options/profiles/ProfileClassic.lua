@@ -41,7 +41,7 @@ m["health-bar-color"] = { classcolor=50 }
 i["alpha"] = { type="alpha" }
 m["alpha"] = { range=99 }
 
-i["buffs-icons"] = { tooltipAnchor="ANCHOR_TOPRIGHT", disableOmniCC=true, enableCooldownText=true, tooltipEnabled=true, reverseCooldown=true, color1={a=1,b=0,g=0,r=0}, fontJustifyV="TOP", fontSize=9, borderSize=1, ctFontSize=10, borderOpacity=1, location={y=0,relPoint="TOPLEFT",point="TOPLEFT",x=0}, level=8, type="icons", fontJustifyH="RIGHT" }
+i["buffs-icons"] = { tooltipAnchor="ANCHOR_TOPRIGHT", enableCooldownText=true, tooltipEnabled=true, reverseCooldown=true, color1={a=1,b=0,g=0,r=0}, fontJustifyV="TOP", fontSize=9, borderSize=1, ctFontSize=10, borderOpacity=1, location={y=0,relPoint="TOPLEFT",point="TOPLEFT",x=0}, level=8, type="icons", fontJustifyH="RIGHT" }
 m["buffs-icons"] = { ["buffs-Relevant"]=100 }
 
 i["border"] = { type="border", color1={a=0,r=0,g=0,b=0} }
@@ -60,7 +60,7 @@ m["power-bar"] = { power=50 }
 i["power-bar-color"] = { type="bar-color" }
 m["power-bar-color"] = { power=51 }
 
-i["debuffs-icons"] = { fontSize=9, borderOpacity=1, disableCooldown=true, fontJustifyV="TOP", borderSize=1, iconSize=26, level=8, tooltipAnchor="ANCHOR_BOTTOMRIGHT", type="icons", enableCooldownText=true, reverseCooldown=true, color1={a=1,b=1,g=1,r=1}, tooltipEnabled=true, ctFontSize=10, disableOmniCC=true, location={y=-2,relPoint="CENTER",point="CENTER",x=0}, fontJustifyH="RIGHT", useStatusColor=true, smartCenter=true }
+i["debuffs-icons"] = { fontSize=9, borderOpacity=1, disableCooldown=true, fontJustifyV="TOP", borderSize=1, iconSize=26, level=8, tooltipAnchor="ANCHOR_BOTTOMRIGHT", type="icons", enableCooldownText=true, reverseCooldown=true, color1={a=1,b=1,g=1,r=1}, tooltipEnabled=true, ctFontSize=10, location={y=-2,relPoint="CENTER",point="CENTER",x=0}, fontJustifyH="RIGHT", useStatusColor=true, smartCenter=true }
 m["debuffs-icons"] = { ["debuffs-Relevant"]=50 }
 
 i["private-auras"] = { maxIcons=1, type="privateauras", location={y=0,relPoint="CENTER",point="CENTER",x=0}, level=9, load={unitType={self=true,player=true}}, iconSize=25 }

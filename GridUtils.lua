@@ -519,7 +519,7 @@ do
 	local function Update()
 		for cooldown, text in pairs(cooldowns) do
 			if cooldown:IsVisible() then
-				 color = cooldown.durationObject:EvaluateRemainingDuration(cooldown.colorCurveObject)
+				 local color = cooldown.durationObject:EvaluateRemainingDuration(cooldown.colorCurveObject)
 				 text:SetTextColor(color:GetRGBA())
 			else
 				cooldowns[cooldown] = nil
@@ -537,4 +537,9 @@ do
 			cooldowns[cooldown] = cooldown:GetCountdownFontString()
 		end
 	end
+
+	function Grid2.RemoveCooldownColorCurve(cooldown)
+		cooldowns[cooldown] = nil
+	end
+
 end

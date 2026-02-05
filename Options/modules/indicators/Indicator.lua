@@ -717,17 +717,19 @@ function Grid2Options:MakeIndicatorCooldownTextOptions(indicator, options)
 				indicator.dbx.ctColors = nil
 				indicator.dbx.ctThresholds = nil
 			else
+				local color = indicator.dbx.ctColor or Grid2.defaultColors.WHITE
+				indicator.dbx.ctColor = nil
 				indicator.dbx.ctColors = indicator.dbx.ctColors or {}
 				indicator.dbx.ctThresholds = indicator.dbx.ctThresholds or {}
-				for i=1,v do
-					indicator.dbx.ctColors[i] = indicator.dbx.ctColors[i] or indicator.dbx.ctColor or Grid2.defaultColors.WHITE
-					indicator.dbx.ctThresholds[i] = indicator.dbx.ctThresholds[i] or 0
+				for i=1,4 do
+					indicator.dbx.ctColors[i] = i<=v and (indicator.dbx.ctColors[i] or Grid2.CopyTable(color)) or nil
+					indicator.dbx.ctThresholds[i] = i<=v and (indicator.dbx.ctThresholds[i] or 0) or nil
 				end
-				indicator.dbx.ctColor = nil
 			end
 			self:RefreshIndicator(indicator, "Layout")
 		end,
-		values = { [1] = "1", [2] = "2", [3] = "3"}
+		values = { [1] = "1", [2] = "2", [3] = "3", [4] = "4" },
+		hidden = function() return indicator.dbx.enableCooldownText==nil end,
 	}
 	options.ctFontColor = {
 		type = "color",
@@ -742,11 +744,17 @@ function Grid2Options:MakeIndicatorCooldownTextOptions(indicator, options)
 		 end,
 		hidden = function() return indicator.dbx.enableCooldownText==nil or indicator.dbx.ctColors~=nil end,
 	}
-	for i=1,3 do
+	for i=1,4 do
 		options['ctColors'..i] = {
 			type = "color",
 			order = 143 + i,
-			name = L["Color"],
+			name = function()
+				if i==1 then
+					return string.format(L["Above %d seconds"], indicator.dbx.ctThresholds and indicator.dbx.ctThresholds[i] or 0)
+				else
+					return string.format(L["Less than %d seconds"], indicator.dbx.ctThresholds and indicator.dbx.ctThresholds[i-1] or 0)
+				end
+			end,
 			hasAlpha = true,
 			get = function() return self:UnpackColor( indicator.dbx.ctColors[i], "WHITE" ) end,
 			set = function(info, r,g,b,a)
@@ -758,10 +766,10 @@ function Grid2Options:MakeIndicatorCooldownTextOptions(indicator, options)
 		options['ctThresholds'..i] = {
 			type = "input",
 			order = 143.5 + i,
-			name = L["Time Threshold"],
-			get = function() return indicator.dbx.ctThresholds[i] end,
+			name = L["Threshold (seconds)"],
+			get = function() return tostring(indicator.dbx.ctThresholds[i] or 0) end,
 			set = function(info, v)
-				indicator.dbx.ctThresholds[i] = v
+				indicator.dbx.ctThresholds[i] = tonumber(v) or 0
 				self:RefreshIndicator(indicator, "Layout" )
 			end,
 			hidden = function() return indicator.dbx.enableCooldownText==nil or indicator.dbx.ctThresholds==nil or #indicator.dbx.ctThresholds<i+1 end,

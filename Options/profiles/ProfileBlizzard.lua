@@ -59,7 +59,7 @@ i["tooltip"] = { showDefault=true, type="tooltip" }
 i["alpha"] = { type="alpha" }
 m["alpha"] = { range=99 }
 
-i["buffs-icons"] = { tooltipAnchor="ANCHOR_RIGHT", fontSize=9, disableCooldown=true, enableCooldownText=true, tooltipEnabled=true, reverseCooldown=true, disableOmniCC=true, color1={a=1,r=0,g=0,b=0}, borderOpacity=1, borderSize=1, ctFontSize=10, fontJustifyH="RIGHT", location={y=4,relPoint="BOTTOMRIGHT",point="BOTTOMRIGHT",x=-1}, level=8, fontJustifyV="TOP", type="icons" }
+i["buffs-icons"] = { tooltipAnchor="ANCHOR_RIGHT", fontSize=9, disableCooldown=true, enableCooldownText=true, tooltipEnabled=true, reverseCooldown=true, color1={a=1,r=0,g=0,b=0}, borderOpacity=1, borderSize=1, ctFontSize=10, fontJustifyH="RIGHT", location={y=4,relPoint="BOTTOMRIGHT",point="BOTTOMRIGHT",x=-1}, level=8, fontJustifyV="TOP", type="icons" }
 m["buffs-icons"] = { ["buffs-Relevant"]=100 }
 
 i["role-icons"] = { disableStack=true, type="icons", disableCooldown=true, level=9, iconSize=12, location={y=0,relPoint="TOPRIGHT",point="TOPRIGHT",x=-1} }
@@ -75,7 +75,7 @@ m["text-name"] = { ["feign-death"]=96, offline=97, name=70, death=98 }
 i["text-name-color"] = { type="text-color" }
 m["text-name-color"] = { offline=97, ["feign-death"]=96, death=98 }
 
-i["debuffs-icons"] = { fontSize=9, borderOpacity=1, disableCooldown=true, fontJustifyV="TOP", borderSize=1, iconSize=26, level=8, tooltipAnchor="ANCHOR_LEFT", type="icons", enableCooldownText=true, reverseCooldown=true, color1={a=1,r=1,g=1,b=1}, fontJustifyH="RIGHT", ctFontSize=12, useStatusColor=true, location={y=4,relPoint="BOTTOMLEFT",point="BOTTOMLEFT",x=1}, disableOmniCC=true, tooltipEnabled=true, fontOffsetY=4 }
+i["debuffs-icons"] = { fontSize=9, borderOpacity=1, disableCooldown=true, fontJustifyV="TOP", borderSize=1, iconSize=26, level=8, tooltipAnchor="ANCHOR_LEFT", type="icons", enableCooldownText=true, reverseCooldown=true, color1={a=1,r=1,g=1,b=1}, fontJustifyH="RIGHT", ctFontSize=12, useStatusColor=true, location={y=4,relPoint="BOTTOMLEFT",point="BOTTOMLEFT",x=1}, tooltipEnabled=true, fontOffsetY=4 }
 m["debuffs-icons"] = { ["debuffs-Relevant"]=50 }
 
 Grid2:DbUpdateStatusesDefaults()
