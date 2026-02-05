@@ -586,65 +586,35 @@ end
 -- Grid2Options:MakeIndicatorCountdownTextOptions()
 function Grid2Options:MakeIndicatorCooldownTextOptions(indicator, options)
 	self:MakeHeaderOptions( options, "CoolText" )
-	options.disableCooldownText = {
-		type = "toggle",
+	options.ctFontJustify = {
+		type = 'select',
 		order = 136,
-		name = L["Show Countdown Text"],
-		desc = L["Show the Countdown Text"],
-		tristate = false,
-		get = function () return indicator.dbx.enableCooldownText end,
-		set = function (_, v)
-			indicator.dbx.disableOmniCC = true
-			indicator.dbx.enableCooldownText = v or nil
-			self:RefreshIndicator(indicator, "Create")
+		name = L["Text Location"],
+		desc = L["Text Location"],
+		values = Grid2Options.pointValueListExtra,
+		get = function()
+			if indicator.dbx.enableCooldownText then
+				local JustifyH = indicator.dbx.ctFontJustifyH or "CENTER"
+				local JustifyV = indicator.dbx.ctFontJustifyV or "MIDDLE"
+				return self.pointMapText[ JustifyH..JustifyV ]
+			end
+			return "0"
 		end,
-	}
-	options.disableOmniCC = {
-		type = "toggle",
-		order = 137,
-		name = L["Disable OmniCC"],
-		desc = L["Don't let OmniCC Addon to display countdown texts on this indicator"],
-		tristate = false,
-		get = function () return indicator.dbx.disableOmniCC end,
-		set = function (_, v)
-			indicator.dbx.disableCooldownAnim = nil
-			indicator.dbx.disableOmniCC = v or nil
-			self:RefreshIndicator(indicator, "Create")
+		set = function(_, v)
+			if v ~= "0" then
+				local justify =  self.pointMapText[v]
+				indicator.dbx.ctFontJustifyH = justify[1]
+				indicator.dbx.ctFontJustifyV = justify[2]
+				indicator.dbx.enableCooldownText = true
+			else
+				indicator.dbx.enableCooldownText = nil
+			end
+            self:RefreshIndicator(indicator, "Create")
 		end,
-		hidden = function() return indicator.dbx.enableCooldownText end,
-	}
-	options.ctFont = {
-		type = "select", dialogControl = "LSM30_Font",
-		order = 139,
-		name = L["Font"],
-		desc = L["Adjust the font settings"],
-		get = function (info) return indicator.dbx.cfFont or self.MEDIA_VALUE_DEFAULT end,
-		set = function (info, v)
-			indicator.dbx.ctFont = self.MEDIA_VALUE_DEFAULT~=v and v or nil
-			self:RefreshIndicator(indicator, "Layout")
-		end,
-		values = self.GetFontValues,
-		hidden= function() return indicator.dbx.enableCooldownText==nil end,
-	}
-	options.ctFontFlags = {
-		type = "select",
-		order = 140,
-		name = L["Font Border"],
-		desc = L["Set the font border type."],
-		get = function ()
-			local flags = indicator.dbx.fontFlags
-			return (flags == nil and "OUTLINE") or (flags == "" and "NONE") or flags
-		end,
-		set = function (_, v)
-			indicator.dbx.fontFlags =  v ~= "NONE" and v or ""
-			self:RefreshIndicator(indicator, "Layout")
-		end,
-		values = Grid2Options.fontFlagsValues,
-		hidden= function() return indicator.dbx.enableCooldownText==nil end,
 	}
 	options.ctFontsize1 = {
 		type = "range",
-		order = 138,
+		order = 137,
 		name = L["Font Size"],
 		desc = L["Adjust the font size."],
 		softMin = 0,
@@ -660,7 +630,7 @@ function Grid2Options:MakeIndicatorCooldownTextOptions(indicator, options)
 	}
 	options.ctFontsize2 = {
 		type = "range",
-		order = 138,
+		order = 137,
 		name = L["Font Size"],
 		desc = L["Adjust the font size."],
 		min = 0.01,
@@ -675,41 +645,38 @@ function Grid2Options:MakeIndicatorCooldownTextOptions(indicator, options)
 		end,
 		hidden= function() return indicator.dbx.enableCooldownText==nil or (indicator.dbx.ctFontSize or 9)>=1 end,
 	}
-	options.ctFontColor = {
-		type = "color",
-		order = 143,
-		name = L["Color"],
-		desc = L["Color"],
-		hasAlpha = true,
-		get = function() return self:UnpackColor( indicator.dbx.ctColor, "WHITE" ) end,
-		set = function( info, r,g,b,a )
-			self:PackColor( r,g,b,a, indicator.dbx, "ctColor" )
-			self:RefreshIndicator(indicator, "Layout" )
-		 end,
+	options.ctFont = {
+		type = "select", dialogControl = "LSM30_Font",
+		order = 138,
+		name = L["Font"],
+		desc = L["Adjust the font settings"],
+		get = function (info) return indicator.dbx.cfFont or self.MEDIA_VALUE_DEFAULT end,
+		set = function (info, v)
+			indicator.dbx.ctFont = self.MEDIA_VALUE_DEFAULT~=v and v or nil
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		values = self.GetFontValues,
 		hidden= function() return indicator.dbx.enableCooldownText==nil end,
 	}
-	options.ctFontJustify = {
-		type = 'select',
-		order = 144,
-		name = L["Text Location"],
-		desc = L["Text Location"],
-		values = Grid2Options.pointValueList,
-		get = function()
-            local JustifyH = indicator.dbx.ctFontJustifyH or "CENTER"
-            local JustifyV = indicator.dbx.ctFontJustifyV or "MIDDLE"
-            return self.pointMapText[ JustifyH..JustifyV ]
+	options.ctFontFlags = {
+		type = "select",
+		order = 139,
+		name = L["Font Border"],
+		desc = L["Set the font border type."],
+		get = function ()
+			local flags = indicator.dbx.fontFlags
+			return (flags == nil and "OUTLINE") or (flags == "" and "NONE") or flags
 		end,
-		set = function(_, v)
-            local justify =  self.pointMapText[v]
-            indicator.dbx.ctFontJustifyH = justify[1]
-            indicator.dbx.ctFontJustifyV = justify[2]
-            self:RefreshIndicator( indicator, "Layout")
+		set = function (_, v)
+			indicator.dbx.fontFlags =  v ~= "NONE" and v or ""
+			self:RefreshIndicator(indicator, "Layout")
 		end,
+		values = Grid2Options.fontFlagsValues,
 		hidden= function() return indicator.dbx.enableCooldownText==nil end,
 	}
 	options.ctFontOffsetX = {
 		type = "range",
-		order = 145,
+		order = 140,
 		name = L["X Offset"],
 		desc = L["Adjust the horizontal offset of the text"],
 		softMin  = -50,
@@ -724,7 +691,7 @@ function Grid2Options:MakeIndicatorCooldownTextOptions(indicator, options)
 	}
 	options.ctFontOffsetY = {
 		type = "range",
-		order = 146,
+		order = 141,
 		name = L["Y Offset"],
 		desc = L["Adjust the vertical offset of the text"],
 		softMin  = -50,
@@ -737,6 +704,69 @@ function Grid2Options:MakeIndicatorCooldownTextOptions(indicator, options)
 		end,
 		hidden= function() return indicator.dbx.enableCooldownText==nil end,
 	}
+	options.ctFontColorCount = {
+		type = "select",
+		order = 142,
+		name = L["Color Count"],
+		desc = L["Color Count"],
+		get = function ()
+			return indicator.dbx.ctColors and #indicator.dbx.ctColors or 1 end,
+		set = function (_, v)
+			if v==1 then
+				indicator.dbx.ctColor = indicator.dbx.ctColors[1]
+				indicator.dbx.ctColors = nil
+				indicator.dbx.ctThresholds = nil
+			else
+				indicator.dbx.ctColors = indicator.dbx.ctColors or {}
+				indicator.dbx.ctThresholds = indicator.dbx.ctThresholds or {}
+				for i=1,v do
+					indicator.dbx.ctColors[i] = indicator.dbx.ctColors[i] or indicator.dbx.ctColor or Grid2.defaultColors.WHITE
+					indicator.dbx.ctThresholds[i] = indicator.dbx.ctThresholds[i] or 0
+				end
+				indicator.dbx.ctColor = nil
+			end
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		values = { [1] = "1", [2] = "2", [3] = "3"}
+	}
+	options.ctFontColor = {
+		type = "color",
+		order = 143,
+		name = L["Color"],
+		desc = L["Color"],
+		hasAlpha = true,
+		get = function() return self:UnpackColor( indicator.dbx.ctColor, "WHITE" ) end,
+		set = function( info, r,g,b,a )
+			self:PackColor( r,g,b,a, indicator.dbx, "ctColor" )
+			self:RefreshIndicator(indicator, "Layout" )
+		 end,
+		hidden = function() return indicator.dbx.enableCooldownText==nil or indicator.dbx.ctColors~=nil end,
+	}
+	for i=1,3 do
+		options['ctColors'..i] = {
+			type = "color",
+			order = 143 + i,
+			name = L["Color"],
+			hasAlpha = true,
+			get = function() return self:UnpackColor( indicator.dbx.ctColors[i], "WHITE" ) end,
+			set = function(info, r,g,b,a)
+				self:PackColor( r,g,b,a, indicator.dbx.ctColors, i )
+				self:RefreshIndicator(indicator, "Layout" )
+			end,
+			hidden = function() return indicator.dbx.enableCooldownText==nil or indicator.dbx.ctColors==nil or #indicator.dbx.ctColors<i end,
+		}
+		options['ctThresholds'..i] = {
+			type = "input",
+			order = 143.5 + i,
+			name = L["Time Threshold"],
+			get = function() return indicator.dbx.ctThresholds[i] end,
+			set = function(info, v)
+				indicator.dbx.ctThresholds[i] = v
+				self:RefreshIndicator(indicator, "Layout" )
+			end,
+			hidden = function() return indicator.dbx.enableCooldownText==nil or indicator.dbx.ctThresholds==nil or #indicator.dbx.ctThresholds<i+1 end,
+		}
+	end
 end
 
 -- Grid2Options:MakeIndicatorTooltipsOptions()

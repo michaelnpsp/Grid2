@@ -8,6 +8,8 @@ local ipairs = ipairs
 local format = string.format
 local issecretvalue = Grid2.issecretvalue
 local canaccessvalue = Grid2.canaccessvalue
+local UpdateCooldownColorCurve = Grid2.UpdateCooldownColorCurve
+local CreateDuration = C_DurationUtil.CreateDuration
 local TruncateWhenZero = C_StringUtil.TruncateWhenZero
 
 local function Icon_Create(self, parent)
@@ -27,6 +29,7 @@ local function Icon_OnFrameUpdate(f)
 	local showStack = self.showStack
 	local showCool  = self.showCooldown
 	local showIcons = self.showIcons
+	local showColors= self.showColors
 	local useStatus = self.useStatusColor
 	local i = 1
 	for _, status in ipairs(self.statuses) do
@@ -39,7 +42,6 @@ local function Icon_OnFrameUpdate(f)
 					aura.icon:SetTexture(textures[j])
 					if useStatus then
 						local c = colors[j]
-						-- aura:SetBackdropBorderColor(c.r, c.g, c.b, min(c.a,self.borderOpacity) )
 						aura:SetBackdropBorderColor(c.r, c.g, c.b, self.borderOpacity ) -- color is secret we cannot use min()
 					end
 				else
@@ -55,11 +57,15 @@ local function Icon_OnFrameUpdate(f)
 					end
 				end
 				if showCool then
+					local cooldown = aura.cooldown
 					local expiration, duration = expirations[j], durations[j]
 					if canaccessvalue(duration) then
-						aura.cooldown:SetCooldown(expiration-duration, duration)
+						cooldown:SetCooldown(expiration-duration, duration)
 					else
-						aura.cooldown:SetCooldownFromExpirationTime(expiration, duration)
+						cooldown:SetCooldownFromExpirationTime(expiration, duration)
+					end
+					if showColors then
+						UpdateCooldownColorCurve(cooldown, expiration, duration)
 					end
 				end
 				aura:Show()
@@ -92,6 +98,9 @@ local function Icon_OnFrameUpdate(f)
 						aura.cooldown:SetCooldown(expiration-duration, duration)
 					else
 						aura.cooldown:SetCooldownFromExpirationTime(expiration, duration)
+					end
+					if showColors then
+						UpdateCooldownColorCurve(aura.cooldown, expiration, duration)
 					end
 				else
 					aura.cooldown:SetCooldown(0, 0)
@@ -139,7 +148,6 @@ end
 -- Layout icons
 local function Icon_Layout(self, parent)
 	local f = parent[self.name]
-	local frameName
 	local x,y = 0,0
 	local ux,uy = self.ux,self.uy
 	local vx,vy = self.vx,self.vy
@@ -150,10 +158,6 @@ local function Icon_Layout(self, parent)
 	local tc1,tc2,tc3,tc4 = Grid2.statusPrototype.GetTexCoord()
 	local level = parent:GetFrameLevel() + self.frameLevel
 	local tooltipEnabled = self.dbx.tooltipEnabled
-	if not self.dbx.disableOmniCC then
-		local i,j  = parent:GetName():match("Grid2LayoutHeader(%d+)UnitButton(%d+)")
-		frameName  = format( "Grid2Icons%s%02d%02d", self.name:gsub("%-","") , i, j )
-	end
 	f:SetParent(parent)
 	f:ClearAllPoints()
 	f:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
@@ -211,24 +215,28 @@ local function Icon_Layout(self, parent)
 		end
 		-- cooldown animation
 		if self.showCooldown then
-			frame.cooldown = frame.cooldown or CreateFrame("Cooldown", frameName and frameName..i or nil, frame, "CooldownFrameTemplate")
-			frame.cooldown:SetAllPoints()
-			frame.cooldown:SetAlpha(1)
-			frame.cooldown:SetHideCountdownNumbers(not self.showCoolText)
-			-- frame.cooldown:SetDrawEdge(not self.dbx.disableOmniCC)
-			frame.cooldown:SetDrawEdge(false)
-			frame.cooldown:SetDrawSwipe(self.showSwipe)
-			frame.cooldown.noCooldownCount = self.dbx.disableOmniCC
-			frame.cooldown:SetReverse(self.dbx.reverseCooldown)
+			local cooldown = frame.cooldown or CreateFrame("Cooldown", nil, frame, "CooldownFrameTemplate")
+			cooldown:SetAllPoints()
+			cooldown:SetAlpha(1)
+			cooldown:SetHideCountdownNumbers(not self.showCoolText)
+			cooldown:SetDrawEdge(false)
+			cooldown:SetDrawSwipe(self.showSwipe)
+			cooldown.noCooldownCount = self.dbx.disableOmniCC
+			cooldown:SetReverse(self.dbx.reverseCooldown)
 			if self.showCoolText then
-				local color, text = self.ctColor, frame.cooldown:GetCountdownFontString()
+				local color, text = self.ctColor, cooldown:GetCountdownFontString()
 				text:SetFont(self.ctFont, self.ctFontSize, self.ctFontFlags)
 				text:SetTextColor(color.r, color.g, color.b, color.a)
 				text:ClearAllPoints()
 				text:SetPoint(self.ctFontPoint, self.ctFontOffsetX, self.ctFontOffsetY)
 				text:SetMaxLines(1)
+				if self.showColors then
+					cooldown.colorCurveObject = self.ctColorCurve
+					cooldown.durationObject = cooldown.durationObject or CreateDuration()
+				end
 			end
-			frame.cooldown:Show()
+			cooldown:Show()
+			frame.cooldown = cooldown
 		elseif frame.cooldown then
 			frame.cooldown:Hide()
 		end
@@ -286,6 +294,9 @@ local function Icon_UpdateDB(self)
 		self.pw, self.ph = self.ph, self.pw
 	end
 	self.showSwipe       = not (dbx.disableCooldown or dbx.disableCooldownAnim)
+
+	print(">>>", self.name, self.showSwipe)
+
 	self.showCoolText    = dbx.enableCooldownText
 	self.showCooldown    = dbx.enableCooldownText or not dbx.disableCooldown or not dbx.disableOmniCC
 	self.showStack       = not dbx.disableStack
@@ -307,10 +318,19 @@ local function Icon_UpdateDB(self)
 	self.ctFontFlags     = dbx.ctFontFlags or "OUTLINE"
 	self.ctFontSize      = dbx.ctFontSize or 9
 	self.ctFont          = Grid2:MediaFetch("font", dbx.ctFont or theme.font) or STANDARD_TEXT_FONT
-	self.ctColor         = Grid2:MakeColor(dbx.ctColor, "WHITE")
 	self.ctFontPoint     = (ctJV=='MIDDLE' and ctJH) or (ctJH=='CENTER' and ctJV) or ctJV..ctJH
 	self.ctFontOffsetX   = dbx.ctFontOffsetX or 0
 	self.ctFontOffsetY   = dbx.ctFontOffsetY or -1
+	self.ctColor         = Grid2:MakeColor(dbx.ctColor or (dbx.ctColors and dbx.ctColors[1]), "WHITE")
+	self.showColors      = dbx.ctColors~=nil
+	if dbx.ctColors then
+		self.ctColorCurve =  self.ctColorCurve or C_CurveUtil.CreateColorCurve()
+		self.ctColorCurve:SetType(Enum.LuaCurveType.Step)
+		self.ctColorCurve:ClearPoints()
+		for i,color in ipairs(dbx.ctColors) do
+			self.ctColorCurve:AddPoint(dbx.ctThresholds[i] or 0, color)
+		end
+	end
 	-- backdrop
 	self.backdrop = self.borderSize>0 and Grid2:GetBackdropTable("Interface\\Addons\\Grid2\\media\\white16x16", self.borderSize) or nil
 end

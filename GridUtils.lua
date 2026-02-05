@@ -510,3 +510,31 @@ function Grid2:SetMinimapIcon(value)
 	end
 	return not minimapIcon.hide
 end
+
+
+-- Cooldown text colorization using color curves, used by icon/icons indicators
+do
+	local timer
+	local cooldowns = {}
+	local function Update()
+		for cooldown, text in pairs(cooldowns) do
+			if cooldown:IsVisible() then
+				 color = cooldown.durationObject:EvaluateRemainingDuration(cooldown.colorCurveObject)
+				 text:SetTextColor(color:GetRGBA())
+			else
+				cooldowns[cooldown] = nil
+			end
+		end
+		if not next(cooldowns) then timer:Stop() end
+	end
+	timer = Grid2:CreateTimer(Update, 0.1, false)
+
+	-- cooldown must have the fields: cooldown.durationObject, cooldown.colorCurveObject
+	function Grid2.UpdateCooldownColorCurve(cooldown, expiration, duration)
+		cooldown.durationObject:SetTimeFromEnd(expiration, duration)
+		if cooldowns[cooldown]==nil then
+			if not next(cooldowns) then timer:Play() end
+			cooldowns[cooldown] = cooldown:GetCountdownFontString()
+		end
+	end
+end

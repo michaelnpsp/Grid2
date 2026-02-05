@@ -6,6 +6,8 @@ local fmt = string.format
 
 local issecretvalue = Grid2.issecretvalue
 local canaccessvalue = Grid2.canaccessvalue
+local UpdateCooldownColorCurve = Grid2.UpdateCooldownColorCurve
+local CreateDuration = C_DurationUtil.CreateDuration
 local TruncateWhenZero = C_StringUtil.TruncateWhenZero
 
 local function Icon_Create(self, parent)
@@ -16,17 +18,8 @@ local function Icon_Create(self, parent)
 	Icon:SetAllPoints()
 	Icon:Show()
 	if not self.disableCooldown then
-		local Cooldown
-		if self.dbx.disableOmniCC then
-			Cooldown = f.Cooldown or CreateFrame("Cooldown", nil, f, "CooldownFrameTemplate")
-			Cooldown.noCooldownCount = true
-		else
-			local name = self.name:gsub("%-","")
-			local i,j = parent:GetName():match("Grid2LayoutHeader(%d+)UnitButton(%d+)")
-			Cooldown = f.Cooldown or CreateFrame("Cooldown", fmt("Grid2%s%02d%02d",name,i,j) , f, "CooldownFrameTemplate")
-			Cooldown.noCooldownCount = nil
-			Cooldown:SetDrawEdge(false) -- Without this omnicc uses only "Recharges color"
-		end
+		local Cooldown = f.Cooldown or CreateFrame("Cooldown", nil, f, "CooldownFrameTemplate")
+		Cooldown:SetDrawEdge(false)
 		Cooldown:SetReverse(self.dbx.reverseCooldown)
 		Cooldown:SetDrawSwipe(self.showSwipe)
 		Cooldown:SetHideCountdownNumbers(not self.showCoolText)
@@ -79,6 +72,9 @@ local function Icon_OnUpdate(self, parent, unit, status)
 		end
 		if not self.disableCooldown and exp and dur then
 			Frame.Cooldown:SetCooldownFromExpirationTime(exp, dur)
+			if self.showColors then
+				UpdateCooldownColorCurve(Frame.Cooldown, exp, dur)
+			end
 		end
 	else
 		local r,g,b,a = status:GetColor(unit)
@@ -122,6 +118,9 @@ local function Icon_OnUpdate(self, parent, unit, status)
 				else
 					Frame.Cooldown:SetCooldownFromExpirationTime(expiration, duration)
 				end
+				if self.showColors then
+					UpdateCooldownColorCurve(Frame.Cooldown, expiration, duration)
+				end
 				Frame.Cooldown:Show()
 			else
 				Frame.Cooldown:Hide()
@@ -162,6 +161,10 @@ local function Icon_Layout(self, parent)
 		text:SetTextColor(color.r, color.g, color.b, color.a)
 		text:ClearAllPoints()
 		text:SetPoint(self.ctFontPoint, self.ctFontOffsetX, self.ctFontOffsetY)
+		if self.showColors then
+			f.Cooldown.colorCurveObject = self.ctColorCurve
+			f.Cooldown.durationObject = f.Cooldown.durationObject or CreateDuration()
+		end
 	end
 
 	if not self.disableStack then
@@ -213,10 +216,19 @@ local function Icon_UpdateDB(self)
 	self.ctFontFlags     = dbx.ctFontFlags or "OUTLINE"
 	self.ctFontSize      = dbx.ctFontSize or 9
 	self.ctFont          = Grid2:MediaFetch("font", dbx.ctFont or theme.font) or STANDARD_TEXT_FONT
-	self.ctColor         = Grid2:MakeColor(dbx.ctColor, "WHITE")
 	self.ctFontPoint     = (ctJV=='MIDDLE' and ctJH) or (ctJH=='CENTER' and ctJV) or ctJV..ctJH
 	self.ctFontOffsetX   = dbx.ctFontOffsetX or 0
 	self.ctFontOffsetY   = dbx.ctFontOffsetY or -1
+	self.ctColor         = Grid2:MakeColor(dbx.ctColor or (dbx.ctColors and dbx.ctColors[1]), "WHITE")
+	self.showColors      = dbx.ctColors~=nil
+	if dbx.ctColors then
+		self.ctColorCurve =  self.ctColorCurve or C_CurveUtil.CreateColorCurve()
+		self.ctColorCurve:SetType(Enum.LuaCurveType.Step)
+		self.ctColorCurve:ClearPoints()
+		for i,color in ipairs(dbx.ctColors) do
+			self.ctColorCurve:AddPoint(dbx.ctThresholds[i] or 0, color)
+		end
+	end
 	-- backdrop
 	self.backdrop = Grid2:GetBackdropTable("Interface\\Addons\\Grid2\\media\\white16x16", self.borderSize or 1)
 end
