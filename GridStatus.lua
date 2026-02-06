@@ -49,6 +49,8 @@ status.GetExpirationTime = Grid2.Dummy
 status.GetDuration = Grid2.Dummy
 -- start time: text indicators
 status.GetStartTime = Grid2.Dummy
+-- icon indicators
+status.GetDurationObject = Grid2.Dummy
 -- percent value: alpha, bar indicators
 status.GetPercent = Grid2.Dummy
 -- texture: icon indicator

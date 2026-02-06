@@ -8,7 +8,6 @@ local issecretvalue = Grid2.issecretvalue
 local canaccessvalue = Grid2.canaccessvalue
 local UpdateCooldownColorCurve = Grid2.UpdateCooldownColorCurve
 local RemoveCooldownColorCurve = Grid2.RemoveCooldownColorCurve
-local CreateDuration = C_DurationUtil.CreateDuration
 local TruncateWhenZero = C_StringUtil.TruncateWhenZero
 
 local function Icon_Create(self, parent)
@@ -57,7 +56,7 @@ local function Icon_OnUpdate(self, parent, unit, status)
 	Icon:SetTexCoord(status:GetTexCoord(unit))
 	Icon:SetVertexColor(status:GetVertexColor(unit))
 	if status.GetIconData then
-		local tex, cnt, exp, dur, color = status:GetIconData(unit)
+		local tex, cnt, exp, dur, color, slot = status:GetIconData(unit)
 		if self.disableIcon then
 			Icon:SetColorTexture(color.r, color.g, color.b)
 		else
@@ -74,7 +73,7 @@ local function Icon_OnUpdate(self, parent, unit, status)
 		if not self.disableCooldown and exp and dur then
 			Frame.Cooldown:SetCooldownFromExpirationTime(exp, dur)
 			if self.showColors then
-				UpdateCooldownColorCurve(Frame.Cooldown, exp, dur)
+				UpdateCooldownColorCurve(Frame.Cooldown, status:GetDurationObject(unit, slot))
 			end
 		end
 	else
@@ -121,7 +120,7 @@ local function Icon_OnUpdate(self, parent, unit, status)
 					Cooldown:SetCooldownFromExpirationTime(expiration, duration)
 				end
 				if self.showColors then
-					UpdateCooldownColorCurve(Cooldown, expiration, duration)
+					UpdateCooldownColorCurve(Cooldown, status:GetDurationObject(unit))
 				end
 				Cooldown:Show()
 			else
@@ -167,8 +166,7 @@ local function Icon_Layout(self, parent)
 		text:SetMaxLines(1)
 		if self.showColors then
 			Cooldown.colorCurveObject = self.ctColorCurve
-			Cooldown.durationObject = Cooldown.durationObject or CreateDuration()
-		elseif Cooldown.durationObject then -- executed only if the user changed the settings to remove possible color update timer
+		elseif Cooldown.countdownTextObject then -- executed only if the user changed the settings to remove possible color update timer
 			RemoveCooldownColorCurve(Cooldown)
 		end
 	end

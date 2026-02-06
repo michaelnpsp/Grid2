@@ -4,7 +4,6 @@ local Mana = Grid2.statusPrototype:new("mana")
 local ManaAlt = Grid2.statusPrototype:new("manaalt", false)
 local Power = Grid2.statusPrototype:new("power",false)
 local PowerAlt = Grid2.statusPrototype:new("poweralt",false)
-local LowMana = Grid2.statusPrototype:new("lowmana",false)
 
 local max = math.max
 local fmt = string.format
@@ -15,6 +14,10 @@ local UnitPower = UnitPower
 local UnitPowerMax = UnitPowerMax
 local unit_is_valid = Grid2.roster_guids
 local canaccessvalue = Grid2.canaccessvalue
+
+local ScaleTo100 = CurveConstants.ScaleTo100
+local format = string.format
+local fmtPercent = "%.0f%%"
 
 local statuses = {}  -- Enabled statuses
 
@@ -66,26 +69,16 @@ function PowerAlt:IsActive(unit)
 	return canaccessvalue(power) and power>0
 end
 
-if Grid2.secretsEnabled then
-	function PowerAlt:GetPercent(unit)
-		return UnitPowerPercent(unit,10,false)
-	end
-	function PowerAlt:GetText(unit)
-		return AbbreviateLargeNumbers( UnitPower(unit,10) )
-	end
-else
-	function PowerAlt:GetPercent(unit)
-		local m = UnitPowerMax(unit,10)
-		return m==0 and 0 or max(UnitPower(unit,10),0) / UnitPowerMax(unit,10)
-	end
-	function PowerAlt:GetText(unit)
-		local power= UnitPower(unit,10)
-		if power>=1000 then
-			return fmt("%.1fk", power / 1000)
-		else
-			return tostring( max(power,0) )
-		end
-	end
+function PowerAlt:GetPercentText(unit)
+	return format( fmtPercent, UnitPowerPercent(unit, 10, false, ScaleTo100) )
+end
+
+function PowerAlt:GetPercent(unit)
+	return UnitPowerPercent(unit,10,false)
+end
+
+function PowerAlt:GetText(unit)
+	return AbbreviateLargeNumbers( UnitPower(unit,10) )
 end
 
 Grid2.setupFunc["poweralt"] = function(baseKey, dbx)
@@ -125,27 +118,16 @@ function Power:GetColor(unit)
 	return c.r, c.g, c.b, c.a
 end
 
-if Grid2.secretsEnabled then
-	-- local ScaleTo100 = CurveConstants.ScaleTo100
-	function Power:GetPercent(unit)
-		return UnitPowerPercent(unit,nil,false)
-	end
-	function Power:GetText(unit)
-		return AbbreviateLargeNumbers( UnitPower(unit) )
-	end
-else
-	function Power:GetPercent(unit)
-		local m = UnitPowerMax(unit)
-		return m == 0 and 0 or UnitPower(unit) / m
-	end
-	function Power:GetText(unit)
-		local power = UnitPower(unit)
-		if power>=1000 then
-			return fmt("%.1fk", power / 1000)
-		else
-			return tostring(power)
-		end
-	end
+function Power:GetPercentText(unit)
+	return format( fmtPercent, UnitPowerPercent(unit, nil, false, ScaleTo100) )
+end
+
+function Power:GetPercent(unit)
+	return UnitPowerPercent(unit,nil,false)
+end
+
+function Power:GetText(unit)
+	return AbbreviateLargeNumbers( UnitPower(unit) )
 end
 
 function Power:UpdateDB()
@@ -164,6 +146,7 @@ function Power:UpdateDB()
 	powerColors["POWER_TYPE_RED_POWER"] = self.dbx.color2 -- garrison proving grounds for friendly NPCs
 	self.IsActive = self.filtered and self.IsActiveFilter or self.IsActiveStandard
 	self.UpdateUnitPower = self.filtered and self.UpdateUnitPowerFilter or self.UpdateUnitPowerStandard
+	fmtPercent = Grid2.db.profile.formatting.percentFormat
 end
 
 Grid2.setupFunc["power"] = function(baseKey, dbx)
@@ -221,22 +204,16 @@ local function Mana_IsActiveSecondaryF(self, unit)
 	return not self.filtered[unit] and UnitPowerMax(unit,0)~=0 and UnitPowerType(unit)~=0
 end
 
-local Mana_GetPercent, Mana_GetText
-if Grid2.secretsEnabled then
-	function Mana_GetPercent(self, unit)
-		return UnitPowerPercent(unit,0,false)
-	end
-	function Mana_GetText(self, unit)
-		return AbbreviateLargeNumbers( UnitPower(unit,0) )
-	end
-else
-	function Mana_GetPercent(self, unit)
-		local m = UnitPowerMax(unit,0)
-		return m == 0 and 0 or UnitPower(unit,0) / m
-	end
-	function Mana_GetText(self, unit)
-		return fmt("%.1fk", UnitPower(unit,0) / 1000)
-	end
+local function Mana_GetPercentText(self, unit)
+	return format( fmtPercent, UnitPowerPercent(unit, 0, false, ScaleTo100) )
+end
+
+local function Mana_GetPercent(self, unit)
+	return UnitPowerPercent(unit,0,false)
+end
+
+local function Mana_GetText(self, unit)
+	return AbbreviateLargeNumbers( UnitPower(unit,0) )
 end
 
 local function Mana_UpdateDB(self)
@@ -254,6 +231,7 @@ end
 Mana.GetColor   = Grid2.statusLibrary.GetColor
 Mana.OnEnable   = status_OnEnable
 Mana.OnDisable  = status_OnDisable
+Mana.GetPercentText = Mana_GetPercentText
 Mana.GetPercent = Mana_GetPercent
 Mana.GetText    = Mana_GetText
 Mana.UpdateDB   = Mana_UpdateDB
@@ -269,6 +247,7 @@ Grid2:DbSetStatusDefaultValue( "mana", {type = "mana", color1= {r=0,g=0,b=1,a=1}
 ManaAlt.GetColor   = Grid2.statusLibrary.GetColor
 ManaAlt.OnEnable   = status_OnEnable
 ManaAlt.OnDisable  = status_OnDisable
+ManaAlt.GetPercentText = Mana_GetPercentText
 ManaAlt.GetPercent = Mana_GetPercent
 ManaAlt.GetText    = Mana_GetText
 ManaAlt.UpdateDB   = Mana_UpdateDB
@@ -279,36 +258,3 @@ Grid2.setupFunc["manaalt"] = function(baseKey, dbx)
 end
 
 Grid2:DbSetStatusDefaultValue( "manaalt", {type = "manaalt", displayType = 2, color1={r=0,g=0,b=1,a=1}} )
-
--- Low Mana status, not available in Midnight
-if Grid2.secretsEnabled then return end
-
-local lowManaThreshold
-
-LowMana.GetColor  = Grid2.statusLibrary.GetColor
-LowMana.OnEnable  = status_OnEnable
-LowMana.OnDisable = status_OnDisable
-
-function LowMana:UpdateUnitPower(unit, powerType)
-	if powerType=="MANA" then
-		self:UpdateIndicators(unit)
-	end
-end
-
-function LowMana:IsActive(unit)
-	if UnitPowerType(unit)==0 then
-		local m = UnitPowerMax(unit)
-		return ( m==0 and 0 or UnitPower(unit)/m ) < lowManaThreshold
-	end
-end
-
-function LowMana:UpdateDB()
-	lowManaThreshold = self.dbx.threshold
-end
-
-Grid2.setupFunc["lowmana"] = function(baseKey, dbx)
-	Grid2:RegisterStatus(LowMana, {"color"}, baseKey, dbx)
-	return LowMana
-end
-
-Grid2:DbSetStatusDefaultValue( "lowmana", {type = "lowmana", threshold = 0.75, color1 = {r=0.5,g=0,b=1,a=1}})

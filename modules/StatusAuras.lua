@@ -6,6 +6,7 @@ local Grid2 = Grid2
 local rosterUnits = Grid2.roster_guids
 local UnitIsFriend = UnitIsFriend
 local GetUnitAuras = C_UnitAuras.GetUnitAuras
+local GetAuraDuration = C_UnitAuras.GetAuraDuration
 local GetAuraDataByIndex = C_UnitAuras.GetAuraDataByIndex
 local GetAuraDispelTypeColor = C_UnitAuras.GetAuraDispelTypeColor
 
@@ -69,6 +70,10 @@ end
 function Shared:GetIconData(unit)
 	local _, tex, cnt, exp, dur, col, slots = self:GetIcons(unit, 1)
 	return tex[1], cnt[1], exp[1], dur[1], col[1], slots[1]
+end
+
+function Shared:GetDurationObject(unit, slotID)
+	return GetAuraDuration(unit, slotID)
 end
 
 function Shared:GetTooltip(unit, tip, slotID)

@@ -517,10 +517,10 @@ do
 	local timer
 	local cooldowns = {}
 	local function Update()
-		for cooldown, text in pairs(cooldowns) do
+		for cooldown, durationObject in pairs(cooldowns) do
 			if cooldown:IsVisible() then
-				 local color = cooldown.durationObject:EvaluateRemainingDuration(cooldown.colorCurveObject)
-				 text:SetTextColor(color:GetRGBA())
+				 local color = durationObject:EvaluateRemainingDuration(cooldown.colorCurveObject)
+				 cooldown.countdownTextObject:SetTextColor(color:GetRGBA())
 			else
 				cooldowns[cooldown] = nil
 			end
@@ -530,11 +530,22 @@ do
 	timer = Grid2:CreateTimer(Update, 0.1, false)
 
 	-- cooldown must have the fields: cooldown.durationObject, cooldown.colorCurveObject
-	function Grid2.UpdateCooldownColorCurve(cooldown, expiration, duration)
-		cooldown.durationObject:SetTimeFromEnd(expiration, duration)
-		if cooldowns[cooldown]==nil then
-			if not next(cooldowns) then timer:Play() end
-			cooldowns[cooldown] = cooldown:GetCountdownFontString()
+	function Grid2.UpdateCooldownColorCurve(cooldown, durationObject)
+		local curve = cooldown.colorCurveObject
+		local text = cooldown.countdownTextObject
+		if text == nil then
+			text = cooldown:GetCountdownFontString()
+			cooldown.countdownTextObject = text
+		end
+		if durationObject then
+			if cooldowns[cooldown]==nil and not next(cooldowns) then
+				timer:Play()
+			end
+			text:SetTextColor( durationObject:EvaluateRemainingDuration(curve):GetRGBA() )
+			cooldowns[cooldown] = durationObject
+		else
+			local point = curve:GetPoint(curve:GetPointCount())
+			text:SetTextColor(point.y:GetRGBA())
 		end
 	end
 

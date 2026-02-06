@@ -1,5 +1,3 @@
-if not Grid2.secretsEnabled then return end
-
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 local Health = Grid2.statusPrototype:new("health-current")

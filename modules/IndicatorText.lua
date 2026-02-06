@@ -202,7 +202,7 @@ local function Text_OnUpdateP(self, parent, unit, status)
 		end
 		if text then
 			Text:SetText( text )
-		elseif percent then
+		elseif percent and canaccessvalue(percent) then
 			Text:SetFormattedText( FmtPercent, percent*100 )
 		else
 			Text:SetText( string_cut(status:GetText(unit) or "", self.textlength) )

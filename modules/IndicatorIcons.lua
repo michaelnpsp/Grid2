@@ -10,7 +10,6 @@ local issecretvalue = Grid2.issecretvalue
 local canaccessvalue = Grid2.canaccessvalue
 local UpdateCooldownColorCurve = Grid2.UpdateCooldownColorCurve
 local RemoveCooldownColorCurve = Grid2.RemoveCooldownColorCurve
-local CreateDuration = C_DurationUtil.CreateDuration
 local TruncateWhenZero = C_StringUtil.TruncateWhenZero
 
 local function Icon_Create(self, parent)
@@ -65,8 +64,8 @@ local function Icon_OnFrameUpdate(f)
 					else
 						cooldown:SetCooldownFromExpirationTime(expiration, duration)
 					end
-					if showColors then
-						UpdateCooldownColorCurve(cooldown, expiration, duration)
+					if showColors and slots[j] then
+						UpdateCooldownColorCurve(cooldown, status:GetDurationObject(unit, slots[j]))
 					end
 				end
 				aura:Show()
@@ -101,7 +100,7 @@ local function Icon_OnFrameUpdate(f)
 						aura.cooldown:SetCooldownFromExpirationTime(expiration, duration)
 					end
 					if showColors then
-						UpdateCooldownColorCurve(aura.cooldown, expiration, duration)
+						UpdateCooldownColorCurve(aura.cooldown, status:GetDurationObject(unit))
 					end
 				else
 					aura.cooldown:SetCooldown(0, 0)
@@ -232,8 +231,7 @@ local function Icon_Layout(self, parent)
 				text:SetMaxLines(1)
 				if self.showColors then
 					cooldown.colorCurveObject = self.ctColorCurve
-					cooldown.durationObject = cooldown.durationObject or CreateDuration()
-				elseif cooldown.durationObject then  -- executed only if the user changed the settings to remove possible color update timer
+				elseif cooldown.countdownTextObject then  -- executed only if the user changed the settings to remove possible color update timer
 					RemoveCooldownColorCurve(cooldown)
 				end
 			end
