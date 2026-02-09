@@ -70,6 +70,10 @@ local Overflow = Grid2.statusPrototype:new("shields-overflow")
 
 Overflow.GetColor = Grid2.statusLibrary.GetColor
 
+function Overflow:GetPercent() -- to avoid crash on old profiles using overflow status linked to bars
+	return 0
+end
+
 function Overflow:OnEnable()
 	self:RegisterEvent("UNIT_MAXHEALTH", "UpdateUnit")
 	self:RegisterEvent("UNIT_HEALTH", "UpdateUnit")

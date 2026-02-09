@@ -527,7 +527,7 @@ do
 		end
 		if not next(cooldowns) then timer:Stop() end
 	end
-	timer = Grid2:CreateTimer(Update, 0.1, false)
+	timer = Grid2:CreateTimer(Update, 0.2, false)
 
 	-- cooldown must have the fields: cooldown.durationObject, cooldown.colorCurveObject
 	function Grid2.UpdateCooldownColorCurve(cooldown, durationObject)

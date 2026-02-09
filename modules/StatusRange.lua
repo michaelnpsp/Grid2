@@ -1,5 +1,4 @@
 -- Created by Grid2 original authors, modified by Michael
-
 local Range = Grid2.statusPrototype:new("range")
 local RangeAlt = Grid2.statusPrototype:new("rangealt")
 
@@ -92,6 +91,8 @@ local Ranges = {
 			return true
 		elseif UnitCanAttack('player', unit) then
 			return spellHostile == nil or IsSpellInRange(spellHostile, unit) == 1
+		elseif rezSpell and UnitIsDeadOrGhost(unit) then
+			return IsSpellInRange(rezSpell, unit) == 1
 		elseif spellFriendly then
 			return IsSpellInRange(spellFriendly, unit) == 1
 		else
