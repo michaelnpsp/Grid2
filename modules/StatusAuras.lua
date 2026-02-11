@@ -32,6 +32,7 @@ Grid2.DispelCurveDefaults = {
 	Enrage  = { 9,  DEBUFF_TYPE_BLEED_COLOR   },
 	Bleed   = { 11, DEBUFF_TYPE_BLEED_COLOR   },
 }
+local color_default = DEBUFF_TYPE_NONE_COLOR
 
 -------------------------------------------------------------------------------
 -- shared functions
@@ -50,7 +51,7 @@ local function GetIconsSorted(unit, max, filter, sortRule, sortDir, colorCurve, 
 			durations[i] = a.duration
 			expirations[i] = a.expirationTime
 			slots[i] = auraInstanceID
-			colors[i] = color or GetAuraDispelTypeColor(unit, auraInstanceID, colorCurve)
+			colors[i] = color or GetAuraDispelTypeColor(unit, auraInstanceID, colorCurve) or color_default
 			if i>=max then break end
 		end
 	end
