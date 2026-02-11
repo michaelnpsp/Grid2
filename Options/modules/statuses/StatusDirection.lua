@@ -133,6 +133,7 @@ Grid2Options:RegisterStatusOptions( "direction", "target", function(self, status
 			status:UpdateDB()
 		end,
 	}
+--[[ due to secrets we cannot use UnitIsUnit() to detect target or focus units
 	options.stickyTarget = {
 		type = "toggle",
 		order = 150,
@@ -157,6 +158,7 @@ Grid2Options:RegisterStatusOptions( "direction", "target", function(self, status
 			status:UpdateDB()
 		end,
 	}
+--]]
 	options.showOnlyStickyUnits = {
 		type = "toggle",
 		order = 170,
@@ -173,12 +175,19 @@ Grid2Options:RegisterStatusOptions( "direction", "target", function(self, status
 			return  not ( (dbx.StickyMouseover or dbx.StickyFocus or dbx.StickyTarget or dbx.StickyTanks) and (dbx.ShowOutOfRange or dbx.ShowVisible or dbx.ShowDead) )
 		end,
 	}
-	options.outOfRangeError = {
+	options.outOfRangeError1 = {
 		type = "description",
 		order = 300,
 		fontSize = "medium",
-		name = "\n|cffFF0000" .. L["Error: Range status must be enabled to use the Out of Range option."],
+		name = "\n|cffFF0000" .. L["Warning: Range status must be enabled to use the Out of Range option."],
 		hidden = function() return not (status.dbx.ShowOutOfRange and not Grid2:GetStatusByName('range').enabled) end
+	}
+	options.outOfRangeError2 = {
+		type = "description",
+		order = 300,
+		fontSize = "medium",
+		name = "\n|cffFF0000" .. L["Warning: Range status must be configured with a range different than 38 yards to use the 'Out of Range' option."],
+		hidden = function() return not (status.dbx.ShowOutOfRange and Grid2:GetStatusByName('range').curRange==38) end
 	}
 end, {
 	title = L["arrows pointing to each raid member"],

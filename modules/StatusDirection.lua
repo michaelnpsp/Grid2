@@ -23,8 +23,7 @@ local rangecache
 local UnitCheck
 
 local CODE = [[
-local UnitIsUnit = UnitIsUnit
-local UnitInRange = UnitInRange
+local issecretvalue = issecretvalue
 local UnitIsVisible = UnitIsVisible
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitGroupRolesAssigned = Grid2.UnitGroupRolesAssigned
@@ -87,13 +86,13 @@ end
 function Direction:UpdateDB()
 	local dbx, t, u = self.dbx, {}, {}
 	SetMouseoverHooks(dbx.StickyMouseover)
-	if dbx.ShowOutOfRange  then u[#u+1]= Grid2.secretsEnabled and "not crange[unit]" or "not UnitInRange(unit)" end
+	if dbx.ShowOutOfRange  then u[#u+1]= "issecretvalue(crange[unit]) or not crange[unit]" end
 	if dbx.ShowVisible 	   then u[#u+1]= "UnitIsVisible(unit)" end
 	if dbx.ShowDead 	   then u[#u+1]= "UnitIsDeadOrGhost(unit) " end
 	if #u>0                then t[#t+1]= table.concat(u, dbx.lazyFilter and ' or ' or ' and '); wipe(u) end
-	if dbx.StickyTarget	   then u[#u+1]= "UnitIsUnit(unit,'target')" end
-	if dbx.StickyMouseover then u[#u+1]= "(mouseover and UnitIsUnit(unit,mouseover))" end
-	if dbx.StickyFocus	   then u[#u+1]= "UnitIsUnit(unit,'focus')" end
+	-- if dbx.StickyTarget	   then u[#u+1]= "UnitIsUnit(unit,'target')" end
+	-- if dbx.StickyFocus	   then u[#u+1]= "UnitIsUnit(unit,'focus')" end
+	if dbx.StickyMouseover then u[#u+1]= "unit==mouseover" end
 	if dbx.StickyTanks	   then u[#u+1]= "UnitGroupRolesAssigned(unit)=='TANK'" end
 	if #u>0                then t[#t+1]= table.concat(u, ' or '); wipe(u) end
 	local s = string.format( CODE, #t>0 and table.concat(t, dbx.showAlwaysStickyUnits and ') or (' or ') and (') or 'true' )

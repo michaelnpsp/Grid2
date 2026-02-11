@@ -1,5 +1,8 @@
 local Grid2 = Grid2
 
+local next = next
+local pairs = pairs
+
 local events = {}
 
 local frames = setmetatable( {}, {__index = function(t, unit)
