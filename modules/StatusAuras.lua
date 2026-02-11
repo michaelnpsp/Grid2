@@ -32,7 +32,7 @@ Grid2.DispelCurveDefaults = {
 	Enrage  = { 9,  DEBUFF_TYPE_BLEED_COLOR   },
 	Bleed   = { 11, DEBUFF_TYPE_BLEED_COLOR   },
 }
-local color_default = DEBUFF_TYPE_NONE_COLOR
+local color_default = Grid2.defaultColors.TRANSPARENT
 
 -------------------------------------------------------------------------------
 -- shared functions
@@ -158,7 +158,6 @@ end
 
 do
 
-	local defColor = Grid2.defaultColors.TRANSPARENT
 	local filterTypedFuncs = {
 		[false] = function(aura) return aura.dispelName==nil; end,
 		[true] = function(aura) return aura.dispelName~=nil; end,
@@ -166,7 +165,7 @@ do
 
 	local function Debuffs_GetColor(self, unit)
 		local aura = GetAuraDataByIndex(unit, 1, self.aura_filter)
-		local c = aura and GetAuraDispelTypeColor(unit, aura.auraInstanceID, self.aura_color) or defColor
+		local c = aura and GetAuraDispelTypeColor(unit, aura.auraInstanceID, self.aura_color) or color_default
 		return c.r, c.g, c.b, c.a
 	end
 
