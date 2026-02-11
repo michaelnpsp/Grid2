@@ -44,6 +44,7 @@ GridCore.lua
 GridShims.lua
 GridUtils.lua
 GridUtilsCmd.lua
+GridRosterUnitEvents.lua
 GridRoster.lua
 GridFrame.lua
 GridLayout.lua

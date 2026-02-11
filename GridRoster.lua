@@ -30,6 +30,7 @@ local grouped_pets    = {} -- partypet1=>1, raidpet2=>1 ; only party/raid pet un
 local roster_types    = { target = 'target', focus = 'focus', targettarget = 'targettarget', focustarget = 'focustarget' }
 local roster_my_units = { player = true, pet = true, vehicle = true }
 local faked_units     = { targettarget = true, focustarget = true, boss6 = true, boss7 = true, boss8 = true } -- eventless units
+local external_units  = { target = true, focus = true, targettarget = true, focustarget = true }
 -- roster tables / storing only existing units
 local roster_names    = {} -- raid1=>name, ..
 local roster_realms   = {} -- raid1=>realm,..
@@ -38,6 +39,7 @@ local roster_players  = {} -- raid1=>guid ;only non pet units in group/raid
 local roster_pets     = {} -- raidpet1=>guid ;only pet units in group/raid
 local roster_units    = {} -- guid=>raid1, ..
 local roster_faked    = {} -- eventless units
+local roster_external = {} -- non-grouped units
 -- roster dead tracking
 local roster_deads = {}
 local textDeath = L["DEAD"]
@@ -138,6 +140,7 @@ do
 			roster_units[guid] = unit
 			roster_pets[unit] = guid
 		end
+		roster_external[unit] = external_units[unit]
 		roster_faked[unit] = faked_units[unit]
 		roster_deads[unit] = Grid2:UnitIsDeadOrGhost(unit)
 		Grid2:SendMessage("Grid_UnitUpdated", unit, true)
@@ -156,6 +159,7 @@ do
 		if not issecretvalue(guid) and unit == roster_units[guid] then
 			roster_units[guid] = nil
 		end
+		roster_external[unit] = nil
 		roster_faked[unit] = nil
 		roster_deads[unit] = nil
 		Grid2:SendMessage("Grid_UnitLeft", unit)
@@ -477,4 +481,5 @@ Grid2.raid_indexes    = raid_indexes
 Grid2.party_indexes   = party_indexes
 Grid2.roster_deads    = roster_deads
 Grid2.roster_faked    = roster_faked
+Grid2.roster_external = roster_external
 --}}

@@ -3,6 +3,7 @@ local Range = Grid2.statusPrototype:new("range")
 local RangeAlt = Grid2.statusPrototype:new("rangealt")
 
 local Grid2 = Grid2
+local next = next
 local tonumber = tonumber
 local UnitIsUnit = UnitIsUnit
 local UnitCanAttack = UnitCanAttack
@@ -11,12 +12,17 @@ local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local CheckInteractDistance = CheckInteractDistance
 local playerClass = Grid2.playerClass
 local GetSpellInfo = Grid2.API.GetSpellInfo
-local IsSpellInRange = Grid2.API.IsSpellInRange
+local IsSpellInRange = C_Spell.IsSpellInRange
+
+local issecretvalue = Grid2.issecretvalue
+local roster_guids = Grid2.roster_guids
+local roster_external = Grid2.roster_external
+local grouped_units = Grid2.grouped_units
 
 -------------------------------------------------------------------------
 --  Range check spells initialization
 -------------------------------------------------------------------------
-local spellHostile, spellFriendly = nil, nil
+local spellHostile, spellFriendly = "", nil
 do
 	local function IVS(spellID) return IsPlayerSpell(spellID) and spellID end
 	local getHostile, getFriendly
@@ -64,6 +70,8 @@ do
 	function Grid2:UpdatePlayerRangeSpells()
 		spellHostile  = GetSpellInfo( getHostile() )
 		spellFriendly = GetSpellInfo( getFriendly() )
+		if Range.enabled then Range:UpdateDB() end
+		if RangeAlt.enabled then RangeAlt:UpdateDB() end
 	end
 end
 
@@ -71,9 +79,7 @@ end
 -- Range status
 -------------------------------------------------------------------------
 
-local friendlySpell -- friendly spell configured by the user (spell name)
-
-local hostileSpell  -- hostile spell configured by the user (spell name)
+local InCombat = false
 
 local playerCanHeal = ({DRUID=true,PRIEST=true,SHAMAN=true,PALADIN=true,MONK=true,EVOKER=true})[playerClass]
 
@@ -81,77 +87,63 @@ local rezSpellID = ({DRUID=20484,PRIEST=2006,PALADIN=7328,SHAMAN=2008,MONK=11517
 
 local rezSpell = rezSpellID and GetSpellInfo(rezSpellID)
 
--- These range functions can be called before Grid2:UpdatePlayerRangeSpells() is executed because SPELLS_CHANGED
--- event is executed after PLAYER_ENTERING_WORLD, it should not be a problem because those functions are checking
--- if spellFriendly/spellHostile are not nil before calling IsSpellInRange()
+local function RangeCheck(unit, spellFriendly, spellHostile, blizRange)
+	if UnitIsUnit(unit,"player") then
+		return true
+	elseif UnitPhaseReason(unit) then
+		return false
+	elseif UnitCanAttack('player', unit) then
+		return IsSpellInRange(spellHostile, unit) == true
+	elseif rezSpell and UnitIsDeadOrGhost(unit) then
+		return IsSpellInRange(rezSpell, unit) == true
+	elseif blizRange and grouped_units[unit] then
+		return UnitInRange(unit), true
+	elseif spellFriendly then -- extra CheckInteractDistance() for OOC friendly npcs if spell check fails
+		return IsSpellInRange(spellFriendly, unit) == true or (not InCombat and CheckInteractDistance(unit, 4))
+	else
+		return InCombat or CheckInteractDistance(unit,4)
+	end
+end
+
 local Ranges = {
 	[99] = UnitIsVisible,
-	[38] = function(unit)
-		if UnitIsUnit(unit,"player") then
-			return true
-		elseif UnitCanAttack('player', unit) then
-			return spellHostile == nil or IsSpellInRange(spellHostile, unit) == 1
-		elseif rezSpell and UnitIsDeadOrGhost(unit) then
-			return IsSpellInRange(rezSpell, unit) == 1
-		elseif spellFriendly then
-			return IsSpellInRange(spellFriendly, unit) == 1
-		else
-			return InCombatLockdown() or CheckInteractDistance(unit,4)
-		end
-	end,
-	["heal"] = function(unit)
-		if UnitIsUnit(unit, 'player') then
-			return true
-		elseif UnitCanAttack('player', unit) then
-			return spellHostile == nil or IsSpellInRange(spellHostile, unit) == 1
-		elseif rezSpell and UnitIsDeadOrGhost(unit) then
-			return IsSpellInRange(rezSpell, unit) == 1
-		elseif spellFriendly then
-			return IsSpellInRange(spellFriendly, unit) == 1
-		else
-			return InCombatLockdown() or CheckInteractDistance(unit,4)
-		end
-	end,
-	["spell"] = function(unit)
-		if not UnitCanAttack('player', unit) then
-			if UnitIsUnit(unit,'player') then
-				return true
-			elseif rezSpell and UnitIsDeadOrGhost(unit) then
-				return IsSpellInRange(rezSpell, unit) == 1
-			elseif friendlySpell then
-				return IsSpellInRange(friendlySpell, unit) == 1
-			end
-		elseif hostileSpell then
-			local range = IsSpellInRange(hostileSpell, unit)
-			if range then return range == 1 end
-		end
-		return spellHostile == nil or IsSpellInRange(spellHostile, unit) == 1
-	end,
+	[38] = RangeCheck,
+	["spell"] = RangeCheck,
+	["heal"]  = RangeCheck,
 }
 
-local function Update(timer)
-	local self = timer.__range
+function Range:UpdateUnits() -- we need to update this on a timer for non-grouped units: target, focus, etc.
 	local cache = self.cache
+	local spellf = self.friendlySpell
+	local spellh = self.hostileSpell
+	local rangeb = self.blizRange
 	local UnitRangeCheck = self.UnitRangeCheck
-	hostileSpell = self.hostileSpell
-	friendlySpell = self.friendlySpell
-	for unit in Grid2:IterateRosterUnits() do
-		local value = UnitRangeCheck(unit) and 1 or false
-		if value ~= cache[unit] then
+	for unit in next, self.refreshUnits do
+		local value = UnitRangeCheck(unit, spellf, spellh, rangeb)
+		local pvalue = cache[unit]
+		if issecretvalue(value) or issecretvalue(pvalue) or value ~= pvalue then
 			cache[unit] = value
 			self:UpdateIndicators(unit)
 		end
 	end
 end
 
-function Range:Grid_PlayerSpecChanged()
-	if tonumber(self.dbx.range)==nil then -- If is not a number -> Using RangeSpell for the player class if available
-		self:UpdateDB()
-	end
+function Range:PLAYER_REGEN_ENABLED()
+	InCombat = false
+end
+
+function Range:PLAYER_REGEN_DISABLED()
+	InCombat = true
+end
+
+function Range:UNIT_IN_RANGE_UPDATE(_, unit)
+	self.cache[unit] = self.UnitRangeCheck(unit, self.friendlySpell, self.hostileSpell, self.blizRange)
+	self:UpdateIndicators(unit)
 end
 
 function Range:Grid_UnitUpdated(_, unit)
-	self.cache[unit] = self.UnitRangeCheck(unit) and 1 or false
+	self.cache[unit] = self.UnitRangeCheck(unit, self.friendlySpell, self.hostileSpell, self.blizRange)
+	self.timer:SetPlaying( next(self.refreshUnits)~=nil )
 end
 
 function Range:Grid_UnitLeft(_, unit)
@@ -159,7 +151,7 @@ function Range:Grid_UnitLeft(_, unit)
 end
 
 function Range:GetPercent(unit)
-	return self.cache[unit] or self.curAlpha
+	return self.curAlpha
 end
 
 function Range:GetRanges()
@@ -167,24 +159,30 @@ function Range:GetRanges()
 end
 
 function Range:IsActive(unit)
-	return not self.cache[unit]
+	return self.cache[unit], true -- true means inverted activation, hackish because we cannot negate a secret value
 end
 
 function Range:OnEnable()
+	InCombat = InCombatLockdown()
+	self.timer = Grid2:CreateTimer( function() self:UpdateUnits() end, self.dbx.elapsed or 0.25, false )
+	self.timer:SetPlaying( next(self.refreshUnits)~=nil )
 	self:RegisterMessage("Grid_UnitUpdated")
 	self:RegisterMessage("Grid_UnitLeft")
-	self:RegisterMessage("Grid_PlayerSpecChanged")
-	self.timer = Grid2:CreateTimer( Update, self.dbx.elapsed or 0.25, false )
-	self.timer.__range = self
-	self.timer:Play()
+	self:RegisterEvent("PLAYER_REGEN_ENABLED")
+	self:RegisterEvent("PLAYER_REGEN_DISABLED")
+	if self.curRange==38 then
+		Grid2:RegisterRosterUnitEvent("UNIT_IN_RANGE_UPDATE", Range)
+	end
 end
 
 function Range:OnDisable()
+	self.timer = Grid2:CancelTimer( self.timer )
 	self:UnregisterMessage("Grid_UnitUpdated")
 	self:UnregisterMessage("Grid_UnitLeft")
-	self:UnregisterMessage("Grid_PlayerSpecChanged")
-	self.timer.__range = nil
-	self.timer = Grid2:CancelTimer( self.timer )
+	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	self:UnregisterEvent("PLAYER_REGEN_DISABLED")
+	self:UnregisterEvent("UNIT_IN_RANGE_UPDATE")
+	Grid2:UnregisterRosterUnitEvent("UNIT_IN_RANGE_UPDATE")
 end
 
 -- Due to ancient code, configuration can store a heal spell name in status.dbx.range (Rejuv, Healing wave, etc), but this prevents
@@ -194,20 +192,20 @@ end
 function Range:UpdateDB()
 	local dbx = self.dbx
 	local dbr = dbx.ranges and dbx.ranges[playerClass] or dbx
-	self.hostileSpell = dbr.hostileSpellID  and GetSpellInfo(dbr.hostileSpellID)
-	self.friendlySpell = dbr.friendlySpellID and GetSpellInfo(dbr.friendlySpellID)
-	self.curRange = tonumber(dbr.range) or (dbr.range=='spell' and 'spell') or (playerCanHeal and 'heal') or 38
-	self.UnitRangeCheck = Ranges[self.curRange] or Ranges[38]
+	self.hostileSpell = dbr.hostileSpellID and GetSpellInfo(dbr.hostileSpellID) or spellHostile
+	self.friendlySpell = dbr.friendlySpellID and GetSpellInfo(dbr.friendlySpellID) or spellFriendly
+	local curRange = tonumber(dbr.range) or (dbr.range=='spell' and 'spell') or (playerCanHeal and 'heal') or 38
+	self.curRange = Ranges[curRange] and curRange or 38
+	self.blizRange = self.curRange==38
+	self.refreshUnits = self.blizRange and roster_external or roster_guids
+	self.UnitRangeCheck = Ranges[self.curRange]
 	self.curAlpha = dbx.default or 0.25
-	self.timer = self.timer or Grid2:CreateTimer( Update )
-	if self.timer then
-		self.timer:SetDuration(dbx.elapsed or 0.25)
-	end
+	if self.timer then self.timer:SetDuration(dbx.elapsed or 0.25) end
 end
 
 Range.GetColor = Grid2.statusLibrary.GetColor
 
-Range.cache = {}
+Range.cache = setmetatable( {}, {__index = function() return false end} )
 
 Grid2.setupFunc["range"] = function(baseKey, dbx)
 	Grid2:RegisterStatus( Range, {"percent", "color"}, baseKey, dbx)
@@ -220,10 +218,10 @@ Grid2:DbSetStatusDefaultValue( "range", {type = "range", color1 = {r=1, g=0, b=0
 -- rangealt status
 -------------------------------------------------------------------------
 
-RangeAlt.Grid_GroupTypeChanged = Range.Grid_GroupTypeChanged
-RangeAlt.Grid_PlayerSpecChanged = Range.Grid_PlayerSpecChanged
+RangeAlt.UNIT_IN_RANGE_UPDATE = Range.UNIT_IN_RANGE_UPDATE
 RangeAlt.Grid_UnitUpdated = Range.Grid_UnitUpdated
 RangeAlt.Grid_UnitLeft = Range.Grid_UnitLeft
+RangeAlt.UpdateUnits = Range.UpdateUnits
 RangeAlt.UpdateDB = Range.UpdateDB
 RangeAlt.OnEnable = Range.OnEnable
 RangeAlt.OnDisable = Range.OnDisable
@@ -231,7 +229,7 @@ RangeAlt.GetPercent = Range.GetPercent
 RangeAlt.IsActive = Range.IsActive
 RangeAlt.GetRanges = Range.GetRanges
 RangeAlt.GetColor = Range.GetColor
-RangeAlt.cache = {}
+RangeAlt.cache = setmetatable( {}, {__index = function() return false end} )
 
 Grid2.setupFunc["rangealt"] = function(baseKey, dbx)
 	Grid2:RegisterStatus( RangeAlt, {"percent", "color"}, baseKey, dbx)
