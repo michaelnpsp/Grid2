@@ -87,42 +87,45 @@ local rezSpellID = ({DRUID=20484,PRIEST=2006,PALADIN=7328,SHAMAN=2008,MONK=11517
 
 local rezSpell = rezSpellID and GetSpellInfo(rezSpellID)
 
-local function RangeCheck(unit, spellFriendly, spellHostile, blizRange)
-	if UnitIsUnit(unit,"player") then
-		return true
-	elseif UnitPhaseReason(unit) then
-		return false
-	elseif UnitCanAttack('player', unit) then
-		return IsSpellInRange(spellHostile, unit) == true
-	elseif rezSpell and UnitIsDeadOrGhost(unit) then
-		return IsSpellInRange(rezSpell, unit) == true
-	elseif blizRange and grouped_units[unit] then
-		return UnitInRange(unit), true
-	elseif spellFriendly then -- extra CheckInteractDistance() for OOC friendly npcs if spell check fails
-		return IsSpellInRange(spellFriendly, unit) == true or (not InCombat and CheckInteractDistance(unit, 4))
-	else
-		return InCombat or CheckInteractDistance(unit,4)
+local function CreateRangeCheck(spellFriendly, spellHostile, blizRange)
+	return function(unit)
+		if UnitIsUnit(unit,"player") then
+			return true
+		elseif UnitPhaseReason(unit) then
+			return false
+		elseif UnitCanAttack('player', unit) then
+			return IsSpellInRange(spellHostile, unit) == true
+		elseif rezSpell and UnitIsDeadOrGhost(unit) then
+			return IsSpellInRange(rezSpell, unit) == true
+		elseif blizRange and grouped_units[unit] then
+			return UnitInRange(unit)
+		elseif spellFriendly then -- extra CheckInteractDistance() for OOC friendly npcs if spell check fails
+			return IsSpellInRange(spellFriendly, unit) == true or (not InCombat and CheckInteractDistance(unit, 4))
+		else
+			return InCombat or CheckInteractDistance(unit,4)
+		end
 	end
 end
 
 local Ranges = {
-	[99] = UnitIsVisible,
-	[38] = RangeCheck,
-	["spell"] = RangeCheck,
-	["heal"]  = RangeCheck,
+	[99] = function() return UnitIsVisible end,
+	[38] = CreateRangeCheck,
+	["heal"] = CreateRangeCheck,
+	["spell"] = CreateRangeCheck,
 }
+
+Range.cache = setmetatable( {}, {__index = function() return false end} )
+
+Range.GetColor = Grid2.statusLibrary.GetColor
 
 function Range:UpdateUnits() -- we need to update this on a timer for non-grouped units: target, focus, etc.
 	local cache = self.cache
-	local spellf = self.friendlySpell
-	local spellh = self.hostileSpell
-	local rangeb = self.blizRange
-	local UnitRangeCheck = self.UnitRangeCheck
+	local check = self.UnitRangeCheck
 	for unit in next, self.refreshUnits do
-		local value = UnitRangeCheck(unit, spellf, spellh, rangeb)
-		local pvalue = cache[unit]
-		if issecretvalue(value) or issecretvalue(pvalue) or value ~= pvalue then
-			cache[unit] = value
+		local new = check(unit)
+		local old = cache[unit]
+		if issecretvalue(new) or issecretvalue(old) or new ~= old then
+			cache[unit] = new
 			self:UpdateIndicators(unit)
 		end
 	end
@@ -137,12 +140,12 @@ function Range:PLAYER_REGEN_DISABLED()
 end
 
 function Range:UNIT_IN_RANGE_UPDATE(_, unit)
-	self.cache[unit] = self.UnitRangeCheck(unit, self.friendlySpell, self.hostileSpell, self.blizRange)
+	self.cache[unit] = self.UnitRangeCheck(unit)
 	self:UpdateIndicators(unit)
 end
 
 function Range:Grid_UnitUpdated(_, unit)
-	self.cache[unit] = self.UnitRangeCheck(unit, self.friendlySpell, self.hostileSpell, self.blizRange)
+	self.cache[unit] = self.UnitRangeCheck(unit)
 	self.timer:SetPlaying( next(self.refreshUnits)~=nil )
 end
 
@@ -185,27 +188,18 @@ function Range:OnDisable()
 	Grid2:UnregisterRosterUnitEvent("UNIT_IN_RANGE_UPDATE")
 end
 
--- Due to ancient code, configuration can store a heal spell name in status.dbx.range (Rejuv, Healing wave, etc), but this prevents
--- to use the same profile for different healer classes, because the heal spell is different for each class:
--- So we check if status.dbx.range stores a heal spell name (the value is not a number), and in this case the code loads the correct
--- heal spell for the class (precalculated in rangeSpell variable) instead of the heal spell stored in config.
 function Range:UpdateDB()
 	local dbx = self.dbx
 	local dbr = dbx.ranges and dbx.ranges[playerClass] or dbx
-	self.hostileSpell = dbr.hostileSpellID and GetSpellInfo(dbr.hostileSpellID) or spellHostile
-	self.friendlySpell = dbr.friendlySpellID and GetSpellInfo(dbr.friendlySpellID) or spellFriendly
-	local curRange = tonumber(dbr.range) or (dbr.range=='spell' and 'spell') or (playerCanHeal and 'heal') or 38
-	self.curRange = Ranges[curRange] and curRange or 38
-	self.blizRange = self.curRange==38
-	self.refreshUnits = self.blizRange and roster_external or roster_guids
-	self.UnitRangeCheck = Ranges[self.curRange]
+	local spellh = dbr.hostileSpellID and GetSpellInfo(dbr.hostileSpellID) or spellHostile
+	local spellf = dbr.friendlySpellID and GetSpellInfo(dbr.friendlySpellID) or spellFriendly
+	local rangec = tonumber(dbr.range) or dbr.range
+	self.curRange = Ranges[rangec] and rangec or 38
+	self.refreshUnits = (rangec==38) and roster_external or roster_guids
+	self.UnitRangeCheck = Ranges[rangec](spellf, spellh, rangec==38)
 	self.curAlpha = dbx.default or 0.25
 	if self.timer then self.timer:SetDuration(dbx.elapsed or 0.25) end
 end
-
-Range.GetColor = Grid2.statusLibrary.GetColor
-
-Range.cache = setmetatable( {}, {__index = function() return false end} )
 
 Grid2.setupFunc["range"] = function(baseKey, dbx)
 	Grid2:RegisterStatus( Range, {"percent", "color"}, baseKey, dbx)
@@ -218,18 +212,18 @@ Grid2:DbSetStatusDefaultValue( "range", {type = "range", color1 = {r=1, g=0, b=0
 -- rangealt status
 -------------------------------------------------------------------------
 
+RangeAlt.cache = setmetatable( {}, {__index = function() return false end} )
+RangeAlt.GetColor = Range.GetColor
 RangeAlt.UNIT_IN_RANGE_UPDATE = Range.UNIT_IN_RANGE_UPDATE
 RangeAlt.Grid_UnitUpdated = Range.Grid_UnitUpdated
 RangeAlt.Grid_UnitLeft = Range.Grid_UnitLeft
 RangeAlt.UpdateUnits = Range.UpdateUnits
-RangeAlt.UpdateDB = Range.UpdateDB
 RangeAlt.OnEnable = Range.OnEnable
 RangeAlt.OnDisable = Range.OnDisable
 RangeAlt.GetPercent = Range.GetPercent
 RangeAlt.IsActive = Range.IsActive
+RangeAlt.UpdateDB = Range.UpdateDB
 RangeAlt.GetRanges = Range.GetRanges
-RangeAlt.GetColor = Range.GetColor
-RangeAlt.cache = setmetatable( {}, {__index = function() return false end} )
 
 Grid2.setupFunc["rangealt"] = function(baseKey, dbx)
 	Grid2:RegisterStatus( RangeAlt, {"percent", "color"}, baseKey, dbx)

@@ -12,11 +12,11 @@ end} )
 
 local Messages = LibStub("AceEvent-3.0"):Embed({})
 
-function Messages:Grid_UnitLeft(unit)
+function Messages:Grid_UnitLeft(_, unit)
 	frames[unit]:UnregisterAllEvents()
 end
 
-function Messages:Grid_UnitUpdated(unit, joined)
+function Messages:Grid_UnitUpdated(_, unit, joined)
 	if joined then
 		local frame = frames[unit]
 		for eventname in pairs(events) do
