@@ -29,7 +29,7 @@ s["leader"] = { hideInCombat=true }
 s["dungeon-role"] = { hideInCombat=true }
 s["master-looter"] = { hideInCombat=true }
 s["heals-incoming"] = { includePlayerHeals=true }
-s["buffs-Relevant"] = { type="mbuffs", color1={a=1,b=0,g=1,r=0}, aura_filter={sortRule=3,filter="HELPFUL|RAID"} }
+s["buffs-Relevant"] = { type="mbuffs", color1={a=1,b=0,g=1,r=0}, aura_filter={sortRule=3,filter="HELPFUL|RAID_IN_COMBAT"} }
 s["debuffs-Relevant"] = { type="mdebuffs", colors={}, aura_filter={sortRule=3} }
 
 i["text-center"] = { type="text", fontSize=10, location={y=0,relPoint="CENTER",point="CENTER",x=0}, level=7, textlength=6, percent=true }

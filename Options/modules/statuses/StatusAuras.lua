@@ -66,6 +66,12 @@ local function filter_exists_substring(status, key, subkey, value)
 	return tcontains( { strsplit('|', filter) }, value)
 end
 
+local function filter_remove_substring(status, key, subkey, value, default)
+	if filter_exists_substring(status, key, subkey, value) then
+		filter_toggle_substring(status, key, subkey, value, default)
+	end
+end
+
 local function get_new_aura_status_key(data)
 	if data.name then
 		local key = data.name:gsub("[ %.\"]", "")
@@ -249,6 +255,7 @@ local function MakeBuffsOptions(status, options)
 			return filter_exists_substring( status, 'aura_filter', 'filter', 'RAID_IN_COMBAT' )
 		end,
 		set = function()
+			filter_remove_substring( status, 'aura_filter', 'filter', 'RAID', 'HELPFUL' )
 			filter_toggle_substring( status, 'aura_filter', 'filter', 'RAID_IN_COMBAT', 'HELPFUL' )
 		end,
 		hidden = function() return Grid2.versionCli<=120000 end,
@@ -262,6 +269,7 @@ local function MakeBuffsOptions(status, options)
 			return filter_exists_substring( status, 'aura_filter', 'filter', 'RAID' )
 		end,
 		set = function()
+			filter_remove_substring( status, 'aura_filter', 'filter', 'RAID_IN_COMBAT', 'HELPFUL' )
 			filter_toggle_substring( status, 'aura_filter', 'filter', 'RAID', 'HELPFUL' )
 		end,
 	}
