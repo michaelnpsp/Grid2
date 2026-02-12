@@ -33,8 +33,8 @@ do
 			local type, spellID = GetSpellBookItemInfo(i,'spell')
 			if spellID and type == 'SPELL' then
 				local name, _, _, _, minRange, maxRange = GetSpellInfo(spellID)
-				if maxRange>0 and maxRange<100 and spellID~=rezSpellID and IsPlayerSpell(spellID) and (hostile or IsSpellInRange(name, 'player')==1)  then
-						customSpells[spellID] = string.format(stringMask, name, maxRange)
+				if maxRange>0 and maxRange<100 and spellID~=rezSpellID and IsPlayerSpell(spellID) and (hostile or IsSpellInRange(name, 'player')==1) then
+					customSpells[spellID] = string.format(stringMask, name, maxRange)
 				end
 			end
 		end
@@ -59,6 +59,10 @@ local function ToggleByClass(status, enabled)
 	return rangeDB
 end
 
+local function RangeAvailable(status, range)
+	return range~=38 or Grid2:GetStatusByName( status.name=='range' and 'rangealt' or 'range' ).curRange~=38
+end
+
 local function MakeRangeOptions(self, status, options, optionParams)
 	local rangeDB = status.dbx.ranges and status.dbx.ranges[playerClass] or status.dbx
 	self:MakeStatusColorOptions(status, options, {
@@ -78,10 +82,10 @@ local function MakeRangeOptions(self, status, options, optionParams)
 		min = 0,
 		max = 1,
 		step = 0.01,
-		get = function () return status.dbx.default	end,
+		get = function () return status.dbx.default end,
 		set = function (_, v)
 			status.dbx.default = v
-			status:UpdateDB()
+			status:Refresh()
 			Grid2Frame:UpdateIndicators()
 		end,
 	}
@@ -111,11 +115,15 @@ local function MakeRangeOptions(self, status, options, optionParams)
 			return tonumber(rangeDB.range) or (rangeDB.range=='spell' and 'spell') or "heal"
 		end,
 		set = function (_, v)
-			if v=='spell' and rangeDB.default then -- force storing range by class for spell option
-				rangeDB = ToggleByClass(status, true)
+			if RangeAvailable(status, v) then
+				if v=='spell' and rangeDB.default then -- force storing range by class for spell option
+					rangeDB = ToggleByClass(status, true)
+				end
+				rangeDB.range = v
+				status:Refresh()
+			else
+				Grid2Options:MessageDialog(L['Selected Range is already used in another range status, choose another option.'])
 			end
-			rangeDB.range = v
-			status:UpdateDB()
 		end,
 		values = function() return GetRangeList(status) end,
 	}

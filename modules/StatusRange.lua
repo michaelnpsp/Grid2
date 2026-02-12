@@ -174,7 +174,7 @@ function Range:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")
 	if self.curRange==38 then
-		Grid2:RegisterRosterUnitEvent("UNIT_IN_RANGE_UPDATE", Range)
+		Grid2:RegisterRosterUnitEvent("UNIT_IN_RANGE_UPDATE", self)
 	end
 end
 
@@ -184,8 +184,9 @@ function Range:OnDisable()
 	self:UnregisterMessage("Grid_UnitLeft")
 	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 	self:UnregisterEvent("PLAYER_REGEN_DISABLED")
-	self:UnregisterEvent("UNIT_IN_RANGE_UPDATE")
-	Grid2:UnregisterRosterUnitEvent("UNIT_IN_RANGE_UPDATE")
+	if self.curRange==38 then
+		Grid2:UnregisterRosterUnitEvent("UNIT_IN_RANGE_UPDATE")
+	end
 end
 
 function Range:UpdateDB()
@@ -215,6 +216,8 @@ Grid2:DbSetStatusDefaultValue( "range", {type = "range", color1 = {r=1, g=0, b=0
 RangeAlt.cache = setmetatable( {}, {__index = function() return false end} )
 RangeAlt.GetColor = Range.GetColor
 RangeAlt.UNIT_IN_RANGE_UPDATE = Range.UNIT_IN_RANGE_UPDATE
+RangeAlt.PLAYER_REGEN_ENABLED = Range.PLAYER_REGEN_ENABLED
+RangeAlt.PLAYER_REGEN_DISABLED = Range.PLAYER_REGEN_DISABLED
 RangeAlt.Grid_UnitUpdated = Range.Grid_UnitUpdated
 RangeAlt.Grid_UnitLeft = Range.Grid_UnitLeft
 RangeAlt.UpdateUnits = Range.UpdateUnits
@@ -230,4 +233,4 @@ Grid2.setupFunc["rangealt"] = function(baseKey, dbx)
 	return RangeAlt
 end
 
-Grid2:DbSetStatusDefaultValue( "rangealt", {type = "rangealt", color1 = {r=1, g=0, b=0, a=1}, range= 38, default = 0.25, elapsed = 0.5} )
+Grid2:DbSetStatusDefaultValue( "rangealt", {type = "rangealt", color1 = {r=1, g=0, b=0, a=1}, range=99, default = 0.25, elapsed = 0.5} )
