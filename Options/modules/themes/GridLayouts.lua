@@ -500,8 +500,34 @@ local generalOptions = {
 		end,
 	},
 
-	displayTanks = {
+	displayFocus = {
 		order = 110,
+		type = "toggle",
+		name = L["Focus unit"],
+		desc = L["Enable this option to display the focus unit."],
+		get = function(info)
+			return theme.layout.specialHeaders and theme.layout.specialHeaders.focus~=nil
+		end,
+		set = function(info,v)
+			SetupSpecialHeader('focus', v)
+		end,
+	},
+
+	displayTargetTarget = {
+		order = 115,
+		type = "toggle",
+		name = L["Target of Target"],
+		desc = L["Enable this option to display the target of target unit."],
+		get = function(info)
+			return theme.layout.specialHeaders and theme.layout.specialHeaders.targettarget~=nil
+		end,
+		set = function(info,v)
+			SetupSpecialHeader('targettarget', v)
+		end,
+	},
+
+	displayTanks = {
+		order = 120,
 		type = "toggle",
 		name = L["Tanks"],
 		desc = L["Enable this option to display tanks units."],
@@ -514,7 +540,7 @@ local generalOptions = {
 	},
 
 	displayBosses = {
-		order = 115,
+		order = 125,
 		type = "toggle",
 		name = L["Bosses"],
 		desc = L["Enable this option to display bosses units."],
@@ -524,35 +550,6 @@ local generalOptions = {
 		set = function(info,v)
 			SetupSpecialHeader('boss', v)
 		end,
-		hidden = function() return Grid2.versionCli<50000 or Grid2.secretsEnabled end,
-	},
-
-	displayTargetTarget = {
-		order = 120,
-		type = "toggle",
-		name = L["Target of Target"],
-		desc = L["Enable this option to display the target of target unit."],
-		get = function(info)
-			return theme.layout.specialHeaders and theme.layout.specialHeaders.targettarget~=nil
-		end,
-		set = function(info,v)
-			SetupSpecialHeader('targettarget', v)
-		end,
-		hidden = function() return Grid2.secretsEnabled end,
-	},
-
-	displayFocus = {
-		order = 125,
-		type = "toggle",
-		name = L["Focus unit"],
-		desc = L["Enable this option to display the focus unit."],
-		get = function(info)
-			return theme.layout.specialHeaders and theme.layout.specialHeaders.focus~=nil
-		end,
-		set = function(info,v)
-			SetupSpecialHeader('focus', v)
-		end,
-		hidden = function() return Grid2.isVanilla end,
 	},
 
 	displayFocusTarget = {
