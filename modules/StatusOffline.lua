@@ -84,7 +84,7 @@ function Offline:OnDisable()
 end
 
 function Offline:IsActive(unit)
-	return offline[unit]
+	return offline[unit]~=nil
 end
 
 function Offline:GetStartTime(unit)

@@ -314,7 +314,7 @@ end
 local FilterC_Enable, FilterC_Disable, FilterC_Refresh
 do
 	local statuses = statuses.combat
-	local IsNotActive = Grid2.Dummy
+	local IsNotActive = function() return false end
 	local frame, inCombat
 
 	local function CombatEvent(_,event)

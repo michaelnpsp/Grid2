@@ -45,7 +45,7 @@ function Target:PLAYER_TARGET_CHANGED()
 end
 
 function Target:IsActive(unit)
-	return curTarget and UnitIsUnit(unit, curTarget)
+	return curTarget~=nil and UnitIsUnit(unit, curTarget)
 end
 
 local text = L["target"]

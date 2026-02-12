@@ -36,7 +36,7 @@ function Voice:VOICE_CHAT_CHANNEL_MEMBER_SPEAKING_STATE_CHANGED(_, memberID, cha
 end
 
 function Voice:IsActive(unit)
-	return cache[unit]
+	return cache[unit]~=nil
 end
 
 local text = L["talking"]

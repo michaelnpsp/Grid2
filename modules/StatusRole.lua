@@ -29,7 +29,7 @@ do
 	local statuses, frame
 	local function CombatEvent(_, event)
 		local inCombat = (event == "PLAYER_REGEN_DISABLED")
-		local Dummy    = Grid2.Dummy
+		local Dummy    = function() return false end
 		for status in next,statuses do
 			status.IsActive = inCombat and Dummy or status.IsActiveB
 			status:UpdateActiveUnits()
@@ -73,9 +73,9 @@ function Role:Grid_RosterUpdate(event)
 	for unit in Grid2:IterateGroupedPlayers() do
 		local index, role = raid_indexes[unit]
 		if index then
-			role = select(10,GetRaidRosterInfo(index))
+			role = select(10,GetRaidRosterInfo(index)) or nil
 		elseif party_indexes[unit] then
-			role = (GetPartyAssignment("MAINTANK",unit) and "MAINTANK") or (GetPartyAssignment("MAINASSIST",unit) and "MAINASSIST")
+			role = (GetPartyAssignment("MAINTANK",unit) and "MAINTANK") or (GetPartyAssignment("MAINASSIST",unit) and "MAINASSIST") or nil
 		end
 		if role ~= role_cache[unit] then
 			role_cache[unit] = role
@@ -103,7 +103,7 @@ function Role:OnDisable()
 end
 
 function Role:IsActive(unit)
-	return role_cache[unit]
+	return role_cache[unit]~=nil
 end
 
 function Role:GetColor(unit)
@@ -190,7 +190,7 @@ function Assistant:OnDisable()
 end
 
 function Assistant:IsActive(unit)
-	return assis_cache[unit]
+	return assis_cache[unit]~=nil
 end
 
 function Assistant:GetIcon(unit)
@@ -355,7 +355,7 @@ Grid2:DbSetStatusDefaultValue( "master-looter", { type = "master-looter", color1
 
 -- if Grid2.versionCli<30000 then return end
 
-local isValidRole = { TANK = true, HEALER = true, DAMAGER = true }
+local isValidRole = { TANK = true, HEALER = true, DAMAGER = true, NONE = false }
 local roleTexture = "Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES"
 local TexCoordfunc = GetTexCoordsForRoleSmallCircle
 
@@ -373,8 +373,7 @@ function DungeonRole:OnDisable()
 end
 
 function DungeonRole:IsActive(unit)
-	local role = UnitGroupRolesAssigned(unit)
-    return role and isValidRole[role]
+    return isValidRole[ UnitGroupRolesAssigned(unit) ]
 end
 
 function DungeonRole:GetColor(unit)
@@ -405,7 +404,7 @@ function DungeonRole:GetText(unit)
 end
 
 function DungeonRole:UpdateDB()
-	isValidRole["DAMAGER"] = (not self.dbx.hideDamagers) or nil
+	isValidRole["DAMAGER"] = not self.dbx.hideDamagers
 	roleTexture = self.dbx.useAlternateIcons and "Interface\\LFGFrame\\LFGROLE" or "Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES"
 	TexCoordfunc = self.dbx.useAlternateIcons and GetTexCoordsForRoleSmall or GetTexCoordsForRoleSmallCircle
 end

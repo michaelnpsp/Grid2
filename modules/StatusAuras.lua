@@ -115,7 +115,7 @@ function Shared:IsActive(unit)
 	if self.aura_display then
 		return self:GetIcons(unit, 1) > 0
 	elseif self.aura_func then
-		return LBA.UnitHasAuras(unit, self.aura_filter)
+		return LBA.UnitHasAuras(unit, self.aura_filter)~=nil
 	else
 		return GetAuraDataByIndex(unit, 1, self.aura_filter)~=nil
 	end

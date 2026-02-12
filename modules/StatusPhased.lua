@@ -110,7 +110,7 @@ function Phased:GetTexCoord(unit)
 end
 
 function Phased:IsActive(unit)
-	return cache[unit]
+	return not not cache[unit]
 end
 
 Phased.GetColor = Grid2.statusLibrary.GetColor

@@ -54,9 +54,7 @@ function PvP:GetPercent(unit)
 end
 
 function PvP:IsActiveWorld(unit)
-	if not IsInInstance() then
-		return UnitIsPVP(unit) or UnitIsPVPFreeForAll(unit)
-	end
+	return (not IsInInstance()) and (UnitIsPVP(unit) or UnitIsPVPFreeForAll(unit))
 end
 
 function PvP:IsActiveAlways(unit)

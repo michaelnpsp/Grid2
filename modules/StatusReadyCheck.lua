@@ -7,7 +7,7 @@ local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 local Grid2 = Grid2
 local GetReadyCheckStatus = GetReadyCheckStatus
 
-local readyChecking
+local readyChecking = false
 local readyCount = 0
 local readyStatuses = {}
 local roster_players = Grid2.roster_players
@@ -17,7 +17,7 @@ function ReadyCheck:ClearStatusDelayed()
 	local timerIndex = readyCount
 	C_Timer.After( self.dbx.threshold or 0.01, function()
 		if timerIndex==readyCount then -- do nothing if a new timer or readycheck was launched
-			readyChecking = nil
+			readyChecking = false
 			wipe(readyStatuses)
 			self:UpdatePlayerUnits()
 		end
@@ -52,7 +52,7 @@ end
 
 function ReadyCheck:PLAYER_REGEN_DISABLED()
 	if readyChecking then
-		readyChecking = nil
+		readyChecking = false
 		wipe(readyStatuses)
 		self:UpdatePlayerUnits()
 	end
@@ -84,11 +84,11 @@ function ReadyCheck:OnDisable()
 	end
 	wipe(readyStatuses)
 	readyCount = readyCount + 1
-	readyChecking = nil
+	readyChecking = false
 end
 
 function ReadyCheck:IsActive(unit)
-	return readyChecking and roster_players[unit]
+	return readyChecking and roster_players[unit]~=nil
 end
 
 function ReadyCheck:GetReadyCheckStatus(unit)

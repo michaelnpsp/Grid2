@@ -35,9 +35,7 @@ end
 -- 3 = securely tanking something
 function Threat:IsActive(unit)
 	local threat = UnitExists(unit) and UnitThreatSituation(unit) or 0 -- hack thanks Potje
-	if threat > 0 then
-		return activeValue
-	end
+	return threat > 0 and activeValue
 end
 
 function Threat:GetColor(unit)

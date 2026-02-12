@@ -6,9 +6,6 @@ local GetRaidTargetIndex = GetRaidTargetIndex
 local rawget = rawget
 local issecretvalue = issecretvalue or function() return false end
 
--- indicator compatibility
-local indicatorTypes
-
 -- Star, Circle, Diamond, Triangle, Moon, Square, Cross, Skull
 local iconColors = {
 	{r = 1.0, g = 0.92, b = 0, a = 1},
@@ -64,61 +61,22 @@ function RaidIcon:UpdateUnit(_, unit)
 	self:UpdateIndicators(unit)
 end
 
-if Grid2.secretsEnabled then -- midnight
+local frame = CreateFrame("frame")
+local tex = frame:CreateTexture()
+frame:Hide()
+tex:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcons")
 
-	local frame = CreateFrame("frame")
-	local tex = frame:CreateTexture()
-	frame:Hide()
-	tex:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcons")
+function RaidIcon:GetTexCoord(unit)
+	tex:SetSpriteSheetCell( self.cache[unit], 4, 4, 64, 64)
+	return tex:GetTexCoord()
+end
 
-	function RaidIcon:GetTexCoord(unit)
-		tex:SetSpriteSheetCell( self.cache[unit], 4, 4, 64, 64)
-		return tex:GetTexCoord()
-	end
+function RaidIcon:GetIcon(unit)
+	return 'Interface\\TargetingFrame\\UI-RaidTargetingIcons'
+end
 
-	function RaidIcon:GetIcon(unit)
-		return 'Interface\\TargetingFrame\\UI-RaidTargetingIcons'
-	end
-
-	function RaidIcon:IsActive(unit)
-		return issecretvalue( self.cache[unit] )
-	end
-
-	indicatorTypes = {"icon"}
-
-else -- classic, tww
-
-	function RaidIcon:GetTexCoord()
-		return 0, 1, 0, 1
-	end
-
-	function RaidIcon:GetIcon(unit)
-		return iconTexture[ self.cache[unit] ]
-	end
-
-	function RaidIcon:GetColor(unit)
-		local c = self.dbx[ "color" .. self.cache[unit] ]
-		return c.r, c.g, c.b, c.a --self.dbx.opacity or 1
-	end
-
-	function RaidIcon:IsActive(unit)
-		local index = self.cache[unit]
-		return index and index < 9
-	end
-
-	function RaidIcon:GetText(unit)
-		return iconText[ self.cache[unit] ]
-	end
-
-	function RaidIcon:SetGlobalOpacity(opacity)
-		local dbx = self.dbx
-		for i=1, 8 do
-			dbx["color"..i].a = opacity
-		end
-	end
-
-	indicatorTypes = {"color", "icon", "text"}
-
+function RaidIcon:IsActive(unit)
+	return issecretvalue( self.cache[unit] )
 end
 
 function RaidIcon:OnEnable()
@@ -146,7 +104,7 @@ end
 
 local function Create(baseKey, dbx)
 	local status = statuses[baseKey]
-	Grid2:RegisterStatus(status, indicatorTypes, baseKey, dbx)
+	Grid2:RegisterStatus(status, {"icon"}, baseKey, dbx)
 	return status
 end
 

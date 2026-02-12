@@ -122,7 +122,7 @@ function Direction:OnDisable()
 end
 
 function Direction:IsActive(unit)
-	return directions[unit] and true
+	return directions[unit]~=nil
 end
 
 function Direction:GetIcon(unit)

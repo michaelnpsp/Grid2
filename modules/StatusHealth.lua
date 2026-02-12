@@ -242,7 +242,7 @@ function Death:OnDisable()
 end
 
 function Death:IsActive(unit)
-	if dead_cache[unit] then return true end
+	return not not dead_cache[unit]
 end
 
 function Death:GetIcon()

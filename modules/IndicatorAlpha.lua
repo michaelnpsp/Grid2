@@ -19,10 +19,8 @@ local function Alpha_UpdateStandard(self, parent, unit)
 			local state, invert = status:IsActive(unit)
 			if invert then
 				alpha = EvaluateColorValueFromBoolean(state, alpha, status:GetPercent() or enabledAlpha)
-			elseif issecretvalue(state) then
-				alpha = EvaluateColorValueFromBoolean(state, status:GetPercent() or enabledAlpha, alpha)
 			else
-				alpha = EvaluateColorValueFromBoolean(not not state, status:GetPercent() or enabledAlpha, alpha)
+				alpha = EvaluateColorValueFromBoolean(state, status:GetPercent() or enabledAlpha, alpha)
 			end
 		end
 		(indicatorName and parent[indicatorName] or parent):SetAlpha(alpha)
@@ -37,10 +35,8 @@ local function Alpha_UpdateOptional(self, parent, unit)
 			local state, invert = statuses[i]:IsActive(unit)
 			if invert then
 				alpha = EvaluateColorValueFromBoolean(state, alpha, enabledAlpha )
-			elseif issecretvalue(state) then
-				alpha = EvaluateColorValueFromBoolean(state, enabledAlpha, alpha )
 			else
-				alpha = EvaluateColorValueFromBoolean(not not state, enabledAlpha, alpha )
+				alpha = EvaluateColorValueFromBoolean(state, enabledAlpha, alpha )
 			end
 		end
 		(indicatorName and parent[indicatorName] or parent):SetAlpha(alpha)

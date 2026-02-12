@@ -62,9 +62,7 @@ function Resurrection:UpdateDB()
 end
 
 function Resurrection:IsActive(unit)
-	if res_cache[unit] then
-		return true
-	end
+	return res_cache[unit]~=nil
 end
 
 function Resurrection:GetColor(unit)
