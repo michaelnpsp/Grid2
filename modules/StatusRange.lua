@@ -89,7 +89,7 @@ local rezSpell = rezSpellID and GetSpellInfo(rezSpellID)
 
 local function CreateRangeCheck(spellFriendly, spellHostile, blizRange)
 	return function(unit)
-		if UnitIsUnit(unit,"player") then
+		if UnitIsUnit(unit,"player") or unit=='pet' then
 			return true
 		elseif UnitPhaseReason(unit) then
 			return false
