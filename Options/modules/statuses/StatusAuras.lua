@@ -258,7 +258,6 @@ local function MakeBuffsOptions(status, options)
 			filter_remove_substring( status, 'aura_filter', 'filter', 'RAID', 'HELPFUL' )
 			filter_toggle_substring( status, 'aura_filter', 'filter', 'RAID_IN_COMBAT', 'HELPFUL' )
 		end,
-		hidden = function() return Grid2.versionCli<=120000 end,
 	}
 	options.filter_raid = {
 		type = "toggle",
@@ -271,6 +270,18 @@ local function MakeBuffsOptions(status, options)
 		set = function()
 			filter_remove_substring( status, 'aura_filter', 'filter', 'RAID_IN_COMBAT', 'HELPFUL' )
 			filter_toggle_substring( status, 'aura_filter', 'filter', 'RAID', 'HELPFUL' )
+		end,
+	}
+	options.filter_important = {
+		type = "toggle",
+		order = 44,
+		width = "full",
+		name = L["Important buffs flagged by Blizzard"],
+		get = function()
+			return filter_exists_substring( status, 'aura_filter', 'filter', 'IMPORTANT' )
+		end,
+		set = function()
+			filter_toggle_substring( status, 'aura_filter', 'filter', 'IMPORTANT', 'HELPFUL' )
 		end,
 	}
 	options.filter_defensive = {
@@ -446,10 +457,22 @@ local function MakeDebuffsFilterOptions(status, options)
 		width = "full",
 		name = L["Debuffs that i can dispel"],
 		get = function()
-			return filter_exists_substring( status, 'aura_filter', 'filter', Grid2.versionCli<=120000 and 'RAID' or 'RAID_PLAYER_DISPELLABLE' )
+			return filter_exists_substring( status, 'aura_filter', 'filter', 'RAID_PLAYER_DISPELLABLE' )
 		end,
 		set = function()
-			filter_toggle_substring( status, 'aura_filter', 'filter', Grid2.versionCli<=120000 and 'RAID' or 'RAID_PLAYER_DISPELLABLE', 'HARMFUL' )
+			filter_toggle_substring( status, 'aura_filter', 'filter', 'RAID_PLAYER_DISPELLABLE', 'HARMFUL' )
+		end,
+	}
+	options.filter_raid = {
+		type = "toggle",
+		order = 45,
+		width = "full",
+		name = L["Debuffs to show up on raid frames"],
+		get = function()
+			return filter_exists_substring( status, 'aura_filter', 'filter', 'RAID' )
+		end,
+		set = function()
+			filter_toggle_substring( status, 'aura_filter', 'filter', 'RAID', 'HARMFUL' )
 		end,
 	}
 	options.filter_nameplate = {
@@ -462,6 +485,18 @@ local function MakeDebuffsFilterOptions(status, options)
 		end,
 		set = function()
 			filter_toggle_substring( status, 'aura_filter', 'filter', 'INCLUDE_NAME_PLATE_ONLY', 'HARMFUL' )
+		end,
+	}
+	options.filter_important = {
+		type = "toggle",
+		order = 55,
+		width = "full",
+		name = L["Important debuffs flagged by Blizzard"],
+		get = function()
+			return filter_exists_substring( status, 'aura_filter', 'filter', 'IMPORTANT' )
+		end,
+		set = function()
+			filter_toggle_substring( status, 'aura_filter', 'filter', 'IMPORTANT', 'HARMFUL' )
 		end,
 	}
 	options.filter_typed = {
@@ -507,7 +542,6 @@ local function MakeDebuffsFilterOptions(status, options)
 		set = function()
 			filter_toggle_substring( status, 'aura_filter', 'filter', 'CROWD_CONTROL', 'HARMFUL' )
 		end,
-		hidden = function() return Grid2.versionCli<=120000 end, -- available only on midnight beta
 	}
 	options.filter_bliz_debuffs = {
 		type = "toggle",
