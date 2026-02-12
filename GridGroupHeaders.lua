@@ -510,7 +510,7 @@ do
 	local TTARGET = { 'UNIT_TARGET', 'PLAYER_TARGET_CHANGED', 'PLAYER_ENTERING_WORLD' }
 	local FTARGET = { 'UNIT_TARGET', 'PLAYER_FOCUS_CHANGED', 'PLAYER_ENTERING_WORLD' }
 	local TARGETS = { target = 'targettarget', focus = 'focustarget', targettarget = 'target', focustarget = 'focus' }
-	local UNITS   = { target=TARGET, focus=FOCUS, targettarget=TTARGET, focustarget=FTARGET, boss1=BOSS, boss2=BOSS, boss3=BOSS, boss4=BOSS, boss5=BOSS, boss6=BOSS, boss7=BOSS, boss8=BOSS, arena1=ARENA, arena2=ARENA, arena3=ARENA, arena4=ARENA, arena5=ARENA }
+	local UNITS   = { target=TARGET, focus=FOCUS, targettarget=TTARGET, focustarget=FTARGET, boss1=BOSS, boss2=BOSS, boss3=BOSS, boss4=BOSS, boss5=BOSS, arena1=ARENA, arena2=ARENA, arena3=ARENA, arena4=ARENA, arena5=ARENA }
 	local notifyObject, updateMessage, refreshRoster, fakedRoster, updateEnabled
 
 	local function UpdateFakedUnits() -- timer to update faked/eventless units

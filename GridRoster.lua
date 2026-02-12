@@ -29,7 +29,7 @@ local grouped_players = {} -- party1=>1, raid1=>1 ; only party/raid player/owner
 local grouped_pets    = {} -- partypet1=>1, raidpet2=>1 ; only party/raid pet units
 local roster_types    = { target = 'target', focus = 'focus', targettarget = 'targettarget', focustarget = 'focustarget' }
 local roster_my_units = { player = true, pet = true, vehicle = true }
-local faked_units     = { targettarget = true, focustarget = true, boss6 = true, boss7 = true, boss8 = true } -- eventless units
+local faked_units     = { targettarget = true, focustarget = true } -- eventless units
 local external_units  = { target = true, focus = true, targettarget = true, focustarget = true }
 -- roster tables / storing only existing units
 local roster_names    = {} -- raid1=>name, ..
