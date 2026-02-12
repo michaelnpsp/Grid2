@@ -255,7 +255,6 @@ local function MakeBuffsOptions(status, options)
 			return filter_exists_substring( status, 'aura_filter', 'filter', 'RAID_IN_COMBAT' )
 		end,
 		set = function()
-			filter_remove_substring( status, 'aura_filter', 'filter', 'RAID', 'HELPFUL' )
 			filter_toggle_substring( status, 'aura_filter', 'filter', 'RAID_IN_COMBAT', 'HELPFUL' )
 		end,
 	}
@@ -268,7 +267,6 @@ local function MakeBuffsOptions(status, options)
 			return filter_exists_substring( status, 'aura_filter', 'filter', 'RAID' )
 		end,
 		set = function()
-			filter_remove_substring( status, 'aura_filter', 'filter', 'RAID_IN_COMBAT', 'HELPFUL' )
 			filter_toggle_substring( status, 'aura_filter', 'filter', 'RAID', 'HELPFUL' )
 		end,
 	}
