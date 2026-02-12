@@ -111,12 +111,14 @@ function Shared:OnDisable()
 	end
 end
 
-function Shared:IsActiveDef(unit)
-	return GetAuraDataByIndex(unit, 1, self.aura_filter)~=nil
-end
-
-function Shared:IsActiveLBA(unit)
-	return LBA.UnitHasAuras(unit, self.aura_filter)
+function Shared:IsActive(unit)
+	if self.aura_display then
+		return self:GetIcons(unit, 1) > 0
+	elseif self.aura_func then
+		return LBA.UnitHasAuras(unit, self.aura_filter)
+	else
+		return GetAuraDataByIndex(unit, 1, self.aura_filter)~=nil
+	end
 end
 
 -------------------------------------------------------------------------------
@@ -132,7 +134,6 @@ do
 		self.aura_sortDir  = filter.sortDir or 0
 		self.aura_filter   = filter.blizFilter or filter.filter or 'HELPFUL'
 		self.aura_func     = filter.blizFilter and LBA.GetUnitAuras or nil
-		self.IsActive      = filter.blizFilter and self.IsActiveLBA or self.IsActiveDef
 	end
 
 	-- Registration
@@ -164,8 +165,8 @@ do
 	}
 
 	local function Debuffs_GetColor(self, unit)
-		local aura = GetAuraDataByIndex(unit, 1, self.aura_filter)
-		local c = aura and GetAuraDispelTypeColor(unit, aura.auraInstanceID, self.aura_color) or color_default
+		local cnt, _, _, _, _, col = self:GetIcons(unit, 1)
+		local c = cnt>0 and col[1] or color_default
 		return c.r, c.g, c.b, c.a
 	end
 
@@ -176,7 +177,6 @@ do
 		self.aura_sortDir  = filter.sortDir or 0
 		self.aura_display  = filterTypedFuncs[filter.typed]
 		self.aura_func     = filter.blizFilter and LBA.GetUnitAuras or nil
-		self.IsActive      = filter.blizFilter and self.IsActiveLBA or self.IsActiveDef
 		self.aura_color:ClearPoints()
 		local colors = self.dbx.colors or {}
 		for typ, def in pairs(Grid2.DispelCurveDefaults) do
@@ -287,4 +287,5 @@ do
 	end
 
 	Grid2:DbSetStatusDefaultValue( "debuffs-DispellableByMe", {type = "mdebuffType", subType = "DispellableByMe", colors = {}} )
+
 end
