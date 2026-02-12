@@ -89,7 +89,7 @@ local rezSpell = rezSpellID and GetSpellInfo(rezSpellID)
 
 local function CreateRangeCheck(spellFriendly, spellHostile, blizRange)
 	return function(unit)
-		if UnitIsUnit(unit,"player") or unit=='pet' then
+		if UnitIsUnit(unit,"player") then
 			return true
 		elseif UnitPhaseReason(unit) then
 			return false
@@ -97,7 +97,7 @@ local function CreateRangeCheck(spellFriendly, spellHostile, blizRange)
 			return IsSpellInRange(spellHostile, unit) == true
 		elseif rezSpell and UnitIsDeadOrGhost(unit) then
 			return IsSpellInRange(rezSpell, unit) == true
-		elseif blizRange and grouped_units[unit] then
+		elseif blizRange and grouped_units[unit] and unit~='pet' then
 			return UnitInRange(unit)
 		elseif spellFriendly then -- extra CheckInteractDistance() for OOC friendly npcs if spell check fails
 			return IsSpellInRange(spellFriendly, unit) == true or (not InCombat and CheckInteractDistance(unit, 4))
