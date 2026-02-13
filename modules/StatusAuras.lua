@@ -3,6 +3,8 @@
 local LBA = Grid2.BlizFramesAuras
 
 local Grid2 = Grid2
+local next = next
+local ipairs = ipairs
 local rosterUnits = Grid2.roster_guids
 local UnitIsFriend = UnitIsFriend
 local GetUnitAuras = C_UnitAuras.GetUnitAuras
@@ -33,6 +35,26 @@ Grid2.DispelCurveDefaults = {
 	Bleed   = { 11, DEBUFF_TYPE_BLEED_COLOR   },
 }
 local color_default = Grid2.defaultColors.TRANSPARENT
+
+-------------------------------------------------------------------------------
+-- UNIT_AURA event dispacthing
+-------------------------------------------------------------------------------
+
+local statuses_enabled = {}
+
+Grid2:RegisterRosterUnitEvent('UNIT_AURA', function(_, unit)
+	for status in next, statuses_enabled do
+		status:UpdateIndicators(unit)
+	end
+end)
+
+local function RegisterStatusEvent(status)
+	statuses_enabled[status] = true
+end
+
+local function UnregisterStatusEvent(status)
+	statuses_enabled[status] = nil
+end
 
 -------------------------------------------------------------------------------
 -- shared functions
@@ -99,7 +121,7 @@ function Shared:OnEnable()
 	if self.aura_func then
 		LBA.RegisterCallback(self, "LBA_UNIT_AURA")
 	else
-		self:RegisterEvent("UNIT_AURA")
+		RegisterStatusEvent(self)
 	end
 end
 
@@ -107,7 +129,7 @@ function Shared:OnDisable()
 	if self.aura_func then
 		LBA.UnregisterCallback(self, "LBA_UNIT_AURA")
 	else
-		self:UnregisterEvent("UNIT_AURA")
+		UnregisterStatusEvent(self)
 	end
 end
 
