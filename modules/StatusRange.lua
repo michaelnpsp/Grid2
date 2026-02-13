@@ -174,7 +174,7 @@ function Range:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")
 	if self.curRange==38 then
-		Grid2:RegisterRosterUnitEvent("UNIT_IN_RANGE_UPDATE", self)
+		self:RegisterRosterUnitEvent("UNIT_IN_RANGE_UPDATE")
 	end
 end
 
@@ -185,7 +185,7 @@ function Range:OnDisable()
 	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 	self:UnregisterEvent("PLAYER_REGEN_DISABLED")
 	if self.curRange==38 then
-		Grid2:UnregisterRosterUnitEvent("UNIT_IN_RANGE_UPDATE")
+		self:UnregisterRosterUnitEvent("UNIT_IN_RANGE_UPDATE")
 	end
 end
 

@@ -37,26 +37,6 @@ Grid2.DispelCurveDefaults = {
 local color_default = Grid2.defaultColors.TRANSPARENT
 
 -------------------------------------------------------------------------------
--- UNIT_AURA event dispacthing
--------------------------------------------------------------------------------
-
-local statuses_enabled = {}
-
-Grid2:RegisterRosterUnitEvent('UNIT_AURA', function(_, unit)
-	for status in next, statuses_enabled do
-		status:UpdateIndicators(unit)
-	end
-end)
-
-local function RegisterStatusEvent(status)
-	statuses_enabled[status] = true
-end
-
-local function UnregisterStatusEvent(status)
-	statuses_enabled[status] = nil
-end
-
--------------------------------------------------------------------------------
 -- shared functions
 -------------------------------------------------------------------------------
 
@@ -84,7 +64,11 @@ end
 -- shared methods
 -------------------------------------------------------------------------------
 
-local Shared = { GetColor = Grid2.statusLibrary.GetColor }
+local Shared = {
+	GetColor = Grid2.statusLibrary.GetColor,
+	UNIT_AURA = Grid2.statusPrototype.UpdateIndicatorsFromEvent,
+	LBA_UNIT_AURA = Grid2.statusPrototype.UpdateIndicatorsFromEvent,
+}
 
 function Shared:GetIcons(unit, max)
 	return GetIconsSorted(unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.aura_color, self.aura_func, self.aura_display)
@@ -107,21 +91,11 @@ function Shared:GetTooltip(unit, tip, slotID)
 	end
 end
 
-function Shared:UNIT_AURA(_, unit)
-	if rosterUnits[unit] then
-		self:UpdateIndicators(unit)
-	end
-end
-
-function Shared:LBA_UNIT_AURA(_, unit)
-	self:UpdateIndicators(unit)
-end
-
 function Shared:OnEnable()
 	if self.aura_func then
 		LBA.RegisterCallback(self, "LBA_UNIT_AURA")
 	else
-		RegisterStatusEvent(self)
+		self:RegisterRosterUnitEvent('UNIT_AURA')
 	end
 end
 
@@ -129,7 +103,7 @@ function Shared:OnDisable()
 	if self.aura_func then
 		LBA.UnregisterCallback(self, "LBA_UNIT_AURA")
 	else
-		UnregisterStatusEvent(self)
+		self:UnregisterRosterUnitEvent('UNIT_AURA')
 	end
 end
 
@@ -262,14 +236,12 @@ do
 		return c.r, c.g, c.b, c.a
 	end
 
-	function DebuffsDispell:LBA_UNIT_AURA(event, unit)
+	function DebuffsDispell:LBA_UNIT_AURA(_, unit)
 		self:UpdateCache( unit, UnitIsFriend("player", unit) and LBA.GetUnitDebuffsDispellable(unit, self.aura_filter, 1)[1] or nil )
 	end
 
-	function DebuffsDispell:UNIT_AURA(event, unit)
-		if rosterUnits[unit] then
-			self:UpdateCache( unit, UnitIsFriend("player", unit) and GetAuraDataByIndex(unit, 1, self.aura_filter) or nil )
-		end
+	function DebuffsDispell:UNIT_AURA(_, unit)
+		self:UpdateCache( unit, UnitIsFriend("player", unit) and GetAuraDataByIndex(unit, 1, self.aura_filter) or nil )
 	end
 
 	function DebuffsDispell:Grid_UnitUpdated(_, unit)

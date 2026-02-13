@@ -63,6 +63,10 @@ status.OnDisable = Grid2.Dummy
 status.UpdateDB = Grid2.Dummy
 -- all indicators
 status.UpdateAllUnits = Grid2.statusLibrary.UpdateAllUnits
+-- all indicators
+status.RegisterRosterUnitEvent = Grid2.RegisterRosterUnitEvent
+-- all indicators
+status.UnregisterRosterUnitEvent = Grid2.UnregisterRosterUnitEvent
 
 function status:Inject(data)
 	for k,f in next, data do
@@ -70,7 +74,17 @@ function status:Inject(data)
 	end
 end
 
+-- standard indicators update
 function status:UpdateIndicators(unit)
+	for parent in next, Grid2:GetUnitFrames(unit) do
+		for indicator in pairs(self.indicators) do
+			indicator:Update(parent, unit, self)
+		end
+	end
+end
+
+-- special indicators update to use as callback in unit events
+function status:UpdateIndicatorsFromEvent(_, unit)
 	for parent in next, Grid2:GetUnitFrames(unit) do
 		for indicator in pairs(self.indicators) do
 			indicator:Update(parent, unit, self)
