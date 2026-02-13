@@ -8,8 +8,8 @@ local ipairs = ipairs
 local format = string.format
 local issecretvalue = Grid2.issecretvalue
 local canaccessvalue = Grid2.canaccessvalue
-local UpdateCooldownColorCurve = Grid2.UpdateCooldownColorCurve
-local RemoveCooldownColorCurve = Grid2.RemoveCooldownColorCurve
+local UpdateIconColorCurve = Grid2.UpdateIconColorCurve
+local RemoveIconColorCurve = Grid2.RemoveIconColorCurve
 local TruncateWhenZero = C_StringUtil.TruncateWhenZero
 
 local function Icon_Create(self, parent)
@@ -42,7 +42,7 @@ local function Icon_OnFrameUpdate(f)
 					aura.icon:SetTexture(textures[j])
 					if useStatus then
 						local c = colors[j]
-						aura:SetBackdropBorderColor(c.r, c.g, c.b, self.borderOpacity ) -- color is secret we cannot use min()
+						aura:SetBackdropBorderColor(c.r, c.g, c.b, self.borderOpacity) -- color is secret we cannot use min()
 					end
 				else
 					local c = colors[j]
@@ -65,7 +65,7 @@ local function Icon_OnFrameUpdate(f)
 						cooldown:SetCooldownFromExpirationTime(expiration, duration)
 					end
 					if showColors and slots[j] then
-						UpdateCooldownColorCurve(cooldown, status:GetDurationObject(unit, slots[j]))
+						UpdateIconColorCurve(aura, status:GetDurationObject(unit, slots[j]))
 					end
 				end
 				aura:Show()
@@ -100,7 +100,7 @@ local function Icon_OnFrameUpdate(f)
 						aura.cooldown:SetCooldownFromExpirationTime(expiration, duration)
 					end
 					if showColors then
-						UpdateCooldownColorCurve(aura.cooldown, status:GetDurationObject(unit))
+						UpdateIconColorCurve(aura, status:GetDurationObject(unit))
 					end
 				else
 					aura.cooldown:SetCooldown(0, 0)
@@ -154,6 +154,7 @@ local function Icon_Layout(self, parent)
 	local borderSize = self.borderSize
 	local iconSize = self.iconSize>1 and self.iconSize or self.iconSize * parent:GetHeight()
 	local fontSize = self.fontSize<1 and self.fontSize*iconSize or self.fontSize
+	local ctFontSize = self.ctFontSize<1 and self.ctFontSize*iconSize or self.ctFontSize
 	local size = iconSize + self.iconSpacing
 	local tc1,tc2,tc3,tc4 = Grid2.statusPrototype.GetTexCoord()
 	local level = parent:GetFrameLevel() + self.frameLevel
@@ -224,15 +225,15 @@ local function Icon_Layout(self, parent)
 			cooldown:SetReverse(self.dbx.reverseCooldown)
 			if self.showCoolText then
 				local color, text = self.ctColor, cooldown:GetCountdownFontString()
-				text:SetFont(self.ctFont, self.ctFontSize, self.ctFontFlags)
+				text:SetFont(self.ctFont, ctFontSize, self.ctFontFlags)
 				text:SetTextColor(color.r, color.g, color.b, color.a)
 				text:ClearAllPoints()
 				text:SetPoint(self.ctFontPoint, self.ctFontOffsetX, self.ctFontOffsetY)
 				text:SetMaxLines(1)
 				if self.showColors then
-					cooldown.colorCurveObject = self.ctColorCurve
-				elseif cooldown.countdownTextObject then  -- executed only if the user changed the settings to remove possible color update timer
-					RemoveCooldownColorCurve(cooldown)
+					frame.colorCurveObject = self.ctColorCurve
+					frame.colorCurveText = text
+					frame.colorCurveBorder = self.showColorsBorder and frame.SetBackdropBorderColor
 				end
 			end
 			cooldown:Show()
@@ -320,6 +321,7 @@ local function Icon_UpdateDB(self)
 	self.ctFontOffsetY   = dbx.ctFontOffsetY or -1
 	self.ctColor         = Grid2:MakeColor(dbx.ctColor or (dbx.ctColors and dbx.ctColors[1]), "WHITE")
 	self.showColors      = dbx.ctColors~=nil
+	self.showColorsBorder= dbx.ctColorsBorder
 	if dbx.ctColors then
 		self.ctColorCurve =  self.ctColorCurve or C_CurveUtil.CreateColorCurve()
 		self.ctColorCurve:SetType(Enum.LuaCurveType.Step)

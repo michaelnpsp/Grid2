@@ -511,46 +511,44 @@ function Grid2:SetMinimapIcon(value)
 	return not minimapIcon.hide
 end
 
-
--- Cooldown text colorization using color curves, used by icon/icons indicators
+-- Icons coloring using color curves, used by icon/icons indicators
 do
 	local timer
-	local cooldowns = {}
+	local icons = {}
+	local function ApplyColors(icon, r, g, b, a)
+		if icon.colorCurveText then
+			icon.colorCurveText:SetTextColor(r, g, b, 1)
+		end
+		if icon.colorCurveBorder then
+			icon:colorCurveBorder(r, g, b, a)
+		end
+	end
 	local function Update()
-		for cooldown, durationObject in pairs(cooldowns) do
-			if cooldown:IsVisible() then
-				 local color = durationObject:EvaluateRemainingDuration(cooldown.colorCurveObject)
-				 cooldown.countdownTextObject:SetTextColor(color:GetRGBA())
+		for icon, durationObject in pairs(icons) do
+			if icon:IsVisible() then
+				ApplyColors(icon, durationObject:EvaluateRemainingDuration(icon.colorCurveObject):GetRGBA())
 			else
-				cooldowns[cooldown] = nil
+				icons[icon] = nil
 			end
 		end
-		if not next(cooldowns) then timer:Stop() end
+		if not next(icons) then timer:Stop() end
 	end
 	timer = Grid2:CreateTimer(Update, 0.2, false)
 
-	-- cooldown must have the fields: cooldown.durationObject, cooldown.colorCurveObject
-	function Grid2.UpdateCooldownColorCurve(cooldown, durationObject)
-		local curve = cooldown.colorCurveObject
-		local text = cooldown.countdownTextObject
-		if text == nil then
-			text = cooldown:GetCountdownFontString()
-			cooldown.countdownTextObject = text
-		end
+	-- icon must have the fields: icon.colorCurveObject, icon.colorcurveText , icon.colorCurveBorder
+	function Grid2.UpdateIconColorCurve(icon, durationObject)
+		local curve = icon.colorCurveObject
 		if durationObject then
-			if cooldowns[cooldown]==nil and not next(cooldowns) then
-				timer:Play()
-			end
-			text:SetTextColor( durationObject:EvaluateRemainingDuration(curve):GetRGBA() )
-			cooldowns[cooldown] = durationObject
+			if not timer:IsPlaying() then timer:Play() end
+			icons[icon] = durationObject
+			ApplyColors(icon, durationObject:EvaluateRemainingDuration(curve):GetRGBA())
 		else
-			local point = curve:GetPoint(curve:GetPointCount())
-			text:SetTextColor(point.y:GetRGBA())
+			ApplyColors(icon, curve:GetPoint(curve:GetPointCount()).y:GetRGBA())
 		end
 	end
 
-	function Grid2.RemoveCooldownColorCurve(cooldown)
-		cooldowns[cooldown] = nil
+	function Grid2.RemoveIconColorCurve(icon)
+		icons[icon] = nil
 	end
 
 end

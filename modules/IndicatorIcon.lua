@@ -6,8 +6,8 @@ local fmt = string.format
 
 local issecretvalue = Grid2.issecretvalue
 local canaccessvalue = Grid2.canaccessvalue
-local UpdateCooldownColorCurve = Grid2.UpdateCooldownColorCurve
-local RemoveCooldownColorCurve = Grid2.RemoveCooldownColorCurve
+local UpdateIconColorCurve = Grid2.UpdateIconColorCurve
+local RemoveIconColorCurve = Grid2.RemoveIconColorCurve
 local TruncateWhenZero = C_StringUtil.TruncateWhenZero
 
 local function Icon_Create(self, parent)
@@ -73,7 +73,7 @@ local function Icon_OnUpdate(self, parent, unit, status)
 		if not self.disableCooldown and exp and dur then
 			Frame.Cooldown:SetCooldownFromExpirationTime(exp, dur)
 			if self.showColors then
-				UpdateCooldownColorCurve(Frame.Cooldown, status:GetDurationObject(unit, slot))
+				UpdateIconColorCurve(Frame, status:GetDurationObject(unit, slot))
 			end
 		end
 	else
@@ -120,7 +120,7 @@ local function Icon_OnUpdate(self, parent, unit, status)
 					Cooldown:SetCooldownFromExpirationTime(expiration, duration)
 				end
 				if self.showColors then
-					UpdateCooldownColorCurve(Cooldown, status:GetDurationObject(unit))
+					UpdateIconColorCurve(Frame, status:GetDurationObject(unit))
 				end
 				Cooldown:Show()
 			else
@@ -165,9 +165,9 @@ local function Icon_Layout(self, parent)
 		text:SetPoint(self.ctFontPoint, self.ctFontOffsetX, self.ctFontOffsetY)
 		text:SetMaxLines(1)
 		if self.showColors then
-			Cooldown.colorCurveObject = self.ctColorCurve
-		elseif Cooldown.countdownTextObject then -- executed only if the user changed the settings to remove possible color update timer
-			RemoveCooldownColorCurve(Cooldown)
+			f.colorCurveObject = self.ctColorCurve
+			f.colorCurveText = text
+			f.colorCurveBorder = self.showColorsBorder and f.SetBackdropBorderColor
 		end
 	end
 
@@ -225,6 +225,7 @@ local function Icon_UpdateDB(self)
 	self.ctFontOffsetY   = dbx.ctFontOffsetY or -1
 	self.ctColor         = Grid2:MakeColor(dbx.ctColor or (dbx.ctColors and dbx.ctColors[1]), "WHITE")
 	self.showColors      = dbx.ctColors~=nil
+	self.showColorsBorder= dbx.ctColorsBorder
 	if dbx.ctColors then
 		self.ctColorCurve =  self.ctColorCurve or C_CurveUtil.CreateColorCurve()
 		self.ctColorCurve:SetType(Enum.LuaCurveType.Step)

@@ -775,6 +775,21 @@ function Grid2Options:MakeIndicatorCooldownTextOptions(indicator, options)
 			hidden = function() return indicator.dbx.enableCooldownText==nil or indicator.dbx.ctThresholds==nil or #indicator.dbx.ctThresholds<i+1 end,
 		}
 	end
+	options.ctColorAtBorder = {
+		type = "toggle",
+		order = 149,
+		name = L["Apply colors to the icon border"],
+		desc = L["Enable this option to apply the cooldown text colors to the icon border too."],
+		width = "double",
+		tristate = false,
+		get = function () return indicator.dbx.ctColorsBorder end,
+		set = function (_, v)
+			indicator.dbx.ctColorsBorder = v or nil
+			self:RefreshIndicator(indicator, "Create")
+		end,
+		hidden = function() return indicator.dbx.enableCooldownText==nil or indicator.dbx.ctColors==nil end,
+	}
+
 end
 
 -- Grid2Options:MakeIndicatorTooltipsOptions()
