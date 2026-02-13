@@ -1,6 +1,7 @@
 local Grid2 = Grid2
 
 local next = next
+local type = type
 
 local events = {}
 
