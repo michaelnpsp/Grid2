@@ -70,7 +70,7 @@ function Combat:Grid_UnitLeft(_, unit)
 end
 
 function Combat:_IsActive(unit)
-	return cache[unit]~=nil
+	return cache[unit]
 end
 
 function Combat:_IsNotActive(unit)
