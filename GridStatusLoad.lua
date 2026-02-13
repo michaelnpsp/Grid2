@@ -422,4 +422,5 @@ function status:RefreshLoad() -- used by Grid2Options
 	FilterG_Refresh(self, load)
 	FilterU_Refresh(self, load)
 	FilterC_Refresh(self, load)
+	self:Refresh()
 end
