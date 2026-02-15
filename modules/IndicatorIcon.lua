@@ -139,8 +139,9 @@ local function Icon_OnUpdate(self, parent, unit, status)
 		if self.showCoolBar then
 			if durObject then
 				Frame.coolBar:SetTimerDuration(durObject, 0, self.cbDirection)
+				Frame.coolBar:Show()
 			else
-				Frame.coolBar:SetValue(0)
+				Frame.coolBar:Hide()
 			end
 		end
 		if self.showColors then

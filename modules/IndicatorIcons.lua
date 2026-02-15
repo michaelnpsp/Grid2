@@ -62,8 +62,9 @@ local function Icon_OnFrameUpdate(f)
 					if showBar then
 						if durObject then
 							aura.coolBar:SetTimerDuration(durObject, 0, self.cbDirection)
+							aura.coolBar:Show()
 						else
-							aura.coolBar:SetValue(0)
+							aura.coolBar:Hide()
 						end
 					end
 					if showColors then
@@ -105,8 +106,9 @@ local function Icon_OnFrameUpdate(f)
 				if showBar then
 					if durObject then
 						aura.coolBar:SetTimerDuration(durObject, 0, self.cbDirection)
+						aura.coolBar:Show()
 					else
-						aura.coolBar:SetValue(0)
+						aura.coolBar:Hide()
 					end
 				end
 				if showColors then
