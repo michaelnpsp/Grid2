@@ -117,7 +117,7 @@ local function HasAuras(unit, key, filter)
 			if #aurasFrame>0 then -- buffs & debuffs otherwise DefensiveBuff
 				aurasFrame = aurasFrame[1]
 			end
-			return aurasFrame:IsShown() and aurasFrame.auraInstanceID
+			return aurasFrame:IsShown() and aurasFrame.auraInstanceID or nil
 		end
 	end
 	if filter then -- fallback to standard filter

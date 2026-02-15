@@ -68,7 +68,7 @@ local function Shape_UpdateDB(self)
 	self.offsetx   = l.x
 	self.offsety   = l.y
 	-- misc variables
-	self.color      = Grid2:MakeColor(dbx.shadowColor, "BLACK")
+	self.color      = Grid2.MakeColor(dbx.shadowColor, "BLACK")
 	self.frameLevel = dbx.level or 4
 	self.iconSize   = dbx.size or 14
 	self.iconPath   = dbx.iconPath or "Interface\\Addons\\Grid2\\media\\shapes"

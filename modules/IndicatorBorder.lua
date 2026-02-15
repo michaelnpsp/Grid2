@@ -24,7 +24,7 @@ function Border:Disable(parent)
 end
 
 function Border:UpdateDB()
-	local c = Grid2:MakeColor(Grid2Frame.db.profile.frameBorderColor, 'TRANSPARENT')
+	local c = Grid2.MakeColor(Grid2Frame.db.profile.frameBorderColor, 'TRANSPARENT')
 	cr, cg, cb, ca = c.r, c.g, c.b, c.a
 end
 

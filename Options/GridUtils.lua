@@ -76,6 +76,14 @@ Grid2Options.pointValueListExtra = {
 	["9"] = L["BOTTOMRIGHT"],
 }
 
+Grid2Options.pointValueListExtra2 = {
+	["0"] = L["None"],
+	["2"] = L["LEFT"],
+	["4"] = L["TOP"],
+	["6"] = L["BOTTOM"],
+	["8"] = L["RIGHT"],
+}
+
 -- Font Flags and Shadow
 do
 	local soft   = L["Soft"]
@@ -288,10 +296,12 @@ do
 		Display    = { type = "header", order = 80,  name = L["Display"]    },
 		StackText  = { type = "header", order = 90,  name = L["Stack Text"] },
 		Cooldown   = { type = "header", order = 125, name = L["Cooldown"]	},
-		CoolAnim   = { type = "header", order = 125, name = L["Cooldown Animation"] },
 		CoolText   = { type = "header", order = 135, name = L["Cooldown Text"]	},
-		Tooltip    = { type = "header", order = 150, name = L["Tooltip"]	},
-		Highlight  = { type = "header", order = 200, name = L["Highlight"]	},
+		CoolBar    = { type = "header", order = 150, name = L["Cooldown Bar"]	},
+		CoolColors = { type = "header", order = 160, name = L["Cooldown Colors"]	},
+		CoolAnim   = { type = "header", order = 200, name = L["Cooldown Animation"] },
+		Tooltip    = { type = "header", order = 250, name = L["Tooltip"]	},
+		Highlight  = { type = "header", order = 300, name = L["Highlight"]	},
 		-- statuses headers
 		Activation    = { type = "header", order = 4.5, name = L["Activation"] },
 		Colors	      = { type = "header", order = 10,  name = L["Colors"] },

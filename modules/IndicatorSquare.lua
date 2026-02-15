@@ -79,7 +79,7 @@ local function Square_UpdateDB(self)
 	self.offsetx = l.x
 	self.offsety = l.y
 	self.frameLevel = dbx.level
-	self.color = Grid2:MakeColor(dbx.color1)
+	self.color = Grid2.MakeColor(dbx.color1)
 	self.borderSize = dbx.borderSize
 	self.borderSwap = dbx.borderSwap
 	self.blendMode = dbx.blend

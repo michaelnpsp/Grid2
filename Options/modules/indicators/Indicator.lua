@@ -550,6 +550,8 @@ end
 function Grid2Options:MakeIndicatorCooldownOptions(indicator, options)
 	self:MakeIndicatorCooldownAnimOptions(indicator, options)
 	self:MakeIndicatorCooldownTextOptions(indicator, options)
+	self:MakeIndicatorCooldownBarOptions(indicator, options)
+	self:MakeIndicatorCooldownColorsOptions(indicator, options)
 end
 
 -- Grid2Options:MakeIndicatorCooldownAnimOptions()
@@ -557,7 +559,7 @@ function Grid2Options:MakeIndicatorCooldownAnimOptions(indicator, options)
 	self:MakeHeaderOptions( options, "CoolAnim" )
 	options.disableCooldown = {
 		type = "toggle",
-		order = 130,
+		order = 210,
 		name = L["Show Animation"],
 		desc = L["Show the Cooldown Animation Texture"],
 		tristate = false,
@@ -570,7 +572,7 @@ function Grid2Options:MakeIndicatorCooldownAnimOptions(indicator, options)
 	}
 	options.reverseCooldown = {
 		type = "toggle",
-		order = 131,
+		order = 211,
 		name = L["Reverse Animation"],
 		desc = L["Set cooldown to become darker over time instead of lighter."],
 		tristate = false,
@@ -704,33 +706,6 @@ function Grid2Options:MakeIndicatorCooldownTextOptions(indicator, options)
 		end,
 		hidden= function() return indicator.dbx.enableCooldownText==nil end,
 	}
-	options.ctFontColorCount = {
-		type = "select",
-		order = 142,
-		name = L["Color Count"],
-		desc = L["Color Count"],
-		get = function ()
-			return indicator.dbx.ctColors and #indicator.dbx.ctColors or 1 end,
-		set = function (_, v)
-			if v==1 then
-				indicator.dbx.ctColor = indicator.dbx.ctColors[1]
-				indicator.dbx.ctColors = nil
-				indicator.dbx.ctThresholds = nil
-			else
-				local color = indicator.dbx.ctColor or Grid2.defaultColors.WHITE
-				indicator.dbx.ctColor = nil
-				indicator.dbx.ctColors = indicator.dbx.ctColors or {}
-				indicator.dbx.ctThresholds = indicator.dbx.ctThresholds or {}
-				for i=1,4 do
-					indicator.dbx.ctColors[i] = i<=v and (indicator.dbx.ctColors[i] or Grid2.CopyTable(color)) or nil
-					indicator.dbx.ctThresholds[i] = i<=v and (indicator.dbx.ctThresholds[i] or 0) or nil
-				end
-			end
-			self:RefreshIndicator(indicator, "Layout")
-		end,
-		values = { [1] = "1", [2] = "2", [3] = "3", [4] = "4" },
-		hidden = function() return indicator.dbx.enableCooldownText==nil end,
-	}
 	options.ctFontColor = {
 		type = "color",
 		order = 143,
@@ -742,12 +717,181 @@ function Grid2Options:MakeIndicatorCooldownTextOptions(indicator, options)
 			self:PackColor( r,g,b,a, indicator.dbx, "ctColor" )
 			self:RefreshIndicator(indicator, "Layout" )
 		 end,
-		hidden = function() return indicator.dbx.enableCooldownText==nil or indicator.dbx.ctColors~=nil end,
+		hidden = function() return indicator.dbx.enableCooldownText==nil end,
+	}
+end
+
+-- Grid2Options:MakeIndicatorCountdownTextOptions()
+function Grid2Options:MakeIndicatorCooldownBarOptions(indicator, options)
+	self:MakeHeaderOptions( options, "CoolBar" )
+	options.cbPoint = {
+		type = 'select',
+		order = 151,
+		name = L["Bar Location"],
+		desc = L["Bar Location"],
+		values = Grid2Options.pointValueListExtra2,
+		get = function()
+			if indicator.dbx.enableCooldownBar then
+				return self.pointMap[indicator.dbx.cbPoint or 'BOTTOM']
+			else
+				return "0"
+			end
+		end,
+		set = function(_, v)
+			if v ~= "0" then
+				indicator.dbx.cbPoint = self.pointMap[v]
+				indicator.dbx.enableCooldownBar = true
+			else
+				indicator.dbx.enableCooldownBar = nil
+			end
+            self:RefreshIndicator(indicator, "Create")
+		end,
+	}
+	options.cbThickness = {
+		type = "range",
+		order = 152.5,
+		name = L["Thickness"],
+		desc = L["Adjust the thickness of the bar."],
+		softMin = 0,
+		softMax = 32,
+		step = 1,
+		get = function () return indicator.dbx.cbThickness or 2 end,
+		set = function (_, v)
+			indicator.dbx.cbThickness = v
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		hidden= function() return indicator.dbx.enableCooldownBar==nil end,
+	}
+	options.cbDirection = {
+		type = "select",
+		order = 152,
+		name = L["Display"],
+		desc = L["Display"],
+		get = function ()
+			return indicator.dbx.cbDirection or 1 end,
+		set = function (_, v)
+			indicator.dbx.cbDirection = (v==0) and 0 or nil
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		values = { [0] = L["Elapsed Time"], [1] = L["Remaining Time"] },
+		hidden= function() return indicator.dbx.enableCooldownBar==nil end,
+	}
+	options.ctReverse = {
+		type = "toggle",
+		order = 152.7,
+		name = L["Reverse Bar Direction"],
+		desc = L["Enable this option to reverse the direction of the bar."],
+		tristate = false,
+		get = function () return indicator.dbx.cbReverse end,
+		set = function (_, v)
+			indicator.dbx.cbReverse = v or nil
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		hidden= function() return indicator.dbx.enableCooldownBar==nil end,
+	}
+	options.cbColor = {
+		type = "color",
+		order = 153,
+		name = L["Foreground Color"],
+		desc = L["Color of the Bar"],
+		hasAlpha = true,
+		get = function() return self:UnpackColor( indicator.dbx.cbColor, "WHITE" ) end,
+		set = function( info, r,g,b,a )
+			self:PackColor( r,g,b,a, indicator.dbx, "cbColor" )
+			self:RefreshIndicator(indicator, "Layout" )
+		 end,
+		hidden = function() return indicator.dbx.enableCooldownBar==nil end,
+	}
+	options.cbColorBack = {
+		type = "color",
+		order = 154,
+		name = L["Background Color"],
+		desc = L["Background Color of the Bar"],
+		hasAlpha = true,
+		get = function() return self:UnpackColor( indicator.dbx.cbColorBack, "RED" ) end,
+		set = function( info, r,g,b,a )
+			self:PackColor( r,g,b,a, indicator.dbx, "cbColorBack" )
+			self:RefreshIndicator(indicator, "Layout" )
+		 end,
+		hidden = function() return indicator.dbx.enableCooldownBar==nil end,
+	}
+end
+
+local DEF_COLORS = { Grid2.defaultColors.WHITE, Grid2.defaultColors.RED, Grid2.defaultColors.RED, Grid2.defaultColors.RED }
+local DEF_THRESHOLDS = { 5, 0, 0, 0}
+function Grid2Options:MakeIndicatorCooldownColorsOptions(indicator, options)
+	local function RefreshColors(v)
+		local dbx = indicator.dbx
+		if dbx.ctColorsBorder or dbx.ctColorsText or dbx.ctColorsBar then
+			dbx.ctColors = dbx.ctColors or {}
+			dbx.ctThresholds = dbx.ctThresholds or {}
+			for i=1,4 do
+				dbx.ctColors[i] = i<=(v or 2) and (dbx.ctColors[i] or Grid2.CopyTable(DEF_COLORS[i])) or nil
+				dbx.ctThresholds[i] = i<=(v or 2) and (dbx.ctThresholds[i] or DEF_THRESHOLDS[i]) or nil
+			end
+		else
+			dbx.ctColors, dbx.ctThresholds = nil, nil
+		end
+		self:RefreshIndicator(indicator, "Create")
+	end
+	self:MakeHeaderOptions( options, "CoolColors" )
+	options.ctColorTargetText = {
+		type = "toggle",
+		order = 160.1,
+		name = L["Cooldown Text"],
+		desc = L["Enable this option to apply cooldown colors to the countdown text."],
+		width = .7,
+		tristate = false,
+		get = function () return indicator.dbx.ctColorsText end,
+		set = function (_, v)
+			indicator.dbx.ctColorsText = v or nil
+			RefreshColors()
+		end,
+		disabled = function() return indicator.dbx.enableCooldownText==nil and indicator.dbx.ctColorsText==nil end,
+	}
+	options.ctColorTargetBar = {
+		type = "toggle",
+		order = 160.2,
+		name = L["Cooldown Bar"],
+		desc = L["Enable this option to apply cooldown colors to the duration bar."],
+		width = .7,
+		tristate = false,
+		get = function () return indicator.dbx.ctColorsBar end,
+		set = function (_, v)
+			indicator.dbx.ctColorsBar = v or nil
+			RefreshColors()
+		end,
+		disabled = function() return indicator.dbx.enableCooldownBar==nil and indicator.dbx.ctColorsBar==nil end,
+	}
+	options.ctColorTargetBorder = {
+		type = "toggle",
+		order = 160.3,
+		name = L["Icon Border"],
+		desc = L["Enable this option to apply cooldown colors to the icon border."],
+		width = .7,
+		tristate = false,
+		get = function () return indicator.dbx.ctColorsBorder end,
+		set = function (_, v)
+			indicator.dbx.ctColorsBorder = v or nil
+			RefreshColors()
+		end,
+		disabled = function() return indicator.dbx.borderSize==nil and indicator.dbx.ctColorsBorder==nil end,
+	}
+	options.ctFontColorCount = {
+		type = "select",
+		order = 161,
+		name = L["Color Count"],
+		desc = L["Color Count"],
+		get = function ()
+			return indicator.dbx.ctColors and #indicator.dbx.ctColors or 2 end,
+		set = function (_, v) RefreshColors(v) end,
+		values = { [2] = "2", [3] = "3", [4] = "4" },
+		hidden = function() return indicator.dbx.ctColors==nil end,
 	}
 	for i=1,4 do
 		options['ctColors'..i] = {
 			type = "color",
-			order = 143 + i,
+			order = 162 + i,
 			name = function()
 				if i==1 then
 					return string.format(L["Above %d seconds"], indicator.dbx.ctThresholds and indicator.dbx.ctThresholds[i] or 0)
@@ -761,35 +905,20 @@ function Grid2Options:MakeIndicatorCooldownTextOptions(indicator, options)
 				self:PackColor( r,g,b,a, indicator.dbx.ctColors, i )
 				self:RefreshIndicator(indicator, "Layout" )
 			end,
-			hidden = function() return indicator.dbx.enableCooldownText==nil or indicator.dbx.ctColors==nil or #indicator.dbx.ctColors<i end,
+			hidden = function() return indicator.dbx.ctColors==nil or #indicator.dbx.ctColors<i end,
 		}
 		options['ctThresholds'..i] = {
 			type = "input",
-			order = 143.5 + i,
+			order = 162.5 + i,
 			name = L["Threshold (seconds)"],
 			get = function() return tostring(indicator.dbx.ctThresholds[i] or 0) end,
 			set = function(info, v)
 				indicator.dbx.ctThresholds[i] = tonumber(v) or 0
 				self:RefreshIndicator(indicator, "Layout" )
 			end,
-			hidden = function() return indicator.dbx.enableCooldownText==nil or indicator.dbx.ctThresholds==nil or #indicator.dbx.ctThresholds<i+1 end,
+			hidden = function() return indicator.dbx.ctThresholds==nil or #indicator.dbx.ctThresholds<i+1 end,
 		}
 	end
-	options.ctColorAtBorder = {
-		type = "toggle",
-		order = 149,
-		name = L["Apply colors to the icon border"],
-		desc = L["Enable this option to apply the cooldown text colors to the icon border too."],
-		width = "double",
-		tristate = false,
-		get = function () return indicator.dbx.ctColorsBorder end,
-		set = function (_, v)
-			indicator.dbx.ctColorsBorder = v or nil
-			self:RefreshIndicator(indicator, "Create")
-		end,
-		hidden = function() return indicator.dbx.enableCooldownText==nil or indicator.dbx.ctColors==nil end,
-	}
-
 end
 
 -- Grid2Options:MakeIndicatorTooltipsOptions()
@@ -797,7 +926,7 @@ function Grid2Options:MakeIndicatorTooltipsOptions(indicator, options)
 	self:MakeHeaderOptions( options, "Tooltip" )
 	options.tooltipEnabled = {
 		type = "toggle",
-		order = 155,
+		order = 290,
 		name = L["Display Tooltip"],
 		desc = L["Check this option to display a tooltip when the mouse is over the icon."],
 		get = function () return indicator.dbx.tooltipEnabled end,
@@ -812,7 +941,7 @@ function Grid2Options:MakeIndicatorTooltipsOptions(indicator, options)
 		type = "select",
 		name = L["Tooltip Anchor"],
 		desc = L["Sets where the Tooltip is anchored relative to the icon."],
-		order = 156,
+		order = 295,
 		get = function () return indicator.dbx.tooltipAnchor or 'ANCHOR_ABSENT' end,
 		set = function (_, v) indicator.dbx.tooltipAnchor = v ~= 'ANCHOR_ABSENT' and v or nil  end,
 		values = Grid2Options.tooltipAnchorValues,

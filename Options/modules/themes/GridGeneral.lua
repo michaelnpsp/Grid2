@@ -746,7 +746,7 @@ local frameOptions2 = { headerback = {
 	name = L["Border Default Color"],
 	desc = L["Sets the default color for the border indicator."],
 	get = function()
-		c = Grid2:MakeColor( theme.frame.frameBorderColor, 'TRANSPARENT' )
+		c = Grid2.MakeColor( theme.frame.frameBorderColor, 'TRANSPARENT' )
 		return c.r, c.g, c.b, c.a
 	end,
 	set = function( info, r,g,b,a )

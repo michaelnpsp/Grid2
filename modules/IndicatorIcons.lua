@@ -6,11 +6,12 @@ local wipe = wipe
 local pairs = pairs
 local ipairs = ipairs
 local format = string.format
+local UnpackColor = Grid2.UnpackColor
 local issecretvalue = Grid2.issecretvalue
 local canaccessvalue = Grid2.canaccessvalue
+local TruncateWhenZero = C_StringUtil.TruncateWhenZero
 local UpdateIconColorCurve = Grid2.UpdateIconColorCurve
 local RemoveIconColorCurve = Grid2.RemoveIconColorCurve
-local TruncateWhenZero = C_StringUtil.TruncateWhenZero
 
 local function Icon_Create(self, parent)
 	local f = self:Acquire("Frame", parent)
@@ -30,6 +31,8 @@ local function Icon_OnFrameUpdate(f)
 	local showCool  = self.showCooldown
 	local showIcons = self.showIcons
 	local showColors= self.showColors
+	local showBar   = self.showCoolBar
+	local needDur   = showColors or showBar
 	local useStatus = self.useStatusColor
 	local i = 1
 	for _, status in ipairs(self.statuses) do
@@ -49,23 +52,22 @@ local function Icon_OnFrameUpdate(f)
 					aura.icon:SetColorTexture(c.r, c.g, c.b)
 				end
 				if showStack then
-					local count = counts[j]
-					if canaccessvalue(count) then
-						aura.text:SetText( count>1 and count or "" )
-					else
-						aura.text:SetText( TruncateWhenZero(count) )
-					end
+					aura.text:SetText( TruncateWhenZero(counts[j]) )
 				end
 				if showCool then
-					local cooldown = aura.cooldown
-					local expiration, duration = expirations[j], durations[j]
-					if canaccessvalue(duration) then
-						cooldown:SetCooldown(expiration-duration, duration)
-					else
-						cooldown:SetCooldownFromExpirationTime(expiration, duration)
+					aura.cooldown:SetCooldownFromExpirationTime(expirations[j], durations[j])
+				end
+				if needDur then
+					local durObject = status:GetDurationObject(unit, slots[j])
+					if showBar then
+						if durObject then
+							aura.coolBar:SetTimerDuration(durObject, 0, self.cbDirection)
+						else
+							aura.coolBar:SetValue(0)
+						end
 					end
-					if showColors and slots[j] then
-						UpdateIconColorCurve(aura, status:GetDurationObject(unit, slots[j]))
+					if showColors then
+						UpdateIconColorCurve(aura, durObject)
 					end
 				end
 				aura:Show()
@@ -80,30 +82,35 @@ local function Icon_OnFrameUpdate(f)
 				aura.icon:SetTexCoord(status:GetTexCoord(unit))
 				aura.icon:SetVertexColor(status:GetVertexColor(unit))
 				if useStatus then
-					local r,g,b,a = status:GetColor(unit)
-					aura:SetBackdropBorderColor(r,g,b, min(a or 1,self.borderOpacity) )
+					local r, g, b, a = status:GetColor(unit)
+					aura:SetBackdropBorderColor(r, g, b, self.borderOpacity)
 				end
 			else
-				local r,g,b = status:GetColor(unit)
-				aura.icon:SetColorTexture(r,g,b)
+				local r, g, b = status:GetColor(unit)
+				aura.icon:SetColorTexture(r, g, b)
 			end
 			if showStack then
-				local count = status:GetCount(unit)
-				aura.text:SetText( (issecretvalue(count) or count>1) and count or "")
+				aura.text:SetText( TruncateWhenZero( status:GetCount(unit) or 0 ) )
 			end
 			if showCool then
 				local expiration, duration = status:GetExpirationTime(unit), status:GetDuration(unit)
 				if expiration and duration then
-					if canaccessvalue(duration) then
-						aura.cooldown:SetCooldown(expiration-duration, duration)
-					else
-						aura.cooldown:SetCooldownFromExpirationTime(expiration, duration)
-					end
-					if showColors then
-						UpdateIconColorCurve(aura, status:GetDurationObject(unit))
-					end
+					aura.cooldown:SetCooldownFromExpirationTime(expiration, duration)
 				else
 					aura.cooldown:SetCooldown(0, 0)
+				end
+			end
+			if needDur then
+				local durObject = status:GetDurationObject(unit)
+				if showBar then
+					if durObject then
+						aura.coolBar:SetTimerDuration(durObject, 0, self.cbDirection)
+					else
+						aura.coolBar:SetValue(0)
+					end
+				end
+				if showColors then
+					UpdateIconColorCurve(aura, durObject)
 				end
 			end
 			aura:Show()
@@ -189,14 +196,12 @@ local function Icon_Layout(self, parent)
 		-- frame container
 		Grid2:SetFrameBackdrop(frame, self.backdrop)
 		if borderSize>0 then
-			local c = self.colorBorder
-			frame:SetBackdropBorderColor(c.r,c.g,c.b,c.a)
+			frame:SetBackdropBorderColor(UnpackColor(self.colorBorder))
 		end
 		frame:ClearAllPoints()
 		frame:SetPoint( self.anchorIcon, f, self.anchorIcon, (x*ux+y*vx)*size, (x*uy+y*vy)*size )
 		-- stack count text
 		if self.showStack then
-			local c = self.colorStack
 			local text = frame.text
 			if not text then
 				local tframe = CreateFrame("frame", nil, frame)
@@ -206,8 +211,8 @@ local function Icon_Layout(self, parent)
 				tframe:SetAllPoints()
 			end
 			text.tframe:SetFrameLevel(level+2)
-			text:SetFont(self.font, fontSize, self.fontFlags )
-			text:SetTextColor(c.r, c.g, c.b, c.a)
+			text:SetFont(self.font, fontSize, self.fontFlags)
+			text:SetTextColor(UnpackColor(self.colorStack))
 			text:ClearAllPoints()
 			text:SetPoint(self.fontPoint, self.fontOffsetX, self.fontOffsetY)
 			text:Show()
@@ -224,27 +229,53 @@ local function Icon_Layout(self, parent)
 			cooldown:SetDrawSwipe(self.showSwipe)
 			cooldown:SetReverse(self.dbx.reverseCooldown)
 			if self.showCoolText then
-				local color, text = self.ctColor, cooldown:GetCountdownFontString()
+				local text = cooldown:GetCountdownFontString()
 				text:SetFont(self.ctFont, ctFontSize, self.ctFontFlags)
-				text:SetTextColor(color.r, color.g, color.b, color.a)
+				text:SetTextColor(UnpackColor(self.ctColor))
 				text:ClearAllPoints()
 				text:SetPoint(self.ctFontPoint, self.ctFontOffsetX, self.ctFontOffsetY)
 				text:SetMaxLines(1)
-				if self.showColors then
-					frame.colorCurveObject = self.ctColorCurve
-					frame.colorCurveText = text
-					frame.colorCurveBorder = self.showColorsBorder and frame.SetBackdropBorderColor
-				end
+				frame.coolText = text
+			else
+				frame.coolText = nil
 			end
 			cooldown:Show()
 			frame.cooldown = cooldown
 		elseif frame.cooldown then
 			frame.cooldown:Hide()
 		end
+		-- cooldown bar
+		if self.showCoolBar then
+			local bar = frame.coolBar or CreateFrame("StatusBar", nil, frame)
+			bar:ClearAllPoints()
+			bar:SetPoint(self.cbPoint, frame, self.cbPoint, self.cbOffsetX, self.cbOffsetY)
+			bar:SetFrameLevel(level+2)
+			bar:SetOrientation(self.cbOrientation)
+			bar:SetWidth( self.cbOrientation=='VERTICAL' and self.cbThickness or iconSize-borderSize*2 )
+			bar:SetHeight( self.cbOrientation=='HORIZONTAL' and self.cbThickness or iconSize-borderSize*2 )
+			bar:SetStatusBarTexture(self.cbTexture)
+			bar:SetStatusBarColor(UnpackColor(self.cbColor))
+			bar:SetReverseFill(self.cbReverse)
+			bar:Show()
+			frame.coolBar = bar
+			local background = bar.background or bar:CreateTexture(nil, "BACKGROUND")
+			background:ClearAllPoints()
+			background:SetAllPoints()
+			background:SetTexture(self.cbTexture)
+			background:SetVertexColor(UnpackColor(self.cbColorBack))
+			bar.background = background
+		elseif frame.coolBar then
+			frame.coolBar:Hide()
+		end
 		-- icon texture
 		frame.icon:SetPoint("TOPLEFT",     frame ,"TOPLEFT",  borderSize, -borderSize)
 		frame.icon:SetPoint("BOTTOMRIGHT", frame ,"BOTTOMRIGHT", -borderSize, borderSize)
 		frame.icon:SetTexCoord(tc1, tc2, tc3, tc4)
+		-- colorization
+		frame.colorCurveObject = self.showColors and self.ctColorCurve
+		frame.colorCurveText   = self.showColorsText and frame.coolText
+		frame.colorCurveBar    = self.showColorsBar and frame.coolBar
+		frame.colorCurveBorder = self.showColorsBorder and frame.SetBackdropBorderColor
 		-- tooltip management
 		self:EnableFrameTooltips(frame, tooltipEnabled)
 		--
@@ -299,9 +330,10 @@ local function Icon_UpdateDB(self)
 	self.showCooldown    = dbx.enableCooldownText or not dbx.disableCooldown
 	self.showStack       = not dbx.disableStack
 	self.showIcons       = not dbx.disableIcons
+	self.showCoolBar     = dbx.enableCooldownBar
 	self.useStatusColor  = dbx.useStatusColor
 	self.borderOpacity   = dbx.borderOpacity  or 1
-	self.colorBorder     = Grid2:MakeColor(dbx.color1, "WHITE")
+	self.colorBorder     = Grid2.MakeColor(dbx.color1, "WHITE")
 	-- stacks text
 	local jV,jH = dbx.fontJustifyV or 'MIDDLE', dbx.fontJustifyH or 'CENTER'
 	self.fontPoint       = (jV=='MIDDLE' and jH) or (jH=='CENTER' and jV) or jV..jH
@@ -310,7 +342,7 @@ local function Icon_UpdateDB(self)
 	self.fontFlags       = dbx.fontFlags or "OUTLINE"
 	self.fontSize        = dbx.fontSize or 9
 	self.font            = Grid2:MediaFetch("font", dbx.font or theme.font) or STANDARD_TEXT_FONT
-	self.colorStack      = Grid2:MakeColor(dbx.colorStack, "WHITE")
+	self.colorStack      = Grid2.MakeColor(dbx.colorStack, "WHITE")
 	-- cooldown text
 	local ctJV,ctJH      = dbx.ctFontJustifyV or 'MIDDLE', dbx.ctFontJustifyH or 'CENTER'
 	self.ctFontFlags     = dbx.ctFontFlags or "OUTLINE"
@@ -319,11 +351,26 @@ local function Icon_UpdateDB(self)
 	self.ctFontPoint     = (ctJV=='MIDDLE' and ctJH) or (ctJH=='CENTER' and ctJV) or ctJV..ctJH
 	self.ctFontOffsetX   = dbx.ctFontOffsetX or 0
 	self.ctFontOffsetY   = dbx.ctFontOffsetY or -1
-	self.ctColor         = Grid2:MakeColor(dbx.ctColor or (dbx.ctColors and dbx.ctColors[1]), "WHITE")
+	self.ctColor         = Grid2.MakeColor(dbx.ctColor, "WHITE")
+	-- coldown bar
+	self.cbPoint        = dbx.cbPoint or 'BOTTOM'
+	self.cbOrientation  = (self.cbPoint=='LEFT' or self.cbPoint=='RIGHT') and 'VERTICAL' or 'HORIZONTAL'
+	self.cbThickness    = dbx.cbThickness~=0 and (dbx.cbThickness or 2) or nil
+	self.cbDirection    = dbx.cbDirection or 1
+	self.cbReverse      = dbx.cbReverse or false
+	self.cbTexture		= Grid2:MediaFetch("statusbar", dbx.cbTexture or 'Grid2 Flat', 'Grid2 Flat')
+	self.cbOffsetX      = (self.cbPoint=='LEFT' or self.cbPoint=='BOTTOM') and self.borderSize or -self.borderSize
+	self.cbOffsetY      = 0
+	if self.cbOrientation=='HORIZONTAL' then self.cbOffsetX, self.cbOffsetY = self.cbOffsetY, self.cbOffsetX end
+	self.cbColor        = Grid2.MakeColor(dbx.cbColor, "WHITE")
+	self.cbColorBack    = Grid2.MakeColor(dbx.cbColorBack, "RED")
+	-- color curve
 	self.showColors      = dbx.ctColors~=nil
+	self.showColorsText  = dbx.ctColorsText
 	self.showColorsBorder= dbx.ctColorsBorder
+	self.showColorsBar   = dbx.ctColorsBar
 	if dbx.ctColors then
-		self.ctColorCurve =  self.ctColorCurve or C_CurveUtil.CreateColorCurve()
+		self.ctColorCurve = self.ctColorCurve or C_CurveUtil.CreateColorCurve()
 		self.ctColorCurve:SetType(Enum.LuaCurveType.Step)
 		self.ctColorCurve:ClearPoints()
 		for i,color in ipairs(dbx.ctColors) do

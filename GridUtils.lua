@@ -30,9 +30,15 @@ do
 		TRANSPARENT = {r=0,g=0,b=0,a=0},
 		BLACK       = {r=0,g=0,b=0,a=1},
 		WHITE       = {r=1,g=1,b=1,a=1},
+		RED         = {r=1,g=0,b=0,a=1},
+		GREEN       = {r=0,g=1,b=0,a=1},
+		BLUE        = {r=0,g=0,b=1,a=1},
 	}
-	function Grid2:MakeColor(color, default)
+	function Grid2.MakeColor(color, default)
 		return color or defaultColors[default or "TRANSPARENT"]
+	end
+	function Grid2.UnpackColor(color)
+		return color.r, color.g, color.b, color.a
 	end
 	Grid2.defaultColors = defaultColors
 end
@@ -519,6 +525,9 @@ do
 		if icon.colorCurveText then
 			icon.colorCurveText:SetTextColor(r, g, b, 1)
 		end
+		if icon.colorCurveBar then
+			icon.colorCurveBar:SetStatusBarColor(r, g, b, a)
+		end
 		if icon.colorCurveBorder then
 			icon:colorCurveBorder(r, g, b, a)
 		end
@@ -535,7 +544,7 @@ do
 	end
 	timer = Grid2:CreateTimer(Update, 0.2, false)
 
-	-- icon must have the fields: icon.colorCurveObject, icon.colorcurveText , icon.colorCurveBorder
+	-- icon must have the fields: icon.colorCurveObject, icon.colorCurveText , icon.colorCurveBorder
 	function Grid2.UpdateIconColorCurve(icon, durationObject)
 		local curve = icon.colorCurveObject
 		if durationObject then

@@ -11,6 +11,7 @@ local GetUnitAuras = C_UnitAuras.GetUnitAuras
 local GetAuraDuration = C_UnitAuras.GetAuraDuration
 local GetAuraDataByIndex = C_UnitAuras.GetAuraDataByIndex
 local GetAuraDispelTypeColor = C_UnitAuras.GetAuraDispelTypeColor
+local GetAuraApplicationDisplayCount = C_UnitAuras.GetAuraApplicationDisplayCount
 
 -- temporary results variables
 local slots = {}
@@ -48,11 +49,11 @@ local function GetIconsSorted(unit, max, filter, sortRule, sortDir, colorCurve, 
 		if not displayFunc or displayFunc(a) then
 			i = i + 1
 			local auraInstanceID = a.auraInstanceID
+			slots[i] = auraInstanceID
 			textures[i] = a.icon
-			counts[i] = a.applications
 			durations[i] = a.duration
 			expirations[i] = a.expirationTime
-			slots[i] = auraInstanceID
+			counts[i] =  a.applications
 			colors[i] = color or GetAuraDispelTypeColor(unit, auraInstanceID, colorCurve) or color_default
 			if i>=max then break end
 		end

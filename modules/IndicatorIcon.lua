@@ -4,6 +4,7 @@ local Grid2 = Grid2
 local GetTime = GetTime
 local fmt = string.format
 
+local UnpackColor = Grid2.UnpackColor
 local issecretvalue = Grid2.issecretvalue
 local canaccessvalue = Grid2.canaccessvalue
 local UpdateIconColorCurve = Grid2.UpdateIconColorCurve
@@ -25,6 +26,9 @@ local function Icon_Create(self, parent)
 		Cooldown:SetHideCountdownNumbers(not self.showCoolText)
 		Cooldown:Hide()
 		f.Cooldown = Cooldown
+		if self.showCoolText then
+			f.coolText = Cooldown:GetCountdownFontString()
+		end
 	end
 	if not self.disableStack then
 		local TextFrame
@@ -37,17 +41,27 @@ local function Icon_Create(self, parent)
 			TextFrame:Show()
 			f.TextFrame = TextFrame
 		end
-		local CooldownText = f.CooldownText or f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-		CooldownText:SetParent(TextFrame)
-		if self.fontSize>=1 then CooldownText:SetFont(self.textfont, self.fontSize, self.dbx.fontFlags or "OUTLINE" ) end
+		local stackText = f.stackText or f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+		stackText:SetParent(TextFrame)
+		if self.fontSize>=1 then stackText:SetFont(self.textfont, self.fontSize, self.dbx.fontFlags or "OUTLINE" ) end
 		local c = self.dbx.stackColor
-		if c then CooldownText:SetTextColor(c.r, c.g, c.b, c.a) end
-		CooldownText:Hide()
-		f.CooldownText = CooldownText
+		if c then stackText:SetTextColor(c.r, c.g, c.b, c.a) end
+		stackText:Hide()
+		f.stackText = stackText
+	end
+	if self.showCoolBar then
+		local bar = f.coolBar or CreateFrame("StatusBar", nil, f)
+		bar:Hide()
+		f.coolBar = bar
+		local background = bar.background or bar:CreateTexture(nil, "BACKGROUND")
+		background:ClearAllPoints()
+		background:SetAllPoints()
+		bar.background = background
+	elseif f.coolBar then
+		f.coolBar:Hide()
 	end
 	self:EnableFrameTooltips(f, self.dbx.tooltipEnabled)
 end
-
 
 local function Icon_OnUpdate(self, parent, unit, status)
 	local Frame = parent[self.name]
@@ -55,8 +69,10 @@ local function Icon_OnUpdate(self, parent, unit, status)
 	local Icon = Frame.Icon
 	Icon:SetTexCoord(status:GetTexCoord(unit))
 	Icon:SetVertexColor(status:GetVertexColor(unit))
+	local slot
 	if status.GetIconData then
-		local tex, cnt, exp, dur, color, slot = status:GetIconData(unit)
+		local tex, cnt, exp, dur, color
+		tex, cnt, exp, dur, color, slot = status:GetIconData(unit)
 		if self.disableIcon then
 			Icon:SetColorTexture(color.r, color.g, color.b)
 		else
@@ -68,13 +84,10 @@ local function Icon_OnUpdate(self, parent, unit, status)
 		end
 		Icon:SetAlpha(color.a or 1)
 		if not self.disableStack then
-			Frame.CooldownText:SetText( TruncateWhenZero(cnt or 0) )
+			Frame.stackText:SetText( TruncateWhenZero(cnt or 0) )
 		end
 		if not self.disableCooldown and exp and dur then
 			Frame.Cooldown:SetCooldownFromExpirationTime(exp, dur)
-			if self.showColors then
-				UpdateIconColorCurve(Frame, status:GetDurationObject(unit, slot))
-			end
 		end
 	else
 		local r,g,b,a = status:GetColor(unit)
@@ -94,38 +107,44 @@ local function Icon_OnUpdate(self, parent, unit, status)
 		end
 		Icon:SetAlpha(a or 1)
 		if not self.disableStack then
-			local CooldownText = Frame.CooldownText
-			if CooldownText.fontSize then -- This is a ugly fix for github issue #152
-				CooldownText:SetFont(self.textfont, CooldownText.fontSize, self.dbx.fontFlags or "OUTLINE" )
-				CooldownText.fontSize = nil
+			local stackText = Frame.stackText
+			if stackText.fontSize then -- This is a ugly fix for github issue #152
+				stackText:SetFont(self.textfont, stackText.fontSize, self.dbx.fontFlags or "OUTLINE" )
+				stackText.fontSize = nil
 			end
 			local count = status:GetCount(unit)
 			if issecretvalue(count) then
-				CooldownText:SetText( TruncateWhenZero(count) )
-				CooldownText:Show()
+				stackText:SetText( TruncateWhenZero(count) )
+				stackText:Show()
 			elseif count>1 then
-				CooldownText:SetText( count )
-				CooldownText:Show()
+				stackText:SetText( count )
+				stackText:Show()
 			else
-				CooldownText:Hide()
+				stackText:Hide()
 			end
 		end
 		if not self.disableCooldown then
 			local Cooldown = Frame.Cooldown
 			local expiration, duration = status:GetExpirationTime(unit), status:GetDuration(unit)
 			if expiration and duration then
-				if canaccessvalue(duration) then
-					Cooldown:SetCooldown(expiration - duration, duration)
-				else
-					Cooldown:SetCooldownFromExpirationTime(expiration, duration)
-				end
-				if self.showColors then
-					UpdateIconColorCurve(Frame, status:GetDurationObject(unit))
-				end
+				Cooldown:SetCooldownFromExpirationTime(expiration, duration)
 				Cooldown:Show()
 			else
 				Cooldown:Hide()
 			end
+		end
+	end
+	if self.needDur then
+		local durObject = status:GetDurationObject(unit, slot)
+		if self.showCoolBar then
+			if durObject then
+				Frame.coolBar:SetTimerDuration(durObject, 0, self.cbDirection)
+			else
+				Frame.coolBar:SetValue(0)
+			end
+		end
+		if self.showColors then
+			UpdateIconColorCurve(Frame, durObject)
 		end
 	end
 	Frame:Show()
@@ -157,27 +176,43 @@ local function Icon_Layout(self, parent)
 	f:SetSize(size,size)
 
 	if self.showCoolText then
-		local Cooldown = f.Cooldown
-		local color, text = self.ctColor, f.Cooldown:GetCountdownFontString()
+		local color, text = self.ctColor, f.coolText
 		text:SetFont(self.ctFont, self.ctFontSize, self.ctFontFlags)
 		text:SetTextColor(color.r, color.g, color.b, color.a)
 		text:ClearAllPoints()
 		text:SetPoint(self.ctFontPoint, self.ctFontOffsetX, self.ctFontOffsetY)
 		text:SetMaxLines(1)
-		if self.showColors then
-			f.colorCurveObject = self.ctColorCurve
-			f.colorCurveText = text
-			f.colorCurveBorder = self.showColorsBorder and f.SetBackdropBorderColor
-		end
 	end
 
 	if not self.disableStack then
 		if f.TextFrame then	f.TextFrame:SetFrameLevel(level+2) end
-		local CooldownText = f.CooldownText
-		CooldownText:ClearAllPoints()
-		CooldownText:SetPoint(self.textPoint, self.textOffsetX, self.textOffsetY)
-		if self.fontSize<1 then CooldownText.fontSize = self.fontSize*size end	-- we cannot set font here, see github issue #152
+		local stackText = f.stackText
+		stackText:ClearAllPoints()
+		stackText:SetPoint(self.textPoint, self.textOffsetX, self.textOffsetY)
+		if self.fontSize<1 then stackText.fontSize = self.fontSize*size end	-- we cannot set font here, see github issue #152
 	end
+
+	if self.showCoolBar then
+		local bsize = size-(borderSize or 0)*2
+		local bar = f.coolBar
+		bar.background:SetTexture(self.cbTexture)
+		bar.background:SetVertexColor(UnpackColor(self.cbColorBack))
+		bar:SetFrameLevel(level+2)
+		bar:ClearAllPoints()
+		bar:SetPoint(self.cbPoint, f, self.cbPoint, self.cbOffsetX, self.cbOffsetY)
+		bar:SetOrientation(self.cbOrientation)
+		bar:SetWidth( self.cbOrientation=='VERTICAL' and self.cbThickness or bsize )
+		bar:SetHeight( self.cbOrientation=='HORIZONTAL' and self.cbThickness or bsize )
+		bar:SetStatusBarTexture(self.cbTexture)
+		bar:SetStatusBarColor(UnpackColor(self.cbColor))
+		bar:SetReverseFill(self.cbReverse)
+		bar:Show()
+	end
+
+	f.colorCurveObject = self.showColors and self.ctColorCurve
+	f.colorCurveText   = self.showColorsText and f.coolText
+	f.colorCurveBar    = self.showColorsBar and f.coolBar
+	f.colorCurveBorder = self.showColorsBorder and f.SetBackdropBorderColor
 end
 
 local function Icon_Disable(self, parent)
@@ -198,6 +233,7 @@ local function Icon_UpdateDB(self)
 	self.offsety   = l.y
 	-- misc variables
 	self.showSwipe       = not (dbx.disableCooldown or dbx.disableCooldownAnim or dbx.disableIcon)
+	self.showCoolBar     = dbx.enableCooldownBar
 	self.showCoolText    = dbx.enableCooldownText
 	self.disableCooldown = dbx.disableCooldown and not dbx.enableCooldownText
 	self.disableStack    = dbx.disableStack
@@ -205,7 +241,7 @@ local function Icon_UpdateDB(self)
 	self.borderSize      = dbx.borderSize
 	self.useStatusColor  = dbx.useStatusColor
 	self.iconSize        = dbx.size or theme.iconSize or 14
-	self.color           = Grid2:MakeColor(dbx.color1)
+	self.color           = Grid2.MakeColor(dbx.color1)
 	-- stacks text
 	local jV,jH = dbx.fontJustifyV or 'MIDDLE', dbx.fontJustifyH or 'CENTER'
 	self.textPoint = (jV=='MIDDLE' and jH) or (jH=='CENTER' and jV) or jV..jH
@@ -223,9 +259,25 @@ local function Icon_UpdateDB(self)
 	self.ctFontPoint     = (ctJV=='MIDDLE' and ctJH) or (ctJH=='CENTER' and ctJV) or ctJV..ctJH
 	self.ctFontOffsetX   = dbx.ctFontOffsetX or 0
 	self.ctFontOffsetY   = dbx.ctFontOffsetY or -1
-	self.ctColor         = Grid2:MakeColor(dbx.ctColor or (dbx.ctColors and dbx.ctColors[1]), "WHITE")
+	self.ctColor         = Grid2.MakeColor(dbx.ctColor or (dbx.ctColors and dbx.ctColors[1]), "WHITE")
+	-- coldown bar
+	local borderSize   = self.borderSize or 0
+	self.cbPoint        = dbx.cbPoint or 'BOTTOM'
+	self.cbOrientation  = (self.cbPoint=='LEFT' or self.cbPoint=='RIGHT') and 'VERTICAL' or 'HORIZONTAL'
+	self.cbThickness    = dbx.cbThickness~=0 and (dbx.cbThickness or 2) or nil
+	self.cbDirection    = dbx.cbDirection or 1
+	self.cbReverse      = dbx.cbReverse or false
+	self.cbTexture		= Grid2:MediaFetch("statusbar", dbx.cbTexture or 'Grid2 Flat', 'Grid2 Flat')
+	self.cbOffsetX      = (self.cbPoint=='LEFT' or self.cbPoint=='BOTTOM') and borderSize or -borderSize
+	self.cbOffsetY      = 0
+	if self.cbOrientation=='HORIZONTAL' then self.cbOffsetX, self.cbOffsetY = self.cbOffsetY, self.cbOffsetX end
+	self.cbColor        = Grid2.MakeColor(dbx.cbColor, "WHITE")
+	self.cbColorBack    = Grid2.MakeColor(dbx.cbColorBack, "RED")
+	-- color curve
 	self.showColors      = dbx.ctColors~=nil
+	self.showColorsText  = dbx.ctColorsText
 	self.showColorsBorder= dbx.ctColorsBorder
+	self.showColorsBar   = dbx.ctColorsBar
 	if dbx.ctColors then
 		self.ctColorCurve =  self.ctColorCurve or C_CurveUtil.CreateColorCurve()
 		self.ctColorCurve:SetType(Enum.LuaCurveType.Step)
@@ -234,6 +286,7 @@ local function Icon_UpdateDB(self)
 			self.ctColorCurve:AddPoint(dbx.ctThresholds[i] or 0, color)
 		end
 	end
+	self.needDur = self.showColors or self.showCoolBar
 	-- backdrop
 	self.backdrop = Grid2:GetBackdropTable("Interface\\Addons\\Grid2\\media\\white16x16", self.borderSize or 1)
 end
