@@ -140,7 +140,9 @@ do
 			roster_units[guid] = unit
 			roster_pets[unit] = guid
 		end
-		roster_external[unit] = external_units[unit]
+		if external_units[unit] then
+			roster_external[unit] = true
+		end
 		roster_faked[unit] = faked_units[unit]
 		roster_deads[unit] = Grid2:UnitIsDeadOrGhost(unit)
 		Grid2:SendMessage("Grid_UnitUpdated", unit, true)
@@ -159,7 +161,9 @@ do
 		if not issecretvalue(guid) and unit == roster_units[guid] then
 			roster_units[guid] = nil
 		end
-		roster_external[unit] = nil
+		if external_units[unit] then
+			roster_external[unit] = nil
+		end
 		roster_faked[unit] = nil
 		roster_deads[unit] = nil
 		Grid2:SendMessage("Grid_UnitLeft", unit)

@@ -99,7 +99,7 @@ local function MakeRangeOptions(self, status, options, optionParams)
 		step = 0.05,
 		bigStep = 0.1,
 		get = function () return status.dbx.elapsed	end,
-		set = function (_, v) status.dbx.elapsed = v; status:UpdateDB()	end,
+		set = function (_, v) status.dbx.elapsed = v; status:Refresh()	end,
 	}
 	options.sep2 = {
 		type = "header",

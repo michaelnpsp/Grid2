@@ -81,11 +81,15 @@ end
 
 local InCombat = false
 
+local petCheck = false
+
 local playerCanHeal = ({DRUID=true,PRIEST=true,SHAMAN=true,PALADIN=true,MONK=true,EVOKER=true})[playerClass]
 
 local rezSpellID = ({DRUID=20484,PRIEST=2006,PALADIN=7328,SHAMAN=2008,MONK=115178,DEATHKNIGHT=61999,WARLOCK=20707,EVOKER=361227})[playerClass]
-
 local rezSpell = rezSpellID and GetSpellInfo(rezSpellID)
+
+local petSpellID = ({HUNTER=136,WARLOCK=755,DEATHKNIGHT=47541})[playerClass]
+local petSpell = petSpellID and GetSpellInfo(petSpellID)
 
 local function CreateRangeCheck(spellFriendly, spellHostile, blizRange)
 	return function(unit)
@@ -95,9 +99,11 @@ local function CreateRangeCheck(spellFriendly, spellHostile, blizRange)
 			return false
 		elseif UnitCanAttack('player', unit) then
 			return IsSpellInRange(spellHostile, unit) == true
+		elseif petCheck and unit=='pet' then
+			return IsSpellInRange(petSpell, unit) == true
 		elseif rezSpell and UnitIsDeadOrGhost(unit) then
 			return IsSpellInRange(rezSpell, unit) == true
-		elseif blizRange and grouped_units[unit] and unit~='pet' then
+		elseif blizRange and grouped_units[unit] then
 			return UnitInRange(unit)
 		elseif spellFriendly then -- extra CheckInteractDistance() for OOC friendly npcs if spell check fails
 			return IsSpellInRange(spellFriendly, unit) == true or (not InCombat and CheckInteractDistance(unit, 4))
@@ -165,10 +171,19 @@ function Range:IsActive(unit)
 	return self.cache[unit], true -- true means inverted activation, hackish because we cannot negate a secret value
 end
 
+-- UNIT_IN_RANGE_UPDATE and UnitInRange() don't work for pet units when solo, so we use a timer
+-- and a pet spell range check for 38 yards range for classes with pets when they are ungrouped.
+function Range:Grid_GroupTypeChanged()
+	if petSpell then -- is a class with pet ?
+		petCheck = (Grid2.groupType=='solo')
+		roster_external.pet = petCheck or nil -- roster_external == self.refreshUnits for 38 yard range
+	end
+	self.timer:SetPlaying( next(self.refreshUnits)~=nil )
+end
+
 function Range:OnEnable()
 	InCombat = InCombatLockdown()
-	self.timer = Grid2:CreateTimer( function() self:UpdateUnits() end, self.dbx.elapsed or 0.25, false )
-	self.timer:SetPlaying( next(self.refreshUnits)~=nil )
+	self.timer = Grid2:CreateTimer( function() self:UpdateUnits() end, self.dbx.elapsed or 0.25, false)
 	self:RegisterMessage("Grid_UnitUpdated")
 	self:RegisterMessage("Grid_UnitLeft")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -176,6 +191,10 @@ function Range:OnEnable()
 	if self.curRange==38 then
 		self:RegisterRosterUnitEvent("UNIT_IN_RANGE_UPDATE")
 	end
+	if petSpell then
+		self:RegisterMessage('Grid_GroupTypeChanged')
+	end
+	self:Grid_GroupTypeChanged()
 end
 
 function Range:OnDisable()
@@ -186,6 +205,9 @@ function Range:OnDisable()
 	self:UnregisterEvent("PLAYER_REGEN_DISABLED")
 	if self.curRange==38 then
 		self:UnregisterRosterUnitEvent("UNIT_IN_RANGE_UPDATE")
+	end
+	if petSpell then
+		self:UnregisterMessage('Grid_GroupTypeChanged')
 	end
 end
 
@@ -199,7 +221,6 @@ function Range:UpdateDB()
 	self.refreshUnits = (rangec==38) and roster_external or roster_guids
 	self.UnitRangeCheck = Ranges[rangec](spellf, spellh, rangec==38)
 	self.curAlpha = dbx.default or 0.25
-	if self.timer then self.timer:SetDuration(dbx.elapsed or 0.25) end
 end
 
 Grid2.setupFunc["range"] = function(baseKey, dbx)
@@ -218,6 +239,7 @@ RangeAlt.GetColor = Range.GetColor
 RangeAlt.UNIT_IN_RANGE_UPDATE = Range.UNIT_IN_RANGE_UPDATE
 RangeAlt.PLAYER_REGEN_ENABLED = Range.PLAYER_REGEN_ENABLED
 RangeAlt.PLAYER_REGEN_DISABLED = Range.PLAYER_REGEN_DISABLED
+RangeAlt.Grid_GroupTypeChanged = Range.Grid_GroupTypeChanged
 RangeAlt.Grid_UnitUpdated = Range.Grid_UnitUpdated
 RangeAlt.Grid_UnitLeft = Range.Grid_UnitLeft
 RangeAlt.UpdateUnits = Range.UpdateUnits
