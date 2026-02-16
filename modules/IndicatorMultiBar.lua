@@ -22,7 +22,7 @@ end
 
 -- value assignments for different types of bars/statuses
 local function SetMultibarLineValue(bar, unit, status)
-	bar:SetAlphaFromBoolean(status:IsActive(unit), 1)
+	bar:SetAlphaFromBoolean(status:IsActive(unit), 1, 0)
 end
 
 local function SetMultibarPercentValue(bar, unit, status)
