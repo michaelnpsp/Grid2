@@ -137,6 +137,32 @@ function Range:UpdateUnits() -- we need to update this on a timer for non-groupe
 	end
 end
 
+-- UNIT_IN_RANGE_UPDATE and UnitInRange() don't work for pet units when solo, so we use a timer
+-- and a pet spell range check for 38 yards range for classes with pets when they are ungrouped.
+function Range:Grid_GroupTypeChanged()
+	if petSpell then -- is a class with pet ?
+		petCheck = (Grid2.groupType=='solo')
+		roster_external.pet = (petCheck and roster_guids[petCheck]~=nil) or nil -- roster_external == self.refreshUnits for 38 yard range
+	end
+	self.timer:SetPlaying( next(self.refreshUnits)~=nil )
+end
+
+function Range:Grid_UnitUpdated(_, unit)
+	self.cache[unit] = self.UnitRangeCheck(unit)
+	if petCheck and unit=='pet'then -- special case for pet units while solo
+		roster_external.pet = true
+	end
+	self.timer:SetPlaying( next(self.refreshUnits)~=nil )
+end
+
+function Range:Grid_UnitLeft(_, unit)
+	if petCheck and unit=='pet' then -- special case for pet units while solo
+		roster_external.pet = nil
+	end
+	self.cache[unit] = nil
+	self.timer:SetPlaying( next(self.refreshUnits)~=nil )
+end
+
 function Range:PLAYER_REGEN_ENABLED()
 	InCombat = false
 end
@@ -150,15 +176,6 @@ function Range:UNIT_IN_RANGE_UPDATE(_, unit)
 	self:UpdateIndicators(unit)
 end
 
-function Range:Grid_UnitUpdated(_, unit)
-	self.cache[unit] = self.UnitRangeCheck(unit)
-	self.timer:SetPlaying( next(self.refreshUnits)~=nil )
-end
-
-function Range:Grid_UnitLeft(_, unit)
-	self.cache[unit] = nil
-end
-
 function Range:GetPercent(unit)
 	return self.curAlpha
 end
@@ -169,16 +186,6 @@ end
 
 function Range:IsActive(unit)
 	return self.cache[unit], true -- true means inverted activation, hackish because we cannot negate a secret value
-end
-
--- UNIT_IN_RANGE_UPDATE and UnitInRange() don't work for pet units when solo, so we use a timer
--- and a pet spell range check for 38 yards range for classes with pets when they are ungrouped.
-function Range:Grid_GroupTypeChanged()
-	if petSpell then -- is a class with pet ?
-		petCheck = (Grid2.groupType=='solo')
-		roster_external.pet = petCheck or nil -- roster_external == self.refreshUnits for 38 yard range
-	end
-	self.timer:SetPlaying( next(self.refreshUnits)~=nil )
 end
 
 function Range:OnEnable()
