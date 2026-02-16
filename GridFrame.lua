@@ -124,7 +124,6 @@ local function GridFrame_Init(frame, width, height)
 		frame:SetAttribute("initial-width", width)
 		frame:SetAttribute("initial-height", height)
 		if PingUtil then
-			frame:SetToplevel(true)
 			frame:SetAttribute("ping-receiver", true)
 			frame.IsPingable = true
 		end
