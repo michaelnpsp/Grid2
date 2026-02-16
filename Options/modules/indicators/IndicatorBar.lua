@@ -251,6 +251,18 @@ function Grid2Options:MakeIndicatorBarMiscOptions(indicator, options)
 			self:RefreshIndicator(indicator, "Create")
 		end,
 	}
+	options.interpol= {
+		type = "toggle",
+		name = L["Smooth animation"],
+		desc = L["Animate bar changes."],
+		order = 72,
+		tristate = false,
+		get = function () return indicator.dbx.interpolation~=nil end,
+		set = function (_, v)
+			indicator.dbx.interpolation = v and 1 or nil
+			self:RefreshIndicator(indicator, "Create")
+		end,
+	}
 	self:MakeHeaderOptions( options, "Display" )
 	if Grid2.isMidnight then
 		options.remaining = {

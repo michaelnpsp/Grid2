@@ -25,14 +25,14 @@ local function SetMultibarLineValue(bar, unit, status)
 	bar:SetAlphaFromBoolean(status:IsActive(unit), 1, 0)
 end
 
-local function SetMultibarPercentValue(bar, unit, status)
-	bar:SetValue(status:GetPercent(unit) or 0, bar.interpol)
+local function SetMultibarPercentValue(bar, unit, status, interpol)
+	bar:SetValue(status:GetPercent(unit) or 0, interpol)
 end
 
-local function SetMultibarMinMaxValue(bar, unit, status)
+local function SetMultibarMinMaxValue(bar, unit, status, interpol)
 	local value, min, max = status:GetValueMinMax(unit)
 	bar:SetMinMaxValues(min, max)
-	bar:SetValue(value, bar.interpol)
+	bar:SetValue(value, interpol)
 end
 
 -- Warning: This is an overrided indicator:Update() NOT the standard indicator:OnUpdate()
@@ -44,11 +44,11 @@ local function Bar_Update(self, parent, unit, status)
 			local priorities = self.priorities
 			if status then
 				local bar = textures[ priorities[status] ]
-				bar:SetMultibarValue(unit, status)
+				bar:SetMultibarValue(unit, status, bar.interpol)
 			else -- update due a layout or groupType change not from a status notifying a change
 				for i, status in ipairs(self.statuses) do
 					local bar = textures[ priorities[status] ]
-					bar:SetMultibarValue(unit, status)
+					bar:SetMultibarValue(unit, status, 0)
 				end
 			end
 		end

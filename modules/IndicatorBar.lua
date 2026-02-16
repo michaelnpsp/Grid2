@@ -70,10 +70,10 @@ local function Bar_OnUpdate(self, parent, unit, status)
 		if status.GetValueMinMax then
 			local value, min, max = status:GetValueMinMax(unit)
 			bar:SetMinMaxValues(min or 0, max or 1)
-			bar:SetValue(value)
+			bar:SetValue(value, self.interpol)
 		else
 			bar:SetMinMaxValues(0, 1)
-			bar:SetValue( (status:GetPercent(unit)) )
+			bar:SetValue( (status:GetPercent(unit)), self.interpol )
 		end
 		if self.hideInactive then bar:Show() end
 	elseif self.hideInactive then
@@ -143,6 +143,7 @@ local function Bar_UpdateDB(self)
 	self.CanCreate   = self.prototype.CanCreate
 	self.hideInactive= dbx.hideWhenInactive
 	self.direction   = (dbx.duration==true and 1) or (dbx.duration==false and 0) or nil
+	self.interpol    = dbx.interpolation or 0
 	self.OnUpdate    = dbx.duration~=nil and Bar_OnUpdateD or Bar_OnUpdate
 end
 

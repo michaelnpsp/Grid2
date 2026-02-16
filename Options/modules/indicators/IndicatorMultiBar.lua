@@ -517,7 +517,7 @@ do
 
 		interpolation = {
 			type = "toggle",
-			name = L["Smooth animations"],
+			name = L["Smooth animation"],
 			desc = L["Animate bar changes"],
 			order = 51,
 			get = function() return barDbx.interpolation==1 end,
