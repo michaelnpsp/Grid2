@@ -5,7 +5,7 @@ Created by Michael, based on Grid2Options\GridDefaults.lua from original Grid2 a
 local Grid2 = Grid2
 
 -- Latest database profile version
-local DB_VERSION = Grid2.isMidnight and 100 or 14
+local DB_VERSION = 101
 
 -- Database manipulation functions
 function Grid2:DbSetStatusDefaultValue(name, value)
@@ -212,6 +212,13 @@ function Grid2:UpdateDefaults()
 				dbx.hideBlizzard = dbx.hideBlizzard or {}
 				dbx.hideBlizzard.raid  = (hid==true or hid==2) or nil
 				dbx.hideBlizzard.party = (hid==true or hid==1) or nil
+			end
+		end
+		if version<101 then -- fix privateauras indicators (GH issue #366)
+			for _,dbx in pairs(self.db.profile.indicators) do
+				if dbx.type=='privateauras' then
+					dbx.load = nil
+				end
 			end
 		end
 		if DB_VERSION>=100 and version<100 then

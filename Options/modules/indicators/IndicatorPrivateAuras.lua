@@ -5,11 +5,12 @@ local L = Grid2Options.L
 local indexValues = { 1, 2, 3, 4 }
 
 Grid2Options:RegisterIndicatorOptions("privateauras", true, function(self, indicator)
-	local options = {}
+	local options, filter = {}, {}
 	self:MakeIndicatorTypeLevelOptions(indicator,options)
 	self:MakeIndicatorLocationOptions(indicator, options)
 	self:MakeIndicatorPrivateAurasCustomOptions(indicator, options)
-	self:AddIndicatorOptions(indicator, nil, options)
+	self:MakeIndicatorLoadOptions(indicator, filter)
+	self:AddIndicatorOptions(indicator, nil, options, nil, filter)
 end)
 
 function Grid2Options:MakeIndicatorPrivateAurasCustomOptions( indicator, options )

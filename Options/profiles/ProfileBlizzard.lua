@@ -44,7 +44,7 @@ i["background"] = { type="background" }
 i["icon-center"] = { disableStack=true, type="icon", fontSize=8, location={y=0,relPoint="CENTER",point="CENTER",x=0}, level=9, disableCooldown=true, size=20 }
 m["icon-center"] = { phased=50, resurrection=54, death=53, ["ready-check"]=55, offline=52, summon=51 }
 
-i["private-auras"] = { maxIcons=1, type="privateauras", location={y=14,relPoint="CENTER",point="CENTER",x=0}, level=9, load={unitType={self=true,player=true}}, iconSize=24 }
+i["private-auras"] = { maxIcons=1, type="privateauras", location={y=14,relPoint="CENTER",point="CENTER",x=0}, level=9, iconSize=24 }
 
 i["icon-right"] = { type="icon", disableCooldown=true, location={y=0,relPoint="RIGHT",point="RIGHT",x=2}, level=8, fontSize=8, size=12 }
 m["icon-right"] = { ["raid-icon-target"]=151 }

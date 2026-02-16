@@ -71,7 +71,7 @@ m["power-bar-color"] = { power=51 }
 i["debuffs-icons"] = { fontSize=9, borderOpacity=1, disableCooldown=true, fontJustifyV="TOP", borderSize=1, iconSize=22, level=8, tooltipAnchor="ANCHOR_BOTTOMRIGHT", type="icons", enableCooldownText=true, reverseCooldown=true, color1={a=1,r=1,g=1,b=1}, ctFontSize=10, location={y=0,relPoint="BOTTOMLEFT",point="BOTTOMLEFT",x=0}, useStatusColor=true, fontJustifyH="RIGHT", tooltipEnabled=true }
 m["debuffs-icons"] = { ["debuffs-Relevant"]=50 }
 
-i["private-auras"] = { maxIcons=1, type="privateauras", location={y=0,relPoint="BOTTOMRIGHT",point="BOTTOMRIGHT",x=0}, level=9, load={unitType={self=true,player=true}}, iconSize=22 }
+i["private-auras"] = { maxIcons=1, type="privateauras", location={y=0,relPoint="BOTTOMRIGHT",point="BOTTOMRIGHT",x=0}, level=9, iconSize=22 }
 
 i["tooltip"] = { showDefault=true, type="tooltip" }
 
