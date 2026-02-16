@@ -1,13 +1,42 @@
 local L = Grid2Options.L
 
+function Grid2Options:MakeStatusHealthFormatOptions(status, options, optionParams)
+	self:MakeSpacerOptions(options, 100)
+	options.displayRawNumbers = {
+		type = "toggle",
+		tristate = false,
+		width = "full",
+		order = 200,
+		name = L["Abreviate Large Numbers"],
+		get = function () return not status.dbx.displayRawNumbers end,
+		set = function (_, v)
+			status.dbx.displayRawNumbers = not v or nil
+			status.dbx.truncateWhenZero = nil
+			status:Refresh()
+		end,
+	}
+	options.truncateWhenZero = {
+		type = "toggle",
+		tristate = false,
+		width = "full",
+		order = 210,
+		name = L["Truncate when zero"],
+		get = function () return status.dbx.truncateWhenZero end,
+		set = function (_, v)
+			status.dbx.truncateWhenZero = v or nil
+			status:Refresh()
+		end,
+		disabled = function() return not status.dbx.displayRawNumbers end,
+	}
+end
+
 Grid2Options:RegisterStatusOptions("health-current", "health", function(self, status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
-	self:MakeSpacerOptions(options, 30)
 	options.deadAsFullHealth = {
 		type = "toggle",
 		tristate = false,
 		width = "full",
-		order = 70,
+		order = 110,
 		name = L["Show dead as having Full Health"],
 		get = function () return status.dbx.deadAsFullHealth end,
 		set = function (_, v)
@@ -15,6 +44,7 @@ Grid2Options:RegisterStatusOptions("health-current", "health", function(self, st
 			status:Refresh()
 		end,
 	}
+	self:MakeStatusHealthFormatOptions(status, options, optionParams)
 end, {
 	width = "full",
 	color1 = L["Full Health"],
@@ -39,39 +69,22 @@ Grid2Options:RegisterStatusOptions("heals-incoming", "health", function(self, st
 			if overhealing then overhealing:Refresh() end
 		end,
 	}
+	self:MakeStatusHealthFormatOptions(status, options, optionParams)
 end, {
 	titleIcon = "Interface\\Icons\\Spell_Holy_DivineProvidence"
 })
 
 Grid2Options:RegisterStatusOptions("my-heals-incoming", "health", function(self, status, options, optionParams)
 	self:MakeStatusStandardOptions(status, options, optionParams)
+	self:MakeStatusHealthFormatOptions(status, options, optionParams)
 end, {
 	titleIcon = "Interface\\Icons\\Spell_Holy_DivineProvidence"
 })
 
-Grid2Options:RegisterStatusOptions("overhealing", "health", function(self, status, options, optionParams)
+Grid2Options:RegisterStatusOptions("health-deficit", "health", function(self, status, options, optionParams)
 	self:MakeStatusStandardOptions(status, options, optionParams)
-	options.minimumOver = {
-		type = "input",
-		order = 120,
-		width = "full",
-		name = L["Minimum value"],
-		desc = L["Incoming overheals below the specified value will not be shown."],
-		get = function ()
-			return tostring(status.dbx.minimum or 0)
-		end,
-		set = function (_, v)
-			v = tonumber(v) or 0
-			status.dbx.minimum = v>0 and v or nil
-			status:Refresh()
-		end,
-	}
+	self:MakeStatusHealthFormatOptions(status, options, optionParams)
 end, {
-	title = L["display heals above max hp"],
-	titleIcon = "Interface\\Icons\\Spell_Holy_DivineProvidence"
-})
-
-Grid2Options:RegisterStatusOptions("health-deficit", "health", Grid2Options.MakeStatusColorOptions, {
 	titleIcon = "Interface\\Icons\\Spell_shadow_lifedrain"
 })
 

@@ -7,6 +7,7 @@ local MyHeals = Grid2.statusPrototype:new("my-heals-incoming")
 local Death = Grid2.statusPrototype:new("death")
 local FeignDeath = Grid2.statusPrototype:new("feign-death")
 
+local UnitExists = UnitExists
 local UnitHealth = UnitHealth
 local UnitHealthMax = UnitHealthMax
 local UnitHealthPercent = UnitHealthPercent
@@ -17,8 +18,10 @@ local UnitGetIncomingHeals = UnitGetIncomingHeals
 local AbbreviateLargeNumbers = AbbreviateLargeNumbers
 local unit_is_valid = Grid2.roster_guids
 local format = string.format
+local tostring = tostring
 local fmtPercent = "%.0f%%"
 local ScaleTo100 = CurveConstants.ScaleTo100
+local TruncateWhenZero = C_StringUtil.TruncateWhenZero
 
 -- health-current status
 local deadAsFullHealth
@@ -43,8 +46,16 @@ function Health:OnDisable()
 	self:UnregisterEvent("UNIT_HEALTH")
 end
 
-function Health:GetText(unit)
+function Health:GetText1(unit)
 	return UnitExists(unit) and AbbreviateLargeNumbers( UnitHealth(unit) ) or ''
+end
+
+function Health:GetText2(unit)
+	return UnitExists(unit) and tostring( UnitHealth(unit) ) or ''
+end
+
+function Health:GetText3(unit)
+	return TruncateWhenZero( UnitHealth(unit) or 0 )
 end
 
 function Health:GetPercentText(unit)
@@ -63,6 +74,7 @@ end
 function Health:UpdateDB()
 	fmtPercent = Grid2.db.profile.formatting.percentFormat
 	deadAsFullHealth = self.dbx.deadAsFullHealth
+	self.GetText = self.dbx.displayRawNumbers and (self.dbx.truncateWhenZero and self.GetText3 or self.GetText2) or self.GetText1
     self.colorCurve:ClearPoints()
 	self.colorCurve:SetType(Enum.LuaCurveType.Linear)
 	self.colorCurve:AddPoint( 0  , self.dbx.color3 )
@@ -102,12 +114,24 @@ function HealthDeficit:IsActive(unit)
 	return true
 end
 
-function HealthDeficit:GetText(unit)
+function HealthDeficit:GetValueMinMax(unit)
+	return UnitHealthMissing(unit) or 0, 0, UnitHealthMax(unit)
+end
+
+function HealthDeficit:GetText1(unit)
 	return UnitExists(unit) and AbbreviateLargeNumbers(UnitHealthMissing(unit)) or ''
 end
 
-function HealthDeficit:GetValueMinMax(unit)
-	return UnitHealthMissing(unit) or 0, 0, UnitHealthMax(unit)
+function HealthDeficit:GetText2(unit)
+	return UnitExists(unit) and tostring(UnitHealthMissing(unit)) or ''
+end
+
+function HealthDeficit:GetText3(unit)
+	return TruncateWhenZero( UnitHealthMissing(unit) or 0 )
+end
+
+function HealthDeficit:UpdateDB()
+	self.GetText = self.dbx.displayRawNumbers and (self.dbx.truncateWhenZero and self.GetText3 or self.GetText2) or self.GetText1
 end
 
 local function CreateHealthDeficit(baseKey, dbx)
@@ -151,8 +175,16 @@ function Heals:GetValueMinMax(unit)
 	return GetIncomingHealsForUnit(unit) or 0, 0, UnitHealthMax(unit)
 end
 
-function Heals:GetText(unit)
+function Heals:GetText1(unit)
 	return AbbreviateLargeNumbers( GetIncomingHealsForUnit(unit) or 0 )
+end
+
+function Heals:GetText2(unit)
+	return tostring( GetIncomingHealsForUnit(unit) or 0 )
+end
+
+function Heals:GetText3(unit)
+	return TruncateWhenZero( GetIncomingHealsForUnit(unit) or 0 )
 end
 
 function Heals:IsActive(unit)
@@ -162,6 +194,7 @@ end
 function Heals:UpdateDB()
 	HealsCalculator:SetHealAbsorbMode(self.dbx.includeHealAbsorbs and 0 or 1)
 	GetIncomingHealsForUnit = self.dbx.includePlayerHeals and UnitGetIncomingHeals or UnitGetIncomingHealsNoPlayer
+	self.GetText = self.dbx.displayRawNumbers and (self.dbx.truncateWhenZero and self.GetText3 or self.GetText2) or self.GetText1
 end
 
 local function CreateHeals(baseKey, dbx)
@@ -195,12 +228,24 @@ function MyHeals:GetValueMinMax(unit)
 	return UnitGetIncomingHeals(unit,'player') or 0, 0, UnitHealthMax(unit)
 end
 
-function MyHeals:GetText(unit)
+function MyHeals:GetText1(unit)
 	return AbbreviateLargeNumbers( UnitGetIncomingHeals(unit,'player') or 0 )
+end
+
+function MyHeals:GetText2(unit)
+	return tostring(UnitGetIncomingHeals(unit,'player') or 0)
+end
+
+function MyHeals:GetText3(unit)
+	return TruncateWhenZero( UnitGetIncomingHeals(unit,'player') or 0 )
 end
 
 function MyHeals:IsActive(unit)
 	return true
+end
+
+function MyHeals:UpdateDB()
+	self.GetText = self.dbx.displayRawNumbers and (self.dbx.truncateWhenZero and self.GetText3 or self.GetText2) or self.GetText1
 end
 
 local function CreateMyHeals(baseKey, dbx)
