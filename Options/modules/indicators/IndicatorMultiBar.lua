@@ -513,6 +513,23 @@ do
 
 		-------------------------------------------------------------------------
 
+		headerExtra = { type = "header", order = 50, name = L["Extra"], hidden = function() return barDbx.glowLine~=nil end, },
+
+		interpolation = {
+			type = "toggle",
+			name = L["Smooth animations"],
+			desc = L["Animate bar changes"],
+			order = 51,
+			get = function() return barDbx.interpolation==1 end,
+			set = function(_, v)
+				barDbx.interpolation = v and 1 or nil
+				self:RefreshIndicator(indicator, "Layout")
+			end,
+			hidden = function() return barDbx.glowLine~=nil end,
+		},
+
+		-------------------------------------------------------------------------
+
 		headerButtons = { type = "header", order = 150, name = "" },
 
 		addBar = {

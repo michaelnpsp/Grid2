@@ -22,17 +22,17 @@ end
 
 -- value assignments for different types of bars/statuses
 local function SetMultibarLineValue(bar, unit, status)
-	bar:SetAlphaFromBoolean(status:IsActive(unit), 1, 0)
+	bar:SetAlphaFromBoolean(status:IsActive(unit), 1)
 end
 
 local function SetMultibarPercentValue(bar, unit, status)
-	bar:SetValue(status:GetPercent(unit) or 0)
+	bar:SetValue(status:GetPercent(unit) or 0, bar.interpol)
 end
 
 local function SetMultibarMinMaxValue(bar, unit, status)
 	local value, min, max = status:GetValueMinMax(unit)
 	bar:SetMinMaxValues(min, max)
-	bar:SetValue(value)
+	bar:SetValue(value, bar.interpol)
 end
 
 -- Warning: This is an overrided indicator:Update() NOT the standard indicator:OnUpdate()
@@ -125,6 +125,7 @@ local function Bar_Layout(self, parent)
 			texture:SetPoint( setup.pointFrom, prevTex, prevPnt )
 			prevTex = textureReal
 			prevPnt = setup.pointTo
+			texture.interpol = setup.interpol
 		end
 		textures[i] = texture
 		texture:Show()
@@ -185,6 +186,7 @@ local function Bar_UpdateDB(self)
 		reverse  =  not ( not self.reverseFill == not dbx.reverseMainBar ),
 		pointFrom = dbx.reverseMainBar and opositePoint[alignPoint] or alignPoint,
 		pointTo   = dbx.reverseMainBar and alignPoint or opositePoint[alignPoint],
+		interpol  = dbx.interpolation or 0,
 		opacity   = dbx.textureColor.a,
 		color     = self.foreColor,
 		texture   = Grid2:MediaFetch("statusbar", dbx.texture or theme.barTexture, "Gradient"),
@@ -199,6 +201,7 @@ local function Bar_UpdateDB(self)
 			prevBar   = (setup.prevBar and setup.prevBar<=i and setup.prevBar) or nil,
 			pointFrom = (setup.glowLine and 'CENTER') or (setup.reverse and opositePoint[alignPoint] or alignPoint),
 			pointTo   = setup.reverse and alignPoint or opositePoint[alignPoint],
+			interpol  = setup.interpolation or 0,
 			opacity   = setup.color.a,
 			color     = setup.color.r and setup.color or self.foreColor,
 			texture   = setup.texture and Grid2:MediaFetch("statusbar", setup.texture) or mainBar.texture,

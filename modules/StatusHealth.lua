@@ -272,21 +272,19 @@ local feign_cache = {}
 FeignDeath.GetColor = Grid2.statusLibrary.GetColor
 
 function FeignDeath:UNIT_AURA(_, unit)
-	if unit_is_valid[unit] then
-		local feign = UnitIsFeignDeath(unit)
-		if feign~=feign_cache[unit] then
-			feign_cache[unit] = feign
-			FeignDeath:UpdateIndicators(unit)
-		end
+	local feign = UnitIsFeignDeath(unit)
+	if feign~=feign_cache[unit] then
+		feign_cache[unit] = feign
+		FeignDeath:UpdateIndicators(unit)
 	end
 end
 
 function FeignDeath:OnEnable()
-	self:RegisterEvent("UNIT_AURA")
+	self:RegisterRosterUnitEvent("UNIT_AURA")
 end
 
 function FeignDeath:OnDisable()
-	self:UnregisterEvent("UNIT_AURA")
+	self:UnregisterRosterUnitEvent("UNIT_AURA")
 	wipe(feign_cache)
 end
 
