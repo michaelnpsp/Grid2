@@ -13,7 +13,6 @@
 
 <Script file="modules\statuses\Status.lua"/>
 <Script file="modules\statuses\StatusAuras.lua"/>
-<Script file="modules\statuses\StatusBanzai.lua"/>
 <Script file="modules\statuses\StatusColor.lua"/>
 <Script file="modules\statuses\StatusColorNew.lua"/>
 <Script file="modules\statuses\StatusDirection.lua"/>

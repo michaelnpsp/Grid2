@@ -92,7 +92,6 @@ modules\StatusTarget.lua
 modules\StatusVoiceComm.lua
 modules\StatusRaidIcon.lua
 modules\StatusAFK.lua
-modules\StatusBanzai.lua
 modules\StatusRes.lua
 modules\StatusSelf.lua
 modules\StatusDirection.lua
