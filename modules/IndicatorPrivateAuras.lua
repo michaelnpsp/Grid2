@@ -39,6 +39,9 @@ local function Icon_Update(self, parent, unit)
 			auraHandles[i] = AddPrivateAuraAnchor(auraAnchor)
 			auraAnchor.auraIndex = auraAnchor.auraIndex + 1
 		end
+		if durationAnchor then -- we dont want to store relativeTo field in savedvariables
+			durationAnchor.relativeTo = nil
+		end
 		f.auraUnit = unit
 	end
 end
