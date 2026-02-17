@@ -40,8 +40,6 @@ local function Icon_Update(self, parent, unit)
 			auraAnchor.auraIndex = auraAnchor.auraIndex + 1
 		end
 		f.auraUnit = unit
-
-		TEST = auraAnchor
 	end
 end
 
