@@ -6,8 +6,6 @@ local strmatch = strmatch
 local AddPrivateAuraAnchor = C_UnitAuras.AddPrivateAuraAnchor
 local RemovePrivateAuraAnchor = C_UnitAuras.RemovePrivateAuraAnchor
 
-local Bug30Fix = true -- border bug workaround (border is always 30 pixels size, so we need to scale the icons instead of change size)
-
 local function ClearFrameAuraAnchors(f)
 	local auraHandles = f.auraHandles
 	for i=1,#auraHandles do
@@ -28,16 +26,22 @@ local function Icon_Update(self, parent, unit)
 		local auraHandles = ClearFrameAuraAnchors(f)
 		local auraAnchor = self.auraAnchor
 		local iconAnchor = auraAnchor.iconInfo.iconAnchor
+		local durationAnchor = auraAnchor.durationAnchor
 		auraAnchor.unitToken = unit
 		auraAnchor.auraIndex = self.auraIndex
 		local auraFrames = f.auraFrames
 		for i=1,self.maxIcons do
 			auraAnchor.parent = auraFrames[i]
 			iconAnchor.relativeTo = auraFrames[i]
+			if durationAnchor then
+				durationAnchor.relativeTo = auraFrames[i]
+			end
 			auraHandles[i] = AddPrivateAuraAnchor(auraAnchor)
 			auraAnchor.auraIndex = auraAnchor.auraIndex + 1
 		end
 		f.auraUnit = unit
+
+		TEST = auraAnchor
 	end
 end
 
@@ -46,7 +50,8 @@ local function Icon_Layout(self, parent)
 	local l = dbx.location
 	local f = parent[self.name]
 	local iconSize = self.iconSize>1 and self.iconSize or self.iconSize * parent:GetHeight()
-	if Bug30Fix then f:SetScale(iconSize/30); iconSize = 30; end -- Workaround to icon border bug (it does not obey iconSize and its always 30 pixels width).
+	f:SetScale(self.borderScale and 1 or iconSize/32)
+	iconSize = self.borderScale and iconSize or 32
 	local sizeFull = iconSize + (dbx.iconSpacing or 1)
 	f:SetParent(parent)
 	f:ClearAllPoints()
@@ -92,8 +97,11 @@ local function Icon_UpdateDB(self)
 	self.maxIcons = dbx.maxIcons or 4
 	self.auraIndex= dbx.auraIndex or 1
 	self.iconSize = dbx.iconSize or Grid2Frame.db.profile.iconSize or 14
+	self.borderScale = dbx.borderScale
+	self.auraAnchor.iconInfo.borderScale = self.borderScale
 	self.auraAnchor.showCountdownFrame = not dbx.disableCooldown
 	self.auraAnchor.showCountdownNumbers = not dbx.disableCooldownNumbers
+	self.auraAnchor.durationAnchor = dbx.durationAnchor
 	if dbx.orientation=='VERTICAL' then
 		self.point = strmatch(dbx.location.point,'BOTTOM') or 'TOP'
 		self.horMult = 0

@@ -119,6 +119,20 @@ function Grid2Options:MakeIndicatorPrivateAurasCustomOptions( indicator, options
 		disabled = function() return indicator.dbx.iconSize==nil end,
 		hidden = function() return (indicator.dbx.iconSize or Grid2Frame.db.profile.iconSize or 1)>1 end,
 	}
+	options.borderScale = {
+		type = "range",
+		order = 16,
+		name = L["Border Scale"],
+		desc = L["Sets the scale of the border. Select zero to automatic scale the border depending of the icon size."],
+		softMin  = 0,
+		softMax  = 10,
+		step = 0.1,
+		get = function () return indicator.dbx.borderScale or 0 end,
+		set = function (_, v)
+			indicator.dbx.borderScale = v~=0 and v or nil
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+	}
 	self:MakeHeaderOptions( options, "Cooldown" )
 	options.enableCooldown = {
 		type = "toggle",
@@ -143,4 +157,72 @@ function Grid2Options:MakeIndicatorPrivateAurasCustomOptions( indicator, options
 		end,
 		hidden = function() return indicator.dbx.disableCooldown end,
 	}
+	options.durationHeader ={ type = "header", order = 149, name = L["Duration"] }
+	options.enableDuration = {
+		type = "toggle",
+		order = 150,
+		name = L["Enable Duration Text"],
+		desc = L["Display duration numbers."],
+		width = "full",
+		get = function () return indicator.dbx.durationAnchor~=nil end,
+		set = function (_, v)
+			indicator.dbx.durationAnchor = v and {point="TOP", relativePoint="BOTTOM", offsetX=0, offsetY=-1} or nil
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+	}
+	options.durationRelPoint = {
+		type = 'select',
+		order = 155,
+		name = L["Location"],
+		desc = L["Align my align point relative to"],
+		values = self.pointValueList,
+		get = function() return self.pointMap[indicator.dbx.durationAnchor.relativePoint] end,
+		set = function(_, v)
+			indicator.dbx.durationAnchor.relativePoint = self.pointMap[v]
+			indicator.dbx.durationAnchor.point = self.pointMap[v]
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		hidden = function() return indicator.dbx.durationAnchor==nil end,
+	}
+	options.durationPoint = {
+		type = 'select',
+		order = 160,
+		name = L["Align Point"],
+		desc = L["Align this point on the indicator"],
+		values = self.pointValueList,
+		get = function() return self.pointMap[indicator.dbx.durationAnchor.point] end,
+		set = function(_, v)
+			indicator.dbx.durationAnchor.point = self.pointMap[v]
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		hidden = function() return indicator.dbx.durationAnchor==nil end,
+	}
+	options.durationX = {
+		type = "range",
+		order = 170,
+		name = L["X Offset"],
+		desc = L["X - Horizontal Offset"],
+		softMin = -50, softMax = 50, step = 1, bigStep = 1,
+		get = function() return indicator.dbx.durationAnchor.offsetX end,
+		set = function(_, v)
+			indicator.dbx.durationAnchor.offsetX = v
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		hidden = function() return indicator.dbx.durationAnchor==nil end,
+	}
+	options.durationY = {
+		type = "range",
+		order = 180,
+		name = L["Y Offset"],
+		desc = L["Y - Vertical Offset"],
+		softMin = -50, softMax = 50, step = 1, bigStep = 1,
+		get = function() return indicator.dbx.durationAnchor.offsetY end,
+		set = function(_, v)
+			indicator.dbx.durationAnchor.offsetY = v
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		hidden = function() return indicator.dbx.durationAnchor==nil end,
+	}
 end
+
+
