@@ -24,6 +24,7 @@ local function Icon_Update(self, parent, unit)
 	local f = parent[self.name]
 	if f and unit ~= f.auraUnit then
 		local auraHandles = ClearFrameAuraAnchors(f)
+		local displayDurFrame = self.displayDurFrame
 		local auraAnchor = self.auraAnchor
 		local iconAnchor = auraAnchor.iconInfo.iconAnchor
 		local durationAnchor = auraAnchor.durationAnchor
@@ -31,10 +32,11 @@ local function Icon_Update(self, parent, unit)
 		auraAnchor.auraIndex = self.auraIndex
 		local auraFrames = f.auraFrames
 		for i=1,self.maxIcons do
-			auraAnchor.parent = auraFrames[i]
-			iconAnchor.relativeTo = auraFrames[i]
+			local auraFrame = auraFrames[i]
+			auraAnchor.parent = auraFrame
+			iconAnchor.relativeTo = auraFrame
 			if durationAnchor then
-				durationAnchor.relativeTo = auraFrames[i]
+				durationAnchor.relativeTo = displayDurFrame and auraFrame.durFrame or auraFrame
 			end
 			auraHandles[i] = AddPrivateAuraAnchor(auraAnchor)
 			auraAnchor.auraIndex = auraAnchor.auraIndex + 1
@@ -64,8 +66,10 @@ local function Icon_Layout(self, parent)
 	auraAnchor.iconInfo.iconWidth = iconSize
 	auraAnchor.iconInfo.iconHeight = iconSize
 	local frameSize = self.disableTip and 0.001 or iconSize
-	local offsetX = self.disableTip and iconSize*self.horMult/2 or 0
-	local offsetY = self.disableTip and iconSize*self.verMult/2 or 0
+	local adjustX = self.disableTip and iconSize*self.horMult/2 or 0
+	local adjustY = self.disableTip and iconSize*self.verMult/2 or 0
+	local offsetX = adjustX
+	local offsetY = adjustY
 	local sumX = sizeFull * self.horMult
 	local sumY = sizeFull * self.verMult
 	local auraFrames = f.auraFrames
@@ -75,6 +79,12 @@ local function Icon_Layout(self, parent)
 		frame:SetPoint(self.point, f, self.point, offsetX, offsetY)
 		frame:SetSize(frameSize, frameSize)
 		frame:Show()
+		if self.displayDurFrame then
+			frame.durFrame = frame.durFrame or CreateFrame('frame', nil, frame)
+			frame.durFrame:SetPoint(self.point, f, self.point, offsetX-adjustX, offsetY-adjustY)
+			frame.durFrame:SetSize(iconSize, iconSize)
+			frame.durFrame:Show()
+		end
 		offsetX = offsetX + sumX
 		offsetY = offsetY + sumY
 		auraFrames[i] = frame
@@ -98,8 +108,9 @@ local function Icon_UpdateDB(self)
 	local dbx = self.dbx
 	self.maxIcons = dbx.maxIcons or 4
 	self.auraIndex= dbx.auraIndex or 1
-	self.iconSize = dbx.iconSize or Grid2Frame.db.profile.iconSize or 14
 	self.disableTip = dbx.disableTooltip
+	self.displayDurFrame = dbx.disableTooltip and dbx.durationAnchor
+	self.iconSize = dbx.iconSize or Grid2Frame.db.profile.iconSize or 14
 	self.borderScale = dbx.borderScale
 	self.auraAnchor.iconInfo.borderScale = self.borderScale
 	self.auraAnchor.showCountdownFrame = not dbx.disableCooldown
