@@ -7,7 +7,7 @@ function Grid2Options:MakeStatusHealthFormatOptions(status, options, optionParam
 		tristate = false,
 		width = "full",
 		order = 200,
-		name = L["Abreviate Large Numbers"],
+		name = L["Abbreviate Large Numbers"],
 		get = function () return not status.dbx.displayRawNumbers end,
 		set = function (_, v)
 			status.dbx.displayRawNumbers = not v or nil

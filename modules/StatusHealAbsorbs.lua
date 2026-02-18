@@ -6,8 +6,11 @@ if Grid2.versionCli<50000 or not UnitGetTotalHealAbsorbs then return end -- only
 local Shields = Grid2.statusPrototype:new("heal-absorbs")
 
 local Grid2 = Grid2
+local tostring = tostring
 local UnitHealthMax = UnitHealthMax
 local UnitGetTotalHealAbsorbs = UnitGetTotalHealAbsorbs
+local AbbreviateLargeNumbers = AbbreviateLargeNumbers
+local TruncateWhenZero = C_StringUtil.TruncateWhenZero
 
 Shields.GetColor = Grid2.statusLibrary.GetColor
 
@@ -23,8 +26,16 @@ function Shields:UNIT_HEAL_ABSORB_AMOUNT_CHANGED(_,unit)
 	self:UpdateIndicators(unit)
 end
 
-function Shields:GetText(unit)
+function Shields:GetText1(unit)
 	return AbbreviateLargeNumbers( UnitGetTotalHealAbsorbs(unit) or 0 )
+end
+
+function Shields:GetText2(unit)
+	return tostring( UnitGetTotalHealAbsorbs(unit) or 0 )
+end
+
+function Shields:GetText3(unit)
+	return TruncateWhenZero( UnitGetTotalHealAbsorbs(unit) or 0 )
 end
 
 function Shields:GetValueMinMaxCustom(unit)
@@ -42,6 +53,7 @@ end
 function Shields:UpdateDB()
 	self.maxShieldValue = self.dbx.maxShieldValue
 	self.GetValueMinMax = self.maxShieldValue and self.GetValueMinMaxCustom or self.GetValueMinMaxHealth
+	self.GetText = self.dbx.displayRawNumbers and (self.dbx.truncateWhenZero and self.GetText3 or self.GetText2) or self.GetText1
 end
 
 local function Create(baseKey, dbx)

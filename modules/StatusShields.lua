@@ -5,9 +5,11 @@ if not Grid2.secretsEnabled then return end -- only midnight
 local Grid2 = Grid2
 local min   = math.min
 local fmt   = string.format
+local tostring = tostring
 local UnitHealthMax = UnitHealthMax
 local UnitGetTotalAbsorbs = UnitGetTotalAbsorbs
 local AbbreviateLargeNumbers = AbbreviateLargeNumbers
+local TruncateWhenZero = C_StringUtil.TruncateWhenZero
 local unit_is_valid = Grid2.roster_guids
 
 -- Shields
@@ -31,8 +33,16 @@ function Shields:UpdateUnit(_,unit)
 	end
 end
 
-function Shields:GetText(unit)
+function Shields:GetText1(unit)
 	return AbbreviateLargeNumbers( UnitGetTotalAbsorbs(unit) or 0 )
+end
+
+function Shields:GetText2(unit)
+	return tostring( UnitGetTotalAbsorbs(unit) or 0 )
+end
+
+function Shields:GetText3(unit)
+	return TruncateWhenZero( UnitGetTotalAbsorbs(unit) or 0 )
 end
 
 function Shields:GetValueMinMaxCustom(unit)
@@ -50,6 +60,7 @@ end
 function Shields:UpdateDB()
 	self.maxShieldValue = self.dbx.maxShieldValue
 	self.GetValueMinMax = self.maxShieldValue and self.GetValueMinMaxCustom or self.GetValueMinMaxHealth
+	self.GetText = self.dbx.displayRawNumbers and (self.dbx.truncateWhenZero and self.GetText3 or self.GetText2) or self.GetText1
 end
 
 local function Create(baseKey, dbx)
