@@ -227,7 +227,7 @@ local function Icon_Layout(self, parent)
 			cooldown:SetAllPoints()
 			cooldown:SetAlpha(1)
 			cooldown:SetHideCountdownNumbers(not self.showCoolText)
-			cooldown:SetDrawEdge(false)
+			cooldown:SetDrawEdge(self.dbx.drawEdge)
 			cooldown:SetDrawSwipe(self.showSwipe)
 			cooldown:SetReverse(self.dbx.reverseCooldown)
 			if self.showCoolText then
