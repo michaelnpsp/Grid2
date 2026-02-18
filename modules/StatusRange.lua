@@ -224,10 +224,11 @@ function Range:UpdateDB()
 	local spellh = dbr.hostileSpellID and GetSpellInfo(dbr.hostileSpellID) or spellHostile
 	local spellf = dbr.friendlySpellID and GetSpellInfo(dbr.friendlySpellID) or spellFriendly
 	local rangec = tonumber(dbr.range) or dbr.range
-	self.curRange = Ranges[rangec] and rangec or 38
+	rangec = Ranges[rangec] and rangec or 38
 	self.refreshUnits = (rangec==38) and roster_external or roster_guids
 	self.UnitRangeCheck = Ranges[rangec](spellf, spellh, rangec==38)
 	self.curAlpha = dbx.default or 0.25
+	self.curRange = rangec
 end
 
 Grid2.setupFunc["range"] = function(baseKey, dbx)
