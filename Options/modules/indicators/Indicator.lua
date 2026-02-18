@@ -583,6 +583,19 @@ function Grid2Options:MakeIndicatorCooldownAnimOptions(indicator, options)
 		end,
 		hidden= function() return indicator.dbx.disableCooldown end,
 	}
+	options.drawEdge = {
+		type = "toggle",
+		order = 212,
+		name = L["Draw Edge"],
+		desc = L["Show a bright line on the moving edge of the cooldown animation."],
+		tristate = false,
+		get = function () return indicator.dbx.drawEdge end,
+		set = function (_, v)
+			indicator.dbx.drawEdge = v or nil
+			self:RefreshIndicator(indicator, "Create")
+		end,
+		hidden= function() return indicator.dbx.disableCooldown end,
+	}
 end
 
 -- Grid2Options:MakeIndicatorCountdownTextOptions()

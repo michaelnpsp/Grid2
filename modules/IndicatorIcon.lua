@@ -20,7 +20,7 @@ local function Icon_Create(self, parent)
 	Icon:Show()
 	if not self.disableCooldown then
 		local Cooldown = f.Cooldown or CreateFrame("Cooldown", nil, f, "CooldownFrameTemplate")
-		Cooldown:SetDrawEdge(false)
+		Cooldown:SetDrawEdge(self.dbx.drawEdge)
 		Cooldown:SetReverse(self.dbx.reverseCooldown)
 		Cooldown:SetDrawSwipe(self.showSwipe)
 		Cooldown:SetHideCountdownNumbers(not self.showCoolText)
