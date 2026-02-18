@@ -63,8 +63,9 @@ local function Icon_Layout(self, parent)
 	local auraAnchor = self.auraAnchor
 	auraAnchor.iconInfo.iconWidth = iconSize
 	auraAnchor.iconInfo.iconHeight = iconSize
-	local offsetX = 0
-	local offsetY = 0
+	local frameSize = self.disableTip and 0.001 or iconSize
+	local offsetX = self.disableTip and iconSize*self.horMult/2 or 0
+	local offsetY = self.disableTip and iconSize*self.verMult/2 or 0
 	local sumX = sizeFull * self.horMult
 	local sumY = sizeFull * self.verMult
 	local auraFrames = f.auraFrames
@@ -72,7 +73,7 @@ local function Icon_Layout(self, parent)
 		local frame = auraFrames[i] or CreateFrame('frame', nil, f)
 		frame:ClearAllPoints()
 		frame:SetPoint(self.point, f, self.point, offsetX, offsetY)
-		frame:SetSize(iconSize, iconSize)
+		frame:SetSize(frameSize, frameSize)
 		frame:Show()
 		offsetX = offsetX + sumX
 		offsetY = offsetY + sumY
@@ -98,6 +99,7 @@ local function Icon_UpdateDB(self)
 	self.maxIcons = dbx.maxIcons or 4
 	self.auraIndex= dbx.auraIndex or 1
 	self.iconSize = dbx.iconSize or Grid2Frame.db.profile.iconSize or 14
+	self.disableTip = dbx.disableTooltip
 	self.borderScale = dbx.borderScale
 	self.auraAnchor.iconInfo.borderScale = self.borderScale
 	self.auraAnchor.showCountdownFrame = not dbx.disableCooldown
