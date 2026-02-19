@@ -5,7 +5,7 @@ local EvaluateColorValueFromBoolean = C_CurveUtil.EvaluateColorValueFromBoolean
 
 local indicatorName
 local defaultAlpha = 1
-local enabledAlpha = 0.5
+local enabledAlpha
 
 Alpha.Create = Grid2.Dummy
 Alpha.Layout = Grid2.Dummy
@@ -18,9 +18,9 @@ local function Alpha_UpdateStandard(self, parent, unit)
 			local status = statuses[i]
 			local state, invert = status:IsActive(unit)
 			if invert then
-				alpha = EvaluateColorValueFromBoolean(state, alpha, status:GetPercent() or enabledAlpha)
+				alpha = EvaluateColorValueFromBoolean(state, alpha, status:GetPercent() or 0.25)
 			else
-				alpha = EvaluateColorValueFromBoolean(state, status:GetPercent() or enabledAlpha, alpha)
+				alpha = EvaluateColorValueFromBoolean(state, status:GetPercent() or 0.25, alpha)
 			end
 		end
 		(indicatorName and parent[indicatorName] or parent):SetAlpha(alpha)
@@ -54,7 +54,7 @@ end
 function Alpha:UpdateDB()
 	local dbx = self.dbx
 	defaultAlpha = dbx.defaultAlpha or 1
-	enabledAlpha = dbx.alpha or 0.5
+	enabledAlpha = dbx.alpha
 	indicatorName = indicatorName and Grid2.indicators[indicatorName] and indicatorName
 	self.UpdateO = enabledAlpha and Alpha_UpdateOptional or Alpha_UpdateStandard
 end
