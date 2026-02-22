@@ -9,6 +9,8 @@ local type = type
 local pairs = pairs
 local tonumber = tonumber
 local tremove = table.remove
+local issecretvalue = issecretvalue or function() return false end
+local canaccessvalue = canaccessvalue or function() return true end
 
 -- Dummy function
 Grid2.Dummy = function() end
@@ -16,8 +18,8 @@ Grid2.Dummy = function() end
 Grid2.EmptyTable = {}
 
 -- Midnight Secrets check
-Grid2.issecretvalue = issecretvalue or function() return false end
-Grid2.canaccessvalue = canaccessvalue or function() return true end
+Grid2.issecretvalue = issecretvalue
+Grid2.canaccessvalue = canaccessvalue
 
 -- Fetch LibSharedMedia resources
 function Grid2:MediaFetch(mediatype, key, def)
@@ -136,7 +138,7 @@ do
 		["я"] = "ya"
 	}
 	function Grid2.strCyr2Lat(str)
-		return gsub(str, "..", Cyr2Lat)
+		return canaccessvalue(str) and gsub(str, "..", Cyr2Lat) or str
 	end
 end
 

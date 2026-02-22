@@ -81,12 +81,12 @@ do
 	end
 
 	local function Button1_OnClick(frame)
-		if funcAction1 then funcAction1() end
+		if funcAction1 then C_Timer.After(0.05,funcAction1) end
 		frame.obj:Hide()
 	end
 
 	local function Button2_OnClick(frame)
-		if funcAction2 then funcAction2() end
+		if funcAction2 then C_Timer.After(0.05,funcAction2) end
 		frame.obj:Hide()
 	end
 
