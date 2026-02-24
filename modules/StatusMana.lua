@@ -197,11 +197,19 @@ local function Mana_IsActivePrimaryF(self, unit)
 end
 
 local function Mana_IsActiveSecondary(self, unit)
-	return UnitPowerMax(unit,0)~=0 and UnitPowerType(unit)~=0
+	if UnitPowerType(unit)~=0 then
+		local m = UnitPowerMax(unit,0)
+		return canaccessvalue(m) and m~=0
+	end
+	return false
 end
 
 local function Mana_IsActiveSecondaryF(self, unit)
-	return not self.filtered[unit] and UnitPowerMax(unit,0)~=0 and UnitPowerType(unit)~=0
+	if not self.filtered[unit] and UnitPowerType(unit)~=0 then
+		local m = UnitPowerMax(unit,0)
+		return canaccessvalue(m) and m~=0
+	end
+	return false
 end
 
 local function Mana_GetPercentText(self, unit)
