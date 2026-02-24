@@ -190,7 +190,7 @@ end
 
 function Range:OnEnable()
 	InCombat = InCombatLockdown()
-	self.timer = Grid2:CreateTimer( function() self:UpdateUnits() end, self.dbx.elapsed or 0.25, false)
+	self.timer = Grid2:CreateTimer( function() self:UpdateUnits() end, self.elapsed, false)
 	self:RegisterMessage("Grid_UnitUpdated")
 	self:RegisterMessage("Grid_UnitLeft")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -221,11 +221,14 @@ end
 function Range:UpdateDB()
 	local dbx = self.dbx
 	local dbr = dbx.ranges and dbx.ranges[playerClass] or dbx
+	local elapsed = dbx.elapsed or 0.25
 	local spellh = dbr.hostileSpellID and GetSpellInfo(dbr.hostileSpellID) or spellHostile
 	local spellf = dbr.friendlySpellID and GetSpellInfo(dbr.friendlySpellID) or spellFriendly
 	local rangec = tonumber(dbr.range) or dbr.range
 	rangec = Ranges[rangec] and rangec or 38
-	self.refreshUnits = (rangec==38) and roster_external or roster_guids
+	-- self.refreshUnits = (rangec==38) and roster_external or roster_guids -- disabled due to a issue in Dimensius fight
+	self.refreshUnits = roster_guids -- forcing a timer even for 38 range because UNIT_IN_RANGE_UPDATE event does not work well in Dimensius fight.
+	self.elapsed = (rangec~=38 or elapsed>1) and elapsed or 1 -- for 38y range does not allow update rate less than 1 second.
 	self.UnitRangeCheck = Ranges[rangec](spellf, spellh, rangec==38)
 	self.curAlpha = dbx.default or 0.25
 	self.curRange = rangec
