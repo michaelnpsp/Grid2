@@ -1,6 +1,12 @@
 -- Players Buffs & Debuffs, used by StatusAuraNewPredictor.lua
 Grid2Options.PlayerBuffs = {
-	[""] = {},
+	[""] = {
+		377234, -- Thrill of the Skies
+		388367, -- Ohn'ahra's Gusts
+		404464, -- Flight Style: Skyriding
+		404468, -- Flight Style: Steady
+		418590, -- Static Charge
+	},
 	["DEATHKNIGHT"] = {
 		},
 	["DRUID"] = {
@@ -24,11 +30,13 @@ Grid2Options.PlayerBuffs = {
 		119611, -- Renewing Mist
 		124682, -- Enveloping Mist
 		450769, -- Aspect of Harmony
+		124255, -- Stagger
 	},
 	["PALADIN"] = {
 		53563, -- Beacon of Light
 		156322, -- Eternal Flame
 		156910, -- Beacon of Faith
+		200025, -- Beacon of Virtue
 		1244893, -- Beacon of the Savior
 		-- Long-term Self Buffs
 		433568, -- Rite of Sanctification
@@ -64,6 +72,7 @@ Grid2Options.PlayerBuffs = {
 		382021, 382022, -- Earthliving Weapon
 		457496, 457481, -- Tidecaller's Guard
 		462757, 462742, -- Thunderstrike Ward
+		344179, -- Maelstrom Weapon
 	},
 	["WARLOCK"] = {
 	},
@@ -71,6 +80,9 @@ Grid2Options.PlayerBuffs = {
 		6673, -- Battle Shout
 	},
 	["DEMONHUNTER"] = {
+		1217607, -- Void Metamorphosis
+		1225789, -- Void Metamorphosis
+		1227702, -- Collapsing Star
 	},
 	["EVOKER"] = {
 		369459, -- Source of Magic
@@ -85,6 +97,7 @@ Grid2Options.PlayerBuffs = {
 		-- Augmentation Evoker
 		360827, -- Blistering Scales
 		395152, -- Ebon Might
+		395296, -- Ebon Might
 		410089, -- Prescience
 		410263, -- Inferno's Blessing
 		410686, -- Symbiotic Bloom
