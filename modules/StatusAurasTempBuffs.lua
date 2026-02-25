@@ -1,17 +1,15 @@
 -- Group of Buffs status
 local Grid2 = Grid2
 local bit_bor= bit.bor
-local SpellIsSelfBuff = SpellIsSelfBuff
-local UnitAffectingCombat = UnitAffectingCombat
-local SpellGetVisibilityInfo = SpellGetVisibilityInfo
 local myUnits = Grid2.roster_my_units
-local UnitAura = Grid2.API.UnitAuraLite
+local canaccessvalue = Grid2.canaccessvalue
+local GetAuraDataByIndex = C_UnitAuras.GetAuraDataByIndex
 
 -- all buffs
 local textures = {}
 local slots = {}
 local color = {}
-local colors = {color, color, color, color, color, color, color, color}
+local colors = {color, color, color, color, color, color, color, color, color, color, color, color}
 
 -- normal buffs
 local counts = {}
@@ -53,12 +51,16 @@ end
 
 -- buffs group status
 local function status_GetIcons(self, unit, max)
-	local i, j, spells, filter, name, caster, _ = 1, 1, self.spells, self.isMine
+	local i, j, spells, filter = 1, 1, self.spells, self.isMine
 	repeat
-		name, textures[j], counts[j], _, durations[j], expirations[j], caster, _, _, sid, _, _, aid = UnitAura(unit, i)
-		if not name then break end
-		if (spells[name] or spells[sid]) and (filter==false or filter==myUnits[caster]) then
-			slots[j] = aid
+		local a = GetAuraDataByIndex(unit, i)
+		if a==nil then break end
+		if canaccessvalue(a.spellId) and (spells[a.name] or spells[a.spellId]) and (filter==false or filter==myUnits[a.sourceUnit]) then
+			textures[j] = a.icon
+			counts[j] = a.applications
+			durations[j] = a.duration
+			expirations[j] = a.expirationTime
+			slots[j] = a.auraInstanceID
 			j = j + 1
 		end
 		i = i + 1
@@ -92,7 +94,6 @@ local function status_Create(baseKey, dbx)
 	local status = Grid2.statusPrototype:new(baseKey, false)
 	if dbx.spellName then dbx.spellName = nil end -- fix possible wrong data in old database
 	status.OnUpdate = status_Update
-	if Grid2.classicDurations then UnitAura = LibStub("LibClassicDurations").UnitAuraDirect end
 	return Grid2.CreateStatusAura( status, basekey, dbx, 'buff', statusTypes )
 end
 

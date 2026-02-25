@@ -14,14 +14,6 @@ local canaccessvalue = Grid2.canaccessvalue
 local Statuses = {}
 local Buffs = {}
 
--- Publish functions/data needed by other modules
-Grid2.API.UnitAuraLite = function(unit, index, filter)
-	local a = GetAuraDataByIndex(unit, index, filter)
-	if a then -- warning is lite because it does not return aura custom values (16,17,18)
-		return a.name, a.icon, a.applications, a.dispelName, a.duration, a.expirationTime, a.sourceUnit, nil, nil, a.spellId, a.canApplyAura, a.isBossAura, a.auraInstanceID
-	end
-end
-
 -- UNIT_AURA event management
 -- s.seen = nil aura was removed, linked indicators must be updated
 -- s.seen = 1   aura was changed, linked indicators must be updated
@@ -29,7 +21,6 @@ end
 local AuraFrame_OnEvent
 do
 	local myUnits  = Grid2.roster_my_units
-	local roUnits  = Grid2.roster_guids
 	local myFrames = Grid2Frame.frames_of_unit
 	local indicators = {}
 	local val = {0,0,0}
@@ -47,10 +38,8 @@ do
 		end
 	end
 	AuraFrame_OnEvent = function(_, event, u)
-		if not roUnits[u] then return end
-		-- Scan Buffs
-		i = 1
-		while GetAura(u,i,'HELPFUL') do
+		local i = 1
+		while GetAura(u,i,'HELPFUL') do -- Scan Buffs
 			if canaccessvalue(sid) then
 				local statuses = Buffs[nam] or Buffs[sid]
 				if statuses then
@@ -127,25 +116,6 @@ do
 	Grid2.RegisterMessage( Statuses, "Grid_FakedUnitsUpdate", UpdateFakedUnitsAuras)
 end
 
--- EnableAuraEvents() DisableAuraEvents()
-local EnableAuraEvents, DisableAuraEvents
-do
-	local frame
-	EnableAuraEvents = function(status)
-		if not next(Statuses) then
-			if not frame then frame = CreateFrame("Frame", nil, Grid2LayoutFrame) end
-			frame:SetScript("OnEvent", AuraFrame_OnEvent)
-			frame:RegisterEvent("UNIT_AURA")
-		end
-	end
-	DisableAuraEvents = function(status)
-		if not next(Statuses) then
-			frame:SetScript("OnEvent", nil)
-			frame:UnregisterEvent("UNIT_AURA")
-		end
-	end
-end
-
 -- RegisterTimeTrackerStatus() UnregisterTimeTrackerStatus()
 local RegisterTimeTrackerStatus, UnregisterTimeTrackerStatus
 do
@@ -179,7 +149,9 @@ do
 end
 
 local function RegisterStatusAura(status, auraType, spell, update)
-	EnableAuraEvents(status)
+	if not next(Statuses) then
+		Grid2.RegisterRosterUnitEvent(Statuses, "UNIT_AURA", AuraFrame_OnEvent)
+	end
 	local handler = Buffs
 	local statuses = handler[spell]
 	if not statuses then
@@ -199,7 +171,9 @@ local function UnregisterStatusAura(status, auraType, subType)
 		end
 	end
 	Statuses[status] = nil
-	DisableAuraEvents(status)
+	if not next(Statuses) then
+		Grid2.UnregisterRosterUnitEvent(Statuses, "UNIT_AURA")
+	end
 end
 
 -- MakeStatusColorHandler()
