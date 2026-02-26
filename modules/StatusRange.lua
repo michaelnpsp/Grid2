@@ -237,7 +237,7 @@ function Range:UpdateDB()
 	self.IsActive = rangec==38 and self.IsActiveR or self.IsActiveN
 	self.curAlpha = dbx.default or 0.25
 	self.curRange = rangec
-	wipe(self.cache)
+	wipe(self.cache) -- needed to clear the cache to remove secrets values if range changes from 38 to another range
 end
 
 Grid2.setupFunc["range"] = function(baseKey, dbx)

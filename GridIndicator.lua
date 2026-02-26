@@ -160,10 +160,10 @@ function indicator:GetCurrentStatus(unit)
 		local statuses= self.statuses
 		for i=1,#statuses do
 			local status = statuses[i]
-			local state = status:IsActive(unit)
+			local state, invert = status:IsActive(unit)
 			local secret = issecretvalue(state)
 			if secret or state then
-				return status, state, secret
+				return status, state, secret, invert
 			end
 		end
 	end
