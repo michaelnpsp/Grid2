@@ -6,6 +6,8 @@ local Grid2 = Grid2
 local Grid2Frame = Grid2Frame
 local min = min
 local max = max
+local floor = math.floor
+local type = type
 local pairs = pairs
 local ipairs = ipairs
 
@@ -26,13 +28,13 @@ local function SetMultibarLineValue(bar, unit, status)
 end
 
 local function SetMultibarPercentValue(bar, unit, status, interpol)
-	bar:SetValue(status:GetPercent(unit) or 0, interpol)
+	bar:SetValue(status:GetPercent(unit) or 0, interpol or bar.interpol)
 end
 
 local function SetMultibarMinMaxValue(bar, unit, status, interpol)
 	local value, min, max = status:GetValueMinMax(unit)
 	bar:SetMinMaxValues(min, max)
-	bar:SetValue(value, interpol)
+	bar:SetValue(value, interpol or bar.interpol)
 end
 
 -- Warning: This is an overrided indicator:Update() NOT the standard indicator:OnUpdate()
@@ -44,9 +46,9 @@ local function Bar_Update(self, parent, unit, status)
 			local priorities = self.priorities
 			if status then
 				local bar = textures[ priorities[status] ]
-				bar:SetMultibarValue(unit, status, bar.interpol)
+				bar:SetMultibarValue(unit, status)
 			else -- update due a layout or groupType change not from a status notifying a change
-				for i, status in ipairs(self.statuses) do
+				for _, status in ipairs(self.statuses) do
 					local bar = textures[ priorities[status] ]
 					bar:SetMultibarValue(unit, status, 0)
 				end
@@ -54,7 +56,32 @@ local function Bar_Update(self, parent, unit, status)
 		end
 	end
 end
--- }}}
+
+-- Warning: This is an overrided indicator:Update() NOT the standard indicator:OnUpdate()
+local function Bar_UpdateMulti(self, parent, unit, status)
+	if unit then
+		local frame = parent[self.name]
+		if frame then
+			local textures = frame.myTextures
+			local priorities = self.priorities
+			if status then
+				local indexes = priorities[status]
+				repeat
+					textures[ indexes % 10 ]:SetMultibarValue(unit, status, 0)
+					indexes = floor( indexes / 10 )
+				until indexes==0
+			else -- update due a layout or groupType change not from a status notifying a change
+				for _, status in ipairs(self.statuses) do
+					local indexes = priorities[status]
+					repeat
+						textures[ indexes % 10 ]:SetMultibarValue(unit, status, 0)
+						indexes = floor( indexes / 10 )
+					until indexes==0
+				end
+			end
+		end
+	end
+end
 
 local function Bar_Layout(self, parent)
 	local frame = parent[self.name]
@@ -109,7 +136,6 @@ local function Bar_Layout(self, parent)
 		if setup.background then
 			texture:SetAllPoints()
 		elseif setup.lineSize then
-			local status = self.statuses[i]
 			texture.SetMultibarValue = SetMultibarLineValue
 			if self.orientation == "HORIZONTAL" then
 				texture:SetSize( setup.lineSize, height )
@@ -155,6 +181,17 @@ local function Bar_Disable(self, parent)
 	bar:Hide()
 	bar:SetParent(nil)
 	bar:ClearAllPoints()
+end
+
+local function GetIndexesFromDb(self)
+	local result = {}
+	for statusName, indexes in pairs(Grid2:DbGetValue('statusMap', self.name)) do
+		repeat
+			result[indexes % 10] = statusName
+			indexes = floor( indexes / 10 )
+		until indexes==0
+	end
+	return result
 end
 
 local function Bar_UpdateDB(self)
@@ -229,6 +266,8 @@ local function Bar_UpdateDB(self)
 			defValue = 1,
 		}
 	end
+	self.UpdateO = Bar_UpdateMulti -- Bar_UpdateMulti or Bar_Update
+    self.Update = self.UpdateO
 end
 
 --{{ Bar Color indicator
@@ -277,13 +316,13 @@ local function Create(indicatorKey, dbx)
 	local Bar = Grid2.indicatorPrototype:new(indicatorKey)
 	Bar.dbx = dbx
 	-- Hack to caculate status index fast: statuses[priorities[status]] == status
-	Bar.sortStatuses    = function (a,b) return Bar.priorities[a] < Bar.priorities[b] end
-	Bar.Create          = Bar_CreateHH
-	Bar.SetOrientation  = Bar_SetOrientation
-	Bar.Disable         = Bar_Disable
-	Bar.Layout          = Bar_Layout
-	Bar.UpdateDB        = Bar_UpdateDB
-	Bar.UpdateO         = Bar_Update -- special case used by multibar and icons indicator
+	Bar.sortStatuses   = function (a,b) return Bar.priorities[a] < Bar.priorities[b] end
+	Bar.Create         = Bar_CreateHH
+	Bar.SetOrientation = Bar_SetOrientation
+	Bar.Disable        = Bar_Disable
+	Bar.Layout         = Bar_Layout
+	Bar.UpdateDB       = Bar_UpdateDB
+	Bar.UpdateO        = Bar_Update -- special case used by multibar and icons indicator
 	Grid2:RegisterIndicator(Bar, { "percent", "color" })
 
 	local BarColor      = Grid2.indicatorPrototype:new(indicatorKey.."-color")
