@@ -103,3 +103,5 @@ modules\StatusVehicle.lua
 modules\StatusSummon.lua
 modules\StatusStagger.lua
 modules\StatusAuras.lua
+modules\StatusAurasTemp.lua
+modules\StatusAurasTempBuffs.lua

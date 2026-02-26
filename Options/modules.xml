@@ -13,6 +13,13 @@
 
 <Script file="modules\statuses\Status.lua"/>
 <Script file="modules\statuses\StatusAuras.lua"/>
+
+<Script file="modules\statuses\AurasTemp\StatusAura.lua"/>
+<Script file="modules\statuses\AurasTemp\StatusAuraBuffs.lua"/>
+<Script file="modules\statuses\AurasTemp\StatusAuraNew.lua"/>
+<Script file="modules\statuses\AurasTemp\StatusAuraNewSpells.lua"/>
+<Script file="modules\statuses\AurasTemp\StatusAuraNewPredictor.lua"/>
+
 <Script file="modules\statuses\StatusColor.lua"/>
 <Script file="modules\statuses\StatusColorNew.lua"/>
 <Script file="modules\statuses\StatusDirection.lua"/>
