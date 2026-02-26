@@ -20,8 +20,8 @@ local function Icon_Create(self, parent)
 	Icon:Show()
 	if not self.disableCooldown then
 		local Cooldown = f.Cooldown or CreateFrame("Cooldown", nil, f, "CooldownFrameTemplate")
-		Cooldown:SetDrawEdge(self.dbx.drawEdge)
-		Cooldown:SetReverse(self.dbx.reverseCooldown)
+		Cooldown:SetDrawEdge(not not self.dbx.drawEdge)
+		Cooldown:SetReverse(not not self.dbx.reverseCooldown)
 		Cooldown:SetDrawSwipe(self.showSwipe)
 		Cooldown:SetHideCountdownNumbers(not self.showCoolText)
 		Cooldown:Hide()
@@ -233,7 +233,7 @@ local function Icon_UpdateDB(self)
 	self.offsetx   = l.x
 	self.offsety   = l.y
 	-- misc variables
-	self.showSwipe       = not (dbx.disableCooldown or dbx.disableCooldownAnim or dbx.disableIcon)
+	self.showSwipe       = not (dbx.disableCooldown or dbx.disableCooldownAnim)
 	self.showCoolBar     = dbx.enableCooldownBar
 	self.showCoolText    = dbx.enableCooldownText
 	self.disableCooldown = dbx.disableCooldown and not dbx.enableCooldownText
