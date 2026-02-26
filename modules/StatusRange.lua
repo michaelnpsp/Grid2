@@ -184,8 +184,12 @@ function Range:GetRanges()
 	return Ranges, self.curRange, rezSpellID
 end
 
-function Range:IsActive(unit)
+function Range:IsActiveR(unit)
 	return self.cache[unit], true -- true means inverted activation, hackish because we cannot negate a secret value
+end
+
+function Range:IsActiveN(unit)  -- normal activation for non-secret ranges
+	return not self.cache[unit]
 end
 
 function Range:OnEnable()
@@ -230,8 +234,10 @@ function Range:UpdateDB()
 	self.refreshUnits = roster_guids -- forcing a timer even for 38 range because UNIT_IN_RANGE_UPDATE event does not work well in Dimensius fight.
 	self.elapsed = (rangec~=38 or elapsed>1) and elapsed or 1 -- for 38y range does not allow update rate less than 1 second.
 	self.UnitRangeCheck = Ranges[rangec](spellf, spellh, rangec==38)
+	self.IsActive = rangec==38 and self.IsActiveR or self.IsActiveN
 	self.curAlpha = dbx.default or 0.25
 	self.curRange = rangec
+	wipe(self.cache)
 end
 
 Grid2.setupFunc["range"] = function(baseKey, dbx)
