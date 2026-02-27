@@ -263,7 +263,8 @@ RangeAlt.UpdateUnits = Range.UpdateUnits
 RangeAlt.OnEnable = Range.OnEnable
 RangeAlt.OnDisable = Range.OnDisable
 RangeAlt.GetPercent = Range.GetPercent
-RangeAlt.IsActive = Range.IsActive
+RangeAlt.IsActiveR = Range.IsActiveR
+RangeAlt.IsActiveN = Range.IsActiveN
 RangeAlt.UpdateDB = Range.UpdateDB
 RangeAlt.GetRanges = Range.GetRanges
 
