@@ -5,7 +5,8 @@ local L = Grid2Options.L
 
 Grid2Options:RegisterIndicatorOptions("bar", true, function(self, indicator)
 	local colors, options, statuses, filter  = {}, {}, {}, {}
-	self:MakeIndicatorBarLocationOptions(indicator, options)
+	self:MakeIndicatorTypeLevelOptions(indicator,options)
+	self:MakeIndicatorLocationOptions(indicator,options)
 	self:MakeIndicatorBarAppearanceOptions(indicator, options)
 	self:MakeIndicatorBarMiscOptions(indicator, options)
 	self:MakeIndicatorStatusOptions(indicator, statuses)
@@ -14,76 +15,9 @@ Grid2Options:RegisterIndicatorOptions("bar", true, function(self, indicator)
 	self:AddIndicatorOptions(indicator, statuses, options, colors, filter)
 end)
 
-local list = {}
-local function GetValues(info)
-	local empty = true
-	local exclude = info.arg
-	wipe(list)
-	if not info.arg.childName then
-		for name, ind in Grid2:IterateIndicators() do
-			if ind.dbx.type=="bar" and ind.sideKick and ind~=exclude and not ind.dbx.load and ( ((not ind.parentName) and (not ind.childName)) or ind.childName==exclude.name ) then
-				list[name] = L[name]
-			end
-		end
-	end
-	local empty = not next(list)
-	list["NONE"] = L["None"]
-	return list, empty
-end
-
-local function anchorToDisabled(info)
-	local _, empty = GetValues(info)
-	return Grid2.isMidnight or empty
-end
-
-local function SetParent(info,v)
-	local child = info.arg
-	local oldParent = Grid2.indicators[ child.parentName ]
-	local newParent = v and Grid2.indicators[v]
-	if oldParent then
-		oldParent.childName = nil
-		oldParent:UpdateDB() -- really not necessary in current implementation
-	end
-	child.dbx.anchorTo = newParent and newParent.name or nil
-	child:UpdateDB()
-	if oldParent then oldParent:LayoutAllFrames() end
-	if newParent then newParent:LayoutAllFrames() end
-	child:LayoutAllFrames()
-	Grid2Frame:UpdateIndicators()
-	for _, indicator in Grid2:IterateIndicators() do
-		if indicator.dbx.type=="bar" and indicator.sideKick then
-			Grid2Options:MakeIndicatorOptions(indicator)
-		end
-	end
-end
-
-function Grid2Options:MakeIndicatorBarAnchorOptions(indicator,options)
-	options.parentBar = {
-		type   = "select",
-		order  = 1.91,
-		name   = L["Anchor to"],
-		desc   = L["Anchor the indicator to the selected bar."],
-		get    = function () return (not Grid2.isMidnight and indicator.dbx.anchorTo) or "NONE" end,
-		set    = SetParent,
-		values = GetValues,
-		disabled = anchorToDisabled,
-		arg    = indicator,
-	}
-end
--- Grid2Options:MakeIndicatorBarParentOptions()
-function Grid2Options:MakeIndicatorBarLocationOptions(indicator,options)
-	self:MakeHeaderOptions( options, "General" )
-	if not indicator.parentName then
-		self:MakeIndicatorLevelOptions(indicator,options)
-		self:MakeIndicatorLocationOptions(indicator,options)
-	end
-	self:MakeIndicatorBarAnchorOptions(indicator,options)
-end
-
 -- Grid2Options:MakeIndicatorBarDisplayOptions()
 function Grid2Options:MakeIndicatorBarAppearanceOptions(indicator,options)
 	self:MakeHeaderOptions( options, "Appearance" )
-	if indicator.dbx.anchorTo then return end
 	options.orientation = {
 		type = "select",
 		order = 15,

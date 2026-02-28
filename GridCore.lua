@@ -161,14 +161,8 @@ function Grid2:OnEnable()
 	self:RegisterEvent("UNIT_NAME_UPDATE")
 	self:RegisterEvent("UNIT_PET")
 	self:RegisterEvent("SPELLS_CHANGED")
-	if self.versionCli>=30000 then -- wotlk or superior
-		self:RegisterEvent("PLAYER_ROLES_ASSIGNED")
-	end
-	if self.isWoW90 then
-		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
-	elseif self.versionCli>=30000 then
-		self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED", "PLAYER_SPECIALIZATION_CHANGED")
-	end
+	self:RegisterEvent("PLAYER_ROLES_ASSIGNED")
+	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 
 	self.db.RegisterCallback(self, "OnProfileShutdown", "ProfileShutdown")
     self.db.RegisterCallback(self, "OnProfileChanged", "ProfileChanged")
@@ -176,8 +170,6 @@ function Grid2:OnEnable()
 	self.db.RegisterCallback(self, "OnProfileReset", "ProfileChanged")
 
 	self.playerClassSpec = self.playerClass .. (self.GetSpecialization() or 0)
-
-	self:UpdatePlayerDispelTypes()
 
 	self:LoadConfig()
 
@@ -302,9 +294,6 @@ end
 
 -- Player spells tracking
 function Grid2:SPELLS_CHANGED()
-	if self.UpdatePlayerDispelTypes then
-		self:UpdatePlayerDispelTypes()
-	end
 	if self.UpdatePlayerRangeSpells then
 		self:UpdatePlayerRangeSpells()
 	end
