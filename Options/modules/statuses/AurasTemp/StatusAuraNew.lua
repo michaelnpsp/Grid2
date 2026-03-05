@@ -165,7 +165,7 @@ NewBuffHandler.options = {
 	newStatusSecret = {
 		type = "description",
 		order= 5.4,
-		name =  "|cFFff0000\n".. L["Warning: This buff cannot be tracked because has been flagged as secret by Blizzard."] .. '|r',
+		name =  "|cFFff0000".. L["Warning: This buff was flagged as secret by Blizzard and cannot be tracked."] .. '|r',
 		hidden = "IsSecret",
 		handler = NewBuffHandler,
 	},
