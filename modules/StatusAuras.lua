@@ -38,6 +38,22 @@ Grid2.DispelCurveDefaults = {
 local color_default = Grid2.defaultColors.TRANSPARENT
 
 -------------------------------------------------------------------------------
+-- Exhaustion or similar debuffs
+-------------------------------------------------------------------------------
+
+Grid2.SatedDebuffs = {
+	[57723]  = true, -- Exhaustion
+	[57724]  = true, -- Sated
+	[80354]  = true, -- Temporal Displacement
+	[95809]  = true, -- Hunter Pet Insanity
+	[160455] = true, -- Hunter Pet Fatigued
+	[264689] = true, -- Hunter Pet Fatigued
+	[390435] = true, -- Exhaustion
+	[26013]  = true, -- BG Deserter
+	[71041]  = true, -- Dungeon Deserter
+}
+
+-------------------------------------------------------------------------------
 -- shared functions
 -------------------------------------------------------------------------------
 
@@ -155,11 +171,22 @@ end
 -------------------------------------------------------------------------------
 
 do
+	local CODE = [[local isv=Grid2.issecretvalue; local dbl=Grid2.SatedDebuffs; return function(a) return (%s) end]]
 
-	local filterTypedFuncs = {
-		[false] = function(aura) return aura.dispelName==nil; end,
-		[true] = function(aura) return aura.dispelName~=nil; end,
-	}
+	local function CompileDisplayFunc(filter)
+		local tmpTbl = {}
+		if filter.typed~=nil then
+			tmpTbl[#tmpTbl+1] = filter.typed and "a.dispelName~=nil" or "a.dispelName==nil"
+		end
+		if filter.sated then
+			tmpTbl[#tmpTbl+1] = "(isv(a.spellId) or dbl[a.spellId]==nil)"
+		end
+		if #tmpTbl>0 then
+			local s = string.format( CODE, table.concat(tmpTbl," and ") )
+			return assert(loadstring(s))()
+		end
+		return nil
+	end
 
 	local function Debuffs_GetColor(self, unit)
 		local cnt, _, _, _, _, col = self:GetIcons(unit, 1)
@@ -172,7 +199,7 @@ do
 		self.aura_filter   = filter.filter or 'HARMFUL'
 		self.aura_sortRule = filter.sortRule or 0
 		self.aura_sortDir  = filter.sortDir or 0
-		self.aura_display  = filterTypedFuncs[filter.typed]
+		self.aura_display  = CompileDisplayFunc(filter)
 		self.aura_func     = filter.blizFilter and LBA.GetUnitAuras or nil
 		self.aura_color:ClearPoints()
 		local colors = self.dbx.colors or {}

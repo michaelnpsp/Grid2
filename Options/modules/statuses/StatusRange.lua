@@ -63,6 +63,11 @@ local function RangeAvailable(status, range)
 	return range~=38 or Grid2:GetStatusByName( status.name=='range' and 'rangealt' or 'range' ).curRange~=38
 end
 
+local function RefreshStatus(status)
+	status:Refresh()
+	status:UpdateUnits()
+end
+
 local function MakeRangeOptions(self, status, options, optionParams)
 	local rangeDB = status.dbx.ranges and status.dbx.ranges[playerClass] or status.dbx
 	self:MakeStatusColorOptions(status, options, {
@@ -85,8 +90,7 @@ local function MakeRangeOptions(self, status, options, optionParams)
 		get = function () return status.dbx.default end,
 		set = function (_, v)
 			status.dbx.default = v
-			status:Refresh()
-			Grid2Frame:UpdateIndicators()
+			RefreshStatus(status)
 		end,
 	}
 	options.update = {
@@ -99,7 +103,7 @@ local function MakeRangeOptions(self, status, options, optionParams)
 		step = 0.05,
 		bigStep = 0.1,
 		get = function () return status.dbx.elapsed	end,
-		set = function (_, v) status.dbx.elapsed = v; status:Refresh()	end,
+		set = function (_, v) status.dbx.elapsed = v; RefreshStatus(status) end,
 	}
 	options.sep2 = {
 		type = "header",
@@ -120,7 +124,7 @@ local function MakeRangeOptions(self, status, options, optionParams)
 					rangeDB = ToggleByClass(status, true)
 				end
 				rangeDB.range = v
-				status:Refresh()
+				RefreshStatus(status)
 			else
 				Grid2Options:MessageDialog(L['Selected Range is already used in another range status, choose another option.'])
 			end
@@ -137,7 +141,7 @@ local function MakeRangeOptions(self, status, options, optionParams)
 		end,
 		set = function (_, v)
 			rangeDB = ToggleByClass(status, v)
-			status:UpdateDB()
+			RefreshStatus(status)
 		end,
 	}
 	options.newline = {
@@ -152,7 +156,7 @@ local function MakeRangeOptions(self, status, options, optionParams)
 		name = L["Spell for friendly units"],
 		desc = L["Spell to check the range of. The player must know the spell."],
 		get = function () return rangeDB.friendlySpellID;	end,
-		set = function (_, v) rangeDB.friendlySpellID = v; status:UpdateDB(); end,
+		set = function (_, v) rangeDB.friendlySpellID = v; RefreshStatus(status); end,
 		values = function() return GetPlayerSpells(status, false) end,
 		hidden = function() return rangeDB.range~='spell' end,
 	}
@@ -163,7 +167,7 @@ local function MakeRangeOptions(self, status, options, optionParams)
 		name = L["Spell for hostile units"],
 		desc = L["Spell to check the range of. The player must know the spell."],
 		get = function () return rangeDB.hostileSpellID;	end,
-		set = function (_, v) rangeDB.hostileSpellID = v; status:UpdateDB(); end,
+		set = function (_, v) rangeDB.hostileSpellID = v; RefreshStatus(status); end,
 		values = function() return GetPlayerSpells(status, true) end,
 		hidden = function() return rangeDB.range~='spell' end,
 	}

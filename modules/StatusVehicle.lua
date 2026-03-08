@@ -20,6 +20,7 @@ function Vehicle:OnEnable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateAllUnits")
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "UpdateUnit")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE", "UpdateUnit")
+	classcolors = self.dbx.useClassColors and Grid2:GetStatusByName('classcolor').dbx.colors or nil
 end
 
 function Vehicle:OnDisable()
@@ -62,8 +63,7 @@ function Vehicle:GetClassColor(unit)
 end
 
 function Vehicle:UpdateDB()
-	classcolors = self.dbx.useClassColors and Grid2:GetStatusByName('classcolor').dbx.colors or nil
-	self.GetColor =	classcolors and self.GetClassColor or Grid2.statusLibrary.GetColor
+	self.GetColor =	self.dbx.useClassColors and self.GetClassColor or Grid2.statusLibrary.GetColor
 end
 
 local function Create(baseKey, dbx)

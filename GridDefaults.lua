@@ -5,7 +5,7 @@ Created by Michael, based on Grid2Options\GridDefaults.lua from original Grid2 a
 local Grid2 = Grid2
 
 -- Latest database profile version
-local DB_VERSION = 101
+local DB_VERSION = 102
 
 -- Database manipulation functions
 function Grid2:DbSetStatusDefaultValue(name, value)
@@ -218,6 +218,13 @@ function Grid2:UpdateDefaults()
 			for _,dbx in pairs(self.db.profile.indicators) do
 				if dbx.type=='privateauras' then
 					dbx.load = nil
+				end
+			end
+		end
+		if version<102 then -- removed posible old anchoring for single bar indicators
+			for _,dbx in pairs(self.db.profile.indicators) do
+				if dbx.type=='bar' then
+					dbx.anchorTo = nil
 				end
 			end
 		end

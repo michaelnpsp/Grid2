@@ -77,9 +77,9 @@ function Health:UpdateDB()
 	self.GetText = self.dbx.displayRawNumbers and (self.dbx.truncateWhenZero and self.GetText3 or self.GetText2) or self.GetText1
     self.colorCurve:ClearPoints()
 	self.colorCurve:SetType(Enum.LuaCurveType.Linear)
-	self.colorCurve:AddPoint( 0  , self.dbx.color3 )
-	self.colorCurve:AddPoint( 0.5, self.dbx.color2 )
-	self.colorCurve:AddPoint( 1  , self.dbx.color1 )
+	self.colorCurve:AddPoint( self.dbx.colorCurve3 or 0  , self.dbx.color3 )
+	self.colorCurve:AddPoint( self.dbx.colorCurve2 or 0.5, self.dbx.color2 )
+	self.colorCurve:AddPoint( self.dbx.colorCurve1 or 1  , self.dbx.color1 )
 end
 
 local function Create(baseKey, dbx)

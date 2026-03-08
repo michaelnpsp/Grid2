@@ -46,7 +46,7 @@ do
 					for s in next, statuses do
 						local mine = s.isMine
 						if (mine==false or mine==myUnits[cas]) and s.seen~=1 then
-							tex, cnt, dur, exp, val[s.vId] = a.icon, max(a.applications,1), a.duration, a.expirationTime, a.points[s.vId]
+							tex, cnt, dur, exp, val[s.vId] = a.icon, a.applications, a.duration, a.expirationTime, a.points[s.vId]
 							if exp~=s.exp[u] or s.cnt[u]~=cnt or val[s.vId]~=s.val[u] or s.spells then
 								s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.val[u], s.tkr[u] = 1, aid, tex, cnt, dur, exp, val[s.vId], 1
 							else

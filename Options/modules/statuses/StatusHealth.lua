@@ -32,6 +32,7 @@ end
 
 Grid2Options:RegisterStatusOptions("health-current", "health", function(self, status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
+	self:MakeStatusColorCurveOptions(status, options, optionParams)
 	options.deadAsFullHealth = {
 		type = "toggle",
 		tristate = false,
@@ -46,10 +47,13 @@ Grid2Options:RegisterStatusOptions("health-current", "health", function(self, st
 	}
 	self:MakeStatusHealthFormatOptions(status, options, optionParams)
 end, {
-	width = "full",
+	width = "normal",
 	color1 = L["Full Health"],
 	color2 = L["Medium Health"],
 	color3 = L["Low Health"],
+	colorCurve1 = 1,
+	colorCurve2 = 0.5,
+	colorCurve3 = 0,
 	titleIcon = "Interface\\Icons\\Inv_potion_51",
 })
 

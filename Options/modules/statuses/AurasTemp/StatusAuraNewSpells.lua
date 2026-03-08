@@ -6,6 +6,9 @@ Grid2Options.PlayerBuffs = {
 		404464, -- Flight Style: Skyriding
 		404468, -- Flight Style: Steady
 		418590, -- Static Charge
+		427490, -- Ride Along Available
+		447959, -- Ride Along Active
+		447960, -- Ride Along Inactive
 	},
 	["DEATHKNIGHT"] = {
 		},
@@ -69,10 +72,12 @@ Grid2Options.PlayerBuffs = {
 		-- Shaman Imbuements
 		319773, -- Windfury Weapon
 		319778, -- Flametongue Weapon
-		382021, 382022, -- Earthliving Weapon
+		382021, 382022, 382024, -- Earthliving Weapon
 		457496, 457481, -- Tidecaller's Guard
 		462757, 462742, -- Thunderstrike Ward
 		344179, -- Maelstrom Weapon
+		207400, -- Ancestral Vigor
+		444490, -- Hydrobubble
 	},
 	["WARLOCK"] = {
 	},

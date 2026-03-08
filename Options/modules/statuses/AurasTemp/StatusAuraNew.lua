@@ -68,6 +68,9 @@ local NewAuraHandlerMT = {
 	IsBlizzard = function(self)
 		return self.subType == "mbuffs"
 	end,
+	IsSecret = function(self)
+		return type(self.spellName) ~= 'number' or C_Secrets.GetSpellAuraSecrecy(self.spellName)==0
+	end,
 	GetAvailableSubTypes = function(self)
 	    return self.subTypes
 	end,
@@ -76,15 +79,9 @@ local NewAuraHandlerMT = {
 	end,
 	SetSubType= function(self,info,value)
 		self.subType  = value
-		if value=='buff' then
-			self.spellName = nil
-			self.name = ""
-			self.mine = 1
-		else
-			self.spellName = value
-			self.name = ""
-			self.mine = nil
-		end
+		self.spellName = nil
+		self.name = ""
+		self.mine = 1
 	end,
 	Create = function (self)
 		local baseKey = self:GetKey()
@@ -165,14 +162,21 @@ NewBuffHandler.options = {
 		hidden = "IsBlizzard",
 		handler = NewBuffHandler,
 	},
+	newStatusSecret = {
+		type = "description",
+		order= 5.4,
+		name =  "|cFFff0000".. L["Warning: This buff was flagged as secret by Blizzard and cannot be tracked."] .. '|r',
+		hidden = "IsSecret",
+		handler = NewBuffHandler,
+	},
 	newStatusBuffSpacer = {
 		type = "header",
-		order = 5.4,
+		order = 5.5,
 		name = "",
 	},
 	newStatusBuff = {
 		type = "execute",
-		order = 5.5,
+		order = 5.6,
 		name = L["Create"],
 		desc = L["Create a new Buff."],
 		func = "Create",

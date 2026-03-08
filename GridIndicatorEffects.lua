@@ -18,10 +18,10 @@ local function GetUpdate_GlowPixel(indicator)
 	local thickness = dbx.glow_thickness or 2
 	local always = not not dbx.highlightAlways
 	return function(self, parent, unit)
-		local status, state = funcStatus(self, unit)
+		local status, state, secret, invert = funcStatus(self, unit)
 		local frame = funcFrame(self, parent)
 		if frame then
-			local enabled = status and (always or state=="blink")
+			local enabled = status and (always or (not secret and state=="blink"))
 			if enabled ~= frame.__glowEnabled then
 				frame.__glowEnabled = enabled
 				if enabled then
@@ -30,7 +30,7 @@ local function GetUpdate_GlowPixel(indicator)
 					funcStop( frame )
 				end
 			end
-			funcUpdate(self, parent, unit, status)
+			funcUpdate(self, parent, unit, status, state, secret, invert)
 		end
 	end
 end
@@ -48,10 +48,10 @@ local function GetUpdate_GlowAutoCast(indicator)
 	local particlesScale = dbx.glow_particlesScale or 1
 	local always = not not dbx.highlightAlways
 	return function(self, parent, unit)
-		local status, state = funcStatus(self, unit)
+		local status, state, secret, invert = funcStatus(self, unit)
 		local frame = funcFrame(self, parent)
 		if frame then
-			local enabled = status and (always or state=="blink")
+			local enabled = status and (always or (not secret and state=="blink"))
 			if enabled ~= frame.__glowEnabled then
 				frame.__glowEnabled = enabled
 				if enabled then
@@ -60,7 +60,7 @@ local function GetUpdate_GlowAutoCast(indicator)
 					funcStop( frame )
 				end
 			end
-			funcUpdate(self, parent, unit, status)
+			funcUpdate(self, parent, unit, status, state, secret, invert)
 		end
 	end
 end
@@ -76,10 +76,10 @@ local function GetUpdate_GlowButton(indicator)
 	local frequency = dbx.glow_frequency or 0.12
 	local always = not not dbx.highlightAlways
 	return function(self, parent, unit)
-		local status, state = funcStatus(self, unit)
+		local status, state, secret, invert = funcStatus(self, unit)
 		local frame = funcFrame(self, parent)
 		if frame then
-			local enabled = status and (always or state=="blink")
+			local enabled = status and (always or (not secret and state=="blink"))
 			if enabled ~= frame.__glowEnabled then
 				frame.__glowEnabled = enabled
 				if enabled then
@@ -88,7 +88,7 @@ local function GetUpdate_GlowButton(indicator)
 					funcStop( frame )
 				end
 			end
-			funcUpdate(self, parent, unit, status)
+			funcUpdate(self, parent, unit, status, state, secret, invert)
 		end
 	end
 end
@@ -119,7 +119,7 @@ local function GetUpdate_Scale(indicator)
 	local funcUpdate = indicator.OnUpdate
 	local animOnEnabled = indicator.dbx.animOnEnabled
 	return function(self, parent, unit)
-		local status, state = funcStatus(self, unit)
+		local status, state, secret, invert = funcStatus(self, unit)
 		local frame = funcFrame(self, parent)
 		if frame then
 			local anim = frame.scaleAnim
@@ -130,7 +130,7 @@ local function GetUpdate_Scale(indicator)
 			elseif anim then
 				anim:Stop()
 			end
-			funcUpdate(self, parent, unit, status)
+			funcUpdate(self, parent, unit, status, state, secret, invert)
 		end
 	end
 end
@@ -155,7 +155,7 @@ local function GetUpdate_Blink(indicator)
 	local funcUpdate = indicator.OnUpdate
 	local always = not not indicator.dbx.highlightAlways
 	return function(self, parent, unit)
-		local status, state = funcStatus(self, unit)
+		local status, state, secret, invert = funcStatus(self, unit)
 		local frame = funcFrame(self, parent)
 		if frame then
 			local anim = frame.blinkAnim
@@ -164,7 +164,7 @@ local function GetUpdate_Blink(indicator)
 			elseif anim then
 				anim:Stop()
 			end
-			funcUpdate(self, parent, unit, status)
+			funcUpdate(self, parent, unit, status, state, secret, invert)
 		end
 	end
 end

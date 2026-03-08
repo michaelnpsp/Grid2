@@ -218,7 +218,7 @@ local function MakeBuffsOptions(status, options)
 	options.filter_header = {
 		type = "header",
 		order = 10,
-		name = L["Buffs to display:"],
+		name = L["Buffs to display"],
 	}
 	options.filter_all = {
 		type = "toggle",
@@ -418,7 +418,7 @@ local function MakeDebuffsFilterOptions(status, options)
 	options.filter_header = {
 		type = "header",
 		order = 10,
-		name = L["Debuffs to display:"],
+		name = L["Debuffs to display"],
 	}
 	options.filter_all = {
 		type = "toggle",
@@ -577,6 +577,24 @@ local function MakeDebuffsFilterOptions(status, options)
 		end,
 		set = function(_, v)
 			filter_set_value( status, 'aura_filter', 'sortDir', v and 1 or nil )
+		end,
+	}
+	options.filter_misc = {
+		type = "header",
+		order = 120,
+		name = L["Miscellaneous"],
+	}
+	options.hide_sated = {
+		type = "toggle",
+		order = 130,
+		width = "full",
+		name = L["Hide exhaustion, sated, deserter and similar debuffs"],
+		desc = L["Hide exhaustion, sated, deserter and similar debuffs"],
+		get = function()
+			return filter_get_value( status, 'aura_filter', 'sated' )
+		end,
+		set = function(_, v)
+			filter_set_value( status, 'aura_filter', 'sated', v, false )
 		end,
 	}
 end

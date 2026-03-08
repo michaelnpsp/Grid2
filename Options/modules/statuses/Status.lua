@@ -481,6 +481,45 @@ do
 	end
 end
 
+--  Grid2Option:MakeStatusColorCurveOptions(status, options, optionParams)
+function Grid2Options:MakeStatusColorCurveOptions(status, options, optionParams)
+	local function GetCurveValue(i, def)
+		return status.dbx["colorCurve"..i] or (optionParams and optionParams["colorCurve"..i]) or def
+	end
+	for i = 1, ( (optionParams and optionParams.colorCount) or status.dbx.colorCount or 1 ) do
+		local curveKey = "colorCurve" .. i
+		options[curveKey] = {
+			type = "range",
+			order = (10.5 + i),
+			isPercent = true,
+			min = 0,
+			max = 1,
+			step = 0.01,
+			name = L["Threshold"],
+			desc = optionParams and optionParams["color"..i] and L["Threshold for: %s"]:format(optionParams["color"..i]) or L["Threshold for: Color %d"]:format(i),
+			width = optionParams and optionParams.width or "half",
+			get = function(info)
+				return GetCurveValue(i, 0)
+			end,
+			set = function(info, value)
+				local def = optionParams and optionParams[curveKey]
+				local min = GetCurveValue(i+1, 0)
+				local max = GetCurveValue(i-1, 1)
+				if value>=min and value<=max then
+					status.dbx[curveKey] = value~=def and value or nil
+					status:Refresh()
+				end
+			end,
+		}
+		options[curveKey..'sep'] = {
+			type = "description",
+			order = 10.6+i,
+			fontSize = "small",
+			name = "\n",
+		}
+	end
+end
+
 -- Grid2Options:MakeStatusColorThresholdOptions()
 function Grid2Options:MakeStatusColorThresholdOptions(status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)

@@ -6,29 +6,53 @@ local function Square_Create(self, parent)
 	self:Acquire("Frame", parent, "BackdropTemplate")
 end
 
-local function Square_OnUpdate(self, parent, unit, status, state, secret)
+local function Square_OnUpdate(self, parent, unit, status, state, secret, invert)
 	local Square = parent[self.name]
-	if secret then
-		Square:SetBackdropColor(status:GetColor(unit))
-		Square:SetAlphaFromBoolean(state, 1, 0)
-	elseif status then
-		Square:SetBackdropColor(status:GetColor(unit))
-		Square:SetAlpha(1)
+	if invert then
+		if secret then
+			Square:SetBackdropColor(status:GetColor(unit))
+			Square:SetAlphaFromBoolean(state, 0, 1)
+		elseif status then
+			Square:SetBackdropColor(status:GetColor(unit))
+			Square:SetAlpha(state and 0 or 1)
+		else
+			Square:SetAlpha(0)
+		end
 	else
-		Square:SetAlpha(0)
+		if secret then
+			Square:SetBackdropColor(status:GetColor(unit))
+			Square:SetAlphaFromBoolean(state, 1, 0)
+		elseif status then
+			Square:SetBackdropColor(status:GetColor(unit))
+			Square:SetAlpha(1)
+		else
+			Square:SetAlpha(0)
+		end
 	end
 end
 
-local function Square_OnUpdateBorder(self, parent, unit, status, state, secret)
+local function Square_OnUpdateBorder(self, parent, unit, status, state, secret, invert)
 	local Square = parent[self.name]
-	if secret then
-		Square:SetBackdropBorderColor(status:GetColor(unit))
-		Square:SetAlphaFromBoolean(state, 1, 0)
-	elseif status then
-		Square:SetBackdropBorderColor(status:GetColor(unit))
-		Square:SetAlpha(1)
+	if invert then
+		if secret then
+			Square:SetBackdropBorderColor(status:GetColor(unit))
+			Square:SetAlphaFromBoolean(state, 0, 1)
+		elseif status then
+			Square:SetBackdropBorderColor(status:GetColor(unit))
+			Square:SetAlpha(state and 0 or 1)
+		else
+			Square:SetAlpha(0)
+		end
 	else
-		Square:SetAlpha(0)
+		if secret then
+			Square:SetBackdropBorderColor(status:GetColor(unit))
+			Square:SetAlphaFromBoolean(state, 1, 0)
+		elseif status then
+			Square:SetBackdropBorderColor(status:GetColor(unit))
+			Square:SetAlpha(1)
+		else
+			Square:SetAlpha(0)
+		end
 	end
 end
 
