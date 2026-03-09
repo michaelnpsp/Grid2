@@ -7,7 +7,6 @@ local floor = math.floor
 local type = type
 local pairs = pairs
 local ipairs = ipairs
-local issecretvalue = Grid2.issecretvalue
 
 local POINTS = {
 	HORIZONTAL = { [true] = "LEFT",   [false] = "RIGHT" }, -- normal, reverse fill
@@ -115,7 +114,7 @@ local function Bar_Layout(self, parent)
 		textureReal:SetDrawLayer("ARTWORK", setup.sublayer)
 		local c = setup.color
 		if c then
-			textureReal:SetVertexColor( c.r, c.g, c.b, setup.opacity )
+			textureReal:SetVertexColor( c.r, c.g, c.b, setup.opacity or 0 )
 		else
 			ctextures = ctextures or {}; ctextures[#ctextures+1] = textureReal
 		end
@@ -291,10 +290,9 @@ local function BarColor_SetBarColor(self, parent, r, g, b, a)
 	if frame then
 		local textures = frame.myCTextures
 		if textures then
-			if a==nil or issecretvalue(a) then	a = 1 end
 			for i=#textures,1,-1 do
 				local tex = textures[i]
-				tex:SetVertexColor( r, g, b, min(tex.myOpacity, a) )
+				tex:SetVertexColor( r, g, b, tex.myOpacity or a or 1 )
 			end
 		end
 	end
@@ -314,7 +312,6 @@ local function BarColor_UpdateDB(self)
 	local dbx = self.dbx
 	self.SetBarColor = dbx.invertColor and BarColor_SetBarColorInverted or BarColor_SetBarColor
 	self.OnUpdate = dbx.textureColor.r and Grid2.Dummy or BarColor_OnUpdate
-	self.opacity = dbx.textureColor.a
 end
 
 --- }}}
