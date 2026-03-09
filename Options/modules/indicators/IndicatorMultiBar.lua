@@ -414,16 +414,16 @@ do
 			order = 6,
 			width = 0.9,
 			name = L["Opacity"],
-			desc = L["Set the opacity."],
+			desc = L["Set the opacity, select zero to use the status color opacity."],
 			min = 0,
 			max = 1,
 			step = 0.01,
 			bigStep = 0.05,
 			get = function()
-				return (barDbx.textureColor or barDbx.color).a or 1
+				return (barDbx.textureColor or barDbx.color).a or 0
 			end,
 			set = function(_, v)
-				(barDbx.textureColor or barDbx.color).a = v
+				(barDbx.textureColor or barDbx.color).a = v>0 and v or nil
 				self:RefreshIndicator(indicator, "Layout")
 			end,
 			hidden = false,

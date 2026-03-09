@@ -159,12 +159,12 @@ function Grid2Options:MakeIndicatorBarMiscOptions(indicator, options)
 		type = "range",
 		order = 43,
 		name = L["Opacity"],
-		desc = L["Set the opacity."],
+		desc = L["Set the opacity, select zero to use the status color opacity."],
 		min = 0,
 		max = 1,
 		step = 0.01,
 		bigStep = 0.05,
-		get = function () return indicator.dbx.opacity or 1	end,
+		get = function () return indicator.dbx.opacity or 1 end,
 		set = function (_, v)
 			indicator.dbx.opacity = v
 			indicator.sideKick:UpdateDB()

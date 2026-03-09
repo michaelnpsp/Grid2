@@ -153,8 +153,7 @@ local function BarColor_OnUpdate(self, parent, unit, status)
 	if bar then
 		if status then
 			local r, g, b, a = status:GetColor(unit)
-			if a==nil or issecretvalue(a) then a = 1 end
-			bar.fgTex:SetVertexColor(r, g, b, min(self.opacity, a) )
+			bar.fgTex:SetVertexColor(r, g, b, self.opacity or a )
 		else
 			bar:SetStatusBarColor(0,0,0,0)
 		end
@@ -167,20 +166,26 @@ local function BarColor_OnUpdateInverted(self, parent, unit, status)
 		local r, g, b, a
 		if status then
 			r, g, b, a = status:GetColor(unit)
+			if a==nil or issecretvalue(a) then	a = 1 end
 		else
 			r, g, b, a = 0, 0, 0, 0
 		end
 		local c = self.backColor
-		bar.fgTex:SetVertexColor(c.r, c.g, c.b, min(self.opacity, 0.8))
-		bar.bgTex:SetVertexColor(r, g, b, (a or 1)*c.a)
+		bar.fgTex:SetVertexColor(c.r, c.g, c.b, self.opacity)
+		bar.bgTex:SetVertexColor(r, g, b, a*c.a)
 	end
 end
 
 local function BarColor_UpdateDB(self)
 	local dbx = self.dbx
-	self.OnUpdate  = dbx.invertColor and BarColor_OnUpdateInverted or BarColor_OnUpdate
 	self.backColor = dbx.backColor or defaultBackColor
-	self.opacity   = dbx.opacity or 1
+	if dbx.invertColor then
+		self.OnUpdate = BarColor_OnUpdateInverted
+		self.opacity = dbx.opacity and min(dbx.opacity, 0.8) or 0.8
+	else
+		self.OnUpdate = BarColor_OnUpdate
+		self.opacity = dbx.opacity~=0 and (dbx.opacity or 1) or nil -- opacity==0 => use status color
+	end
 end
 
 local function Create(indicatorKey, dbx)
