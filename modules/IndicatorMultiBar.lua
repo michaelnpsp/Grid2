@@ -259,6 +259,7 @@ local function Bar_UpdateDB(self)
 			color = dbx.invertColor and texColor or backColor,
 			opacity = backColor.a,
 			background = not self.backAnchor,
+			prevBar = 1,
 			sublayer = -1,
 			defValue = 1,
 		}
