@@ -5,6 +5,7 @@ if not Grid2.secretsEnabled then return end
 local Grid2 = Grid2
 local Grid2Frame = Grid2Frame
 local min = min
+local issecretvalue = Grid2.issecretvalue
 local AlignPoints = Grid2.AlignPoints
 local defaultBackColor = { r=0, g=0, b=0, a=1 }
 
@@ -152,7 +153,8 @@ local function BarColor_OnUpdate(self, parent, unit, status)
 	if bar then
 		if status then
 			local r, g, b, a = status:GetColor(unit)
-			bar.fgTex:SetVertexColor(r, g, b, self.opacity)
+			if a==nil or issecretvalue(a) then a = 1 end
+			bar.fgTex:SetVertexColor(r, g, b, min(self.opacity, a) )
 		else
 			bar:SetStatusBarColor(0,0,0,0)
 		end

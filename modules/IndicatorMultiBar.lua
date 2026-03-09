@@ -3,11 +3,11 @@
 local Grid2 = Grid2
 local Grid2Frame = Grid2Frame
 local min = min
-local max = max
 local floor = math.floor
 local type = type
 local pairs = pairs
 local ipairs = ipairs
+local issecretvalue = Grid2.issecretvalue
 
 local POINTS = {
 	HORIZONTAL = { [true] = "LEFT",   [false] = "RIGHT" }, -- normal, reverse fill
@@ -30,8 +30,8 @@ local function SetMultibarPercentValue(bar, unit, status, interpol)
 end
 
 local function SetMultibarMinMaxValue(bar, unit, status, interpol)
-	local value, min, max = status:GetValueMinMax(unit)
-	bar:SetMinMaxValues(min, max)
+	local value, minVal, maxVal = status:GetValueMinMax(unit)
+	bar:SetMinMaxValues(minVal, maxVal)
 	bar:SetValue(value, interpol or bar.interpol)
 end
 
@@ -291,9 +291,10 @@ local function BarColor_SetBarColor(self, parent, r, g, b, a)
 	if frame then
 		local textures = frame.myCTextures
 		if textures then
+			if a==nil or issecretvalue(a) then	a = 1 end
 			for i=#textures,1,-1 do
 				local tex = textures[i]
-				tex:SetVertexColor( r, g, b, tex.myOpacity )
+				tex:SetVertexColor( r, g, b, min(tex.myOpacity, a) )
 			end
 		end
 	end
