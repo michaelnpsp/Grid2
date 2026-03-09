@@ -1,6 +1,4 @@
-if not Grid2.secretsEnabled then return end
-
---[[ Created by Grid2 original authors, modified by Michael ]]--
+--[[ Created by Michael ]]--
 
 local Grid2 = Grid2
 local Grid2Frame = Grid2Frame
@@ -67,16 +65,12 @@ local function Bar_UpdateMulti(self, parent, unit, status)
 			if status then
 				local indexes = priorities[status]
 				repeat
-					textures[ indexes % 10 ]:SetMultibarValue(unit, status, 0)
+					textures[indexes % 10]:SetMultibarValue(unit, status, 0)
 					indexes = floor( indexes / 10 )
 				until indexes==0
 			else -- update due a layout or groupType change not from a status notifying a change
-				for _, status in ipairs(self.statuses) do
-					local indexes = priorities[status]
-					repeat
-						textures[ indexes % 10 ]:SetMultibarValue(unit, status, 0)
-						indexes = floor( indexes / 10 )
-					until indexes==0
+				for index, status in ipairs(self.bstatuses) do
+					textures[index]:SetMultibarValue(unit, status, 0)
 				end
 			end
 		end
@@ -145,7 +139,7 @@ local function Bar_Layout(self, parent)
 				texture:SetPoint( setup.pointFrom, prevTex, prevPnt, 0, setup.lineAdjust )
 			end
 		else
-			local status = self.statuses[i]
+			local status = self.bstatuses[i]
 			texture.SetMultibarValue = (status and status.GetValueMinMax and SetMultibarMinMaxValue) or SetMultibarPercentValue
 			texture:SetSize( width, height )
 			texture:SetPoint( setup.pointFrom, prevTex, prevPnt )
@@ -183,15 +177,18 @@ local function Bar_Disable(self, parent)
 	bar:ClearAllPoints()
 end
 
-local function GetIndexesFromDb(self)
-	local result = {}
-	for statusName, indexes in pairs(Grid2:DbGetValue('statusMap', self.name)) do
+local function Bar_SortStatuses(self)
+	local statuses = self.statuses
+	table.sort(statuses, self.sortStatuses)
+	local bstatuses = self.bstatuses
+	wipe(bstatuses)
+	for _, status in ipairs(statuses) do
+		local indexes = self.priorities[status]
 		repeat
-			result[indexes % 10] = statusName
+			bstatuses[indexes % 10] = status
 			indexes = floor( indexes / 10 )
 		until indexes==0
 	end
-	return result
 end
 
 local function Bar_UpdateDB(self)
@@ -266,7 +263,15 @@ local function Bar_UpdateDB(self)
 			defValue = 1,
 		}
 	end
-	self.UpdateO = Bar_UpdateMulti -- Bar_UpdateMulti or Bar_Update
+	if dbx.multiStatus then -- at least one status linked to several bars: status priority stores several bar indexes
+		self.bstatuses = (self.statuses~=self.bstatuses) and self.bstatuses or {}
+		self.SortStatuses = Bar_SortStatuses
+		self.UpdateO = Bar_UpdateMulti
+	else -- no repeated statuses: status priority == bar index
+		self.bstatuses = self.statuses
+		self.SortStatuses = Grid2.indicatorPrototype.SortStatuses
+		self.UpdateO = Bar_Update
+	end
     self.Update = self.UpdateO
 end
 
@@ -315,7 +320,6 @@ end
 local function Create(indicatorKey, dbx)
 	local Bar = Grid2.indicatorPrototype:new(indicatorKey)
 	Bar.dbx = dbx
-	-- Hack to caculate status index fast: statuses[priorities[status]] == status
 	Bar.sortStatuses   = function (a,b) return Bar.priorities[a] < Bar.priorities[b] end
 	Bar.Create         = Bar_CreateHH
 	Bar.SetOrientation = Bar_SetOrientation

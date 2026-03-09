@@ -121,6 +121,20 @@ do
 		return Grid2:DbGetValue('statusMap',indicator.name) or emptyTable
 	end
 
+	local function GetStatusPriorityFromDB(indicator, statusName)
+		return GetIndicatorStatusMap(indicator)[statusName]
+	end
+
+	local function UpdateMultiStatusFromDB(indicator)
+		for _, priority in pairs(GetIndicatorStatusMap(indicator)) do
+			if priority>=10 then
+				indicator.dbx.multiStatus = true
+				return
+			end
+		end
+		indicator.dbx.multiStatus = nil
+	end
+
 	local function RegisterIndicatorStatus(indicator, statusName, priority)
 		if statusName then
 			assert( type(priority)=='number' )
@@ -138,32 +152,60 @@ do
 		end
 	end
 
-	local function UnregisterIndicatorAllStatuses(indicator)
-		for statusName in next, GetIndicatorStatusMap(indicator) do
-			UnregisterIndicatorStatus(indicator, statusName)
+	local function UpdateIndicatorMultiStatus(indicator)
+		UpdateMultiStatusFromDB(indicator)
+		indicator:UpdateDB()
+		indicator:SortStatuses()
+		indicator:LayoutAllFrames()
+		Grid2Frame:UpdateIndicators()
+	end
+
+	local function GetIndicatorStatusNameMulti(indicator, barIndex)
+		for statusName, indexes in pairs(GetIndicatorStatusMap(indicator)) do
+			repeat
+				if barIndex == (indexes % 10) then return statusName end
+				indexes = math.floor( indexes / 10 )
+			until indexes==0
 		end
 	end
 
-	local function SetIndicatorStatusPriority(indicator, statusName, priority)
-		assert( type(priority)=='number' )
+	local function RegisterIndicatorStatusMulti(indicator, statusName, barIndex)
+		local status = Grid2:GetStatusByName(statusName)
+		if status then
+			local priority = indicator.priorities[status]
+			if priority then
+				priority = priority*10 + barIndex
+				indicator:SetStatusPriority(status, priority)
+			else
+				priority = barIndex
+				indicator:RegisterStatus(status, priority)
+			end
+			Grid2:DbSetMap(indicator.name, status.name, priority)
+		end
+	end
+
+	local function UnregisterIndicatorStatusMulti(indicator, statusName, barIndex)
+		local status = Grid2:GetStatusByName(statusName)
+		if status then
+			local priority = indicator.priorities[status]
+			assert(priority>10 or priority==barIndex)
+			if priority<10 then
+				priority = nil
+				indicator:UnregisterStatus(status)
+			else
+				priority = tonumber( (tostring(priority):gsub( tostring(barIndex), '' )) )
+				indicator:SetStatusPriority(status, priority)
+			end
+			Grid2:DbSetMap(indicator.name, status.name, priority)
+		end
+	end
+
+	local function SetIndicatorStatusPriorityMulti(indicator, statusName, oldIndex, newIndex)
+		local priority = GetIndicatorStatusMap(indicator)[statusName]
+		priority = tonumber( (tostring(priority):gsub(tostring(oldIndex),tostring(newIndex))) )
 		Grid2:DbSetMap( indicator.name, statusName, priority)
 		local status = Grid2:GetStatusByName(statusName)
-		if status then indicator:SetStatusPriority(status, priority) end
-	end
-
-	local function GetIndicatorStatusPriority(indicator, statusName)
-		if statusName then
-			local map = Grid2:DbGetValue('statusMap', indicator.name)
-			return map and map[statusName]
-		end
-	end
-
-	local function GetIndicatorStatusName(indicator, priority)
-		for name, index in next, GetIndicatorStatusMap(indicator) do
-			if priority==index then
-				return name
-			end
-		end
+		if status then 	indicator:SetStatusPriority(status, priority) end
 	end
 
 	-- bar settings
@@ -219,35 +261,24 @@ do
 			width = 1,
 			name = L["Status"],
 			desc = L["Select the status to display in this bar."],
-			get = function()
-				return GetIndicatorStatusName(indicator, barIndex+1)
-			end,
+			get = function() return GetIndicatorStatusNameMulti(indicator, barIndex+1) end,
 			set = function(_, newStatusName)
-				local newStatusIndex = barIndex + 1
-				local oldStatusName  = GetIndicatorStatusName(indicator, newStatusIndex)
-				local oldStatusIndex = GetIndicatorStatusPriority(indicator, newStatusName)
-				if oldStatusName and oldStatusIndex then
-					SetIndicatorStatusPriority(indicator, oldStatusName, oldStatusIndex)
-					SetIndicatorStatusPriority(indicator, newStatusName, newStatusIndex)
-				else
-					UnregisterIndicatorStatus(indicator, oldStatusName)
-					RegisterIndicatorStatus(indicator, newStatusName , newStatusIndex)
-				end
-				self:RefreshIndicator(indicator, "Layout")
+				local statusIndex = barIndex + 1
+				local oldStatusName = GetIndicatorStatusNameMulti(indicator, statusIndex)
+				UnregisterIndicatorStatusMulti(indicator, oldStatusName, statusIndex)
+				RegisterIndicatorStatusMulti(indicator, newStatusName , statusIndex)
+				UpdateIndicatorMultiStatus(indicator)
 			end,
 			values = function()
 				wipe(tmpTable)
-				local curStatusName = GetIndicatorStatusName(indicator, barIndex+1)
-				local usedStatuses  = GetIndicatorStatusMap(indicator)
 				local type = barDbx.glowLine and 'color' or 'percent'
 				for statusKey, status in Grid2:IterateStatuses() do
-					if self:IsCompatiblePair(indicator, status) and self:IsCompatibleStatus(status, type) and (curStatusName or not usedStatuses[statusKey]) then
+					if self:IsCompatiblePair(indicator, status) and self:IsCompatibleStatus(status, type) then
 						tmpTable[statusKey] = self.LocalizeStatus(status)
 					end
 				end
 				return tmpTable
 			end,
-			disabled = function() return barIndex>0 and not GetIndicatorStatusName(indicator, barIndex) end,
 			hidden = false,
 		},
 		--
@@ -345,7 +376,10 @@ do
 					RegisterIndicatorStatus(indicator.sideKick, 'classcolor', 50)
 					color.r, color.g, color.b = nil, nil, nil
 				else -- (2) custom color
-					UnregisterIndicatorAllStatuses(indicator.sideKick)
+					local indicator = indicator.sideKick
+					for statusName in next, GetIndicatorStatusMap(indicator) do
+						UnregisterIndicatorStatus(indicator, statusName)
+					end
 					color.r, color.g, color.b = 0, 0, 0
 				end
 				self:RefreshIndicator(indicator, "Layout" )
@@ -543,7 +577,7 @@ do
 				self:RefreshIndicator(indicator, "Layout")
 				SelectTab( #indicator.dbx )
 			end,
-			disabled = function() return #indicator.dbx>=5 end,
+			disabled = function() return #indicator.dbx>=6 end,
 			hidden = false,
 		},
 
@@ -555,20 +589,23 @@ do
 			desc = L["Delete this bar"],
 			func = function(info)
 				if barIndex>0 and barIndex<=#indicator.dbx then
-					local priority = barIndex+1
-					UnregisterIndicatorStatus( indicator, GetIndicatorStatusName(indicator, priority) )
+					local statusIndex = barIndex+1
+					local oldStatusName = GetIndicatorStatusNameMulti(indicator, statusIndex)
+					UnregisterIndicatorStatusMulti(indicator, oldStatusName, statusIndex)
 					table.remove(indicator.dbx, barIndex)
 					for i,bar in ipairs(indicator.dbx) do
-						if bar.prevBar and bar.prevBar>i then
-							bar.prevBar = nil
-						end
+						bar.prevBar = (bar.prevBar and bar.prevBar<=i and bar.prevBar) or nil
 					end
-					for statusName, index in next, GetIndicatorStatusMap(indicator) do
-						if index>priority then
-							SetIndicatorStatusPriority(indicator, statusName, index-1)
-						end
+					for statusName, indexes in next, GetIndicatorStatusMap(indicator) do
+						repeat
+							local index = indexes % 10
+							if index>statusIndex then
+								SetIndicatorStatusPriorityMulti(indicator, statusName, index, index-1)
+							end
+							indexes = math.floor( indexes / 10 )
+						until indexes==0
 					end
-					self:RefreshIndicator(indicator, "Layout")
+					UpdateIndicatorMultiStatus(indicator)
 					SelectTab( barIndex<=#indicator.dbx and barIndex or barIndex-1 )
 				end
 			end,
@@ -727,7 +764,7 @@ do
 		return barIndex>0 and not (indicator and indicator.dbx[barIndex])
 	end
 
-	for i=0,6 do
+	for i=0,7 do
 		options[tostring(i)] = {
 			type   = "group",
 			order  = i,
