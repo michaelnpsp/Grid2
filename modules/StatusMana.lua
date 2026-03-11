@@ -141,7 +141,7 @@ function Power:IsActiveFilter(unit)
 end
 
 function Power:GetPercent(unit)
-	local m = UnitPowerMax(unit)
+	local m = UnitPowerMax(unit, (UnitPowerType(unit)) )
 	return m == 0 and 0 or UnitPower(unit) / m
 end
 
