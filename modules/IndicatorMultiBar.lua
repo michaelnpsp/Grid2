@@ -40,14 +40,12 @@ local function Bar_Update(self, parent, unit, status)
 		local frame = parent[self.name]
 		if frame then
 			local textures = frame.myTextures
-			local priorities = self.priorities
 			if status then
-				local bar = textures[ priorities[status] ]
-				bar:SetMultibarValue(unit, status)
+				local index = self.priorities[status]
+				textures[index]:SetMultibarValue(unit, status)
 			else -- update due a layout or groupType change not from a status notifying a change
-				for _, status in ipairs(self.statuses) do
-					local bar = textures[ priorities[status] ]
-					bar:SetMultibarValue(unit, status, 0)
+				for index, status in ipairs(self.statuses) do
+					textures[index]:SetMultibarValue(unit, status, 0)
 				end
 			end
 		end
@@ -60,9 +58,8 @@ local function Bar_UpdateMulti(self, parent, unit, status)
 		local frame = parent[self.name]
 		if frame then
 			local textures = frame.myTextures
-			local priorities = self.priorities
 			if status then
-				local indexes = priorities[status]
+				local indexes = self.priorities[status]
 				repeat
 					textures[indexes % 10]:SetMultibarValue(unit, status, 0)
 					indexes = floor( indexes / 10 )
@@ -319,6 +316,7 @@ end
 local function Create(indicatorKey, dbx)
 	local Bar = Grid2.indicatorPrototype:new(indicatorKey)
 	Bar.dbx = dbx
+	-- invert sort order to fast lookup bar index: priorities[status] == barIndex / statuses[priorities[status]] == status
 	Bar.sortStatuses   = function (a,b) return Bar.priorities[a] < Bar.priorities[b] end
 	Bar.Create         = Bar_CreateHH
 	Bar.SetOrientation = Bar_SetOrientation
