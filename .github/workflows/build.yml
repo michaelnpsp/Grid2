@@ -3,18 +3,9 @@ name: Build Grid2
 on:
   workflow_dispatch:
     inputs:
-      retail:
-        type: boolean
-        description: Retail
       mists:
         type: boolean
         description: Pandaria
-      cata:
-        type: boolean
-        description: Cataclysm
-      wrath:
-        type: boolean
-        description: Wrath
       bcc:
         type: boolean
         description: Burning
@@ -34,41 +25,11 @@ jobs:
         with:
           fetch-depth: 200
 
-      - name: Create Retail Package
-        if: ${{ inputs.retail }}
-        uses: BigWigsMods/packager@master
-        with:
-          args: -g retail -m .pkgmeta-retail
-        env:
-          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
-          CF_API_KEY: ${{ secrets.CF_API_KEY }}
-          WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
-
       - name: Create MoP Package
         if: ${{ inputs.mists }}
         uses: BigWigsMods/packager@master
         with:
           args: -g mists -m .pkgmeta-mists
-        env:
-          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
-          CF_API_KEY: ${{ secrets.CF_API_KEY }}
-          WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
-
-      - name: Create Cata Package
-        if: ${{ inputs.cata }}
-        uses: BigWigsMods/packager@master
-        with:
-          args: -g cata -m .pkgmeta-cata
-        env:
-          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
-          CF_API_KEY: ${{ secrets.CF_API_KEY }}
-          WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
-
-      - name: Create Wrath Package
-        if: ${{ inputs.wrath }}
-        uses: BigWigsMods/packager@master
-        with:
-          args: -g wrath -m .pkgmeta-wrath
         env:
           GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
