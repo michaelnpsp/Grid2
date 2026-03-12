@@ -7,6 +7,7 @@ local next = next
 local ipairs = ipairs
 local rosterUnits = Grid2.roster_guids
 local UnitIsFriend = UnitIsFriend
+local UnitIsVisible = UnitIsVisible
 local GetUnitAuras = C_UnitAuras.GetUnitAuras
 local GetAuraDuration = C_UnitAuras.GetAuraDuration
 local GetAuraDataByIndex = C_UnitAuras.GetAuraDataByIndex
@@ -57,21 +58,23 @@ Grid2.SatedDebuffs = {
 -- shared functions
 -------------------------------------------------------------------------------
 
-local function GetIconsSorted(unit, max, filter, sortRule, sortDir, colorCurve, aurasFunc, displayFunc)
+local function GetIconsSorted(unit, max, filter, sortRule, sortDir, colorCurve, aurasFunc, displayFunc, displayUnitFunc)
 	local i = 0
-	local color = colorCurve.r and colorCurve or nil
-	local auras = (aurasFunc or GetUnitAuras)(unit, filter, displayFunc and 40 or max, sortRule, sortDir)
-	for _, a in ipairs(auras) do
-		if not displayFunc or displayFunc(a) then
-			i = i + 1
-			local auraInstanceID = a.auraInstanceID
-			slots[i] = auraInstanceID
-			textures[i] = a.icon
-			durations[i] = a.duration
-			expirations[i] = a.expirationTime
-			counts[i] =  a.applications
-			colors[i] = color or GetAuraDispelTypeColor(unit, auraInstanceID, colorCurve) or color_default
-			if i>=max then break end
+	if not displayUnitFunc or displayUnitFunc(unit) then
+		local color = colorCurve.r and colorCurve or nil
+		local auras = (aurasFunc or GetUnitAuras)(unit, filter, displayFunc and 40 or max, sortRule, sortDir)
+		for _, a in ipairs(auras) do
+			if not displayFunc or displayFunc(a) then
+				i = i + 1
+				local auraInstanceID = a.auraInstanceID
+				slots[i] = auraInstanceID
+				textures[i] = a.icon
+				durations[i] = a.duration
+				expirations[i] = a.expirationTime
+				counts[i] =  a.applications
+				colors[i] = color or GetAuraDispelTypeColor(unit, auraInstanceID, colorCurve) or color_default
+				if i>=max then break end
+			end
 		end
 	end
 	return i, textures, counts, expirations, durations, colors, slots
@@ -88,7 +91,7 @@ local Shared = {
 }
 
 function Shared:GetIcons(unit, max)
-	return GetIconsSorted(unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.aura_color, self.aura_func, self.aura_display)
+	return GetIconsSorted(unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.aura_color, self.aura_func, self.aura_display, self.aura_displayu)
 end
 
 function Shared:GetIconData(unit)
@@ -129,6 +132,8 @@ function Shared:IsActive(unit)
 		return self:GetIcons(unit, 1) > 0
 	elseif self.aura_func then
 		return LBA.UnitHasAuras(unit, self.aura_filter)~=nil
+	elseif self.aura_displayu and not self.aura_displayu(unit) then
+		return false
 	else
 		return GetAuraDataByIndex(unit, 1, self.aura_filter)~=nil
 	end
@@ -147,6 +152,9 @@ do
 		self.aura_sortDir  = filter.sortDir or 0
 		self.aura_filter   = filter.blizFilter or filter.filter or 'HELPFUL'
 		self.aura_func     = filter.blizFilter and LBA.GetUnitAuras or nil
+		-- we must check UnitIsVisible() for defensives because blizzard returns all buffs if unit is far away
+		local isDef = filter.blizFilter==nil and strfind(filter.filter or '', 'DEFENSIVE')~=nil
+		self.aura_displayu = isDef and UnitIsVisible or nil
 	end
 
 	-- Registration
