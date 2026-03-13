@@ -150,11 +150,15 @@ do
 		self.aura_color    = self.dbx.color1
 		self.aura_sortRule = filter.sortRule or 0
 		self.aura_sortDir  = filter.sortDir or 0
-		self.aura_filter   = filter.blizFilter or filter.filter or 'HELPFUL'
-		self.aura_func     = filter.blizFilter and LBA.GetUnitAuras or nil
-		-- we must check UnitIsVisible() for defensives because blizzard returns all buffs if unit is far away
-		local isDef = filter.blizFilter==nil and strfind(filter.filter or '', 'DEFENSIVE')~=nil
-		self.aura_displayu = isDef and UnitIsVisible or nil
+		if filter.blizFilter then -- buffs from blizzard frames
+			self.aura_filter   = filter.blizFilter
+			self.aura_func     = LBA.GetUnitAuras
+			self.aura_displayu = nil
+		else -- standard filter
+			self.aura_filter   = filter.filter or 'HELPFUL'
+			self.aura_func     = nil
+			self.aura_displayu = self.aura_filter~='HELPFUL' and UnitIsVisible or nil
+		end
 	end
 
 	-- Registration
@@ -208,7 +212,13 @@ do
 		self.aura_sortRule = filter.sortRule or 0
 		self.aura_sortDir  = filter.sortDir or 0
 		self.aura_display  = CompileDisplayFunc(filter)
-		self.aura_func     = filter.blizFilter and LBA.GetUnitAuras or nil
+		if filter.blizFilter then -- debuffs from blizzard frames
+			self.aura_func     = LBA.GetUnitAuras
+			self.aura_displayu = nil
+		else -- standard filter
+			self.aura_func     = nil
+			self.aura_displayu = self.aura_filter~='HARMFUL' and UnitIsVisible or nil
+		end
 		self.aura_color:ClearPoints()
 		local colors = self.dbx.colors or {}
 		for typ, def in pairs(Grid2.DispelCurveDefaults) do
@@ -273,11 +283,11 @@ do
 	end
 
 	function DebuffsDispell:LBA_UNIT_AURA(_, unit)
-		self:UpdateCache( unit, UnitIsFriend("player", unit) and LBA.GetUnitDebuffsDispellable(unit, self.aura_filter, 1)[1] or nil )
+		self:UpdateCache( unit, (UnitIsFriend("player", unit) and UnitIsVisible(unit)) and LBA.GetUnitDebuffsDispellable(unit, self.aura_filter, 1)[1] or nil )
 	end
 
 	function DebuffsDispell:UNIT_AURA(_, unit)
-		self:UpdateCache( unit, UnitIsFriend("player", unit) and GetAuraDataByIndex(unit, 1, self.aura_filter) or nil )
+		self:UpdateCache( unit, (UnitIsFriend("player", unit) and UnitIsVisible(unit)) and GetAuraDataByIndex(unit, 1, self.aura_filter) or nil )
 	end
 
 	function DebuffsDispell:Grid_UnitUpdated(_, unit)
