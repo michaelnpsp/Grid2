@@ -312,7 +312,13 @@ do
 
 	function DebuffsDispell:UpdateDB()
 		self.aura_filter = 'HARMFUL|RAID_PLAYER_DISPELLABLE'
-		self.aura_func = self.dbx.blizFilter and LBA.GetUnitAuras or nil
+		if self.dbx.blizFilter then
+			self.aura_func = LBA.GetUnitAuras
+			self.aura_displayu = nil
+		else
+			self.aura_func = nil
+			self.aura_displayu = UnitIsVisible
+		end
 		self.aura_color:ClearPoints()
 		local colors = self.dbx.colors or {}
 		for typ, def in pairs(Grid2.DispelCurveDefaults) do
