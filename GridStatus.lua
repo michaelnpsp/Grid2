@@ -27,7 +27,7 @@ end
 
 -- stacks: text, bar indicators
 function status:GetCount()
-	return 1
+	return 0
 end
 -- max posible stacks: bar indicator
 function status:GetCountMax()
