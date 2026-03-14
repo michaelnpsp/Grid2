@@ -47,7 +47,7 @@ do
 						local mine = s.isMine
 						if (mine==false or mine==myUnits[cas]) and s.seen~=1 then
 							tex, cnt, dur, exp, val[s.vId] = a.icon, a.applications, a.duration, a.expirationTime, a.points[s.vId]
-							if exp~=s.exp[u] or s.cnt[u]~=cnt or val[s.vId]~=s.val[u] or s.spells then
+							if exp~=s.exp[u] or s.cnt[u]~=cnt or val[s.vId]~=s.val[u] then
 								s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.val[u], s.tkr[u] = 1, aid, tex, cnt, dur, exp, val[s.vId], 1
 							else
 								s.seen, s.idx[u] = -1, aid
@@ -67,7 +67,6 @@ do
 						indicators[indicator] = true
 					end
 				end
-				if s.ResetState then s:ResetState(u) end
 				s.seen = false
 			end
 			-- Update indicators that needs updating only once.
@@ -83,7 +82,6 @@ do
 				if not s.seen and s.idx[u] then
 					s.idx[u], s.exp[u], s.val[u] = nil, nil, nil
 				end
-				if s.ResetState then s:ResetState(u) end
 				s.seen = false
 			end
 		end
