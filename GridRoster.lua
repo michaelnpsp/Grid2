@@ -29,7 +29,6 @@ local grouped_players = {} -- party1=>1, raid1=>1 ; only party/raid player/owner
 local grouped_pets    = {} -- partypet1=>1, raidpet2=>1 ; only party/raid pet units
 local roster_types    = { target = 'target', focus = 'focus', targettarget = 'targettarget', focustarget = 'focustarget' }
 local roster_my_units = { player = true, pet = true, vehicle = true }
-local faked_units     = { focustarget = true } -- eventless units
 local external_units  = { target = true, focus = true, targettarget = true, focustarget = true }
 -- roster tables / storing only existing units
 local roster_names    = {} -- raid1=>name, ..
@@ -38,7 +37,6 @@ local roster_guids    = {} -- raid1=>guid,..
 local roster_players  = {} -- raid1=>guid ;only non pet units in group/raid
 local roster_pets     = {} -- raidpet1=>guid ;only pet units in group/raid
 local roster_units    = {} -- guid=>raid1, ..
-local roster_faked    = {} -- eventless units
 local roster_external = {} -- non-grouped units
 -- roster dead tracking
 local roster_deads = {}
@@ -143,7 +141,6 @@ do
 		if external_units[unit] then
 			roster_external[unit] = true
 		end
-		roster_faked[unit] = faked_units[unit]
 		roster_deads[unit] = Grid2:UnitIsDeadOrGhost(unit)
 		Grid2:SendMessage("Grid_UnitUpdated", unit, true)
 	end
@@ -164,7 +161,6 @@ do
 		if external_units[unit] then
 			roster_external[unit] = nil
 		end
-		roster_faked[unit] = nil
 		roster_deads[unit] = nil
 		Grid2:SendMessage("Grid_UnitLeft", unit)
 	end
@@ -216,7 +212,7 @@ do
 
 	-- functions to manage non-grouped and eventless units from custom headers (see GridGroupHeaders.lua)
 	-- target, focus, targettarget, focustarget, bosssX, arenaX, ...
-	Grid2InsecureGroupCustomHeader_RegisterUpdate(Grid2, "Grid_FakedUnitsUpdate", RefreshUnit, roster_faked)
+	Grid2InsecureGroupCustomHeader_RegisterUpdate(Grid2, "Grid_FakedUnitsUpdate", RefreshUnit, {})
 
 	-- We delay roster updates to the next frame Update, to ensure all GROUP_ROSTER_UPDATE group headers events were already
 	-- processed, in this way roster is up to date: non-existant units already removed from roster when UpdateRoster() is executed.
@@ -484,6 +480,5 @@ Grid2.grouped_players = grouped_players
 Grid2.raid_indexes    = raid_indexes
 Grid2.party_indexes   = party_indexes
 Grid2.roster_deads    = roster_deads
-Grid2.roster_faked    = roster_faked
 Grid2.roster_external = roster_external
 --}}

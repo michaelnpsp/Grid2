@@ -1,117 +1,164 @@
 -- Auras management
 local Grid2 = Grid2
-local Grid2Frame = Grid2Frame
 local type = type
 local next = next
-local max = math.max
 local GetTime = GetTime
 local GetSpellInfo = Grid2.API.GetSpellInfo
 local GetAuraDataByIndex = C_UnitAuras.GetAuraDataByIndex
+local GetAuraDataByAuraInstanceID = C_UnitAuras.GetAuraDataByAuraInstanceID
 local GetAuraDuration = C_UnitAuras.GetAuraDuration
 local canaccessvalue = Grid2.canaccessvalue
+local myUnits = Grid2.roster_my_units
+local myFrames = Grid2Frame.frames_of_unit
 
 -- Local variables
 local Statuses = {}
 local Buffs = {}
 
 -- UNIT_AURA event management
--- s.seen = nil aura was removed, linked indicators must be updated
--- s.seen = 1   aura was changed, linked indicators must be updated
--- s.seen = -1  aura was not changed, do nothing
-local AuraFrame_OnEvent
+local UpdateAllAuras, UnitAuraEvent
 do
-	local myUnits  = Grid2.roster_my_units
-	local myFrames = Grid2Frame.frames_of_unit
-	local indicators = {}
-	local val = {0,0,0}
-	local a, nam, tex, cnt, typ, dur, exp, cas, sid, bos, aid, _
-	local function GetAura(unit, index, filter)
-		a = GetAuraDataByIndex(unit, index, filter)
-		if a then
-			nam  = a.name
-			sid  = a.spellId
-			cas  = a.sourceUnit
-			bos  = a.isBossAura
-			typ  = a.dispelName
-			aid  = a.auraInstanceID
-			return true
+	-- update status indicators
+	local function UpdateStatusFrames(unit, status, frames)
+		for indicator in next, status.indicators do
+			for frame in next, frames do
+				indicator:Update(frame, unit)
+			end
 		end
 	end
-	AuraFrame_OnEvent = function(_, event, u)
-		local i = 1
-		while GetAura(u,i,'HELPFUL') do -- Scan Buffs
+	-- full aura scan
+	local function ScanFull(u)
+		for i=1,40 do
+			local a = GetAuraDataByIndex(u, i, 'HELPFUL')
+			if a==nil then break end
+			local sid = a.spellId
 			if canaccessvalue(sid) then
-				local statuses = Buffs[nam] or Buffs[sid]
+				local statuses = Buffs[a.name] or Buffs[sid]
 				if statuses then
 					for s in next, statuses do
 						local mine = s.isMine
-						if (mine==false or mine==myUnits[cas]) and s.seen~=1 then
-							tex, cnt, dur, exp, val[s.vId] = a.icon, a.applications, a.duration, a.expirationTime, a.points[s.vId]
-							if exp~=s.exp[u] or s.cnt[u]~=cnt or val[s.vId]~=s.val[u] then
-								s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.val[u], s.tkr[u] = 1, aid, tex, cnt, dur, exp, val[s.vId], 1
-							else
-								s.seen, s.idx[u] = -1, aid
+						if (mine==false or mine==myUnits[a.sourceUnit]) and (not s.seen) then
+							s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.tkr[u] = true, a.auraInstanceID, a.icon, a.applications, a.duration, a.expirationTime, 1
+						end
+					end
+				end
+			end
+		end
+	end
+	-- update indicators linked to statuses added/modified/removed on last aura full scan
+	local function UpdateFull(u)
+		local frames = myFrames[u]
+		for s in next, Statuses do
+			if s.seen then
+				s.seen = nil
+			else
+				s.idx[u], s.exp[u] = nil, nil
+			end
+			UpdateStatusFrames(u,s,frames)
+		end
+	end
+	-- clear statuses not detected on last aura full scan
+	local function ClearFull(u)
+		for s in next, Statuses do
+			if not s.seen and s.idx[u] then
+				s.idx[u], s.exp[u] = nil, nil
+			else
+				s.seen = nil
+			end
+		end
+	end
+	-- scan added auras
+	local function ScanAdded(u, added)
+		if added then
+			for _,a in ipairs(added) do
+				local sid = a.spellId
+				if canaccessvalue(sid) then
+					local statuses = Buffs[a.name] or Buffs[sid]
+					if statuses then
+						for s in next, statuses do
+							local mine = s.isMine
+							if (mine==false or mine==myUnits[a.sourceUnit]) and s.seen~=1 then
+								s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.tkr[u] = true, a.auraInstanceID, a.icon, a.applications, a.duration, a.expirationTime, 1
 							end
 						end
 					end
 				end
 			end
-			i = i + 1
 		end
-		if event then
-			-- Mark indicators that need updating
-			for s in next, Statuses do
-				local seen = s.seen
-				if (seen==1) or ((not seen) and s.idx[u] and s:Reset(u)) then
-					for indicator in next, s.indicators do
-						indicators[indicator] = true
+	end
+	-- scan updated auras
+	local function ScanUpdated(u, updated)
+		if updated then
+			for _,aid in ipairs(updated) do
+				local a = GetAuraDataByAuraInstanceID(u,aid)
+				if a then
+					local sid = a.spellId
+					if canaccessvalue(sid) then
+						local statuses = Buffs[a.name] or Buffs[sid]
+						if statuses then
+							for s in next, statuses do
+								if aid==s.idx[u] then
+									s.seen, s.cnt[u], s.dur[u], s.exp[u], s.tkr[u] = true, a.applications, a.duration, a.expirationTime, 1
+								end
+							end
+						end
 					end
 				end
-				s.seen = false
 			end
-			-- Update indicators that needs updating only once.
-			local frames = myFrames[u]
-			for indicator in next, indicators do
-				for frame in next, frames do
-					indicator:Update(frame, u)
-				end
+		end
+	end
+	-- scan removed auras
+	local function ScanRemoved(u, removed)
+		if removed then
+			for _,aid in ipairs(removed) do
+				removed[aid] = true
 			end
-			wipe(indicators)
+		end
+	end
+	-- update indicators linked to statuses added/modified/removed on last aura non-full scan
+	local function UpdatePartial(u, removed)
+		local frames = myFrames[u]
+		for s in next, Statuses do
+			if s.seen then
+				s.seen = nil
+				UpdateStatusFrames(u,s,frames)
+			elseif removed and removed[s.idx[u]] then
+				s.idx[u], s.exp[u] = nil, nil
+				UpdateStatusFrames(u,s,frames)
+			end
+		end
+	end
+	-- UNIT_AURA event
+	UnitAuraEvent = function(_, event, u, info)
+		if info then
+			ScanAdded(u, info.addedAuras)
+			ScanUpdated(u, info.updatedAuraInstanceIDs)
+			ScanRemoved(u, info.removedAuraInstanceIDs)
+			UpdatePartial(u, info.removedAuraInstanceIDs)
 		else
-			for s in next, Statuses do
-				if not s.seen and s.idx[u] then
-					s.idx[u], s.exp[u], s.val[u] = nil, nil, nil
-				end
-				s.seen = false
-			end
+			ScanFull(u)
+			UpdateFull(u)
 		end
 	end
-end
-
--- Clear/update auras when unit changes or leaves the roster.
-local UpdateAllAuras
-do
-	local function UpdateFakedUnitsAuras(_,units)
-		for unit in next, units do
-			AuraFrame_OnEvent(nil, true, unit)
+	-- clear all statuses when a unit leave the roster
+	Grid2.RegisterMessage( Statuses, "Grid_UnitLeft", function(_,u)
+		for s in next, Statuses do
+			s.idx[u], s.exp[u] = nil, nil
 		end
-	end
-	local function ClearAurasOfUnit(_, unit)
-		for status in next, Statuses do
-			status.idx[unit], status.exp[unit], status.val[unit] = nil, nil, nil
-		end
-	end
-	local function UpdateAurasOfUnit(_, unit)
-		AuraFrame_OnEvent(nil, nil, unit)
-	end
+	end )
+	-- full scan when a roster unit joins or is changed
+	Grid2.RegisterMessage( Statuses, "Grid_UnitUpdated", function(_,u)
+		ScanFull(u)
+		ClearFull(u)
+	end )
+	--  full scan when a status is enabled (profile load, status settings changed, or suspended status wake up)
 	function UpdateAllAuras() -- TODO, very inefficient if several suspended buffs/debuffs are waked up, because it's executed for each status, and should be executed only once for all statuses.
-		for unit in Grid2:IterateRosterUnits() do
-			AuraFrame_OnEvent(nil,nil,unit)
+		for u in Grid2:IterateRosterUnits() do
+			ScanFull(u)
+			ClearFull(u)
 		end
 	end
-	Grid2.RegisterMessage( Statuses, "Grid_UnitLeft", ClearAurasOfUnit )
-	Grid2.RegisterMessage( Statuses, "Grid_UnitUpdated", UpdateAurasOfUnit )
-	Grid2.RegisterMessage( Statuses, "Grid_FakedUnitsUpdate", UpdateFakedUnitsAuras)
+
 end
 
 -- RegisterTimeTrackerStatus() UnregisterTimeTrackerStatus()
@@ -148,7 +195,7 @@ end
 
 local function RegisterStatusAura(status, auraType, spell, update)
 	if not next(Statuses) then
-		Grid2.RegisterRosterUnitEvent(Statuses, "UNIT_AURA", AuraFrame_OnEvent)
+		Grid2.RegisterRosterUnitEvent(Statuses, "UNIT_AURA", UnitAuraEvent)
 	end
 	local handler = Buffs
 	local statuses = handler[spell]
@@ -204,10 +251,6 @@ do
 	local fmt = string.format
 	local UnitHealthMax = UnitHealthMax
 	local unit_is_pet   = Grid2.owner_of_unit
-	local function Reset(self, unit) -- multibar indicator needs val[unit]=nil because due to a speed optimization it does not check if status is active before calling GetPercent()
-		self.idx[unit], self.exp[unit], self.val[unit] = nil, nil, nil
-		return true
-	end
 	-- with unit class/reaction/role filters
 	local function IsActiveFilter(self, unit)
 		return not self.filtered[unit] and self.idx[unit]~=nil
@@ -312,15 +355,19 @@ do
 	local function GetDurationMissing()
 		return
 	end
+	local function GetAuraPointsValue(self, unit)
+		local a = GetAuraDataByAuraInstanceID(unit, self.idx[unit])
+		return a and a.points[self.vId] or 0
+	end
 	local function GetPercentHealth(self, unit)
 		local m = UnitHealthMax(unit)
-		return m>0 and (self.val[unit] or 0) / m or 0
+		return (canaccessvalue(m) and m>0) and GetAuraPointsValue(self, unit)/m or 0
 	end
 	local function GetPercentMax(self, unit)
-		return (self.val[unit] or 0) / self.valMax
+		return GetAuraPointsValue(self, unit) / self.valMax
 	end
 	local function GetTextValue(self, unit)
-		return fmt( "%.1fk", (self.val[unit] or 0) / 1000 )
+		return fmt( "%.1fk", GetAuraPointsValue(self, unit) / 1000 )
 	end
 	local function GetTextSpell(self, unit)
 		return self.spellText
@@ -336,7 +383,7 @@ do
 	end
 	local function GetValueColor(self, unit) -- Color by value
 		local i = 1
-		local value = self.val[unit] or 0
+		local value = GetAuraPointsValue(self, unit)
 		local thresholds = self.thresholds
 		while i<=#thresholds and value<thresholds[i] do
 			i = i + 1
@@ -373,7 +420,7 @@ do
 	local function OnDisable(self)
 		UnregisterStatusAura(self, self.handlerType, self.dbx.subType)
 		UnregisterTimeTrackerStatus(self)
-		wipe(self.idx);	wipe(self.exp); wipe(self.val)
+		wipe(self.idx);	wipe(self.exp)
 		if self.OnDisableAura then self:OnDisableAura() end
 	end
 	local function UpdateDB(self,dbx)
@@ -487,10 +534,7 @@ do
 		status.cnt = {}
 		status.exp = {}
 		status.dur = {}
-		status.typ = {}
-		status.val = {}
 		status.tkr = {}
-		status.Reset       = Reset
 		status.GetCountMax = GetCountMax
 		status.UpdateDB    = UpdateDB
 		status.OnEnable    = OnEnable

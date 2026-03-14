@@ -135,13 +135,16 @@ local function Icon_OnFrameUpdate(f)
 end
 
 -- Delayed updates
-local updates = {}
+local updates, updateFrame = {}
 local EnableDelayedUpdates = function()
-	CreateFrame("Frame", nil, Grid2LayoutFrame):SetScript("OnUpdate", function()
+	updateFrame = CreateFrame("Frame", nil, Grid2LayoutFrame)
+	updateFrame:Hide()
+	updateFrame:SetScript("OnUpdate", function()
 		for i=1,#updates do
 			Icon_OnFrameUpdate(updates[i])
 		end
 		wipe(updates)
+		updateFrame:Hide()
 	end)
 	EnableDelayedUpdates = Grid2.Dummy
 end
@@ -150,7 +153,9 @@ end
 local function Icon_Update(self, parent, unit)
 	local f = parent[self.name]
 	if f then
-		updates[#updates+1] = f
+		local count = #updates
+		if count==0 then updateFrame:Show() end
+		updates[count+1] = f
 	end
 end
 
