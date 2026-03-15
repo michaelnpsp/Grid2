@@ -21,7 +21,7 @@ local roster_external = Grid2.roster_external
 local grouped_units = Grid2.grouped_units
 
 -------------------------------------------------------------------------
---  Range check spells initialization
+--  range check spells initialization
 -------------------------------------------------------------------------
 local spellHostile, spellFriendly = "", nil
 do
@@ -88,7 +88,7 @@ do
 end
 
 ------------------------------------------------------------------------
--- Range status
+-- range check functions
 -------------------------------------------------------------------------
 
 local InCombat = false
@@ -256,7 +256,7 @@ function Shared:UpdateDB()
 	local rangec = tonumber(dbr.range) or dbr.range
 	rangec = Ranges[rangec] and rangec or 38
 	self.refreshUnits = (rangec==38) and roster_external or roster_guids
-	self.elapsed = (rangec~=38 or elapsed>1) and elapsed or 1 -- for 38y range does not allow update rate less than 1 second.
+	self.elapsed = (rangec~=38 or elapsed>1) and elapsed or 1 -- for 38y range do not allow update rate less than 1 second.
 	self.UnitRangeCheck = Ranges[rangec](spellf, spellh, rangec==38)
 	self.IsActive = rangec==38 and self.IsActiveR or self.IsActiveN
 	self.curAlpha = dbx.default or 0.25
