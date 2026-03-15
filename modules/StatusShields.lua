@@ -18,19 +18,13 @@ local Shields = Grid2.statusPrototype:new("shields")
 Shields.GetColor = Grid2.statusLibrary.GetColor
 
 function Shields:OnEnable()
-	self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED", "UpdateUnit")
-	self:RegisterEvent("UNIT_MAXHEALTH", "UpdateUnit")
+	self:RegisterRosterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", self.UpdateIndicatorsFromEvent)
+	self:RegisterRosterUnitEvent("UNIT_MAXHEALTH", self.UpdateIndicatorsFromEvent)
 end
 
 function Shields:OnDisable()
-	self:UnregisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
-	self:UnregisterEvent("UNIT_MAXHEALTH")
-end
-
-function Shields:UpdateUnit(_,unit)
-	if unit_is_valid[unit] then
-		self:UpdateIndicators(unit)
-	end
+	self:UnregisterRosterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED")
+	self:UnregisterRosterUnitEvent("UNIT_MAXHEALTH")
 end
 
 function Shields:GetText1(unit)
@@ -86,21 +80,15 @@ function Overflow:GetPercent() -- to avoid crash on old profiles using overflow 
 end
 
 function Overflow:OnEnable()
-	self:RegisterEvent("UNIT_MAXHEALTH", "UpdateUnit")
-	self:RegisterEvent("UNIT_HEALTH", "UpdateUnit")
-	self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED", "UpdateUnit")
+	self:RegisterRosterUnitEvent("UNIT_HEALTH", self.UpdateIndicatorsFromEvent)
+	self:RegisterRosterUnitEvent("UNIT_MAXHEALTH", self.UpdateIndicatorsFromEvent)
+	self:RegisterRosterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", self.UpdateIndicatorsFromEvent)
 end
 
 function Overflow:OnDisable()
-	self:UnregisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
-	self:UnregisterEvent("UNIT_MAXHEALTH")
-	self:UnregisterEvent("UNIT_HEALTH")
-end
-
-function Overflow:UpdateUnit(_, unit)
-	if unit_is_valid[unit] then
-		self:UpdateIndicators(unit)
-	end
+	self:UnregisterRosterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED")
+	self:UnregisterRosterUnitEvent("UNIT_MAXHEALTH")
+	self:UnregisterRosterUnitEvent("UNIT_HEALTH")
 end
 
 function Overflow:IsActive(unit) -- hackish, only used by multibar indicator

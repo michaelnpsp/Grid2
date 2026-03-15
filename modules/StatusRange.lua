@@ -7,6 +7,7 @@ local next = next
 local tonumber = tonumber
 local UnitIsUnit = UnitIsUnit
 local UnitCanAttack = UnitCanAttack
+local UnitPhaseReason = UnitPhaseReason
 local InCombatLockdown = InCombatLockdown
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local CheckInteractDistance = CheckInteractDistance

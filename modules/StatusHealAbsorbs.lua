@@ -15,15 +15,11 @@ local TruncateWhenZero = C_StringUtil.TruncateWhenZero
 Shields.GetColor = Grid2.statusLibrary.GetColor
 
 function Shields:OnEnable()
-	self:RegisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED")
+	self:RegisterRosterUnitEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", self.UpdateIndicatorsFromEvent)
 end
 
 function Shields:OnDisable()
-	self:UnregisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED")
-end
-
-function Shields:UNIT_HEAL_ABSORB_AMOUNT_CHANGED(_,unit)
-	self:UpdateIndicators(unit)
+	self:UnregisterRosterUnitEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED")
 end
 
 function Shields:GetText1(unit)

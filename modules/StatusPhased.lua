@@ -20,14 +20,8 @@ local function ResetUnit(_, unit)
 	cache[unit], range[unit] = nil, nil
 end
 
-local UpdateUnit = UnitPhaseReason and function(_, unit)
+local function UpdateUnit(_, unit)
 	local phased = UnitPhaseReason(unit)
-	if phased~=cache[unit] then
-		cache[unit] = phased
-		Phased:UpdateIndicators(unit)
-	end
-end or function(_, unit)
-	local phased = not UnitInPhase(unit) or nil
 	if phased~=cache[unit] then
 		cache[unit] = phased
 		Phased:UpdateIndicators(unit)

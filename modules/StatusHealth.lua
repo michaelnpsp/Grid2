@@ -30,20 +30,14 @@ Health.colorCurve = C_CurveUtil.CreateColorCurve()
 Health.IsActive = Grid2.statusLibrary.IsActive
 Health.GetColor  = Grid2.statusLibrary.GetColor
 
-local function HealthChangedEvent(_, unit)
-	if unit_is_valid[unit] then
-		Health:UpdateIndicators(unit)
-	end
-end
-
 function Health:OnEnable()
-	self:RegisterEvent("UNIT_MAXHEALTH", HealthChangedEvent)
-	self:RegisterEvent("UNIT_HEALTH", HealthChangedEvent)
+	self:RegisterRosterUnitEvent("UNIT_MAXHEALTH", self.UpdateIndicatorsFromEvent)
+	self:RegisterRosterUnitEvent("UNIT_HEALTH", self.UpdateIndicatorsFromEvent)
 end
 
 function Health:OnDisable()
-	self:UnregisterEvent("UNIT_MAXHEALTH")
-	self:UnregisterEvent("UNIT_HEALTH")
+	self:UnregisterRosterUnitEvent("UNIT_MAXHEALTH")
+	self:UnregisterRosterUnitEvent("UNIT_HEALTH")
 end
 
 function Health:GetText1(unit)
@@ -94,20 +88,14 @@ Grid2:DbSetStatusDefaultValue( "health-current", {type = "health-current", color
 -- health-deficit status
 HealthDeficit.GetColor  = Grid2.statusLibrary.GetColor
 
-local function HealthDeficitChangedEvent(_, unit)
-	if unit_is_valid[unit] then
-		HealthDeficit:UpdateIndicators(unit)
-	end
-end
-
 function HealthDeficit:OnEnable()
-	self:RegisterEvent("UNIT_MAXHEALTH", HealthDeficitChangedEvent)
-	self:RegisterEvent("UNIT_HEALTH", HealthDeficitChangedEvent)
+	self:RegisterRosterUnitEvent("UNIT_MAXHEALTH", self.UpdateIndicatorsFromEvent)
+	self:RegisterRosterUnitEvent("UNIT_HEALTH", self.UpdateIndicatorsFromEvent)
 end
 
 function HealthDeficit:OnDisable()
-	self:UnregisterEvent("UNIT_MAXHEALTH")
-	self:UnregisterEvent("UNIT_HEALTH")
+	self:UnregisterRosterUnitEvent("UNIT_MAXHEALTH")
+	self:UnregisterRosterUnitEvent("UNIT_HEALTH")
 end
 
 function HealthDeficit:IsActive(unit)
@@ -157,18 +145,12 @@ end
 Heals.IsActive = Grid2.statusLibrary.IsActive
 Heals.GetColor = Grid2.statusLibrary.GetColor
 
-function Heals:UNIT_HEAL_PREDICTION(_, unit)
-	if unit_is_valid[unit] then
-		self:UpdateIndicators(unit)
-	end
-end
-
 function Heals:OnEnable()
-	self:RegisterEvent("UNIT_HEAL_PREDICTION")
+	self:RegisterRosterUnitEvent("UNIT_HEAL_PREDICTION", self.UpdateIndicatorsFromEvent)
 end
 
 function Heals:OnDisable()
-	self:UnregisterEvent("UNIT_HEAL_PREDICTION")
+	self:UnregisterRosterUnitEvent("UNIT_HEAL_PREDICTION")
 end
 
 function Heals:GetValueMinMax(unit)
@@ -210,18 +192,12 @@ Grid2:DbSetStatusDefaultValue( "heals-incoming", {type = "heals-incoming", color
 MyHeals.IsActive = Grid2.statusLibrary.IsActive
 MyHeals.GetColor = Grid2.statusLibrary.GetColor
 
-function MyHeals:UNIT_HEAL_PREDICTION(_, unit)
-	if unit_is_valid[unit] then
-		self:UpdateIndicators(unit)
-	end
-end
-
 function MyHeals:OnEnable()
-	self:RegisterEvent("UNIT_HEAL_PREDICTION")
+	self:RegisterRosterUnitEvent("UNIT_HEAL_PREDICTION", self.UpdateIndicatorsFromEvent)
 end
 
 function MyHeals:OnDisable()
-	self:UnregisterEvent("UNIT_HEAL_PREDICTION")
+	self:UnregisterRosterUnitEvent("UNIT_HEAL_PREDICTION")
 end
 
 function MyHeals:GetValueMinMax(unit)
@@ -277,12 +253,12 @@ function Death:Grid_UnitDeadUpdated(_, unit)
 end
 
 function Death:OnEnable()
-	self:RegisterEvent("UNIT_HEALTH")
+	self:RegisterRosterUnitEvent("UNIT_HEALTH", self.UpdateIndicatorsFromEvent)
 	self:RegisterMessage("Grid_UnitDeadUpdated")
 end
 
 function Death:OnDisable()
-	self:UnregisterEvent("UNIT_HEALTH")
+	self:UnregisterRosterUnitEvent("UNIT_HEALTH")
 	self:UnregisterMessage("Grid_UnitDeadUpdated")
 end
 

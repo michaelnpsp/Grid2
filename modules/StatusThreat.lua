@@ -9,19 +9,13 @@ local unit_is_valid = Grid2.roster_guids
 local colors
 local activeValue
 
-function Threat:UpdateUnit(_, unit)
-	if unit_is_valid[unit or 0] then -- unit can be nil which is so wtf
-		self:UpdateIndicators(unit)
-	end
-end
-
 function Threat:OnEnable()
-	self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", "UpdateUnit")
+	self:RegisterRosterUnitEvent("UNIT_THREAT_SITUATION_UPDATE", self.UpdateIndicatorsFromEvent)
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "UpdateAllUnits")
 end
 
 function Threat:OnDisable()
-	self:UnregisterEvent("UNIT_THREAT_SITUATION_UPDATE")
+	self:UnregisterRosterUnitEvent("UNIT_THREAT_SITUATION_UPDATE")
 	self:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
 end
 
