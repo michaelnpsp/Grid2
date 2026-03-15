@@ -22,35 +22,16 @@ local fmtPercent = "%.0f%%"
 local statuses = {}  -- Enabled statuses
 
 -- Methods shared by all statuses
-local status_OnEnable, status_OnDisable
-do
-	local frame
-	local function Frame_OnEvent(self, event, unit, powerType)
-		if unit_is_valid[unit] then
-			for status, update in next, statuses do
-				update(status, unit, powerType, event)
-			end
-		end
-	end
-	function status_OnEnable(status)
-		if not next(statuses) then
-			if not frame then frame = CreateFrame("Frame", nil, Grid2LayoutFrame) end
-			frame:SetScript("OnEvent", Frame_OnEvent)
-			frame:RegisterEvent("UNIT_POWER_UPDATE")
-			frame:RegisterEvent("UNIT_MAXPOWER")
-			frame:RegisterEvent("UNIT_DISPLAYPOWER")
-		end
-		statuses[status] = status.UpdateUnitPower
-	end
-	function status_OnDisable(status)
-		statuses[status] = nil
-		if (not next(statuses)) and frame then
-			frame:SetScript("OnEvent", nil)
-			frame:UnregisterEvent("UNIT_POWER_UPDATE")
-			frame:UnregisterEvent("UNIT_MAXPOWER")
-			frame:UnregisterEvent("UNIT_DISPLAYPOWER")
-		end
-	end
+local function status_OnEnable(self)
+	self:RegisterRosterUnitEvent("UNIT_POWER_UPDATE", self.UpdateUnitPower)
+	self:RegisterRosterUnitEvent("UNIT_MAXPOWER", self.UpdateUnitPower)
+	self:RegisterRosterUnitEvent("UNIT_DISPLAYPOWER", self.UpdateUnitPower)
+end
+
+local function status_OnDisable(self)
+	self:UnregisterRosterUnitEvent("UNIT_POWER_UPDATE")
+	self:UnregisterRosterUnitEvent("UNIT_MAXPOWER")
+	self:UnregisterRosterUnitEvent("UNIT_DISPLAYPOWER")
 end
 
 -- Alternative power status
@@ -58,7 +39,7 @@ PowerAlt.GetColor = Grid2.statusLibrary.GetColor
 PowerAlt.OnEnable = status_OnEnable
 PowerAlt.OnDisable= status_OnDisable
 
-function PowerAlt:UpdateUnitPower(unit, powerType)
+function PowerAlt:UpdateUnitPower(_, unit, powerType)
 	if powerType=="ALTERNATE" then
 		self:UpdateIndicators(unit)
 	end
@@ -94,11 +75,7 @@ local powerColors = {}
 Power.OnEnable  = status_OnEnable
 Power.OnDisable = status_OnDisable
 
-function Power:UpdateUnitPowerStandard(unit, powerType, event)
-	self:UpdateIndicators(unit)
-end
-
-function Power:UpdateUnitPowerFilter(unit, powerType)
+function Power:UpdateUnitPowerFilter(_, unit, powerType)
 	if not self.filtered[unit] then
 		self:UpdateIndicators(unit)
 	end
@@ -145,7 +122,7 @@ function Power:UpdateDB()
 	powerColors["POWER_TYPE_FOCUS"] = self.dbx.color3 	  -- Codes returned by UnitPowerType() in
 	powerColors["POWER_TYPE_RED_POWER"] = self.dbx.color2 -- garrison proving grounds for friendly NPCs
 	self.IsActive = self.filtered and self.IsActiveFilter or self.IsActiveStandard
-	self.UpdateUnitPower = self.filtered and self.UpdateUnitPowerFilter or self.UpdateUnitPowerStandard
+	self.UpdateUnitPower = self.filtered and self.UpdateUnitPowerFilter or self.UpdateIndicatorsFromEvent
 	fmtPercent = Grid2.db.profile.formatting.percentFormat
 end
 
@@ -168,13 +145,13 @@ Grid2:DbSetStatusDefaultValue( "power", {type = "power", colorCount = 10,
 })
 
 -- Mana, Manaalt statuses
-local function Mana_UpdateUnitPower(self, unit, powerType)
+local function Mana_UpdateUnitPower(self, _, unit, powerType)
 	if powerType=='MANA' or powerType==nil then -- powerType==nil => UNIT_DISPLAYPOWER event
 		self:UpdateIndicators(unit)
 	end
 end
 
-local function Mana_UpdateUnitPowerF(self, unit, powerType)
+local function Mana_UpdateUnitPowerF(self, _, unit, powerType)
 	if not self.filtered[unit] and (powerType=='MANA' or powerType==nil) then
 		self:UpdateIndicators(unit)
 	end

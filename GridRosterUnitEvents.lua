@@ -1,3 +1,30 @@
+--===================================================================
+-- More efficient AceEvents replacement, these events are only fired
+-- for units in roster so no extra checks are required to filter
+-- non-roster units like nameplates.
+-- These register/unregister functions are embeded by default in all
+-- statuses, the "method_name" defaults to "event":
+--   status:RegisterRosterUnitEvent(event, method_name)
+--   status:RegisterRosterUnitEvent(event, function)
+--   status:RegisterRosterUnitEvent(event)
+--   status:UnregisterRosterUnitEvent(event)
+-- Register/unregister examples:
+--   status:RegisterRosterUnitEvent("UNIT_AURA")
+--   status:RegisterRosterUnitEvent("UNIT_AURA", function)
+--   status:RegisterRosterUnitEvent("UNIT_AURA", "UpdateAuras")
+-- Direct call examples:
+--   Grid2.UnregisterRosterUnitEvent(table, "UNIT_HEALTH")
+--   Grid2.RegisterRosterUnitEvent(table, "UNIT_HEALTH", function)
+-- Event handling function/method example:
+--   function status:UpdateAuras(event, unit, ...)
+--      self:UpdateIndicators(unit)
+--   end
+-- If a string is passed as method_name a direct function reference
+-- is saved (not the method name) so if the function/method body is
+-- changed a new RegisterRosterUnitEvent() call is required to
+-- register the new function callback.
+--===================================================================
+
 local Grid2 = Grid2
 
 local next = next
