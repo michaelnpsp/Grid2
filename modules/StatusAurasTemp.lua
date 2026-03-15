@@ -146,7 +146,7 @@ do
 			s.idx[u], s.exp[u] = nil, nil
 		end
 	end )
-	-- full scan when a roster unit joins or is changed, we don't update indicators here, because roster code will update all indicators after this message.
+	-- full scan when a roster unit joins or is changed, we don't update indicators here, because roster code already update all indicators after this message.
 	Grid2.RegisterMessage( Statuses, "Grid_UnitUpdated", function(_,u)
 		ScanFull(u)
 		ClearFull(u)
@@ -180,7 +180,7 @@ do
 					end
 				end
 			end
-		end, 0.1, false )
+		end, 0.2, false )
 		RegisterTimeTrackerStatus = function(status, elapsed)
 			if not next(tracked) then timetracker:Play() end
 			tracked[status] = elapsed or false
