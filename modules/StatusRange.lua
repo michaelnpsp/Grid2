@@ -261,7 +261,6 @@ function Shared:UpdateDB()
 	self.IsActive = rangec==38 and self.IsActiveR or self.IsActiveN
 	self.curAlpha = dbx.default or 0.25
 	self.curRange = rangec
-	print("--->UpdateDB", self.name)
 end
 
 -------------------------------------------------------------------------
