@@ -45,7 +45,7 @@ do
 			end
 		end
 	end
-	-- update indicators linked to statuses added/modified/removed on last aura full scan
+	-- clear removed statuses on last aura full scan and update indicators linked to all statuses
 	local function UpdateFull(u)
 		local frames = myFrames[u]
 		for s in next, Statuses do
@@ -57,13 +57,13 @@ do
 			UpdateStatusFrames(u,s,frames)
 		end
 	end
-	-- clear statuses not detected on last aura full scan
+	-- clear removed statuses on last aura full scan without updating indicators
 	local function ClearFull(u)
 		for s in next, Statuses do
-			if not s.seen and s.idx[u] then
-				s.idx[u], s.exp[u] = nil, nil
-			else
+			if s.seen then
 				s.seen = nil
+			else
+				s.idx[u], s.exp[u] = nil, nil
 			end
 		end
 	end
@@ -77,7 +77,7 @@ do
 					if statuses then
 						for s in next, statuses do
 							local mine = s.isMine
-							if (mine==false or mine==myUnits[a.sourceUnit]) and s.seen~=1 then
+							if (mine==false or mine==myUnits[a.sourceUnit]) and (not s.seen) then
 								s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.tkr[u] = true, a.auraInstanceID, a.icon, a.applications, a.duration, a.expirationTime, 1
 							end
 						end
@@ -130,7 +130,7 @@ do
 	end
 	-- UNIT_AURA event
 	UnitAuraEvent = function(_, event, u, info)
-		if info then
+		if info and not info.isFullUpdate then
 			ScanAdded(u, info.addedAuras)
 			ScanUpdated(u, info.updatedAuraInstanceIDs)
 			ScanRemoved(u, info.removedAuraInstanceIDs)
@@ -146,12 +146,12 @@ do
 			s.idx[u], s.exp[u] = nil, nil
 		end
 	end )
-	-- full scan when a roster unit joins or is changed
+	-- full scan when a roster unit joins or is changed, we don't update indicators here, because roster code will update all indicators after this message.
 	Grid2.RegisterMessage( Statuses, "Grid_UnitUpdated", function(_,u)
 		ScanFull(u)
 		ClearFull(u)
 	end )
-	--  full scan when a status is enabled (profile load, status settings changed, or suspended status wake up)
+	--  full scan when a status is enabled (profile load, status settings changed, or suspended status wake up), like in previous case indicators update is not needed.
 	function UpdateAllAuras() -- TODO, very inefficient if several suspended buffs/debuffs are waked up, because it's executed for each status, and should be executed only once for all statuses.
 		for u in Grid2:IterateRosterUnits() do
 			ScanFull(u)
