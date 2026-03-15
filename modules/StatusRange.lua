@@ -67,13 +67,24 @@ do
 		getHostile  = function() return IVS(116) or IVS(30451) or IVS(133) end -- Frostbolt, Arcane Blast, Fireball
 		getFriendly = function() return 1459 end -- Arcane intellect
 	end
-	-- update range spells, called from GridCore.lua
-	function Grid2:UpdatePlayerRangeSpells()
+	local pendingUpdate
+	local function UpdateSpells(...)
+		pendingUpdate = nil
 		spellHostile  = GetSpellInfo( getHostile() )
 		spellFriendly = GetSpellInfo( getFriendly() )
 		if Range.enabled then Range:UpdateDB() end
 		if RangeAlt.enabled then RangeAlt:UpdateDB() end
 	end
+	Range:RegisterEvent("SPELLS_CHANGED", function()
+		UpdateSpells()
+		Range:UnregisterEvent("SPELLS_CHANGED") -- this event used only on login/reload because is fired a lot in combat.
+		Range:RegisterEvent("PLAYER_TALENT_UPDATE", function()
+			if not pendingUpdate then -- to update only once because this event fires twice
+				pendingUpdate = true
+				C_Timer.After(0.01, UpdateSpells)
+			end
+		end )
+	end)
 end
 
 ------------------------------------------------------------------------
@@ -83,8 +94,6 @@ end
 local InCombat = false
 
 local petCheck = false
-
-local playerCanHeal = ({DRUID=true,PRIEST=true,SHAMAN=true,PALADIN=true,MONK=true,EVOKER=true})[playerClass]
 
 local rezSpellID = ({DRUID=20484,PRIEST=2006,PALADIN=7328,SHAMAN=2008,MONK=115178,DEATHKNIGHT=61999,WARLOCK=20707,EVOKER=361227})[playerClass]
 local rezSpell = rezSpellID and GetSpellInfo(rezSpellID)
@@ -96,16 +105,16 @@ local function CreateRangeCheck(spellFriendly, spellHostile, blizRange)
 	return function(unit)
 		if UnitIsUnit(unit,"player") then
 			return true
+		elseif petCheck and unit=='pet' then -- solo player with pet
+			return IsSpellInRange(petSpell, unit) == true
+		elseif blizRange and grouped_units[unit] then -- 38y range check
+			return UnitInRange(unit)
 		elseif UnitPhaseReason(unit) then
 			return false
 		elseif UnitCanAttack('player', unit) then
 			return IsSpellInRange(spellHostile, unit) == true
-		elseif petCheck and unit=='pet' then
-			return IsSpellInRange(petSpell, unit) == true
 		elseif rezSpell and UnitIsDeadOrGhost(unit) then
 			return IsSpellInRange(rezSpell, unit) == true
-		elseif blizRange and grouped_units[unit] then
-			return UnitInRange(unit)
 		elseif spellFriendly then -- extra CheckInteractDistance() for OOC friendly npcs if spell check fails
 			return IsSpellInRange(spellFriendly, unit) == true or (not InCombat and CheckInteractDistance(unit, 4))
 		else
@@ -121,26 +130,41 @@ local Ranges = {
 	["spell"] = CreateRangeCheck,
 }
 
-Range.cache = setmetatable( {}, {__index = function() return false end} )
+----------------------------------------------------------
+-- shared methods
+----------------------------------------------------------
 
-Range.GetColor = Grid2.statusLibrary.GetColor
+local Shared = { GetColor = Grid2.statusLibrary.GetColor }
 
-function Range:UpdateUnits() -- we need to update this on a timer for non-grouped units: target, focus, etc.
+-- we need to update this on a timer for non-grouped units: target, focus, or when range used is not 38y
+function Shared:UpdateUnits()
 	local cache = self.cache
 	local check = self.UnitRangeCheck
 	for unit in next, self.refreshUnits do
 		local new = check(unit)
 		local old = cache[unit]
-		if issecretvalue(new) or issecretvalue(old) or new ~= old then
+		if issecretvalue(new) or issecretvalue(old) or new~=old then
 			cache[unit] = new
 			self:UpdateIndicators(unit)
 		end
 	end
 end
 
+-- called from options
+function Shared:Refresh()
+	Grid2.statusPrototype.Refresh(self, true)
+	wipe(self.cache) -- we need to wipe cache to remove secrets if prev range was 38y
+	local cache = self.cache
+	local check = self.UnitRangeCheck
+	for unit in Grid2:IterateRosterUnits() do
+		cache[unit] = check(unit)
+		self:UpdateIndicators(unit)
+	end
+end
+
 -- UNIT_IN_RANGE_UPDATE and UnitInRange() don't work for pet units when solo, so we use a timer
--- and a pet spell range check for 38 yards range for classes with pets when they are ungrouped.
-function Range:Grid_GroupTypeChanged()
+-- and a pet spell range check for 38 yards range for classes with pets when when not in group.
+function Shared:Grid_GroupTypeChanged()
 	if petSpell then -- is a class with pet ?
 		petCheck = (Grid2.groupType=='solo')
 		roster_external.pet = (petCheck and roster_guids[petCheck]~=nil) or nil -- roster_external == self.refreshUnits for 38 yard range
@@ -148,7 +172,7 @@ function Range:Grid_GroupTypeChanged()
 	self.timer:SetPlaying( next(self.refreshUnits)~=nil )
 end
 
-function Range:Grid_UnitUpdated(_, unit)
+function Shared:Grid_UnitUpdated(_, unit)
 	self.cache[unit] = self.UnitRangeCheck(unit)
 	if petCheck and unit=='pet'then -- special case for pet units while solo
 		roster_external.pet = true
@@ -156,7 +180,7 @@ function Range:Grid_UnitUpdated(_, unit)
 	self.timer:SetPlaying( next(self.refreshUnits)~=nil )
 end
 
-function Range:Grid_UnitLeft(_, unit)
+function Shared:Grid_UnitLeft(_, unit)
 	if petCheck and unit=='pet' then -- special case for pet units while solo
 		roster_external.pet = nil
 	end
@@ -164,36 +188,36 @@ function Range:Grid_UnitLeft(_, unit)
 	self.timer:SetPlaying( next(self.refreshUnits)~=nil )
 end
 
-function Range:PLAYER_REGEN_ENABLED()
+function Shared:PLAYER_REGEN_ENABLED()
 	InCombat = false
 end
 
-function Range:PLAYER_REGEN_DISABLED()
+function Shared:PLAYER_REGEN_DISABLED()
 	InCombat = true
 end
 
-function Range:UNIT_IN_RANGE_UPDATE(_, unit)
+function Shared:UNIT_IN_RANGE_UPDATE(_, unit)
 	self.cache[unit] = self.UnitRangeCheck(unit)
 	self:UpdateIndicators(unit)
 end
 
-function Range:GetPercent(unit)
+function Shared:GetPercent(unit)
 	return self.curAlpha
 end
 
-function Range:GetRanges()
+function Shared:GetRanges()
 	return Ranges, self.curRange, rezSpellID
 end
 
-function Range:IsActiveR(unit)
+function Shared:IsActiveR(unit)
 	return self.cache[unit], true -- true means inverted activation, hackish because we cannot negate a secret value
 end
 
-function Range:IsActiveN(unit)  -- normal activation for non-secret ranges
+function Shared:IsActiveN(unit)  -- normal activation for non-secret ranges
 	return not self.cache[unit]
 end
 
-function Range:OnEnable()
+function Shared:OnEnable()
 	InCombat = InCombatLockdown()
 	self.timer = Grid2:CreateTimer( function() self:UpdateUnits() end, self.elapsed, false)
 	self:RegisterMessage("Grid_UnitUpdated")
@@ -209,7 +233,7 @@ function Range:OnEnable()
 	self:Grid_GroupTypeChanged()
 end
 
-function Range:OnDisable()
+function Shared:OnDisable()
 	self.timer = Grid2:CancelTimer( self.timer )
 	self:UnregisterMessage("Grid_UnitUpdated")
 	self:UnregisterMessage("Grid_UnitLeft")
@@ -223,7 +247,7 @@ function Range:OnDisable()
 	end
 end
 
-function Range:UpdateDB()
+function Shared:UpdateDB()
 	local dbx = self.dbx
 	local dbr = dbx.ranges and dbx.ranges[playerClass] or dbx
 	local elapsed = dbx.elapsed or 0.25
@@ -231,15 +255,22 @@ function Range:UpdateDB()
 	local spellf = dbr.friendlySpellID and GetSpellInfo(dbr.friendlySpellID) or spellFriendly
 	local rangec = tonumber(dbr.range) or dbr.range
 	rangec = Ranges[rangec] and rangec or 38
-	-- self.refreshUnits = (rangec==38) and roster_external or roster_guids -- disabled due to a issue in Dimensius fight
-	self.refreshUnits = roster_guids -- forcing a timer even for 38 range because UNIT_IN_RANGE_UPDATE event does not work well in Dimensius fight.
+	self.refreshUnits = (rangec==38) and roster_external or roster_guids
 	self.elapsed = (rangec~=38 or elapsed>1) and elapsed or 1 -- for 38y range does not allow update rate less than 1 second.
 	self.UnitRangeCheck = Ranges[rangec](spellf, spellh, rangec==38)
 	self.IsActive = rangec==38 and self.IsActiveR or self.IsActiveN
 	self.curAlpha = dbx.default or 0.25
 	self.curRange = rangec
-	wipe(self.cache) -- needed to clear the cache to remove secrets values if range changes from 38 to another range
+	print("--->UpdateDB", self.name)
 end
+
+-------------------------------------------------------------------------
+-- range status
+-------------------------------------------------------------------------
+
+Range.cache = setmetatable( {}, {__index = function() return false end} )
+
+Range:Inject(Shared)
 
 Grid2.setupFunc["range"] = function(baseKey, dbx)
 	Grid2:RegisterStatus( Range, {"percent", "color"}, baseKey, dbx)
@@ -253,21 +284,8 @@ Grid2:DbSetStatusDefaultValue( "range", {type = "range", color1 = {r=1, g=0, b=0
 -------------------------------------------------------------------------
 
 RangeAlt.cache = setmetatable( {}, {__index = function() return false end} )
-RangeAlt.GetColor = Range.GetColor
-RangeAlt.UNIT_IN_RANGE_UPDATE = Range.UNIT_IN_RANGE_UPDATE
-RangeAlt.PLAYER_REGEN_ENABLED = Range.PLAYER_REGEN_ENABLED
-RangeAlt.PLAYER_REGEN_DISABLED = Range.PLAYER_REGEN_DISABLED
-RangeAlt.Grid_GroupTypeChanged = Range.Grid_GroupTypeChanged
-RangeAlt.Grid_UnitUpdated = Range.Grid_UnitUpdated
-RangeAlt.Grid_UnitLeft = Range.Grid_UnitLeft
-RangeAlt.UpdateUnits = Range.UpdateUnits
-RangeAlt.OnEnable = Range.OnEnable
-RangeAlt.OnDisable = Range.OnDisable
-RangeAlt.GetPercent = Range.GetPercent
-RangeAlt.IsActiveR = Range.IsActiveR
-RangeAlt.IsActiveN = Range.IsActiveN
-RangeAlt.UpdateDB = Range.UpdateDB
-RangeAlt.GetRanges = Range.GetRanges
+
+RangeAlt:Inject(Shared)
 
 Grid2.setupFunc["rangealt"] = function(baseKey, dbx)
 	Grid2:RegisterStatus( RangeAlt, {"percent", "color"}, baseKey, dbx)

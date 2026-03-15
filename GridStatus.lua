@@ -93,12 +93,14 @@ function status:UpdateIndicatorsFromEvent(_, unit)
 end
 
 -- Used by Grid2Options to refresh settings
-function status:Refresh()
+function status:Refresh(skipUpdate)
 	local enabled = self.enabled
 	if enabled then self.enabled = false; self:OnDisable() end
 	self:UpdateDB()
 	if enabled then self.enabled = true; self:OnEnable() end
-	self:UpdateAllUnits()
+	if not skipUpdate then
+		self:UpdateAllUnits()
+	end
 end
 
 -- register or wakeup a previous registered status

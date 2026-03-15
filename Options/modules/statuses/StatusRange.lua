@@ -65,7 +65,6 @@ end
 
 local function RefreshStatus(status)
 	status:Refresh()
-	status:UpdateUnits()
 end
 
 local function MakeRangeOptions(self, status, options, optionParams)

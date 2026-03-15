@@ -160,7 +160,6 @@ function Grid2:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	self:RegisterEvent("UNIT_NAME_UPDATE")
 	self:RegisterEvent("UNIT_PET")
-	self:RegisterEvent("SPELLS_CHANGED")
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED")
 	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 
@@ -289,13 +288,6 @@ function Grid2:ReloadTheme(force)
 			self:Debug("Theme Reloaded", theme)
 		end
 		return true
-	end
-end
-
--- Player spells tracking
-function Grid2:SPELLS_CHANGED()
-	if self.UpdatePlayerRangeSpells then
-		self:UpdatePlayerRangeSpells()
 	end
 end
 

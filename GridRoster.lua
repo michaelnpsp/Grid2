@@ -104,7 +104,6 @@ do
 			modified = true
 		end
 		local name, realm = UnitName(unit)
-
 		if not issecretvalue(name) and name == UNKNOWNOBJECT then
 			roster_unknowns = true
 		end
