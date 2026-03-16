@@ -239,12 +239,10 @@ local dead_cache = Grid2.roster_deads
 Death.GetColor = Grid2.statusLibrary.GetColor
 
 function Death:UNIT_HEALTH(_, unit)
-	if unit_is_valid[unit] then
-		local d = Grid2:UnitIsDeadOrGhost(unit)
-		if d ~= dead_cache[unit] then
-			dead_cache[unit] = d
-			Grid2:SendMessage("Grid_UnitDeadUpdated", unit, d)
-		end
+	local d = Grid2:UnitIsDeadOrGhost(unit)
+	if d ~= dead_cache[unit] then
+		dead_cache[unit] = d
+		Grid2:SendMessage("Grid_UnitDeadUpdated", unit, d)
 	end
 end
 
@@ -253,7 +251,7 @@ function Death:Grid_UnitDeadUpdated(_, unit)
 end
 
 function Death:OnEnable()
-	self:RegisterRosterUnitEvent("UNIT_HEALTH", self.UpdateIndicatorsFromEvent)
+	self:RegisterRosterUnitEvent("UNIT_HEALTH")
 	self:RegisterMessage("Grid_UnitDeadUpdated")
 end
 
