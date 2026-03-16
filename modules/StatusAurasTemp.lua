@@ -256,22 +256,22 @@ do
 		return not self.filtered[unit] and self.idx[unit]~=nil
 	end
 	local function IsActiveStacksFilter(self, unit)
-		return not self.filtered[unit] and self.idx[unit] and self.cnt[unit]>=self.stacks
+		return not self.filtered[unit] and self.idx[unit]~=nil and self.cnt[unit]>=self.stacks
 	end
 	local function IsActiveBlinkFilter(self, unit)
-		if self.filtered[unit] or not self.idx[unit] then return end
+		if self.filtered[unit] or not self.idx[unit] then return false end
 		return self.tkr[unit]==1 or "blink"
 	end
 	local function IsActiveStacksBlinkFilter(self, unit)
-		if self.filtered[unit] or not (self.idx[unit] and self.cnt[unit]>=self.stacks) then return end
+		if self.filtered[unit] or not (self.idx[unit] and self.cnt[unit]>=self.stacks) then return false end
 		return self.tkr[unit]==1 or "blink"
 	end
 	local function IsActiveBlinkAFilter(self, unit)
-		if self.filtered[unit] or not self.idx[unit] then return end
+		if self.filtered[unit] or not self.idx[unit] then return false end
 		return "blink"
 	end
 	local function IsActiveStacksBlinkAFilter(self, unit)
-		if self.filtered[unit] or not (self.idx[unit] and self.cnt[unit]>=self.stacks) then return end
+		if self.filtered[unit] or not (self.idx[unit] and self.cnt[unit]>=self.stacks) then return false end
 		return "blink"
 	end
 	local function IsInactiveFilter(self, unit)
@@ -288,25 +288,25 @@ do
 	end
 	-- no unit class/reaction/role filters
 	local function IsActive(self, unit)
-		if self.idx[unit] then return true end
+		return self.idx[unit]~=nil
 	end
 	local function IsActiveStacks(self, unit)
-		if self.idx[unit] and self.cnt[unit]>=self.stacks then return true end
+		return self.idx[unit]~=nil and self.cnt[unit]>=self.stacks
 	end
 	local function IsActiveBlink(self, unit)
-		if not self.idx[unit] then return end
+		if not self.idx[unit] then return false end
 		return self.tkr[unit]==1 or "blink"
 	end
 	local function IsActiveStacksBlink(self, unit)
-		if not (self.idx[unit] and self.cnt[unit]>=self.stacks) then return end
+		if not (self.idx[unit] and self.cnt[unit]>=self.stacks) then return false end
 		return self.tkr[unit]==1 or "blink"
 	end
 	local function IsActiveBlinkA(self, unit)
-		if not self.idx[unit] then return end
+		if not self.idx[unit] then return false end
 		return "blink"
 	end
 	local function IsActiveStacksBlinkA(self, unit)
-		if not (self.idx[unit] and self.cnt[unit]>=self.stacks) then return end
+		if not (self.idx[unit] and self.cnt[unit]>=self.stacks) then return false end
 		return "blink"
 	end
 	local function IsInactive(self, unit)

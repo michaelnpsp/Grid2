@@ -7,6 +7,7 @@ local floor = math.floor
 local type = type
 local pairs = pairs
 local ipairs = ipairs
+local canaccessvalue = Grid2.canaccessvalue
 
 local POINTS = {
 	HORIZONTAL = { [true] = "LEFT",   [false] = "RIGHT" }, -- normal, reverse fill
@@ -21,7 +22,14 @@ end
 
 -- value assignments for different types of bars/statuses
 local function SetMultibarLineValue(bar, unit, status)
-	bar:SetAlphaFromBoolean(status:IsActive(unit), 1, 0)
+	local state, invert = status:IsActive(unit)
+	if invert then
+		bar:SetAlphaFromBoolean(state, 0, 1) -- warning, assuming that "blink" inverted states dont exist
+	elseif canaccessvalue(state) then
+		bar:SetAlpha(state and 1 or 0) -- warning: state for unsecret statuses can be "blink" so dont use AlphaFromBoolean()
+	else
+		bar:SetAlphaFromBoolean(state, 1, 0)
+	end
 end
 
 local function SetMultibarPercentValue(bar, unit, status, interpol)
