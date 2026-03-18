@@ -2,6 +2,7 @@
 local Grid2 = Grid2
 local type = type
 local next = next
+local ipairs = ipairs
 local GetTime = GetTime
 local GetSpellInfo = Grid2.API.GetSpellInfo
 local GetAuraDataByIndex = C_UnitAuras.GetAuraDataByIndex

@@ -2,57 +2,29 @@
 
 local Grid2 = Grid2
 
+local SetAlphaFromBoolean = Grid2.SetAlphaFromBoolean
+
 local function Square_Create(self, parent)
 	self:Acquire("Frame", parent, "BackdropTemplate")
 end
 
 local function Square_OnUpdate(self, parent, unit, status, state, secret, invert)
 	local Square = parent[self.name]
-	if invert then
-		if secret then
-			Square:SetBackdropColor(status:GetColor(unit))
-			Square:SetAlphaFromBoolean(state, 0, 1)
-		elseif status then
-			Square:SetBackdropColor(status:GetColor(unit))
-			Square:SetAlpha(state and 0 or 1)
-		else
-			Square:SetAlpha(0)
-		end
+	if status then
+		Square:SetBackdropColor(status:GetColor(unit))
+		SetAlphaFromBoolean(Square, state, 1, 0, secret, invert)
 	else
-		if secret then
-			Square:SetBackdropColor(status:GetColor(unit))
-			Square:SetAlphaFromBoolean(state, 1, 0)
-		elseif status then
-			Square:SetBackdropColor(status:GetColor(unit))
-			Square:SetAlpha(1)
-		else
-			Square:SetAlpha(0)
-		end
+		Square:SetAlpha(0)
 	end
 end
 
 local function Square_OnUpdateBorder(self, parent, unit, status, state, secret, invert)
 	local Square = parent[self.name]
-	if invert then
-		if secret then
-			Square:SetBackdropBorderColor(status:GetColor(unit))
-			Square:SetAlphaFromBoolean(state, 0, 1)
-		elseif status then
-			Square:SetBackdropBorderColor(status:GetColor(unit))
-			Square:SetAlpha(state and 0 or 1)
-		else
-			Square:SetAlpha(0)
-		end
+	if status then
+		Square:SetBackdropBorderColor(status:GetColor(unit))
+		SetAlphaFromBoolean(Square, state, 1, 0, secret, invert)
 	else
-		if secret then
-			Square:SetBackdropBorderColor(status:GetColor(unit))
-			Square:SetAlphaFromBoolean(state, 1, 0)
-		elseif status then
-			Square:SetBackdropBorderColor(status:GetColor(unit))
-			Square:SetAlpha(1)
-		else
-			Square:SetAlpha(0)
-		end
+		Square:SetAlpha(0)
 	end
 end
 

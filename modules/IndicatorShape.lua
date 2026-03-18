@@ -3,6 +3,8 @@
 local Grid2 = Grid2
 local unpack = unpack
 
+local SetAlphaFromBoolean = Grid2.SetAlphaFromBoolean
+
 local function Shape_Create(self, parent)
 	local f = self:Acquire("Frame", parent)
 	local Icon = f.Icon or f:CreateTexture(nil, "ARTWORK")
@@ -10,14 +12,11 @@ local function Shape_Create(self, parent)
 	f.Icon = Icon
 end
 
-local function Shape_OnUpdate(self, parent, unit, status, state, secret)
+local function Shape_OnUpdate(self, parent, unit, status, state, secret, invert)
 	local f = parent[self.name]
-	if secret then
+	if status then
 		f.Icon:SetVertexColor(status:GetColor(unit))
-		f:SetAlphaFromBoolean(state, 1, 0)
-	elseif status then
-		f.Icon:SetVertexColor(status:GetColor(unit))
-		f:SetAlpha(1)
+		SetAlphaFromBoolean(f, state, 1, 0, secret, invert)
 	else
 		f:SetAlpha(0)
 	end

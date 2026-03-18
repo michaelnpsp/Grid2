@@ -21,6 +21,18 @@ Grid2.EmptyTable = {}
 Grid2.issecretvalue = issecretvalue
 Grid2.canaccessvalue = canaccessvalue
 
+-- SetAlphaFromBoolean() supporting nonbooleans values for non secret statuses
+function Grid2.SetAlphaFromBoolean(widget, value, aTrue, aFalse, secret, invert)
+	if not secret then
+		value = not not value
+	end
+	if invert then
+		widget:SetAlphaFromBoolean(value, aFalse, aTrue)
+	else
+		widget:SetAlphaFromBoolean(value, aTrue, aFalse)
+	end
+end
+
 -- Fetch LibSharedMedia resources
 function Grid2:MediaFetch(mediatype, key, def)
 	return (key and media:Fetch(mediatype, key)) or (def and media:Fetch(mediatype, def))
