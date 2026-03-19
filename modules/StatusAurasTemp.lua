@@ -74,7 +74,7 @@ do
 			for _,a in ipairs(added) do
 				local sid = a.spellId
 				if canaccessvalue(sid) then
-					local statuses = Buffs[a.name] or Buffs[sid]
+					local statuses = (not a.isNameplateOnly and Buffs[a.name]) or Buffs[sid]
 					if statuses then
 						for s in next, statuses do
 							local mine = s.isMine
@@ -95,7 +95,7 @@ do
 				if a then
 					local sid = a.spellId
 					if canaccessvalue(sid) then
-						local statuses = Buffs[a.name] or Buffs[sid]
+						local statuses = (not a.isNameplateOnly and Buffs[a.name]) or Buffs[sid]
 						if statuses then
 							for s in next, statuses do
 								if aid==s.idx[u] then
