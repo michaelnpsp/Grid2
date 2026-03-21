@@ -123,8 +123,10 @@ do
 			if s.seen then
 				s.seen = nil
 				UpdateStatusFrames(u,s,frames)
-			elseif removed and removed[s.idx[u]] then
+			elseif (removed and removed[s.idx[u]]) then
 				s.idx[u], s.exp[u] = nil, nil
+				UpdateStatusFrames(u,s,frames)
+			elseif s.spells then -- TODO, fix: does not work with single icon indicator
 				UpdateStatusFrames(u,s,frames)
 			end
 		end
