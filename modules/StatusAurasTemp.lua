@@ -16,153 +16,70 @@ local myFrames = Grid2Frame.frames_of_unit
 local Statuses = {}
 local Buffs = {}
 
--- UNIT_AURA event management
-local UpdateAllAuras, UnitAuraEvent
-do
-	-- update status indicators
-	local function UpdateStatusFrames(unit, status, frames)
-		for indicator in next, status.indicators do
-			for frame in next, frames do
-				indicator:Update(frame, unit)
-			end
-		end
-	end
-	-- full aura scan
-	local function ScanFull(u)
-		for i=1,40 do
-			local a = GetAuraDataByIndex(u, i, 'HELPFUL')
-			if a==nil then break end
-			local sid = a.spellId
-			if canaccessvalue(sid) then
-				local statuses = Buffs[a.name] or Buffs[sid]
-				if statuses then
-					for s in next, statuses do
-						local mine = s.isMine
-						if (mine==false or mine==myUnits[a.sourceUnit]) and (not s.seen) then
-							s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.tkr[u] = true, a.auraInstanceID, a.icon, a.applications, a.duration, a.expirationTime, 1
+-- s.seen = nil aura was removed, linked indicators must be updated
+-- s.seen = 1   aura was changed, linked indicators must be updated
+-- s.seen = -1  aura was not changed, do nothing
+local function UnitAuraEvent(_, event, u)
+	for i=1,40 do
+		local a = GetAuraDataByIndex(u, i, 'HELPFUL')
+		if a==nil then break end
+		local sid = a.spellId
+		if canaccessvalue(sid) then
+			local statuses = Buffs[a.name] or Buffs[sid]
+			if statuses then
+				for s in next, statuses do
+					if (s.isMine==false or s.isMine==myUnits[a.sourceUnit]) and s.seen~=1 then
+						local exp, cnt, val = a.expirationTime, a.applications, a.points[s.vId]
+						if exp~=s.exp[u] or cnt~=s.cnt[u] or val~=s.val[u] or s.spells then
+							s.idx[u], s.tex[u], s.dur[u], s.exp[u], s.cnt[u], s.val[u], s.tkr[u], s.seen = a.auraInstanceID, a.icon, a.duration, exp, cnt, val, 1, 1
+						else
+							s.idx[u], s.seen = a.auraInstanceID, -1
 						end
 					end
 				end
 			end
 		end
 	end
-	-- clear removed statuses on last aura full scan and update indicators linked to all statuses
-	local function UpdateFull(u)
+	if event then -- UNIT_AURA event, update indicators
 		local frames = myFrames[u]
 		for s in next, Statuses do
-			if s.seen then
-				s.seen = nil
-			else
-				s.idx[u], s.exp[u] = nil, nil
-			end
-			UpdateStatusFrames(u,s,frames)
-		end
-	end
-	-- clear removed statuses on last aura full scan without updating indicators
-	local function ClearFull(u)
-		for s in next, Statuses do
-			if s.seen then
-				s.seen = nil
-			else
-				s.idx[u], s.exp[u] = nil, nil
-			end
-		end
-	end
-	-- scan added auras
-	local function ScanAdded(u, added)
-		if added then
-			for _,a in ipairs(added) do
-				local sid = a.spellId
-				if canaccessvalue(sid) then
-					local statuses = (not a.isNameplateOnly and Buffs[a.name]) or Buffs[sid]
-					if statuses then
-						for s in next, statuses do
-							local mine = s.isMine
-							if (mine==false or mine==myUnits[a.sourceUnit]) and (not s.seen) then
-								s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.tkr[u] = true, a.auraInstanceID, a.icon, a.applications, a.duration, a.expirationTime, 1
-							end
-						end
+			if (s.seen==1) or ((not s.seen) and s.idx[u] and s:Reset(u)) then
+				for indicator in next, s.indicators do
+					for f in next, frames do
+						indicator:Update(f, u)
 					end
 				end
 			end
+			s.seen = nil
 		end
-	end
-	-- scan updated auras
-	local function ScanUpdated(u, updated)
-		if updated then
-			for _,aid in ipairs(updated) do
-				local a = GetAuraDataByAuraInstanceID(u,aid)
-				if a then
-					local sid = a.spellId
-					if canaccessvalue(sid) then
-						local statuses = (not a.isNameplateOnly and Buffs[a.name]) or Buffs[sid]
-						if statuses then
-							for s in next, statuses do
-								if aid==s.idx[u] then
-									s.seen, s.cnt[u], s.dur[u], s.exp[u], s.tkr[u] = true, a.applications, a.duration, a.expirationTime, 1
-								end
-							end
-						end
-					end
-				end
-			end
-		end
-	end
-	-- scan removed auras
-	local function ScanRemoved(u, removed)
-		if removed then
-			for _,aid in ipairs(removed) do
-				removed[aid] = true
-			end
-		end
-	end
-	-- update indicators linked to statuses added/modified/removed on last aura non-full scan
-	local function UpdatePartial(u, removed)
-		local frames = myFrames[u]
+	else -- roster/profile/theme changed, don't update indicators
 		for s in next, Statuses do
-			if s.seen then
-				s.seen = nil
-				UpdateStatusFrames(u,s,frames)
-			elseif (removed and removed[s.idx[u]]) then
-				s.idx[u], s.exp[u] = nil, nil
-				UpdateStatusFrames(u,s,frames)
-			elseif s.spells then -- TODO, fix: does not work with single icon indicator
-				UpdateStatusFrames(u,s,frames)
+			if not s.seen and s.idx[u] then
+				s.idx[u], s.exp[u], s.val[u] = nil, nil, nil
 			end
+			s.seen = nil
 		end
 	end
-	-- UNIT_AURA event
-	UnitAuraEvent = function(_, event, u, info)
-		if info and not info.isFullUpdate then
-			ScanAdded(u, info.addedAuras)
-			ScanUpdated(u, info.updatedAuraInstanceIDs)
-			ScanRemoved(u, info.removedAuraInstanceIDs)
-			UpdatePartial(u, info.removedAuraInstanceIDs)
-		else
-			ScanFull(u)
-			UpdateFull(u)
-		end
-	end
-	-- clear all statuses when a unit leave the roster
-	Grid2.RegisterMessage( Statuses, "Grid_UnitLeft", function(_,u)
-		for s in next, Statuses do
-			s.idx[u], s.exp[u] = nil, nil
-		end
-	end )
-	-- full scan when a roster unit joins or is changed, we don't update indicators here, because roster code already update all indicators after this message.
-	Grid2.RegisterMessage( Statuses, "Grid_UnitUpdated", function(_,u)
-		ScanFull(u)
-		ClearFull(u)
-	end )
-	--  full scan when a status is enabled (profile load, status settings changed, or suspended status wake up), like in previous case indicators update is not needed.
-	function UpdateAllAuras() -- TODO, very inefficient if several suspended buffs/debuffs are waked up, because it's executed for each status, and should be executed only once for all statuses.
-		for u in Grid2:IterateRosterUnits() do
-			ScanFull(u)
-			ClearFull(u)
-		end
-	end
-
 end
+
+-- Update when a status is enabled (profile load, status settings changed, or suspended status wake up), indicators update not needed.
+local function UpdateAllAuras() -- TODO, very inefficient if several suspended buffs/debuffs are waked up, because it's executed for each status, and should be executed only once for all statuses.
+	for unit in Grid2:IterateRosterUnits() do
+		UnitAuraEvent(nil,nil,unit)
+	end
+end
+
+-- Update auras when unit changes in the the roster.
+Grid2.RegisterMessage( Statuses, "Grid_UnitUpdated", function(_, unit)
+	UnitAuraEvent(nil, nil, unit)
+end)
+
+-- Clear auras when unit leaves the roster.
+Grid2.RegisterMessage( Statuses, "Grid_UnitLeft", function(_, unit)
+	for status in next, Statuses do
+		status.idx[unit], status.exp[unit], status.val[unit] = nil, nil, nil
+	end
+end)
 
 -- RegisterTimeTrackerStatus() UnregisterTimeTrackerStatus()
 local RegisterTimeTrackerStatus, UnregisterTimeTrackerStatus
@@ -254,6 +171,11 @@ do
 	local fmt = string.format
 	local UnitHealthMax = UnitHealthMax
 	local unit_is_pet   = Grid2.owner_of_unit
+	-- multibar indicator needs val[unit]=nil because due to a speed optimization it does not check if status is active before calling GetPercent()
+	local function Reset(self, unit)
+		self.idx[unit], self.exp[unit], self.val[unit] = nil, nil, nil
+		return true
+	end
 	-- with unit class/reaction/role filters
 	local function IsActiveFilter(self, unit)
 		return not self.filtered[unit] and self.idx[unit]~=nil
@@ -358,19 +280,15 @@ do
 	local function GetDurationMissing()
 		return
 	end
-	local function GetAuraPointsValue(self, unit)
-		local a = GetAuraDataByAuraInstanceID(unit, self.idx[unit])
-		return a and a.points[self.vId] or 0
-	end
 	local function GetPercentHealth(self, unit)
 		local m = UnitHealthMax(unit)
-		return (canaccessvalue(m) and m>0) and GetAuraPointsValue(self, unit)/m or 0
+		return (canaccessvalue(m) and m>0) and (self.val[unit] or 0) / m or 0
 	end
 	local function GetPercentMax(self, unit)
-		return GetAuraPointsValue(self, unit) / self.valMax
+		return (self.val[unit] or 0) / self.valMax
 	end
 	local function GetTextValue(self, unit)
-		return fmt( "%.1fk", GetAuraPointsValue(self, unit) / 1000 )
+		return fmt( "%.1fk", (self.val[unit] or 0) / 1000 )
 	end
 	local function GetTextSpell(self, unit)
 		return self.spellText
@@ -386,7 +304,7 @@ do
 	end
 	local function GetValueColor(self, unit) -- Color by value
 		local i = 1
-		local value = GetAuraPointsValue(self, unit)
+		local value = self.val[unit] or 0
 		local thresholds = self.thresholds
 		while i<=#thresholds and value<thresholds[i] do
 			i = i + 1
@@ -537,7 +455,9 @@ do
 		status.cnt = {}
 		status.exp = {}
 		status.dur = {}
+		status.val = {}
 		status.tkr = {}
+		status.Reset       = Reset
 		status.GetCountMax = GetCountMax
 		status.UpdateDB    = UpdateDB
 		status.OnEnable    = OnEnable
