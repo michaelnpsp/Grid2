@@ -1,5 +1,6 @@
 -- Auras management
 local Grid2 = Grid2
+local wipe = wipe
 local type = type
 local next = next
 local ipairs = ipairs
@@ -19,6 +20,24 @@ local Buffs = {}
 -- UNIT_AURA event management
 local UpdateAllAuras, UnitAuraEvent
 do
+	-- helper tables
+	local auras_cache = setmetatable({}, {__index = function(t,u) local v={}; t[u]=v; return v; end})
+	local modif, cache = {}
+	-- process added or modified aura
+	local function ProcessAura(u, a)
+		local statuses = (not a.isNameplateOnly and Buffs[a.name]) or Buffs[a.spellId]
+		if statuses then
+			for s in next, statuses do
+				if s.isMine==false or s.isMine==myUnits[a.sourceUnit] then
+					local i = a.auraInstanceID
+					modif[s] = true
+					cache[i] = a
+					s.tkr[u] = 1
+					s.dta[u][i] = a
+				end
+			end
+		end
+	end
 	-- update status indicators
 	local function UpdateStatusFrames(unit, status, frames)
 		for indicator in next, status.indicators do
@@ -29,6 +48,7 @@ do
 	end
 	-- full aura scan
 	local function ScanFull(u)
+		cache = wipe(auras_cache[u])
 		for i=1,40 do
 			local a = GetAuraDataByIndex(u, i, 'HELPFUL')
 			if a==nil then break end
@@ -37,9 +57,8 @@ do
 				local statuses = Buffs[a.name] or Buffs[sid]
 				if statuses then
 					for s in next, statuses do
-						local mine = s.isMine
-						if (mine==false or mine==myUnits[a.sourceUnit]) and (not s.seen) then
-							s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.tkr[u] = true, a.auraInstanceID, a.icon, a.applications, a.duration, a.expirationTime, 1
+						if s.isMine==false or s.isMine==myUnits[a.sourceUnit] then
+							cache[a.auraInstanceID], s.dta[u][a.auraInstanceID], s.tkr[u], s.seen = a, a, 1, true
 						end
 					end
 				end
@@ -53,7 +72,7 @@ do
 			if s.seen then
 				s.seen = nil
 			else
-				s.idx[u], s.exp[u] = nil, nil
+				wipe(s.dta[u])
 			end
 			UpdateStatusFrames(u,s,frames)
 		end
@@ -64,7 +83,7 @@ do
 			if s.seen then
 				s.seen = nil
 			else
-				s.idx[u], s.exp[u] = nil, nil
+				wipe(s.dta[u])
 			end
 		end
 	end
@@ -72,17 +91,8 @@ do
 	local function ScanAdded(u, added)
 		if added then
 			for _,a in ipairs(added) do
-				local sid = a.spellId
-				if canaccessvalue(sid) then
-					local statuses = (not a.isNameplateOnly and Buffs[a.name]) or Buffs[sid]
-					if statuses then
-						for s in next, statuses do
-							local mine = s.isMine
-							if (mine==false or mine==myUnits[a.sourceUnit]) and (not s.seen) then
-								s.seen, s.idx[u], s.tex[u], s.cnt[u], s.dur[u], s.exp[u], s.tkr[u] = true, a.auraInstanceID, a.icon, a.applications, a.duration, a.expirationTime, 1
-							end
-						end
-					end
+				if canaccessvalue(a.spellId) then
+					ProcessAura(u, a)
 				end
 			end
 		end
@@ -92,18 +102,8 @@ do
 		if updated then
 			for _,aid in ipairs(updated) do
 				local a = GetAuraDataByAuraInstanceID(u,aid)
-				if a then
-					local sid = a.spellId
-					if canaccessvalue(sid) then
-						local statuses = (not a.isNameplateOnly and Buffs[a.name]) or Buffs[sid]
-						if statuses then
-							for s in next, statuses do
-								if aid==s.idx[u] then
-									s.seen, s.cnt[u], s.dur[u], s.exp[u], s.tkr[u] = true, a.applications, a.duration, a.expirationTime, 1
-								end
-							end
-						end
-					end
+				if canaccessvalue(a.spellId) then
+					ProcessAura(u, a)
 				end
 			end
 		end
@@ -112,32 +112,38 @@ do
 	local function ScanRemoved(u, removed)
 		if removed then
 			for _,aid in ipairs(removed) do
-				removed[aid] = true
+				local a = cache[aid]
+				if a then
+					cache[aid] = nil
+					local statuses = Buffs[a.name] or Buffs[a.spellId]
+					if statuses then
+						for s in next, statuses do
+							local dta = s.dta[u]
+							if dta[aid] then
+								modif[s], dta[aid] = true, nil
+							end
+						end
+					end
+				end
 			end
 		end
 	end
 	-- update indicators linked to statuses added/modified/removed on last aura non-full scan
-	local function UpdatePartial(u, removed)
+	local function UpdatePartial(u)
 		local frames = myFrames[u]
-		for s in next, Statuses do
-			if s.seen then
-				s.seen = nil
-				UpdateStatusFrames(u,s,frames)
-			elseif (removed and removed[s.idx[u]]) then
-				s.idx[u], s.exp[u] = nil, nil
-				UpdateStatusFrames(u,s,frames)
-			elseif s.spells then -- TODO, fix: does not work with single icon indicator
-				UpdateStatusFrames(u,s,frames)
-			end
+		for s in next, modif do
+			UpdateStatusFrames(u,s,frames)
 		end
+		wipe(modif)
 	end
 	-- UNIT_AURA event
 	UnitAuraEvent = function(_, event, u, info)
 		if info and not info.isFullUpdate then
+			cache = auras_cache[u]
 			ScanAdded(u, info.addedAuras)
 			ScanUpdated(u, info.updatedAuraInstanceIDs)
 			ScanRemoved(u, info.removedAuraInstanceIDs)
-			UpdatePartial(u, info.removedAuraInstanceIDs)
+			UpdatePartial(u)
 		else
 			ScanFull(u)
 			UpdateFull(u)
@@ -145,8 +151,9 @@ do
 	end
 	-- clear all statuses when a unit leave the roster
 	Grid2.RegisterMessage( Statuses, "Grid_UnitLeft", function(_,u)
+		wipe(auras_cache[u])
 		for s in next, Statuses do
-			s.idx[u], s.exp[u] = nil, nil
+			s.idx[u] = nil
 		end
 	end )
 	-- full scan when a roster unit joins or is changed, we don't update indicators here, because roster code already update all indicators after this message.
@@ -532,11 +539,7 @@ do
 	end
 	CreateStatusAura = function(status, baseKey, dbx, handlerType, statusTypes)
 		status.handlerType = handlerType
-		status.idx = {}
-		status.tex = {}
-		status.cnt = {}
-		status.exp = {}
-		status.dur = {}
+		status.dta = {}
 		status.tkr = {}
 		status.GetCountMax = GetCountMax
 		status.UpdateDB    = UpdateDB
