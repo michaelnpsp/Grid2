@@ -76,8 +76,8 @@ end)
 
 -- Clear auras when unit leaves the roster.
 Grid2.RegisterMessage( Statuses, "Grid_UnitLeft", function(_, unit)
-	for status in next, Statuses do
-		status.idx[unit], status.exp[unit], status.val[unit] = nil, nil, nil
+	for s in next, Statuses do
+		s.idx[unit], s.exp[unit], s.val[unit] = nil, nil, nil
 	end
 end)
 
