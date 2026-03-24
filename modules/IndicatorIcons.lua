@@ -54,11 +54,19 @@ local function Icon_OnFrameUpdate(f)
 				if showStack then
 					aura.text:SetText( TruncateWhenZero(counts[j]) )
 				end
+				local durObject
 				if showCool then
-					aura.cooldown:SetCooldownFromExpirationTime(expirations[j], durations[j])
+					if canaccessvalue(expirations[j]) then
+						aura.cooldown:SetCooldownFromExpirationTime(expirations[j], durations[j])
+					else
+						durObject = status:GetDurationObject(unit, slots[j])
+						if durObject then
+							aura.cooldown:SetCooldownFromDurationObject(durObject)
+						end
+					end
 				end
 				if needDur then
-					local durObject = status:GetDurationObject(unit, slots[j])
+					durObject = durObject or status:GetDurationObject(unit, slots[j])
 					if showBar then
 						if durObject then
 							aura.coolBar:SetTimerDuration(durObject, 0, self.cbDirection)

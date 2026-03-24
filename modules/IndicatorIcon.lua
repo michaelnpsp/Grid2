@@ -69,7 +69,7 @@ local function Icon_OnUpdate(self, parent, unit, status)
 	local Icon = Frame.Icon
 	Icon:SetTexCoord(status:GetTexCoord(unit))
 	Icon:SetVertexColor(status:GetVertexColor(unit))
-	local slot
+	local slot, durObject
 	if status.GetIconData then
 		local tex, cnt, exp, dur, color
 		tex, cnt, exp, dur, color, slot = status:GetIconData(unit)
@@ -88,7 +88,14 @@ local function Icon_OnUpdate(self, parent, unit, status)
 			Frame.stackText:Show()
 		end
 		if not self.disableCooldown and exp and dur then
-			Frame.Cooldown:SetCooldownFromExpirationTime(exp, dur)
+			if canaccessvalue(exp) then
+				Frame.Cooldown:SetCooldownFromExpirationTime(exp, dur)
+			else
+				durObject = status:GetDurationObject(unit, slot)
+				if durObject then
+					Frame.Cooldown:SetCooldownFromDurationObject( durObject )
+				end
+			end
 		end
 	else
 		local r,g,b,a = status:GetColor(unit)
@@ -128,7 +135,14 @@ local function Icon_OnUpdate(self, parent, unit, status)
 			local Cooldown = Frame.Cooldown
 			local expiration, duration = status:GetExpirationTime(unit), status:GetDuration(unit)
 			if expiration and duration then
-				Cooldown:SetCooldownFromExpirationTime(expiration, duration)
+				if canaccessvalue(expiration) then
+					Cooldown:SetCooldownFromExpirationTime(expiration, duration)
+				else
+					durObject = status:GetDurationObject(unit)
+					if durObject then
+						Cooldown:SetCooldownFromDurationObject( durObject )
+					end
+				end
 				Cooldown:Show()
 			else
 				Cooldown:Hide()
@@ -136,7 +150,7 @@ local function Icon_OnUpdate(self, parent, unit, status)
 		end
 	end
 	if self.needDur then
-		local durObject = status:GetDurationObject(unit, slot)
+		durObject = durObject or status:GetDurationObject(unit, slot)
 		if self.showCoolBar then
 			if durObject then
 				Frame.coolBar:SetTimerDuration(durObject, 0, self.cbDirection)
