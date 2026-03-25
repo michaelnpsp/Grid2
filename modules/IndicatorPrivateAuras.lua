@@ -5,6 +5,32 @@ local wipe = wipe
 local strmatch = strmatch
 local AddPrivateAuraAnchor = C_UnitAuras.AddPrivateAuraAnchor
 local RemovePrivateAuraAnchor = C_UnitAuras.RemovePrivateAuraAnchor
+local InCombatLockdown = InCombatLockdown
+
+local QueueUpdate -- delay updates if we are in combat
+do
+	local queue, frame = {}, CreateFrame("Frame")
+	frame:Hide()
+	frame:SetScript("OnEvent", function()
+		frame:UnregisterEvent('PLAYER_REGEN_ENABLED')
+		for unit in pairs(queue) do
+			for _, indicator in Grid2:IterateIndicators('privateauras') do
+				if not indicator.suspended then
+					for frame in next, Grid2:GetUnitFrames(unit) do
+						indicator:Update(frame, unit)
+					end
+				end
+			end
+		end
+		wipe(queue)
+	end)
+	function QueueUpdate(unit)
+		if not next(queue) then
+			frame:RegisterEvent('PLAYER_REGEN_ENABLED')
+		end
+		queue[unit] = true
+	end
+end
 
 local function ClearFrameAuraAnchors(f)
 	local auraHandles = f.auraHandles
@@ -22,7 +48,11 @@ end
 
 local function Icon_Update(self, parent, unit)
 	local f = parent[self.name]
-	if f and unit ~= f.auraUnit then
+	if f and unit ~= f.auraUnit and not Grid2:UnitIsPet(unit) then
+		if InCombatLockdown() then
+			QueueUpdate(unit)
+			return
+		end
 		local auraHandles = ClearFrameAuraAnchors(f)
 		local displayDurFrame = self.displayDurFrame
 		local auraAnchor = self.auraAnchor
