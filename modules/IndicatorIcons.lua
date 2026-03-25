@@ -32,57 +32,51 @@ local function Icon_OnFrameUpdate(f)
 	local showIcons = self.showIcons
 	local showColors= self.showColors
 	local showBar   = self.showCoolBar
-	local needDur   = showColors or showBar
 	local useStatus = self.useStatusColor
 	local i = 1
 	for _, status in ipairs(self.statuses) do
 		if status.GetIcons then
-			local k, textures, counts, expirations, durations, colors, slots = status:GetIcons(unit,max)
-			for j=1,k do
+			local icons = status:GetIcons(unit,max)
+			for j, data in ipairs(icons) do
 				local aura = auras[i]
-				aura.status, aura.slotID = status, slots[j]
+				aura.status, aura.slotID = status, data.auraInstanceID
 				if showIcons then
-					aura.icon:SetTexture(textures[j])
+					aura.icon:SetTexture(data.icon)
 					if useStatus then
-						local c = colors[j]
+						local c = data.color
 						aura:SetBackdropBorderColor(c.r, c.g, c.b, self.borderOpacity) -- color is secret we cannot use min()
 					end
 				else
-					local c = colors[j]
+					local c = data.color
 					aura.icon:SetColorTexture(c.r, c.g, c.b)
 				end
 				if showStack then
-					aura.text:SetText( TruncateWhenZero(counts[j]) )
+					aura.text:SetText( TruncateWhenZero(data.applications) )
 				end
-				local durObject
+				local durObject = data.durationObject
 				if showCool then
-					if canaccessvalue(expirations[j]) then
-						aura.cooldown:SetCooldownFromExpirationTime(expirations[j], durations[j])
+					if durObject then
+						aura.cooldown:SetCooldownFromDurationObject(durObject)
 					else
-						durObject = status:GetDurationObject(unit, slots[j])
-						if durObject then
-							aura.cooldown:SetCooldownFromDurationObject(durObject)
-						end
+						aura.cooldown:SetCooldownFromExpirationTime(data.expirationTime, data.duration)
 					end
 				end
-				if needDur then
-					durObject = durObject or status:GetDurationObject(unit, slots[j])
-					if showBar then
-						if durObject then
-							aura.coolBar:SetTimerDuration(durObject, 0, self.cbDirection)
-							aura.coolBar:Show()
-						else
-							aura.coolBar:Hide()
-						end
+				if showBar then
+					durObject = durObject or status:GetDurationObject(unit, data.auraInstanceID)
+					if durObject then
+						aura.coolBar:SetTimerDuration(durObject, 0, self.cbDirection)
+						aura.coolBar:Show()
+					else
+						aura.coolBar:Hide()
 					end
-					if showColors then
-						UpdateIconColorCurve(aura, durObject)
-					end
+				end
+				if showColors then
+					UpdateIconColorCurve(aura, durObject or status:GetDurationObject(unit, data.auraInstanceID))
 				end
 				aura:Show()
 				i = i + 1
 			end
-			max = max - k
+			max = max - #icons
 		elseif status:IsActive(unit) then -- TODO secret test maybe
 			local aura = auras[i]
 			aura.status, aura.slotID = status, nil
@@ -109,19 +103,17 @@ local function Icon_OnFrameUpdate(f)
 					aura.cooldown:SetCooldown(0, 0)
 				end
 			end
-			if needDur then
+			if showBar then
 				local durObject = status:GetDurationObject(unit)
-				if showBar then
-					if durObject then
-						aura.coolBar:SetTimerDuration(durObject, 0, self.cbDirection)
-						aura.coolBar:Show()
-					else
-						aura.coolBar:Hide()
-					end
+				if durObject then
+					aura.coolBar:SetTimerDuration(durObject, 0, self.cbDirection)
+					aura.coolBar:Show()
+				else
+					aura.coolBar:Hide()
 				end
-				if showColors then
-					UpdateIconColorCurve(aura, durObject)
-				end
+			end
+			if showColors then
+				UpdateIconColorCurve(aura, status:GetDurationObject(unit))
 			end
 			aura:Show()
 			i = i + 1

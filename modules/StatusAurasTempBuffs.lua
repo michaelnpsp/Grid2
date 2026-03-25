@@ -1,65 +1,62 @@
 -- Group of Buffs status
 local Grid2 = Grid2
+local wipe = wipe
 local myUnits = Grid2.roster_my_units
 local canaccessvalue = Grid2.canaccessvalue
+local GetAuraDuration = C_UnitAuras.GetAuraDuration
 local GetAuraDataByIndex = C_UnitAuras.GetAuraDataByIndex
 
--- all buffs
-local textures = {}
-local slots = {}
-local color = {}
-local colors = {color, color, color, color, color, color, color, color, color, color, color, color}
-
--- normal buffs
-local counts = {}
-local expirations = {}
-local durations = {}
-
--- missing buffs
-local mcounts = {1}
-local mexpirations = {0}
-local mdurations = mexpirations
+--
+local auras_tmp = {}
+local empty_table = {}
 
 -- buffs group status
 local function status_GetIcons(self, unit, max)
+	wipe(auras_tmp)
 	local i, j, spells, filter = 1, 1, self.spells, self.isMine
 	repeat
 		local a = GetAuraDataByIndex(unit, i)
 		if a==nil then break end
 		if canaccessvalue(a.spellId) and (spells[a.name] or spells[a.spellId]) and (filter==false or filter==myUnits[a.sourceUnit]) then
-			textures[j] = a.icon
-			counts[j] = a.applications
-			durations[j] = a.duration
-			expirations[j] = a.expirationTime
-			slots[j] = a.auraInstanceID
+			a.color = self.color
+			a.durationObject = GetAuraDuration(unit, a.auraInstanceID)
+			auras_tmp[j] = a
 			j = j + 1
 		end
 		i = i + 1
 	until j>max
-	if j>1 then
-		color.r, color.g, color.b, color.a = self:GetColor(unit)
-	end
-	return j-1, textures, counts, expirations, durations, colors, slots
+	return auras_tmp
 end
 
 local function status_GetIconsMissing(self, unit)
-	if self:IsActive(unit) then
-		color.r, color.g, color.b, color.a = self:GetColor(unit)
-		textures[1], slots[1] = self.missingTexture, 0
-		return 1, textures, mcounts, mexpirations, mdurations, colors, slots
+	if self:IsActive() then
+		return self.aurasMissing
+	else
+		return empty_table
 	end
-	return 0
 end
 
 local function status_Update(self, dbx)
-	self.GetIcons = dbx.missing and status_GetIconsMissing or status_GetIcons
+	self.color = dbx.color1
+	if dbx.missing then
+		self.aurasMissing = self.aurasMissing or {{}}
+		local data = self.dataMissing[1]
+		data.icon = self.missingTexture
+		data.color = self.color
+		data.applications = 0
+		data.expirationTime = 0
+		data.duration = 0
+		self.GetIcons = status_GetIconsMissing
+	else
+		self.GetIcons = status_GetIcons
+	end
 end
 
 local statusTypes = { "color", "icon", "icons", "percent", "text" }
 local function status_Create(baseKey, dbx)
 	local status = Grid2.statusPrototype:new(baseKey, false)
 	if dbx.spellName then dbx.spellName = nil end -- fix possible wrong data in old database
-	status.OnUpdate = status_Update
+	status.OnUpdate = status_Update -- called from status:UpdateDB()
 	return Grid2.CreateStatusAura( status, basekey, dbx, 'buff', statusTypes )
 end
 

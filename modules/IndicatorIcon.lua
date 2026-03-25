@@ -69,14 +69,15 @@ local function Icon_OnUpdate(self, parent, unit, status)
 	local Icon = Frame.Icon
 	Icon:SetTexCoord(status:GetTexCoord(unit))
 	Icon:SetVertexColor(status:GetVertexColor(unit))
-	local slot, durObject
-	if status.GetIconData then
-		local tex, cnt, exp, dur, color
-		tex, cnt, exp, dur, color, slot = status:GetIconData(unit)
+	local data, color, durObject
+	if status.GetIcons then
+		data = status:GetIcons(unit, 1)[1]
+		color = data.color
+		durObject = data.durationObject
 		if self.disableIcon then
 			Icon:SetColorTexture(color.r, color.g, color.b)
 		else
-			Icon:SetTexture(tex)
+			Icon:SetTexture(data.icon)
 		end
 		if self.borderSize then
 			local c = self.useStatusColor and color or self.color
@@ -84,20 +85,18 @@ local function Icon_OnUpdate(self, parent, unit, status)
 		end
 		Icon:SetAlpha(color.a or 1)
 		if not self.disableStack then
-			Frame.stackText:SetText( TruncateWhenZero(cnt or 0) )
+			Frame.stackText:SetText( TruncateWhenZero(data.applications or 0) )
 			Frame.stackText:Show()
 		end
-		if not self.disableCooldown and exp and dur then
-			if canaccessvalue(exp) then
-				Frame.Cooldown:SetCooldownFromExpirationTime(exp, dur)
+		if not self.disableCooldown then
+			if durObject  then
+				Frame.Cooldown:SetCooldownFromDurationObject( durObject )
 			else
-				durObject = status:GetDurationObject(unit, slot)
-				if durObject then
-					Frame.Cooldown:SetCooldownFromDurationObject( durObject )
-				end
+				Frame.Cooldown:SetCooldownFromExpirationTime(data.expirationTime, data.duration)
 			end
 		end
 	else
+		durObject = status:GetDurationObject(unit)
 		local r,g,b,a = status:GetColor(unit)
 		if self.disableIcon then
 			Icon:SetColorTexture(r,g,b)
@@ -132,25 +131,21 @@ local function Icon_OnUpdate(self, parent, unit, status)
 			end
 		end
 		if not self.disableCooldown then
-			local Cooldown = Frame.Cooldown
-			local expiration, duration = status:GetExpirationTime(unit), status:GetDuration(unit)
-			if expiration and duration then
-				if canaccessvalue(expiration) then
-					Cooldown:SetCooldownFromExpirationTime(expiration, duration)
-				else
-					durObject = status:GetDurationObject(unit)
-					if durObject then
-						Cooldown:SetCooldownFromDurationObject( durObject )
-					end
-				end
-				Cooldown:Show()
+			if durObject then
+				Frame.Cooldown:SetCooldownFromDurationObject( durObject )
+				Frame.Cooldown:Show()
 			else
-				Cooldown:Hide()
+				local expiration, duration = status:GetExpirationTime(unit), status:GetDuration(unit)
+				if expiration and duration then
+					Frame.Cooldown:SetCooldownFromExpirationTime(expiration, duration)
+				else
+					Frame.Cooldown:Hide()
+				end
 			end
 		end
 	end
 	if self.needDur then
-		durObject = durObject or status:GetDurationObject(unit, slot)
+		durObject = durObject or status:GetDurationObject(unit, data and data.auraInstanceID)
 		if self.showCoolBar then
 			if durObject then
 				Frame.coolBar:SetTimerDuration(durObject, 0, self.cbDirection)

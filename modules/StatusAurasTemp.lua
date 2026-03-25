@@ -266,7 +266,8 @@ do
 		return GetTime() + 9999
 	end
 	local function GetDurationObject(self, unit)
-		return GetAuraDuration(unit, self.idx[unit])
+		local idx = self.idx[unit]
+		return idx and GetAuraDuration(unit, idx)
 	end
 	local function GetCountMax(self)
 		return self.dbx.colorCount or 1
