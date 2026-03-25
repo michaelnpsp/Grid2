@@ -55,32 +55,6 @@ Grid2.SatedDebuffs = {
 }
 
 -------------------------------------------------------------------------------
--- shared functions
--------------------------------------------------------------------------------
-
-local function GetIconsSorted(unit, max, filter, sortRule, sortDir, colorCurve, aurasFunc, displayFunc, displayUnitFunc)
-	local i = 0
-	if not displayUnitFunc or displayUnitFunc(unit) then
-		local color = colorCurve.r and colorCurve or nil
-		local auras = (aurasFunc or GetUnitAuras)(unit, filter, displayFunc and 40 or max, sortRule, sortDir)
-		for _, a in ipairs(auras) do
-			if not displayFunc or displayFunc(a) then
-				i = i + 1
-				local auraInstanceID = a.auraInstanceID
-				slots[i] = auraInstanceID
-				textures[i] = a.icon
-				durations[i] = a.duration
-				expirations[i] = a.expirationTime
-				counts[i] =  a.applications
-				colors[i] = color or GetAuraDispelTypeColor(unit, auraInstanceID, colorCurve) or color_default
-				if i>=max then break end
-			end
-		end
-	end
-	return i, textures, counts, expirations, durations, colors, slots
-end
-
--------------------------------------------------------------------------------
 -- shared methods
 -------------------------------------------------------------------------------
 
@@ -91,7 +65,27 @@ local Shared = {
 }
 
 function Shared:GetIcons(unit, max)
-	return GetIconsSorted(unit, max, self.aura_filter, self.aura_sortRule, self.aura_sortDir, self.aura_color, self.aura_func, self.aura_display, self.aura_displayu)
+	local i = 0
+	if self.aura_displayu==nil or self.aura_displayu(unit) then
+		local displayFunc = self.aura_display
+		local colorCurve = self.aura_color
+		local color = colorCurve.r and colorCurve or nil
+		local auras = self.aura_func(unit, self.aura_filter, displayFunc and 40 or max, self.aura_sortRule, self.aura_sortDir)
+		for _, a in ipairs(auras) do
+			if not displayFunc or displayFunc(a) then
+				i = i + 1
+				local auraInstanceID = a.auraInstanceID
+				slots[i] = auraInstanceID
+				textures[i] = a.icon
+				durations[i] = a.duration
+				expirations[i] = a.expirationTime
+				counts[i] = a.applications
+				colors[i] = color or GetAuraDispelTypeColor(unit, auraInstanceID, colorCurve) or color_default
+				if i>=max then break end
+			end
+		end
+	end
+	return i, textures, counts, expirations, durations, colors, slots
 end
 
 function Shared:GetIconData(unit)
@@ -112,7 +106,7 @@ function Shared:GetTooltip(unit, tip, slotID)
 end
 
 function Shared:OnEnable()
-	if self.aura_func then
+	if self.blizFilter then
 		LBA.RegisterCallback(self, "LBA_UNIT_AURA")
 	else
 		self:RegisterRosterUnitEvent('UNIT_AURA')
@@ -120,7 +114,7 @@ function Shared:OnEnable()
 end
 
 function Shared:OnDisable()
-	if self.aura_func then
+	if self.blizFilter then
 		LBA.UnregisterCallback(self, "LBA_UNIT_AURA")
 	else
 		self:UnregisterRosterUnitEvent('UNIT_AURA')
@@ -130,7 +124,7 @@ end
 function Shared:IsActive(unit)
 	if self.aura_display then
 		return self:GetIcons(unit, 1) > 0
-	elseif self.aura_func then
+	elseif self.blizFilter then
 		return LBA.UnitHasAuras(unit, self.aura_filter)~=nil
 	elseif self.aura_displayu and not self.aura_displayu(unit) then
 		return false
@@ -147,16 +141,17 @@ do
 
 	local function Buffs_UpdateDB(self)
 		local filter = self.dbx.aura_filter or {}
-		self.aura_color    = self.dbx.color1
+		self.blizFilter = filter.blizFilter
+		self.aura_color = self.dbx.color1
+		self.aura_sortDir = filter.sortDir or 0
 		self.aura_sortRule = filter.sortRule or 0
-		self.aura_sortDir  = filter.sortDir or 0
 		if filter.blizFilter then -- buffs from blizzard frames
-			self.aura_filter   = filter.blizFilter
-			self.aura_func     = LBA.GetUnitAuras
+			self.aura_filter = filter.blizFilter
+			self.aura_func = LBA.GetUnitAuras
 			self.aura_displayu = nil
 		else -- standard filter
-			self.aura_filter   = filter.filter or 'HELPFUL'
-			self.aura_func     = nil
+			self.aura_filter = filter.filter or 'HELPFUL'
+			self.aura_func = C_UnitAuras.GetUnitAuras
 			self.aura_displayu = self.aura_filter~='HELPFUL' and UnitIsVisible or nil
 		end
 	end
@@ -208,15 +203,16 @@ do
 
 	local function Debuffs_UpdateDB(self)
 		local filter = self.dbx.aura_filter or {}
-		self.aura_filter   = filter.filter or 'HARMFUL'
+		self.blizFilter = filter.blizFilter
+		self.aura_filter = filter.filter or 'HARMFUL'
+		self.aura_sortDir = filter.sortDir or 0
 		self.aura_sortRule = filter.sortRule or 0
-		self.aura_sortDir  = filter.sortDir or 0
-		self.aura_display  = CompileDisplayFunc(filter)
+		self.aura_display = CompileDisplayFunc(filter)
 		if filter.blizFilter then -- debuffs from blizzard frames
-			self.aura_func     = LBA.GetUnitAuras
+			self.aura_func = LBA.GetUnitAuras
 			self.aura_displayu = nil
 		else -- standard filter
-			self.aura_func     = nil
+			self.aura_func = C_UnitAuras.GetUnitAuras
 			self.aura_displayu = self.aura_filter~='HARMFUL' and UnitIsVisible or nil
 		end
 		self.aura_color:ClearPoints()
@@ -291,7 +287,7 @@ do
 	end
 
 	function DebuffsDispell:Grid_UnitUpdated(_, unit)
-		if not self.aura_func then
+		if not self.blizFilter then
 			dispel_cache[unit] = nil
 		end
 	end
@@ -311,12 +307,13 @@ do
 	end
 
 	function DebuffsDispell:UpdateDB()
+		self.blizFilter = self.dbx.blizFilter
 		self.aura_filter = 'HARMFUL|RAID_PLAYER_DISPELLABLE'
-		if self.dbx.blizFilter then
+		if self.blizFilter then
 			self.aura_func = LBA.GetUnitAuras
 			self.aura_displayu = nil
 		else
-			self.aura_func = nil
+			self.aura_func =  C_UnitAuras.GetUnitAuras
 			self.aura_displayu = UnitIsVisible
 		end
 		self.aura_color:ClearPoints()
