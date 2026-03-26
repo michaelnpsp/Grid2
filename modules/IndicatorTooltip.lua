@@ -42,13 +42,14 @@ ResfreshFrameTooltip = Grid2:CreateTimer( function()
 end, 0.25, false)
 
 ShowFrameTooltip = function(frame)
-	if tooltipFrame and tooltipFrame.unit then
-		local indicator = frame.tooltipIndicator
-		if indicator then
-			local func = indicator.GetMouseOverStatus or indicator.GetCurrentStatus
-			local status, _, extraID, tframe = func(indicator, tooltipFrame.unit, tooltipFrame, frame)
+	local indicator = frame.tooltipIndicator
+	if indicator then
+		local unit = tooltipFrame and tooltipFrame.unit or frame:GetParent().unit
+		local func = indicator.GetMouseOverStatus or (unit and indicator.GetCurrentStatus)
+		if func then
+			local status, _, extraID, tframe, tunit = func(indicator, unit, tooltipFrame, frame)
 			if status and status.GetTooltip then
-				Tooltip:Display(tooltipFrame.unit, status, extraID, tframe or frame, indicator.dbx.tooltipAnchor)
+				Tooltip:Display(tunit or unit, status, extraID, tframe or frame, indicator.dbx.tooltipAnchor)
 				tooltipIndicatorFrame = frame
 				return true
 			elseif tooltipIndicatorFrame then

@@ -399,7 +399,7 @@ local function Icon_UpdateDB(self)
 end
 
 local function Icon_GetMouseOverStatus(self, unit, parent, frame)
-	return frame.status, true, frame.slotID, frame
+	return frame.status, true, frame.slotID, frame, unit or frame:GetParent():GetParent().unit
 end
 
 Grid2.setupFunc["icons"] = function(indicatorKey, dbx)
