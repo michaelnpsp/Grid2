@@ -4,7 +4,6 @@ local RangeAlt = Grid2.statusPrototype:new("rangealt")
 
 local Grid2 = Grid2
 local next = next
-local tonumber = tonumber
 local UnitIsUnit = UnitIsUnit
 local UnitCanAttack = UnitCanAttack
 local UnitPhaseReason = UnitPhaseReason
@@ -188,6 +187,11 @@ function Shared:Grid_UnitLeft(_, unit)
 	self.timer:SetPlaying( next(self.refreshUnits)~=nil )
 end
 
+function Shared:PLAYER_ENTERING_WORLD(_, isLogin, isReload)
+	if isLogin or isReload then return end
+	self:UpdateUnits(roster_guids)
+end
+
 function Shared:PLAYER_REGEN_ENABLED()
 	InCombat = false
 end
@@ -199,11 +203,6 @@ end
 function Shared:UNIT_IN_RANGE_UPDATE(_, unit)
 	self.cache[unit] = self.UnitRangeCheck(unit)
 	self:UpdateIndicators(unit)
-end
-
-function Shared:PLAYER_ENTERING_WORLD(_, isLogin, isReload)
-	if isLogin or isReload then return end
-	self:UpdateUnits(roster_guids)
 end
 
 function Shared:GetPercent(unit)
@@ -231,7 +230,6 @@ function Shared:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")
 	if self.curRange==38 then
 		self:RegisterRosterUnitEvent("UNIT_IN_RANGE_UPDATE")
-		-- self:RegisterRosterUnitEvent("UNIT_DISTANCE_CHECK_UPDATE", "UNIT_IN_RANGE_UPDATE")
 		self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	end
 	if petSpell then
@@ -248,7 +246,6 @@ function Shared:OnDisable()
 	self:UnregisterEvent("PLAYER_REGEN_DISABLED")
 	if self.curRange==38 then
 		self:UnregisterRosterUnitEvent("UNIT_IN_RANGE_UPDATE")
-		-- self:UnregisterRosterUnitEvent("UNIT_DISTANCE_CHECK_UPDATE")
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	end
 	if petSpell then
