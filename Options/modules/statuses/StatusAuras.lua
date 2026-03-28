@@ -99,28 +99,6 @@ local function create_aura_status(data)
 	end
 end
 
-local function make_colortype_option(status, options, key, order, defColor, params)
-	if order then
-		options[key] = {
-			type = "color",
-			width = params and params.width or "full",
-			order = order,
-			name = L[key],
-			get = function()
-				status.dbx.colors = status.dbx.colors or {}
-				local c = status.dbx.colors[key] or defColor
-				return c.r, c.g, c.b, c.a
-			end,
-			set = function(info, r, g, b, a)
-				local c = status.dbx.colors[key] or {}
-				c.r, c.g, c.b, c.a = r, g, b, a
-				status.dbx.colors[key] = c
-				refresh_aura_status(status)
-			end,
-		}
-	end
-end
-
 local function make_color_option(status, options, key, order, name, params)
 	options[key] = {
 		type = "color",
@@ -146,7 +124,7 @@ local function make_colortype_option(status, options, key, order, defColor, para
 		options[key] = {
 			type = "color",
 			hasAlpha = true,
-			width = params and params.width or "full",
+			width = params and params.width or 0.65,
 			order = order,
 			name = L[key],
 			get = function()
@@ -162,20 +140,6 @@ local function make_colortype_option(status, options, key, order, defColor, para
 			end,
 		}
 	end
-end
-
-local function make_colors_reset_option(status, options, newline)
-	if newline then
-		options.reset_header = { type = "description", width = "full", order = 499, name = "" }
-	end
-	options.reset_colors = {
-		type = "execute",
-		order = 500,
-		name = L["Reset"],
-		desc = L["Reset colors to the default values."],
-		func = function () 	wipe(status.dbx.colors); refresh_aura_status(status) end,
-		confirm = true,
-	}
 end
 
 --==============================================
@@ -599,13 +563,35 @@ local function MakeDebuffsFilterOptions(status, options)
 	}
 end
 
-local function MakeDebuffsColorsOptions( status, options, optionParams)
-	options.cheader = { type = "header", order = 199, name = L["Debuff Type Colors"] }
+local function MakeDebuffTypesColorsOptions(status, options, optionParams)
+	local order = optionParams and optionParams.order or 1
+	local inone = optionParams and optionParams.ignore_none
+	options.debuff_types_header = {
+		type = "header",
+		order = order,
+		name = L["Debuff Type Colors"]
+	}
 	for typ,v in pairs(Grid2.DispelCurveDefaults) do
 		local idx, color = unpack(v)
-		make_colortype_option(status, options, typ, idx==0 and 299 or idx+200, color, optionParams)
+		if idx~=0 or not inone then
+			make_colortype_option(status, options, typ, idx==0 and order+15 or order+idx, color, optionParams)
+		end
 	end
-	make_colors_reset_option(status, options, true)
+	options.dtype_reset_header = {
+		type = "description",
+		width = "full",
+		order = order+18,
+		name = ""
+	}
+	options.dtype_reset_colors = {
+		type = "execute",
+		order = order+19,
+		width = "half",
+		name = L["Reset"],
+		desc = L["Reset colors to the default values."],
+		func = function () 	wipe(status.dbx.colors); refresh_aura_status(status) end,
+		confirm = true,
+	}
 end
 
 -- Grid2Options:MakeMidnightDebuffsOptions(NewDebuffsOptions.arg, NewDebuffsOptions)
@@ -613,8 +599,8 @@ end
 Grid2Options:RegisterStatusCategoryOptions("debuff", NewDebuffsOptions)
 
 Grid2Options:RegisterStatusOptions("mdebuffs", "debuff", function(self, status, options, optionParams)
-	MakeDebuffsFilterOptions( status, options)
-	MakeDebuffsColorsOptions( status, options, {width = 0.65} )
+	MakeDebuffsFilterOptions( status, options )
+	MakeDebuffTypesColorsOptions( status, options, {order=200} )
 end,{
 	groupOrder = 10, isDeletable = true,
 	titleIcon = "Interface\\Icons\\Spell_deathknight_strangulate",
@@ -625,6 +611,7 @@ end,{
 --==============================================
 
 function Grid2Options:MakeMidnightDispellableByMeOptions(status, options)
+	--[[
 	options.bliz_filter = {
 		type = "toggle",
 		order = 1,
@@ -636,16 +623,8 @@ function Grid2Options:MakeMidnightDispellableByMeOptions(status, options)
 			refresh_aura_status(status)
 		end,
 	}
-	options.colors_header = {
-		type = "header",
-		order = 2,
-		name = L["Debuff Type Colors"],
-	}
-	for typ,v in pairs(Grid2.DispelCurveDefaults) do
-		local idx, color = unpack(v)
-		make_colortype_option(status, options, typ, idx~=0 and idx+100, color)
-	end
-	make_colors_reset_option(status, options)
+	--]]
+	MakeDebuffTypesColorsOptions( status, options, {width=.75, ignore_none=true} )
 end
 
 Grid2Options:RegisterStatusOptions("mdebuffType", "debuff", function(self, status, options, optionParams)

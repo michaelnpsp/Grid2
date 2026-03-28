@@ -307,7 +307,7 @@ do
 	end
 
 	function DebuffsDispell:UpdateDB()
-		self.blizFilter = self.dbx.blizFilter
+		self.blizFilter = nil -- self.dbx.blizFilter
 		self.aura_filter = 'HARMFUL|RAID_PLAYER_DISPELLABLE'
 		if self.blizFilter then
 			self.aura_func = LBA.GetUnitAuras
