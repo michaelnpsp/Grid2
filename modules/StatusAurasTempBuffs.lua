@@ -55,7 +55,7 @@ local function status_Update(self, dbx)
 	self.GetIcons = dbx.missing and status_GetIconsMissing or status_GetIcons
 end
 
-local statusTypes = { "color", "icon", "icons", "percent", "text" }
+local statusTypes = { "color", "icon", "icons", "percent", "text", "tooltip" }
 local function status_Create(baseKey, dbx)
 	local status = Grid2.statusPrototype:new(baseKey, false)
 	if dbx.spellName then dbx.spellName = nil end -- fix possible wrong data in old database
