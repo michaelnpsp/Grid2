@@ -86,22 +86,22 @@ end
 function OnFrameIndicatorLeave(frame)
 	if tooltipDisplayed then
 		Tooltip:Hide()
-		if tooltipFrame then
-			OnFrameEnter(tooltipFrame)
-		end
+		OnFrameEnter(tooltipFrame)
 	end
 end
 
 -- tooltip for the whole unit frame
 function OnFrameEnter(frame)
-	local unit = frame.unit
-	if unit then
-		if tooltipOOC and not InCombatLockdown() then
-			Tooltip:Display(unit, Tooltip)
-		elseif tooltipCheck() then
-			local status = Tooltip:GetCurrentStatus(unit, frame)
-			if status or tooltipDefault then
-				Tooltip:Display(unit, status or Tooltip)
+	if frame then
+		local unit = frame.unit
+		if unit then
+			if tooltipOOC and not InCombatLockdown() then
+				Tooltip:Display(unit, Tooltip)
+			elseif tooltipCheck() then
+				local status = Tooltip:GetCurrentStatus(unit, frame)
+				if status or tooltipDefault then
+					Tooltip:Display(unit, status or Tooltip)
+				end
 			end
 		end
 	end
