@@ -240,12 +240,8 @@ function Grid2Layout:OnModuleEnable()
 	self:RegisterMessage("Grid_GroupTypeChanged")
 	self:RegisterMessage("Grid_UpdateLayoutSize")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")
-	if not Grid2.isClassic then
-		self:RegisterEvent("PET_BATTLE_OPENING_START", "PetBattleTransition")
-		self:RegisterEvent("PET_BATTLE_CLOSE", "PetBattleTransition")
-		self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-		self:RegisterEvent("UNIT_TARGETABLE_CHANGED")
-	end
+	self:RegisterEvent("PET_BATTLE_OPENING_START", "PetBattleTransition")
+	self:RegisterEvent("PET_BATTLE_CLOSE", "PetBattleTransition")
 end
 
 function Grid2Layout:OnModuleDisable()
@@ -253,12 +249,8 @@ function Grid2Layout:OnModuleDisable()
 	self:UnregisterMessage("Grid_GroupTypeChanged")
 	self:UnregisterMessage("Grid_UpdateLayoutSize")
 	self:UnregisterEvent("PLAYER_REGEN_DISABLED")
-	if not Grid2.isClassic then
-		self:UnregisterEvent("PET_BATTLE_OPENING_START")
-		self:UnregisterEvent("PET_BATTLE_CLOSE")
-		self:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
-		self:UnregisterEvent("UNIT_TARGETABLE_CHANGED")
-	end
+	self:UnregisterEvent("PET_BATTLE_OPENING_START")
+	self:UnregisterEvent("PET_BATTLE_CLOSE")
 	self.frame:Hide()
 end
 
@@ -305,22 +297,6 @@ end
 function Grid2Layout:Grid_RosterUpdate(_, unknowns)
 	if unknowns and not self.useInsecureHeaders then
 		Grid2:RunThrottled(self, "FixRoster", .25)
-	end
-end
-
--- Fixing Shadowlands bug when entering Maw Zone, see ticket #901.
-function Grid2Layout:ZONE_CHANGED_NEW_AREA()
-	if C_Map.GetBestMapForUnit("player")==1543 then
-		self.flagEnteringMaw = true
-	end
-end
-
-function Grid2Layout:UNIT_TARGETABLE_CHANGED(_,unit)
-	if unit=="player" and self.flagEnteringMaw then
-		self.flagEnteringMaw = nil
-		if not Grid2:RunSecure(10, self, "UpdateHeaders") then
-			self:UpdateHeaders()
-		end
 	end
 end
 
