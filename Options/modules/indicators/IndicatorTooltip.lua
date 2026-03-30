@@ -121,7 +121,7 @@ do
 					local indicator = indicators[i]
 					indicator.dbx.tooltipAnchor = nil
 					indicator.dbx.tooltipEnabled = v or nil
-					indicator:DisableTooltips(); indicator:EnableTooltips()
+					self:RefreshIndicator( indicator, "Create" )
 				end,
 				hidden = function()
 					return indicators[i]==nil

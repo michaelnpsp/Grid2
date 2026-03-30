@@ -8,87 +8,104 @@ local InCombatLockDown = InCombatLockDown
 Tooltip.Create = Grid2.Dummy
 Tooltip.Layout = Grid2.Dummy
 
+-- tooltip indicator settings
 local TooltipCheck= {
 	[1] = function() return false end, -- never
 	[2] = function() return true  end, -- always
 	[3] = InCombatLockdown,            -- in combat
 	[4] = function() return not InCombatLockdown() end, -- out of combat
 }
-
 local tooltipOOC
 local tooltipDefault
 local tooltipCheck
-local tooltipFrame  -- unit frame under the mouse, usually parent in indicators code
 local tooltipOwner  -- default frame to anchor the tooltip if no indicator is provided
 local tooltipDisplayed
+local tooltipHookEnabled
+-- whole unit frame
+local tooltipFrame  -- unit frame under the mouse, usually parent in indicators code
 local OnFrameEnter
 local OnFrameLeave
+-- indicator under the mouse
+local tooltipIndicatorFrame -- indicator frame under the mouse, usually parent[indicator.name]
+local tooltipIndicatorEnabled
+local OnFrameIndicatorEnter
+local OnFrameIndicatorLeave
+local ShowFrameTooltip
+local RefreshFrameTooltip
 
--- tooltip over icons support
-local timer
-local indicators = {}
-local tooltipIndicator -- indicator frame under the mouse, usually parent[indicator.name]
+ResfreshFrameTooltip = Grid2:CreateTimer( function()
+	if tooltipIndicatorFrame then
+		ShowFrameTooltip(tooltipIndicatorFrame)
+	else
+		ResfreshFrameTooltip:Stop()
+	end
+end, 0.25, false)
 
-local function TimerEvent()
-	if tooltipFrame then
-		local unit = tooltipFrame.unit
-		if unit then
-			for indicator, func in next, indicators do
-				local frame = indicator:GetFrame(tooltipFrame)
-				if frame and frame:IsMouseOver() then
-					if frame:IsVisible() then
-						local status, _, extraID, tframe = func(indicator, unit, tooltipFrame, frame)
-						if status and status.GetTooltip then
-							Tooltip:Display(unit, status, extraID, tframe or frame, indicator.dbx.tooltipAnchor)
-							tooltipIndicator = frame
-							return
-						end
-					end
-					break
-				end
-			end
-			if tooltipIndicator then
+ShowFrameTooltip = function(frame)
+	local indicator = frame.tooltipIndicator
+	if indicator then
+		local unit = tooltipFrame and tooltipFrame.unit or frame:GetParent().unit
+		local func = indicator.GetMouseOverStatus or (unit and indicator.GetCurrentStatus)
+		if func then
+			local status, _, extraID, tframe, tunit = func(indicator, unit, tooltipFrame, frame)
+			if status and status.GetTooltip then
+				Tooltip:Display(tunit or unit, status, extraID, tframe or frame, indicator.dbx.tooltipAnchor)
+				tooltipIndicatorFrame = frame
+				return true
+			elseif tooltipIndicatorFrame then
 				Tooltip:Hide()
 				OnFrameEnter(tooltipFrame)
+				return false
 			end
 		end
 	end
 end
 
-function Grid2.indicatorPrototype:EnableTooltips()
-	if self.dbx.tooltipEnabled then
-		if not next(indicators) then
-			Tooltip:SetMouseHooks(true)
-			timer = Grid2:CreateTimer( TimerEvent, 0.2 )
-		end
-		indicators[self] = self.GetMouseOverStatus or self.GetCurrentStatus
+function Grid2.indicatorPrototype:EnableFrameTooltips(frame, enabled)
+	enabled = not not enabled
+	frame.tooltipIndicator = enabled and self or nil
+	frame:EnableMouse(enabled)
+	frame:SetPropagateMouseMotion(enabled)
+	frame:SetPropagateMouseClicks(enabled)
+	frame:SetMouseClickEnabled(false)
+	frame:SetScript("OnEnter", enabled and OnFrameIndicatorEnter or nil)
+	frame:SetScript("OnLeave", enabled and OnFrameIndicatorLeave or nil)
+	if enabled then
+		Tooltip:SetMouseHooks(true)
+		tooltipIndicatorEnabled = enabled
 	end
 end
 
-function Grid2.indicatorPrototype:DisableTooltips()
-	if indicators[self]~=nil then
-		indicators[self] = nil
-		if not next(indicators) then
-			Tooltip:SetMouseHooks(nil)
-			timer = Grid2:CancelTimer(timer)
-		end
+-- tooltip for indicator frames
+function OnFrameIndicatorEnter(frame)
+	if ShowFrameTooltip(frame) then
+		ResfreshFrameTooltip:Play()
 	end
 end
 
--- standard tooltip indicator
+function OnFrameIndicatorLeave(frame)
+	if tooltipDisplayed then
+		Tooltip:Hide()
+		OnFrameEnter(tooltipFrame)
+	end
+end
+
+-- tooltip for the whole unit frame
 function OnFrameEnter(frame)
-	local unit = frame.unit
-	if unit then
-		if tooltipOOC and not InCombatLockdown() then
-			Tooltip:Display(unit, Tooltip)
-		elseif tooltipCheck() then
-			local status = Tooltip:GetCurrentStatus(unit, frame)
-			if status or tooltipDefault then
-				Tooltip:Display(unit, status or Tooltip)
+	if frame then
+		local unit = frame.unit
+		if unit then
+			if tooltipOOC and not InCombatLockdown() then
+				Tooltip:Display(unit, Tooltip)
+			elseif tooltipCheck() then
+				local status = Tooltip:GetCurrentStatus(unit, frame)
+				if status or tooltipDefault then
+					Tooltip:Display(unit, status or Tooltip)
+				end
 			end
 		end
 	end
-	tooltipFrame, tooltipIndicator = frame, nil
+	tooltipFrame, tooltipIndicatorFrame = frame, nil
 end
 
 function OnFrameLeave()
@@ -98,6 +115,7 @@ function OnFrameLeave()
 	end
 end
 
+-- Tooltip indicator methods
 function Tooltip:GetTooltip(unit, tip)
 	tip:SetUnit(unit) -- Special case to get unit info without linking "name" status to the indicator
 end
@@ -131,9 +149,11 @@ function Tooltip:OnUpdate(parent, unit, status)
 end
 
 function Tooltip:SetMouseHooks(flag)
-	if flag==nil then flag = self.dbx.showTooltip~=1 end
-	Grid2Frame:SetEventHook( 'OnEnter', OnFrameEnter, flag )
-	Grid2Frame:SetEventHook( 'OnLeave', OnFrameLeave, flag )
+	if flag~=tooltipHookEnabled and (flag or not tooltipIndicatorEnabled) then -- if another indicator has tooltips we cannot disable the unit frame event hook
+		Grid2Frame:SetEventHook( 'OnEnter', OnFrameEnter, flag )
+		Grid2Frame:SetEventHook( 'OnLeave', OnFrameLeave, flag )
+		tooltipHookEnabled = flag
+	end
 end
 
 function Tooltip:OnSuspend()
@@ -146,7 +166,7 @@ function Tooltip:UpdateDB()
 	tooltipDefault = dbx.showDefault
 	tooltipCheck = TooltipCheck[dbx.showTooltip or 4]
 	tooltipOwner = Grid2Layout.frame.frameBack
-	self:SetMouseHooks( dbx.showTooltip~=1 or next(indicators) )
+	self:SetMouseHooks(dbx.showTooltip~=1)
 end
 
 local function Create(indicatorKey, dbx)

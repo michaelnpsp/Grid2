@@ -103,13 +103,16 @@ local function Icon_OnFrameUpdate(f)
 end
 
 -- Delayed updates
-local updates = {}
+local updates, updateFrame = {}
 local EnableDelayedUpdates = function()
-	CreateFrame("Frame", nil, Grid2LayoutFrame):SetScript("OnUpdate", function()
-		for i=1,#updates do
-			Icon_OnFrameUpdate(updates[i])
+	updateFrame = CreateFrame("Frame", nil, Grid2LayoutFrame)
+	updateFrame:Hide()
+	updateFrame:SetScript("OnUpdate", function()
+		for f in next, updates do
+			Icon_OnFrameUpdate(f)
 		end
 		wipe(updates)
+		updateFrame:Hide()
 	end)
 	EnableDelayedUpdates = Grid2.Dummy
 end
@@ -118,7 +121,10 @@ end
 local function Icon_Update(self, parent, unit)
 	local f = parent[self.name]
 	if f then
-		updates[#updates+1] = f
+		if not next(updates) then
+			updateFrame:Show()
+		end
+		updates[f] = true
 	end
 end
 
@@ -135,6 +141,7 @@ local function Icon_Layout(self, parent)
 	local size = iconSize + self.iconSpacing
 	local tc1,tc2,tc3,tc4 = Grid2.statusPrototype.GetTexCoord()
 	local level = parent:GetFrameLevel() + self.frameLevel
+	local tooltipEnabled = self.dbx.tooltipEnabled
 	if not self.dbx.disableOmniCC then
 		local i,j  = parent:GetName():match("Grid2LayoutHeader(%d+)UnitButton(%d+)")
 		frameName  = format( "Grid2Icons%s%02d%02d", self.name:gsub("%-","") , i, j )
@@ -207,6 +214,8 @@ local function Icon_Layout(self, parent)
 		frame.icon:SetPoint("TOPLEFT",     frame ,"TOPLEFT",  borderSize, -borderSize)
 		frame.icon:SetPoint("BOTTOMRIGHT", frame ,"BOTTOMRIGHT", -borderSize, borderSize)
 		frame.icon:SetTexCoord(tc1, tc2, tc3, tc4)
+		-- tooltip management
+		self:EnableFrameTooltips(frame, tooltipEnabled)
 		--
 		frame:Hide()
 		x = x + 1
@@ -275,14 +284,7 @@ local function Icon_UpdateDB(self)
 end
 
 local function Icon_GetMouseOverStatus(self, unit, parent, frame)
-	frame = frame or parent[self.name]
-	local auras = frame.auras
-	for i=1,frame.visibleCount do
-		local aura = auras[i]
-		if aura:IsMouseOver() then
-			return aura.status, true, aura.slotID, aura
-		end
-	end
+	return frame.status, true, frame.slotID, frame, unit or frame:GetParent():GetParent().unit
 end
 
 Grid2.setupFunc["icons"] = function(indicatorKey, dbx)

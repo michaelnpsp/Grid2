@@ -49,6 +49,7 @@ local function Icon_Create(self, parent)
 		CooldownText:Hide()
 		f.CooldownText = CooldownText
 	end
+	self:EnableFrameTooltips(f, self.dbx.tooltipEnabled)
 end
 
 local function Icon_OnUpdate(self, parent, unit, status)
