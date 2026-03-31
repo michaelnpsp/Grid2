@@ -16,8 +16,6 @@ local GetRaidRosterInfo = GetRaidRosterInfo
 local GetNumGroupMembers = GetNumGroupMembers
 local UnitGroupRolesAssigned = UnitGroupRolesAssigned
 local issecretvalue = Grid2.issecretvalue
-local isClassic = Grid2.isClassic
-local isVanilla = Grid2.isVanilla
 
 -- helper tables to check units types/categories
 local party_indexes   = {} -- player=>0, party1=>1, ..
@@ -44,18 +42,9 @@ local textDeath = L["DEAD"]
 local textGhost = L["GHOST"]
 
 -- provide alternative missing api functions for classic
-Grid2.GetSpecialization = GetSpecialization or (Grid2.versionCli>=30000 and GetActiveTalentGroup) or function()
-	return 0
-end
-
-Grid2.GetNumSpecializations = Grid2.isWoW90 and GetNumSpecializations or function()
-	return 2
-end
-
-Grid2.UnitGroupRolesAssigned = (not Grid2.isVanilla) and UnitGroupRolesAssigned or function(unit)
-	local index = raid_indexes[unit]
-	return ((index and select(10,GetRaidRosterInfo(index))=='MAINTANK') and 'TANK') or UnitGroupRolesAssigned(unit) or 'NONE'
-end
+Grid2.GetSpecialization = GetSpecialization
+Grid2.GetNumSpecializations = GetNumSpecializations
+Grid2.UnitGroupRolesAssigned = UnitGroupRolesAssigned
 
 -- populate unit tables
 do
@@ -104,6 +93,11 @@ do
 			modified = true
 		end
 		local name, realm = UnitName(unit)
+		if issecretvalue(realm) then
+			realm = "secret"
+		elseif realm == "" then
+			realm = nil
+		end
 		if not issecretvalue(name) and name == UNKNOWNOBJECT then
 			roster_unknowns = true
 		end
@@ -111,7 +105,6 @@ do
 			roster_names[unit] = name
 			modified = true
 		end
-		if realm == "" then realm = nil end
 		if realm ~= roster_realms[unit] then
 			roster_realms[unit] = realm
 			modified = true
@@ -126,7 +119,11 @@ do
 	local function AddUnit(unit)
 		local guid = UnitGUID(unit)
 		local name, realm = UnitName(unit)
-		if realm == "" then realm = nil end
+		if issecretvalue(realm) then
+			realm = "secret"
+		elseif realm == "" then
+			realm = nil
+		end
 		roster_names[unit]  = name
 		roster_realms[unit] = realm
 		roster_guids[unit]  = guid
@@ -235,9 +232,6 @@ do
 			end
 		end
 		self:SendMessage("Grid_RosterUpdate", roster_unknowns)
-		if isVanilla then
-			self:SendMessage("Grid_PlayerRolesAssigned")
-		end
 	end
 end
 
@@ -377,13 +371,6 @@ do
 					newInstType = "flex"
 				else                              -- raid@other / Other instances: 5man/unknow instances/classic instances
 					newInstType = "other"
-					if isClassic then
-						if maxPlayers==5 then -- classic raid inside a dungeon
-							maxPlayers = 10
-						elseif maxPlayers==0 or maxPlayers==nil then -- classic bug sometimes GetInstanceInfo() returns 0/nil instead of instance maxPlayers
-							maxPlayers = isVanilla and 40 or 25 -- vanilla:40 tbc:25 not a perfect workaround, entering a 40man vanilla instance (onyxia lair for example) from tbc client sets 25 instead of 40
-						end
-					end
 				end
 			else -- raid@none / In World Map or Garrison
 				newInstType = "none"
