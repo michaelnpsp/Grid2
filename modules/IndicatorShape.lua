@@ -18,7 +18,7 @@ local function Shape_OnUpdate(self, parent, unit, status, state, secret, invert)
 	if status then
 		if self.opacity then
 			local r, g, b, a = status:GetColor(unit)
-			f.Icon:SetVertexColor(r, g, b, canaccessvalue(a) and min(self.opacity, a) or self.opacity)
+			f.Icon:SetVertexColor(r, g, b, canaccessvalue(a) and min(self.opacity, a or 1) or self.opacity)
 		else
 			f.Icon:SetVertexColor(status:GetColor(unit))
 		end
