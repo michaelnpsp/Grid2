@@ -287,7 +287,6 @@ do
 		Location   = { type = "header", order = 2,   name = L["Location"]   },
 		Appearance = { type = "header", order = 10,  name = L["Appearance"] },
 		Icon	   = { type = "header", order = 10,  name = L["Icon"] },
-		Shape	   = { type = "header", order = 10,  name = L["Shape"] },
 		Border     = { type = "header", order = 20,  name = L["Border"]     },
 		Shadow     = { type = "header", order = 30,  name = L["Shadow"]     },
 		Effect     = { type = "header", order = 30,  name = L["Effect"] },

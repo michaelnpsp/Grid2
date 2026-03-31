@@ -34,10 +34,79 @@ Grid2Options:RegisterIndicatorOptions("shape", true, function(self, indicator)
 end)
 
 function Grid2Options:MakeIndicatorShapeCustomOptions(indicator, options)
-	self:MakeHeaderOptions( options, "Shape" )
+	options.headerSize = { type = "header", order = 10,  name = L["Size"] }
+	options.shapeSize = {
+		type = "range",
+		order = 10.1,
+		-- width = "double",
+		name = L["Size"],
+		desc = L["Adjust the size of the shape. Select zero to use the unit frame size."],
+		min = 0,
+		softMax = 50,
+		step = 1,
+		get = function ()
+			return indicator.dbx.size or 14
+		end,
+		set = function (_, v)
+			indicator.dbx.size = v
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		hidden = function() return indicator.dbx.width~=nil end
+	}
+	options.shapeWidth = {
+		type = "range",
+		order = 10.2,
+		name = L["Width"],
+		desc = L["Adjust the width of the indicator. Select zero to use the unit frame width."],
+		min = 0,
+		softMax = 50,
+		step = 1,
+		get = function () return indicator.dbx.width or 0 end,
+		set = function (_, v)
+			indicator.dbx.width = v
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		hidden = function() return indicator.dbx.width==nil end
+	}
+	options.shapeHeight = {
+		type = "range",
+		order = 10.3,
+		name = L["Height"],
+		desc = L["Adjust the height of the indicator. Select zero to use the unit frame height."],
+		min = 0,
+		softMax = 50,
+		step = 1,
+		get = function () return indicator.dbx.height or 0 end,
+		set = function (_, v)
+			indicator.dbx.height = v
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		hidden = function() return indicator.dbx.height==nil end
+	}
+	options.shapeSizeToggle = {
+		type = "toggle",
+		name = L["Rectangle"],
+		desc = L["Allows to independently adjust width and height."],
+		order = 10.4,
+		tristate = false,
+		get = function () return not indicator.dbx.size end,
+		set = function (_, v)
+			if v then
+				indicator.dbx.width = indicator.dbx.size
+				indicator.dbx.height = indicator.dbx.size
+				indicator.dbx.size = nil
+			else
+				indicator.dbx.size = indicator.dbx.width
+				indicator.dbx.width = nil
+				indicator.dbx.height = nil
+			end
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+	}
+	options.headerAppe = { type = "header", order = 15,  name = L["Appearance"] }
 	options.shapeType = {
 		type = "select",
-		order = 11,
+		order = 16,
 		name = L["Shape"],
 		desc = L["Select the shape to display"],
 		get = function (info) return indicator.dbx.iconIndex or 0 end,
@@ -49,9 +118,21 @@ function Grid2Options:MakeIndicatorShapeCustomOptions(indicator, options)
 		end,
 		values = SHAPES_VALUES,
 	}
+	options.shapeBlend = {
+		type = "select",
+		order = 17,
+		name = L["Blend Mode"],
+		desc = L["Select how to mix the texture with the background."],
+		get = function () return (indicator.dbx.blend=='ADD') and 2 or 1 end,
+		set = function (_, v)
+			indicator.dbx.blend = (v==2) and 'ADD' or nil
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		values = Grid2Options.blendSimpleValues,
+	}
 	options.shapeRotation = {
 		type = "select",
-		order = 12,
+		order = 18,
 		name = L["Rotation"],
 		desc = L["Select the shape angle"],
 		get = function (info) return indicator.dbx.iconRotation or 0 end,
@@ -61,20 +142,18 @@ function Grid2Options:MakeIndicatorShapeCustomOptions(indicator, options)
 		end,
 		values = SHAPE_ANGLE,
 	}
-	options.shapeSize = {
+	options.shapeOpacity = {
 		type = "range",
-		order = 13,
-		width = "double",
-		name = L["Size"],
-		desc = L["Adjust the size of the shape, select zero to use the theme default icon size."],
+		order = 19,
+		name = L["Opacity"],
+		desc = L["Set the maximum opacity."],
 		min = 0,
-		softMax = 50,
-		step = 1,
-		get = function ()
-			return indicator.dbx.size
-		end,
+		max = 1,
+		step = 0.01,
+		bigStep = 0.05,
+		get = function () return indicator.dbx.opacity or 1 end,
 		set = function (_, v)
-			indicator.dbx.size = v>0 and v or nil
+			indicator.dbx.opacity = v<1 and v or nil
 			self:RefreshIndicator(indicator, "Layout")
 		end,
 	}
