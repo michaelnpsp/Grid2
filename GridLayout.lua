@@ -483,13 +483,18 @@ function Grid2Layout:PlaceHeaders()
 		frame:SetOrientation(horizontal)
 		frame:ClearAllPoints()
 		frame:SetParent(self.frame)
-		if prevFrame then
-			frame:SetPoint(anchor, prevFrame, relPoint, xMult2, yMult2 )
-		else
+		if not prevFrame then
 			frame:SetPoint(anchor, self.frame, anchor, spacing * xMult1, spacing * yMult1)
+		elseif not frame.isInline then
+			frame:SetPoint(anchor, prevFrame, relPoint, xMult2, yMult2)
+		else -- special case to display several headers on the same row/column
+			local relPoint = self.relativePoints[not vertical][anchor]
+			local xMult = vertical and 0 or padding * xMult1
+			local yMult = vertical and padding * yMult1 or 0
+			frame:SetPoint(anchor, prevFrame, relPoint, xMult, yMult)
 		end
 		frame:Show()
-		prevFrame = frame
+		prevFrame = frame.isInline and prevFrame or frame
 	end
 	for i, frame in self:IterateHeaders(true) do -- detached headers
 		frame:SetOrientation(frame.groupHorizontal)
@@ -651,6 +656,7 @@ do
 		header.headerClass = BuiltInHeaders[header.headerName] or 'other'
 		header.wasDetached = header.isDetached
 		header.isDetached = setupIndex>1 and (dbx.detachHeader or p.detachedHeaders=='player' or p.detachedHeaders==header.headerType) or nil
+		header.isInline = dbx.inlineHeader
 		header.groupHorizontal = GetSetupValue( header.isDetached, p.groupHorizontals[header.headerClass], p.horizontal )
 		header.groupAnchor = GetSetupValue( header.isDetached, p.groupAnchors[header.headerClass], p.groupAnchor )
 		header.headerAnchor = GetSetupValue( header.isDetached, p.anchors[header.headerClass], p.anchor )
@@ -797,9 +803,9 @@ function Grid2Layout:UpdateFramesSizeByRaidSize()
 	end
 end
 
-function Grid2Layout:UpdateSize()
+function Grid2Layout:UpdateSizeExtra()
 	local p = self.db.profile
-	local mcol,mrow,curCol,maxRow,remSize = "GetWidth","GetHeight",0,0,0
+	local mcol,mrow,curCol,maxRow = "GetWidth","GetHeight",0,0
 	if p.horizontal then mcol,mrow = mrow,mcol end
 	for _,g in self:IterateHeaders(false) do -- only non-detaches headers
 		local row = g[mrow](g)
@@ -816,6 +822,29 @@ function Grid2Layout:UpdateSize()
 	self.frame.frameBack:SetSize(col,row)
 	if not Grid2:RunSecure(7, self, "UpdateSize") then
 		self.frame:SetSize(col,row)
+	end
+	self:UpdateSizeExtra()
+end
+
+function Grid2Layout:UpdateSize()
+	local p = self.db.profile
+	local x1, x2, y1, y2 = math.huge, -math.huge, -math.huge, math.huge
+	for _,g in self:IterateHeaders(false) do -- only non-detaches headers
+		if g[1] and g[1]:IsVisible() then
+			x1 = math.min( g:GetLeft(), x1 )
+			x2 = math.max( g:GetRight(), x2 )
+			y1 = math.max( g:GetTop(), y1)
+			y2 = math.min( g:GetBottom(), y2)
+		end
+	end
+	local width = x2-x1
+	local height = y1-y2
+	local twidth = math.max( width + p.Spacing*2, 1 )
+	local theight = math.max( height + p.Spacing*2, 1 )
+	self.frame.frameBack:SetShown(width>1 and height>1)
+	self.frame.frameBack:SetSize(twidth,theight)
+	if not Grid2:RunSecure(7, self, "UpdateSize") then
+		self.frame:SetSize(twidth,theight)
 	end
 end
 

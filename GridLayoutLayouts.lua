@@ -6,18 +6,15 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Grid2")
 
 local groupFilters = Grid2Layout.groupFilters
 
--- Old settings for classic
--- local DEFAULT_ROLE = 'ROLE'
--- local DEFAULT_ROLE_ORDER  = 'MAINTANK,MAINASSIST,NONE'
-
-local DEFAULT_ROLE 		  = 'ASSIGNEDROLE'
-local DEFAULT_ROLE_ORDER  = 'TANK,HEALER,DAMAGER,NONE'
+local DEFAULT_ROLE = 'ASSIGNEDROLE'
+local DEFAULT_ROLE_ORDER = 'TANK,HEALER,DAMAGER,NONE'
 
 local DEFAULT_GROUP_ORDER = "WARRIOR,DEATHKNIGHT,DEMONHUNTER,ROGUE,MONK,PALADIN,DRUID,SHAMAN,PRIEST,MAGE,WARLOCK,HUNTER,EVOKER"
-local DEFAULT_PET_ORDER   = "HUNTER,WARLOCK,MAGE,DEATHKNIGHT,DRUID,PRIEST,SHAMAN,MONK,PALADIN,DEMONHUNTER,ROGUE,WARRIOR,EVOKER"
+local DEFAULT_PET_ORDER = "HUNTER,WARLOCK,MAGE,DEATHKNIGHT,DRUID,PRIEST,SHAMAN,MONK,PALADIN,DEMONHUNTER,ROGUE,WARRIOR,EVOKER"
 
-local META_ALL   = { solo = true, party = true, arena = true, raid  = true }
-local META_RAID  = { raid = true }
+local META_ALL = { solo = true, party = true, arena = true, raid  = true }
+local META_RAID = { raid = true }
+local META_PARTY = { party = true }
 
 local PETS_GROUP = {
 	type = "pet",
@@ -129,4 +126,24 @@ Grid2Layout:AddLayout("By Group & Role w/Pets", {
 	},
 	[1] = "auto",
 	[2] = PETS_GROUP,
+})
+
+Grid2Layout:AddLayout("By Role, Player First", {
+	meta = META_PARTY,
+	[1] = {
+		type = "custom",
+		maxColumns = 1,
+		unitsPerColum = 1,
+		unitsFilter = "player",
+	},
+	[2] = {
+		inlineHeader = true,
+		showPlayer = false,
+		maxColumns = 1,
+		unitsPerColumn = 4,
+		groupFilter = "1",
+		groupBy = DEFAULT_ROLE,
+		groupingOrder = DEFAULT_ROLE_ORDER,
+		sortMethod = "NAME",
+	},
 })
