@@ -803,44 +803,21 @@ function Grid2Layout:UpdateFramesSizeByRaidSize()
 	end
 end
 
-function Grid2Layout:UpdateSizeExtra()
-	local p = self.db.profile
-	local mcol,mrow,curCol,maxRow = "GetWidth","GetHeight",0,0
-	if p.horizontal then mcol,mrow = mrow,mcol end
-	for _,g in self:IterateHeaders(false) do -- only non-detaches headers
-		local row = g[mrow](g)
-		if maxRow<row then maxRow = row end
-		local col = g[mcol](g) + p.Padding
-		curCol = curCol + col
-		remSize = (g.dbx.type=='custom' or (g[1] and g[1]:IsVisible())) and 0 or remSize + col
-	end
-	curCol = curCol - remSize
-	local col = math.max( curCol + p.Spacing*2 - p.Padding, 1 )
-	local row = math.max( maxRow + p.Spacing*2, 1 )
-	if p.horizontal then col,row = row,col end
-	self.frame.frameBack:SetShown(curCol>1 and maxRow>1)
-	self.frame.frameBack:SetSize(col,row)
-	if not Grid2:RunSecure(7, self, "UpdateSize") then
-		self.frame:SetSize(col,row)
-	end
-	self:UpdateSizeExtra()
-end
-
 function Grid2Layout:UpdateSize()
 	local p = self.db.profile
 	local x1, x2, y1, y2 = math.huge, -math.huge, -math.huge, math.huge
 	for _,g in self:IterateHeaders(false) do -- only non-detaches headers
 		if g[1] and g[1]:IsVisible() then
-			x1 = math.min( g:GetLeft(), x1 )
-			x2 = math.max( g:GetRight(), x2 )
-			y1 = math.max( g:GetTop(), y1)
-			y2 = math.min( g:GetBottom(), y2)
+			x1 = math.min(g:GetLeft(), x1)
+			x2 = math.max(g:GetRight(), x2)
+			y1 = math.max(g:GetTop(), y1)
+			y2 = math.min(g:GetBottom(), y2)
 		end
 	end
 	local width = x2-x1
 	local height = y1-y2
-	local twidth = math.max( width + p.Spacing*2, 1 )
-	local theight = math.max( height + p.Spacing*2, 1 )
+	local twidth = math.max(width + p.Spacing*2, 1)
+	local theight = math.max(height + p.Spacing*2, 1)
 	self.frame.frameBack:SetShown(width>1 and height>1)
 	self.frame.frameBack:SetSize(twidth,theight)
 	if not Grid2:RunSecure(7, self, "UpdateSize") then
