@@ -805,7 +805,10 @@ end
 
 function Grid2Layout:UpdateSize()
 	local p = self.db.profile
-	local x1, x2, y1, y2 = math.huge, -math.huge, -math.huge, math.huge
+	local x1 = strfind(p.groupAnchor, "LEFT") and self.frame:GetLeft() or self.frame:GetRight()
+	local y1 = strfind(p.groupAnchor, "TOP" ) and self.frame:GetTop()  or self.frame:GetBottom()
+	local x2 = x1
+	local y2 = y1
 	for _,g in self:IterateHeaders(false) do -- only non-detaches headers
 		if g[1] and g[1]:IsVisible() then
 			x1 = math.min(g:GetLeft(), x1)
@@ -814,10 +817,10 @@ function Grid2Layout:UpdateSize()
 			y2 = math.min(g:GetBottom(), y2)
 		end
 	end
-	local width = x2-x1
-	local height = y1-y2
-	local twidth = math.max(width + p.Spacing*2, 1)
-	local theight = math.max(height + p.Spacing*2, 1)
+	local width = x2 - x1
+	local height = y1 - y2
+	local twidth = math.max(width + p.Spacing, 1)
+	local theight = math.max(height + p.Spacing, 1)
 	self.frame.frameBack:SetShown(width>1 and height>1)
 	self.frame.frameBack:SetSize(twidth,theight)
 	if not Grid2:RunSecure(7, self, "UpdateSize") then
