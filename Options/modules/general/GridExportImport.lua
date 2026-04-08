@@ -90,6 +90,34 @@ local function ExportCurrentProfile(Hex, exportCustomLayouts)
 	end
 	return result
 end
+Grid2.ExportCurrentProfile = ExportCurrentProfile
+
+-- External consumers may need export-by-profile-key, not just current-profile export.
+local function ExportProfileByKey(profileKey, exportCustomLayouts)
+	local config = { ["Grid2"] = Grid2DB and Grid2DB.profiles and Grid2DB.profiles[profileKey] }
+	if not config["Grid2"] then
+		return nil
+	end
+	for name, module in Grid2:IterateModules() do
+		local data = Grid2.db:GetNamespace(name, true)
+		if data and data.profiles and data.profiles[profileKey] then
+			config[name] = data.profiles[profileKey]
+		end
+	end
+	config["@Grid2Options"] = Grid2Options.db and Grid2Options.db.profiles and Grid2Options.db.profiles[profileKey]
+	if exportCustomLayouts then
+		local data = Grid2.db:GetNamespace("Grid2Layout", true)
+		if data then
+			config["@Grid2Layout"] = data.global
+		end
+	end
+	local Serializer = LibStub:GetLibrary("AceSerializer-3.0")
+	local Compresor = LibStub:GetLibrary("LibCompress")
+	local result = Compresor:CompressHuffman(Serializer:Serialize(config))
+	result = HexEncode(result, profileKey)
+	return result
+end
+Grid2.ExportProfileByKey = ExportProfileByKey
 
 -- Deserialize a profile string into a table:
 -- Hex:  true/String is encoded in plain hexadecimal   false/String is encoded to be transmited through chat channels
@@ -109,6 +137,7 @@ local function UnserializeProfile(data,Hex)
 	end
 	return false,err
 end
+Grid2.UnserializeProfile = UnserializeProfile
 
 -- Generates a new profile name
 local function ExtractProfileName(data)
@@ -189,6 +218,73 @@ local function ImportCurrentProfile(sender, data, Hex, importCustomLayouts)
 	end
 	return true
 end
+Grid2.ImportCurrentProfile = ImportCurrentProfile
+
+-- External import callers can target an explicit profile key and skip ValidateProfileName()-based renaming.
+local function ImportProfileIntoKey(profileKey, data, Hex, importCustomLayouts)
+	if type(profileKey) ~= "string" then
+		return false
+	end
+	if type(data) ~= "string" then
+		print("Grid2 Import profile failed, data supplied must be a string")
+		return false
+	end
+	local Success
+	Success, data = UnserializeProfile(data, Hex)
+	if not Success then
+		print("Grid2 Import profile failed: ", data)
+		return false
+	end
+	if importCustomLayouts and data["@Grid2Layout"] then
+		local db = Grid2.db:GetNamespace("Grid2Layout", true)
+		if db then
+			local customLayouts = data["@Grid2Layout"].customLayouts
+			if customLayouts then
+				if not db.global.customLayouts then db.global.customLayouts = {} end
+				MoveTableKeys(customLayouts, db.global.customLayouts)
+				Grid2Layout:AddCustomLayouts()
+			end
+		end
+	end
+	local prev_Hook = Grid2.ProfileChanged
+	Grid2.ProfileChanged = function(self)
+		self.ProfileChanged = prev_Hook
+		for key, section in pairs(data) do
+			local db
+			if key == "Grid2" then
+				db = self.db
+				if db.profile then
+					wipe(db.profile)
+				end
+			elseif key == "@Grid2Options" then
+				db = Grid2Options.db
+				if db and db.profile then
+					wipe(db.profile)
+				end
+			else
+				db = self:GetModule(key, true) and self.db:GetNamespace(key, true)
+				if db and db.profile then
+					wipe(db.profile)
+				end
+			end
+			if db then
+				MoveTableKeys(section, db.profile)
+			end
+		end
+		self:ProfileChanged()
+		Grid2Options:NotifyChange()
+	end
+	if Grid2.db:GetCurrentProfile() == profileKey then
+		Grid2:ProfileChanged()
+	else
+		Grid2.db:SetProfile(profileKey)
+	end
+	if importCustomLayouts then
+		Grid2Options:AddNewCustomLayoutsOptions()
+	end
+	return true
+end
+Grid2.ImportProfileIntoKey = ImportProfileIntoKey
 
 -- Show a Editbox where the user can copy or paste serialized profiles
 local function ShowSerializeFrame(title,subtitle,data)
