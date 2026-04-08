@@ -134,12 +134,13 @@ local function Text_Layout(self, parent)
 	Frame:Show()
 end
 
-local function Text_SetText(self, Text, unit, status)
+local function Text_SetText(self, Frame, unit, status)
 	local text, value = status:GetText(unit)
-	Text:SetText( string_cut(text or '', self.textlength) )
-	return value
+	Frame.Text:SetText( string_cut(text or '', self.textlength) )
+	Frame:SetAlpha(value or 1)
 end
 
+-- display duration or elapsed time
 local function Text_OnUpdateDE(self, parent, unit, status)
 	local Frame = parent[self.name]
 	local Text = Frame.Text
@@ -173,7 +174,7 @@ local function Text_OnUpdateDE(self, parent, unit, status)
 			Frame:SetAlpha(1)
 			return
 		else
-			Frame:SetAlpha( Text_SetText(self, Text, unit, status) or 1 )
+			Text_SetText(self, Frame, unit, status)
 			if timers[Text] then TimerStop(Text) end
 			return
 		end
@@ -182,65 +183,65 @@ local function Text_OnUpdateDE(self, parent, unit, status)
 	if timers[Text] then TimerStop(Text) end
 end
 
+-- display stacks
 local function Text_OnUpdateS(self, parent, unit, status)
 	local Frame = parent[self.name]
-	local Text  = Frame.Text
 	if status then
-		local count, alpha = status:GetCount(unit)
+		local count = status:GetCount(unit)
 		if count then
-			Text:SetFormattedText( "%d", count )
+			Frame.Text:SetText(count)
+			Frame:SetAlpha(1)
 		else
-			alpha = Text_SetText(self, Text, unit, status)
+			Text_SetText(self, Frame, unit, status)
 		end
-		Frame:SetAlpha(alpha or 1)
 	else
 		Frame:SetAlpha(0)
 	end
 end
 
+-- display percent
 local FmtPercent
 local function Text_OnUpdateP(self, parent, unit, status)
 	local Frame = parent[self.name]
-	local Text  = Frame.Text
 	if status then
-		local percent, text, alpha
+		local percent, text
 		if status.GetPercentText then
 			text = status:GetPercentText(unit)
 		else
 			percent, text = status:GetPercent(unit)
 		end
 		if text then
-			Text:SetText(text)
+			Frame.Text:SetText(text)
+			Frame:SetAlpha(1)
 		elseif percent and canaccessvalue(percent) then
-			Text:SetFormattedText( FmtPercent, percent*100 )
+			Frame.Text:SetFormattedText(FmtPercent, percent*100)
+			Frame:SetAlpha(1)
 		else
-			alpha = Text_SetText(self, Text, unit, status)
+			Text_SetText(self, Frame, unit, status)
 		end
-		Frame:SetAlpha(alpha or 1)
 	else
 		Frame:SetAlpha(0)
 	end
 end
 
+-- display standard text
 local function Text_OnUpdate(self, parent, unit, status)
 	local Frame = parent[self.name]
-	local Text = Frame.Text
 	if status then
-		local alpha = Text_SetText(self, Text, unit, status)
-		Frame:SetAlpha( alpha or 1)
+		Text_SetText(self, Frame, unit, status)
 	else
 		Frame:SetAlpha(0)
 	end
 end
 
+-- display test data
 local function Text_OnUpdateTest(self, parent, unit, status)
 	local Frame = parent[self.name]
-	local Text  = Frame.Text
 	if status and status.name=='name' then
 		local header = parent:GetParent()
 		if header.headerType then
 			local str = string_cut(status:GetText(unit) or header.headerType, self.textlength)
-			Text:SetText( string.format("%s(%s)", str, header:GetAttribute('testIndex') or '') )
+			Frame.Text:SetText( string.format("%s(%s)", str, header:GetAttribute('testIndex') or '') )
 			Frame:SetAlpha(1)
 			return
 		end
