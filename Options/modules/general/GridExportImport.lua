@@ -90,7 +90,6 @@ local function ExportCurrentProfile(Hex, exportCustomLayouts)
 	end
 	return result
 end
-Grid2.ExportCurrentProfile = ExportCurrentProfile
 
 -- External consumers may need export-by-profile-key, not just current-profile export.
 local function ExportProfileByKey(profileKey, exportCustomLayouts)
