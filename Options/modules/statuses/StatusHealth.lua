@@ -11,7 +11,6 @@ function Grid2Options:MakeStatusHealthFormatOptions(status, options, optionParam
 		get = function () return not status.dbx.displayRawNumbers end,
 		set = function (_, v)
 			status.dbx.displayRawNumbers = not v or nil
-			status.dbx.truncateWhenZero = nil
 			status:Refresh()
 		end,
 	}
@@ -20,13 +19,12 @@ function Grid2Options:MakeStatusHealthFormatOptions(status, options, optionParam
 		tristate = false,
 		width = "full",
 		order = 210,
-		name = L["Truncate when zero"],
+		name = L["Hide when zero"],
 		get = function () return status.dbx.truncateWhenZero end,
 		set = function (_, v)
 			status.dbx.truncateWhenZero = v or nil
 			status:Refresh()
 		end,
-		disabled = function() return not status.dbx.displayRawNumbers end,
 	}
 end
 
