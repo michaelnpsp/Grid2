@@ -348,7 +348,7 @@ headerOptions = {
 		width = "full",
 		name = L["Units List"],
 		desc = L["Type a list of unit names, valid units:\ntarget, focus\nboss1, boss2, boss3, boss4, boss5\narena1, arena2, arena3, arena4, arena5\nplayer, party1, party2, party3, party4\nraid1, raid2, raid3, .. , raid40"],
-		multiline = 9,
+		multiline = 5,
 		get = function()
 			return editedHeader.unitsFilter or ''
 		end,
@@ -456,6 +456,23 @@ headerOptions = {
 			RefreshLayout()
 		end,
 		hidden = function() return editedHeader.type~='custom' end,
+	},
+
+	inlineHeader = {
+		type = "toggle",
+		name = L["Inline Header"],
+		desc = L["Place this header in the same column/row as the previous header."],
+		order = 58,
+		width = 1,
+		get = function()
+			return editedHeader.inlineHeader
+		end,
+		set = function(info, value)
+			editedHeader.inlineHeader = value or nil
+			RefreshLayout(true)
+		end,
+		disabled = function() return editedHeaderIndex==1 end,
+		hidden = false,
 	},
 
 	---------------------------------------------------------------------------

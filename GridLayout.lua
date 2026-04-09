@@ -477,7 +477,7 @@ function Grid2Layout:PlaceHeaders()
 	local yMult2 	 = horizontal and yMult1*padding or 0
 	local xMult3     = xMult2 + (vertical   and xMult1*spacing*2 or 0)
 	local yMult3     = yMult2 + (horizontal and yMult1*spacing*2 or 0)
-	local prevFrame
+	local prevFrame, prevInline
 	self:RestorePosition()
 	for i, frame in self:IterateHeaders(false) do -- non detached headers
 		frame:SetOrientation(horizontal)
@@ -487,11 +487,13 @@ function Grid2Layout:PlaceHeaders()
 			frame:SetPoint(anchor, self.frame, anchor, spacing * xMult1, spacing * yMult1)
 		elseif not frame.isInline then
 			frame:SetPoint(anchor, prevFrame, relPoint, xMult2, yMult2)
+			prevInline = nil
 		else -- special case to display several headers on the same row/column
 			local relPoint = self.relativePoints[not vertical][anchor]
 			local xMult = vertical and 0 or padding * xMult1
 			local yMult = vertical and padding * yMult1 or 0
-			frame:SetPoint(anchor, prevFrame, relPoint, xMult, yMult)
+			frame:SetPoint(anchor, prevInline or prevFrame, relPoint, xMult, yMult)
+			prevInline = frame
 		end
 		frame:Show()
 		prevFrame = frame.isInline and prevFrame or frame
