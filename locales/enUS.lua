@@ -93,6 +93,7 @@ L["Party"] = true
 L["Party w/Pets"] = true
 L["By Role"] = true
 L["By Role w/Pets"] = true
+L["By Role & Player First"] = true
 L["By Group"] = true
 L["By Group w/Pets"] = true
 L["By Group w/Tanks"] = true

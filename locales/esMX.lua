@@ -4,7 +4,7 @@ if not L then return end
 --{{{ Actually used
 L["Border"] = "Borde"
 L["Charmed"] = "Controlado"
-L["Default"] = "Default"
+L["Default"] = "Predeterminado"
 L["Grid2"] = "Grid2"
 L["Beast"] = "Bestia"
 L["Demon"] = "Demonio"
@@ -16,11 +16,11 @@ L["Elemental"] = "Elemental"
 L["DEAD"] = "Muerto"
 L["GHOST"] = "Fantasma"
 L["FD"] = "F.M."
-L["Offline"] = "Desc."
+L["Offline"] = "Desc"
 --}}}
 
 --{{{ Pvp
--- L["PvP"] = ""
+L["PvP"] = "JcJ"
 -- L["FFA"] = ""
 --}}}
 
@@ -53,6 +53,13 @@ L["HEALER"] = "Curador"
 L["DAMAGER"] = "Daño"
 --}}}
 
+--{{{ SpecRole
+L["Tank"] = "Tanque"
+L["Healer"] = "Healer"
+L["Melee"] = "Melee"
+L["Ranged"] = "Rango"
+--}}}
+
 --{{{ Other roles
 L["RL"] = "RL"
 L["RA"] = "RA"
@@ -65,39 +72,42 @@ L["Revived"] = "Revivido"
 ---}}}
 
 --{{{ Self
--- L["Me"] = ""
+L["Me"] = "Yo"
 ---}}}
 
+--{{{ Combat
+L["combat"] = "Combate"
+--}}
+
 --{{{ Summon
--- L["Pending"] = ""
--- L["Accepted"] = ""
--- L["Declined"] = ""
+L["Pending"] = "Pendiente"
+L["Accepted"] = "Aceptado"
+L["Declined"] = "Rechazado"
 ---}}}
 
 --Layouts
 L["None"] = "Ninguno"
 L["Solo"] = "Solo"
-L["Solo w/Pet"] = "Solo con mascota"
-L["By Group 5"] = "Por Grupo 5"
-L["By Group 5 w/Pets"] = "Por Grupo 5 con mascotas"
-L["By Group 10"] = "Por Grupo 10"
-L["By Group 10 w/Pets"] = "Por Grupo 10 con mascotas"
-L["By Group 15"] = "Por Grupo 15"
-L["By Group 15 w/Pets"] = "Por Grupo 15 con  mascotas"
-L["By Group 25"] = "Por Grupo 25"
-L["By Group 25 w/Pets"] = "Por Grupo 25 con mascotas"
+L["Solo w/Pet"] = "Solo c/Pet"
+L["Party"] = "Grupo"
+L["Party w/Pets"] = "Grupo c/Pets"
+L["By Role"] = "Por Rol"
+L["By Role w/Pets"] = "Por Rol c/Pets"
+L["By Role | 10x4"] = "Por Rol | 10x4"
+L["By Role & Player First"] = "Por Rol & Yo Primero"
+L["By Group"] = "Por Grupo"
+L["By Group w/Pets"] = "Por Grupo c/Pets"
+L["By Group w/Tanks"] = "Por Grupo c/Tanques"
+L["By Group & Role"] = "Por Grupo & Rol"
 L["By Class"] = "Por Clase"
-L["By Class w/Pets"] = "Por Clase con mascotas"
-L["By Class 25"] = "Por Clase 25"
-L["By Role 25"] = "Por Rol 25"
-L["By Class 1 x 25 Wide"] = "Por Clase 1x25"
-L["By Class 2 x 15 Wide"] = "Por Clase 2x15"
-L["By Group 4 x 10 Wide"] = "Por Grupo 4x10"
-L["By Group 25 w/tanks"] = "Por Grupo 25 con tanques"
-L["By Group 40"] = "Por Grupo 40"
-L["By Group 25 Tanks First"] = "Por Grupo 25 tanques primero"
-L["By Group 10 Tanks First"] = "Por Grupo 10 tanques primero"
+L["By Class w/Pets"] = "Por Clase c/Pets"
+L["By Class | 1x25"] = "Por Clase | 1x25"
+L["By Class | 2x15"] = "Por Clase | 2x15"
+L["By Group | 40"] = "Por Grupo | 40"
+L["By Group | 40 w/Pets"] = "Por Grupo | 40 c/Pets"
+L["By Group | 4x10"] = "Por Grupo | 4x10"
+L["By Group | 4x10 w/Pets"] = "Por Grupo | 4x10 c/Pets"
 L["Select Layout"] = "Elige Diseño"
--- L["By Group & Class"] = ""
--- L["By Group & Class w/Pets"] = ""
--- L["By Group & Role w/Pets"] = ""
+L["By Group & Class"] = "Por Grupo & Clase"
+L["By Group & Class w/Pets"] = "Por Grupo & Clase c/Pets"
+L["By Group & Role w/Pets"] = "Por Grupo & Rol c/Pets"

@@ -128,7 +128,7 @@ Grid2Layout:AddLayout("By Group & Role w/Pets", {
 	[2] = PETS_GROUP,
 })
 
-Grid2Layout:AddLayout("By Role, Player First", {
+Grid2Layout:AddLayout("By Role & Player First", {
 	meta = META_PARTY,
 	[1] = {
 		type = "custom",
