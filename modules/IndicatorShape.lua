@@ -90,7 +90,10 @@ local function Shape_UpdateDB(self)
 	local i, j, u, v
 	local r = dbx.iconRotation or 0
 	local k = dbx.iconIndex or 0
-	if k>=0 then
+	local a = type(k)=='string' and C_Texture.GetAtlasInfo(k)
+	if a then
+		self.iconPath, i, j, u, v = a.file, a.leftTexCoord, a.rightTexCoord, a.topTexCoord, a.bottomTexCoord
+	elseif (tonumber(k) or 0)>=0 then
 		i, j, u, v = k/8, (k+1)/8, 0, 1
 	elseif dbx.iconCoord then
 		i, j, u, v = unpack(dbx.iconCoord)

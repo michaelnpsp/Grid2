@@ -2,7 +2,12 @@ local media = LibStub("LibSharedMedia-3.0", true)
 local L = Grid2Options.L
 
 local SHAPES_VALUES = {
-   [-1] = L["Custom Texture"],
+	['_RaidFrame-Dispel-Highlight-Horizontal'] = L["Blizzard Dispel Overlay"],
+	['RaidFrame-Icon-DebuffMagic'] = L["Blizzard Magic"],
+	['RaidFrame-Icon-DebuffCurse'] = L["Blizzard Curse"],
+	['RaidFrame-Icon-DebuffDisease'] = L["Blizzard Disease"],
+	['RaidFrame-Icon-DebuffPoison'] = L["Blizzard Poison"],
+	['RaidFrame-Icon-DebuffBleed'] = L["Blizzard Bleed"],
 	[0] = L["Square"],
 	[1] = L["Rounded Square"],
 	[2] = L["Circle"],
@@ -11,6 +16,7 @@ local SHAPES_VALUES = {
 	[5] = L["Right Triangle"],
 	[6] = L["Semi Circle"],
 	[7] = L["Quarter Circle"],
+   [-1] = L["Custom Texture"],
 }
 
 local SHAPE_ANGLE = { [0] = L["0 degrees"], [1] = L["90 degrees"], [2] = L["180 degrees"], [3] = L["270 degrees"] }
@@ -168,11 +174,11 @@ function Grid2Options:MakeIndicatorShapeCustomOptions(indicator, options)
 			indicator.dbx.iconPath = v
 			self:RefreshIndicator(indicator, "Layout")
 		end,
-		hidden = function() return indicator.dbx.iconIndex~=-1 end,
+		hidden = function() return (tonumber(indicator.dbx.iconIndex) or 0)~=-1 end,
 	}
 	options.shapeSeparator = {
 		type = "description", order = 21.5, name = "\n",
-		hidden = function() return indicator.dbx.iconIndex~=-1 end,
+		hidden = function() return (tonumber(indicator.dbx.iconIndex) or 0)~=-1 end,
 	}
 	options.shapeLeft = {
 		type = "input",
@@ -186,7 +192,7 @@ function Grid2Options:MakeIndicatorShapeCustomOptions(indicator, options)
 		set = function(_, v)
 			SetCoord(indicator, 1, v, 0)
 		end,
-		hidden = function() return indicator.dbx.iconIndex~=-1 end,
+		hidden = function() return (tonumber(indicator.dbx.iconIndex) or 0)~=-1 end,
 	}
 	options.shapeRight = {
 		type = "input",
@@ -200,7 +206,7 @@ function Grid2Options:MakeIndicatorShapeCustomOptions(indicator, options)
 		set = function(_, v)
 			SetCoord(indicator, 2, v, 1)
 		end,
-		hidden = function() return indicator.dbx.iconIndex~=-1 end,
+		hidden = function() return (tonumber(indicator.dbx.iconIndex) or 0)~=-1 end,
 	}
 	options.shapeTop = {
 		type = "input",
@@ -214,7 +220,7 @@ function Grid2Options:MakeIndicatorShapeCustomOptions(indicator, options)
 		set = function(_, v)
 			SetCoord(indicator, 3, v, 0)
 		end,
-		hidden = function() return indicator.dbx.iconIndex~=-1 end,
+		hidden = function() return (tonumber(indicator.dbx.iconIndex) or 0)~=-1 end,
 	}
 	options.shapeBottom = {
 		type = "input",
@@ -228,7 +234,7 @@ function Grid2Options:MakeIndicatorShapeCustomOptions(indicator, options)
 		set = function(_, v)
 			SetCoord(indicator, 4, v, 1)
 		end,
-		hidden = function() return indicator.dbx.iconIndex~=-1 end,
+		hidden = function() return (tonumber(indicator.dbx.iconIndex) or 0)~=-1 end,
 	}
 	self:MakeHeaderOptions( options, "Shadow" )
 	options.shadowEnabled = {
