@@ -112,7 +112,6 @@ local function Text_Create(self, parent)
 	if f.SetBackdrop then f:SetBackdrop(nil) end
 	local Text = f.Text or f:CreateFontString(nil, "OVERLAY")
 	f.Text = Text
-	Text:Show()
 end
 
 local function Text_Layout(self, parent)
@@ -135,10 +134,17 @@ local function Text_Layout(self, parent)
 	Frame:Show()
 end
 
+local function Text_SetText(self, Frame, unit, status)
+	local text, value = status:GetText(unit)
+	Frame.Text:SetText( string_cut(text or '', self.textlength) )
+	Frame:SetAlpha(value or 1)
+end
+
+-- display duration or elapsed time
 local function Text_OnUpdateDE(self, parent, unit, status)
-	local Text = parent[self.name].Text
+	local Frame = parent[self.name]
+	local Text = Frame.Text
 	if status then
-		Text:Show()
 		local expiration = status:GetExpirationTime(unit)
 		if expiration and canaccessvalue(expiration) then
 			curTime = GetTime() -- not local because is used later by self.updateFunc
@@ -155,6 +161,7 @@ local function Text_OnUpdateDE(self, parent, unit, status)
 					TimerStart(Text, self.updateFunc)
 				end
 				self.updateFunc(Text)
+				Frame:SetAlpha(1)
 				return
 			end
 		elseif self.elapsed then
@@ -164,35 +171,38 @@ local function Text_OnUpdateDE(self, parent, unit, status)
 				TimerStart(Text, self.updateFunc)
 			end
 			self.updateFunc(Text)
+			Frame:SetAlpha(1)
 			return
 		else
-			Text:SetText( string_cut(status:GetText(unit) or "", self.textlength) )
+			Text_SetText(self, Frame, unit, status)
 			if timers[Text] then TimerStop(Text) end
 			return
 		end
 	end
-	Text:Hide()
+	Frame:SetAlpha(0)
 	if timers[Text] then TimerStop(Text) end
 end
 
+-- display stacks
 local function Text_OnUpdateS(self, parent, unit, status)
-	local Text = parent[self.name].Text
+	local Frame = parent[self.name]
 	if status then
 		local count = status:GetCount(unit)
 		if count then
-			Text:SetFormattedText( "%d", count )
+			Frame.Text:SetText(count)
+			Frame:SetAlpha(1)
 		else
-			Text:SetText( string_cut(status:GetText(unit) or "", self.textlength) )
+			Text_SetText(self, Frame, unit, status)
 		end
-		Text:Show()
 	else
-		Text:Hide()
+		Frame:SetAlpha(0)
 	end
 end
 
+-- display percent
 local FmtPercent
 local function Text_OnUpdateP(self, parent, unit, status)
-	local Text = parent[self.name].Text
+	local Frame = parent[self.name]
 	if status then
 		local percent, text
 		if status.GetPercentText then
@@ -201,40 +211,42 @@ local function Text_OnUpdateP(self, parent, unit, status)
 			percent, text = status:GetPercent(unit)
 		end
 		if text then
-			Text:SetText( text )
+			Frame.Text:SetText(text)
+			Frame:SetAlpha(1)
 		elseif percent and canaccessvalue(percent) then
-			Text:SetFormattedText( FmtPercent, percent*100 )
+			Frame.Text:SetFormattedText(FmtPercent, percent*100)
+			Frame:SetAlpha(1)
 		else
-			Text:SetText( string_cut(status:GetText(unit) or "", self.textlength) )
+			Text_SetText(self, Frame, unit, status)
 		end
-		Text:Show()
 	else
-		Text:Hide()
+		Frame:SetAlpha(0)
 	end
 end
 
+-- display standard text
 local function Text_OnUpdate(self, parent, unit, status)
-	local Text = parent[self.name].Text
+	local Frame = parent[self.name]
 	if status then
-		Text:SetText( string_cut(status:GetText(unit) or "", self.textlength) )
-		Text:Show()
+		Text_SetText(self, Frame, unit, status)
 	else
-		Text:Hide()
+		Frame:SetAlpha(0)
 	end
 end
 
+-- display test data
 local function Text_OnUpdateTest(self, parent, unit, status)
-	local Text = parent[self.name].Text
+	local Frame = parent[self.name]
 	if status and status.name=='name' then
 		local header = parent:GetParent()
 		if header.headerType then
 			local str = string_cut(status:GetText(unit) or header.headerType, self.textlength)
-			Text:SetText( string.format("%s(%s)", str, header:GetAttribute('testIndex') or '') )
-			Text:Show()
+			Frame.Text:SetText( string.format("%s(%s)", str, header:GetAttribute('testIndex') or '') )
+			Frame:SetAlpha(1)
 			return
 		end
 	end
-	Text:Hide()
+	Frame:SetAlpha(0)
 end
 
 local function Text_Disable(self, parent)

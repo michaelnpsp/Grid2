@@ -24,7 +24,9 @@ local ScaleTo100 = CurveConstants.ScaleTo100
 local TruncateWhenZero = C_StringUtil.TruncateWhenZero
 
 -- health-current status
-local deadAsFullHealth
+local HealthFormat
+local HealthTruncate
+local HealthDeadAsFull
 
 Health.colorCurve = C_CurveUtil.CreateColorCurve()
 Health.IsActive = Grid2.statusLibrary.IsActive
@@ -40,24 +42,18 @@ function Health:OnDisable()
 	self:UnregisterRosterUnitEvent("UNIT_HEALTH")
 end
 
-function Health:GetText1(unit)
-	return UnitExists(unit) and AbbreviateLargeNumbers( UnitHealth(unit) ) or ''
-end
-
-function Health:GetText2(unit)
-	return UnitExists(unit) and tostring( UnitHealth(unit) ) or ''
-end
-
-function Health:GetText3(unit)
-	return TruncateWhenZero( UnitHealth(unit) or 0 )
+function Health:GetText(unit)
+	if not UnitExists(unit) then return '' end
+	local value = UnitHealth(unit)
+	return HealthFormat(value), HealthTruncate and value or nil
 end
 
 function Health:GetPercentText(unit)
-	return format( fmtPercent, (deadAsFullHealth and UnitIsDeadOrGhost(unit) and 100) or UnitHealthPercent(unit, true, ScaleTo100) )
+	return format( fmtPercent, (HealthDeadAsFull and UnitIsDeadOrGhost(unit) and 100) or UnitHealthPercent(unit, true, ScaleTo100) )
 end
 
 function Health:GetPercent(unit)
-	if deadAsFullHealth and UnitIsDeadOrGhost(unit) then return 1 end
+	if HealthDeadAsFull and UnitIsDeadOrGhost(unit) then return 1 end
 	return UnitHealthPercent(unit, true)
 end
 
@@ -67,8 +63,9 @@ end
 
 function Health:UpdateDB()
 	fmtPercent = Grid2.db.profile.formatting.percentFormat
-	deadAsFullHealth = self.dbx.deadAsFullHealth
-	self.GetText = self.dbx.displayRawNumbers and (self.dbx.truncateWhenZero and self.GetText3 or self.GetText2) or self.GetText1
+	HealthFormat = self.dbx.displayRawNumbers and tostring or AbbreviateLargeNumbers
+	HealthTruncate = self.dbx.truncateWhenZero
+	HealthDeadAsFull = self.dbx.deadAsFullHealth
     self.colorCurve:ClearPoints()
 	self.colorCurve:SetType(Enum.LuaCurveType.Linear)
 	self.colorCurve:AddPoint( self.dbx.colorCurve3 or 0  , self.dbx.color3 )
@@ -86,6 +83,9 @@ Grid2.setupFunc["health-current"] = Create
 Grid2:DbSetStatusDefaultValue( "health-current", {type = "health-current", colorCount=3, color1 = {r=0,g=1,b=0,a=1}, color2 = {r=1,g=1,b=0,a=1}, color3 = {r=1,g=0,b=0,a=1} } )
 
 -- health-deficit status
+local HealthDeficitFormat
+local HealthDeficitTruncate
+
 HealthDeficit.GetColor  = Grid2.statusLibrary.GetColor
 
 function HealthDeficit:OnEnable()
@@ -106,20 +106,15 @@ function HealthDeficit:GetValueMinMax(unit)
 	return UnitHealthMissing(unit) or 0, 0, UnitHealthMax(unit)
 end
 
-function HealthDeficit:GetText1(unit)
-	return UnitExists(unit) and AbbreviateLargeNumbers(UnitHealthMissing(unit)) or ''
-end
-
-function HealthDeficit:GetText2(unit)
-	return UnitExists(unit) and tostring(UnitHealthMissing(unit)) or ''
-end
-
-function HealthDeficit:GetText3(unit)
-	return TruncateWhenZero( UnitHealthMissing(unit) or 0 )
+function HealthDeficit:GetText(unit)
+	if not UnitExists(unit) then return '' end
+	local value = UnitHealthMissing(unit)
+	return HealthDeficitFormat(value), HealthDeficitTruncate and value or nil
 end
 
 function HealthDeficit:UpdateDB()
-	self.GetText = self.dbx.displayRawNumbers and (self.dbx.truncateWhenZero and self.GetText3 or self.GetText2) or self.GetText1
+	HealthDeficitFormat = self.dbx.displayRawNumbers and tostring or AbbreviateLargeNumbers
+	HealthDeficitTruncate = self.dbx.truncateWhenZero
 end
 
 local function CreateHealthDeficit(baseKey, dbx)
@@ -132,6 +127,8 @@ Grid2.setupFunc["health-deficit"] = CreateHealthDeficit
 Grid2:DbSetStatusDefaultValue( "health-deficit", {type = "health-deficit", color1 = {r=1,g=1,b=1,a=1} })
 
 -- heals-incoming status
+local HealsFormat
+local HealsTruncate
 local HealsCalculator = CreateUnitHealPredictionCalculator()
 local UnitGetDetailedHealPrediction = UnitGetDetailedHealPrediction
 local GetIncomingHealsForUnit = UnitGetIncomingHeals
@@ -157,16 +154,9 @@ function Heals:GetValueMinMax(unit)
 	return GetIncomingHealsForUnit(unit) or 0, 0, UnitHealthMax(unit)
 end
 
-function Heals:GetText1(unit)
-	return AbbreviateLargeNumbers( GetIncomingHealsForUnit(unit) or 0 )
-end
-
-function Heals:GetText2(unit)
-	return tostring( GetIncomingHealsForUnit(unit) or 0 )
-end
-
-function Heals:GetText3(unit)
-	return TruncateWhenZero( GetIncomingHealsForUnit(unit) or 0 )
+function Heals:GetText(unit)
+	local value = GetIncomingHealsForUnit(unit) or 0
+	return HealsFormat(value), HealsTruncate and value or nil
 end
 
 function Heals:IsActive(unit)
@@ -176,7 +166,8 @@ end
 function Heals:UpdateDB()
 	HealsCalculator:SetHealAbsorbMode(self.dbx.includeHealAbsorbs and 0 or 1)
 	GetIncomingHealsForUnit = self.dbx.includePlayerHeals and UnitGetIncomingHeals or UnitGetIncomingHealsNoPlayer
-	self.GetText = self.dbx.displayRawNumbers and (self.dbx.truncateWhenZero and self.GetText3 or self.GetText2) or self.GetText1
+	HealsFormat = self.dbx.displayRawNumbers and tostring or AbbreviateLargeNumbers
+	HealsTruncate = self.dbx.truncateWhenZero
 end
 
 local function CreateHeals(baseKey, dbx)
@@ -189,6 +180,9 @@ Grid2.setupFunc["heals-incoming"] = CreateHeals
 Grid2:DbSetStatusDefaultValue( "heals-incoming", {type = "heals-incoming", color1 = {r=0,g=1,b=0,a=1}})
 
 -- my-heals-incoming status
+local MyHealsFormat
+local MyHealsTruncate
+
 MyHeals.IsActive = Grid2.statusLibrary.IsActive
 MyHeals.GetColor = Grid2.statusLibrary.GetColor
 
@@ -204,16 +198,9 @@ function MyHeals:GetValueMinMax(unit)
 	return UnitGetIncomingHeals(unit,'player') or 0, 0, UnitHealthMax(unit)
 end
 
-function MyHeals:GetText1(unit)
-	return AbbreviateLargeNumbers( UnitGetIncomingHeals(unit,'player') or 0 )
-end
-
-function MyHeals:GetText2(unit)
-	return tostring(UnitGetIncomingHeals(unit,'player') or 0)
-end
-
-function MyHeals:GetText3(unit)
-	return TruncateWhenZero( UnitGetIncomingHeals(unit,'player') or 0 )
+function MyHeals:GetText(unit)
+	local value = UnitGetIncomingHeals(unit,'player') or 0
+	return MyHealsFormat(value), MyHealsTruncate and value or nil
 end
 
 function MyHeals:IsActive(unit)
@@ -221,7 +208,8 @@ function MyHeals:IsActive(unit)
 end
 
 function MyHeals:UpdateDB()
-	self.GetText = self.dbx.displayRawNumbers and (self.dbx.truncateWhenZero and self.GetText3 or self.GetText2) or self.GetText1
+	MyHealsFormat = self.dbx.displayRawNumbers and tostring or AbbreviateLargeNumbers
+	MyHealsTruncate = self.dbx.truncateWhenZero
 end
 
 local function CreateMyHeals(baseKey, dbx)

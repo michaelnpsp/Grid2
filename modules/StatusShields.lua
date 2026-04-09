@@ -1,19 +1,15 @@
-if not Grid2.secretsEnabled then return end -- only midnight
-
 -- Shields absorb status, created by Michael
-
 local Grid2 = Grid2
-local min   = math.min
-local fmt   = string.format
-local tostring = tostring
-local UnitHealthMax = UnitHealthMax
-local UnitGetTotalAbsorbs = UnitGetTotalAbsorbs
-local AbbreviateLargeNumbers = AbbreviateLargeNumbers
-local TruncateWhenZero = C_StringUtil.TruncateWhenZero
-local unit_is_valid = Grid2.roster_guids
 
 -- Shields
 local Shields = Grid2.statusPrototype:new("shields")
+
+local UnitHealthMax = UnitHealthMax
+local UnitGetTotalAbsorbs = UnitGetTotalAbsorbs
+
+local ShieldsFormat
+local ShieldsTruncate
+local ShieldsValueMax
 
 Shields.GetColor = Grid2.statusLibrary.GetColor
 
@@ -27,20 +23,13 @@ function Shields:OnDisable()
 	self:UnregisterRosterUnitEvent("UNIT_MAXHEALTH")
 end
 
-function Shields:GetText1(unit)
-	return AbbreviateLargeNumbers( UnitGetTotalAbsorbs(unit) or 0 )
-end
-
-function Shields:GetText2(unit)
-	return tostring( UnitGetTotalAbsorbs(unit) or 0 )
-end
-
-function Shields:GetText3(unit)
-	return TruncateWhenZero( UnitGetTotalAbsorbs(unit) or 0 )
+function Shields:GetText(unit)
+	local value = UnitGetTotalAbsorbs(unit) or 0
+	return ShieldsFormat(value), ShieldsTruncate and value or nil
 end
 
 function Shields:GetValueMinMaxCustom(unit)
-	return UnitGetTotalAbsorbs(unit) or 0, 0, self.maxShieldValue
+	return UnitGetTotalAbsorbs(unit) or 0, 0, ShieldsValueMax
 end
 
 function Shields:GetValueMinMaxHealth(unit)
@@ -53,8 +42,10 @@ end
 
 function Shields:UpdateDB()
 	self.maxShieldValue = self.dbx.maxShieldValue
-	self.GetValueMinMax = self.maxShieldValue and self.GetValueMinMaxCustom or self.GetValueMinMaxHealth
-	self.GetText = self.dbx.displayRawNumbers and (self.dbx.truncateWhenZero and self.GetText3 or self.GetText2) or self.GetText1
+	ShieldsFormat = self.dbx.displayRawNumbers and tostring or AbbreviateLargeNumbers
+	ShieldsTruncate = self.dbx.truncateWhenZero
+	ShieldsValueMax = self.dbx.maxShieldValue
+	self.GetValueMinMax = self.dbx.maxShieldValue and self.GetValueMinMaxCustom or self.GetValueMinMaxHealth
 end
 
 local function Create(baseKey, dbx)

@@ -55,6 +55,7 @@ GridDefaults.lua
 GridDefaultsRetail.lua
 GridBlizFramesHide.lua
 GridBlizFramesAuras.lua
+GridProfileAPI.lua
 
 # Indicators
 modules\IndicatorAlpha.lua
