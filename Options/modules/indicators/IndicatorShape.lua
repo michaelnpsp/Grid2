@@ -167,8 +167,8 @@ function Grid2Options:MakeIndicatorShapeCustomOptions(indicator, options)
 		type = "input",
 		order = 21,
 		width = "double",
-		name = L["Texture Path"],
-		desc = L["Type the path to a texture file."],
+		name = L["Texture"],
+		desc = L["Type a texture file path, a texture identifier or an atlas name."],
 		get = function() return indicator.dbx.iconPath end,
 		set = function(_, v)
 			indicator.dbx.iconPath = v
@@ -192,7 +192,7 @@ function Grid2Options:MakeIndicatorShapeCustomOptions(indicator, options)
 		set = function(_, v)
 			SetCoord(indicator, 1, v, 0)
 		end,
-		hidden = function() return (tonumber(indicator.dbx.iconIndex) or 0)~=-1 end,
+		hidden = function() return (tonumber(indicator.dbx.iconIndex) or 0)~=-1 or C_Texture.GetAtlasInfo(indicator.dbx.iconPath or '')~=nil end,
 	}
 	options.shapeRight = {
 		type = "input",
@@ -206,7 +206,7 @@ function Grid2Options:MakeIndicatorShapeCustomOptions(indicator, options)
 		set = function(_, v)
 			SetCoord(indicator, 2, v, 1)
 		end,
-		hidden = function() return (tonumber(indicator.dbx.iconIndex) or 0)~=-1 end,
+		hidden = function() return (tonumber(indicator.dbx.iconIndex) or 0)~=-1 or C_Texture.GetAtlasInfo(indicator.dbx.iconPath or '')~=nil end,
 	}
 	options.shapeTop = {
 		type = "input",
@@ -220,7 +220,7 @@ function Grid2Options:MakeIndicatorShapeCustomOptions(indicator, options)
 		set = function(_, v)
 			SetCoord(indicator, 3, v, 0)
 		end,
-		hidden = function() return (tonumber(indicator.dbx.iconIndex) or 0)~=-1 end,
+		hidden = function() return (tonumber(indicator.dbx.iconIndex) or 0)~=-1 or C_Texture.GetAtlasInfo(indicator.dbx.iconPath or '')~=nil end,
 	}
 	options.shapeBottom = {
 		type = "input",
@@ -234,7 +234,7 @@ function Grid2Options:MakeIndicatorShapeCustomOptions(indicator, options)
 		set = function(_, v)
 			SetCoord(indicator, 4, v, 1)
 		end,
-		hidden = function() return (tonumber(indicator.dbx.iconIndex) or 0)~=-1 end,
+		hidden = function() return (tonumber(indicator.dbx.iconIndex) or 0)~=-1 or C_Texture.GetAtlasInfo(indicator.dbx.iconPath or '')~=nil end,
 	}
 	self:MakeHeaderOptions( options, "Shadow" )
 	options.shadowEnabled = {

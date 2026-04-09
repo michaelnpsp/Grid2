@@ -3,6 +3,7 @@
 local Grid2 = Grid2
 local unpack = unpack
 local min = math.min
+local GetAtlasInfo = C_Texture.GetAtlasInfo
 local canaccessvalue = Grid2.canaccessvalue
 local SetAlphaFromBoolean = Grid2.SetAlphaFromBoolean
 
@@ -90,7 +91,7 @@ local function Shape_UpdateDB(self)
 	local i, j, u, v
 	local r = dbx.iconRotation or 0
 	local k = dbx.iconIndex or 0
-	local a = type(k)=='string' and C_Texture.GetAtlasInfo(k)
+	local a = (dbx.iconPath and GetAtlasInfo(dbx.iconPath)) or (type(k)=='string' and GetAtlasInfo(k))
 	if a then
 		self.iconPath, i, j, u, v = a.file, a.leftTexCoord, a.rightTexCoord, a.topTexCoord, a.bottomTexCoord
 	elseif (tonumber(k) or 0)>=0 then
