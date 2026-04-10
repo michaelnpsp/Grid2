@@ -5,6 +5,7 @@ Created by Grid2 original authors, modified by Michael
 local Grid2Layout = Grid2:NewModule("Grid2Layout")
 
 local Grid2 = Grid2
+local PixelUtil = Grid2.PixelUtil
 local GetSetupValue = Grid2.GetSetupValue
 local UnitExists = UnitExists
 local InCombatLockdown = InCombatLockdown
@@ -484,15 +485,15 @@ function Grid2Layout:PlaceHeaders()
 		frame:ClearAllPoints()
 		frame:SetParent(self.frame)
 		if not prevFrame then
-			frame:SetPoint(anchor, self.frame, anchor, spacing * xMult1, spacing * yMult1)
+			PixelUtil.SetPoint(frame, anchor, self.frame, anchor, spacing * xMult1, spacing * yMult1)
 		elseif not frame.isInline then
-			frame:SetPoint(anchor, prevFrame, relPoint, xMult2, yMult2)
+			PixelUtil.SetPoint(frame, anchor, prevFrame, relPoint, xMult2, yMult2)
 			prevInline = nil
 		else -- special case to display several headers on the same row/column
 			local relPoint = self.relativePoints[not vertical][anchor]
 			local xMult = vertical and 0 or padding * xMult1
 			local yMult = vertical and padding * yMult1 or 0
-			frame:SetPoint(anchor, prevInline or prevFrame, relPoint, xMult, yMult)
+			PixelUtil.SetPoint(frame, anchor, prevInline or prevFrame, relPoint, xMult, yMult)
 			prevInline = frame
 		end
 		frame:Show()
@@ -681,7 +682,7 @@ function Grid2Layout:FixHeaderAttributes(header, index)
 		header:SetAttribute("unitsPerColumn", unitsPerColumn)
 	end
 	-- fix anchors
-	header:SetAttribute("columnSpacing", p.Padding)
+	header:SetAttribute("columnSpacing", PixelUtil.GetSize(p.Padding))
 	header:SetAttribute("columnAnchorPoint", anchorPoints[not header.groupHorizontal][header.groupAnchor] or header.groupAnchor)
 	-- fix maxColumns
 	local autoEnabled = not p.displayAllGroups or nil
@@ -900,7 +901,8 @@ function Grid2Layout:RestorePosition()
 	f:SetScale(p.ScaleSize)
 	local a, x, y, k = self:GetFramePosition(f)
 	f:ClearAllPoints()
-	f:SetPoint(a, x, y)
+	-- f:SetPoint(a, x, y)
+	PixelUtil.SetPoint(f, a, UIParent, a, x, y)
 	-- background frame
 	local b = f.frameBack
 	b:ClearAllPoints()

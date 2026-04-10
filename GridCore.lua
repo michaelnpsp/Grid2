@@ -170,6 +170,8 @@ function Grid2:OnEnable()
 
 	self.playerClassSpec = self.playerClass .. (self.GetSpecialization() or 0)
 
+	self.PixelUtil.PixelPerfectEnable()
+
 	self:LoadConfig()
 
 	self:SendMessage("Grid_Enabled")

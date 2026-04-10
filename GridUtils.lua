@@ -226,13 +226,18 @@ Grid2.AlignPoints= {
 
 -- Create/Manage/Sets frame backdrops
 do
+	local PixelUtil = Grid2.PixelUtil
 	local format = string.format
 	local tostring = tostring
 	local backdrops = {}
 	-- Generates a backdrop table, reuses tables avoiding to create duplicates
 	function Grid2:GetBackdropTable(edgeFile, edgeSize, bgFile, tile, tileSize, inset)
 		inset = inset or edgeSize
-		local key = format("%s;%s;%d;%s;%d;%d", bgFile or "", edgeFile or "", edgeSize or -1, tostring(tile), tileSize or -1, inset or -1)
+
+		edgeSize = PixelUtil.GetSize(edgeSize)
+		inset = PixelUtil.GetSize(inset)
+
+		local key = format("%s;%s;%f;%s;%d;%f", bgFile or "", edgeFile or "", edgeSize or -1, tostring(tile), tileSize or -1, inset or -1)
 		local backdrop = backdrops[key]
 		if not backdrop then
 			backdrop = {
@@ -240,7 +245,7 @@ do
 				tile = tile,
 				tileSize = tileSize,
 				edgeFile = edgeFile,
-				edgeSize = edgeSize,
+				edgeSize = PixelUtil.GetSize(edgeSize),
 				insets = { left = inset, right = inset, top = inset, bottom = inset },
 			}
 			backdrops[key] = backdrop

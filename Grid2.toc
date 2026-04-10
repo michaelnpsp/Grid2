@@ -37,8 +37,8 @@ GridGroupHeaders.xml
 # Grid2
 GridCore.lua
 GridShims.lua
-GridUtils.lua
 GridPixelUtil.lua
+GridUtils.lua
 GridUtilsCmd.lua
 GridRosterUnitEvents.lua
 GridRoster.lua

@@ -1,6 +1,7 @@
 --[[ Created by Grid2 original authors, modified by Michael --]]
 
 local Grid2 = Grid2
+local PixelUtil = Grid2.PixelUtil
 local next = next
 local pairs = pairs
 local strfind = strfind
@@ -121,8 +122,8 @@ local function GridFrame_Init(frame, width, height)
 		frame:HookScript(event, handler)
 	end
 	if frame:CanChangeAttribute() then
-		frame:SetAttribute("initial-width", width)
-		frame:SetAttribute("initial-height", height)
+		frame:SetAttribute("initial-width", PixelUtil.GetSize(width) )
+		frame:SetAttribute("initial-height", PixelUtil.GetSize(height) )
 		if PingUtil then
 			frame:SetAttribute("ping-receiver", true)
 			frame.IsPingable = true
@@ -143,7 +144,7 @@ end
 
 function GridFramePrototype:Layout()
 	local dbx = Grid2Frame.db.profile
-	local w,h = GridFrame_GetInitialSize(self)
+	local width, height = GridFrame_GetInitialSize(self)
 	-- external border controlled by the border indicator
 	local r,g,b,a = self:GetBackdropBorderColor()
 	Grid2:SetFrameBackdrop( self, frameBackdrop )
@@ -157,15 +158,20 @@ function GridFramePrototype:Layout()
 	self:SetBackdropColor( cf.r, cf.g, cf.b, cf.a )
 	-- visible background
 	local container= self.container
-	container:SetPoint("CENTER", self, "CENTER")
 	-- shrink the background, showing part of the real frame background (that is behind) as a inner border.
-	local inset = (dbx.frameBorder+dbx.frameBorderDistance)*2
-	container:SetSize( w-inset, h-inset )
+	local inset = dbx.frameBorder+dbx.frameBorderDistance
+	local pinset = PixelUtil.GetSize(inset)
+	container:ClearAllPoints()
+	container:SetPoint("TOPLEFT", self, "TOPLEFT", pinset, -pinset)
+	container:SetPoint("BOTTOMRIGHT",self, "BOTTOMRIGHT",  -pinset, pinset)
+	PixelUtil.SetSize(container, width-inset*2, height-inset*2)
 	-- visible background texture
 	local texture = Grid2:MediaFetch("statusbar", dbx.frameTexture, "Gradient" )
 	self.container:SetTexture(texture)
 	-- set size
-	if not InCombatLockdown() then self:SetSize(w,h) end
+	if not InCombatLockdown() then
+		PixelUtil.SetSize(self, width, height)
+	end
 	-- highlight texture
 	if dbx.mouseoverHighlight then
 		self:SetHighlightTexture( Grid2:MediaFetch("background", dbx.mouseoverTexture, "Blizzard Quest Title Highlight") )

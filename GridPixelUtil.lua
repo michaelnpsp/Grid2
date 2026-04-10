@@ -29,6 +29,10 @@ function PixelUtil.GetSizeForRegion(size, region)
 	return size
 end
 
+function PixelUtil.GetSize(size)
+	return size
+end
+
 function PixelUtil.SetWidth(region, width)
 	region:SetWidth(width)
 end
@@ -52,13 +56,19 @@ end
 local function GetSizeForScale(size, scale, minPixels)
 	local pixels =  Round( (size * scale) / scaleFactor )
 	if minPixels then
-		pixels = size<0.0 and max( pixels, -minPixels ) or min( pixels, minPixels )
+		pixels = size<0.0 and min( pixels, -minPixels ) or max( pixels, minPixels )
+	elseif size~=0 then
+		pixels = size<0.0 and min( pixels, -1 ) or max( pixels, 1 )
 	end
 	return pixels * scaleFactor / scale
 end
 
-local function GetSizeForRegion(size, region)
-	return GetSizeForScale( size, region:GetEffectiveScale() )
+local function GetSizeForRegion(size, region, minPixels)
+	return GetSizeForScale( size, region:GetEffectiveScale(), minPixels )
+end
+
+local function GetSize(size, minPixels)
+	return GetSizeForScale( size, Grid2LayoutFrame:GetEffectiveScale() , minPixels)
 end
 
 local function SetWidth(region, width, minPixels)
@@ -76,13 +86,18 @@ end
 
 local function SetPoint(region, point, relativeTo, relPoint, offX, offY, minX, minY)
 	local scale = region:GetEffectiveScale()
-	region:SetPoint(point, relativeTo, relPoint, GetSizeForScale(offX, scale, minX), GetSizeForScale(offX, scale, minY) )
+	region:SetPoint(point, relativeTo, relPoint, GetSizeForScale(offX, scale, minX), GetSizeForScale(offY, scale, minY) )
 end
 
 function PixelUtil.PixelPerfectEnable()
+
+	-- if true then return end
+	print("Enable pixel perfect!!!", Grid2LayoutFrame:GetEffectiveScale())
+
 	scaleFactor = PixelUtil.GetScaleFactor()
 	PixelUtil.GetSizeForScale = GetSizeForScale
 	PixelUtil.GetSizeForRegion = GetSizeForRegion
+	PixelUtil.GetSize = GetSize
 	PixelUtil.SetWidth = SetWidth
 	PixelUtil.SetHeight = SetHeight
 	PixelUtil.SetSize = SetSize
