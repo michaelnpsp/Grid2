@@ -20,6 +20,7 @@ Grid2Options:RegisterIndicatorOptions("icons", true, function(self, indicator)
 	self:MakeIndicatorAuraIconsBorderOptions(indicator, options)
 	self:MakeIndicatorTooltipsOptions(indicator, options)
 	self:MakeIndicatorAuraIconsCustomOptions(indicator, options)
+	self:MakeIndicatorAuraIconsMiscOptions(indicator, options)
 	self:MakeIndicatorCooldownOptions(indicator, options)
 	self:MakeIndicatorStatusOptions(indicator, statuses)
 	self:MakeIndicatorLoadOptions(indicator, filter)
@@ -331,5 +332,22 @@ function Grid2Options:MakeIndicatorAuraIconsCustomOptions(indicator, options)
 			self:RefreshIndicator(indicator, "Layout" )
 		 end,
 		hidden= function() return indicator.dbx.disableStack end,
+	}
+end
+
+function Grid2Options:MakeIndicatorAuraIconsMiscOptions(indicator, options)
+	self:MakeHeaderOptions( options, "MiscIcons" )
+	options.hideDupes = {
+		type = "toggle",
+		width = "full",
+		name = L["Hide duplicate icons"],
+		desc = L["Applicable only when more than one status is linked to the indicator."],
+		order = 241,
+		tristate = false,
+		get = function () return indicator.dbx.hideDupes end,
+		set = function (_, v)
+			indicator.dbx.hideDupes = v or nil
+			self:RefreshIndicator(indicator, "Layout")
+		end,
 	}
 end

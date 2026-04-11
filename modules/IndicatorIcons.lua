@@ -34,54 +34,61 @@ local function Icon_OnFrameUpdate(f)
 	local showColors= self.showColors
 	local showBar   = self.showCoolBar
 	local needDur   = showColors or showBar
+	local hideDupes = #self.statuses>1 and self.hideDupes
 	local useStatus = self.useStatusColor
+	local function checkDupe(slotID)
+		if hideDupes[slotID] then return true end; hideDupes[slotID] = true
+	end
 	local i = 1
 	for _, status in ipairs(self.statuses) do
 		if status.GetIcons then
 			local k, textures, counts, expirations, durations, colors, slots = status:GetIcons(unit,max)
 			for j=1,k do
-				local aura = auras[i]
-				aura.status, aura.slotID = status, slots[j]
-				if showIcons then
-					aura.icon:SetTexture(textures[j])
-					if useStatus then
-						local c = colors[j]
-						aura:SetBackdropBorderColor(c.r, c.g, c.b, self.borderOpacity) -- color is secret we cannot use min()
-					end
-				else
-					local c = colors[j]
-					aura.icon:SetColorTexture(c.r, c.g, c.b)
-				end
-				if showStack then
-					aura.text:SetText( TruncateWhenZero(counts[j]) )
-				end
-				local durObject
-				if showCool then
-					if canaccessvalue(expirations[j]) then
-						aura.cooldown:SetCooldownFromExpirationTime(expirations[j], durations[j])
+				local slotID = slots[j]
+				if not (hideDupes and checkDupe(slotID)) then
+					local aura = auras[i]
+					aura.status, aura.slotID = status, slotID
+					if showIcons then
+						aura.icon:SetTexture(textures[j])
+						if useStatus then
+							local c = colors[j]
+							aura:SetBackdropBorderColor(c.r, c.g, c.b, self.borderOpacity) -- color is secret we cannot use min()
+						end
 					else
-						durObject = status:GetDurationObject(unit, slots[j])
-						if durObject then
-							aura.cooldown:SetCooldownFromDurationObject(durObject)
-						end
+						local c = colors[j]
+						aura.icon:SetColorTexture(c.r, c.g, c.b)
 					end
-				end
-				if needDur then
-					durObject = durObject or status:GetDurationObject(unit, slots[j])
-					if showBar then
-						if durObject then
-							aura.coolBar:SetTimerDuration(durObject, 0, self.cbDirection)
-							aura.coolBar:Show()
+					if showStack then
+						aura.text:SetText( TruncateWhenZero(counts[j]) )
+					end
+					local durObject
+					if showCool then
+						if canaccessvalue(expirations[j]) then
+							aura.cooldown:SetCooldownFromExpirationTime(expirations[j], durations[j])
 						else
-							aura.coolBar:Hide()
+							durObject = status:GetDurationObject(unit, slotID)
+							if durObject then
+								aura.cooldown:SetCooldownFromDurationObject(durObject)
+							end
 						end
 					end
-					if showColors then
-						UpdateIconColorCurve(aura, durObject)
+					if needDur then
+						durObject = durObject or status:GetDurationObject(unit, slotID)
+						if showBar then
+							if durObject then
+								aura.coolBar:SetTimerDuration(durObject, 0, self.cbDirection)
+								aura.coolBar:Show()
+							else
+								aura.coolBar:Hide()
+							end
+						end
+						if showColors then
+							UpdateIconColorCurve(aura, durObject)
+						end
 					end
+					aura:Show()
+					i = i + 1
 				end
-				aura:Show()
-				i = i + 1
 			end
 			max = max - k
 		elseif status:IsActive(unit) then -- TODO secret test maybe
@@ -141,6 +148,7 @@ local function Icon_OnFrameUpdate(f)
 		f:SetSmartSize( self.cellSize * f.visibleCount - self.iconSpacing )
 	end
 	f:SetShown(i>1)
+	if hideDupes then wipe(hideDupes) end
 end
 
 -- Delayed updates
@@ -394,6 +402,8 @@ local function Icon_UpdateDB(self)
 			self.ctColorCurve:AddPoint(dbx.ctThresholds[i] or 0, color)
 		end
 	end
+	-- hide duplicated icons, used if several buffs/debufs statuses are linked to the indicator
+	self.hideDupes = dbx.hideDupes and {} or nil
 	-- backdrop
 	self.backdrop = self.borderSize>0 and Grid2:GetBackdropTable("Interface\\Addons\\Grid2\\media\\white16x16", self.borderSize) or nil
 end

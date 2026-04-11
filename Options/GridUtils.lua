@@ -299,6 +299,7 @@ do
 		CoolBar    = { type = "header", order = 150, name = L["Cooldown Bar"]	},
 		CoolColors = { type = "header", order = 160, name = L["Cooldown Colors"]	},
 		CoolAnim   = { type = "header", order = 200, name = L["Cooldown Animation"] },
+		MiscIcons  = { type = "header", order = 240, name = L["Miscellaneous"] },
 		Tooltip    = { type = "header", order = 250, name = L["Tooltip"]	},
 		Highlight  = { type = "header", order = 300, name = L["Highlight"]	},
 		-- statuses headers
