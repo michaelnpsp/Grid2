@@ -1,7 +1,5 @@
 -- buffs and debuffs statuses for midnight
 
-local LBA = Grid2.BlizFramesAuras
-
 local Grid2 = Grid2
 local next = next
 local ipairs = ipairs
@@ -61,7 +59,6 @@ Grid2.SatedDebuffs = {
 local Shared = {
 	GetColor = Grid2.statusLibrary.GetColor,
 	UNIT_AURA = Grid2.statusPrototype.UpdateIndicatorsFromEvent,
-	LBA_UNIT_AURA = Grid2.statusPrototype.UpdateIndicatorsFromEvent,
 }
 
 function Shared:GetIcons(unit, max)
@@ -106,26 +103,16 @@ function Shared:GetTooltip(unit, tip, slotID)
 end
 
 function Shared:OnEnable()
-	if self.blizFilter then
-		LBA.RegisterCallback(self, "LBA_UNIT_AURA")
-	else
-		self:RegisterRosterUnitEvent('UNIT_AURA')
-	end
+	self:RegisterRosterUnitEvent('UNIT_AURA')
 end
 
 function Shared:OnDisable()
-	if self.blizFilter then
-		LBA.UnregisterCallback(self, "LBA_UNIT_AURA")
-	else
-		self:UnregisterRosterUnitEvent('UNIT_AURA')
-	end
+	self:UnregisterRosterUnitEvent('UNIT_AURA')
 end
 
 function Shared:IsActive(unit)
 	if self.aura_display then
 		return self:GetIcons(unit, 1) > 0
-	elseif self.blizFilter then
-		return LBA.UnitHasAuras(unit, self.aura_filter)~=nil
 	elseif self.aura_displayu and not self.aura_displayu(unit) then
 		return false
 	else
@@ -141,19 +128,12 @@ do
 
 	local function Buffs_UpdateDB(self)
 		local filter = self.dbx.aura_filter or {}
-		self.blizFilter = filter.blizFilter
 		self.aura_color = self.dbx.color1
 		self.aura_sortDir = filter.sortDir or 0
 		self.aura_sortRule = filter.sortRule or 0
-		if filter.blizFilter then -- buffs from blizzard frames
-			self.aura_filter = filter.blizFilter
-			self.aura_func = LBA.GetUnitAuras
-			self.aura_displayu = nil
-		else -- standard filter
-			self.aura_filter = filter.filter or 'HELPFUL'
-			self.aura_func = C_UnitAuras.GetUnitAuras
-			self.aura_displayu = self.aura_filter~='HELPFUL' and UnitIsVisible or nil
-		end
+		self.aura_filter = filter.filter or 'HELPFUL'
+		self.aura_func = C_UnitAuras.GetUnitAuras
+		self.aura_displayu = self.aura_filter~='HELPFUL' and UnitIsVisible or nil
 	end
 
 	-- Registration
@@ -203,18 +183,12 @@ do
 
 	local function Debuffs_UpdateDB(self)
 		local filter = self.dbx.aura_filter or {}
-		self.blizFilter = filter.blizFilter
 		self.aura_filter = filter.filter or 'HARMFUL'
 		self.aura_sortDir = filter.sortDir or 0
 		self.aura_sortRule = filter.sortRule or 0
 		self.aura_display = CompileDisplayFunc(filter)
-		if filter.blizFilter then -- debuffs from blizzard frames
-			self.aura_func = LBA.GetUnitAuras
-			self.aura_displayu = nil
-		else -- standard filter
-			self.aura_func = C_UnitAuras.GetUnitAuras
-			self.aura_displayu = self.aura_filter~='HARMFUL' and UnitIsVisible or nil
-		end
+		self.aura_func = C_UnitAuras.GetUnitAuras
+		self.aura_displayu = self.aura_filter~='HARMFUL' and UnitIsVisible or nil
 		self.aura_color:ClearPoints()
 		local colors = self.dbx.colors or {}
 		for typ, def in pairs(Grid2.DispelCurveDefaults) do
@@ -278,18 +252,12 @@ do
 		return c.r, c.g, c.b, c.a
 	end
 
-	function DebuffsDispell:LBA_UNIT_AURA(_, unit)
-		self:UpdateCache( unit, (UnitIsFriend("player", unit) and UnitIsVisible(unit)) and LBA.GetUnitDebuffsDispellable(unit, self.aura_filter, 1)[1] or nil )
-	end
-
 	function DebuffsDispell:UNIT_AURA(_, unit)
 		self:UpdateCache( unit, (UnitIsFriend("player", unit) and UnitIsVisible(unit)) and GetAuraDataByIndex(unit, 1, self.aura_filter) or nil )
 	end
 
 	function DebuffsDispell:Grid_UnitUpdated(_, unit)
-		if not self.blizFilter then
-			dispel_cache[unit] = nil
-		end
+		dispel_cache[unit] = nil
 	end
 
 	function DebuffsDispell:OnEnable()
@@ -307,15 +275,9 @@ do
 	end
 
 	function DebuffsDispell:UpdateDB()
-		self.blizFilter = nil -- self.dbx.blizFilter
 		self.aura_filter = 'HARMFUL|RAID_PLAYER_DISPELLABLE'
-		if self.blizFilter then
-			self.aura_func = LBA.GetUnitAuras
-			self.aura_displayu = nil
-		else
-			self.aura_func =  C_UnitAuras.GetUnitAuras
-			self.aura_displayu = UnitIsVisible
-		end
+		self.aura_func = C_UnitAuras.GetUnitAuras
+		self.aura_displayu = UnitIsVisible
 		self.aura_color:ClearPoints()
 		local colors = self.dbx.colors or {}
 		for typ, def in pairs(Grid2.DispelCurveDefaults) do

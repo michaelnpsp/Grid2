@@ -5,7 +5,7 @@ Created by Michael, based on Grid2Options\GridDefaults.lua from original Grid2 a
 local Grid2 = Grid2
 
 -- Latest database profile version
-local DB_VERSION = 102
+local DB_VERSION = 103
 
 -- Database manipulation functions
 function Grid2:DbSetStatusDefaultValue(name, value)
@@ -217,6 +217,15 @@ function Grid2:UpdateDefaults()
 			for _,dbx in pairs(self.db.profile.indicators) do
 				if dbx.type=='bar' then
 					dbx.anchorTo = nil
+				end
+			end
+		end
+		if version<103 then -- remove blizzard raid frames filter
+			for _, dbx in pairs(self.db.profile.statuses) do
+				local blizFilter = dbx.aura_filter and dbx.aura_filter.blizFilter
+				if blizFilter and (dbx.type=='mbuffs' or dbx.type=='mdebuffs') then
+					dbx.aura_filter.filter = blizFilter
+					dbx.aura_filter.blizFilter = nil
 				end
 			end
 		end

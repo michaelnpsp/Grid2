@@ -43,9 +43,6 @@ local function filter_set_value(status, key, subkey, value, default)
 	else
 		status.dbx[key][subkey] = nil
 	end
-	if subkey=='filter' then
-		status.dbx[key].blizFilter = nil
-	end
 	refresh_aura_status(status)
 end
 
@@ -190,7 +187,7 @@ local function MakeBuffsOptions(status, options)
 		width = "full",
 		name = L["Display all buffs"],
 		get = function(info)
-			return filter_get_value(status, 'aura_filter', 'filter', 'HELPFUL')=='HELPFUL' and filter_get_value(status, 'aura_filter', 'blizFilter')==nil
+			return filter_get_value(status, 'aura_filter', 'filter', 'HELPFUL')=='HELPFUL'
 		end,
 		set = function(info, v)
 			if v then
@@ -268,34 +265,6 @@ local function MakeBuffsOptions(status, options)
 		end,
 		set = function()
 			filter_toggle_substring( status, 'aura_filter', 'filter', 'EXTERNAL_DEFENSIVE', 'HELPFUL' )
-		end,
-	}
-	options.filter_bliz_buffs = {
-		type = "toggle",
-		order = 60,
-		width = "full",
-		name = L["Buffs from Blizzard Unit Frames"],
-		desc = L["Show the same buffs displayed by the Blizzard unit frames"],
-		get = function()
-			return filter_get_value(status, 'aura_filter', 'blizFilter')=='HELPFUL|RAID'
-		end,
-		set = function(_, v)
-			filter_set_value(status, 'aura_filter', 'filter', nil)
-			filter_set_value(status, 'aura_filter', 'blizFilter', v and 'HELPFUL|RAID' or nil)
-		end,
-	}
-	options.filter_bliz_defensive = {
-		type = "toggle",
-		order = 70,
-		width = "full",
-		name = L["Defensive Buff from Blizzard Unit Frames"],
-		desc = L["Show the same defensive buff displayed by the Blizzard unit frames"],
-		get = function()
-			return filter_get_value(status, 'aura_filter', 'blizFilter')=='HELPFUL|EXTERNAL_DEFENSIVE'
-		end,
-		set = function(_, v)
-			filter_set_value(status, 'aura_filter', 'filter', nil)
-			filter_set_value(status, 'aura_filter', 'blizFilter', v and 'HELPFUL|EXTERNAL_DEFENSIVE' or nil)
 		end,
 	}
 	options.sort_rule = {
@@ -391,8 +360,7 @@ local function MakeDebuffsFilterOptions(status, options)
 		name = L["Display all debuffs"],
 		get = function(info)
 			return filter_get_value(status, 'aura_filter', 'filter', 'HARMFUL') == 'HARMFUL' and
-					filter_get_value(status, 'aura_filter', 'typed')==nil and
-					filter_get_value(status, 'aura_filter', 'blizFilter')==nil
+					filter_get_value(status, 'aura_filter', 'typed')==nil
 		end,
 		set = function(info, v)
 			if v then
@@ -505,20 +473,6 @@ local function MakeDebuffsFilterOptions(status, options)
 			filter_toggle_substring( status, 'aura_filter', 'filter', 'CROWD_CONTROL', 'HARMFUL' )
 		end,
 	}
-	options.filter_bliz_debuffs = {
-		type = "toggle",
-		order = 80,
-		width = "full",
-		name = L["Debuffs from Blizzard Unit Frames"],
-		desc = L["Show the same debuffs displayed by the Blizzard unit frames"],
-		get = function()
-			return filter_get_value(status, 'aura_filter', 'blizFilter')=='HARMFUL'
-		end,
-		set = function(_, v)
-			filter_set_value(status, 'aura_filter', 'filter',  nil)
-			filter_set_value(status, 'aura_filter', 'blizFilter', v and 'HARMFUL' or nil)
-		end,
-	}
 	options.sort_rule = {
 		type = "select",
 		order = 100,
@@ -611,19 +565,6 @@ end,{
 --==============================================
 
 function Grid2Options:MakeMidnightDispellableByMeOptions(status, options)
-	--[[
-	options.bliz_filter = {
-		type = "toggle",
-		order = 1,
-		width = "full",
-		name = L["Get Dispellable debuffs from Blizzard Unit Frames"],
-		get = function() return status.dbx.blizFilter~=nil end,
-		set = function(_, v)
-			status.dbx.blizFilter = v and "HARMFUL|RAID_PLAYER_DISPELLABLE" or nil
-			refresh_aura_status(status)
-		end,
-	}
-	--]]
 	MakeDebuffTypesColorsOptions( status, options, {width=.75, ignore_none=true} )
 end
 

@@ -1,7 +1,6 @@
 -- Hide blizzard frames
 local pcall = pcall
 local InCombatLockdown = InCombatLockdown
-local secretsEnabled = Grid2.secretsEnabled
 local grouped_units = Grid2.grouped_units
 
 local hiddenFrame = CreateFrame('Frame')
@@ -35,12 +34,7 @@ end
 local function UnregisterUnitEvents(frame)
 	local unit = frame.unit
 	if grouped_units[unit] then
-		pcall(function()
-			frame:UnregisterAllEvents()
-			frame:RegisterUnitEvent("UNIT_AURA", unit, frame.displayedUnit and frame.displayedUnit or nil)
-			frame:RegisterEvent("PLAYER_REGEN_ENABLED")
-			frame:RegisterEvent("PLAYER_REGEN_DISABLED")
-		end)
+		pcall(function() frame:UnregisterAllEvents() end)
 	end
 end
 
@@ -68,10 +62,8 @@ local function HideRaidFrames()
 				frame:SetScale(0.001)
 				frame:Hide()
 			end
+			frame:UnregisterAllEvents()
 		end)
-		if not secretsEnabled then
-			pcall(function() frame:UnregisterAllEvents() end)
-		end
 	end
 	local function HideFrames()
 		HideFrame(CompactRaidFrameContainer)
