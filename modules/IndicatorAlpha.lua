@@ -18,9 +18,9 @@ local function Alpha_UpdateStandard(self, parent, unit)
 			local status = statuses[i]
 			local state, invert = status:IsActive(unit)
 			if invert then
-				alpha = EvaluateColorValueFromBoolean(state, alpha, status:GetPercent() or 0.25)
+				alpha = EvaluateColorValueFromBoolean(state, alpha, status:GetPercent(unit) or 0.25)
 			else
-				alpha = EvaluateColorValueFromBoolean(state, status:GetPercent() or 0.25, alpha)
+				alpha = EvaluateColorValueFromBoolean(state, status:GetPercent(unit) or 0.25, alpha)
 			end
 		end
 		(indicatorName and parent[indicatorName] or parent):SetAlpha(alpha)
