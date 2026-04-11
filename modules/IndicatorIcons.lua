@@ -34,8 +34,8 @@ local function Icon_OnFrameUpdate(f)
 	local showColors= self.showColors
 	local showBar   = self.showCoolBar
 	local needDur   = showColors or showBar
-	local hideDupes = #self.statuses>1 and self.hideDupes
 	local useStatus = self.useStatusColor
+	local hideDupes = #self.statuses>1 and self.hideDupes
 	local function checkDupe(slotID)
 		if hideDupes[slotID] then return true end; hideDupes[slotID] = true
 	end
