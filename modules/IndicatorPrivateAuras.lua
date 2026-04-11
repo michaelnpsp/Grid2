@@ -163,7 +163,7 @@ end
 
 Grid2.setupFunc["privateauras"] = function(indicatorKey, dbx)
 	local indicator = Grid2.indicatorPrototype:new(indicatorKey)
-	indicator.auraAnchor = { iconInfo={ iconAnchor={ offsetX=0, offsetY=0, point='CENTER', relativePoint='CENTER' } } }
+	indicator.auraAnchor = { isContainer = false, iconInfo={ iconAnchor={ offsetX=0, offsetY=0, point='CENTER', relativePoint='CENTER' } } }
 	indicator.dbx       = dbx
 	indicator.Create    = Icon_Create
 	indicator.Layout    = Icon_Layout

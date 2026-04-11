@@ -69,7 +69,9 @@ function lib.InitCache()
 end
 
 function lib.Initialize()
-	hooksecurefunc("CompactUnitFrame_UpdateAuras", lib.UpdateUnit)
+	if CompactUnitFrame_UpdateAuras then
+		hooksecurefunc("CompactUnitFrame_UpdateAuras", lib.UpdateUnit)
+	end
 	lib.InitCache()
 end
 
