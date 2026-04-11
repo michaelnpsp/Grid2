@@ -135,4 +135,13 @@ function Grid2Options:OpenFirstBootProfilesDialog()
 		end
 	end)
 	self:SelectDialogGroup( 'Grid2ProfilesDialog', "1" )
+	-- ugly workaround to reopen dialog, because the window is automatically closed on new characters if a cutscene is played.
+	C_Timer.NewTicker(1, function(timer)
+		if Grid2Options.dialogFrame==nil then -- is first boot dialog closed?
+			timer:Cancel()
+			if Grid2.firstBootDialogEnabled then
+				Grid2Options:OpenFirstBootProfilesDialog() -- reopen dialog because user did not select a profile
+			end
+		end
+	end)
 end
