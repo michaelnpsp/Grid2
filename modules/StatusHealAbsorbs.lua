@@ -6,10 +6,9 @@ local Grid2 = Grid2
 local tostring = tostring
 local UnitHealthMax = UnitHealthMax
 local UnitGetTotalHealAbsorbs = UnitGetTotalHealAbsorbs
-local AbbreviateLargeNumbers = AbbreviateLargeNumbers
-local TruncateWhenZero = C_StringUtil.TruncateWhenZero
 
-local ShieldsFormat
+local ShieldsFmtFunc
+local ShieldsFmtData
 local ShieldsTruncate
 local ShieldsValueMax
 
@@ -25,7 +24,7 @@ end
 
 function Shields:GetText(unit)
 	local value = UnitGetTotalHealAbsorbs(unit) or 0
-	return ShieldsFormat(value), ShieldsTruncate and value or nil
+	return ShieldsFmtFunc(value, ShieldsFmtData), ShieldsTruncate and value or nil
 end
 
 function Shields:GetValueMinMaxCustom(unit)
@@ -41,9 +40,9 @@ function Shields:IsActive(unit)
 end
 
 function Shields:UpdateDB()
-	ShieldsFormat = self.dbx.displayRawNumbers and tostring or AbbreviateLargeNumbers
 	ShieldsTruncate = self.dbx.truncateWhenZero
 	ShieldsValueMax = self.dbx.maxShieldValue
+	ShieldsFmtFunc, ShieldsFmtData = Grid2:GetNumbersFormatFunction(self.dbx.displayRawNumbers)
 	self.GetValueMinMax = self.dbx.maxShieldValue and self.GetValueMinMaxCustom or self.GetValueMinMaxHealth
 end
 

@@ -7,7 +7,8 @@ local Shields = Grid2.statusPrototype:new("shields")
 local UnitHealthMax = UnitHealthMax
 local UnitGetTotalAbsorbs = UnitGetTotalAbsorbs
 
-local ShieldsFormat
+local ShieldsFmtFunc
+local ShieldsFmtData
 local ShieldsTruncate
 local ShieldsValueMax
 
@@ -25,7 +26,7 @@ end
 
 function Shields:GetText(unit)
 	local value = UnitGetTotalAbsorbs(unit) or 0
-	return ShieldsFormat(value), ShieldsTruncate and value or nil
+	return ShieldsFmtFunc(value, ShieldsFmtData), ShieldsTruncate and value or nil
 end
 
 function Shields:GetValueMinMaxCustom(unit)
@@ -42,9 +43,9 @@ end
 
 function Shields:UpdateDB()
 	self.maxShieldValue = self.dbx.maxShieldValue
-	ShieldsFormat = self.dbx.displayRawNumbers and tostring or AbbreviateLargeNumbers
 	ShieldsTruncate = self.dbx.truncateWhenZero
 	ShieldsValueMax = self.dbx.maxShieldValue
+	ShieldsFmtFunc, ShieldsFmtData = Grid2:GetNumbersFormatFunction(self.dbx.displayRawNumbers)
 	self.GetValueMinMax = self.dbx.maxShieldValue and self.GetValueMinMaxCustom or self.GetValueMinMaxHealth
 end
 

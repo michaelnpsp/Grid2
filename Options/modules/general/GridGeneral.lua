@@ -245,6 +245,26 @@ Grid2Options:AddGeneralOptions( "General", "Text Formatting", {
 })
 
 --==========================================================================
+-- Abbreviate numberes
+--==========================================================================
+
+Grid2Options:AddGeneralOptions( "General", "Abbreviate Numbers", {
+	numbersGameFormat = {
+		type = "toggle",
+		width = "full",
+		name = L["Use the game locale settings to abbreviate numbers"],
+		desc = L["Use the game locale settings to abbreviate numbers"],
+		get = function () return Grid2.db.profile.formatting.numbersUseGameFormat end,
+		set = function (_, v)
+			Grid2.db.profile.formatting.numbersUseGameFormat = v or nil
+			ReloadUI()
+		end,
+		confirm = function() return L["A UI reload is required to change this option. Are your sure?"] end,
+		disabled = InCombatLockdown
+	},
+})
+
+--==========================================================================
 -- Target on mouse down
 --==========================================================================
 
@@ -254,7 +274,6 @@ Grid2Options:AddGeneralOptions( "General", "Click Targeting", {
 		name = L["Trigger targeting on the down portion of the mouse click"],
 		desc = L["Trigger targeting on the down portion of the mouse click"],
 		width = "full",
-		order = 119,
 		get = function () return Grid2.db.global.clickOnMouseDown end,
 		set = function (_, v)
 			Grid2.db.global.clickOnMouseDown = v or nil
@@ -278,7 +297,6 @@ if Grid2Layout.minimapIcon then -- checks if Grid2LDB addon was loaded
 			name = L["Show Minimap Icon"],
 			desc = L["Show Minimap Icon"],
 			width = "full",
-			order = 119,
 			get = function () return Grid2:SetMinimapIcon('query') end,
 			set = function (_, v) Grid2:SetMinimapIcon(v) end,
 		},

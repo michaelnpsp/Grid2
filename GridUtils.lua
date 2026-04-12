@@ -21,6 +21,35 @@ Grid2.EmptyTable = {}
 Grid2.issecretvalue = issecretvalue
 Grid2.canaccessvalue = canaccessvalue
 
+-- Abreviate numbers
+do
+	local abbrevData = { breakpointData = {
+		  {
+			 breakpoint = 1e6,
+			 abbreviation = "m",
+			 significandDivisor = 1e5,
+			 fractionDivisor = 10,
+			 abbreviationIsGlobal = false,
+		  },
+		  {
+			 breakpoint = 1e3,
+			 abbreviation = "k",
+			 significandDivisor = 100,
+			 fractionDivisor = 10,
+			 abbreviationIsGlobal = false,
+		  },
+	} }
+	function Grid2:GetNumbersFormatFunction(rawNumbers)
+		if rawNumbers then
+			return tostring, nil
+		elseif self.db.profile.formatting.numbersUseGameFormat then
+			return AbbreviateLargeNumbers, nil
+		else
+			return AbbreviateNumbers, abbrevData
+		end
+	end
+end
+
 -- SetAlphaFromBoolean() supporting nonbooleans values for non secret statuses
 function Grid2.SetAlphaFromBoolean(widget, value, aTrue, aFalse, secret, invert)
 	if not secret then

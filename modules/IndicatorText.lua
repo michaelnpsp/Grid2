@@ -19,6 +19,7 @@ Grid2.defaults.profile.formatting = {
 	secondsElapsedFormat     = "%ds",
 	minutesElapsedFormat     = "%dm",
 	percentFormat            = "%.0f%%",
+	numbersUseGameFormat     = nil,
 }
 
 local timers = {}
