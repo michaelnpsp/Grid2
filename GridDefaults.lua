@@ -224,7 +224,7 @@ function Grid2:UpdateDefaults()
 			for _, dbx in pairs(self.db.profile.statuses) do
 				local blizFilter = dbx.aura_filter and dbx.aura_filter.blizFilter
 				if blizFilter and (dbx.type=='mbuffs' or dbx.type=='mdebuffs') then
-					dbx.aura_filter.filter = blizFilter
+					dbx.aura_filter.filter = gsub( blizFilter, 'EXTERNAL_DEFENSIVE', 'BIG_DEFENSIVE' )
 					dbx.aura_filter.blizFilter = nil
 				end
 			end
