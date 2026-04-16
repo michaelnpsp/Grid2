@@ -21,7 +21,7 @@ Grid2.EmptyTable = {}
 Grid2.issecretvalue = issecretvalue
 Grid2.canaccessvalue = canaccessvalue
 
--- Abreviate numbers
+-- Abbreviate numbers
 do
 	local abbrevData = { breakpointData = {
 		  {
