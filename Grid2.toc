@@ -1,5 +1,5 @@
-﻿## Interface: 120001
-## Interface-Retail: 120001
+﻿## Interface: 120005, 120001
+## Interface-Retail: 120005, 120001
 ## Title: Grid2
 ## Author: Pastamancer & Maia, Jerry, Toadkiller
 ## Version: @project-version@
