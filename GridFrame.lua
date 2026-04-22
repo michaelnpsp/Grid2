@@ -302,6 +302,7 @@ function Grid2Frame:UpgradeThemeDB()
 	p.frameHeaderLocks = p.frameHeaderLocks or {}
 	p.frameHeaderWidths = p.frameHeaderWidths or {}
 	p.frameHeaderHeights = p.frameHeaderHeights or {}
+	if p.fontFlags=='NONE' then p.fontFlags = nil end
 end
 
 -- wakeup/suspend indicators according to the current theme

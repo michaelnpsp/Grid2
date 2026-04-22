@@ -5,7 +5,7 @@ Created by Michael, based on Grid2Options\GridDefaults.lua from original Grid2 a
 local Grid2 = Grid2
 
 -- Latest database profile version
-local DB_VERSION = 103
+local DB_VERSION = 104
 
 -- Database manipulation functions
 function Grid2:DbSetStatusDefaultValue(name, value)
@@ -226,6 +226,13 @@ function Grid2:UpdateDefaults()
 				if blizFilter and (dbx.type=='mbuffs' or dbx.type=='mdebuffs') then
 					dbx.aura_filter.filter = gsub( blizFilter, 'EXTERNAL_DEFENSIVE', 'BIG_DEFENSIVE' )
 					dbx.aura_filter.blizFilter = nil
+				end
+			end
+		end
+		if version<104 then -- fix possible wrong fontFlags
+			for _,dbx in pairs(self.db.profile.indicators) do
+				if dbx.fontFlags=='NONE' then
+					dbx.fontFlags = nil
 				end
 			end
 		end
