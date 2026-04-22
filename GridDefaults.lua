@@ -229,13 +229,6 @@ function Grid2:UpdateDefaults()
 				end
 			end
 		end
-		if version<104 then -- fix possible wrong fontFlags
-			for _,dbx in pairs(self.db.profile.indicators) do
-				if dbx.fontFlags=='NONE' then
-					dbx.fontFlags = nil
-				end
-			end
-		end
 		if DB_VERSION>=100 and version<100 then
 			Grid2:DbSetValue("versions","Grid2Prev",version)
 		end

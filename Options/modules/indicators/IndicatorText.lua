@@ -58,7 +58,7 @@ function Grid2Options:MakeIndicatorTextCustomOptions(indicator, options)
 			if v ~= self.FONT_FLAGS_DEFAULT then
 				shadow, flags = strsplit(";",v)
 			end
-			indicator.dbx.fontFlags =  flags
+			indicator.dbx.fontFlags = flags
 			indicator.dbx.shadowDisabled = (shadow=='0') or nil
 			self:RefreshIndicator(indicator, "Layout")
 		end,
