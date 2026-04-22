@@ -4,7 +4,6 @@ local RangeAlt = Grid2.statusPrototype:new("rangealt")
 
 local Grid2 = Grid2
 local next = next
-local UnitIsUnit = UnitIsUnit
 local UnitCanAttack = UnitCanAttack
 local UnitPhaseReason = UnitPhaseReason
 local InCombatLockdown = InCombatLockdown
@@ -92,7 +91,7 @@ end
 
 local InCombat = false
 
-local petCheck = false
+local petCheckUnit = nil
 
 local rezSpellID = ({DRUID=20484,PRIEST=2006,PALADIN=7328,SHAMAN=2008,MONK=115178,DEATHKNIGHT=61999,WARLOCK=20707,EVOKER=361227})[playerClass]
 local rezSpell = rezSpellID and GetSpellInfo(rezSpellID)
@@ -102,9 +101,9 @@ local petSpell = petSpellID and GetSpellInfo(petSpellID)
 
 local function CreateRangeCheck(spellFriendly, spellHostile, blizRange)
 	return function(unit)
-		if UnitIsUnit(unit,"player") then
+		if unit=='player' then
 			return true
-		elseif petCheck and unit=='pet' then -- solo player with pet
+		elseif unit==petCheckUnit then -- solo player with pet
 			return IsSpellInRange(petSpell, unit) == true
 		elseif blizRange and grouped_units[unit] then -- 38y range check
 			return UnitInRange(unit)
@@ -165,22 +164,22 @@ end
 -- and a pet spell range check for 38 yards range for classes with pets when when not in group.
 function Shared:Grid_GroupTypeChanged()
 	if petSpell then -- is a class with pet ?
-		petCheck = (Grid2.groupType=='solo')
-		roster_external.pet = (petCheck and roster_guids[petCheck]~=nil) or nil -- roster_external == self.refreshUnits for 38 yard range
+		petCheckUnit = (Grid2.groupType=='solo') and 'pet' or nil
+		roster_external.pet = (roster_guids[petCheckUnit]~=nil) or nil -- roster_external == self.refreshUnits for 38 yard range
 	end
 	self.timer:SetPlaying( next(self.refreshUnits)~=nil )
 end
 
 function Shared:Grid_UnitUpdated(_, unit)
 	self.cache[unit] = self.UnitRangeCheck(unit)
-	if petCheck and unit=='pet'then -- special case for pet units while solo
+	if unit==petCheckUnit then -- special case for pet units while solo
 		roster_external.pet = true
 	end
 	self.timer:SetPlaying( next(self.refreshUnits)~=nil )
 end
 
 function Shared:Grid_UnitLeft(_, unit)
-	if petCheck and unit=='pet' then -- special case for pet units while solo
+	if unit==petCheckUnit then -- special case for pet units while solo
 		roster_external.pet = nil
 	end
 	self.cache[unit] = nil
