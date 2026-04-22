@@ -276,10 +276,10 @@ local function Text_UpdateDB(self)
 	self.textsize = dbx.fontSize or theme.fontSize or 11
 	if dbx.fontFlags then
 		self.shadowAlpha = dbx.shadowDisabled and 0 or 1
-		self.fontFlags   = dbx.fontFlags
+		self.fontFlags   = dbx.fontFlags~='NONE' and dbx.fontFlags or nil
 	else
 		self.shadowAlpha = theme.shadowDisabled and 0 or 1
-		self.fontFlags   = theme.fontFlags
+		self.fontFlags   = theme.fontFlags~='NONE' and theme.fontFlags or nil
 	end
 	if Grid2.testThemeIndex then -- check layout test mode
 		self.OnUpdate = Text_OnUpdateTest
