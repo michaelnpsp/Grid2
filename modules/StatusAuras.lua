@@ -3,7 +3,6 @@
 local Grid2 = Grid2
 local next = next
 local ipairs = ipairs
-local rosterUnits = Grid2.roster_guids
 local UnitIsFriend = UnitIsFriend
 local UnitIsVisible = UnitIsVisible
 local GetUnitAuras = C_UnitAuras.GetUnitAuras

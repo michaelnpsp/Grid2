@@ -128,10 +128,14 @@ do
 		roster_realms[unit] = realm
 		roster_guids[unit]  = guid
 		if grouped_players[unit] then
-			roster_units[guid] = unit
+			if not issecretvalue(guid) then
+				roster_units[guid] = unit
+			end
 			roster_players[unit] = guid
 		elseif grouped_pets[unit] then
-			roster_units[guid] = unit
+			if not issecretvalue(guid) then
+				roster_units[guid] = unit
+			end
 			roster_pets[unit] = guid
 		end
 		if external_units[unit] then

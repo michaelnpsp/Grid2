@@ -165,7 +165,7 @@ end
 function Shared:Grid_GroupTypeChanged()
 	if petSpell then -- is a class with pet ?
 		petCheckUnit = (Grid2.groupType=='solo') and 'pet' or nil
-		roster_external.pet = (roster_guids[petCheckUnit]~=nil) or nil -- roster_external == self.refreshUnits for 38 yard range
+		roster_external.pet = roster_guids[petCheckUnit] -- roster_external == self.refreshUnits for 38 yard range
 	end
 	self.timer:SetPlaying( next(self.refreshUnits)~=nil )
 end
@@ -173,7 +173,7 @@ end
 function Shared:Grid_UnitUpdated(_, unit)
 	self.cache[unit] = self.UnitRangeCheck(unit)
 	if unit==petCheckUnit then -- special case for pet units while solo
-		roster_external.pet = true
+		roster_external.pet = roster_guids.pet
 	end
 	self.timer:SetPlaying( next(self.refreshUnits)~=nil )
 end

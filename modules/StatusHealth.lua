@@ -15,7 +15,6 @@ local UnitHealthMissing = UnitHealthMissing
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitIsFeignDeath = UnitIsFeignDeath
 local UnitGetIncomingHeals = UnitGetIncomingHeals
-local unit_is_valid = Grid2.roster_guids
 local format = string.format
 local tostring = tostring
 local fmtPercent = "%.0f%%"

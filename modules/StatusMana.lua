@@ -12,7 +12,6 @@ local tostring = tostring
 local UnitPowerType = UnitPowerType
 local UnitPower = UnitPower
 local UnitPowerMax = UnitPowerMax
-local unit_is_valid = Grid2.roster_guids
 local canaccessvalue = Grid2.canaccessvalue
 
 local ScaleTo100 = CurveConstants.ScaleTo100

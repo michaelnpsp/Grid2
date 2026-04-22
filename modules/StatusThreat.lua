@@ -4,8 +4,6 @@ local Grid2 = Grid2
 local UnitExists = UnitExists
 local UnitThreatSituation = UnitThreatSituation
 
-local unit_is_valid = Grid2.roster_guids
-
 local colors
 local activeValue
 

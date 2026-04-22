@@ -12,7 +12,6 @@ local GetPlayerFacing = GetPlayerFacing
 local UnitPosition = UnitPosition
 local UnitIsUnit = UnitIsUnit
 local UnitGUID = UnitGUID
-local roster_units = Grid2.roster_units
 
 local timer
 local colors
