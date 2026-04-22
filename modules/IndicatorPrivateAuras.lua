@@ -163,16 +163,13 @@ end
 
 Grid2.setupFunc["privateauras"] = function(indicatorKey, dbx)
 	local indicator = Grid2.indicatorPrototype:new(indicatorKey)
-	indicator.auraAnchor = { iconInfo={ iconAnchor={ offsetX=0, offsetY=0, point='CENTER', relativePoint='CENTER' } } }
-	if Grid2.versionCli>=120005 then
-		indicator.auraAnchor.isContainer = false
-	end
-	indicator.dbx       = dbx
-	indicator.Create    = Icon_Create
-	indicator.Layout    = Icon_Layout
-	indicator.Disable   = Icon_Disable
-	indicator.UpdateDB  = Icon_UpdateDB
-	indicator.UpdateO   = Icon_Update
+	indicator.auraAnchor = { isContainer = false, iconInfo={ iconAnchor={ offsetX=0, offsetY=0, point='CENTER', relativePoint='CENTER' } } }
+	indicator.dbx = dbx
+	indicator.Create = Icon_Create
+	indicator.Layout = Icon_Layout
+	indicator.Disable = Icon_Disable
+	indicator.UpdateDB = Icon_UpdateDB
+	indicator.UpdateO = Icon_Update
 	Grid2:RegisterIndicator(indicator, { "privateauras" })
 	return indicator
 end
