@@ -30,7 +30,6 @@ Grid2Options:RegisterStatusOptions("afk", "misc", function(self, status, options
 		set = function (_, v)
 			v = strtrim(v)
 			status.dbx.text = (v~='' and v~=LG["AFK"]) and v or nil
-			print(">", status.dbx.text)
 			status:UpdateDB()
 			status:UpdateAllUnits()
 		end,

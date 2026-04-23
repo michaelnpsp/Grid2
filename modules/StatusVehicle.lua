@@ -46,7 +46,7 @@ local text = L["vehicle"]
 function Vehicle:GetText(unit)
 	local owner = owner_of_unit[unit]
 	if owner and UnitHasVehicleUI(owner) then
-		return UnitName(owner)
+		return (UnitName(owner))  -- extra () to remove realm(second parameter)
 	else
 		return text
 	end
