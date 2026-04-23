@@ -5,7 +5,7 @@ Created by Michael, based on Grid2Options\GridDefaults.lua from original Grid2 a
 local Grid2 = Grid2
 
 -- Latest database profile version
-local DB_VERSION = 104
+local DB_VERSION = 105
 
 -- Database manipulation functions
 function Grid2:DbSetStatusDefaultValue(name, value)
@@ -227,6 +227,11 @@ function Grid2:UpdateDefaults()
 					dbx.aura_filter.filter = gsub( blizFilter, 'EXTERNAL_DEFENSIVE', 'BIG_DEFENSIVE' )
 					dbx.aura_filter.blizFilter = nil
 				end
+			end
+		end
+		if version<105 then -- add privateaurasdispells indicator
+			if not self.db.profile.indicators['private-auras-dispells'] then
+				self.db.profile.indicators['private-auras-dispells'] = { type = 'privateaurasdispells', level = 7 }
 			end
 		end
 		if DB_VERSION>=100 and version<100 then

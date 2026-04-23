@@ -1,8 +1,8 @@
-if not (C_UnitAuras and C_UnitAuras.AddPrivateAuraAnchor) then return end
-
 local Grid2Options = Grid2Options
 local L = Grid2Options.L
 local indexValues = { 1, 2, 3, 4 }
+
+-- private auras icons
 
 Grid2Options:RegisterIndicatorOptions("privateauras", true, function(self, indicator)
 	local options, filter = {}, {}
@@ -237,4 +237,27 @@ function Grid2Options:MakeIndicatorPrivateAurasCustomOptions( indicator, options
 	}
 end
 
+-- private auras overlay
 
+function Grid2Options:MakeIndicatorPrivateAurasDispellsCustomOptions( indicator, options )
+	self:MakeHeaderOptions( options, "Display"  )
+	options.displayAllDispells = {
+		type = "toggle",
+		order = 100,
+		width = "full",
+		name = L["Only display debuffs i can dispell"],
+		desc = L["Uncheck this option to display all dispellable debuffs even if you cannot dispell them."],
+		get = function () return not indicator.dbx.displayAllDispells end,
+		set = function (_, v)
+			indicator.dbx.displayAllDispells = (not v) or nil
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+	}
+end
+
+Grid2Options:RegisterIndicatorOptions("privateaurasdispells", true, function(self, indicator)
+	local options = {}
+	self:MakeIndicatorTypeLevelOptions(indicator,options)
+	self:MakeIndicatorPrivateAurasDispellsCustomOptions(indicator, options)
+	self:AddIndicatorOptions(indicator, nil, options)
+end)
