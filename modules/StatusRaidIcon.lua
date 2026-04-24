@@ -5,6 +5,7 @@ local UnitExists = UnitExists
 local GetRaidTargetIndex = GetRaidTargetIndex
 local rawget = rawget
 local issecretvalue = issecretvalue or function() return false end
+local roster_guids = Grid2.roster_guids
 
 -- Star, Circle, Diamond, Triangle, Moon, Square, Cross, Skull
 local iconColors = {
@@ -57,8 +58,10 @@ function RaidIcon:UpdateAllUnits()
 end
 
 function RaidIcon:UpdateUnit(_, unit)
-	self.cache[unit] = nil
-	self:UpdateIndicators(unit)
+	if roster_guids[unit] then
+		self.cache[unit] = nil
+		self:UpdateIndicators(unit)
+	end
 end
 
 local frame = CreateFrame("frame")

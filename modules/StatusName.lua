@@ -34,11 +34,11 @@ function Name:UNIT_NAME_UPDATE(_, unit)
 end
 
 function Name:OnEnable()
-	self:RegisterEvent("UNIT_NAME_UPDATE")
+	self:RegisterRosterUnitEvent("UNIT_NAME_UPDATE")
 end
 
 function Name:OnDisable()
-	self:UnregisterEvent("UNIT_NAME_UPDATE")
+	self:UnregisterRosterUnitEvent("UNIT_NAME_UPDATE")
 end
 
 function Name:GetTooltip(unit,tip)

@@ -1,6 +1,6 @@
-if Grid2.isClassic then return end
-
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
+
+local Grid2 = Grid2
 
 local status = Grid2.statusPrototype:new("summon")
 
@@ -14,7 +14,9 @@ local texts = {
 }
 
 function status:INCOMING_SUMMON_CHANGED(_, unit)
-	self:UpdateIndicators(unit)
+	if Grid2:IsPlayerInRaid(unit) then
+		self:UpdateIndicators(unit)
+	end
 end
 
 function status:OnEnable()

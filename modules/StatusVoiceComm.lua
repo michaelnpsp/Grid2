@@ -3,6 +3,7 @@ local Voice = Grid2.statusPrototype:new("voice")
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 
 local Grid2 = Grid2
+local canaccessvalue = Grid2.canaccessvalue
 local C_VoiceChat_GetMemberGUID = C_VoiceChat.GetMemberGUID
 
 local cache = {}
@@ -26,7 +27,7 @@ end
 
 function Voice:VOICE_CHAT_CHANNEL_MEMBER_SPEAKING_STATE_CHANGED(_, memberID, channelID, isSpeaking)
 	local guid = C_VoiceChat_GetMemberGUID( memberID, channelID )
-	if guid then
+	if guid and canaccessvalue(guid) then
 		local unit = Grid2:GetUnitOfGUID(guid)
 		if unit then
 			cache[unit] = isSpeaking or nil

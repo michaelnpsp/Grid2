@@ -37,7 +37,7 @@ function ReadyCheck:READY_CHECK()
 end
 
 function ReadyCheck:READY_CHECK_CONFIRM(_, unit)
-	if readyChecking then
+	if readyChecking and Grid2:IsPlayerInRaid(unit) then
 		readyStatuses[unit] = GetReadyCheckStatus(unit) -- warning do not remove this line (without this line Icons indicator fails for the last player because it delays the update
 		self:UpdateIndicators(unit)                     -- to the next frame OnUpdate() when ReadyCheck has already finished and GetReadyCheckStatus() inside GetIcon() or GetText() returns nil
 	end

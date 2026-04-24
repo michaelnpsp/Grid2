@@ -5,6 +5,7 @@ local select = select
 local UnitClass = UnitClass
 local UnitIsVisible = UnitIsVisible
 local UnitIsConnected = UnitIsConnected
+local canaccessvalue = Grid2.canaccessvalue
 
 local Portraits = {}
 
@@ -57,7 +58,7 @@ local function Portrait_OnUpdate3D(self, parent, unit, event)
 			Portrait.guid = nil
 		else
 			local guid = UnitGUID(unit)
-			if guid ~= Portrait.guid or event == 'UNIT_MODEL_CHANGED' then
+			if (canaccessvalue(guid) and guid ~= Portrait.guid) or event == 'UNIT_MODEL_CHANGED' then
 				Portrait:SetCamDistanceScale(1)
 				Portrait:SetPortraitZoom(1)
 				Portrait:SetPosition(0, 0, 0)

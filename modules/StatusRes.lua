@@ -27,7 +27,7 @@ local function Timer()
 end
 
 local function ResEventStandard(self, _, unit)
-	if unit and UnitIsDeadOrGhost(unit) then
+	if Grid2:IsUnitInRaid(unit) and UnitIsDeadOrGhost(unit) then
 		if UnitHasIncomingResurrection(unit) then
 			if res_cache[unit] ~= 1 then
 				res_cache[unit]= 1
@@ -42,7 +42,7 @@ local function ResEventStandard(self, _, unit)
 end
 
 local function ResEventOnlyReviving(self, _, unit)
-	if unit then
+	if Grid2:IsUnitInRaid(unit) then
 		res_cache[unit] = UnitHasIncomingResurrection(unit) and 1 or nil
 		self:UpdateIndicators(unit)
 	end

@@ -10,11 +10,11 @@ local UnitStagger = UnitStagger
 local UnitHealthMax = UnitHealthMax
 
 function Stagger:OnEnable()
-	self:RegisterEvent("UNIT_POWER_UPDATE")
+	self:RegisterRosterUnitEvent("UNIT_POWER_UPDATE")
 end
 
 function Stagger:OnDisable()
-	self:UnregisterEvent("UNIT_POWER_UPDATE")
+	self:UnregisterRosterUnitEvent("UNIT_POWER_UPDATE")
 end
 
 function Stagger:UNIT_POWER_UPDATE(_,unit)

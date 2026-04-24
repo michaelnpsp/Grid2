@@ -9,13 +9,14 @@ local GetTime = GetTime
 local UnitGUID = UnitGUID
 local UnitIsAFK = UnitIsAFK
 local canaccessvalue = Grid2.canaccessvalue
+local roster_guids = Grid2.roster_guids
 
 local afk_cache = setmetatable({}, {__index = function(t,k) local v=GetTime(); t[k]=v; return v end})
 
 AFK.GetColor = Grid2.statusLibrary.GetColor
 
 local function UpdateUnit(_, unit)
-	if unit then
+	if roster_guids[unit] then
 		local afk = UnitIsAFK(unit)
 		local guid = UnitGUID(unit) or 0
 		if canaccessvalue(afk) then
@@ -54,7 +55,8 @@ function AFK:IsActive(unit)
 end
 
 function AFK:GetStartTime(unit)
-	return afk_cache[ UnitGUID(unit) ]
+	local guid = UnitGUID(unit)
+	return canaccessvalue(guid) and afk_cache[guid] or GetTime()
 end
 
 local text
