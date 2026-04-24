@@ -392,6 +392,14 @@ function Grid2Frame:UpdateFrameUnits()
 	end
 end
 
+--[[
+-- Removed this workaround because due to secret pets guids grid2 can crash
+-- and maybe blizzard fixed the bug time ago and this code is not needed anymore.
+-- From new tests in Ulduar it looks like now securegroupheaders are updating
+-- correctly the unit frames, but my tests were very limited.
+-- If users complain that vehicles are not updated correctly in raid frames maybe
+-- i should reactivate this workaround, adding a pet guid secret check.
+--
 -- Manage togleForVehicle owners/pets swap
 -- this event is fired when the vehicle pet unit does not exist yet, so we have to use a timer
 -- to delay frame updates if pet unit does not exist or exists but does not represent a vehicle yet.
@@ -399,6 +407,7 @@ function Grid2Frame:UNIT_ENTERED_VEHICLE(event, unit)
 	if unit then
 		for frame in next, frames_of_unit[unit] do
 			local old, new = frame.unit, SecureButton_GetModifiedUnit(frame)
+			print("Enter vehicle", event, unit, old, new, UnitExists(new))
 			if old ~= new then
 				Grid2:SetFrameUnit(frame, new)
 				if UnitExists(new) and (event==nil or strfind(UnitGUID(new),'^Vehicle')) then -- new is a player or is a vehicle pet
@@ -411,6 +420,8 @@ function Grid2Frame:UNIT_ENTERED_VEHICLE(event, unit)
 		self:UNIT_ENTERED_VEHICLE( nil, pet_of_unit[unit] ) -- event==nil => unit is a pet
 	end
 end
+--]]
+Grid2Frame.UNIT_ENTERED_VEHICLE = Grid2.Dummy
 Grid2Frame.UNIT_EXITED_VEHICLE = Grid2Frame.UNIT_ENTERED_VEHICLE
 
 --}}}

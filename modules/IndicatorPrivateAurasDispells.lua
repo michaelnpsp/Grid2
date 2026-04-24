@@ -18,13 +18,14 @@ local function RemoveFrameAnchor(f)
 	if f and f.auraHandle then
 		RemovePrivateAuraAnchor(f.auraHandle)
 		f.auraHandle = nil
+		f.auraUnit = nil
 	end
 end
 
 local function Overlay_Create(self, parent)
 	local f = self:Acquire("Frame", parent)
-	f.auraUnit = nil
 	f.auraHandle = nil
+	f.auraUnit = nil
 end
 
 local function Overlay_Release(self, parent)
