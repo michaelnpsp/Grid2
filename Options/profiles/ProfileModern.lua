@@ -72,7 +72,7 @@ i["debuffs-icons"] = { fontSize=9, borderOpacity=1, disableCooldown=true, fontJu
 m["debuffs-icons"] = { ["debuffs-Relevant"]=50 }
 
 i["private-auras"] = { maxIcons=1, type="privateauras", location={y=0,relPoint="BOTTOMRIGHT",point="BOTTOMRIGHT",x=0}, level=9, iconSize=22 }
-i["private-auras-dispells"] = { type='privateaurasdispells', level = 7 }
+i["private-auras-dispel"] = { type='privateaurasdispel', level = 7 }
 
 i["tooltip"] = { showDefault=true, type="tooltip" }
 

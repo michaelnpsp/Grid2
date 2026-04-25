@@ -1,4 +1,4 @@
--- Overlay to display dispells, including dispellable private auras
+-- Overlay to display dispels, including dispellable private auras
 
 local Grid2 = Grid2
 local pcall = pcall
@@ -125,8 +125,8 @@ local function Create(indicatorKey, dbx)
 	indicator.Release = Overlay_Release
 	indicator.UpdateDB = Overlay_UpdateDB
 	indicator.UpdateO = Overlay_Update
-	Grid2:RegisterIndicator(indicator, { "privateaurasdispells" })
+	Grid2:RegisterIndicator(indicator, { "privateaurasdispel" })
 	return indicator
 end
 
-Grid2.setupFunc["privateaurasdispells"] = Create
+Grid2.setupFunc["privateaurasdispel"] = Create

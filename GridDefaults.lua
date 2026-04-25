@@ -5,7 +5,7 @@ Created by Michael, based on Grid2Options\GridDefaults.lua from original Grid2 a
 local Grid2 = Grid2
 
 -- Latest database profile version
-local DB_VERSION = 105
+local DB_VERSION = 106
 
 -- Database manipulation functions
 function Grid2:DbSetStatusDefaultValue(name, value)
@@ -105,25 +105,11 @@ function Grid2:UpdateDefaults()
 			return -- first boot dialog
 		end
 	else
-		local health = Grid2:DbGetValue("indicators", "health")
-		local heals  = Grid2:DbGetValue("indicators", "heals")
-		if version<2 then
-			-- Upgrade health&heals indicator to version 2
-			if health and heals then heals.parentBar = "health"	end
-		end
-		if version<4 then
-			-- Upgrade health&heals indicator to version 4
-			if heals and heals.parentBar then
-				heals.anchorTo = heals.parentBar
-				heals.parentBar = nil
-			end
-			if health and health.childBar then
-				health.childBar = nil
-			end
-		end
+		local dbi = self.db.profile.indicators
+		local dbs = self.db.profile.statuses
 		if version<5 then
 			-- Upgrade buffs and debuffs groups statuses
-			for _, status in pairs(self.db.profile.statuses) do
+			for _, status in pairs(dbs) do
 				if status.auras and (status.type == "buff" or status.type=="debuff") then
 					status.type = status.type .. "s"  -- Convert type: buff -> buffs , debuff -> debuffs
 					if status.type == "debuffs" then
@@ -140,7 +126,7 @@ function Grid2:UpdateDefaults()
 		end
 		if version<8 then
 			-- upgrade multibars
-			for _,dbx in pairs(self.db.profile.indicators) do
+			for _,dbx in pairs(dbi) do
 				if dbx.type=='multibar' then
 					local opacity = math.min(dbx.opacity or 1, dbx.invertColor and 0.8 or 1)
 					dbx.textureColor = dbx.textureColor or {}
@@ -159,7 +145,7 @@ function Grid2:UpdateDefaults()
 		end
 		if version<9 then
 			-- upgrade class filter
-			for _,dbx in pairs(self.db.profile.statuses) do
+			for _,dbx in pairs(dbs) do
 				if dbx.playerClass then
 					dbx.load = { playerClass = { [dbx.playerClass] = true } }
 					dbx.playerClass = nil
@@ -181,12 +167,12 @@ function Grid2:UpdateDefaults()
 			end
 		end
 		if version<11 then
-			local threat = self.db.profile.statuses.threat
+			local threat = dbs.threat
 			threat.blinkThreshold = not threat.disableBlink
 			threat.disableBlink = nil
 		end
 		if version<12 then
-			local dbx = self.db.profile.statuses.mana
+			local dbx = dbs.mana
 			if dbx.showOnlyHealers then
 				dbx.load = dbx.load or {}
 				dbx.load.unitRole = { HEALER = true }
@@ -207,21 +193,21 @@ function Grid2:UpdateDefaults()
 			end
 		end
 		if version<101 then -- fix privateauras indicators (GH issue #366)
-			for _,dbx in pairs(self.db.profile.indicators) do
+			for _,dbx in pairs(dbi) do
 				if dbx.type=='privateauras' then
 					dbx.load = nil
 				end
 			end
 		end
 		if version<102 then -- removed posible old anchoring for single bar indicators
-			for _,dbx in pairs(self.db.profile.indicators) do
+			for _,dbx in pairs(dbi) do
 				if dbx.type=='bar' then
 					dbx.anchorTo = nil
 				end
 			end
 		end
 		if version<103 then -- remove blizzard raid frames filter
-			for _, dbx in pairs(self.db.profile.statuses) do
+			for _, dbx in pairs(dbs) do
 				local blizFilter = dbx.aura_filter and dbx.aura_filter.blizFilter
 				if blizFilter and (dbx.type=='mbuffs' or dbx.type=='mdebuffs') then
 					dbx.aura_filter.filter = gsub( blizFilter, 'EXTERNAL_DEFENSIVE', 'BIG_DEFENSIVE' )
@@ -229,9 +215,18 @@ function Grid2:UpdateDefaults()
 				end
 			end
 		end
-		if version<105 then -- add privateaurasdispells indicator
-			if not self.db.profile.indicators['private-auras-dispells'] then
-				self.db.profile.indicators['private-auras-dispells'] = { type = 'privateaurasdispells', level = 7 }
+		if version<105 then -- add privateaurasdispel indicator
+			if dbi['private-auras-dispel']==nil then
+				dbi['private-auras-dispel'] = { type = 'privateaurasdispel', level = 7 }
+			end
+		elseif version<106 then
+			if dbi['private-auras-dispells'] then
+				dbi['private-auras-dispel'], dbi['private-auras-dispells'] = dbi['private-auras-dispells'], nil
+			end
+			for _,dbx in pairs(dbi) do
+				if dbx.type=='privateaurasdispells' then
+					dbx.type = 'privateaurasdispel'
+				end
 			end
 		end
 		if DB_VERSION>=100 and version<100 then

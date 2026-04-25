@@ -313,7 +313,7 @@ function Grid2Options:MakeIndicatorPrivateAurasDispellsCustomOptions( indicator,
 	}
 end
 
-Grid2Options:RegisterIndicatorOptions("privateaurasdispells", true, function(self, indicator)
+Grid2Options:RegisterIndicatorOptions("privateaurasdispel", true, function(self, indicator)
 	local options, filter = {}, {}
 	self:MakeIndicatorTypeLevelOptions(indicator,options)
 	self:MakeIndicatorPrivateAurasDispellsCustomOptions(indicator, options)
