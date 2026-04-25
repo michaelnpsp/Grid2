@@ -3,7 +3,6 @@
 local Grid2 = Grid2
 local pcall = pcall
 local strfind = strfind
-local UnitIsVisible = UnitIsVisible
 local GetAuraDataByIndex = C_UnitAuras.GetAuraDataByIndex
 local AddPrivateAuraAnchor = C_UnitAuras.AddPrivateAuraAnchor
 local RemovePrivateAuraAnchor = C_UnitAuras.RemovePrivateAuraAnchor
@@ -18,7 +17,7 @@ local auraAnchorTemplate = {
 }
 
 local function Overlay_UpdateVisibility(f, _, unit)
-	if GetAuraDataByIndex(unit, 1, "HARMFUL|RAID_PLAYER_DISPELLABLE") and UnitIsVisible(unit) then
+	if GetAuraDataByIndex(unit, 1, "HARMFUL|RAID_PLAYER_DISPELLABLE") then
 		f:SetAlpha(0)
 	else
 		f:SetAlpha(f.myIndicator.opacity)
