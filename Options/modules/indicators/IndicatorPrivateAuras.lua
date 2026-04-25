@@ -239,17 +239,75 @@ end
 
 -- private auras overlay
 
+local ORIENT_VALUES = { [0] = L["Top to Bottom"], [1] = L["Bottom to Top"], [2] = L["Left to Right"] }
+
 function Grid2Options:MakeIndicatorPrivateAurasDispellsCustomOptions( indicator, options )
+	self:MakeHeaderOptions( options, "Appearance"  )
+	options.opacity = {
+		type = "range",
+		order = 40,
+		name = L["Opacity"],
+		desc = L["Set the dispel overlay opacity."],
+		softMin = 0.5,
+		min = 0,
+		max = 1,
+		step = 0.01,
+		bigStep = 0.05,
+		get = function () return indicator.dbx.opacity or 1 end,
+		set = function (_, v)
+			indicator.dbx.opacity = v
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+	}
+	options.sizeAdjust = {
+		type = "range",
+		order = 45,
+		width = "normal",
+		name = L["Size Adjust"],
+		desc = L["Adjust the default size of the dispel overlay rectangle."],
+		softMin = -10,
+		softMax = 10,
+		step = 1,
+		get = function () return indicator.dbx.sizeAdjust or 0 end,
+		set = function (_, v)
+			indicator.dbx.sizeAdjust = (v~=0) and v or nil
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+	}
+	options.orientation = {
+		type = 'select',
+		order = 50,
+		name = L["Orientation"],
+		desc = L["Select the dispel overlay gradient orientation."],
+		get = function() return indicator.dbx.orientation or 0 end,
+		set = function(_, v)
+			indicator.dbx.orientation = (v~=0) and v or nil
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		values = ORIENT_VALUES,
+	}
 	self:MakeHeaderOptions( options, "Display"  )
 	options.displayAllDispells = {
 		type = "toggle",
 		order = 100,
 		width = "full",
-		name = L["Only display debuffs i can dispell"],
-		desc = L["Uncheck this option to display all dispellable debuffs even if you cannot dispell them."],
-		get = function () return not indicator.dbx.displayAllDispells end,
+		name = L["Show for all typed debuffs"],
+		desc = L["Show the indicator for all dispellable debuffs even if i cannot dispel them."],
+		get = function () return indicator.dbx.displayAllDispells end,
 		set = function (_, v)
-			indicator.dbx.displayAllDispells = (not v) or nil
+			indicator.dbx.displayAllDispells = v or nil
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+	}
+	options.hideNormalDispells = {
+		type = "toggle",
+		order = 110,
+		width = "full",
+		name = L["Hide for normal dispellable debuffs"],
+		desc = L["Hide this indicator if non-private debuffs that i can dispel are up on the unit frame."],
+		get = function () return indicator.dbx.hideNormalDispells end,
+		set = function (_, v)
+			indicator.dbx.hideNormalDispells = v or nil
 			self:RefreshIndicator(indicator, "Layout")
 		end,
 	}
