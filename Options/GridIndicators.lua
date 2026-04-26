@@ -506,8 +506,8 @@ function Grid2Options:AddIndicatorOptions(indicator, statusOptions, layoutOption
 	self:MakeIndicatorTitleOptions(options, indicator)
 	if statusOptions then options.statuses = { type = "group", order = 10, name = L["statuses"], args = statusOptions } end
 	if colorOptions  then options.colors   = { type = "group", order = 20, name = L["Colors"],   args = colorOptions  } end
-	if layoutOptions then options.layout   = { type = "group", order = 40, name = L["Layout"],   args = layoutOptions } end
-	if loadOptions   then options.load     = { type = "group", order = 30, name = L["Load"],     args = loadOptions   } end
+	if layoutOptions then options.layout   = { type = "group", order = statusOptions and 40 or 30, name = L["Layout"],   args = layoutOptions } end
+	if loadOptions   then options.load     = { type = "group", order = statusOptions and 30 or 40, name = L["Load"],     args = loadOptions   } end
 end
 
 -- Don't remove options param (openmanager hooks this function and needs this parameter)
