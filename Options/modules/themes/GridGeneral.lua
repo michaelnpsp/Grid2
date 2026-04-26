@@ -445,7 +445,7 @@ do
 	layoutOptions1.focus  = {
 		type = "group", order = 6, name = L['Focus'],
 		args = layoutAnchorOptions,
-		disabled = function() theme.layout.specialHeaders==nil or theme.layout.specialHeaders.focus==nil end
+		disabled = function() return theme.layout.specialHeaders==nil or theme.layout.specialHeaders.focus==nil end
 	}
 	layoutOptions1.focustarget  = {
 		type = "group", order = 7, name = L['Target of Focus'],
