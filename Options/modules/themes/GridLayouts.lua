@@ -388,7 +388,7 @@ local generalOptions = {
 			Grid2Layout.useInsecureHeaders = v
 			Grid2Options:RefreshLayout()
 		end,
-		hidden = function() return 	not (Grid2.isVanilla or Grid2.debugging or Grid2Layout.db.global.useInsecureHeaders) end,
+		hidden = function() return not (Grid2.debugging or Grid2Layout.db.global.useInsecureHeaders) end,
 		confirm = function(info, v) return not v and L["Warning, this is an experimental option. Are you sure you want to disable blizzard frames?"] or nil end
 	},
 
@@ -563,7 +563,7 @@ local generalOptions = {
 		set = function(info,v)
 			SetupSpecialHeader('focustarget', v)
 		end,
-		hidden = function() return Grid2.secretsEnabled end,
+		hidden = function() return true end,
 	},
 
 	desc3 = {

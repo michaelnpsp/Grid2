@@ -144,10 +144,8 @@ local function ProcessHelpCmd()
 	print("    /grid2 show never || always || grouped || raid || toggle")
 	print("    /grid2 minimapicon show || hide || toggle || global")
 	print("    /grid2 profile <profile_name>")
-	if not Grid2.isClassic then
-		print("    /grid2 profile specIndex name")
-		print("    /grid2 profilesperspec enable || disable")
-	end
+	print("    /grid2 profile specIndex name")
+	print("    /grid2 profilesperspec enable || disable")
 	print("    /grid2 namelist || nl [header_type] clear || @mouseover || <player_name>")
 	print("    /grid2 parsetip [status_name]")
 end

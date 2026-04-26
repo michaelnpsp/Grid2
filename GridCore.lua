@@ -17,20 +17,8 @@ local LoadAddOn = C_AddOns and C_AddOns.LoadAddOn or LoadAddOn
 local versionToc = GetAddOnMetadata("Grid2","Version")
 local versionCli = select(4,GetBuildInfo())
 Grid2.versionCli = versionCli
-Grid2.isClassic = versionCli<90000 -- not retail
-Grid2.isVanilla = versionCli<20000
-Grid2.isSoD     = C_Seasons and C_Seasons.GetActiveSeason()==2
-Grid2.isTBC     = versionCli>=20000 and versionCli<30000
-Grid2.isWrath   = versionCli>=30000 and versionCli<40000
-Grid2.isCata    = versionCli>=40000 and versionCli<50000
-Grid2.isMoP     = versionCli>=50000 and versionCli<60000
-Grid2.isWoW90   = versionCli>=90000
-Grid2.isMidnight= versionCli>=120000
 Grid2.isDevelop = versionToc=='\@project-version\@'
 Grid2.versionstring = "Grid2 v"..(Grid2.isDevelop and 'Dev' or versionToc)
-
---
-Grid2.secretsEnabled = issecretvalue~=nil
 
 -- debug messages
 Grid2.debugFrame = Grid2DebugFrame or ChatFrame1
@@ -132,8 +120,6 @@ function Grid2:OnInitialize()
 	self.profiles = self.db:RegisterNamespace('LibDualSpec-1.0') -- Using "LibDualSpec-1.0" namespace for backward compatibility
 
 	self.debugging = self.db.global.debug
-
-	self.classicDurations = self.isVanilla and not self.db.global.disableDurations or nil
 
 	local media = LibStub("LibSharedMedia-3.0", true)
 	media:Register("statusbar", "Gradient", "Interface\\Addons\\Grid2\\media\\gradient32x32")
