@@ -35,6 +35,7 @@ end
 -- group/instance data initialization
 Grid2.groupType      = "solo"
 Grid2.instType       = "other"
+Grid2.instSubType    = ""
 Grid2.instMaxPlayers = 1
 Grid2.instMaxGroup   = 1
 
@@ -237,15 +238,17 @@ function Grid2:CheckTheme()
 	local theme   = enabled.default or 0
 	local spec    = self.GetSpecialization() or 0
 	local role    = self.UnitGroupRolesAssigned('player') or 0
-	local groupType, instType, maxPlayers = self:GetGroupType()
+	local groupType, instType, maxPlayers, _, instSubType = self:GetGroupType()
 	local kM   = tostring(maxPlayers)
 	local kC   = fmt("%s@0",     self.playerClass)
 	local kS   = fmt("%s@%d",    self.playerClass, spec)
 	local kSM  = fmt("%s@%d",    kS, maxPlayers)
+	local kSGIS= fmt("%s@%s@%s", kS, groupType, instType, instSubType)
 	local kSGI = fmt("%s@%s@%s", kS, groupType, instType)
 	local kSG  = fmt("%s@%s",    kS, groupType)
+	local kGIS = fmt("%s@%s@%s", groupType, instType, instSubType)
 	local kGI  = fmt("%s@%s",    groupType, instType)
-	theme = self.testThemeIndex or enabled[kSM] or enabled[kSGI] or enabled[kSG] or enabled[kS] or enabled[kC] or enabled[kM] or enabled[kGI] or enabled[groupType] or enabled[role] or theme
+	theme = self.testThemeIndex or enabled[kSM] or enabled[kSGIS] or enabled[kSGI] or enabled[kSG] or enabled[kS] or enabled[kC] or enabled[kM] or enabled[kGIS] or enabled[kGI] or enabled[groupType] or enabled[role] or theme
 	theme = themes.names[theme] and theme or 0
 	return theme, themes.indicators[theme] or {}
 end

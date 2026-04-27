@@ -111,14 +111,17 @@ do
 		local CONDITIONS = {
 			'solo', 'arena',
 			'party', 'party@normal', 'party@heroic', 'party@mythic',
-			'raid', 'raid@pvp' ,'raid@lfr', 'raid@flex', 'raid@mythic',
+			'raid', 'raid@lfr', 'raid@flex', 'raid@mythic',
+			'raid@pvp' , 'raid@pvp@blitz', 'raid@pvp@normal', 'raid@pvp@epic',
 			'5', '10', '15', '20', '25', '30', '35', '40',
 			'TANK', 'HEALER', 'DAMAGER', 'NONE',
 		}
+
 		local CONDITIONS_DESC = {
 			L['Solo'], L['Arena'],
 			L['Party'], L['Party (Normal)'], L['Party (Heroic)'], L['Party (Mythic)'],
-			L['Raid'], L['Raid (PvP)'], L['Raid (LFR)'], L['Raid (N&H)'], L['Raid (Mythic)'],
+			L['Raid'], L['Raid (LFR)'], L['Raid (N&H)'], L['Raid (Mythic)'],
+			L['Raid (PvP)'], L['Raid (PvP: Blitz BG)'], L['Raid (PvP: Normal BG)'], L['Raid (PvP: Epic BG)'],
 			L['5 man'], L['10 man'], L['15 man'], L['20 man'], L['25 man'], L['30 man'], L['35 man'], L['40 man'],
 			L['Tank (Role)'], L['Healer (Role)'], L['Damager (Role)'],	L['None (Role)'],
 		}

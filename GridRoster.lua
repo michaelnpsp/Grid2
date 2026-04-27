@@ -320,7 +320,7 @@ do
 	end
 	-- Used by another modules
 	function Grid2:GetGroupType()
-		return self.groupType or "solo", self.instType or "other", self.instMaxPlayers or 1, self.instMaxGroup or 1
+		return self.groupType or "solo", self.instType or "other", self.instMaxPlayers or 1, self.instMaxGroup or 1, self.instSubType or ""
 	end
 	-- Workaround to fix maxPlayers in pvp when UI is reloaded (retry every .5 seconds for 2-3 seconds), see ticket #641
 	function Grid2:FixGroupMaxPlayers(newInstType)
@@ -350,6 +350,7 @@ do
 	-- partyTypes = solo party arena raid / instTypes = none pvp lfr flex mythic other
 	function Grid2:GroupChanged(event)
 		local newGroupType
+		local instSubType = ""
 		local InInstance, newInstType = IsInInstance()
 		local instName, _, difficultyID, _, maxPlayers, _, _, instMapID = GetInstanceInfo()
 		if self.debugging then
@@ -361,7 +362,14 @@ do
 			newGroupType = "raid"
 			if InInstance then
 				if newInstType == "pvp" then      -- raid@pvp / PvP battleground instance
-					maxPlayers = pvp_instances[instMapID] or maxPlayers
+					print("+maxPlayers", maxPlayers, pvp_instances[instMapID] )
+					if C_PvP.IsSoloRBG() then
+						maxPlayers = 10
+						instSubType = "blitz"
+					else
+						maxPlayers = pvp_instances[instMapID] or maxPlayers
+						instSubType = maxPlayers<40 and "normal" or "epic"
+					end
 				elseif newInstType == "none" then -- raid@none / Not in Instance, in theory its not posible to reach this point
 					maxPlayers = 40
 				elseif difficultyID == 17 then    -- raid@lfr / Looking for Raid instances (but not LFR especial events instances)
@@ -392,13 +400,14 @@ do
 			maxPlayers = 40
 		end
 		local instMaxPlayers, instMaxGroup = GetRaidMaxPlayers( maxPlayers, math.ceil(maxPlayers/5) )
-		if self.groupType ~= newGroupType or self.instType ~= newInstType or self.instMaxPlayers ~= instMaxPlayers or self.instMaxGroup ~= instMaxGroup then
-			self:Debug("GroupChanged", event, instName, instMapID, self.groupType, self.instType, self.instMaxPlayers, self.instMaxGroup, "=>", newGroupType, newInstType, instMaxPlayers, instMaxGroup)
+		if self.groupType ~= newGroupType or self.instType ~= newInstType or self.instMaxPlayers ~= instMaxPlayers or self.instMaxGroup ~= instMaxGroup or self.instSubType ~= instSubType then
+			self:Debug("GroupChanged", event, instName, instMapID, self.groupType, self.instType, self.instMaxPlayers, self.instMaxGroup, self.instSubType, "=>", newGroupType, newInstType, instMaxPlayers, instMaxGroup, instSubType)
 			self.groupType      = newGroupType
 			self.instType       = newInstType
+			self.instSubType    = instSubType
 			self.instMaxPlayers = instMaxPlayers
 			self.instMaxGroup   = instMaxGroup
-			self:SendMessage("Grid_GroupTypeChanged", newGroupType, newInstType, instMaxPlayers, instMaxGroup)
+			self:SendMessage("Grid_GroupTypeChanged", newGroupType, newInstType, instMaxPlayers, instMaxGroup, instSubType)
 		end
 		self:QueueUpdateRoster()
 	end
