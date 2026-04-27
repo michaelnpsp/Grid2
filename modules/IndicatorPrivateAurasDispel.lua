@@ -1,13 +1,18 @@
 -- Overlay to display dispels, including dispellable private auras
 
 local Grid2 = Grid2
+local next = next
 local pcall = pcall
 local strfind = strfind
+local C_Timer_After = C_Timer.After
 local GetAuraDataByIndex = C_UnitAuras.GetAuraDataByIndex
 local AddPrivateAuraAnchor = C_UnitAuras.AddPrivateAuraAnchor
 local RemovePrivateAuraAnchor = C_UnitAuras.RemovePrivateAuraAnchor
 local RegisterRosterUnitEvent = Grid2.RegisterRosterUnitEvent
 local UnregisterRosterUnitEvent = Grid2.UnregisterRosterUnitEvent
+local frames_of_unit = Grid2Frame.frames_of_unit
+
+local bliz_hide = {}
 
 local auraAnchorTemplate = {
 	auraIndex = 1,
@@ -16,25 +21,33 @@ local auraAnchorTemplate = {
 	showCountdownNumbers = false,
 }
 
-local function Overlay_UpdateVisibility(f, _, unit)
-	if GetAuraDataByIndex(unit, 1, "HARMFUL|RAID_PLAYER_DISPELLABLE") then
-		f:SetAlpha(0)
-	else
-		f:SetAlpha(f.myIndicator.opacity)
+local function Overlay_UpdateVisibility(self, _, unit)
+	local hide = GetAuraDataByIndex(unit, 1, "HARMFUL|RAID_PLAYER_DISPELLABLE")~=nil
+	if hide~=bliz_hide[unit] then
+		local name = self.name
+		if hide then
+			for frame in next, frames_of_unit[unit] do
+				local f = frame[name]
+				if f then f:SetAlpha(0) end
+			end
+		else
+			C_Timer.After(0, function()
+				for frame in next, frames_of_unit[unit] do
+					local f = frame[name]
+					if f then f:SetAlpha(self.opacity) end
+				end
+			end)
+		end
+		bliz_hide[unit] = hide
 	end
 end
 
 local function Overlay_RemoveFrameAnchor(f)
-	if f then
-		if f.auraHandle then
-			RemovePrivateAuraAnchor(f.auraHandle)
-			f.auraHandle = nil
-			f.auraUnit = nil
-		end
-		if f.myIndicator then
-			UnregisterRosterUnitEvent(f, "UNIT_AURA")
-			f.myIndicator = nil
-		end
+	if f and f.auraHandle then
+		RemovePrivateAuraAnchor(f.auraHandle)
+		bliz_hide[f.auraUnit] = nil
+		f.auraHandle = nil
+		f.auraUnit = nil
 	end
 end
 
@@ -62,10 +75,6 @@ local function Overlay_Update(self, parent, unit)
 				f.auraHandle =  handle
 			else
 				Grid2:Debug("Error AddingPrivateAuraAnchor in IndicatorPrivateAurasDispells.lua:", handle)
-			end
-			if self.hideNormal then
-				f.myIndicator = self
-				RegisterRosterUnitEvent(f, "UNIT_AURA", Overlay_UpdateVisibility)
 			end
 		end
 		f.auraUnit = unit
@@ -114,6 +123,11 @@ local function Overlay_UpdateDB(self)
 	self.opacity    = dbx.opacity or 1
 	self.orientation= dbx.orientation or 0 -- 0=top>bottom, 1=bottom>top, 2=left>right
 	self.hideNormal = dbx.hideNormalDispells
+	if self.hideNormal then
+		RegisterRosterUnitEvent(self, "UNIT_AURA", Overlay_UpdateVisibility)
+	else
+		UnregisterRosterUnitEvent(self, "UNIT_AURA")
+	end
 end
 
 local function Create(indicatorKey, dbx)
