@@ -31,7 +31,7 @@ local function Overlay_UpdateVisibility(self, _, unit)
 				if f then f:SetAlpha(0) end
 			end
 		else
-			C_Timer.After(0, function()
+			C_Timer_After(0, function()
 				for frame in next, frames_of_unit[unit] do
 					local f = frame[name]
 					if f then f:SetAlpha(self.opacity) end
@@ -122,8 +122,7 @@ local function Overlay_UpdateDB(self)
 	self.sizeAdjust = dbx.sizeAdjust or 0
 	self.opacity    = dbx.opacity or 1
 	self.orientation= dbx.orientation or 0 -- 0=top>bottom, 1=bottom>top, 2=left>right
-	self.hideNormal = dbx.hideNormalDispells
-	if self.hideNormal then
+	if dbx.hideNormalDispells then
 		RegisterRosterUnitEvent(self, "UNIT_AURA", Overlay_UpdateVisibility)
 	else
 		UnregisterRosterUnitEvent(self, "UNIT_AURA")
