@@ -14,17 +14,22 @@ Grid2Options:RegisterIndicatorOptions("privateauras", true, function(self, indic
 end)
 
 function Grid2Options:MakeIndicatorPrivateAurasCustomOptions( indicator, options )
+	local function GetIndex1()
+		return indicator.dbx.auraIndex or 1
+	end
+	local function GetIndex2()
+		return (indicator.dbx.auraIndex or 1) + (indicator.dbx.maxIcons or 4) - 1
+	end
 	options.auraIndex1 = {
 		type = "select",
 		order = 1.98,
 		name = L["First Aura"],
 		desc = L["Select the index of the first private aura to display."],
-		get = function () return indicator.dbx.auraIndex or 1 end,
+		get = GetIndex1,
 		set = function (_, v)
+			local index2 = GetIndex2()
 			indicator.dbx.auraIndex = v
-			if v>(indicator.dbx.maxIcons or 2) then
-				indicator.dbx.maxIcons = v
-			end
+			indicator.dbx.maxIcons = math.max(1, index2-v+1)
 			self:RefreshIndicator(indicator, "Layout")
 		end,
 		values = indexValues,
@@ -34,10 +39,11 @@ function Grid2Options:MakeIndicatorPrivateAurasCustomOptions( indicator, options
 		order = 1.99,
 		name = L["Last Aura"],
 		desc = L["Select the index of the last private aura to display."],
-		get = function () return indicator.dbx.maxIcons or 2 end,
+		get = GetIndex2,
 		set = function (_, v)
-			if v>=(indicator.dbx.auraIndex or 1) then
-				indicator.dbx.maxIcons = v
+			local index1 = GetIndex1()
+			if v>=index1 then
+				indicator.dbx.maxIcons = v - index1 + 1
 				self:RefreshIndicator(indicator, "Layout")
 			end
 		end,

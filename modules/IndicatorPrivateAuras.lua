@@ -7,6 +7,10 @@ local AddPrivateAuraAnchor = C_UnitAuras.AddPrivateAuraAnchor
 local RemovePrivateAuraAnchor = C_UnitAuras.RemovePrivateAuraAnchor
 local InCombatLockdown = InCombatLockdown
 
+-- Fix for 12.0.5 private-auras bug, when a container is removed/added, private-aura icons are ignoring frame-levels
+-- and displayed behind the unit frame, the workaround: use a higher strata for private-aura containers.
+local strataFix = { BACKGROUND = 'LOW', LOW = 'MEDIUM', MEDIUM = 'HIGH', HIGH ='DIALOG' }
+
 local QueueUpdate -- delay updates if we are in combat
 do
 	local queue, frame = {}, CreateFrame("Frame")
@@ -37,6 +41,7 @@ local function ClearFrameAuraAnchors(f)
 	for i=1,#auraHandles do
 		RemovePrivateAuraAnchor(auraHandles[i])
 	end
+	f.auraUnit = nil
 	return wipe(auraHandles)
 end
 
@@ -83,15 +88,16 @@ local function Icon_Layout(self, parent)
 	local l = dbx.location
 	local f = parent[self.name]
 	local iconSize = self.iconSize>1 and self.iconSize or self.iconSize * parent:GetHeight()
+	ClearFrameAuraAnchors(f)
+	f:SetParent(parent)
+	f:ClearAllPoints()
 	f:SetScale(self.borderScale and 1 or iconSize/32)
 	iconSize = self.borderScale and iconSize or 32
 	local sizeFull = iconSize + (dbx.iconSpacing or 1)
-	f:SetParent(parent)
-	f:ClearAllPoints()
 	f:SetPoint( l.point, parent.container, l.relPoint, l.x, l.y )
-	f:SetFrameLevel( parent:GetFrameLevel() + (dbx.level or 1) )
+	f:SetFrameLevel( parent:GetFrameLevel() + (dbx.level or 1) + 100 )
+	f:SetFrameStrata( strataFix[parent:GetFrameStrata()] or 'DIALOG' )
 	f:SetSize( sizeFull*self.colCount, sizeFull*self.rowCount )
-	f.auraUnit = nil
 	local auraAnchor = self.auraAnchor
 	auraAnchor.iconInfo.iconWidth = iconSize
 	auraAnchor.iconInfo.iconHeight = iconSize
@@ -128,7 +134,6 @@ end
 local function Icon_Disable(self, parent)
 	local f = parent[self.name]
 	ClearFrameAuraAnchors(f)
-	f.auraUnit = nil
 	f:Hide()
 	f:SetParent(nil)
 	f:ClearAllPoints()
