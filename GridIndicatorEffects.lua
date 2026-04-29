@@ -65,12 +65,17 @@ local function GetUpdate_GlowAutoCast(indicator)
 	end
 end
 
+-- refactored to avoid libCustomGlow bug, if we call ButtonGlow_Start() twice libCustomGlow crashes because
+-- if _ButtonGlow already exists the libray is doing some maths with secret textures alpha values, alpha
+-- values are secret because the unit parent frame alpha is secret due to range status being secret too.
+-- We cannot use LCG.ButtonGlow_Stop() too, because this function does not immediately release the button.
 local function GetUpdate_GlowButton(indicator)
 	local funcStatus = indicator.GetCurrentStatus
-	local funcFrame  = indicator.GetBlinkFrame
+	local funcFrame = indicator.GetBlinkFrame
 	local funcUpdate = indicator.OnUpdate
-	local funcStart  = LCG.ButtonGlow_Start
-	local funcStop   = LCG.ButtonGlow_Stop
+	local funcStart = LCG.ButtonGlow_Start
+	-- local funcStop = LCG.ButtonGlow_Stop
+	local pool = LCG.ButtonGlowPool
 	local dbx = indicator.dbx
 	local color = dbx.glow_color
 	local frequency = dbx.glow_frequency or 0.12
@@ -81,11 +86,17 @@ local function GetUpdate_GlowButton(indicator)
 		if frame then
 			local enabled = status and (always or (not secret and state=="blink"))
 			if enabled ~= frame.__glowEnabled then
+				local button = frame._ButtonGlow
 				frame.__glowEnabled = enabled
 				if enabled then
-					funcStart( frame, color, frequency )
-				else
-					funcStop( frame )
+					if button==nil then -- dont call funcStart if glow button already exists because this crash due to secret alpha textures.
+						funcStart( frame, color, frequency )
+					end
+				elseif button then -- not using LCG.ButtonGlow_Stop() because we cannot delay the release of the button to avoid secrets bug crash.
+					button.animIn:Stop()
+					button.animOut:Stop()
+					pool:Release(button) -- this sets frame._ButtonGlow=nil too
+					-- funcStop( frame )
 				end
 			end
 			funcUpdate(self, parent, unit, status, state, secret, invert)
