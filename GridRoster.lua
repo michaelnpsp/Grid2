@@ -356,12 +356,12 @@ do
 			self:Debug("GetInstanceInfo %s/%s/%s/%s/%s/%s %s@%s(%s)", tostring(event), tostring(instName), tostring(newInstType), tostring(instMapID), tostring(difficultyID), tostring(maxPlayers), tostring(self.groupType), tostring(self.instType), tostring(self.instMaxPlayers))
 		end
 		if newInstType == "arena" then
-			newGroupType = newInstType	-- arena@arena instances
+			newGroupType = newInstType -- arena@arena instances
 		elseif IsInRaid() then
 			newGroupType = "raid"
 			if InInstance then
 				if newInstType == "pvp" then      -- raid@pvp / PvP battleground instance
-					maxPlayers = pvp_instances[instMapID] or maxPlayers
+					maxPlayers = maxPlayers==40 and pvp_instances[instMapID] or maxPlayers
 				elseif newInstType == "none" then -- raid@none / Not in Instance, in theory its not posible to reach this point
 					maxPlayers = 40
 				elseif difficultyID == 17 then    -- raid@lfr / Looking for Raid instances (but not LFR especial events instances)
