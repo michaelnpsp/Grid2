@@ -357,18 +357,18 @@ do
 			self:Debug("GetInstanceInfo %s/%s/%s/%s/%s/%s %s@%s(%s)", tostring(event), tostring(instName), tostring(newInstType), tostring(instMapID), tostring(difficultyID), tostring(maxPlayers), tostring(self.groupType), tostring(self.instType), tostring(self.instMaxPlayers))
 		end
 		if newInstType == "arena" then
-			newGroupType = newInstType	-- arena@arena instances
+			newGroupType = newInstType -- arena@arena instances
 		elseif IsInRaid() then
 			newGroupType = "raid"
 			if InInstance then
-				if newInstType == "pvp" then      -- raid@pvp / PvP battleground instance
-					print("+maxPlayers", maxPlayers, pvp_instances[instMapID] )
-					if C_PvP.IsSoloRBG() then
-						maxPlayers = 10
-						instSubType = "blitz"
+				if newInstType == "pvp" then -- raid@pvp / PvP battleground instance
+					maxPlayers = maxPlayers==40 and pvp_instances[instMapID] or maxPlayers
+					if maxPlayers==8 and C_PvP.IsSoloRBG() then
+						instSubType = "blitz" -- raid@pvp@blitz
+					elseif maxPlayers<40 then
+						instSubType = "normal" -- raid@pvp@normal
 					else
-						maxPlayers = pvp_instances[instMapID] or maxPlayers
-						instSubType = maxPlayers<40 and "normal" or "epic"
+						instSubType = "epic"   -- raid@pvp@epic
 					end
 				elseif newInstType == "none" then -- raid@none / Not in Instance, in theory its not posible to reach this point
 					maxPlayers = 40
