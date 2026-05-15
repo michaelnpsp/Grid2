@@ -368,7 +368,7 @@ do
 					elseif maxPlayers<40 then
 						instSubType = "normal" -- raid@pvp@normal
 					else
-						instSubType = "epic"   -- raid@pvp@epic
+						instSubType = "epic" -- raid@pvp@epic
 					end
 				elseif newInstType == "none" then -- raid@none / Not in Instance, in theory its not posible to reach this point
 					maxPlayers = 40
