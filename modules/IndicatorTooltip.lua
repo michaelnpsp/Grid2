@@ -96,11 +96,11 @@ function OnFrameEnter(frame)
 		local unit = frame.unit
 		if unit then
 			if tooltipOOC and not InCombatLockdown() then
-				Tooltip:Display(unit, Tooltip)
+				Tooltip:Display(unit, Tooltip, nil, frame)
 			elseif tooltipCheck() then
 				local status = Tooltip:GetCurrentStatus(unit, frame)
 				if status or tooltipDefault then
-					Tooltip:Display(unit, status or Tooltip)
+					Tooltip:Display(unit, status or Tooltip,nil, frame)
 				end
 			end
 		end
@@ -124,9 +124,10 @@ function Tooltip:Display(unit, status, extraID, owner, anchor)
 	if anchor then
 		GameTooltip:SetOwner(owner, anchor)
 	elseif self.dbx.tooltipAnchor then
+		tooltipOwner.unit = unit -- needed by addons that customize the unit tooltip.
 		GameTooltip:SetOwner(tooltipOwner, self.dbx.tooltipAnchor)
 	else
-		GameTooltip_SetDefaultAnchor(GameTooltip, UIParent)
+		GameTooltip_SetDefaultAnchor(GameTooltip, owner or UIParent)
 	end
 	status:GetTooltip(unit, GameTooltip, extraID)
 	GameTooltip:Show()
@@ -134,6 +135,7 @@ function Tooltip:Display(unit, status, extraID, owner, anchor)
 end
 
 function Tooltip:Hide()
+	tooltipOwner.unit = nil
 	GameTooltip:Hide()
 	tooltipDisplayed = nil
 end
