@@ -322,6 +322,7 @@ do
 				TestAuras.exp[i] = time+math.random(10,60)
 				TestAuras.dur[i] = math.random(30) + 3
 				TestAuras.col[i] = color
+				TestAuras.idx[i] = i
 			end
 			-- create test status
 			Test = Grid2.statusPrototype:new("/@@@test@@@/",false)
