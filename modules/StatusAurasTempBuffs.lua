@@ -2,6 +2,7 @@
 local Grid2 = Grid2
 local myUnits = Grid2.roster_my_units
 local canaccessvalue = Grid2.canaccessvalue
+local GetAuraDuration = C_UnitAuras.GetAuraDuration
 local GetAuraDataByIndex = C_UnitAuras.GetAuraDataByIndex
 
 -- all buffs
@@ -51,8 +52,13 @@ local function status_GetIconsMissing(self, unit)
 	return 0
 end
 
+function status_GetDurationObject(self, unit, slotID)
+	return GetAuraDuration(unit, slotID or self.idx[unit])
+end
+
 local function status_Update(self, dbx)
 	self.GetIcons = dbx.missing and status_GetIconsMissing or status_GetIcons
+	self.GetDurationObject = status_GetDurationObject
 end
 
 local statusTypes = { "color", "icon", "icons", "percent", "text", "tooltip" }
