@@ -275,7 +275,7 @@ local function Icon_UpdateDB(self)
 	self.ctFontPoint     = (ctJV=='MIDDLE' and ctJH) or (ctJH=='CENTER' and ctJV) or ctJV..ctJH
 	self.ctFontOffsetX   = dbx.ctFontOffsetX or 0
 	self.ctFontOffsetY   = dbx.ctFontOffsetY or -1
-	self.ctColor         = Grid2.MakeColor(dbx.ctColor or (dbx.ctColors and dbx.ctColors[1]), "WHITE")
+	self.ctColor         = Grid2.MakeColor((dbx.ctColorsText and dbx.ctColors and dbx.ctColors[1] or dbx.ctColor), "WHITE")
 	-- coldown bar
 	local borderSize   = self.borderSize or 0
 	self.cbPoint        = dbx.cbPoint or 'BOTTOM'
