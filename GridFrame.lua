@@ -292,6 +292,7 @@ function Grid2Frame:UpdateTheme()
 end
 
 function Grid2Frame:RefreshTheme()
+	self:UpdateBackdrop()
 	self:RefreshIndicators(true)
 end
 
