@@ -459,7 +459,7 @@ do
 			get = function() return indicator.dbx.invertColor end,
 			set = function(_, v)
 				indicator.dbx.invertColor = v or nil
-				indicator.dbx.textureColor.a = math.min( indicator.dbx.textureColor.a, 0.8 )
+				indicator.dbx.textureColor.a = math.min( indicator.dbx.textureColor.a or 1, 0.8 )
 				if v then
 					for _,bar in ipairs(indicator.dbx) do
 						bar.color.a = math.min(bar.color.a, 0.8)
