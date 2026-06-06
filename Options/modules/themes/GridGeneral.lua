@@ -447,11 +447,13 @@ do
 		args = layoutAnchorOptions,
 		disabled = function() return theme.layout.specialHeaders==nil or theme.layout.specialHeaders.focus==nil end
 	}
+	--[[ focustarget is not working correctly in midnight due to secrets
 	layoutOptions1.focustarget  = {
 		type = "group", order = 7, name = L['Target of Focus'],
 		args = layoutAnchorOptions,
 		disabled = function() return theme.layout.specialHeaders==nil or theme.layout.specialHeaders.focustarget==nil end
 	}
+	--]]
 	layoutOptions1.tanks  = {
 		type = "group", order = 8, name = L['Tanks'],
 		args = layoutAnchorOptions,
