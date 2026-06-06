@@ -99,13 +99,13 @@ do
 	function Grid2Options:MakeIndicatorIconTooltipOptions(indicator, options)
 		options.__display = { type = "header", order = 0, name = "", hidden = function()
 			wipe(indicators)
-			for _,indicator in next, Grid2.indicatorTypes.icon do
+			for _,indicator in next, (Grid2.indicatorTypes.icon or {}) do
 				indicators[#indicators+1] = indicator
 			end
 			table.sort( indicators, function(a,b) if a.dbx.type==b.dbx.type then return a.name<b.name else return a.dbx.type>b.dbx.type	end; end )
 			return true
 		end }
-		options.icontooltip = { type = "header", order = 100, name = L["Icon Tooltips"] }
+		options.icontooltip = { type = "header", order = 100, name = L["Icon Tooltips"], hidden = function() return #indicators==0 end }
 		for i=1,10 do
 			options['icon'..i] = {
 				type = "toggle",
