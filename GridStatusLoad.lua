@@ -15,6 +15,7 @@ local UnitGroupRolesAssigned = Grid2.UnitGroupRolesAssigned
 local issecretvalue = Grid2.issecretvalue
 local roster_types = Grid2.roster_types
 local roster_deads = Grid2.roster_deads
+local canaccessvalue = Grid2.canaccessvalue
 local empty = {}
 
 -------------------------------------------------------------------------
@@ -158,7 +159,7 @@ do
 
 	local function IsSpellInCooldown(spellID)
 		local start, duration = GetSpellCooldown(spellID)
-		if start~=0 then
+		if canaccessvalue(start) and start~=0 then
 			local gcdStart, gcdDuration = GetSpellCooldown(61304)
 			return start ~= gcdStart or duration ~= gcdDuration, start+duration
 		end
