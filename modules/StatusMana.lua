@@ -12,6 +12,7 @@ local tostring = tostring
 local UnitPowerType = UnitPowerType
 local UnitPower = UnitPower
 local UnitPowerMax = UnitPowerMax
+local issecretvalue = Grid2.issecretvalue
 local canaccessvalue = Grid2.canaccessvalue
 
 local ScaleTo100 = CurveConstants.ScaleTo100
@@ -167,11 +168,14 @@ local function Mana_UpdateUnitPowerF(self, _, unit, powerType)
 end
 
 local function Mana_IsActiveAlways(self, unit)
-	return UnitPowerMax(unit,0)>0
+	local m = UnitPowerMax(unit,0)
+	return issecretvalue(m) or m>0
 end
 
 local function Mana_IsActiveAlwaysF(self, unit)
-	return not self.filtered[unit] and UnitPowerMax(unit,0)>0
+	if self.filtered[unit] then return false end
+	local m = UnitPowerMax(unit,0)
+	return issecretvalue(m) or m>0
 end
 
 local function Mana_IsActivePrimary(self, unit)
