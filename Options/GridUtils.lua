@@ -91,6 +91,7 @@ do
 	local thin   = L["Thin"]
 	local thick  = L["Thick"]
 	local shadow = L["Shadow"]
+	local slug 	 = L["Slug"]
 	local fontFlagsValues = {
 		["NONE"] = soft,
 		["OUTLINE"] = string.format( "%s,%s", soft, thin ),
@@ -98,6 +99,7 @@ do
 		["MONOCHROME"] = sharp,
 		["MONOCHROME, OUTLINE"] = string.format( "%s,%s", sharp, thin ),
 		["MONOCHROME, THICKOUTLINE"] = string.format( "%s,%s", sharp, thick ),
+		["OUTLINE, SLUG"] = string.format("%s,%s", soft, slug)
 	}
 	local fontFlagsShadowValues = {
 		["0;NONE"] = soft,
@@ -112,6 +114,7 @@ do
 		["1;MONOCHROME"] = string.format( "%s+%s", sharp, shadow ),
 		["1;MONOCHROME, OUTLINE"] = string.format( "%s,%s+%s", sharp, thin, shadow ),
 		["1;MONOCHROME, THICKOUTLINE"] = string.format( "%s,%s+%s", sharp, thick, shadow ),
+		["0;OUTLINE, SLUG"] = string.format("%s,%s", soft, slug),
 	}
 	local FONT_FLAGS_DEFAULT = '0'
 	local fontFlagsShadowDefValues = Grid2.CopyTable(fontFlagsShadowValues)

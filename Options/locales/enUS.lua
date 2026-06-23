@@ -304,6 +304,7 @@ L["Thin"] = true
 L["Thick"] = true
 L["Soft"] = true
 L["Sharp"] = true
+L["Slug"] = true
 L["Adjust the font settings"] = true
 L["Border Texture"] = true
 L["Adjust the border texture."] = true
