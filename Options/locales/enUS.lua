@@ -321,6 +321,8 @@ L["Options for %s."]= true
 L["Delete this element"] = true
 L["Disable shadow"] = true
 L["Shadow"] = true
+L["Shadow offset"] = true
+L["Set the font shadow offset."] = true
 
 --{{{ Indicator management
 L["New Indicator"] = true

@@ -41,6 +41,18 @@ function Grid2Options:MakeIndicatorTextCustomOptions(indicator, options)
 			self:RefreshIndicator(indicator, "Layout")
 		end,
 	}
+	options.font = {
+		type = "select", dialogControl = "LSM30_Font",
+		order = 70,
+		name = L["Font"],
+		desc = L["Adjust the font settings"],
+		get = function(info) return indicator.dbx.font or self.MEDIA_VALUE_DEFAULT end,
+		set = function(info,v)
+			indicator.dbx.font = self.MEDIA_VALUE_DEFAULT~=v and v or nil
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		values = self.GetFontValues,
+	}
 	options.fontFlags = {
 		type = "select",
 		order = 75,
@@ -60,21 +72,27 @@ function Grid2Options:MakeIndicatorTextCustomOptions(indicator, options)
 			end
 			indicator.dbx.fontFlags = flags
 			indicator.dbx.shadowDisabled = (shadow=='0') or nil
+			if indicator.dbx.shadowDisabled then
+				indicator.dbx.shadowOffset = nil
+			end
 			self:RefreshIndicator(indicator, "Layout")
 		end,
 		values = self.fontFlagsShadowDefValues,
 	}
-	options.font = {
-		type = "select", dialogControl = "LSM30_Font",
-		order = 70,
-		name = L["Font"],
-		desc = L["Adjust the font settings"],
-		get = function(info) return indicator.dbx.font or self.MEDIA_VALUE_DEFAULT end,
-		set = function(info,v)
-			indicator.dbx.font = self.MEDIA_VALUE_DEFAULT~=v and v or nil
+	options.shadowOffset = {
+		type = "range",
+		order = 76,
+		softMin = 1,
+		softMax = 8,
+		step = 1,
+		name = L["Shadow offset"],
+		desc = L["Set the font shadow offset."],
+		get = function () return indicator.dbx.shadowOffset or 1 end,
+		set = function (_, v)
+			indicator.dbx.shadowOffset = v
 			self:RefreshIndicator(indicator, "Layout")
 		end,
-		values = self.GetFontValues,
+		hidden = function() return indicator.dbx.shadowDisabled end,
 	}
 	self:MakeHeaderOptions( options, "Display" )
 	options.duration = {

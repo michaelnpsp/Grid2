@@ -111,7 +111,7 @@ local function Text_Create(self, parent)
 	local f = self:Acquire("Frame", parent)
 	f:SetAllPoints()
 	if f.SetBackdrop then f:SetBackdrop(nil) end
-	local Text = f.Text or f:CreateFontString(nil, "OVERLAY")
+	local Text = f.Text or f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	f.Text = Text
 end
 
@@ -128,7 +128,7 @@ local function Text_Layout(self, parent)
 	Text:SetJustifyH(justifyH[self.anchorRel])
 	Text:SetJustifyV(justifyV[self.anchorRel])
 	Text:SetWidth(parent:GetWidth())
-	Text:SetShadowOffset(1,-1)
+	Text:SetShadowOffset(self.shadowOffset, -self.shadowOffset)
 	Text:SetShadowColor(0,0,0, self.shadowAlpha)
 	Text:SetMaxLines(1)
 	Text:Show()
@@ -289,6 +289,7 @@ local function Text_UpdateDB(self)
 	self.textlength = dbx.textlength or 16
 	self.textfont = Grid2:MediaFetch("font", dbx.font or theme.font) or STANDARD_TEXT_FONT
 	self.textsize = dbx.fontSize or theme.fontSize or 11
+	self.shadowOffset = (dbx.shadowDisabled and 0) or dbx.shadowOffset or 1
 	if dbx.fontFlags then
 		self.shadowAlpha = dbx.shadowDisabled and 0 or 1
 		self.fontFlags   = dbx.fontFlags~='NONE' and dbx.fontFlags or nil

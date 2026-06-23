@@ -322,6 +322,8 @@ L["Options for %s."] = "opciones de: %s"
 L["Delete this element"] = "Elimina este elemento"
 L["Disable shadow"] = "Desactivar sombra"
 L["Shadow"] = "Sombra"
+L["Shadow offset"] = "Desplazamiento sombra"
+L["Set the font shadow offset."] = "Elige el desplazamiento de la sombra."
 
 --{{{ Indicator management
 L["New Indicator"] = "Nuevo Indicador"
