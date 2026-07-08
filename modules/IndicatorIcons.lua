@@ -183,7 +183,7 @@ local function Icon_Layout(self, parent)
 			local text = frame.text
 			if not text then
 				local tframe = CreateFrame("frame", nil, frame)
-				text = tframe:CreateFontString(nil, "OVERLAY")
+				text = tframe:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 				frame.text = text
 				text.tframe = tframe
 				tframe:SetAllPoints()

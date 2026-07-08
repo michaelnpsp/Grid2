@@ -109,7 +109,7 @@ local function Text_Create(self, parent)
 	local f = self:Acquire("Frame", parent)
 	f:SetAllPoints()
 	if f.SetBackdrop then f:SetBackdrop(nil) end
-	local Text = f.Text or f:CreateFontString(nil, "OVERLAY")
+	local Text = f.Text or f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	f.Text = Text
 	Text:Show()
 end
