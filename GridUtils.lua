@@ -278,7 +278,7 @@ do
 	end
 	-- Sets a backdrop only if necessary to alleviate game freezes, see ticket #640
 	function Grid2:SetFrameBackdrop(frame, backdrop)
-		if backdrop~=frame.currentBackdrop then
+		if backdrop~=frame.currentBackdrop and frame.SetBackdrop then
 			frame:SetBackdrop(backdrop)
 			frame.currentBackdrop = backdrop
 		end

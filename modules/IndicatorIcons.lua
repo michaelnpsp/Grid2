@@ -1,3 +1,5 @@
+-- if true then return end -- TODO check for 12.1
+
 -- Aura Icons indicator
 
 local Grid2 = Grid2
