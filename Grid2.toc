@@ -65,7 +65,6 @@ modules\IndicatorMultiBar.lua
 modules\IndicatorText.lua
 modules\IndicatorIcon.lua
 modules\IndicatorIcons.lua
-modules\IndicatorIconsMidnight.lua
 modules\IndicatorSquare.lua
 modules\IndicatorTooltip.lua
 modules\IndicatorPortrait.lua
@@ -101,8 +100,6 @@ modules\StatusVehicle.lua
 modules\StatusSummon.lua
 modules\StatusStagger.lua
 modules\StatusAuras.lua
-modules\StatusAurasTemp.lua
-modules\StatusAurasTempBuffs.lua
 modules\old\StatusAuras.lua
 modules\old\StatusAurasTemp.lua
 modules\old\StatusAurasTempBuffs.lua

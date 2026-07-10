@@ -1,4 +1,6 @@
 -- Auras management
+if Grid2.versionCli>=120100 then return end
+
 local Grid2 = Grid2
 local type = type
 local next = next

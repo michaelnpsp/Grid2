@@ -1,4 +1,5 @@
 -- if true then return end -- TODO check for 12.1
+if Grid2.versionCli>=120100 then return end
 
 -- Aura Icons indicator
 

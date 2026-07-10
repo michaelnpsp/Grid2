@@ -1,6 +1,5 @@
--- if true then return end -- TODO check for 12.1
-
 -- Aura Icons indicator
+if Grid2.versionCli<120100 then return end
 
 local Grid2 = Grid2
 local min = min
@@ -16,14 +15,13 @@ local TruncateWhenZero = C_StringUtil.TruncateWhenZero
 local UpdateIconColorCurve = Grid2.UpdateIconColorCurve
 local RemoveIconColorCurve = Grid2.RemoveIconColorCurve
 
-
 -------------------------------------------------------------
 -- helps functions to disable old mode when mode switches
 -------------------------------------------------------------
 
 local function Icon_DisableIconContainer(f)
 	for i=1,f.visibleCount do
-		local aura = auras[j]
+		local aura = f.auras[i]
 		aura.status = nil
 		aura.slotID = nil
 		aura:Hide()
@@ -513,14 +511,15 @@ local function Icon_LayoutB(self, parent)
 	auraContainer:SetAuraLayoutPadding(0,0,0,0)
 	local buttons = auraContainer._buttons
 	for i, status in ipairs(self.statuses) do
-		local key = tostring(i)
-		if status.aura_filter then
-			auraContainer:AddAuraGroup( key, status.aura_filter, { maxFrameCount = self.maxIcons, initializeFrame = function(button)
+		if status.isAura then
+			local key = tostring(i)
+			local filter = status:GetAurasFilter()
+			auraContainer:AddAuraGroup( key, filter, { maxFrameCount = self.maxIcons, initializeFrame = function(button)
 				buttons[#buttons+1] = button
 				Icon_SetupButtonB(self, parent, auraContainer, button)
 			end } )
+			auraContainer:SetAuraGroupLayout(key, self.groupLayout)
 		end
-		auraContainer:SetAuraGroupLayout(key, self.groupLayout)
 	end
 	for _, button in ipairs(auraContainer._buttons) do
 		Icon_SetupButtonB(self, parent, auraContainer, button)
@@ -648,7 +647,7 @@ end
 
 local function Icon_Update(self, parent, unit)
 	local status = self.statuses[1]
-	if status and status.aura_filter then
+	if status and status.isAura then
 		Icon_UpdateB(self, parent, unit)
 	else
 		Icon_UpdateA(self, parent, unit)
@@ -657,7 +656,7 @@ end
 
 local function Icon_Layout(self, parent)
 	local status = self.statuses[1]
-	if status and status.aura_filter then
+	if status and status.isAura then
 		Icon_LayoutB(self, parent)
 	else
 		Icon_LayoutA(self, parent)

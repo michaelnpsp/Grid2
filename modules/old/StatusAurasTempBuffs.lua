@@ -1,4 +1,6 @@
 -- Group of Buffs status
+if Grid2.versionCli>=120100 then return end
+
 local Grid2 = Grid2
 local myUnits = Grid2.roster_my_units
 local canaccessvalue = Grid2.canaccessvalue
