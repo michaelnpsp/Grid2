@@ -16,13 +16,30 @@ local TruncateWhenZero = C_StringUtil.TruncateWhenZero
 local UpdateIconColorCurve = Grid2.UpdateIconColorCurve
 local RemoveIconColorCurve = Grid2.RemoveIconColorCurve
 
-local function Icon_Create(self, parent)
-	local f = self:Acquire("Frame", parent)
-	f.myIndicator = self
-	f.myFrame = parent
-	f.auras = f.auras or {}
-	f.visibleCount = 0
+
+-------------------------------------------------------------
+-- helps functions to disable old mode when mode switches
+-------------------------------------------------------------
+
+local function Icon_DisableIconContainer(f)
+	for i=1,f.visibleCount do
+		local aura = auras[j]
+		aura.status = nil
+		aura.slotID = nil
+		aura:Hide()
+	end
 end
+
+local function Icon_DisableAuraContainer(f)
+	f.myUnit = nil
+	f.auraContainer:SetEnabled(false)
+	f.auraContainer:SetShown(false)
+	f.auraContainer = nil
+end
+
+-------------------------------------------------------------
+-- standard non-secret statuses
+-------------------------------------------------------------
 
 local function Icon_OnFrameUpdate(f)
 	local unit = f.myFrame.unit
@@ -169,7 +186,7 @@ local EnableDelayedUpdates = function()
 end
 
 -- Warning: This is an overrided indicator:Update() NOT the standard indicator:OnUpdate()
-local function Icon_Update(self, parent, unit)
+local function Icon_UpdateA(self, parent, unit)
 	local f = parent[self.name]
 	if f then
 		if not next(updates) then
@@ -180,8 +197,9 @@ local function Icon_Update(self, parent, unit)
 end
 
 -- Layout icons
-local function Icon_Layout(self, parent)
+local function Icon_LayoutA(self, parent)
 	local f = parent[self.name]
+	if f.auraContainer then Icon_DisableAuraContainer(f) end
 	local x,y = 0,0
 	local ux,uy = self.ux,self.uy
 	local vx,vy = self.vx,self.vy
@@ -312,11 +330,225 @@ local function Icon_Layout(self, parent)
 	end
 end
 
+-------------------------------------------------------------
+-- blizzard secret aura containers 12.1+
+-------------------------------------------------------------
+
+local BORDER_SETTINGS = {
+	showIcon = true,
+	showWhenHarmful = true,
+	showWhenHelpful = true,
+	style = 1 -- Atlas = 0, Color = 1
+}
+
+local function Icon_SetupButtonB(self, parent, auraContainer, frame)
+	-- frame button
+	local iconSize = self.iconSize>1 and self.iconSize or self.iconSize * parent:GetHeight()
+	frame:SetSize(iconSize, iconSize)
+	frame:SetAlpha(1)
+	local level = parent:GetFrameLevel() + self.frameLevel
+	frame:SetFrameLevel(level+1)
+	-- aura icon
+	if not frame.icon then
+		frame.icon = frame:CreateTexture(nil, "OVERLAY")
+		frame:SetIcon(frame.icon)
+	end
+	-- frame border
+	local borderSize = self.borderSize
+	if borderSize>0 then
+		-- dispel border
+		if self.useStatusColor then
+			local border = frame.border
+			if not border then
+				border = frame:CreateTexture(nil, "OVERLAY")
+				frame.border = border
+			end
+			border:ClearAllPoints()
+			border:SetAllPoints()
+			border:SetColorTexture(1,1,1,1)
+			border:SetAlpha(1)
+			frame:SetAuraBorder(border, BORDER_SETTINGS)
+		elseif frame.border then
+			frame:ClearAuraBorder(frame.border)
+		end
+		-- default border
+		local borderBack = frame.borderBack
+		if not borderBack then
+			borderBack = frame:CreateTexture(nil, "BACKGROUND")
+			frame.borderBack = borderBack
+		end
+		borderBack:ClearAllPoints()
+		borderBack:SetAllPoints()
+		borderBack:SetColorTexture(UnpackColor(self.colorBorder))
+		borderBack:SetAlpha(1)
+	elseif frame.border then
+		frame:ClearAuraBorder(frame.border)
+		frame.border:Hide()
+		frame.borderBack:Hide()
+	end
+	-- stack count text
+	if self.showStack then
+		local fontSize = self.fontSize<1 and self.fontSize*iconSize or self.fontSize
+		local text = frame.text
+		if not text then
+			local tframe = CreateFrame("frame", nil, frame)
+			text = tframe:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+			frame.text = text
+			text.tframe = tframe
+			tframe:SetAllPoints()
+		end
+		text.tframe:SetFrameLevel(level+2)
+		text:SetFont(self.font, fontSize, self.fontFlags)
+		text:SetTextColor(UnpackColor(self.colorStack))
+		text:ClearAllPoints()
+		text:SetPoint(self.fontPoint, self.fontOffsetX, self.fontOffsetY)
+		text:Show()
+		frame:SetApplicationCount(text, {})
+	elseif frame.text then
+		frame:ClearApplicationCount()
+		frame.text:Hide()
+	end
+	-- cooldown animation
+	if self.showCooldown then
+		local cooldown = frame.cooldown or CreateFrame("Cooldown", nil, frame, "CooldownFrameTemplate")
+		cooldown:SetAllPoints()
+		cooldown:SetAlpha(1)
+		cooldown:SetHideCountdownNumbers(not self.showCoolText)
+		cooldown:SetDrawEdge(self.dbx.drawEdge)
+		cooldown:SetDrawSwipe(self.showSwipe)
+		cooldown:SetReverse(self.dbx.reverseCooldown)
+		if self.showCoolText then
+			local ctFontSize = self.ctFontSize<1 and self.ctFontSize*iconSize or self.ctFontSize
+			local text = cooldown:GetCountdownFontString()
+			text:SetFont(self.ctFont, ctFontSize, self.ctFontFlags)
+			text:SetTextColor(UnpackColor(self.ctColor))
+			text:ClearAllPoints()
+			text:SetPoint(self.ctFontPoint, self.ctFontOffsetX, self.ctFontOffsetY)
+			text:SetMaxLines(1)
+			frame.coolText = text
+			frame:SetDurationText(text)
+		else
+			frame.coolText = nil
+			frame:ClearDurationText()
+		end
+		cooldown:Show()
+		frame.cooldown = cooldown
+		frame:SetDurationCooldown(cooldown)
+	elseif frame.cooldown then
+		frame.cooldown:Hide()
+		frame:ClearDurationCooldown()
+	end
+	-- cooldown bar
+	if self.showCoolBar then
+		local bar = frame.coolBar or CreateFrame("StatusBar", nil, frame)
+		bar:ClearAllPoints()
+		bar:SetPoint(self.cbPoint, frame, self.cbPoint, self.cbOffsetX, self.cbOffsetY)
+		bar:SetFrameLevel(level+2)
+		bar:SetOrientation(self.cbOrientation)
+		bar:SetWidth( self.cbOrientation=='VERTICAL' and self.cbThickness or iconSize-borderSize*2 )
+		bar:SetHeight( self.cbOrientation=='HORIZONTAL' and self.cbThickness or iconSize-borderSize*2 )
+		bar:SetStatusBarTexture(self.cbTexture)
+		bar:SetStatusBarColor(UnpackColor(self.cbColor))
+		bar:SetReverseFill(self.cbReverse)
+		bar:Show()
+		frame.coolBar = bar
+		local background = bar.background or bar:CreateTexture(nil, "BACKGROUND")
+		background:ClearAllPoints()
+		background:SetAllPoints()
+		background:SetTexture(self.cbTexture)
+		background:SetVertexColor(UnpackColor(self.cbColorBack))
+		bar.background = background
+	elseif frame.coolBar then
+		frame.coolBar:Hide()
+	end
+	-- icon texture
+	frame.icon:SetPoint("TOPLEFT",     frame ,"TOPLEFT",  borderSize, -borderSize)
+	frame.icon:SetPoint("BOTTOMRIGHT", frame ,"BOTTOMRIGHT", -borderSize, borderSize)
+	frame.icon:SetTexCoord( Grid2.statusPrototype.GetTexCoord() )
+end
+
+local function Icon_UpdateB(self, parent, unit) -- Warning: This is an overrided indicator:Update() NOT the standard indicator:OnUpdate()
+	local f = parent[self.name]
+	if not f then return end
+	local unit = parent.unit
+	if unit==f.myUnit then return end
+	f.myUnit = unit
+	f.auraContainer:SetShown(unit~=nil)
+	f.auraContainer:SetUnit(unit)
+	f.auraContainer:SetEnabled(unit~=nil)
+end
+
+local function Icon_LayoutB(self, parent)
+	local f = parent[self.name]
+	-- hide non-aura icons if necessary
+	if f.visibleCount>0 then Icon_DisableIconContainer(f) end
+	-- root indicator frame
+	f:SetParent(parent)
+	f:ClearAllPoints()
+	f:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
+	f:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
+	local iconSize = self.iconSize>1 and self.iconSize or self.iconSize * parent:GetHeight()
+	local size = iconSize + self.iconSpacing
+	if size>0 then
+		f:SetSize( size*self.pw+1, size*self.ph+1 )
+	else
+		f:SetSize( iconSize, iconSize ) -- to avoid 0 size frame when using a negative spacing: iconSize+iconSpacing==0
+	end
+	f:Show()
+	-- bliz aura container
+	if f.auraContainer then -- discard previous container because blizz API has no methods to change some settings like the auraFilter
+		f.myUnit = nil
+		f.auraContainer:SetEnabled(false)
+		f.auraContainer:SetShown(false)
+	end
+	local auraContainer = CreateFrame("AuraContainer", nil, f, "CustomAuraContainerTemplate")
+	f.auraContainer = auraContainer
+	auraContainer._buttons = {}
+	auraContainer:ClearAllPoints()
+	auraContainer:SetAllPoints()
+	auraContainer:SetSize(f:GetSize())
+	auraContainer:SetAuraLayoutRowWidth(f:GetWidth())
+	auraContainer:SetAuraLayoutAnchorPoint(self.anchorIcon)
+	auraContainer:SetAuraLayoutGrowthDirection(self.horizontalDirection, self.verticalDirection)
+	auraContainer:SetAuraLayoutPadding(0,0,0,0)
+	local buttons = auraContainer._buttons
+	for i, status in ipairs(self.statuses) do
+		local key = tostring(i)
+		if status.aura_filter then
+			auraContainer:AddAuraGroup( key, status.aura_filter, { maxFrameCount = self.maxIcons, initializeFrame = function(button)
+				buttons[#buttons+1] = button
+				Icon_SetupButtonB(self, parent, auraContainer, button)
+			end } )
+		end
+		auraContainer:SetAuraGroupLayout(key, self.groupLayout)
+	end
+	for _, button in ipairs(auraContainer._buttons) do
+		Icon_SetupButtonB(self, parent, auraContainer, button)
+	end
+	auraContainer:Show()
+end
+
+-------------------------------------------------------------
+-- shared
+-------------------------------------------------------------
+
+local function Icon_Create(self, parent)
+	local f = self:Acquire("Frame", parent)
+	f.myIndicator = self
+	f.myFrame = parent
+	f.auras = f.auras or {}
+	f.visibleCount = 0
+end
+
 local function Icon_Disable(self, parent)
 	local f = parent[self.name]
 	f:Hide()
 	f:SetParent(nil)
 	f:ClearAllPoints()
+end
+
+local function Icon_GetMouseOverStatus(self, unit, parent, frame)
+	return frame.status, true, frame.slotID, frame, unit or frame:GetParent():GetParent().unit
 end
 
 local pointsX = { TOPLEFT =  1,	TOPRIGHT = -1, BOTTOMLEFT = 1, BOTTOMRIGHT = -1 }
@@ -408,10 +640,28 @@ local function Icon_UpdateDB(self)
 	self.hideDupes = dbx.hideDupes and {} or nil
 	-- backdrop
 	self.backdrop = self.borderSize>0 and Grid2:GetBackdropTable("Interface\\Addons\\Grid2\\media\\white16x16", self.borderSize) or nil
+	-- used only in auraContainer mode
+	self.horizontalDirection = self.ux
+	self.verticalDirection = self.vy
+	self.groupLayout = { elementSpacingX = self.iconSpacing, elementSpacingY = self.iconSpacing, gapX = 0, gapY = 0, forceNewRow = false }
 end
 
-local function Icon_GetMouseOverStatus(self, unit, parent, frame)
-	return frame.status, true, frame.slotID, frame, unit or frame:GetParent():GetParent().unit
+local function Icon_Update(self, parent, unit)
+	local status = self.statuses[1]
+	if status and status.aura_filter then
+		Icon_UpdateB(self, parent, unit)
+	else
+		Icon_UpdateA(self, parent, unit)
+	end
+end
+
+local function Icon_Layout(self, parent)
+	local status = self.statuses[1]
+	if status and status.aura_filter then
+		Icon_LayoutB(self, parent)
+	else
+		Icon_LayoutA(self, parent)
+	end
 end
 
 Grid2.setupFunc["icons"] = function(indicatorKey, dbx)
