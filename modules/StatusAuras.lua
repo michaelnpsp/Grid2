@@ -3,6 +3,24 @@ if Grid2.versionCli<120100 then return end
 
 local Grid2 = Grid2
 
+-------------------------------------------------------------------------------
+-- Dispel Type colors
+-------------------------------------------------------------------------------
+
+Grid2.DispelCurveDefaults = {
+	None    = { 0,  DEBUFF_TYPE_NONE_COLOR    },
+	Magic   = { 1,  DEBUFF_TYPE_MAGIC_COLOR   },
+	Curse   = { 2,  DEBUFF_TYPE_CURSE_COLOR   },
+	Disease = { 3,  DEBUFF_TYPE_DISEASE_COLOR },
+	Poison  = { 4,  DEBUFF_TYPE_POISON_COLOR  },
+	Enrage  = { 9,  DEBUFF_TYPE_BLEED_COLOR   },
+	Bleed   = { 11, DEBUFF_TYPE_BLEED_COLOR   },
+}
+
+-------------------------------------------------------------------------------
+-- shared methods
+-------------------------------------------------------------------------------
+
 local function Auras_IsActive()
 	return false
 end

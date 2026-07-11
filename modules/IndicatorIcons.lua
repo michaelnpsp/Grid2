@@ -513,11 +513,16 @@ local function Icon_LayoutB(self, parent)
 	for i, status in ipairs(self.statuses) do
 		if status.isAura then
 			local key = tostring(i)
-			local filter = status:GetAurasFilter()
-			auraContainer:AddAuraGroup( key, filter, { maxFrameCount = self.maxIcons, initializeFrame = function(button)
-				buttons[#buttons+1] = button
-				Icon_SetupButtonB(self, parent, auraContainer, button)
-			end } )
+			local filter, sortMethod, sortDirection = status:GetAurasFilter()
+			auraContainer:AddAuraGroup( key, filter, {
+				maxFrameCount = self.maxIcons,
+				sortMethod = sortMethod,
+				sortDirection = sortDirection,
+				initializeFrame = function(button)
+					buttons[#buttons+1] = button
+					Icon_SetupButtonB(self, parent, auraContainer, button)
+				end
+			} )
 			auraContainer:SetAuraGroupLayout(key, self.groupLayout)
 		end
 	end

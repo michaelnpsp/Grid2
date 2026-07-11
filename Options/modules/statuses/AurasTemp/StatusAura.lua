@@ -1,3 +1,5 @@
+if Grid2.versionCli>=120100 then return end
+
 local L = Grid2Options.L
 
 local GetSpellInfo = Grid2.API.GetSpellInfo
@@ -463,5 +465,16 @@ Grid2Options:RegisterStatusOptions("buff", "buff", function(self, status, option
 	self:MakeStatusAuraTextOptions(status, options, optionParams)
 end,{
 	groupOrder = 10, isDeletable = true
+})
+
+Grid2Options:RegisterStatusOptions("buffs", "buff", function(self, status, options, optionParams)
+	self:MakeStatusAuraColorsOptions(status, options, optionParams)
+	self:MakeStatusAuraMissingOptions(status, options, optionParams)
+	self:MakeStatusBlinkThresholdOptions(status, options, optionParams)
+	self:MakeHeaderOptions( options, "AurasExpanded" )
+	self:MakeStatusAuraListOptions(status, options, optionParams)
+end,{
+	groupOrder = 20, isDeletable = true,
+	titleIcon = "Interface\\Icons\\Inv_enchant_shardbrilliantsmall",
 })
 -- }}
