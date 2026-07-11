@@ -1,3 +1,5 @@
+if Grid2.versionCli>=120100 then return end
+
 local L = Grid2Options.L
 
 --==============================================

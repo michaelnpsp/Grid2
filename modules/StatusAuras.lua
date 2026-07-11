@@ -53,7 +53,7 @@ end
 -------------------------------------------------------------------------------
 
 Grid2.setupFunc["mbuffs"] = function(baseKey, dbx)
-	Auras_Create(baseKey, dbx, "HELPFUL")
+	return Auras_Create(baseKey, dbx, "HELPFUL")
 end
 
 --[[ mbuffs database format
@@ -67,7 +67,7 @@ end
 -------------------------------------------------------------------------------
 
 Grid2.setupFunc["mdebuffs"] = function(baseKey, dbx)
-	Auras_Create(baseKey, dbx, "HARMFUL")
+	return Auras_Create(baseKey, dbx, "HARMFUL")
 end
 
 --[[ mdebuffs database format
@@ -83,7 +83,7 @@ end
 local DebuffsDispell = Grid2.statusPrototype:new("debuffs-DispellableByMe")
 
 Grid2.setupFunc["mdebuffType"] = function(baseKey, dbx)
-	Auras_Create(baseKey, dbx, "HARMFUL|RAID_PLAYER_DISPELLABLE", DebuffsDispell)
+	return Auras_Create(baseKey, dbx, "HARMFUL|RAID_PLAYER_DISPELLABLE", DebuffsDispell)
 end
 
 Grid2:DbSetStatusDefaultValue( "debuffs-DispellableByMe", {type = "mdebuffType", subType = "DispellableByMe", colors = {}} )
