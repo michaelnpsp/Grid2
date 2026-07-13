@@ -571,7 +571,7 @@ function Grid2Options:MakeMidnightDispellableByMeOptions(status, options)
 end
 
 Grid2Options:RegisterStatusOptions("mdebuffType", "debuff", function(self, status, options, optionParams)
-	self:MakeMidnightDispellableByMeOptions(status, options, optionParams)
+	-- self:MakeMidnightDispellableByMeOptions(status, options, optionParams)
 end,{
 	groupOrder = 5,
 })

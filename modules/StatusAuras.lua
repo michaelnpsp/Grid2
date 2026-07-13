@@ -52,6 +52,14 @@ end
 -- midnight-buffs status
 -------------------------------------------------------------------------------
 
+Grid2.setupFunc["buff"] = function(baseKey, dbx)
+	return Auras_Create(baseKey, dbx, "HELPFUL")
+end
+
+Grid2.setupFunc["buffs"] = function(baseKey, dbx)
+	return Auras_Create(baseKey, dbx, "HELPFUL")
+end
+
 Grid2.setupFunc["mbuffs"] = function(baseKey, dbx)
 	return Auras_Create(baseKey, dbx, "HELPFUL")
 end
