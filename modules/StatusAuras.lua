@@ -3,6 +3,8 @@ if Grid2.versionCli<120100 then return end
 
 local Grid2 = Grid2
 
+local CopyTable = Grid2.CopyTable
+
 -------------------------------------------------------------------------------
 -- Dispel Type colors
 -------------------------------------------------------------------------------
@@ -21,37 +23,76 @@ Grid2.DispelCurveDefaults = {
 -- shared methods
 -------------------------------------------------------------------------------
 
+local function GetSpellIDsTable(dbx)
+	local r = nil
+	if dbx.auras then -- buffs/mbuffs/mdebufs statuses
+		r = {}
+		for _,spell in ipairs(dbx.auras) do
+			r[spell] = true
+		end
+	elseif dbx.spellName then -- buff status
+		r = { [dbx.spellName] = true }
+	end
+	return r
+end
+
 local function Auras_IsActive()
 	return false
 end
 
+local function Auras_GetAurasFilter(self)
+	return self.aura_filter
+end
+
 local function Auras_UpdateDB(self)
 	local dbx = self.dbx
-	local filter = dbx.aura_filter or {}
+	local typ = dbx.type
 	-- color
 	local r,g,b,a = Grid2:UnpackColor(dbx.color1 or Grid2.defaultColors.BLACK)
 	self.GetColor = function() return r, g, b, a end
 	-- aura filter
-	local aura_filter = filter.filter or self.defFilter
-	local aura_sortDir = filter.sortDir or 0
-	local aura_sortRule = filter.sortRule or 0
-	self.GetAurasFilter = function() return aura_filter, aura_sortRule, aura_sortDir end
+	local filter = CopyTable( self.defaults, CopyTable(dbx.aura_filter or {}) )
+	--[[
+	if typ=='buff' then
+		filter.maxAuras = 1
+		filter.filter=  (dbx.mine==1 and 'HELPFUL|PLAYER') or (dbx.mine==2 and 'HELPFUL|!PLAYER') or 'HELPFUL'
+	elseif typ=='buffs' then
+		filter.maxAuras = filter.maxAuras or math.huge
+		filter.filter=  (dbx.mine==1 and 'HELPFUL|PLAYER') or (dbx.mine==2 and 'HELPFUL|!PLAYER') or 'HELPFUL'
+	else -- mbuffs/mdebuffs
+		filter.maxAuras = filter.maxAuras or math.huge
+		filter.filter = filter.filter or self.defFilter
+	end
+	--]]
+	-- spells table
+	local spells = GetSpellIDsTable(dbx)
+	if spells then
+		filter.candidateFilters = filter.candidateFilters or {}
+		if filter.candidateFilters.excludeSpellIDs then
+			filter.candidateFilters.excludeSpellIDs = spells
+		else
+			filter.candidateFilters.includeSpellIDs = spells
+		end
+	end
+	-- save filter table
+	self.aura_filter = filter
 end
 
-local function Auras_Create(baseKey, dbx, defFilter, status)
+local function Auras_Create(baseKey, dbx, defaults, status)
 	status = status or Grid2.statusPrototype:new(baseKey)
 	status.isAura = true
-	status.defFilter = defFilter
+	status.defaults= defaults
 	status.IsActive = Auras_IsActive
 	status.UpdateDB = Auras_UpdateDB
-	Grid2:RegisterStatus(status, { "icons", "icon", "color", "tooltip" }, baseKey, dbx)
+	status.GetAurasFilter = Auras_GetAurasFilter
+	Grid2:RegisterStatus(status, { "icons", "icon", "color" }, baseKey, dbx)
 	return status
 end
 
 -------------------------------------------------------------------------------
 -- midnight-buffs status
 -------------------------------------------------------------------------------
-
+--[[
 Grid2.setupFunc["buff"] = function(baseKey, dbx)
 	return Auras_Create(baseKey, dbx, "HELPFUL")
 end
@@ -59,9 +100,18 @@ end
 Grid2.setupFunc["buffs"] = function(baseKey, dbx)
 	return Auras_Create(baseKey, dbx, "HELPFUL")
 end
+--]]
 
+local DEFAULTS = { filter = 'HELPFUL', maxAuras = 1 }
+Grid2.setupFunc["mbuff"] = function(baseKey, dbx)
+	return Auras_Create(baseKey, dbx, DEFAULTS)
+end
+
+
+
+local DEFAULTS = { filter = 'HELPFUL', maxAuras = 64 }
 Grid2.setupFunc["mbuffs"] = function(baseKey, dbx)
-	return Auras_Create(baseKey, dbx, "HELPFUL")
+	return Auras_Create(baseKey, dbx, DEFAULTS)
 end
 
 --[[ mbuffs database format
@@ -74,8 +124,9 @@ end
 -- midnight-debuffs status
 -------------------------------------------------------------------------------
 
+local DEFAULTS = { filter = 'HARMFUL', maxAuras = 64 }
 Grid2.setupFunc["mdebuffs"] = function(baseKey, dbx)
-	return Auras_Create(baseKey, dbx, "HARMFUL")
+	return Auras_Create(baseKey, dbx, DEFAULTS)
 end
 
 --[[ mdebuffs database format
@@ -90,8 +141,9 @@ end
 
 local DebuffsDispell = Grid2.statusPrototype:new("debuffs-DispellableByMe")
 
+local DEFAULTS = { filter = 'HARMFUL|RAID_PLAYER_DISPELLABLE', maxAuras = 64 }
 Grid2.setupFunc["mdebuffType"] = function(baseKey, dbx)
-	return Auras_Create(baseKey, dbx, "HARMFUL|RAID_PLAYER_DISPELLABLE", DebuffsDispell)
+	return Auras_Create(baseKey, dbx, DEFAULTS, DebuffsDispell)
 end
 
 Grid2:DbSetStatusDefaultValue( "debuffs-DispellableByMe", {type = "mdebuffType", subType = "DispellableByMe", colors = {}} )

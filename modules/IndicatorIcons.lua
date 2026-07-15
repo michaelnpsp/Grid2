@@ -511,13 +511,13 @@ local function Icon_LayoutB(self, parent)
 	auraContainer:SetAuraLayoutPadding(0,0,0,0)
 	local buttons = auraContainer._buttons
 	for i, status in ipairs(self.statuses) do
-		if status.isAura then
-			local key = tostring(i)
-			local filter, sortMethod, sortDirection = status:GetAurasFilter()
-			auraContainer:AddAuraGroup( key, filter, {
-				maxFrameCount = self.maxIcons,
-				sortMethod = sortMethod,
-				sortDirection = sortDirection,
+		if status.GetAurasFilter then
+			local key, aura_filter = tostring(i), status:GetAurasFilter()
+			auraContainer:AddAuraGroup( key, aura_filter.filter, {
+				maxFrameCount = math.min(self.maxIcons, aura_filter.maxAuras or 64),
+				sortMethod = aura_filter.sortMethod or 0,
+				sortDirection = aura_filter.sortDirection or 0,
+				candidateFilters = aura_filter.candidateFilters,
 				initializeFrame = function(button)
 					buttons[#buttons+1] = button
 					Icon_SetupButtonB(self, parent, auraContainer, button)
@@ -652,7 +652,7 @@ end
 
 local function Icon_Update(self, parent, unit)
 	local status = self.statuses[1]
-	if status and status.isAura then
+	if status and status.GetAurasFilter then
 		Icon_UpdateB(self, parent, unit)
 	else
 		Icon_UpdateA(self, parent, unit)
@@ -661,7 +661,7 @@ end
 
 local function Icon_Layout(self, parent)
 	local status = self.statuses[1]
-	if status and status.isAura then
+	if status and status.GetAurasFilter then
 		Icon_LayoutB(self, parent)
 	else
 		Icon_LayoutA(self, parent)
