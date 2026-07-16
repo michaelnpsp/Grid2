@@ -107,8 +107,6 @@ Grid2.setupFunc["mbuff"] = function(baseKey, dbx)
 	return Auras_Create(baseKey, dbx, DEFAULTS)
 end
 
-
-
 local DEFAULTS = { filter = 'HELPFUL', maxAuras = 64 }
 Grid2.setupFunc["mbuffs"] = function(baseKey, dbx)
 	return Auras_Create(baseKey, dbx, DEFAULTS)

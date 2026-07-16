@@ -15,8 +15,8 @@ do
 	local function Reset(typ)
 		new_type = typ or "mbuff"
 		new_name = ""
-		new_mine = 1
 		new_spell = nil
+		new_mine = new_type=='mbuff' and 1 or nil
 	end
 
 	local function GetKey()
@@ -79,6 +79,7 @@ do
 			set = function(info, value)
 				new_mine= value and 1
 			end,
+			hidden = function() return new_type~='mbuff' end,
 		},
 		buffNotMine = {
 			type = "toggle",
@@ -91,6 +92,7 @@ do
 			set = function(info, value)
 				new_mine = value and 2
 			end,
+			hidden = function() return new_type~='mbuff' end,
 		},
 		buffSpacer = {
 			type = "header",

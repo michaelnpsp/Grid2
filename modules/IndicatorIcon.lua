@@ -96,6 +96,7 @@ local function Icon_ButtonCreate(self, parent, f, auraContainer)
 		background:ClearAllPoints()
 		background:SetAllPoints()
 		bar.background = background
+		if auraContainer then f:SetDurationBar(bar, self.cbOptions) end
 	elseif f.coolBar then
 		f.coolBar:Hide()
 	end
@@ -104,7 +105,7 @@ local function Icon_ButtonCreate(self, parent, f, auraContainer)
 	end
 end
 
-local function Icon_ButtonLayout(self, parent, f, auraContainer, level)
+local function Icon_ButtonLayout(self, parent, f, auraContainer, size, level)
 	local Icon = f.Icon
 	local borderSize = self.borderSize
 	if auraContainer then -- 12.1+ aura container
@@ -175,6 +176,22 @@ local function Icon_ButtonLayout(self, parent, f, auraContainer, level)
 	end
 end
 
+local function Icon_LayoutShared(self, parent, f)
+	local f = parent[self.name]
+	local level = parent:GetFrameLevel() + self.frameLevel
+	f:SetParent(parent)
+	f:ClearAllPoints()
+	f:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
+	f:SetFrameLevel(level)
+	local size = self.iconSize
+	if size<=1 then
+		size = size * parent:GetHeight()
+	end
+	f:SetSize(size,size)
+	f:Show()
+	return size, level
+end
+
 local function Icon_DisableIconContainer(f)
 	if f.auraContainer then return end
 	local function Hide(f)
@@ -193,22 +210,6 @@ local function Icon_DisableAuraContainer(f)
 	f.auraContainer:SetParent(nil)
 	f.auraContainer = nil
 	f.myUnit = nil
-end
-
-local function Icon_LayoutShared(self, parent, f)
-	local f = parent[self.name]
-	local level = parent:GetFrameLevel() + self.frameLevel
-	f:SetParent(parent)
-	f:ClearAllPoints()
-	f:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
-	f:SetFrameLevel(level)
-	local size = self.iconSize
-	if size<=1 then
-		size = size * parent:GetHeight()
-	end
-	f:SetSize(size,size)
-	f:Show()
-	return level
 end
 
 -------------------------------------------------------------
@@ -322,9 +323,9 @@ end
 local function Icon_Layout(self, parent)
 	local f = parent[self.name]
 	Icon_DisableAuraContainer(f)
-	local level = Icon_LayoutShared(self, parent, f)
-	Icon_ButtonCreate(self, parent, f, nil, level)
-	Icon_ButtonLayout(self, parent, f, nil, level)
+	local size, level = Icon_LayoutShared(self, parent, f)
+	Icon_ButtonCreate(self, parent, f, nil, size, level)
+	Icon_ButtonLayout(self, parent, f, nil, size, level)
 end
 
 -------------------------------------------------------------
@@ -346,21 +347,21 @@ local function Icon_LayoutAura(self, parent)
 	local f = parent[self.name]
 	Icon_DisableIconContainer(f)
 	Icon_DisableAuraContainer(f)
-	local level = Icon_LayoutShared(self, parent, f)
+	local size, level = Icon_LayoutShared(self, parent, f)
 	local auraContainer = CreateFrame("AuraContainer", nil, f, "CustomAuraContainerTemplate")
 	f.auraContainer = auraContainer
 	auraContainer:ClearAllPoints()
 	auraContainer:SetAllPoints()
 	local aura_filter = self.statuses[1]:GetAurasFilter()
 	auraContainer:AddAuraSlot( "1", aura_filter.filter, {
-		sortMethod = aura_filter.sortMethod or 0,
-		sortDirection = aura_filter.sortDirection or 0,
+		sortMethod = aura_filter.sortRule or 0,
+		sortDirection = aura_filter.sortDir or 0,
 		candidateFilters = aura_filter.candidateFilters,
 		initializeFrame = function(button)
 			auraContainer._button = button
 			button:SetFrameLevel(level)
-			Icon_ButtonCreate(self, parent, button, auraContainer, level)
-			Icon_ButtonLayout(self, parent, button, auraContainer, level)
+			Icon_ButtonCreate(self, parent, button, auraContainer, size, level)
+			Icon_ButtonLayout(self, parent, button, auraContainer, size, level)
 		end
 	} )
 	auraContainer:Show()
@@ -440,6 +441,7 @@ local function Icon_UpdateDB(self)
 	self.cbTexture		= Grid2:MediaFetch("statusbar", dbx.cbTexture or 'Grid2 Flat', 'Grid2 Flat')
 	self.cbOffsetX      = (self.cbPoint=='LEFT' or self.cbPoint=='BOTTOM') and borderSize or -borderSize
 	self.cbOffsetY      = 0
+	self.cbOptions      = { direction = self.cbDirection }
 	if self.cbOrientation=='HORIZONTAL' then self.cbOffsetX, self.cbOffsetY = self.cbOffsetY, self.cbOffsetX end
 	self.cbColor        = Grid2.MakeColor(dbx.cbColor, "WHITE")
 	self.cbColorBack    = Grid2.MakeColor(dbx.cbColorBack, "RED")

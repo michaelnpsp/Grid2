@@ -450,6 +450,7 @@ local function Icon_SetupButtonB(self, parent, auraContainer, frame)
 		bar:SetReverseFill(self.cbReverse)
 		bar:Show()
 		frame.coolBar = bar
+		frame:SetDurationBar(bar, self.cbOptions)
 		local background = bar.background or bar:CreateTexture(nil, "BACKGROUND")
 		background:ClearAllPoints()
 		background:SetAllPoints()
@@ -457,6 +458,7 @@ local function Icon_SetupButtonB(self, parent, auraContainer, frame)
 		background:SetVertexColor(UnpackColor(self.cbColorBack))
 		bar.background = background
 	elseif frame.coolBar then
+		frame:ClearDurationBar(frame.coolBar)
 		frame.coolBar:Hide()
 	end
 	-- icon texture
@@ -515,8 +517,8 @@ local function Icon_LayoutB(self, parent)
 			local key, aura_filter = tostring(i), status:GetAurasFilter()
 			auraContainer:AddAuraGroup( key, aura_filter.filter, {
 				maxFrameCount = math.min(self.maxIcons, aura_filter.maxAuras or 64),
-				sortMethod = aura_filter.sortMethod or 0,
-				sortDirection = aura_filter.sortDirection or 0,
+				sortMethod = aura_filter.sortRule or 0,
+				sortDirection = aura_filter.sortDir or 0,
 				candidateFilters = aura_filter.candidateFilters,
 				initializeFrame = function(button)
 					buttons[#buttons+1] = button
@@ -624,6 +626,7 @@ local function Icon_UpdateDB(self)
 	self.cbTexture		= Grid2:MediaFetch("statusbar", dbx.cbTexture or 'Grid2 Flat', 'Grid2 Flat')
 	self.cbOffsetX      = (self.cbPoint=='LEFT' or self.cbPoint=='BOTTOM') and self.borderSize or -self.borderSize
 	self.cbOffsetY      = 0
+	self.cbOptions      = { direction = self.cbDirection }
 	if self.cbOrientation=='HORIZONTAL' then self.cbOffsetX, self.cbOffsetY = self.cbOffsetY, self.cbOffsetX end
 	self.cbColor        = Grid2.MakeColor(dbx.cbColor, "WHITE")
 	self.cbColorBack    = Grid2.MakeColor(dbx.cbColorBack, "RED")

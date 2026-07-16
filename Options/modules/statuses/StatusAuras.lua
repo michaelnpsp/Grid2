@@ -21,10 +21,14 @@ local AuraFilters ={
 	["filter;EXTERNAL_DEFENSIVE"] = "External Defensive",
 	["filter;!BIG_DEFENSIVE"] = "Not Big Defensive",
 	["filter;!EXTERNAL_DEFENSIVE"] = "Not External Defensive",
-	["filter;RAID_PLAYER_DISPELLABLE"] = "Dispelable be Me",
-	["filter;!RAID_PLAYER_DISPELLABLE"] = "Not Dispelable be Me",
+	["filter;DISPELLABLE"] = "Dispellable",
+	["filter;!DISPELLABLE"] = "Not Dispellable",
+	["filter;RAID_PLAYER_DISPELLABLE"] = "Dispellable be Me",
+	["filter;!RAID_PLAYER_DISPELLABLE"] = "Not Dispellable be Me",
 	["filter;CROWD_CONTROL"] = "Crown Control",
 	["filter;!CROWD_CONTROL"] = "Not Crown Control",
+	["filter;IMPORTANT"] = "Important",
+	["filter;!IMPORTANT"] = "Not Important",
 	["includeDispelTypes;Magic"] = "Magic",
 	["includeDispelTypes;Curse"] = "Curse",
 	["includeDispelTypes;Poison"] = "Poison",
@@ -55,6 +59,8 @@ local AuraFiltersNegate = {
 	["filter;!EXTERNAL_DEFENSIVE"] = "filter;EXTERNAL_DEFENSIVE",
 	["filter;RAID_PLAYER_DISPELLABLE"] = "filter;!RAID_PLAYER_DISPELLABLE",
 	["filter;!RAID_PLAYER_DISPELLABLE"] = "filter;RAID_PLAYER_DISPELLABLE",
+	["filter;DISPELLABLE"] = "filter;!DISPELLABLE",
+	["filter;!DISPELLABLE"] = "filter;DISPELLABLE",
 	["filter;CROWD_CONTROL"] = "filter;!CROWD_CONTROL",
 	["filter;!CROWD_CONTROL"] = "filter;CROWD_CONTROL",
 	["includeDispelTypes;Magic"] = "excludeDispelTypes;Magic",
@@ -74,11 +80,13 @@ local Filters = {}
 Filters.buffs = {
 	"filter;PLAYER",
 	"filter;RAID_IN_COMBAT",
+	"filter;DISPELLABLE",
 	"filter;RAID_PLAYER_DISPELLABLE",
 	"filter;BIG_DEFENSIVE",
 	"filter;EXTERNAL_DEFENSIVE",
 	"filter;!PLAYER",
 	"filter;!RAID_IN_COMBAT",
+	"filter;!DISPELLABLE",
 	"filter;!RAID_PLAYER_DISPELLABLE",
 	"filter;!BIG_DEFENSIVE",
 	"filter;!EXTERNAL_DEFENSIVE",
@@ -97,12 +105,16 @@ Filters.mbuff = {
 Filters.mbuffs = {
 	"filter;PLAYER",
 	"filter;RAID_IN_COMBAT",
+	"filter;DISPELLABLE",
+	"filter;RAID_PLAYER_DISPELLABLE",
+	"filter;IMPORTANT",
 	"filter;BIG_DEFENSIVE",
 	"filter;EXTERNAL_DEFENSIVE",
-	"filter;RAID_PLAYER_DISPELLABLE",
 	"filter;!PLAYER",
 	"filter;!RAID_IN_COMBAT",
+	"filter;!DISPELLABLE",
 	"filter;!RAID_PLAYER_DISPELLABLE",
+	"filter;!IMPORTANT",
 	"filter;!BIG_DEFENSIVE",
 	"filter;!EXTERNAL_DEFENSIVE",
 	"candidateFilters;canApplyAura",
@@ -151,10 +163,8 @@ local MAX_AURAS_VALUES = { [100] = "Unlimited" }
 for i=1,16 do MAX_AURAS_VALUES[i] = tostring(i) end
 
 local function refresh_aura_status(status)
-	if status.Refresh then
-		status:Refresh()
-	end
-	-- DevTools_Dump(status.dbx)
+	status:UpdateDB()
+	Grid2Options:RefreshStatusIndicators(status, "Layout")
 end
 
 -- aura_filter management
@@ -331,7 +341,7 @@ end
 --==============================================
 
 function Grid2Options:MakeStatusAuraMiscOptions(status, options)
-	make_color_option(status, options, "color1", 10, L["Color"], "half")
+	-- make_color_option(status, options, "color1", 10, L["Color"], "half")
 	options.max_auras = {
 		type = "select",
 		order = 20,
@@ -351,7 +361,7 @@ function Grid2Options:MakeStatusAuraMiscOptions(status, options)
 		order = 30,
 		width = 0.75,
 		name = "Sorting",
-		desc = L["Choose how to sort the auras."],
+		desc = L["Select the auras sort order."],
 		get = function()
 			return filter_get_value( status, 'aura_filter', 'sortRule', 0 )
 		end,
@@ -363,8 +373,8 @@ function Grid2Options:MakeStatusAuraMiscOptions(status, options)
 	options.sort_dir = {
 		type = "toggle",
 		order = 40,
-		width = "half",
-		name = L["Reverse"],
+		width = 0.75,
+		name = L["Reverse sort"],
 		desc = L["Reverse sort order."],
 		get = function()
 			return filter_get_value( status, 'aura_filter', 'sortDir' ) == 1
@@ -430,6 +440,7 @@ end
 
 
 function Grid2Options:MakeStatusAuraFilterOptions(status, options)
+	local bsingle  = status.dbx.type=='mbuff'
 	local default = status.dbx.type=='mdebuffs' and 'HARMFUL' or 'HELPFUL'
 	local filters = Filters[status.dbx.type]
 	options.header_filter = { type = "header", order = 99, name = "Auras to Display" }
@@ -452,6 +463,7 @@ function Grid2Options:MakeStatusAuraFilterOptions(status, options)
 			end
 			return t
 		end,
+		hidden = function() return bsingle end,
 	}
 	for i,filter in ipairs(filters) do
 		options['mfilter'..i] = {
@@ -461,135 +473,16 @@ function Grid2Options:MakeStatusAuraFilterOptions(status, options)
 			name = AuraFilters[filter] or "Unknow:".. filter,
 			desc = L["Click to remove this filter"],
 			get = function() return true end,
-			set = function() mfilter_set_disabled(status, filter, default) end,
+			set = (not bsingle) and function() mfilter_set_disabled(status, filter, default) end or nil,
 			hidden= function() return not mfilter_is_enabled(status,filter) end
 		}
 	end
-end
-
-local function MakeBuffsOptions(status, options)
-	options.filter_all = {
-		type = "toggle",
-		order = 20,
-		width = "full",
-		name = L["Display all buffs"],
-		get = function(info)
-			return filter_get_value(status, 'aura_filter', 'filter', 'HELPFUL')=='HELPFUL'
-		end,
-		set = function(info, v)
-			if v then
-				filter_set_value(status, 'aura_filter', 'filter',  (not v) and 'HELPFUL|PLAYER|RAID' or nil)
-			end
-		end,
-	}
-	options.filter_player = {
-		type = "toggle",
-		order = 30,
-		width = "full",
-		name = L["Buffs applied by me"],
-		get = function(info)
-			return filter_exists_substring( status, 'aura_filter', 'filter', 'PLAYER' )
-		end,
-		set = function()
-			filter_toggle_substring( status, 'aura_filter', 'filter', 'PLAYER', 'HELPFUL' )
-		end,
-	}
-	options.filter_raid_combat = {
-		type = "toggle",
-		order = 40,
-		width = "full",
-		name = L["Buffs relevant for your class"],
-		get = function()
-			return filter_exists_substring( status, 'aura_filter', 'filter', 'RAID_IN_COMBAT' )
-		end,
-		set = function()
-			filter_toggle_substring( status, 'aura_filter', 'filter', 'RAID_IN_COMBAT', 'HELPFUL' )
-		end,
-	}
-	options.filter_raid = {
-		type = "toggle",
-		order = 43,
-		width = "full",
-		name = L["Buffs relevant for your class (light version)"],
-		get = function()
-			return filter_exists_substring( status, 'aura_filter', 'filter', 'RAID' )
-		end,
-		set = function()
-			filter_toggle_substring( status, 'aura_filter', 'filter', 'RAID', 'HELPFUL' )
-		end,
-	}
-	options.filter_important = {
-		type = "toggle",
-		order = 44,
-		width = "full",
-		name = L["Important buffs flagged by Blizzard"],
-		get = function()
-			return filter_exists_substring( status, 'aura_filter', 'filter', 'IMPORTANT' )
-		end,
-		set = function()
-			filter_toggle_substring( status, 'aura_filter', 'filter', 'IMPORTANT', 'HELPFUL' )
-		end,
-	}
-	options.filter_defensive = {
-		type = "toggle",
-		order = 45,
-		width = "full",
-		name = L["Big defensive buff"],
-		get = function()
-			return filter_exists_substring( status, 'aura_filter', 'filter', 'BIG_DEFENSIVE' )
-		end,
-		set = function()
-			filter_toggle_substring( status, 'aura_filter', 'filter', 'BIG_DEFENSIVE', 'HELPFUL' )
-		end,
-	}
-	options.filter_external_defensives = {
-		type = "toggle",
-		order = 50,
-		width = "full",
-		name = L["External defensive buffs"],
-		get = function()
-			return filter_exists_substring( status, 'aura_filter', 'filter', 'EXTERNAL_DEFENSIVE' )
-		end,
-		set = function()
-			filter_toggle_substring( status, 'aura_filter', 'filter', 'EXTERNAL_DEFENSIVE', 'HELPFUL' )
-		end,
-	}
-	options.sort_rule = {
-		type = "select",
-		order = 100,
-		name = "Sorting",
-		desc = L["Choose how to sort the auras."],
-		get = function()
-			return filter_get_value( status, 'aura_filter', 'sortRule', 0 )
-		end,
-		set = function(_, v)
-			filter_set_value( status, 'aura_filter', 'sortRule', v, 0 )
-		end,
-		values = SORT_VALUES,
-	}
-	options.sort_dir = {
-		type = "toggle",
-		order = 110,
-		name = L["Reverse Sorting"],
-		get = function()
-			return filter_get_value( status, 'aura_filter', 'sortDir' ) == 1
-		end,
-		set = function(_, v)
-			filter_set_value( status, 'aura_filter', 'sortDir', v and 1 or nil )
-		end,
-	}
-end
-
-local function MakeBuffsColorOptions( status, options, optionParams )
-	options.cheader = { type = "header", order = 199, name = L["Buffs Color"] }
-	make_color_option(status, options, "color1", 200)
 end
 
 -- Grid2Options:MakeMidnightBuffsOptions(NewBuffsOptions.arg, NewBuffsOptions)
 
 Grid2Options:RegisterStatusOptions("mbuff", "buff", function(self, status, options, optionParams)
 	self:MakeStatusAuraFilterOptions(status, options)
-	self:MakeStatusAuraMiscOptions(status, options)
 	self:MakeStatusAuraListOptions(status, options)
 end,{
 	groupOrder = 5, isDeletable = true,

@@ -534,7 +534,14 @@ function Grid2Options:RefreshIndicator(indicator, method)
 			Grid2Frame:WithAllFrames(indicator, method)
 		end
 	end
-	Grid2Frame:UpdateIndicators()
+	self:UpdateIndicator(indicator)
+end
+
+-- Refresh indicators linked to the specified status
+function Grid2Options:RefreshStatusIndicators(status, method)
+	for indicator in pairs(status.indicators) do
+		self:RefreshIndicator(indicator, method)
+	end
 end
 
 -- Create or recreate indicator
@@ -559,6 +566,15 @@ function Grid2Options:RegisterIndicatorStatuses(indicator)
 					indicator:RegisterStatus(status, priority)
 				end
 			end
+		end
+	end
+end
+
+-- Update one indicator
+function Grid2Options:UpdateIndicator(indicator)
+	for frame in next, Grid2Frame.activatedFrames do
+		if frame.unit then
+			indicator:Update(frame, unit)
 		end
 	end
 end
