@@ -43,7 +43,7 @@ local function Icon_ButtonCreate(self, parent, f, auraContainer)
 		Cooldown:SetHideCountdownNumbers(not self.showCoolText)
 		Cooldown:SetAllPoints()
 		Cooldown:Show()
-		f:SetDurationCooldown(Cooldown)
+		if auraContainer then f:SetDurationCooldown(Cooldown) end
 		f.Cooldown = Cooldown
 		if self.showCoolText then
 			f.coolText = Cooldown:GetCountdownFontString()
@@ -176,6 +176,7 @@ local function Icon_ButtonLayout(self, parent, f, auraContainer, level)
 end
 
 local function Icon_DisableIconContainer(f)
+	if f.auraContainer then return end
 	local function Hide(f)
 		if f then f:Hide() end
 	end
@@ -186,11 +187,28 @@ local function Icon_DisableIconContainer(f)
 end
 
 local function Icon_DisableAuraContainer(f)
-	f.myUnit = nil
+	if not f.auraContainer then return end
 	f.auraContainer:SetEnabled(false)
 	f.auraContainer:SetShown(false)
 	f.auraContainer:SetParent(nil)
 	f.auraContainer = nil
+	f.myUnit = nil
+end
+
+local function Icon_LayoutShared(self, parent, f)
+	local f = parent[self.name]
+	local level = parent:GetFrameLevel() + self.frameLevel
+	f:SetParent(parent)
+	f:ClearAllPoints()
+	f:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
+	f:SetFrameLevel(level)
+	local size = self.iconSize
+	if size<=1 then
+		size = size * parent:GetHeight()
+	end
+	f:SetSize(size,size)
+	f:Show()
+	return level
 end
 
 -------------------------------------------------------------
@@ -301,8 +319,10 @@ local function Icon_OnUpdate(self, parent, unit, status)
 	Frame:Show()
 end
 
-local function Icon_LayoutIcon(self, parent, f)
-	if f.auraContainer then Icon_DisableAuraContainer(f) end
+local function Icon_Layout(self, parent)
+	local f = parent[self.name]
+	Icon_DisableAuraContainer(f)
+	local level = Icon_LayoutShared(self, parent, f)
 	Icon_ButtonCreate(self, parent, f, nil, level)
 	Icon_ButtonLayout(self, parent, f, nil, level)
 end
@@ -311,19 +331,27 @@ end
 -- 12.1+ aura containers
 -------------------------------------------------------------
 
-local function Icon_LayoutAura(self, parent, f, status, level)
-	if f.auraContainer then -- discard previous container because blizz API has no methods to change some settings like the auraFilter
-		f.auraContainer:SetEnabled(false)
-		f.auraContainer:SetShown(false)
-		f.auraContainer:SetParent(nil)
-	else
-		Icon_DisableIconContainer(f)
-	end
+local function Icon_UpdateAura(self, parent, unit)
+	local f = parent[self.name]
+	if not (f and f.auraContainer) then return end
+	local unit = parent.unit
+	if unit==f.myUnit then return end
+	f.myUnit = unit
+	f.auraContainer:SetShown(unit~=nil)
+	f.auraContainer:SetUnit(unit)
+	f.auraContainer:SetEnabled(unit~=nil)
+end
+
+local function Icon_LayoutAura(self, parent)
+	local f = parent[self.name]
+	Icon_DisableIconContainer(f)
+	Icon_DisableAuraContainer(f)
+	local level = Icon_LayoutShared(self, parent, f)
 	local auraContainer = CreateFrame("AuraContainer", nil, f, "CustomAuraContainerTemplate")
 	f.auraContainer = auraContainer
 	auraContainer:ClearAllPoints()
 	auraContainer:SetAllPoints()
-	local key, aura_filter = tostring(i), status:GetAurasFilter()
+	local aura_filter = self.statuses[1]:GetAurasFilter()
 	auraContainer:AddAuraSlot( "1", aura_filter.filter, {
 		sortMethod = aura_filter.sortMethod or 0,
 		sortDirection = aura_filter.sortDirection or 0,
@@ -342,42 +370,14 @@ end
 -- shared
 -------------------------------------------------------------
 
-local function Icon_Update(self, parent, unit)
-	local status = self.statuses[1]
-	if status and status.GetAurasFilter then
-		local f = parent[self.name]
-		if not (f and f.auraContainer) then return end
-		local unit = parent.unit
-		if unit==f.myUnit then return end
-		f.myUnit = unit
-		f.auraContainer:SetShown(unit~=nil)
-		f.auraContainer:SetUnit(unit)
-		f.auraContainer:SetEnabled(unit~=nil)
+local function Icon_SetAuraMode(self, auraMode)
+	if auraMode then
+		self.Layout = Icon_LayoutAura
+		self.UpdateO = Icon_UpdateAura
 	else
-		self:OnUpdate(parent, unit, self:GetCurrentStatus(unit, parent) )
+		self.Layout = Icon_Layout
+		self.UpdateO = Grid2.indicatorPrototype.Update
 	end
-end
-
-local function Icon_Layout(self, parent)
-	local f = parent[self.name]
-	local level = parent:GetFrameLevel() + self.frameLevel
-	f:SetParent(parent)
-	f:ClearAllPoints()
-	f:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
-	f:SetFrameLevel(level)
-	local size = self.iconSize
-	if size<=1 then
-		size = size * parent:GetHeight()
-	end
-	f:SetSize(size,size)
-	f:Show()
-	local status = self.statuses[1]
-	if status and status.GetAurasFilter then
-		Icon_LayoutAura(self, parent, f, status, level)
-	else
-		Icon_LayoutIcon(self, parent, f, level)
-	end
-	f.myUnit = nil
 end
 
 local function Icon_Disable(self, parent)
@@ -463,13 +463,13 @@ end
 
 local function CreateIcon(indicatorKey, dbx)
 	local indicator = Grid2.indicatorPrototype:new(indicatorKey)
-	indicator.dbx 			= dbx
-	indicator.Create        = Icon_Create
-	indicator.Layout        = Icon_Layout
-	indicator.UpdateO       = Icon_Update
-	indicator.OnUpdate      = Icon_OnUpdate
-	indicator.Disable       = Icon_Disable
-	indicator.UpdateDB      = Icon_UpdateDB
+	indicator.dbx 		  = dbx
+	indicator.Create      = Icon_Create
+	indicator.Layout      = Icon_Layout
+	indicator.OnUpdate    = Icon_OnUpdate
+	indicator.Disable     = Icon_Disable
+	indicator.UpdateDB    = Icon_UpdateDB
+	indicator.SetAuraMode = Icon_SetAuraMode
 	-- indicator.GetBlinkFrame = indicator.GetFrame    -- NBot compatible with 12.1 auras container TODO / fix
 	Grid2:RegisterIndicator(indicator, { "icon" })
 	return indicator
