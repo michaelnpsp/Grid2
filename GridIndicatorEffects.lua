@@ -197,7 +197,7 @@ do
 	-- Warning indicators that replace the Update method (like icons or multibar) cannot use these effects
 	-- so never add a GetBlinkFrame method to an indicator that overrides the default Update method.
 	function indicatorPrototype:UpdateHighlight(status)
-		if self.GetBlinkFrame and (status==nil or ( self.highlightType==nil and (self.dbx.highlightAlways or (status.dbx and status.dbx.blinkThreshold)) ) ) then
+		if self.GetBlinkFrame and not self.auraMode and (status==nil or ( self.highlightType==nil and (self.dbx.highlightAlways or (status.dbx and status.dbx.blinkThreshold)) ) ) then
 			local typ = self.dbx.highlightType or -2 -- blink by default
 			self.highlightType = typ
 			self.Update = updateFunctions[typ](self)

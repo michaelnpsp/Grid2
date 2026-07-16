@@ -107,14 +107,14 @@ function indicator:Update(parent, unit)
 	self:OnUpdate(parent, unit, self:GetCurrentStatus(unit, parent) )
 end
 
-function indicator:UpdateDB()
-end
+indicator.UpdateDB = Grid2.Dummy
 
 function indicator:RegisterStatus(status, priority)
 	if not self.priorities[status] and not status.suspended then
 		self.statuses[#self.statuses + 1] = status
 		self.priorities[status] = priority
 		self:SortStatuses()
+		self:StatusChanged(status, priority)
 		self:UpdateHighlight(status)
 	end
 	status:RegisterIndicator( self, priority, Grid2.suspendedIndicators[self.name] )
@@ -125,8 +125,24 @@ function indicator:UnregisterStatus(status, suspend)
 		self.priorities[status] = nil
 		tremove(self.statuses, self:GetStatusIndex(status))
 		self:SortStatuses()
+		self:StatusChanged(status, nil, suspend)
 	end
 	status:UnregisterIndicator(self, suspend)
+end
+
+function indicator.StatusChanged(self, status, suspend)
+	if self.SetAuraMode then
+		local status = self.statuses[1]
+		local auraMode = status and status.GetAurasFilter~=nil or nil
+		if auraMode~=self.auraMode then
+			self.auraMode = auraMode
+			self:SetAuraMode(auraMode)
+			if status then
+				self:UpdateFilter()
+				self:UpdateHighlight(status)
+			end
+		end
+	end
 end
 
 function indicator:GetStatusIndex(status)

@@ -33,7 +33,7 @@ function indicatorPrototype:UpdateFilter()
 	    self.UpdateF = nil
 	elseif not self.parentName and self.load then
 		self.Update = MakeUpdateFunction(self)
-		self.UpdateF = self.Update
+		self.UpdateF = self.Update -- used in GridIndicatorEffects.lua
 	else
 		self.Update = indicatorPrototype.Update
 	    self.UpdateF = nil

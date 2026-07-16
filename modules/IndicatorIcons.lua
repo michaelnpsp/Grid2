@@ -29,10 +29,10 @@ local function Icon_DisableIconContainer(f)
 end
 
 local function Icon_DisableAuraContainer(f)
-	f.myUnit = nil
 	f.auraContainer:SetEnabled(false)
 	f.auraContainer:SetShown(false)
 	f.auraContainer = nil
+	f.myUnit = nil
 end
 
 -------------------------------------------------------------
@@ -650,33 +650,26 @@ local function Icon_UpdateDB(self)
 	self.groupLayout = { elementSpacingX = self.iconSpacing, elementSpacingY = self.iconSpacing, gapX = 0, gapY = 0, forceNewRow = false }
 end
 
-local function Icon_Update(self, parent, unit)
-	local status = self.statuses[1]
-	if status and status.GetAurasFilter then
-		Icon_UpdateB(self, parent, unit)
+local function Icon_SetAuraMode(self, auraMode)
+	if auraMode then
+		self.UpdateO = Icon_UpdateB
+		self.Layout = Icon_LayoutB
 	else
-		Icon_UpdateA(self, parent, unit)
-	end
-end
-
-local function Icon_Layout(self, parent)
-	local status = self.statuses[1]
-	if status and status.GetAurasFilter then
-		Icon_LayoutB(self, parent)
-	else
-		Icon_LayoutA(self, parent)
+		self.UpdateO = Icon_UpdateA
+		self.Layout = Icon_LayoutA
 	end
 end
 
 Grid2.setupFunc["icons"] = function(indicatorKey, dbx)
 	local indicator = Grid2.indicatorPrototype:new(indicatorKey)
 	indicator.dbx       = dbx
+	indicator.GetMouseOverStatus = Icon_GetMouseOverStatus
 	indicator.Create    = Icon_Create
-	indicator.Layout    = Icon_Layout
 	indicator.Disable   = Icon_Disable
 	indicator.UpdateDB  = Icon_UpdateDB
-	indicator.UpdateO   = Icon_Update -- special case used by multibar and icons indicator
-	indicator.GetMouseOverStatus = Icon_GetMouseOverStatus
+	indicator.Layout    = Icon_LayoutA
+	indicator.UpdateO   = Icon_UpdateA -- special case used by multibar and icons indicator
+	indicator.SetAuraMode = Icon_SetAuraMode
 	EnableDelayedUpdates()
 	Grid2:RegisterIndicator(indicator, { "icon", "icons" })
 	return indicator
