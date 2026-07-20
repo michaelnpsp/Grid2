@@ -71,7 +71,12 @@ end
 
 local function Square_OnUpdate(self, parent, unit, status, state, secret, invert)
 	local Square = parent[self.name]
-	if not Square.iconContainer then return; end
+	if Square.auraContainer then
+		Square.auraContainer:UpdateAllAuras()
+	end
+	if not Square.iconContainer then
+		return
+	end
 	if status then
 		Square:SetBackdropColor(status:GetColor(unit))
 		SetAlphaFromBoolean(Square, state, 1, 0, secret, invert)
@@ -82,7 +87,12 @@ end
 
 local function Square_OnUpdateBorder(self, parent, unit, status, state, secret, invert)
 	local Square = parent[self.name]
-	if not Square.iconContainer then return; end
+	if Square.auraContainer then
+		Square.auraContainer:UpdateAllAuras()
+	end
+	if not Square.iconContainer then
+		return
+	end
 	if status then
 		Square:SetBackdropBorderColor(status:GetColor(unit))
 		SetAlphaFromBoolean(Square, state, 1, 0, secret, invert)

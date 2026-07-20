@@ -187,7 +187,10 @@ end
 -- Warning: This is an overrided indicator:Update() NOT the standard indicator:OnUpdate()
 local function Icon_Update(self, parent, unit)
 	local f = parent[self.name]
-	if f and f.auraContainer==nil then
+	if not f then return end
+	if f.auraContainer then
+		f.auraContainer:UpdateAllAuras()
+	else
 		if not next(updates) then
 			updateFrame:Show()
 		end

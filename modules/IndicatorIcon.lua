@@ -205,8 +205,16 @@ end
 
 local function Icon_OnUpdate(self, parent, unit, status)
 	local Frame = parent[self.name]
-	if not Frame.iconContainer then return; end
-	if not status then Frame:Hide(); return; end
+	if Frame.auraContainer then
+		Frame.auraContainer:UpdateAllAuras()
+	end
+	if not Frame.iconContainer then
+		return
+	end
+	if not status then
+		Frame:Hide()
+		return
+	end
 	local Icon = Frame.Icon
 	Icon:SetTexCoord(status:GetTexCoord(unit))
 	Icon:SetVertexColor(status:GetVertexColor(unit))
