@@ -437,11 +437,12 @@ function Grid2Options:MakeStatusAuraListOptions(status, options)
 	return options
 end
 
-
 function Grid2Options:MakeStatusAuraFilterOptions(status, options)
-	local bsingle  = status.dbx.type=='mbuff'
-	local default = status.dbx.type=='mdebuffs' and 'HARMFUL' or 'HELPFUL'
-	local filters = Filters[status.dbx.type]
+	local stype = status.dbx.type
+	local bsingle = stype=='mbuff'
+	local fwidth = not bsingle and "full" or nil
+	local default = stype=='mdebuffs' and 'HARMFUL' or 'HELPFUL'
+	local filters = Filters[stype]
 	options.header_filter = { type = "header", order = 99, name = "Auras to Display" }
 	options.select_filter = {
 		type = "select",
@@ -468,12 +469,13 @@ function Grid2Options:MakeStatusAuraFilterOptions(status, options)
 		options['mfilter'..i] = {
 			type = "toggle",
 			order = i+100,
-			width = "full",
+			width = fwidth,
 			name = AuraFilters[filter] or "Unknow:".. filter,
 			desc = L["Click to remove this filter"],
 			get = function() return true end,
 			set = (not bsingle) and function() mfilter_set_disabled(status, filter, default) end or nil,
-			hidden= function() return not mfilter_is_enabled(status,filter) end
+			hidden= function() return not mfilter_is_enabled(status,filter) end,
+			disabled = bsingle or nil,
 		}
 	end
 end
@@ -481,7 +483,7 @@ end
 -- Grid2Options:MakeMidnightBuffsOptions(NewBuffsOptions.arg, NewBuffsOptions)
 
 Grid2Options:RegisterStatusOptions("mbuff", "buff", function(self, status, options, optionParams)
-	make_color_option(status, options, "color1", 10, L["Color"], "half")
+	make_color_option(status, options, "color1", 100.1, L["Color"], "half")
 	self:MakeStatusAuraFilterOptions(status, options)
 	self:MakeStatusAuraListOptions(status, options)
 end,{
@@ -490,7 +492,7 @@ end,{
 })
 
 Grid2Options:RegisterStatusOptions("mbuffs", "buff", function(self, status, options, optionParams)
-	make_color_option(status, options, "color1", 10, L["Color"], "half")
+	make_color_option(status, options, "color1", 90, L["Color"], "half")
 	self:MakeStatusAuraFilterOptions(status, options)
 	self:MakeStatusAuraMiscOptions(status, options)
 	self:MakeStatusAuraListOptions(status, options)

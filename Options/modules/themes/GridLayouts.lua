@@ -81,7 +81,11 @@ do
 	end
 
 	function Grid2Options:SetLayoutTestMode(enabled)
-		if enabled == nil then enabled = not Grid2.testMaxPlayers end
+		if enabled == nil then
+			enabled = not Grid2.testMaxPlayers
+		elseif not enabled == not Grid2.testMaxPlayers then
+			return
+		end
 		Grid2Layout:SetTestMode( enabled, Grid2.currentTheme or 0, Grid2Layout.layoutName, math.max(select(3,Grid2:GetGroupType()),5) )
 		SetTexts(Grid2Layout, enabled)
 	end

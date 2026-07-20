@@ -16,7 +16,18 @@ local function Square_GetAurasFilter(self)
 	end
 end
 
+local function Square_DisableAuraContainer(self, parent)
+	local f = parent[self.name]
+	if not f.auraContainer then return end
+	f.auraContainer:SetEnabled(false)
+	f.auraContainer:SetShown(false)
+	f.auraContainer:SetParent(nil)
+	f.auraContainer = nil
+	f.myUnit = nil
+end
+
 local function Square_LayoutAura(self, parent)
+	Square_DisableAuraContainer(self, parent)
 	local status, aura_filter = Square_GetAurasFilter(self)
 	if not aura_filter then return end
 	local auraContainer = CreateFrame("AuraContainer", nil, parent, "CustomAuraContainerTemplate")
@@ -48,16 +59,6 @@ local function Square_OnUnitChanged(self, parent, unit)
 	if unit then f.auraContainer:SetUnit(unit) end
 	f.auraContainer:SetShown(unit~=nil)
 	f.auraContainer:SetEnabled(unit~=nil)
-end
-
-local function Square_DisableAuraContainer(self, parent)
-	local f = parent[self.name]
-	if not f.auraContainer then return end
-	f.auraContainer:SetEnabled(false)
-	f.auraContainer:SetShown(false)
-	f.auraContainer:SetParent(nil)
-	f.auraContainer = nil
-	f.myUnit = nil
 end
 
 --==============================================================

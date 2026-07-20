@@ -517,25 +517,40 @@ end
 -- 	"Create" > Recreate the indicator
 --  "Update"|nil > Update all indicators in all registered frame units
 --  key > method defined inside indicator to be executed
-function Grid2Options:RefreshIndicator(indicator, method)
-	self:UpdateIndicatorDB(indicator)
-	if method then
-		if method == "Create" then
-			for _,f in next, Grid2Frame.registeredFrames do
-				if indicator:GetFrame(f) then
-					indicator:Disable(f)
-					indicator:Create(f)
-					indicator:Layout(f)
+do
+	local qtime, qindicator, qmethod
+	function Grid2Options:RefreshIndicatorNow(indicator, method)
+		self:UpdateIndicatorDB(indicator)
+		if method then
+			if method == "Create" then
+				for _,f in next, Grid2Frame.registeredFrames do
+					if indicator:GetFrame(f) then
+						indicator:Disable(f)
+						indicator:Create(f)
+						indicator:Layout(f)
+					end
 				end
+			elseif method == 'Layout' then
+				indicator:LayoutAllFrames()
+			elseif method ~= 'Update' then
+				Grid2Frame:WithAllFrames(indicator, method)
 			end
-		elseif method == 'Layout' then
-			indicator:LayoutAllFrames()
-		elseif method ~= 'Update' then
-			Grid2Frame:WithAllFrames(indicator, method)
 		end
+		self:UpdateIndicator(indicator)
 	end
-	self:UpdateIndicator(indicator)
+	function Grid2Options:RefreshIndicator(indicator, method)
+		if qtime then qtime = GetTime()+.2; return end
+		qtime, qindicator, qmethod = GetTime()+.2, indicator, method
+		C_Timer.NewTicker(.2, function(timer)
+			if GetTime()>=qtime then
+				timer:Cancel()
+				self:RefreshIndicatorNow(qindicator,qmethod)
+				qtime, qindicator, qmethod = nil, nil, nil
+			end
+		end)
+	end
 end
+
 
 -- Refresh indicators linked to the specified status
 function Grid2Options:RefreshStatusIndicators(status, method)
@@ -573,7 +588,9 @@ end
 -- Update one indicator
 function Grid2Options:UpdateIndicator(indicator)
 	for frame in next, Grid2Frame.activatedFrames do
-		if frame.unit then
+		local unit = frame.unit
+		if unit then
+			indicator:OnUnitChanged(frame, unit)
 			indicator:Update(frame, unit)
 		end
 	end

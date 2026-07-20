@@ -339,6 +339,7 @@ local function Icon_OnUnitChanged(self, parent, unit)
 end
 
 local function Icon_LayoutAura(self, parent)
+	Icon_DisableAuraContainer(self, parent)
 	local aura_filter = Icon_GetAurasFilter(self)
 	if not aura_filter then return end
 	local auraContainer = CreateFrame("AuraContainer", nil, parent, "CustomAuraContainerTemplate")
