@@ -32,6 +32,7 @@ Libs\LibCustomGlow-1.0\LibCustomGlow-1.0.lua
 #Locales
 locales.xml
 
+GridBackdrop.xml
 GridGroupHeaders.xml
 
 # Grid2

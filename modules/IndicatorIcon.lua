@@ -355,6 +355,7 @@ local function Icon_LayoutAura(self, parent)
 		sortMethod = aura_filter.sortRule or 0,
 		sortDirection = aura_filter.sortDir or 0,
 		candidateFilters = aura_filter.candidateFilters,
+		-- templateNames = { "Grid2BackdropTemplate" },
 		initializeFrame = function(button)
 			local level = parent:GetFrameLevel() + self.frameLevel
 			local size = self.iconSize
