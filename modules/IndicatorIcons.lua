@@ -29,6 +29,7 @@ local function Icon_DisableIconContainer(f)
 end
 
 local function Icon_DisableAuraContainer(f)
+	f.auraContainer:SetParent(nil)
 	f.auraContainer:SetEnabled(false)
 	f.auraContainer:SetShown(false)
 	f.auraContainer = nil
@@ -184,9 +185,9 @@ local EnableDelayedUpdates = function()
 end
 
 -- Warning: This is an overrided indicator:Update() NOT the standard indicator:OnUpdate()
-local function Icon_UpdateA(self, parent, unit)
+local function Icon_Update(self, parent, unit)
 	local f = parent[self.name]
-	if f then
+	if f and f.auraContainer==nil then
 		if not next(updates) then
 			updateFrame:Show()
 		end
@@ -467,14 +468,14 @@ local function Icon_SetupButtonB(self, parent, auraContainer, frame)
 	frame.icon:SetTexCoord( Grid2.statusPrototype.GetTexCoord() )
 end
 
-local function Icon_UpdateB(self, parent, unit) -- Warning: This is an overrided indicator:Update() NOT the standard indicator:OnUpdate()
+local function Icon_OnUnitChanged(self, parent, unit)
 	local f = parent[self.name]
-	if not f then return end
+	if not (f and f.auraContainer) then return end
 	local unit = parent.unit
 	if unit==f.myUnit then return end
 	f.myUnit = unit
+	if unit then f.auraContainer:SetUnit(unit) end
 	f.auraContainer:SetShown(unit~=nil)
-	f.auraContainer:SetUnit(unit)
 	f.auraContainer:SetEnabled(unit~=nil)
 end
 
@@ -653,13 +654,11 @@ local function Icon_UpdateDB(self)
 	self.groupLayout = { elementSpacingX = self.iconSpacing, elementSpacingY = self.iconSpacing, gapX = 0, gapY = 0, forceNewRow = false }
 end
 
-local function Icon_SetAuraMode(self, auraMode)
-	if auraMode then
-		self.UpdateO = Icon_UpdateB
-		self.Layout = Icon_LayoutB
+local function Icon_Layout(self, parent)
+	if self.auraMode then
+		Icon_LayoutB(self, parent)
 	else
-		self.UpdateO = Icon_UpdateA
-		self.Layout = Icon_LayoutA
+		Icon_LayoutA(self, parent)
 	end
 end
 
@@ -670,9 +669,9 @@ Grid2.setupFunc["icons"] = function(indicatorKey, dbx)
 	indicator.Create    = Icon_Create
 	indicator.Disable   = Icon_Disable
 	indicator.UpdateDB  = Icon_UpdateDB
-	indicator.Layout    = Icon_LayoutA
-	indicator.UpdateO   = Icon_UpdateA -- special case used by multibar and icons indicator
-	indicator.SetAuraMode = Icon_SetAuraMode
+	indicator.Layout    = Icon_Layout
+	indicator.UpdateO   = Icon_Update -- special case used by multibar and icons indicator
+	indicator.OnUnitChanged = Icon_OnUnitChanged
 	EnableDelayedUpdates()
 	Grid2:RegisterIndicator(indicator, { "icon", "icons" })
 	return indicator

@@ -26,6 +26,8 @@ indicator.__index = indicator
 
 indicator.EnableTooltips = Grid2.Dummy
 indicator.DisableTooltips = Grid2.Dummy
+indicator.UpdateDB = Grid2.Dummy
+indicator.OnUnitChanged = Grid2.Dummy
 
 function indicator:new(name)
 	local e = setmetatable({}, self)
@@ -107,14 +109,11 @@ function indicator:Update(parent, unit)
 	self:OnUpdate(parent, unit, self:GetCurrentStatus(unit, parent) )
 end
 
-indicator.UpdateDB = Grid2.Dummy
-
 function indicator:RegisterStatus(status, priority)
 	if not self.priorities[status] and not status.suspended then
 		self.statuses[#self.statuses + 1] = status
 		self.priorities[status] = priority
 		self:SortStatuses()
-		self:StatusChanged(status, priority)
 		self:UpdateHighlight(status)
 	end
 	status:RegisterIndicator( self, priority, Grid2.suspendedIndicators[self.name] )
@@ -125,24 +124,20 @@ function indicator:UnregisterStatus(status, suspend)
 		self.priorities[status] = nil
 		tremove(self.statuses, self:GetStatusIndex(status))
 		self:SortStatuses()
-		self:StatusChanged(status, nil, suspend)
 	end
 	status:UnregisterIndicator(self, suspend)
 end
 
-function indicator.StatusChanged(self, status, suspend)
-	if self.SetAuraMode then
-		local status = self.statuses[1]
-		local auraMode = status and status.GetAurasFilter~=nil or nil
-		if auraMode~=self.auraMode then
-			self.auraMode = auraMode
-			self:SetAuraMode(auraMode)
-			if status then
-				self:UpdateFilter()
-				self:UpdateHighlight(status)
-			end
-		end
+function indicator.StatusChanged(self, status, priority)
+	if status.GetAurasFilter then
+		self.auraMode = (self.auraMode or 0) + (priority and 1 or -1)
+		if self.auraMode==0 then self.auraMode = nil end
+	else
+		self.iconMode = (self.iconMode or 0) + (priority and 1 or -1)
+		if self.iconMode==0 then self.iconMode = nil end
 	end
+	-- self:UpdateFilter()
+	-- self:UpdateHighlight(status)
 end
 
 function indicator:GetStatusIndex(status)

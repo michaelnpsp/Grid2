@@ -116,6 +116,7 @@ function status:RegisterIndicator(indicator, priority, suspended)
 				self:OnEnable()
 				self:EnableLoad()
 			end
+			indicator:StatusChanged(self, priority)
 		end
 	end
 end
@@ -134,6 +135,7 @@ function status:UnregisterIndicator(indicator, suspended)
 			self:DisableLoad()
 			self:OnDisable()
 		end
+		indicator:StatusChanged(self)
 	end
 end
 

@@ -48,19 +48,14 @@ end
 function Grid2:UpdateFramesOfUnit(unit)
 	for frame in next, frames_of_unit[unit] do
 		local old, new = frame.unit, SecureButton_GetModifiedUnit(frame)
-		if old ~= new then
+		local changed = old ~= new
+		if changed then
 			Grid2:SetFrameUnit(frame, new)
 		end
-		frame:UpdateIndicators()
+		frame:UpdateIndicators(changed)
 	end
 end
 
-function Grid2:RefreshFramesOfUnit(unit)
-	Grid2:RosterRegisterUnit(unit)
-	for frame in next, frames_of_unit[unit] do
-		frame:UpdateIndicators()
-	end
-end
 --}}}
 
 -- {{ Precalculated backdrop table, shared by all frames
@@ -86,11 +81,12 @@ function GridFrameEvents:OnAttributeChanged(name, value)
 			if old_unit ~= unit then
 				Grid2Frame:Debug("updated", self:GetName(), name, value, unit, '<=', old_unit)
 				Grid2:SetFrameUnit(self, unit)
-				self:UpdateIndicators()
+				self:UpdateIndicators(true)
 			end
 		elseif old_unit then
 			Grid2Frame:Debug("removed", self:GetName(), name, old_unit)
 			Grid2:SetFrameUnit(self, nil)
+			self:NotifyIndicatorsUnitChanged(nil)
 		end
 	end
 end
@@ -186,11 +182,22 @@ function GridFramePrototype:Layout()
 	end
 end
 
-function GridFramePrototype:UpdateIndicators()
+function GridFramePrototype:NotifyIndicatorsUnitChanged()
+	local unit = self.unit
+	local indicators = Grid2:GetIndicatorsEnabled()
+	for i=1,#indicators do
+		indicators[i]:OnUnitChanged(self, unit)
+	end
+end
+
+function GridFramePrototype:UpdateIndicators(unitChanged)
 	local unit = self.unit
 	if unit then
 		local indicators = Grid2:GetIndicatorsEnabled()
 		for i=1,#indicators do
+			if unitChanged then
+				indicators[i]:OnUnitChanged(self, unit)
+			end
 			indicators[i]:Update(self, unit)
 		end
 	end
@@ -259,10 +266,6 @@ end
 
 function Grid2Frame:OnModuleEnable()
 	self.mouseClickType = Grid2.db.global.clickOnMouseDown and "AnyDown" or "AnyUp"
-	if Grid2.versionCli>=30000 then
-		self:RegisterEvent("UNIT_ENTERED_VEHICLE")
-		self:RegisterEvent("UNIT_EXITED_VEHICLE")
-	end
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateFrameUnits")
 	self:CreateIndicators()
 	self:RefreshIndicators()
@@ -272,10 +275,6 @@ function Grid2Frame:OnModuleEnable()
 end
 
 function Grid2Frame:OnModuleDisable()
-	if Grid2.versionCli>=30000 then
-		self:UnregisterEvent("UNIT_ENTERED_VEHICLE")
-		self:UnregisterEvent("UNIT_EXITED_VEHICLE")
-	end
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 end
 
@@ -388,42 +387,10 @@ function Grid2Frame:UpdateFrameUnits()
 		local unit = SecureButton_GetModifiedUnit(frame)
 		if old_unit ~= unit then
 			Grid2:SetFrameUnit(frame, unit)
-			frame:UpdateIndicators()
+			frame:UpdateIndicators(true)
 		end
 	end
 end
-
---[[
--- Removed this workaround because due to secret pets guids grid2 can crash
--- and maybe blizzard fixed the bug time ago and this code is not needed anymore.
--- From new tests in Ulduar it looks like now securegroupheaders are updating
--- correctly the unit frames, but my tests were very limited.
--- If users complain that vehicles are not updated correctly in raid frames maybe
--- i should reactivate this workaround, adding a pet guid secret check.
---
--- Manage togleForVehicle owners/pets swap
--- this event is fired when the vehicle pet unit does not exist yet, so we have to use a timer
--- to delay frame updates if pet unit does not exist or exists but does not represent a vehicle yet.
-function Grid2Frame:UNIT_ENTERED_VEHICLE(event, unit)
-	if unit then
-		for frame in next, frames_of_unit[unit] do
-			local old, new = frame.unit, SecureButton_GetModifiedUnit(frame)
-			print("Enter vehicle", event, unit, old, new, UnitExists(new))
-			if old ~= new then
-				Grid2:SetFrameUnit(frame, new)
-				if UnitExists(new) and (event==nil or strfind(UnitGUID(new),'^Vehicle')) then -- new is a player or is a vehicle pet
-					frame:UpdateIndicators()
-				else -- only for pets: pet unit does not exist or exists but is not a vehicle yet
-					C_Timer_After( 1.5, function() Grid2:RefreshFramesOfUnit(new) end )
-				end
-			end
-		end
-		self:UNIT_ENTERED_VEHICLE( nil, pet_of_unit[unit] ) -- event==nil => unit is a pet
-	end
-end
---]]
-Grid2Frame.UNIT_ENTERED_VEHICLE = Grid2.Dummy
-Grid2Frame.UNIT_EXITED_VEHICLE = Grid2Frame.UNIT_ENTERED_VEHICLE
 
 --}}}
 

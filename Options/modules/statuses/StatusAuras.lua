@@ -341,7 +341,6 @@ end
 --==============================================
 
 function Grid2Options:MakeStatusAuraMiscOptions(status, options)
-	-- make_color_option(status, options, "color1", 10, L["Color"], "half")
 	options.max_auras = {
 		type = "select",
 		order = 20,
@@ -482,6 +481,7 @@ end
 -- Grid2Options:MakeMidnightBuffsOptions(NewBuffsOptions.arg, NewBuffsOptions)
 
 Grid2Options:RegisterStatusOptions("mbuff", "buff", function(self, status, options, optionParams)
+	make_color_option(status, options, "color1", 10, L["Color"], "half")
 	self:MakeStatusAuraFilterOptions(status, options)
 	self:MakeStatusAuraListOptions(status, options)
 end,{
@@ -490,6 +490,7 @@ end,{
 })
 
 Grid2Options:RegisterStatusOptions("mbuffs", "buff", function(self, status, options, optionParams)
+	make_color_option(status, options, "color1", 10, L["Color"], "half")
 	self:MakeStatusAuraFilterOptions(status, options)
 	self:MakeStatusAuraMiscOptions(status, options)
 	self:MakeStatusAuraListOptions(status, options)

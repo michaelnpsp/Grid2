@@ -48,7 +48,7 @@ local function Auras_UpdateDB(self)
 	local dbx = self.dbx
 	local typ = dbx.type
 	-- color
-	local r,g,b,a = Grid2:UnpackColor(dbx.color1 or Grid2.defaultColors.BLACK)
+	local r, g, b, a = Grid2.UnpackColor( dbx.color1 or Grid2.defaultColors.BLACK )
 	self.GetColor = function() return r, g, b, a end
 	-- aura filter
 	local filter = CopyTable( self.defaults, CopyTable(dbx.aura_filter or {}) )

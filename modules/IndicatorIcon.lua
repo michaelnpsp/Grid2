@@ -27,7 +27,7 @@ local function Icon_Create(self, parent)
 end
 
 local function Icon_ButtonCreate(self, parent, f, auraContainer)
-	local Icon = f.Icon or f:CreateTexture(nil, "ARTWORK")
+	local Icon = f.Icon or f:CreateTexture(nil, "BACKGROUND")
 	f.Icon = Icon
 	Icon:SetTexCoord(0.05, 0.95, 0.05, 0.95)
 	Icon:ClearAllPoints()
@@ -39,7 +39,6 @@ local function Icon_ButtonCreate(self, parent, f, auraContainer)
 		Cooldown:SetDrawEdge(not not self.dbx.drawEdge)
 		Cooldown:SetReverse(not not self.dbx.reverseCooldown)
 		Cooldown:SetDrawSwipe(self.showSwipe)
-		--Cooldown:SetSwipeColor(0, 0, 0, 0.58)
 		Cooldown:SetHideCountdownNumbers(not self.showCoolText)
 		Cooldown:SetAllPoints()
 		Cooldown:Show()
@@ -47,7 +46,7 @@ local function Icon_ButtonCreate(self, parent, f, auraContainer)
 		f.Cooldown = Cooldown
 		if self.showCoolText then
 			f.coolText = Cooldown:GetCountdownFontString()
-			if auraContainer then f:SetDurationText(f.coolText) end
+			if auraContainer then f:SetDurationText(f.coolText, self.ctOptions) end
 		end
 	end
 	if not self.disableStack then
@@ -109,8 +108,6 @@ local function Icon_ButtonLayout(self, parent, f, auraContainer, size, level)
 	local Icon = f.Icon
 	local borderSize = self.borderSize
 	if auraContainer then -- 12.1+ aura container
-		f:SetAllPoints()
-		f:SetAlpha(1)
 		if borderSize then
 			Icon:SetPoint("TOPLEFT", borderSize, -borderSize)
 			Icon:SetPoint("BOTTOMRIGHT", -borderSize, borderSize)
@@ -176,34 +173,16 @@ local function Icon_ButtonLayout(self, parent, f, auraContainer, size, level)
 	end
 end
 
-local function Icon_LayoutShared(self, parent, f)
+local function Icon_DisableIconContainer(self, parent)
 	local f = parent[self.name]
-	local level = parent:GetFrameLevel() + self.frameLevel
-	f:SetParent(parent)
-	f:ClearAllPoints()
-	f:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
-	f:SetFrameLevel(level)
-	local size = self.iconSize
-	if size<=1 then
-		size = size * parent:GetHeight()
+	if f.iconContainer then
+		f:Hide()
+		f.iconContainer = nil
 	end
-	f:SetSize(size,size)
-	f:Show()
-	return size, level
 end
 
-local function Icon_DisableIconContainer(f)
-	if f.auraContainer then return end
-	local function Hide(f)
-		if f then f:Hide() end
-	end
-	Hide(f.Icon)
-	Hide(f.Cooldown)
-	Hide(f.stackText)
-	Hide(f.coolBar)
-end
-
-local function Icon_DisableAuraContainer(f)
+local function Icon_DisableAuraContainer(self, parent)
+	local f = parent[self.name]
 	if not f.auraContainer then return end
 	f.auraContainer:SetEnabled(false)
 	f.auraContainer:SetShown(false)
@@ -212,13 +191,21 @@ local function Icon_DisableAuraContainer(f)
 	f.myUnit = nil
 end
 
+local function Icon_GetAurasFilter(self)
+	for _,status in ipairs(self.statuses) do
+		if status.GetAurasFilter then
+			return status:GetAurasFilter()
+		end
+	end
+end
+
 -------------------------------------------------------------
 -- standard non-secret statuses
 -------------------------------------------------------------
 
 local function Icon_OnUpdate(self, parent, unit, status)
 	local Frame = parent[self.name]
-	if Frame.auraContainer then return; end
+	if not Frame.iconContainer then return; end
 	if not status then Frame:Hide(); return; end
 	local Icon = Frame.Icon
 	Icon:SetTexCoord(status:GetTexCoord(unit))
@@ -320,64 +307,75 @@ local function Icon_OnUpdate(self, parent, unit, status)
 	Frame:Show()
 end
 
-local function Icon_Layout(self, parent)
+local function Icon_LayoutIcon(self, parent)
 	local f = parent[self.name]
-	Icon_DisableAuraContainer(f)
-	local size, level = Icon_LayoutShared(self, parent, f)
-	Icon_ButtonCreate(self, parent, f, nil, size, level)
+	local level = parent:GetFrameLevel() + self.frameLevel
+	local size = self.iconSize
+	if size<=1 then size = size * parent:GetHeight() end
+	f:SetParent(parent)
+	f:ClearAllPoints()
+	f:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
+	f:SetFrameLevel(level)
+	f:SetSize(size,size)
+	f:Show()
+	Icon_ButtonCreate(self, parent, f)
 	Icon_ButtonLayout(self, parent, f, nil, size, level)
+	f.iconContainer = f
 end
 
 -------------------------------------------------------------
 -- 12.1+ aura containers
 -------------------------------------------------------------
 
-local function Icon_UpdateAura(self, parent, unit)
+local function Icon_OnUnitChanged(self, parent, unit)
 	local f = parent[self.name]
 	if not (f and f.auraContainer) then return end
 	local unit = parent.unit
 	if unit==f.myUnit then return end
 	f.myUnit = unit
+	if unit then f.auraContainer:SetUnit(unit) end
 	f.auraContainer:SetShown(unit~=nil)
-	f.auraContainer:SetUnit(unit)
 	f.auraContainer:SetEnabled(unit~=nil)
 end
 
 local function Icon_LayoutAura(self, parent)
-	local f = parent[self.name]
-	Icon_DisableIconContainer(f)
-	Icon_DisableAuraContainer(f)
-	local size, level = Icon_LayoutShared(self, parent, f)
-	local auraContainer = CreateFrame("AuraContainer", nil, f, "CustomAuraContainerTemplate")
-	f.auraContainer = auraContainer
-	auraContainer:ClearAllPoints()
-	auraContainer:SetAllPoints()
-	local aura_filter = self.statuses[1]:GetAurasFilter()
+	local aura_filter = Icon_GetAurasFilter(self)
+	if not aura_filter then return end
+	local auraContainer = CreateFrame("AuraContainer", nil, parent, "CustomAuraContainerTemplate")
 	auraContainer:AddAuraSlot( "1", aura_filter.filter, {
 		sortMethod = aura_filter.sortRule or 0,
 		sortDirection = aura_filter.sortDir or 0,
 		candidateFilters = aura_filter.candidateFilters,
 		initializeFrame = function(button)
-			auraContainer._button = button
+			local level = parent:GetFrameLevel() + self.frameLevel
+			local size = self.iconSize
+			if size<=1 then size = size * parent:GetHeight() end
+			button:ClearAllPoints()
 			button:SetFrameLevel(level)
-			Icon_ButtonCreate(self, parent, button, auraContainer, size, level)
+			button:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
+			button:SetSize(size, size)
+			Icon_ButtonCreate(self, parent, button, auraContainer)
 			Icon_ButtonLayout(self, parent, button, auraContainer, size, level)
 		end
 	} )
 	auraContainer:Show()
+	parent[self.name].auraContainer = auraContainer
 end
 
 -------------------------------------------------------------
 -- shared
 -------------------------------------------------------------
 
-local function Icon_SetAuraMode(self, auraMode)
-	if auraMode then
-		self.Layout = Icon_LayoutAura
-		self.UpdateO = Icon_UpdateAura
+local function Icon_Layout(self, parent)
+	if self.auraMode then
+		Icon_LayoutAura(self, parent)
 	else
-		self.Layout = Icon_Layout
-		self.UpdateO = Grid2.indicatorPrototype.Update
+		Icon_DisableAuraContainer(self, parent)
+	end
+	if self.iconMode then
+		Icon_LayoutIcon(self, parent)
+	else
+		Icon_DisableIconContainer(self, parent)
 	end
 end
 
@@ -458,6 +456,7 @@ local function Icon_UpdateDB(self)
 			self.ctColorCurve:AddPoint(dbx.ctThresholds[i] or 0, color)
 		end
 	end
+	-- self.ctOptions = dbx.ctColors and { textColorCurve = self.ctColorCurve } or nil   -- TODO colorCurve is broken in PTR, uncoment once fixed
 	self.needDur = self.showColors or self.showCoolBar
 	-- backdrop
 	self.backdrop = Grid2:GetBackdropTable("Interface\\Addons\\Grid2\\media\\white16x16", self.borderSize or 1)
@@ -465,14 +464,14 @@ end
 
 local function CreateIcon(indicatorKey, dbx)
 	local indicator = Grid2.indicatorPrototype:new(indicatorKey)
-	indicator.dbx 		  = dbx
-	indicator.Create      = Icon_Create
-	indicator.Layout      = Icon_Layout
-	indicator.OnUpdate    = Icon_OnUpdate
-	indicator.Disable     = Icon_Disable
-	indicator.UpdateDB    = Icon_UpdateDB
-	indicator.SetAuraMode = Icon_SetAuraMode
-	-- indicator.GetBlinkFrame = indicator.GetFrame    -- NBot compatible with 12.1 auras container TODO / fix
+	indicator.dbx = dbx
+	indicator.Create = Icon_Create
+	indicator.Layout = Icon_Layout
+	indicator.Disable = Icon_Disable
+	indicator.UpdateDB = Icon_UpdateDB
+	indicator.OnUpdate = Icon_OnUpdate
+	indicator.OnUnitChanged = Icon_OnUnitChanged
+	-- indicator.GetBlinkFrame = indicator.GetFrame    -- Not compatible with 12.1 auras container TODO / fix
 	Grid2:RegisterIndicator(indicator, { "icon" })
 	return indicator
 end
