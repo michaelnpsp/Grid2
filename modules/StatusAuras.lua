@@ -10,13 +10,21 @@ local CopyTable = Grid2.CopyTable
 -------------------------------------------------------------------------------
 
 Grid2.DispelCurveDefaults = {
-	None    = { 0,  DEBUFF_TYPE_NONE_COLOR    },
+	['']    = { 0,  DEBUFF_TYPE_NONE_COLOR    },
 	Magic   = { 1,  DEBUFF_TYPE_MAGIC_COLOR   },
 	Curse   = { 2,  DEBUFF_TYPE_CURSE_COLOR   },
 	Disease = { 3,  DEBUFF_TYPE_DISEASE_COLOR },
 	Poison  = { 4,  DEBUFF_TYPE_POISON_COLOR  },
 	Enrage  = { 9,  DEBUFF_TYPE_BLEED_COLOR   },
 	Bleed   = { 11, DEBUFF_TYPE_BLEED_COLOR   },
+}
+
+Grid2.DispelBorderDefaults = {
+	showIcon = true,
+	showWhenHarmful = true,
+	showWhenHelpful = true,
+	showWithoutDispelType = true,
+	style = 1 -- Atlas = 0, Color = 1
 }
 
 -------------------------------------------------------------------------------
@@ -47,9 +55,6 @@ end
 local function Auras_UpdateDB(self)
 	local dbx = self.dbx
 	local typ = dbx.type
-	-- color
-	local r, g, b, a = Grid2.UnpackColor( dbx.color1 or Grid2.defaultColors.BLACK )
-	self.GetColor = function() return r, g, b, a end
 	-- aura filter
 	local filter = CopyTable( self.defaults, CopyTable(dbx.aura_filter or {}) )
 	--[[
@@ -74,6 +79,22 @@ local function Auras_UpdateDB(self)
 			filter.candidateFilters.includeSpellIDs = spells
 		end
 	end
+	-- aura type colors
+ 	local colorMap, defColor = {}
+	if dbx.color1 then -- single buff
+		defColor = dbx.color1 or Grid2.defaultColors.BLACK
+		colorMap[""] = defColor
+	else
+		local colors = dbx.colors
+		for typ, data in pairs(Grid2.DispelCurveDefaults) do
+			colorMap[typ] = (colors and colors[typ]) or data[2]
+		end
+		defColor = colorMap['']
+	end
+	filter.borderOptions = CopyTable( Grid2.DispelBorderDefaults, {customDispelColorMap = colorMap} )
+	-- default status color
+	local r, g, b, a = Grid2.UnpackColor(defColor)
+	self.GetColor = function() return r, g, b, a end
 	-- save filter table
 	self.aura_filter = filter
 end

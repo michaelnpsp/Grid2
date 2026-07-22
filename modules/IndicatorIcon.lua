@@ -11,13 +11,6 @@ local UpdateIconColorCurve = Grid2.UpdateIconColorCurve
 local RemoveIconColorCurve = Grid2.RemoveIconColorCurve
 local TruncateWhenZero = C_StringUtil.TruncateWhenZero
 
-local BORDER_SETTINGS = {
-	showIcon = true,
-	showWhenHarmful = true,
-	showWhenHelpful = true,
-	style = 1 -- Atlas = 0, Color = 1
-}
-
 -------------------------------------------------------------
 -- shared
 -------------------------------------------------------------
@@ -69,26 +62,22 @@ local function Icon_ButtonCreate(self, parent, f, auraContainer)
 		f.stackText = stackText
 		if auraContainer then f:SetApplicationCount(stackText, {}) end
 	end
-	if auraContainer then
-		-- dispel border
-		if self.useStatusColor then
+	if auraContainer then -- border
+		f:ClearAuraBorder()
+		if self.borderSize or self.useStatusColor then
 			local border = f.border or f:CreateTexture(nil, "BACKGROUND")
 			border:ClearAllPoints()
 			border:SetAllPoints()
 			border:SetColorTexture(1,1,1,1)
-			f:SetAuraBorder(border, BORDER_SETTINGS)
+			if self.useStatusColor then
+				f:SetAuraBorder(border, auraContainer.borderOptions)
+			else
+				border:SetColorTexture(UnpackColor(self.color))
+			end
 			border:Show()
 			f.border = border
-		end
-		 -- default border
-		if self.borderSize then
-			local borderBack = f.borderBack or f:CreateTexture(nil, "BACKGROUND", nil, -8)
-			borderBack:ClearAllPoints()
-			borderBack:SetAllPoints()
-			borderBack:SetColorTexture(UnpackColor(self.color))
-			borderBack:SetAlpha(1)
-			borderBack:Show()
-			f.borderBack = borderBack
+		elseif self.border then
+			border:Hide()
 		end
 	end
 	if self.showCoolBar then
@@ -311,6 +300,9 @@ local function Icon_LayoutAura(self, parent)
 		button:SetFrameLevel(level)
 		button:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
 		button:SetSize(size, size)
+
+		print(">>>", auraContainer.borderOptions)
+
 		Icon_ButtonCreate(self, parent, button, auraContainer)
 		Icon_ButtonLayout(self, parent, button, auraContainer, size, level)
 	end)

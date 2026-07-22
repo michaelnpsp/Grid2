@@ -320,7 +320,7 @@ local function make_colortype_option(status, options, key, order, defColor, para
 			hasAlpha = true,
 			width = params and params.width or 0.65,
 			order = order,
-			name = L[key],
+			name = L[params[key] or key],
 			get = function()
 				status.dbx.colors = status.dbx.colors or {}
 				local c = status.dbx.colors[key] or defColor
@@ -511,12 +511,12 @@ local function MakeDebuffTypesColorsOptions(status, options, optionParams)
 	options.debuff_types_header = {
 		type = "header",
 		order = order,
-		name = L["Debuff Type Colors"]
+		name = L["Colors"]
 	}
 	for typ,v in pairs(Grid2.DispelCurveDefaults) do
 		local idx, color = unpack(v)
 		if idx~=0 or not inone then
-			make_colortype_option(status, options, typ, idx==0 and order+15 or order+idx, color, optionParams)
+			make_colortype_option(status, options, typ, order+idx, color, optionParams)
 		end
 	end
 	options.dtype_reset_header = {
@@ -531,20 +531,55 @@ local function MakeDebuffTypesColorsOptions(status, options, optionParams)
 		width = "half",
 		name = L["Reset"],
 		desc = L["Reset colors to the default values."],
-		func = function () 	wipe(status.dbx.colors); refresh_aura_status(status) end,
+		func = function() status.dbx.colors = nil;  refresh_aura_status(status) end,
 		confirm = true,
 	}
+	return options
 end
 
 -- Grid2Options:MakeMidnightDebuffsOptions(NewDebuffsOptions.arg, NewDebuffsOptions)
 
-Grid2Options:RegisterStatusCategoryOptions("debuff", NewDebuffsOptions)
+-- Grid2Options:RegisterStatusCategoryOptions("debuff", NewDebuffsOptions)
 
+--[[
 Grid2Options:RegisterStatusOptions("mdebuffs", "debuff", function(self, status, options, optionParams)
+	MakeDebuffTypesColorsOptions( status, options, {width=.5, order=50} )
 	self:MakeStatusAuraFilterOptions(status, options)
 	self:MakeStatusAuraMiscOptions(status, options)
 end,{
 	groupOrder = 10, isDeletable = true,
+	titleIcon = "Interface\\Icons\\Spell_deathknight_strangulate",
+})
+--]]
+
+Grid2Options:RegisterStatusOptions("mdebuffs", "debuff", function(self, status, options, optionParams)
+	local function MakeGeneralOptions(status, options, optionParams)
+		self:MakeStatusAuraFilterOptions(status, options)
+		self:MakeStatusAuraMiscOptions(status, options)
+		return options
+	end
+	self:MakeStatusTitleOptions(status, options, optionParams)
+	options.settings   = {
+		type = "group", order = 10, name = L['General'],
+		args = MakeGeneralOptions(status, {}, optionParams),
+	}
+	options.colors = {
+		type = "group", order = 20, name = L["Colors"],
+		desc = L["Debuff Type colors."],
+		args = MakeDebuffTypesColorsOptions( status, {}, { width="normal", [''] = 'Default' } ),
+		-- hidden = function() return status.dbx.auras==nil end
+	}
+	options.load = {
+		type = "group", order = 30, name = L['Load'],
+		args = self:MakeStatusLoadOptions( status, {}, optionParams )
+	}
+	options.indicators = {
+		type = "group", order = 40, name = L['indicators'],
+		args = self:MakeStatusIndicatorsOptions(status,{}, optionParams)
+	}
+	return options
+end,{
+	groupOrder = 10, isDeletable = true, hideTitle = true,
 	titleIcon = "Interface\\Icons\\Spell_deathknight_strangulate",
 })
 
@@ -553,7 +588,7 @@ end,{
 --==============================================
 
 function Grid2Options:MakeMidnightDispellableByMeOptions(status, options)
-	-- MakeDebuffTypesColorsOptions( status, options, {width=.75, ignore_none=true} )
+	MakeDebuffTypesColorsOptions( status, options, {width=.75, ignore_none=true} )
 end
 
 Grid2Options:RegisterStatusOptions("mdebuffType", "debuff", function(self, status, options, optionParams)

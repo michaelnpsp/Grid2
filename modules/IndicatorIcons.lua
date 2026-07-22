@@ -335,14 +335,7 @@ end
 -- blizzard secret aura containers 12.1+
 -------------------------------------------------------------
 
-local BORDER_SETTINGS = {
-	showIcon = true,
-	showWhenHarmful = true,
-	showWhenHelpful = true,
-	style = 1 -- Atlas = 0, Color = 1
-}
-
-local function Icon_SetupButtonB(self, parent, auraContainer, frame)
+local function Icon_SetupButtonB(self, parent, auraContainer, frame, borderOptions)
 	-- frame button
 	local iconSize = self.iconSize>1 and self.iconSize or self.iconSize * parent:GetHeight()
 	frame:SetSize(iconSize, iconSize)
@@ -357,35 +350,24 @@ local function Icon_SetupButtonB(self, parent, auraContainer, frame)
 	-- frame border
 	local borderSize = self.borderSize
 	if borderSize>0 then
-		-- dispel border
-		if self.useStatusColor then
-			local border = frame.border
-			if not border then
-				border = frame:CreateTexture(nil, "OVERLAY")
-				frame.border = border
-			end
+		local border = frame.border
+		if not border then
+			border = frame:CreateTexture(nil, "OVERLAY")
 			border:ClearAllPoints()
 			border:SetAllPoints()
 			border:SetColorTexture(1,1,1,1)
-			border:SetAlpha(1)
-			frame:SetAuraBorder(border, BORDER_SETTINGS)
-		elseif frame.border then
-			frame:ClearAuraBorder(frame.border)
+			frame.border = border
 		end
-		-- default border
-		local borderBack = frame.borderBack
-		if not borderBack then
-			borderBack = frame:CreateTexture(nil, "BACKGROUND")
-			frame.borderBack = borderBack
+		if self.useStatusColor then -- dispel border
+			frame:SetAuraBorder(border, borderOptions)
+		else -- fixed border
+			frame:ClearAuraBorder()
+			border:SetColorTexture(UnpackColor(self.colorBorder))
 		end
-		borderBack:ClearAllPoints()
-		borderBack:SetAllPoints()
-		borderBack:SetColorTexture(UnpackColor(self.colorBorder))
-		borderBack:SetAlpha(1)
+		border:Show()
 	elseif frame.border then
 		frame:ClearAuraBorder(frame.border)
 		frame.border:Hide()
-		frame.borderBack:Hide()
 	end
 	-- stack count text
 	if self.showStack then
@@ -506,15 +488,15 @@ local function Icon_LayoutB(self, parent)
 	local buttons = auraContainer._buttons
 	for i, status in ipairs(self.statuses) do
 		if status.GetAurasFilter then
-			local key, aura_filter = tostring(i), status:GetAurasFilter()
-			auraContainer:AddAuraGroup( key, aura_filter.filter, {
-				maxFrameCount = math.min(self.maxIcons, aura_filter.maxAuras or 64),
-				sortMethod = aura_filter.sortRule or 0,
-				sortDirection = aura_filter.sortDir or 0,
-				candidateFilters = aura_filter.candidateFilters,
+			local key, filter = tostring(i), status:GetAurasFilter()
+			auraContainer:AddAuraGroup( key, filter.filter, {
+				maxFrameCount = math.min(self.maxIcons, filter.maxAuras or 64),
+				sortMethod = filter.sortRule or 0,
+				sortDirection = filter.sortDir or 0,
+				candidateFilters = filter.candidateFilters,
 				initializeFrame = function(button)
 					buttons[#buttons+1] = button
-					Icon_SetupButtonB(self, parent, auraContainer, button)
+					Icon_SetupButtonB(self, parent, auraContainer, button, filter.borderOptions)
 				end
 			} )
 			auraContainer:SetAuraGroupLayout(key, self.groupLayout)

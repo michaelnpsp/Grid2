@@ -9,13 +9,6 @@ local pairs = pairs
 local ipairs = ipairs
 local canaccessvalue = Grid2.canaccessvalue
 
-local BORDER_SETTINGS = {
-	showIcon = true,
-	showWhenHarmful = true,
-	showWhenHelpful = true,
-	style = 1 -- Atlas = 0, Color = 1
-}
-
 local POINTS = {
 	HORIZONTAL = { [true] = "LEFT",   [false] = "RIGHT" }, -- normal, reverse fill
 	VERTICAL   = { [true] = "BOTTOM", [false] = "TOP"   }, -- normal, reverse fill
@@ -91,6 +84,7 @@ end
 local function Bar_LayoutAuraColor(self, parent, f, level)
 	local color = self.sideKick
 	if color.auraMode then
+		local filter = color:GetStatusAurasFilter()
 		self:AcquireAuraContainerSlot(parent, function(button)
 			local tex = f.myCTextures and f.myCTextures[1]
 			if not tex then return end
@@ -105,9 +99,8 @@ local function Bar_LayoutAuraColor(self, parent, f, level)
 			atex:SetVertTile(setup.verWrap~='CLAMP')
 			atex:SetBlendMode('ADD')
 			atex:SetAllPoints(tex)
-			button:SetAuraBorder(atex, BORDER_SETTINGS)
-
-		end, color:GetStatusAurasFilter(), f)
+			button:SetAuraBorder(atex, filter.borderOptions)
+		end, filter, f)
 	elseif f.auraContainer then
 		self:ReleaseAuraContainer(parent, f)
 	end

@@ -303,11 +303,12 @@ function indicator:AcquireAuraContainerSlot(parent, initFunc, filter, frame)
 	if not filter then return end
 	local f = frame or parent[self.name]
 	if f.auraContainer then
-		auraContainer:SetEnabled(false)
-		auraContainer:SetShown(false)
-		auraContainer:SetParent(nil)
+		f.auraContainer:SetEnabled(false)
+		f.auraContainer:SetShown(false)
+		f.auraContainer:SetParent(nil)
 	end
 	local auraContainer = CreateFrame("AuraContainer", nil, parent, "CustomAuraContainerTemplate")
+	auraContainer.borderOptions = filter.borderOptions
 	auraContainer:AddAuraSlot( "1", filter.filter, {
 		sortMethod = filter.sortRule or 0,
 		sortDirection = filter.sortDir or 0,
