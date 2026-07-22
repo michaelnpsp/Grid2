@@ -128,18 +128,6 @@ function indicator:UnregisterStatus(status, suspend)
 	status:UnregisterIndicator(self, suspend)
 end
 
-function indicator.StatusChanged(self, status, priority)
-	if status.GetAurasFilter then
-		self.auraMode = (self.auraMode or 0) + (priority and 1 or -1)
-		if self.auraMode==0 then self.auraMode = nil end
-	else
-		self.iconMode = (self.iconMode or 0) + (priority and 1 or -1)
-		if self.iconMode==0 then self.iconMode = nil end
-	end
-	-- self:UpdateFilter()
-	-- self:UpdateHighlight(status)
-end
-
 function indicator:GetStatusIndex(status)
 	for i, s in ipairs(self.statuses) do
 		if s == status then
@@ -273,4 +261,72 @@ end
 
 function Grid2:IterateIndicators(type)
 	return next, type and self.indicatorTypes[type] or self.indicators
+end
+
+-- helper functions to manage aura containers 12.1+
+
+function indicator:GetStatusAurasFilter()
+	for _,status in ipairs(self.statuses) do
+		if status.GetAurasFilter then
+			return status:GetAurasFilter(), status
+		end
+	end
+end
+
+function indicator:StatusChanged(status, priority)
+	if status.GetAurasFilter then
+		self.auraMode = (self.auraMode or 0) + (priority and 1 or -1)
+		if self.auraMode==0 then self.auraMode = nil end
+	else
+		self.iconMode = (self.iconMode or 0) + (priority and 1 or -1)
+		if self.iconMode==0 then self.iconMode = nil end
+	end
+	-- self:UpdateFilter()
+	-- self:UpdateHighlight(status)
+end
+
+function indicator:UpdateAuraContainerUnit(parent, unit, frame)
+	local f = frame or parent[self.name]
+	if not f then return end
+	local auraContainer = f.auraContainer
+	if auraContainer and unit~=auraContainer.myUnit then
+		local enabled = unit~=nil
+		if enabled then auraContainer:SetUnit(unit) end
+		auraContainer:SetShown(enabled)
+		auraContainer:SetEnabled(enabled)
+		auraContainer.myUnit = unit
+	end
+end
+
+function indicator:AcquireAuraContainerSlot(parent, initFunc, filter, frame)
+	filter = filter or self:GetStatusAurasFilter()
+	if not filter then return end
+	local f = frame or parent[self.name]
+	if f.auraContainer then
+		auraContainer:SetEnabled(false)
+		auraContainer:SetShown(false)
+		auraContainer:SetParent(nil)
+	end
+	local auraContainer = CreateFrame("AuraContainer", nil, parent, "CustomAuraContainerTemplate")
+	auraContainer:AddAuraSlot( "1", filter.filter, {
+		sortMethod = filter.sortRule or 0,
+		sortDirection = filter.sortDir or 0,
+		candidateFilters = filter.candidateFilters,
+		initializeFrame = initFunc,
+		-- templateNames = { "Grid2BackdropTemplate" },
+	} )
+	auraContainer:Show()
+	f.auraContainer = auraContainer
+	return auraContainer
+end
+
+function indicator:ReleaseAuraContainer(parent, frame)
+	local f = frame or parent[self.name]
+	local auraContainer = f.auraContainer
+	if auraContainer then
+		auraContainer:SetEnabled(false)
+		auraContainer:SetShown(false)
+		auraContainer:SetParent(nil)
+		f.auraContainer = nil
+	end
 end

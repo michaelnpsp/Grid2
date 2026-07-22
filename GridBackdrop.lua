@@ -5,7 +5,7 @@ local BORDER_SETTINGS = {
 	style = 1 -- Atlas = 0, Color = 1
 }
 
-local Grid2BackdropTemplateMixin = {}
+Grid2BackdropTemplateMixin = {}
 
 for k,v in pairs(BackdropTemplateMixin) do
    Grid2BackdropTemplateMixin[k] = v
@@ -32,5 +32,3 @@ function Grid2BackdropTemplateMixin:ClearAuraBackdropBorder()
 	self:ClearAuraBorder(self.LeftEdge)
 	self:ClearAuraBorder(self.RightEdge)
 end
-
-Grid2BackdropTemplateMixin = Grid2BackdropTemplateMixin

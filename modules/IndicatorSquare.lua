@@ -8,14 +8,6 @@ local SetAlphaFromBoolean = Grid2.SetAlphaFromBoolean
 --
 --==============================================================
 
-local function Square_GetAurasFilter(self)
-	for _,status in ipairs(self.statuses) do
-		if status.GetAurasFilter then
-			return status, status:GetAurasFilter()
-		end
-	end
-end
-
 local function Square_DisableAuraContainer(self, parent)
 	local f = parent[self.name]
 	if not f.auraContainer then return end
@@ -23,42 +15,20 @@ local function Square_DisableAuraContainer(self, parent)
 	f.auraContainer:SetShown(false)
 	f.auraContainer:SetParent(nil)
 	f.auraContainer = nil
-	f.myUnit = nil
 end
 
 local function Square_LayoutAura(self, parent)
-	Square_DisableAuraContainer(self, parent)
-	local status, aura_filter = Square_GetAurasFilter(self)
-	if not aura_filter then return end
-	local auraContainer = CreateFrame("AuraContainer", nil, parent, "CustomAuraContainerTemplate")
-	auraContainer:AddAuraSlot( "1", aura_filter.filter, {
-		sortMethod = aura_filter.sortRule or 0,
-		sortDirection = aura_filter.sortDir or 0,
-		candidateFilters = aura_filter.candidateFilters,
-		initializeFrame = function(button)
-			local container = parent.container
-			button:ClearAllPoints()
-			button:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
-			button:SetPoint(self.anchor, container, self.anchorRel, self.offsetx, self.offsety)
-			button:SetSize(self.width or container:GetWidth() , self.height or container:GetHeight())
-			local tex = button:CreateTexture(nil, "ARTWORK")
-			tex:SetAllPoints()
-			tex:SetColorTexture( status:GetColor() )
-		end
-	} )
-	auraContainer:Show()
-	parent[self.name].auraContainer = auraContainer
-end
-
-local function Square_OnUnitChanged(self, parent, unit)
-	local f = parent[self.name]
-	if not (f and f.auraContainer) then return end
-	local unit = parent.unit
-	if unit==f.myUnit then return end
-	f.myUnit = unit
-	if unit then f.auraContainer:SetUnit(unit) end
-	f.auraContainer:SetShown(unit~=nil)
-	f.auraContainer:SetEnabled(unit~=nil)
+	self:AcquireAuraContainerSlot(parent, function(button)
+		local filter, status = self:GetStatusAurasFilter()
+		local container = parent.container
+		button:ClearAllPoints()
+		button:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
+		button:SetPoint(self.anchor, container, self.anchorRel, self.offsetx, self.offsety)
+		button:SetSize(self.width or container:GetWidth() , self.height or container:GetHeight())
+		local tex = button:CreateTexture(nil, "ARTWORK")
+		tex:SetAllPoints()
+		tex:SetColorTexture( status:GetColor() )
+	end, filter)
 end
 
 --==============================================================
@@ -194,7 +164,7 @@ local function Create(indicatorKey, dbx)
 	indicator.OnUpdate = Square_OnUpdate
 	indicator.Disable = Square_Disable
 	indicator.UpdateDB = Square_UpdateDB
-	indicator.OnUnitChanged = Square_OnUnitChanged
+	indicator.OnUnitChanged =  indicator.UpdateAuraContainerUnit
 	indicator.GetBlinkFrame = indicator.GetFrame
 	Grid2:RegisterIndicator(indicator, { "color" })
 	return indicator

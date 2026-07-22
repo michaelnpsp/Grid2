@@ -33,7 +33,6 @@ local function Icon_DisableAuraContainer(f)
 	f.auraContainer:SetEnabled(false)
 	f.auraContainer:SetShown(false)
 	f.auraContainer = nil
-	f.myUnit = nil
 end
 
 -------------------------------------------------------------
@@ -471,17 +470,6 @@ local function Icon_SetupButtonB(self, parent, auraContainer, frame)
 	frame.icon:SetTexCoord( Grid2.statusPrototype.GetTexCoord() )
 end
 
-local function Icon_OnUnitChanged(self, parent, unit)
-	local f = parent[self.name]
-	if not (f and f.auraContainer) then return end
-	local unit = parent.unit
-	if unit==f.myUnit then return end
-	f.myUnit = unit
-	if unit then f.auraContainer:SetUnit(unit) end
-	f.auraContainer:SetShown(unit~=nil)
-	f.auraContainer:SetEnabled(unit~=nil)
-end
-
 local function Icon_LayoutB(self, parent)
 	local f = parent[self.name]
 	-- hide non-aura icons if necessary
@@ -501,9 +489,9 @@ local function Icon_LayoutB(self, parent)
 	f:Show()
 	-- bliz aura container
 	if f.auraContainer then -- discard previous container because blizz API has no methods to change some settings like the auraFilter
-		f.myUnit = nil
 		f.auraContainer:SetEnabled(false)
 		f.auraContainer:SetShown(false)
+		f.auraContainer:SetParent(nil)
 	end
 	local auraContainer = CreateFrame("AuraContainer", nil, f, "CustomAuraContainerTemplate")
 	f.auraContainer = auraContainer
@@ -532,9 +520,9 @@ local function Icon_LayoutB(self, parent)
 			auraContainer:SetAuraGroupLayout(key, self.groupLayout)
 		end
 	end
-	for _, button in ipairs(auraContainer._buttons) do
-		Icon_SetupButtonB(self, parent, auraContainer, button)
-	end
+	-- for _, button in ipairs(auraContainer._buttons) do
+	-- 	Icon_SetupButtonB(self, parent, auraContainer, button)
+	-- end
 	auraContainer:Show()
 end
 
@@ -674,8 +662,9 @@ Grid2.setupFunc["icons"] = function(indicatorKey, dbx)
 	indicator.UpdateDB  = Icon_UpdateDB
 	indicator.Layout    = Icon_Layout
 	indicator.UpdateO   = Icon_Update -- special case used by multibar and icons indicator
-	indicator.OnUnitChanged = Icon_OnUnitChanged
+	indicator.OnUnitChanged = indicator.UpdateAuraContainerUnit
 	EnableDelayedUpdates()
 	Grid2:RegisterIndicator(indicator, { "icon", "icons" })
 	return indicator
 end
+

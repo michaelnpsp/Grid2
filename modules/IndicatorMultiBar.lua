@@ -9,6 +9,13 @@ local pairs = pairs
 local ipairs = ipairs
 local canaccessvalue = Grid2.canaccessvalue
 
+local BORDER_SETTINGS = {
+	showIcon = true,
+	showWhenHarmful = true,
+	showWhenHelpful = true,
+	style = 1 -- Atlas = 0, Color = 1
+}
+
 local POINTS = {
 	HORIZONTAL = { [true] = "LEFT",   [false] = "RIGHT" }, -- normal, reverse fill
 	VERTICAL   = { [true] = "BOTTOM", [false] = "TOP"   }, -- normal, reverse fill
@@ -78,6 +85,31 @@ local function Bar_UpdateMulti(self, parent, unit, status)
 				end
 			end
 		end
+	end
+end
+
+local function Bar_LayoutAuraColor(self, parent, f, level)
+	local color = self.sideKick
+	if color.auraMode then
+		self:AcquireAuraContainerSlot(parent, function(button)
+			local tex = f.myCTextures and f.myCTextures[1]
+			if not tex then return end
+			local setup = self.bars[1]
+			if not setup then return end
+			button:ClearAllPoints()
+			button:SetAllPoints(f)
+			button:SetFrameLevel(level)
+			local atex = button:CreateTexture(nil, "OVERLAY", nil, setup.sublayer+1)
+			atex:SetTexture(setup.texture, setup.horWrap, setup.verWrap)
+			atex:SetHorizTile(setup.horWrap~='CLAMP')
+			atex:SetVertTile(setup.verWrap~='CLAMP')
+			atex:SetBlendMode('ADD')
+			atex:SetAllPoints(tex)
+			button:SetAuraBorder(atex, BORDER_SETTINGS)
+
+		end, color:GetStatusAurasFilter(), f)
+	elseif f.auraContainer then
+		self:ReleaseAuraContainer(parent, f)
 	end
 end
 
@@ -161,6 +193,8 @@ local function Bar_Layout(self, parent)
 	frame.myTextures = textures
 	frame.myCTextures = ctextures
 	frame:Show()
+	-- aura container colorization
+	Bar_LayoutAuraColor(self, parent, frame, frameLevel)
 end
 
 local function Bar_SetOrientation(self, orientation)
@@ -290,6 +324,7 @@ local function BarColor_OnUpdate(self, parent, unit, status)
 	end
 end
 
+-- foreground bar texture colorize
 local function BarColor_SetBarColor(self, parent, r, g, b, a)
 	local frame = parent[self.parentName]
 	if frame then
@@ -303,6 +338,7 @@ local function BarColor_SetBarColor(self, parent, r, g, b, a)
 	end
 end
 
+-- background bar texture colorize
 local function BarColor_SetBarColorInverted(self, parent, r, g, b, a)
 	local frame = parent[self.parentName]
 	if frame then
@@ -340,6 +376,7 @@ local function Create(indicatorKey, dbx)
 	BarColor.Create     = Grid2.Dummy
 	BarColor.Layout     = Grid2.Dummy
 	BarColor.UpdateDB   = BarColor_UpdateDB
+	BarColor.OnUnitChanged = BarColor.UpdateAuraContainerUnit
 	Grid2:RegisterIndicator(BarColor, { "color" })
 	Bar.sideKick = BarColor
 
