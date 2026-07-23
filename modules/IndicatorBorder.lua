@@ -8,6 +8,19 @@ Border.Create = Grid2.Dummy
 
 --
 
+function Border:OnUnitChanged(parent, unit)
+	local auraContainer = parent._borderAuraContainer
+	if auraContainer then
+		unit = unit or 'none'
+		if unit~=auraContainer:GetUnit() then
+			local enabled = unit~="none"
+			auraContainer:SetUnit(unit)
+			auraContainer:SetShown(enabled)
+			auraContainer:SetEnabled(enabled)
+		end
+	end
+end
+
 function Border:ReleaseAuraContainer(parent)
 	local auraContainer = parent._borderAuraContainer
 	if auraContainer then
@@ -20,6 +33,7 @@ end
 
 function Border:AcquireAuraContainerSlot(parent, initFunc, filter)
 	local auraContainer = CreateFrame("AuraContainer", nil, parent, "CustomAuraContainerTemplate")
+	parent._borderAuraContainer = auraContainer
 	auraContainer:AddAuraSlot( "1", filter.filter, {
 		sortMethod = filter.sortRule or 0,
 		sortDirection = filter.sortDir or 0,
@@ -27,7 +41,6 @@ function Border:AcquireAuraContainerSlot(parent, initFunc, filter)
 		initializeFrame = initFunc,
 	} )
 	auraContainer:Show()
-	parent._borderAuraContainer = auraContainer
 end
 
 function Border:Layout(parent)
@@ -56,6 +69,9 @@ function Border:GetFrame(parent)
 end
 
 function Border:OnUpdate(parent, unit, status)
+	if parent._borderAuraContainer then
+		parent._borderAuraContainer:UpdateAllAuras()
+	end
 	if status then
 		parent:SetBackdropBorderColor(status:GetColor(unit))
 	else
@@ -74,7 +90,6 @@ end
 
 local function Create(indicatorKey, dbx)
 	Border.dbx = dbx
-	Border.OnUnitChanged = Border.UpdateAuraContainerUnit
 	Grid2:RegisterIndicator(Border, { "color" })
 	return Border
 end
