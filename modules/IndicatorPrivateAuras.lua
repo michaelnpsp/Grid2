@@ -6,10 +6,21 @@ local strmatch = strmatch
 local AddPrivateAuraAnchor = C_UnitAuras.AddPrivateAuraAnchor
 local RemovePrivateAuraAnchor = C_UnitAuras.RemovePrivateAuraAnchor
 local InCombatLockdown = InCombatLockdown
+local roster_types = Grid2.roster_types
 
 -- Fix for 12.0.5 private-auras bug, when a container is removed/added, private-aura icons are ignoring frame-levels
 -- and displayed behind the unit frame, the workaround: use a higher strata for private-aura containers.
 local strataFix = { BACKGROUND = 'LOW', LOW = 'MEDIUM', MEDIUM = 'HIGH', HIGH ='DIALOG' }
+
+-- Workaround for privateaura blizzard code crashing with external units due to 2026/7/21 patch
+local invalidCategories = {
+	pet = true,
+	boss = true,
+	target = true,
+	focus = true,
+	targettarget = true,
+	focustarget = true,
+}
 
 local QueueUpdate -- delay updates if we are in combat
 do
@@ -45,6 +56,11 @@ local function ClearFrameAuraAnchors(f)
 	return wipe(auraHandles)
 end
 
+local function IsValidUnit(unit)
+	local typ = roster_types[unit]
+	return not invalidCategories[typ]
+end
+
 local function Icon_Create(self, parent)
 	local f = self:Acquire("Frame", parent)
 	f.auraHandles = {}
@@ -53,7 +69,7 @@ end
 
 local function Icon_Update(self, parent, unit)
 	local f = parent[self.name]
-	if f and unit ~= f.auraUnit and not Grid2:UnitIsPet(unit) then
+	if f and unit ~= f.auraUnit and IsValidUnit(unit) then
 		if InCombatLockdown() then
 			QueueUpdate(unit)
 			return
