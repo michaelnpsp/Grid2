@@ -287,47 +287,49 @@ end
 
 function indicator:UpdateAuraContainerUnit(parent, unit, frame)
 	local f = frame or parent[self.name]
-	if not f then return end
-	local auraContainer = f.auraContainer
-	if auraContainer and unit~=auraContainer.myUnit then
-		local enabled = unit~=nil
-		if enabled then auraContainer:SetUnit(unit) end
-		auraContainer:SetShown(enabled)
-		auraContainer:SetEnabled(enabled)
-		auraContainer.myUnit = unit
+	if f then
+		local auraContainer = f.auraContainer
+		if auraContainer then
+			unit = unit or 'none'
+			if unit~=auraContainer:GetUnit() then
+				local enabled = unit~="none"
+				auraContainer:SetUnit(unit)
+				auraContainer:SetShown(enabled)
+				auraContainer:SetEnabled(enabled)
+			end
+		end
 	end
-end
-
-function indicator:AcquireAuraContainerSlot(parent, initFunc, filter, frame)
-	filter = filter or self:GetStatusAurasFilter()
-	if not filter then return end
-	local f = frame or parent[self.name]
-	if f.auraContainer then
-		f.auraContainer:SetEnabled(false)
-		f.auraContainer:SetShown(false)
-		f.auraContainer:SetParent(nil)
-	end
-	local auraContainer = CreateFrame("AuraContainer", nil, parent, "CustomAuraContainerTemplate")
-	auraContainer.borderOptions = filter.borderOptions
-	auraContainer:AddAuraSlot( "1", filter.filter, {
-		sortMethod = filter.sortRule or 0,
-		sortDirection = filter.sortDir or 0,
-		candidateFilters = filter.candidateFilters,
-		initializeFrame = initFunc,
-		-- templateNames = { "Grid2BackdropTemplate" },
-	} )
-	auraContainer:Show()
-	f.auraContainer = auraContainer
-	return auraContainer
 end
 
 function indicator:ReleaseAuraContainer(parent, frame)
 	local f = frame or parent[self.name]
 	local auraContainer = f.auraContainer
 	if auraContainer then
-		auraContainer:SetEnabled(false)
 		auraContainer:SetShown(false)
+		auraContainer:SetEnabled(false)
 		auraContainer:SetParent(nil)
 		f.auraContainer = nil
+	end
+end
+
+function indicator:AcquireAuraContainerSlot(parent, initFunc, filter, frame)
+	filter = filter or self:GetStatusAurasFilter()
+	if filter then
+		local f = frame or parent[self.name]
+		if f.auraContainer then
+			self:ReleaseAuraContainer(parent, f)
+		end
+		local auraContainer = CreateFrame("AuraContainer", nil, parent, "CustomAuraContainerTemplate")
+		auraContainer.borderOptions = filter.borderOptions
+		auraContainer:AddAuraSlot( "1", filter.filter, {
+			sortMethod = filter.sortRule or 0,
+			sortDirection = filter.sortDir or 0,
+			candidateFilters = filter.candidateFilters,
+			initializeFrame = initFunc,
+			-- templateNames = { "Grid2BackdropTemplate" },
+		} )
+		auraContainer:Show()
+		f.auraContainer = auraContainer
+		return auraContainer
 	end
 end

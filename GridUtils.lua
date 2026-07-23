@@ -285,6 +285,23 @@ do
 	end
 end
 
+-- NineSlice backdrop textures
+do
+	local TEXTURES = {
+		"Interface/Addons/Grid2/media/backdrop1px",
+		"Interface/Addons/Grid2/media/backdrop2px",
+		"Interface/Addons/Grid2/media/backdrop3px",
+		"Interface/Addons/Grid2/media/backdrop4px",
+		"Interface/Addons/Grid2/media/backdrop5px",
+		"Interface/Addons/Grid2/media/backdrop6px",
+		"Interface/Addons/Grid2/media/backdrop7px",
+	}
+	function Grid2:GetSliceBorderTexture(borderSize)
+		return TEXTURES[borderSize]
+	end
+end
+
+
 -- Grid2:RunSecure(priority, object, method, arg)
 -- Queue some methods to be executed when out of combat, if we are not in combat do nothing.
 -- Methods with lower priority value override the execution of methods with higher priority value.

@@ -361,6 +361,7 @@ local function Create(indicatorKey, dbx)
 	Bar.Layout         = Bar_Layout
 	Bar.UpdateDB       = Bar_UpdateDB
 	Bar.UpdateO        = Bar_Update -- special case used by multibar and icons indicator
+	Bar.OnUnitChanged  = Bar.UpdateAuraContainerUnit
 	Grid2:RegisterIndicator(Bar, { "percent", "color" })
 
 	local BarColor      = Grid2.indicatorPrototype:new(indicatorKey.."-color")
@@ -369,7 +370,6 @@ local function Create(indicatorKey, dbx)
 	BarColor.Create     = Grid2.Dummy
 	BarColor.Layout     = Grid2.Dummy
 	BarColor.UpdateDB   = BarColor_UpdateDB
-	BarColor.OnUnitChanged = BarColor.UpdateAuraContainerUnit
 	Grid2:RegisterIndicator(BarColor, { "color" })
 	Bar.sideKick = BarColor
 

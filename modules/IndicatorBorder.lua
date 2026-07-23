@@ -5,7 +5,51 @@ local Border = Grid2.indicatorPrototype:new("border")
 local cr, cg, cb, ca = 0, 0, 0, 0
 
 Border.Create = Grid2.Dummy
-Border.Layout = Grid2.Dummy
+
+--
+
+function Border:ReleaseAuraContainer(parent)
+	local auraContainer = parent._borderAuraContainer
+	if auraContainer then
+		auraContainer:SetShown(false)
+		auraContainer:SetEnabled(false)
+		auraContainer:SetParent(nil)
+		parent._borderAuraContainer = nil
+	end
+end
+
+function Border:AcquireAuraContainerSlot(parent, initFunc, filter)
+	local auraContainer = CreateFrame("AuraContainer", nil, parent, "CustomAuraContainerTemplate")
+	auraContainer:AddAuraSlot( "1", filter.filter, {
+		sortMethod = filter.sortRule or 0,
+		sortDirection = filter.sortDir or 0,
+		candidateFilters = filter.candidateFilters,
+		initializeFrame = initFunc,
+	} )
+	auraContainer:Show()
+	parent._borderAuraContainer = auraContainer
+end
+
+function Border:Layout(parent)
+	self:ReleaseAuraContainer(parent)
+	if self.auraMode then
+		local filter = self:GetStatusAurasFilter()
+		self:AcquireAuraContainerSlot(parent, function(button)
+			local borderSize = Grid2Frame.db.profile.frameBorder
+			button:SetAllPoints(parent)
+			button:SetFrameLevel(parent:GetFrameLevel())
+			local tex = button:CreateTexture(nil, "OVERLAY", nil, 7)
+			tex:SetTexture( Grid2:GetSliceBorderTexture(borderSize) )
+			tex:SetTextureSliceMargins(borderSize, borderSize, borderSize, borderSize)
+			tex:SetTextureSliceMode(1)
+			tex:SetAllPoints()
+			tex:SetVertexColor(1, 1, 1, 1)
+			button:SetAuraBorder(tex, filter.borderOptions)
+		end, filter)
+	end
+end
+
+--
 
 function Border:GetFrame(parent)
 	return parent
@@ -30,6 +74,7 @@ end
 
 local function Create(indicatorKey, dbx)
 	Border.dbx = dbx
+	Border.OnUnitChanged = Border.UpdateAuraContainerUnit
 	Grid2:RegisterIndicator(Border, { "color" })
 	return Border
 end

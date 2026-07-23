@@ -300,9 +300,6 @@ local function Icon_LayoutAura(self, parent)
 		button:SetFrameLevel(level)
 		button:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
 		button:SetSize(size, size)
-
-		print(">>>", auraContainer.borderOptions)
-
 		Icon_ButtonCreate(self, parent, button, auraContainer)
 		Icon_ButtonLayout(self, parent, button, auraContainer, size, level)
 	end)
