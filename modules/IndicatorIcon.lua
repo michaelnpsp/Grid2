@@ -189,9 +189,6 @@ end
 
 local function Icon_OnUpdate(self, parent, unit, status)
 	local Frame = parent[self.name]
-	if Frame.auraContainer then
-		Frame.auraContainer:UpdateAllAuras()
-	end
 	if not Frame.iconContainer then
 		return
 	end

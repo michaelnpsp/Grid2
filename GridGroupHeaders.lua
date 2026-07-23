@@ -592,7 +592,7 @@ do
 			if not self.hideEmptyUnits or UnitExists(unit) then
 				local frame = units[unit]
 				if frame then
-					frame:UpdateIndicators()
+					frame:UpdateIndicators(true)
 					FireSizeChanged(self)
 				end
 			end
@@ -600,7 +600,7 @@ do
 		else
 			for unit, frame in next, units do
 				refreshRoster(unit) -- do not check return value to avoid indicators update, because the same unit can be used in several headers.
-				frame:UpdateIndicators()
+				frame:UpdateIndicators(true)
 			end
 			FireSizeChanged(self)
 			UpdateFakedTimer()

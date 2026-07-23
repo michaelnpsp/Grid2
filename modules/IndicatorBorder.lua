@@ -17,6 +17,8 @@ function Border:OnUnitChanged(parent, unit)
 			auraContainer:SetUnit(unit)
 			auraContainer:SetShown(enabled)
 			auraContainer:SetEnabled(enabled)
+		else
+			auraContainer:UpdateAllAuras()
 		end
 	end
 end
@@ -69,9 +71,6 @@ function Border:GetFrame(parent)
 end
 
 function Border:OnUpdate(parent, unit, status)
-	if parent._borderAuraContainer then
-		parent._borderAuraContainer:UpdateAllAuras()
-	end
 	if status then
 		parent:SetBackdropBorderColor(status:GetColor(unit))
 	else

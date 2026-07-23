@@ -194,7 +194,7 @@ do
 	function Grid2:UNIT_NAME_UPDATE(_, unit) -- event registered in GridCore.lua because this module does not have a init function
 		if roster_guids[unit] then
 			UpdateUnit(unit)
-			self:UpdateFramesOfUnit(unit)
+			self:UpdateFramesOfUnit(unit, true)
 		end
 	end
 
@@ -202,7 +202,7 @@ do
 		local unit = pet_of_unit[owner]
 		if roster_guids[unit] then
 			RefreshUnit(unit)
-			self:UpdateFramesOfUnit(unit)
+			self:UpdateFramesOfUnit(unit, true)
 		end
 	end
 
@@ -232,7 +232,7 @@ do
 		roster_unknowns = false
 		for unit in next, roster_guids do
 			if UnitExists(unit) and UpdateUnit(unit) then
-				self:UpdateFramesOfUnit(unit)
+				self:UpdateFramesOfUnit(unit, true)
 			end
 		end
 		self:SendMessage("Grid_RosterUpdate", roster_unknowns)

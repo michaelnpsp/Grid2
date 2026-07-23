@@ -187,14 +187,11 @@ end
 local function Icon_Update(self, parent, unit)
 	local f = parent[self.name]
 	if not f then return end
-	if f.auraContainer then
-		f.auraContainer:UpdateAllAuras()
-	else
-		if not next(updates) then
-			updateFrame:Show()
-		end
-		updates[f] = true
+	if f.auraContainer then return end
+	if not next(updates) then
+		updateFrame:Show()
 	end
+	updates[f] = true
 end
 
 -- Layout icons

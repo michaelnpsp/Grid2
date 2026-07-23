@@ -296,6 +296,8 @@ function indicator:UpdateAuraContainerUnit(parent, unit, frame)
 				auraContainer:SetUnit(unit)
 				auraContainer:SetShown(enabled)
 				auraContainer:SetEnabled(enabled)
+			else
+				auraContainer:UpdateAllAuras()
 			end
 		end
 	end

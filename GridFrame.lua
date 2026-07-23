@@ -45,14 +45,16 @@ function Grid2:GetUnitFrames(unit)
 	return frames_of_unit[unit]
 end
 
-function Grid2:UpdateFramesOfUnit(unit)
+function Grid2:UpdateFramesOfUnit(unit, unitChanged)
 	for frame in next, frames_of_unit[unit] do
 		local old, new = frame.unit, SecureButton_GetModifiedUnit(frame)
 		local changed = old ~= new
 		if changed then
 			Grid2:SetFrameUnit(frame, new)
+			frame:UpdateIndicators(true)
+		else
+			frame:UpdateIndicators(unitChanged)
 		end
-		frame:UpdateIndicators(changed)
 	end
 end
 
@@ -86,7 +88,7 @@ function GridFrameEvents:OnAttributeChanged(name, value)
 		elseif old_unit then
 			Grid2Frame:Debug("removed", self:GetName(), name, old_unit)
 			Grid2:SetFrameUnit(self, nil)
-			self:NotifyIndicatorsUnitChanged(nil)
+			self:NotifyIndicatorsUnitChanged()
 		end
 	end
 end
