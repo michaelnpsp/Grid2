@@ -27,6 +27,18 @@ Grid2.DispelBorderDefaults = {
 	style = Enum.CustomAuraButtonDispelTypeTextureStyle.PreserveAsset, -- Border, BorderWithIcon, Icon, PreserverAsset, CustomAsset
 }
 
+Grid2.SatedDebuffs = {
+	[57723]  = true, -- Exhaustion
+	[57724]  = true, -- Sated
+	[80354]  = true, -- Temporal Displacement
+	[95809]  = true, -- Hunter Pet Insanity
+	[160455] = true, -- Hunter Pet Fatigued
+	[264689] = true, -- Hunter Pet Fatigued
+	[390435] = true, -- Exhaustion
+	[26013]  = true, -- BG Deserter
+	[71041]  = true, -- Dungeon Deserter
+}
+
 --[[
 	if style == Enum.CustomAuraButtonDispelTypeTextureStyle.Border then
 		local showIcon = false;
@@ -99,6 +111,9 @@ local function Auras_UpdateDB(self)
 		else
 			filter.candidateFilters.includeSpellIDs = spells
 		end
+	elseif filter.excludeSatedDebuffs then
+		filter.candidateFilters = filter.candidateFilters or {}
+		filter.candidateFilters.excludeSpellIDs = Grid2.SatedDebuffs
 	end
 	-- aura type colors
  	local colorMap, defColor = {}
@@ -158,7 +173,7 @@ end
 
 --[[ mbuffs database format
  type = "mbuffs",
- aura_filter = { filter='HELPFUL|RAID|PLAYER', sortRule=3, sortDir=0 },
+ aura_filter = { filter='HELPFUL|RAID|PLAYER', sortRule=3, sortDir=0, },
  color1 = {r=0, g=1, b=0, a=1}
 --]]
 
@@ -174,7 +189,7 @@ end
 --[[ mdebuffs database format
 	type = "mdebuffs",
 	aura_filter = { filter = 'HARMFUL' ],
-	color1 = {r=0, g=1, b=0, a=1}
+	colors = {}
 --]]
 
 -------------------------------------------------------------------------------

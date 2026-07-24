@@ -46,6 +46,7 @@ local AuraFilters ={
 	["candidateFilters;isBossOrRoleAura"] = "Is Boss or Role Aura",
 	["spells;includeSpellIDs"] = "List of Spell IDs to Display",
 	["spells;excludeSpellIDs"] = "List of Spell IDs to Ignore",
+	["root;excludeSatedDebuffs"] = "Not Sated Debuffs",
 }
 
 local AuraFiltersNegate = {
@@ -147,6 +148,7 @@ Filters.mdebuffs ={
 	"excludeDispelTypes;Curse",
 	"excludeDispelTypes;Poison",
 	"excludeDispelTypes;Disease",
+	"root;excludeSatedDebuffs",
 }
 
 local SORT_VALUES = {
@@ -248,6 +250,8 @@ local function mfilter_set_disabled(status, filter, default, negated)
 	local typ, field = strsplit(";",filter)
 	if typ == 'filter' then
 		filter_remove_substring(status, 'aura_filter', 'filter', field, default)
+	elseif typ == 'root' then
+		mfilter_set_tree_value(status, nil, 'aura_filter', field)
 	elseif typ == 'spells' then
 		status.dbx.auras = negated and status.dbx.auras or nil
 		mfilter_set_tree_value(status, nil, 'aura_filter', 'candidateFilters', field)
@@ -265,6 +269,8 @@ local function mfilter_set_enabled(status, filter, default)
 	local typ, field = strsplit(";",filter)
 	if typ == 'filter' then
 		filter_add_substring(status, 'aura_filter', 'filter', field, default)
+	elseif typ == 'root' then
+		mfilter_set_tree_value(status, true, 'aura_filter', field)
 	elseif typ == 'spells' then
 		status.dbx.auras = status.dbx.auras or {}
 		mfilter_set_tree_value(status, true, 'aura_filter', 'candidateFilters', field)
@@ -280,6 +286,8 @@ local function mfilter_is_enabled(status, filter)
 	local typ, field = strsplit(";",filter)
 	if typ == 'filter' then
 		return filter_exists_substring(status, 'aura_filter', 'filter', field)
+	elseif typ == 'root' then
+		return mfilter_get_tree_value(status, 'aura_filter', field)~=nil
 	elseif typ == 'candidateFilters' or typ == 'spells' then
 		return mfilter_get_tree_value(status, 'aura_filter', 'candidateFilters', field)~=nil
 	else
