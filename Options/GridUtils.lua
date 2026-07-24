@@ -521,6 +521,7 @@ end
 --  "Update"|nil > Update all indicators in all registered frame units
 --  key > method defined inside indicator to be executed
 do
+	local queue = {}
 	local qtime, qindicator, qmethod
 	function Grid2Options:RefreshIndicatorNow(indicator, method)
 		self:UpdateIndicatorDB(indicator)
@@ -542,18 +543,21 @@ do
 		self:UpdateIndicator(indicator)
 	end
 	function Grid2Options:RefreshIndicator(indicator, method)
-		if qtime then qtime = GetTime()+.2; return end
-		qtime, qindicator, qmethod = GetTime()+.2, indicator, method
+		local skip = qtime
+		qtime = GetTime()+.2
+		queue[indicator] = method
+		if skip then return end
 		C_Timer.NewTicker(.2, function(timer)
 			if GetTime()>=qtime then
 				timer:Cancel()
-				self:RefreshIndicatorNow(qindicator,qmethod)
-				qtime, qindicator, qmethod = nil, nil, nil
+				for indicator, method in pairs(queue) do
+					self:RefreshIndicatorNow(indicator,method)
+				end
+				wipe(queue); qtime = nil
 			end
 		end)
 	end
 end
-
 
 -- Refresh indicators linked to the specified status
 function Grid2Options:RefreshStatusIndicators(status, method)
