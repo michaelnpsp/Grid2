@@ -292,10 +292,10 @@ local function Text_UpdateDB(self)
 	self.shadowOffset = (dbx.shadowDisabled and 0) or dbx.shadowOffset or 1
 	if dbx.fontFlags then
 		self.shadowAlpha = dbx.shadowDisabled and 0 or 1
-		self.fontFlags   = dbx.fontFlags~='NONE' and dbx.fontFlags or nil
+		self.fontFlags   = dbx.fontFlags~='NONE' and dbx.fontFlags or ''
 	else
 		self.shadowAlpha = theme.shadowDisabled and 0 or 1
-		self.fontFlags   = theme.fontFlags~='NONE' and theme.fontFlags or nil
+		self.fontFlags   = theme.fontFlags~='NONE' and theme.fontFlags or ''
 	end
 	if Grid2.testThemeIndex then -- check layout test mode
 		self.OnUpdate = Text_OnUpdateTest
