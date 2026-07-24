@@ -225,17 +225,12 @@ function Grid2:UpdateDefaults()
 			for key,dbx in pairs(dbs) do
 				local typ = dbx.type
 				if typ=='buff' or typ=='buffs' then
-					local color = dbx.color1
-					local aura_filter = {
+					dbx.type = 'm'..typ
+					dbx.auras = dbx.auras or (dbx.spellName and {dbx.spellName}) or nil
+					dbx.aura_filter = {
 						filter = (dbx.mine==1 and 'HELPFUL|PLAYER') or (dbx.mine==2 and 'HELPFUL|!PLAYER') or nil,
 						candidateFilters = { includeSpellIDs= true },
 					}
-					local auras = dbx.auras or (dbx.spellName and {dbx.spellName}) or nil
-					wipe(dbx)
-					dbx.type   = 'm'..typ
-					dbx.color1 = color
-					dbx.auras = auras
-					dbx.aura_filter = aura_filter
 				elseif dbx.type=='mdebuffs' and dbx.aura_filter then
 					local aura_filter = dbx.aura_filter
 					if aura_filter.sated then
@@ -244,7 +239,7 @@ function Grid2:UpdateDefaults()
 					if aura_filter.typed~=nil then
 						if aura_filter.typed then
 							aura_filter.candidateFilters = { includeDispelTypes = { Magic=true, Curse=true, Disease=true, Poison=true } }
-						elseif filter.typed==false then
+						else
 							aura_filter.candidateFilters = { excludeDispelTypes = { None=true } }
 						end
 						aura_filter.typed = nil

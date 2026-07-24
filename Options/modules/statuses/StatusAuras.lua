@@ -380,7 +380,7 @@ function Grid2Options:MakeStatusAuraMiscOptions(status, options)
 	options.sort_dir = {
 		type = "toggle",
 		order = 40,
-		width = 0.75,
+		width = 0.70,
 		name = L["Reverse sort"],
 		desc = L["Reverse sort order."],
 		get = function()
