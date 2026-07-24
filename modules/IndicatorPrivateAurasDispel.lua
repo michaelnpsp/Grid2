@@ -1,3 +1,5 @@
+if Grid2.versionCli>=120100 then return end
+
 -- Overlay to display dispels, including dispellable private auras
 
 local Grid2 = Grid2
