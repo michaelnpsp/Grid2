@@ -16,8 +16,8 @@ db.__template = 'Classic'
 
 s["dungeon-role"] = { hideInCombat=true }
 s["heals-incoming"] = { includePlayerHeals=true }
+s["debuffs-Relevant"] = { type="mdebuffs", colors= {}, aura_filter={excludeSatedDebuffs=true,sortRule=3} }
 s["buffs-Relevant"] = { type="mbuffs", aura_filter={filter="HELPFUL|RAID_IN_COMBAT",sortRule=3}, color1={a=1,r=0,g=1,b=0} }
-s["debuffs-Relevant"] = { type="mdebuffs", colors= {}, aura_filter={sortRule=3} }
 
 i["text-down"] = { type="text", location={y=4,relPoint="BOTTOM",point="BOTTOM",x=0}, level=6, textlength=6, fontSize=10 }
 m["text-down"] = { name=99 }
@@ -60,11 +60,8 @@ m["power-bar"] = { power=50 }
 i["power-bar-color"] = { type="bar-color" }
 m["power-bar-color"] = { power=51 }
 
-i["debuffs-icons"] = { fontSize=9, borderOpacity=1, disableCooldown=true, fontJustifyV="TOP", borderSize=1, iconSize=26, level=8, tooltipAnchor="ANCHOR_BOTTOMRIGHT", type="icons", enableCooldownText=true, reverseCooldown=true, color1={a=1,b=1,g=1,r=1}, tooltipEnabled=true, ctFontSize=10, location={y=-2,relPoint="CENTER",point="CENTER",x=0}, fontJustifyH="RIGHT", useStatusColor=true, smartCenter=true }
+i["debuffs-icons"] = { maxIcons=1, fontSize=9, borderOpacity=1, disableCooldown=true, fontJustifyV="TOP", borderSize=1, iconSize=26, level=8, tooltipAnchor="ANCHOR_BOTTOMRIGHT", type="icons", enableCooldownText=true, reverseCooldown=true, color1={a=1,b=1,g=1,r=1}, tooltipEnabled=true, ctFontSize=10, location={y=-2,relPoint="CENTER",point="CENTER",x=0}, fontJustifyH="RIGHT", useStatusColor=true, smartCenter=true }
 m["debuffs-icons"] = { ["debuffs-Relevant"]=50 }
-
-i["private-auras"] = { maxIcons=1, type="privateauras", location={y=0,relPoint="CENTER",point="CENTER",x=0}, level=9, iconSize=25 }
-i["private-auras-dispel"] = { type='privateaurasdispel', level = 7 }
 
 i["tooltip"] = { type="tooltip", showDefault=true }
 

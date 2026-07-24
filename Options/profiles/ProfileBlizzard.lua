@@ -30,7 +30,7 @@ s["leader"] = { hideInCombat=true }
 s["dungeon-role"] = { hideInCombat=true }
 s["master-looter"] = { hideInCombat=true }
 s["heals-incoming"] = { includePlayerHeals=true }
-s["debuffs-Relevant"] = { type="mdebuffs", colors={}, aura_filter={sortRule=3} }
+s["debuffs-Relevant"] = { type="mdebuffs", colors={}, aura_filter={sortRule=3,excludeSatedDebuffs=true} }
 s["buffs-Relevant"] = { type="mbuffs", color1={a=1,b=0,g=1,r=0}, aura_filter={sortRule=3,filter="HELPFUL|RAID_IN_COMBAT"} }
 
 i["icon-left"] = { type="icon", disableCooldown=true, location={y=0,relPoint="LEFT",point="LEFT",x=-2}, level=8, fontSize=8, size=12 }
@@ -43,9 +43,6 @@ i["background"] = { type="background" }
 
 i["icon-center"] = { disableStack=true, type="icon", fontSize=8, location={y=0,relPoint="CENTER",point="CENTER",x=0}, level=9, disableCooldown=true, size=20 }
 m["icon-center"] = { phased=50, resurrection=54, death=53, ["ready-check"]=55, offline=52, summon=51 }
-
-i["private-auras"] = { maxIcons=1, type="privateauras", location={y=14,relPoint="CENTER",point="CENTER",x=0}, level=9, iconSize=24 }
-i["private-auras-dispel"] = { type='privateaurasdispel', level = 7 }
 
 i["icon-right"] = { type="icon", disableCooldown=true, location={y=0,relPoint="RIGHT",point="RIGHT",x=2}, level=8, fontSize=8, size=12 }
 m["icon-right"] = { ["raid-icon-target"]=151 }

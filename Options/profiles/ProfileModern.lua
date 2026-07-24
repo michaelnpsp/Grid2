@@ -29,8 +29,8 @@ s["leader"] = { hideInCombat=true }
 s["dungeon-role"] = { hideInCombat=true }
 s["master-looter"] = { hideInCombat=true }
 s["heals-incoming"] = { includePlayerHeals=true }
-s["buffs-Relevant"] = { type="mbuffs", color1={a=1,b=0,g=1,r=0}, aura_filter={sortRule=3,filter="HELPFUL|RAID_IN_COMBAT"} }
-s["debuffs-Relevant"] = { type="mdebuffs", colors={}, aura_filter={sortRule=3} }
+s["debuffs-Relevant"] = { type="mdebuffs", colors={}, aura_filter={excludeSatedDebuffs=true,sortRule=3} }
+s["buffs-Relevant"] = { type="mbuffs", color1={a=1,b=0,g=1,r=0}, aura_filter={sortRule=3,filter="HELPFUL|RAID_IN_COMBAT",excludeSatedDebuffs=true} }
 
 i["text-center"] = { type="text", fontSize=10, location={y=0,relPoint="CENTER",point="CENTER",x=0}, level=7, textlength=6, percent=true }
 m["text-center"] = { ["feign-death"]=96, offline=97, name=70, death=98 }
@@ -70,9 +70,6 @@ m["power-bar-color"] = { power=51 }
 
 i["debuffs-icons"] = { fontSize=9, borderOpacity=1, disableCooldown=true, fontJustifyV="TOP", borderSize=1, iconSize=22, level=8, tooltipAnchor="ANCHOR_BOTTOMRIGHT", type="icons", enableCooldownText=true, reverseCooldown=true, color1={a=1,r=1,g=1,b=1}, ctFontSize=10, location={y=0,relPoint="BOTTOMLEFT",point="BOTTOMLEFT",x=0}, useStatusColor=true, fontJustifyH="RIGHT", tooltipEnabled=true }
 m["debuffs-icons"] = { ["debuffs-Relevant"]=50 }
-
-i["private-auras"] = { maxIcons=1, type="privateauras", location={y=0,relPoint="BOTTOMRIGHT",point="BOTTOMRIGHT",x=0}, level=9, iconSize=22 }
-i["private-auras-dispel"] = { type='privateaurasdispel', level = 7 }
 
 i["tooltip"] = { showDefault=true, type="tooltip" }
 
