@@ -10,7 +10,7 @@ local CopyTable = Grid2.CopyTable
 -------------------------------------------------------------------------------
 
 Grid2.DispelCurveDefaults = {
-	['']    = { 0,  DEBUFF_TYPE_NONE_COLOR    },
+	None    = { 0,  DEBUFF_TYPE_NONE_COLOR    },
 	Magic   = { 1,  DEBUFF_TYPE_MAGIC_COLOR   },
 	Curse   = { 2,  DEBUFF_TYPE_CURSE_COLOR   },
 	Disease = { 3,  DEBUFF_TYPE_DISEASE_COLOR },
@@ -20,12 +20,33 @@ Grid2.DispelCurveDefaults = {
 }
 
 Grid2.DispelBorderDefaults = {
-	showIcon = true,
+	showIcon = false,
 	showWhenHarmful = true,
 	showWhenHelpful = true,
 	showWithoutDispelType = true,
-	style = 1 -- Atlas = 0, Color = 1
+	style = Enum.CustomAuraButtonDispelTypeTextureStyle.PreserveAsset,-- Border, BorderWithIcon, Icon, PreserverAsset, CustomAsset
 }
+
+--[[
+	if style == Enum.CustomAuraButtonDispelTypeTextureStyle.Border then
+		local showIcon = false;
+		AuraUtil.SetAuraBorderAtlas(texture, auraData.dispelName, showIcon);
+		texture:SetVertexColor(1, 1, 1, 1);
+	elseif style == Enum.CustomAuraButtonDispelTypeTextureStyle.BorderWithIcon then
+		local showIcon = true;
+		AuraUtil.SetAuraBorderAtlas(texture, auraData.dispelName, showIcon);
+		texture:SetVertexColor(1, 1, 1, 1);
+	elseif style == Enum.CustomAuraButtonDispelTypeTextureStyle.Icon then
+		AuraUtil.SetAuraDispelTypeIcon(texture, auraData.dispelName);
+		texture:SetVertexColor(1, 1, 1, 1);
+	elseif style == Enum.CustomAuraButtonDispelTypeTextureStyle.PreserveAsset then
+		AuraUtil.SetAuraBorderColor(texture, auraData.dispelName);
+	elseif style == Enum.CustomAuraButtonDispelTypeTextureStyle.CustomAsset then
+		local customAsset = secretwrap(GetCustomDispelTypeTextureAsset(options, auraData));
+		ApplyDispelTypeTextureAsset(texture, customAsset);
+		texture:SetVertexColor(1, 1, 1, 1);
+	end
+--]]
 
 -------------------------------------------------------------------------------
 -- shared methods
@@ -83,13 +104,15 @@ local function Auras_UpdateDB(self)
  	local colorMap, defColor = {}
 	if dbx.color1 then -- single buff
 		defColor = dbx.color1 or Grid2.defaultColors.BLACK
-		colorMap[""] = defColor
+		for typ, data in pairs(Grid2.DispelCurveDefaults) do
+			colorMap[typ] = defColor
+		end
 	else
 		local colors = dbx.colors
 		for typ, data in pairs(Grid2.DispelCurveDefaults) do
 			colorMap[typ] = (colors and colors[typ]) or data[2]
 		end
-		defColor = colorMap['']
+		defColor = colorMap.None
 	end
 	filter.borderOptions = CopyTable( Grid2.DispelBorderDefaults, {customDispelColorMap = colorMap} )
 	-- default status color

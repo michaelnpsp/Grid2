@@ -6,7 +6,7 @@ local cr, cg, cb, ca = 0, 0, 0, 0
 
 Border.Create = Grid2.Dummy
 
---
+-- aura containers management
 
 function Border:OnUnitChanged(parent, unit)
 	local auraContainer = parent._borderAuraContainer
@@ -64,7 +64,7 @@ function Border:Layout(parent)
 	end
 end
 
---
+-- standard indicators
 
 function Border:GetFrame(parent)
 	return parent

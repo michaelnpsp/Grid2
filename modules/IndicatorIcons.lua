@@ -319,8 +319,6 @@ local function Icon_LayoutA(self, parent)
 		frame.colorCurveText   = self.showColorsText and frame.coolText
 		frame.colorCurveBar    = self.showColorsBar and frame.coolBar
 		frame.colorCurveBorder = self.showColorsBorder and frame.SetBackdropBorderColor
-		-- tooltip management
-		self:EnableFrameTooltips(frame, tooltipEnabled)
 		--
 		frame:Hide()
 		x = x + 1
@@ -478,10 +476,11 @@ local function Icon_LayoutB(self, parent)
 	auraContainer:ClearAllPoints()
 	auraContainer:SetAllPoints()
 	auraContainer:SetSize(f:GetSize())
-	auraContainer:SetAuraLayoutRowWidth(f:GetWidth())
-	auraContainer:SetAuraLayoutAnchorPoint(self.anchorIcon)
-	auraContainer:SetAuraLayoutGrowthDirection(self.horizontalDirection, self.verticalDirection)
-	auraContainer:SetAuraLayoutPadding(0,0,0,0)
+	auraContainer:SetFlowLayoutMaximumLineSize(f:GetWidth())
+	auraContainer:SetFlowLayoutAnchorPoint(self.anchorIcon)
+	auraContainer:SetFlowLayoutGrowthDirection(self.horizontalDirection, self.verticalDirection)
+	auraContainer:SetFlowLayoutPadding(0,0,0,0)
+	local tooltipEnabled = not not self.dbx.tooltipEnabled
 	local buttons = auraContainer._buttons
 	for i, status in ipairs(self.statuses) do
 		if status.GetAurasFilter then
@@ -494,6 +493,7 @@ local function Icon_LayoutB(self, parent)
 				initializeFrame = function(button)
 					buttons[#buttons+1] = button
 					Icon_SetupButtonB(self, parent, auraContainer, button, filter.borderOptions)
+					button:EnableMouse(tooltipEnabled)
 				end
 			} )
 			auraContainer:SetAuraGroupLayout(key, self.groupLayout)

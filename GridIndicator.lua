@@ -14,7 +14,6 @@ local issecretvalue = Grid2.issecretvalue
 local BackdropTemplateMixin = BackdropTemplateMixin
 local framePool = setmetatable( {}, {__index = function (t,k) local r = {}; t[k] = r; return r; end} )
 
-
 Grid2.indicators = {}
 Grid2.indicatorSorted = {}
 Grid2.indicatorEnabled = {}
@@ -323,13 +322,13 @@ function indicator:AcquireAuraContainerSlot(parent, initFunc, filter, frame)
 		end
 		local auraContainer = CreateFrame("AuraContainer", nil, parent, "CustomAuraContainerTemplate")
 		auraContainer.borderOptions = filter.borderOptions
-		auraContainer:AddAuraSlot( "1", filter.filter, {
+		local button = auraContainer:AddAuraSlot( "1", filter.filter, {
 			sortMethod = filter.sortRule or 0,
 			sortDirection = filter.sortDir or 0,
 			candidateFilters = filter.candidateFilters,
 			initializeFrame = initFunc,
-			-- templateNames = { "Grid2BackdropTemplate" },
 		} )
+	    button:EnableMouse(not not self.dbx.tooltipEnabled)
 		auraContainer:Show()
 		f.auraContainer = auraContainer
 		return auraContainer

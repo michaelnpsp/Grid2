@@ -41,10 +41,6 @@ function Name:OnDisable()
 	self:UnregisterRosterUnitEvent("UNIT_NAME_UPDATE")
 end
 
-function Name:GetTooltip(unit,tip)
-	tip:SetUnit(unit)
-end
-
 function Name:UpdateDB()
 	local dbx = self.dbx
 	defaultName = dbx.defaultName

@@ -92,9 +92,6 @@ local function Icon_ButtonCreate(self, parent, f, auraContainer)
 	elseif f.coolBar then
 		f.coolBar:Hide()
 	end
-	if not auraContainer then
-		self:EnableFrameTooltips(f, self.dbx.tooltipEnabled)
-	end
 end
 
 local function Icon_ButtonLayout(self, parent, f, auraContainer, size, level)
