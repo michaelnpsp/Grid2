@@ -208,7 +208,6 @@ local function Icon_LayoutA(self, parent)
 	local size = iconSize + self.iconSpacing
 	local tc1,tc2,tc3,tc4 = Grid2.statusPrototype.GetTexCoord()
 	local level = parent:GetFrameLevel() + self.frameLevel
-	local tooltipEnabled = self.dbx.tooltipEnabled
 	f:SetParent(parent)
 	f:ClearAllPoints()
 	f:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
@@ -445,6 +444,8 @@ local function Icon_SetupButtonB(self, parent, auraContainer, frame, borderOptio
 	frame.icon:SetPoint("TOPLEFT",     frame ,"TOPLEFT",  borderSize, -borderSize)
 	frame.icon:SetPoint("BOTTOMRIGHT", frame ,"BOTTOMRIGHT", -borderSize, borderSize)
 	frame.icon:SetTexCoord( Grid2.statusPrototype.GetTexCoord() )
+	-- tooltip
+	self:SetAuraButtonTooltip(frame)
 end
 
 local function Icon_LayoutB(self, parent)
@@ -480,7 +481,6 @@ local function Icon_LayoutB(self, parent)
 	auraContainer:SetFlowLayoutAnchorPoint(self.anchorIcon)
 	auraContainer:SetFlowLayoutGrowthDirection(self.horizontalDirection, self.verticalDirection)
 	auraContainer:SetFlowLayoutPadding(0,0,0,0)
-	local tooltipEnabled = not not self.dbx.tooltipEnabled
 	local buttons = auraContainer._buttons
 	for i, status in ipairs(self.statuses) do
 		if status.GetAurasFilter then
@@ -493,7 +493,6 @@ local function Icon_LayoutB(self, parent)
 				initializeFrame = function(button)
 					buttons[#buttons+1] = button
 					Icon_SetupButtonB(self, parent, auraContainer, button, filter.borderOptions)
-					button:EnableMouse(tooltipEnabled)
 				end
 			} )
 			auraContainer:SetAuraGroupLayout(key, self.groupLayout)

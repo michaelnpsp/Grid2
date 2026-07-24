@@ -328,9 +328,18 @@ function indicator:AcquireAuraContainerSlot(parent, initFunc, filter, frame)
 			candidateFilters = filter.candidateFilters,
 			initializeFrame = initFunc,
 		} )
-	    button:EnableMouse(not not self.dbx.tooltipEnabled)
+		self:SetAuraButtonTooltip(button)
 		auraContainer:Show()
 		f.auraContainer = auraContainer
 		return auraContainer
+	end
+end
+
+function indicator:SetAuraButtonTooltip(button)
+	if self.dbx.tooltipEnabled then
+		button:EnableMouse(true)
+		button:SetTooltipAnchorPoint(self.dbx.tooltipAnchor or "ANCHOR_BOTTOMLEFT")
+	else
+		button:EnableMouse(false)
 	end
 end
