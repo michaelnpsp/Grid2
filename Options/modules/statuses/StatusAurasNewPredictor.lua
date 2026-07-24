@@ -19,6 +19,8 @@ function AuraPredictor:new( type, spells )
 end
 
 function AuraPredictor:Initialize()
+	local initFunc = self.spells.initFunc
+	if initFunc then initFunc(self.spells) end
 	classNames    = { [""] = "", ["MYTHIC+"] =  string.format(", |cfffe0000%s+|r ", PLAYER_DIFFICULTY6 or "Mythic") }
 	classNamesLoc = { [""] = "", ["MYTHIC+"] =  strupper(PLAYER_DIFFICULTY6) or "MYTHIC" }
 	for class,translation in pairs(LOCALIZED_CLASS_NAMES_MALE) do
@@ -26,7 +28,7 @@ function AuraPredictor:Initialize()
 		classNames[class] = string.format(", |cff%.2x%.2x%.2x%s|r ", c.r*255, c.g*255, c.b*255, translation)
 		classNamesLoc[class] = strupper(translation)
 	end
-	AuraPredictor.OnInitialize = nil -- Only one initialization for all instances
+	AuraPredictor.Initialize = nil -- Only one initialization for all instances
 end
 
 function AuraPredictor:GetValues(text, values, max)

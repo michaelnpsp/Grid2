@@ -169,6 +169,11 @@ local function refresh_aura_status(status)
 	Grid2Options:RefreshStatusIndicators(status, "Layout")
 end
 
+local function get_similar_spells(typ, spell)
+	local spellID = tonumber(spell)
+	return typ~='mdebuffs' and Grid2Options.PlayerBuffsReverse[spellID and GetSpellInfo(spellID)] or {spellID or spell}
+end
+
 -- aura_filter management
 
 local function filter_get_value(status, key, subkey, default)
@@ -404,7 +409,9 @@ function Grid2Options:MakeStatusAuraListOptions(status, options)
 			local _, spell = string.match(value, "^(.-[@#>])(.*)$")
 			spell = strtrim(spell or value)
 			if #spell>0 then
-				table.insert(status.dbx.auras, tonumber(spell) or spell)
+				for _,spell in pairs(get_similar_spells(status.dbx.type, spell)) do
+					table.insert(status.dbx.auras, spell)
+				end
 				status:Refresh()
 			end
 		end,

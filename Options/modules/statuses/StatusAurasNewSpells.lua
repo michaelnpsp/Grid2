@@ -1,4 +1,5 @@
 -- Players Buffs & Debuffs, used by StatusAuraNewPredictor.lua
+
 Grid2Options.PlayerBuffs = {
 	[""] = {
 		377234, -- Thrill of the Skies
@@ -67,7 +68,7 @@ Grid2Options.PlayerBuffs = {
 	},
 	["SHAMAN"] = {
 		462854, -- Skyfury
-		974, 383648, -- Earth Shield
+		383648, 974, -- Earth Shield
 		61295, -- Riptide
 		-- Shaman Imbuements
 		319773, -- Windfury Weapon
@@ -122,6 +123,23 @@ Grid2Options.PlayerBuffs = {
 		381757, -- Warlock
 		381758, -- Warrior
 	},
+	initFunc = function(self) -- create reverse table spellName => spellIDs
+		self.initFunc = nil
+		local GetSpellInfo = Grid2.API.GetSpellInfo
+		local list = {}
+		for category, spells in pairs(self) do
+			for i,spellID in ipairs(spells) do
+				local spellName = GetSpellInfo(spellID)
+				if spellName then
+					local t =  list[spellName]
+					if t==nil then t = {}; list[spellName] = t; end
+					t[#t+1] = spellID
+				end
+			end
+
+		end
+		Grid2Options.PlayerBuffsReverse = list
+	end
 }
 
 Grid2Options.PlayerDebuffs = {
