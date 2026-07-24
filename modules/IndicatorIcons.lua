@@ -477,7 +477,8 @@ local function Icon_LayoutB(self, parent)
 	auraContainer:ClearAllPoints()
 	auraContainer:SetAllPoints()
 	auraContainer:SetSize(f:GetSize())
-	auraContainer:SetFlowLayoutMaximumLineSize(f:GetWidth())
+	auraContainer:SetFlowLayoutAxis(self.layoutAxis)
+	auraContainer:SetFlowLayoutMaximumLineSize( self.vertical and f:GetHeight() or f:GetWidth() )
 	auraContainer:SetFlowLayoutAnchorPoint(self.anchorIcon)
 	auraContainer:SetFlowLayoutGrowthDirection(self.horizontalDirection, self.verticalDirection)
 	auraContainer:SetFlowLayoutPadding(0,0,0,0)
@@ -540,6 +541,7 @@ local function Icon_UpdateDB(self)
 	self.offsety    = l.y
 	self.anchorIcon = (pointsX[self.anchor] and self.anchor) or (self.anchor=="BOTTOM" and "BOTTOMLEFT") or (self.anchor=="RIGHT" and "TOPRIGHT") or "TOPLEFT"
 	-- misc variables
+	self.layoutAxis     = AnchorUtil.FlowLayoutAxis[dbx.orientation=='VERTICAL' and 'Vertical' or 'Horizontal']
 	self.vertical       = dbx.orientation=='VERTICAL'
 	self.borderSize     = dbx.borderSize or 0
 	self.frameLevel     = dbx.level or 1
@@ -618,8 +620,8 @@ local function Icon_UpdateDB(self)
 	-- backdrop
 	self.backdrop = self.borderSize>0 and Grid2:GetBackdropTable("Interface\\Addons\\Grid2\\media\\white16x16", self.borderSize) or nil
 	-- used only in auraContainer mode
-	self.horizontalDirection = self.ux
-	self.verticalDirection = self.vy
+	self.horizontalDirection = pointsX[self.anchorIcon]
+	self.verticalDirection = pointsY[self.anchorIcon]
 	self.groupLayout = { elementSpacingX = self.iconSpacing, elementSpacingY = self.iconSpacing, gapX = 0, gapY = 0, forceNewRow = false }
 end
 
