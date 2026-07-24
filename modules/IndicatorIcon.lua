@@ -392,7 +392,7 @@ local function Icon_UpdateDB(self)
 			self.ctColorCurve:AddPoint(dbx.ctThresholds[i] or 0, color)
 		end
 	end
-	-- self.ctOptions = dbx.ctColors and { textColorCurve = self.ctColorCurve } or nil   -- TODO colorCurve is broken in PTR, uncoment once fixed
+	self.ctOptions = dbx.ctColors and { textColor={ curve=self.ctColorCurve, property=Enum.DurationTextBindingProperty.RemainingDuration } } or nil
 	self.needDur = self.showColors or self.showCoolBar
 	-- backdrop
 	self.backdrop = Grid2:GetBackdropTable("Interface\\Addons\\Grid2\\media\\white16x16", self.borderSize or 1)

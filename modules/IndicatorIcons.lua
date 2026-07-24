@@ -385,7 +385,7 @@ local function Icon_SetupButtonB(self, parent, auraContainer, frame, borderOptio
 		frame:ClearApplicationCount()
 		frame.text:Hide()
 	end
-	-- cooldown animation
+	-- cooldown animation & cooldown text
 	if self.showCooldown then
 		local cooldown = frame.cooldown or CreateFrame("Cooldown", nil, frame, "CooldownFrameTemplate")
 		cooldown:SetAllPoints()
@@ -403,7 +403,7 @@ local function Icon_SetupButtonB(self, parent, auraContainer, frame, borderOptio
 			text:SetPoint(self.ctFontPoint, self.ctFontOffsetX, self.ctFontOffsetY)
 			text:SetMaxLines(1)
 			frame.coolText = text
-			frame:SetDurationText(text)
+			frame:SetDurationText(text, self.ctOptions)
 		else
 			frame.coolText = nil
 			frame:ClearDurationText()
@@ -524,10 +524,6 @@ local function Icon_Disable(self, parent)
 	f:ClearAllPoints()
 end
 
-local function Icon_GetMouseOverStatus(self, unit, parent, frame)
-	return frame.status, true, frame.slotID, frame, unit or frame:GetParent():GetParent().unit
-end
-
 local pointsX = { TOPLEFT =  1,	TOPRIGHT = -1, BOTTOMLEFT = 1, BOTTOMRIGHT = -1 }
 local pointsY = { TOPLEFT = -1, TOPRIGHT = -1, BOTTOMLEFT = 1, BOTTOMRIGHT =  1 }
 local function Icon_UpdateDB(self)
@@ -615,6 +611,7 @@ local function Icon_UpdateDB(self)
 			self.ctColorCurve:AddPoint(dbx.ctThresholds[i] or 0, color)
 		end
 	end
+	self.ctOptions = dbx.ctColors and { textColor={ curve=self.ctColorCurve, property=Enum.DurationTextBindingProperty.RemainingDuration } } or nil
 	-- hide duplicated icons, used if several buffs/debufs statuses are linked to the indicator
 	self.hideDupes = dbx.hideDupes and {} or nil
 	-- backdrop
@@ -636,7 +633,6 @@ end
 Grid2.setupFunc["icons"] = function(indicatorKey, dbx)
 	local indicator = Grid2.indicatorPrototype:new(indicatorKey)
 	indicator.dbx       = dbx
-	indicator.GetMouseOverStatus = Icon_GetMouseOverStatus
 	indicator.Create    = Icon_Create
 	indicator.Disable   = Icon_Disable
 	indicator.UpdateDB  = Icon_UpdateDB

@@ -24,7 +24,7 @@ Grid2.DispelBorderDefaults = {
 	showWhenHarmful = true,
 	showWhenHelpful = true,
 	showWithoutDispelType = true,
-	style = Enum.CustomAuraButtonDispelTypeTextureStyle.PreserveAsset,-- Border, BorderWithIcon, Icon, PreserverAsset, CustomAsset
+	style = Enum.CustomAuraButtonDispelTypeTextureStyle.PreserveAsset, -- Border, BorderWithIcon, Icon, PreserverAsset, CustomAsset
 }
 
 --[[

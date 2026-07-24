@@ -566,7 +566,7 @@ Grid2Options:RegisterStatusOptions("mdebuffs", "debuff", function(self, status, 
 	options.colors = {
 		type = "group", order = 20, name = L["Colors"],
 		desc = L["Debuff Type colors."],
-		args = MakeDebuffTypesColorsOptions( status, {}, { width="normal", [''] = 'Default' } ),
+		args = MakeDebuffTypesColorsOptions( status, {}, { width="normal" } ),
 		-- hidden = function() return status.dbx.auras==nil end
 	}
 	options.load = {
