@@ -321,10 +321,7 @@ local function Icon_Disable(self, parent)
 	f:Hide()
 	f:SetParent(nil)
 	f:ClearAllPoints()
-	if f.auraContainer then
-		f.auraContainer:SetParent(nil)
-		f.auraContainer = nil
-	end
+	Icon_DisableAuraContainer(self, parent)
 end
 
 local function Icon_UpdateDB(self)

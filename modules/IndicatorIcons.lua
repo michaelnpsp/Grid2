@@ -58,57 +58,7 @@ local function Icon_OnFrameUpdate(f)
 	end
 	local i = 1
 	for _, status in ipairs(self.statuses) do
-		if status.GetIcons then
-			local k, textures, counts, expirations, durations, colors, slots = status:GetIcons(unit,max)
-			for j=1,k do
-				local slotID = slots[j]
-				if not (hideDupes and checkDupe(slotID)) then
-					local aura = auras[i]
-					aura.status, aura.slotID = status, slotID
-					if showIcons then
-						aura.icon:SetTexture(textures[j])
-						if useStatus then
-							local c = colors[j]
-							aura:SetBackdropBorderColor(c.r, c.g, c.b, self.borderOpacity) -- color is secret we cannot use min()
-						end
-					else
-						local c = colors[j]
-						aura.icon:SetColorTexture(c.r, c.g, c.b)
-					end
-					if showStack then
-						aura.text:SetText( TruncateWhenZero(counts[j]) )
-					end
-					local durObject
-					if showCool then
-						if canaccessvalue(expirations[j]) then
-							aura.cooldown:SetCooldownFromExpirationTime(expirations[j], durations[j])
-						else
-							durObject = status:GetDurationObject(unit, slotID)
-							if durObject then
-								aura.cooldown:SetCooldownFromDurationObject(durObject)
-							end
-						end
-					end
-					if needDur then
-						durObject = durObject or status:GetDurationObject(unit, slotID)
-						if showBar then
-							if durObject then
-								aura.coolBar:SetTimerDuration(durObject, 0, self.cbDirection)
-								aura.coolBar:Show()
-							else
-								aura.coolBar:Hide()
-							end
-						end
-						if showColors then
-							UpdateIconColorCurve(aura, durObject)
-						end
-					end
-					aura:Show()
-					i = i + 1
-				end
-			end
-			max = max - k
-		elseif status:IsActive(unit) then -- TODO secret test maybe
+		if status:IsActive(unit) then -- TODO secret test maybe
 			local aura = auras[i]
 			aura.status, aura.slotID = status, nil
 			if showIcons then
@@ -338,7 +288,7 @@ local function Icon_SetupButtonB(self, parent, auraContainer, frame, borderOptio
 	frame:SetFrameLevel(level+1)
 	-- aura icon
 	if not frame.icon then
-		frame.icon = frame:CreateTexture(nil, "OVERLAY")
+		frame.icon = frame:CreateTexture(nil, "ARTWORK")
 		frame:SetIcon(frame.icon)
 	end
 	-- frame border
@@ -346,7 +296,7 @@ local function Icon_SetupButtonB(self, parent, auraContainer, frame, borderOptio
 	if borderSize>0 then
 		local border = frame.border
 		if not border then
-			border = frame:CreateTexture(nil, "OVERLAY")
+			border = frame:CreateTexture(nil, "BACKGROUND")
 			border:ClearAllPoints()
 			border:SetAllPoints()
 			border:SetColorTexture(1,1,1,1)
