@@ -415,7 +415,7 @@ local function Icon_LayoutB(self, parent)
 	f:Show()
 	-- bliz aura container
 	Icon_DisableAuraContainer(self, parent, f)
-	local auraContainer = self:AcquireAuraContainer(parent, self.auraContainerKey)
+	local auraContainer = self:AcquireAuraContainer(parent, self.auraContainerKey, f)
 	auraContainer._buttons = {}
 	auraContainer:ClearAllPoints()
 	auraContainer:SetAllPoints()
@@ -443,7 +443,7 @@ local function Icon_LayoutB(self, parent)
 		end
 	end
 	auraContainer:Show()
-	self.auraContainer = auraContainer
+	f.auraContainer = auraContainer
 end
 
 -------------------------------------------------------------

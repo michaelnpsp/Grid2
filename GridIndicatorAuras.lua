@@ -14,11 +14,11 @@ end
 
 --=====================================================================
 
-function indicator:AcquireAuraContainer(parent, key)
+function indicator:AcquireAuraContainer(parent, key, frame)
 	local manager = parent.__auraManager
 	if not manager then
 		manager = setmetatable( {}, { __index = function(t,k)
-			local c = CreateFrame("AuraContainer", nil, parent, "CustomAuraContainerTemplate")
+			local c = CreateFrame("AuraContainer", nil, frame or parent, "CustomAuraContainerTemplate")
 			if k==0 then -- special AuraContainer to manage all single aura slots for each unit frame
 				c.slotCount = 0
 				c.slotEnabled = {}
