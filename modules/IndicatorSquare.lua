@@ -9,26 +9,21 @@ local SetAlphaFromBoolean = Grid2.SetAlphaFromBoolean
 --==============================================================
 
 local function Square_DisableAuraContainer(self, parent)
-	local f = parent[self.name]
-	if not f.auraContainer then return end
-	f.auraContainer:SetEnabled(false)
-	f.auraContainer:SetShown(false)
-	f.auraContainer:SetParent(nil)
-	f.auraContainer = nil
+	self:ReleaseAuraSlotButton(parent)
 end
 
 local function Square_LayoutAura(self, parent)
-	self:AcquireAuraContainerSlot(parent, function(button)
-		local filter, status = self:GetStatusAurasFilter()
-		local container = parent.container
-		button:ClearAllPoints()
-		button:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
-		button:SetPoint(self.anchor, container, self.anchorRel, self.offsetx, self.offsety)
-		button:SetSize(self.width or container:GetWidth() , self.height or container:GetHeight())
-		local tex = button:CreateTexture(nil, "ARTWORK")
-		tex:SetAllPoints()
-		tex:SetColorTexture( status:GetColor() )
-	end, filter)
+	local filter, status = self:GetStatusAurasFilter()
+	local button = self:AcquireAuraSlotButton(parent, filter)
+	local container = parent.container
+	button:ClearAllPoints()
+	button:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
+	button:SetPoint(self.anchor, container, self.anchorRel, self.offsetx, self.offsety)
+	button:SetSize(self.width or container:GetWidth() , self.height or container:GetHeight())
+	tex = button.__texture or button:CreateTexture(nil, "ARTWORK")
+	tex:SetAllPoints()
+	tex:SetColorTexture( status:GetColor() )
+	button.__texture = tex
 end
 
 --==============================================================
@@ -158,7 +153,6 @@ local function Create(indicatorKey, dbx)
 	indicator.OnUpdate = Square_OnUpdate
 	indicator.Disable = Square_Disable
 	indicator.UpdateDB = Square_UpdateDB
-	indicator.OnUnitChanged =  indicator.UpdateAuraContainerUnit
 	indicator.GetBlinkFrame = indicator.GetFrame
 	Grid2:RegisterIndicator(indicator, { "color" })
 	return indicator

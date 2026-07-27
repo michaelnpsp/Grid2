@@ -46,6 +46,7 @@ GridFrame.lua
 GridLayout.lua
 GridLayoutLayouts.lua
 GridIndicator.lua
+GridIndicatorAuras.lua
 GridIndicatorLoad.lua
 GridIndicatorEffects.lua
 GridStatus.lua

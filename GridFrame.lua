@@ -89,6 +89,7 @@ function GridFrameEvents:OnAttributeChanged(name, value)
 			Grid2Frame:Debug("removed", self:GetName(), name, old_unit)
 			Grid2:SetFrameUnit(self, nil)
 			self:NotifyIndicatorsUnitChanged()
+			self:UpdateAuraContainers()
 		end
 	end
 end
@@ -184,6 +185,23 @@ function GridFramePrototype:Layout()
 	end
 end
 
+function GridFramePrototype:UpdateAuraContainers()
+	local manager = self.__auraManager
+	if manager then
+		local unit = self.unit or 'none'
+		local enabled = unit ~= 'none'
+		for _, container in pairs(manager) do
+			if unit ~= container:GetUnit() then
+				container:SetUnit(unit)
+				container:SetShown(enabled)
+				container:SetEnabled(enabled)
+			else
+				container:UpdateAllAuras()
+			end
+		end
+	end
+end
+
 function GridFramePrototype:NotifyIndicatorsUnitChanged()
 	local unit = self.unit
 	local indicators = Grid2:GetIndicatorsEnabled()
@@ -202,6 +220,9 @@ function GridFramePrototype:UpdateIndicators(unitChanged)
 			end
 			indicators[i]:Update(self, unit)
 		end
+	end
+	if unitChanged then
+		self:UpdateAuraContainers(unit)
 	end
 end
 

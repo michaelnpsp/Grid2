@@ -84,26 +84,27 @@ end
 local function Bar_LayoutAuraColor(self, parent, f, level)
 	local color = self.sideKick
 	if color.auraMode then
-		local filter = color:GetStatusAurasFilter()
-		self:AcquireAuraContainerSlot(parent, function(button)
-			local tex = f.myCTextures and f.myCTextures[1]
-			if not tex then return end
-			local setup = self.bars[1]
-			if not setup then return end
+		local setup = self.bars[1]
+		local tex = f.myCTextures and f.myCTextures[1]
+		if tex and setup then
+			local filter = color:GetStatusAurasFilter()
+			local button = self:AcquireAuraSlotButton(parent, filter)
 			button:ClearAllPoints()
 			button:SetAllPoints(f)
 			button:SetFrameLevel(level)
-			local atex = button:CreateTexture(nil, "OVERLAY", nil, setup.sublayer+1)
-			atex:SetTexture(setup.texture, setup.horWrap, setup.verWrap)
-			atex:SetHorizTile(setup.horWrap~='CLAMP')
-			atex:SetVertTile(setup.verWrap~='CLAMP')
-			atex:SetBlendMode('ADD')
-			atex:SetAllPoints(tex)
-			button:SetAuraBorder(atex, filter.borderOptions)
-		end, filter, f)
-	elseif f.auraContainer then
-		self:ReleaseAuraContainer(parent, f)
+			local ctex = button.__texture or button:CreateTexture(nil, "OVERLAY", nil, setup.sublayer+1)
+			ctex:ClearAllPoints(tex)
+			ctex:SetTexture(setup.texture, setup.horWrap, setup.verWrap)
+			ctex:SetHorizTile(setup.horWrap~='CLAMP')
+			ctex:SetVertTile(setup.verWrap~='CLAMP')
+			ctex:SetBlendMode('ADD')
+			ctex:SetAllPoints(tex)
+			button:SetAuraBorder(ctex, filter.borderOptions)
+			button.__texture = ctex
+			return
+		end
 	end
+	self:ReleaseAuraSlotButton(parent)
 end
 
 local function Bar_Layout(self, parent)
@@ -361,7 +362,6 @@ local function Create(indicatorKey, dbx)
 	Bar.Layout         = Bar_Layout
 	Bar.UpdateDB       = Bar_UpdateDB
 	Bar.UpdateO        = Bar_Update -- special case used by multibar and icons indicator
-	Bar.OnUnitChanged  = Bar.UpdateAuraContainerUnit
 	Grid2:RegisterIndicator(Bar, { "percent", "color" })
 
 	local BarColor      = Grid2.indicatorPrototype:new(indicatorKey.."-color")

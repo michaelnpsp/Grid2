@@ -50,9 +50,15 @@ end
 
 function indicator:Release(parent)
 	local f = parent[self.name]
+	if self.Destroy then
+		self:Destroy(parent, f)
+	end
+	-- We only release the first aura slot button created, if a indicator creates more slots (using a non nil key to identify them)
+	-- those slots must be manually released inside a indicator:Destroy() method.
+	if parent.__auraManager then
+		self:ReleaseAuraSlotButton(parent)
+	end
 	if f then
-		local Destroy = self.Destroy
-		if Destroy then	Destroy(self, parent, f) end
 		if f~=parent then
 			f:SetParent(nil)
 			f:ClearAllPoints()

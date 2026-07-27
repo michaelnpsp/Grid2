@@ -28,10 +28,8 @@ local function Icon_DisableIconContainer(f)
 	end
 end
 
-local function Icon_DisableAuraContainer(f)
-	f.auraContainer:SetParent(nil)
-	f.auraContainer:SetEnabled(false)
-	f.auraContainer:SetShown(false)
+local function Icon_DisableAuraContainer(self, parent, f)
+	self:ReleaseAuraContainer(parent, self.auraContainerKey)
 	f.auraContainer = nil
 end
 
@@ -147,7 +145,7 @@ end
 -- Layout icons
 local function Icon_LayoutA(self, parent)
 	local f = parent[self.name]
-	if f.auraContainer then Icon_DisableAuraContainer(f) end
+	Icon_DisableAuraContainer(self, parent, f)
 	local x,y = 0,0
 	local ux,uy = self.ux,self.uy
 	local vx,vy = self.vx,self.vy
@@ -416,13 +414,8 @@ local function Icon_LayoutB(self, parent)
 	end
 	f:Show()
 	-- bliz aura container
-	if f.auraContainer then -- discard previous container because blizz API has no methods to change some settings like the auraFilter
-		f.auraContainer:SetEnabled(false)
-		f.auraContainer:SetShown(false)
-		f.auraContainer:SetParent(nil)
-	end
-	local auraContainer = CreateFrame("AuraContainer", nil, f, "CustomAuraContainerTemplate")
-	f.auraContainer = auraContainer
+	Icon_DisableAuraContainer(self, parent, f)
+	local auraContainer = self:AcquireAuraContainer(parent, self.auraContainerKey)
 	auraContainer._buttons = {}
 	auraContainer:ClearAllPoints()
 	auraContainer:SetAllPoints()
@@ -449,10 +442,8 @@ local function Icon_LayoutB(self, parent)
 			auraContainer:SetAuraGroupLayout(key, self.groupLayout)
 		end
 	end
-	-- for _, button in ipairs(auraContainer._buttons) do
-	-- 	Icon_SetupButtonB(self, parent, auraContainer, button)
-	-- end
 	auraContainer:Show()
+	self.auraContainer = auraContainer
 end
 
 -------------------------------------------------------------
@@ -472,6 +463,7 @@ local function Icon_Disable(self, parent)
 	f:Hide()
 	f:SetParent(nil)
 	f:ClearAllPoints()
+	Icon_DisableAuraContainer(self, parent, f)
 end
 
 local pointsX = { TOPLEFT =  1,	TOPRIGHT = -1, BOTTOMLEFT = 1, BOTTOMRIGHT = -1 }
@@ -570,6 +562,7 @@ local function Icon_UpdateDB(self)
 	self.horizontalDirection = pointsX[self.anchorIcon]
 	self.verticalDirection = pointsY[self.anchorIcon]
 	self.groupLayout = { elementSpacingX = self.iconSpacing, elementSpacingY = self.iconSpacing, gapX = 0, gapY = 0, forceNewRow = false }
+	self.auraContainerKey = string.format("%s_%s", self.dbx.type, self.name)
 end
 
 local function Icon_Layout(self, parent)
@@ -585,6 +578,7 @@ Grid2.setupFunc["icons"] = function(indicatorKey, dbx)
 	indicator.dbx       = dbx
 	indicator.Create    = Icon_Create
 	indicator.Disable   = Icon_Disable
+	indicator.Destroy   = Icon_Disable
 	indicator.UpdateDB  = Icon_UpdateDB
 	indicator.Layout    = Icon_Layout
 	indicator.UpdateO   = Icon_Update -- special case used by multibar and icons indicator

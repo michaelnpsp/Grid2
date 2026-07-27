@@ -18,6 +18,27 @@ local function Bar_CreateHH(self, parent)
 	end
 end
 
+local function Bar_LayoutAuraColor(self, parent, f, level)
+	local color = self.sideKick
+	if color.auraMode then
+		local filter = color:GetStatusAurasFilter()
+		local button = self:AcquireAuraSlotButton(parent, filter)
+		local tex = f:GetStatusBarTexture()
+		button:ClearAllPoints()
+		button:SetAllPoints(f)
+		button:SetFrameLevel(level)
+		local ctex = button.__texture or button:CreateTexture(nil, "OVERLAY", nil, 7)
+		ctex:ClearAllPoints(tex)
+		ctex:SetTexture(self.texture)
+		ctex:SetBlendMode('ADD')
+		ctex:SetAllPoints(tex)
+		button:SetAuraBorder(ctex, filter.borderOptions)
+		button.__texture = ctex
+	else
+		self:ReleaseAuraSlotButton(parent)
+	end
+end
+
 local function Bar_Layout(self, parent)
 	local Bar    = parent[self.name]
 	local bgTex  = Bar.bgTex
@@ -59,6 +80,7 @@ local function Bar_Layout(self, parent)
 	end
 	Bar.fgTex = Bar:GetStatusBarTexture()
 	Bar:Show()
+	Bar_LayoutAuraColor(self, parent, Bar, level)
 end
 
 --{{{ Bar OnUpdate
