@@ -3,6 +3,7 @@
 local Grid2 = Grid2
 
 local SetAlphaFromBoolean = Grid2.SetAlphaFromBoolean
+local UnpackColor = Grid2.UnpackColor
 
 --==============================================================
 --
@@ -24,6 +25,47 @@ local function Square_LayoutAura(self, parent)
 	tex:SetAllPoints()
 	tex:SetColorTexture( status:GetColor() )
 	button.__texture = tex
+end
+
+local function Square_LayoutAura(self, parent)
+	local filter, status = self:GetStatusAurasFilter()
+	local button = self:AcquireAuraSlotButton(parent, filter)
+	local container = parent.container
+	button:ClearAllPoints()
+	button:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
+	button:SetPoint(self.anchor, container, self.anchorRel, self.offsetx, self.offsety)
+	button:SetSize(self.width or container:GetWidth() , self.height or container:GetHeight())
+	local tex = button.__texture
+	if not tex then
+		tex = button:CreateTexture(nil, "ARTWORK")
+		button.__texture = tex
+	end
+	local btex = tex.__borderTexture
+	if not btex then
+		btex = button:CreateTexture(nil, "ARTWORK")
+		btex:SetAllPoints()
+		tex.__borderTexture = btex
+	end
+	tex:ClearAllPoints()
+	local borderSize = self.borderSize
+	if borderSize then
+		tex:SetPoint("TOPLEFT", borderSize, -borderSize)
+		tex:SetPoint("BOTTOMRIGHT", -borderSize, borderSize)
+		btex:SetTexture( Grid2:GetSliceBorderTexture(borderSize) )
+		btex:SetTextureSliceMargins(borderSize, borderSize, borderSize, borderSize)
+		btex:SetTextureSliceMode(1)
+		btex:Show()
+	else
+		tex:SetAllPoints()
+		btex:Hide()
+	end
+	if self.borderSwap then
+		tex:SetColorTexture( UnpackColor(self.color) )
+		btex:SetVertexColor( status:GetColor() )
+	else
+		tex:SetColorTexture( status:GetColor() )
+		btex:SetVertexColor( UnpackColor(self.color) )
+	end
 end
 
 --==============================================================
@@ -78,18 +120,16 @@ local function Square_LayoutIcon(self, parent)
 	Square:SetWidth( self.width or container:GetWidth() )
 	Square:SetHeight( self.height or container:GetHeight() )
 	if self.borderSwap then
-		local c = self.color
 		local r,g,b,a = Square:GetBackdropBorderColor()
 		Grid2:SetFrameBackdrop(Square, self.backdrop)
-		Square:SetBackdropColor( c.r, c.g, c.b, c.a )
+		Square:SetBackdropColor( UnpackColor(self.color) )
 		if r then Square:SetBackdropBorderColor( r,g,b,a ) end
 	else
 		local r,g,b,a = Square:GetBackdropColor()
 		Grid2:SetFrameBackdrop(Square, self.backdrop)
 		if r then Square:SetBackdropColor( r,g,b,a ) end
 		if self.borderSize then
-			local c = self.color
-			Square:SetBackdropBorderColor( c.r, c.g, c.b, c.a )
+			Square:SetBackdropBorderColor( UnpackColor(self.color) )
 		end
 	end
 	local mode = self.blendMode
