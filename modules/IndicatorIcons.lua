@@ -429,12 +429,15 @@ local function Icon_LayoutB(self, parent)
 	for i, status in ipairs(self.statuses) do
 		if status.GetAurasFilter then
 			local key, filter = tostring(i), status:GetAurasFilter()
+			local maxFrameCount = math.min(self.maxIcons, filter.maxAuras or 64)
+			local count = 10 - maxFrameCount
 			auraContainer:AddAuraGroup( key, filter.filter, {
-				maxFrameCount = math.min(self.maxIcons, filter.maxAuras or 64),
+				maxFrameCount = maxFrameCount,
 				sortMethod = filter.sortRule or 0,
 				sortDirection = filter.sortDir or 0,
 				candidateFilters = filter.candidateFilters,
 				initializeFrame = function(button)
+					if count>0 then count = count -1; return end
 					buttons[#buttons+1] = button
 					Icon_SetupButtonB(self, parent, auraContainer, button, filter.borderOptions)
 				end
@@ -560,7 +563,7 @@ local function Icon_UpdateDB(self)
 	-- used only in auraContainer mode
 	self.horizontalDirection = pointsX[self.anchorIcon]
 	self.verticalDirection = pointsY[self.anchorIcon]
-	self.groupLayout = { elementSpacingX = self.iconSpacing, elementSpacingY = self.iconSpacing, gapX = 0, gapY = 0, forceNewRow = false }
+	self.groupLayout = { elementSpacing = self.iconSpacing, lineSpacing = self.iconSpacing, gapX = 0, gapY = 0, forceNewRow = false }
 	self.auraContainerKey = string.format("%s_%s", self.dbx.type, self.name)
 end
 
