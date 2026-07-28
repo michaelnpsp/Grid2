@@ -141,6 +141,12 @@ function Grid2:OnInitialize()
 end
 
 function Grid2:OnEnable()
+
+	if Grid2.versionCli<120001 then
+		print("Grid2 Error: This addon version is only compatible with WoW Midnight Path 12.0.1 or superior!!!")
+		return
+	end
+
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 	self:RegisterEvent("GROUP_ROSTER_UPDATE", "GroupChanged")

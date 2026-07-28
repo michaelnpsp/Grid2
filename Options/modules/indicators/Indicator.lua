@@ -100,9 +100,9 @@ do
 	local function AreCurrentStatusesIncompatible(indicator)
 		if indicator then
 			if indicator.dbx.type=='icons' then
-				return indicator.auraMode and indicator.iconMode and "Warning: This indicator does not support mixed auras and non-auras statuses. Remove some statuses from the list to fix this issue."
+				return indicator.auraMode and indicator.iconMode and "Warning: This indicator does not support mixing auras and non-auras statuses. Remove some statuses from the list to fix the issue."
 			elseif (indicator.auraMode or 1)>1 then
-				return "Warning: This indicator only supports one linked aura status. Remove some statuses from the list to fix this issue."
+				return "Warning: Only one aura status can be assigned to this indicator. Remove some aura statuses from the list to fix the issue."
 			end
 		end
 	end
@@ -150,9 +150,7 @@ do
 		},
 
 		msg = { type = "description", order = 1.5, fontSize = "medium",
-			name = function()
-				return string.format("|cffDD571c%s|r", L[AreCurrentStatusesIncompatible(editedIndicator) or ''] )
-			end,
+			name = function() return string.format("|cffFC6A03%s|r", L[AreCurrentStatusesIncompatible(editedIndicator) or ''] ) end,
 			hidden = function() return not AreCurrentStatusesIncompatible(editedIndicator) end,
 		},
 
