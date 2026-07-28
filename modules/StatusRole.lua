@@ -22,6 +22,7 @@ local MAIN_ASSIST = MAIN_ASSIST
 local raid_indexes = Grid2.raid_indexes
 local party_indexes = Grid2.party_indexes
 local next, select = next, select
+local canaccessvalue = Grid2.canaccessvalue
 
 -- Code to disable statuses in combat
 local SetHideInCombat
@@ -373,7 +374,8 @@ function DungeonRole:OnDisable()
 end
 
 function DungeonRole:IsActive(unit)
-    return isValidRole[ UnitGroupRolesAssigned(unit) ]
+	local role = UnitGroupRolesAssigned(unit)
+    return canaccessvalue(role) and isValidRole[role]
 end
 
 function DungeonRole:GetColor(unit)
