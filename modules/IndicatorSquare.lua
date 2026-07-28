@@ -21,20 +21,6 @@ local function Square_LayoutAura(self, parent)
 	button:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
 	button:SetPoint(self.anchor, container, self.anchorRel, self.offsetx, self.offsety)
 	button:SetSize(self.width or container:GetWidth() , self.height or container:GetHeight())
-	tex = button.__texture or button:CreateTexture(nil, "ARTWORK")
-	tex:SetAllPoints()
-	tex:SetColorTexture( status:GetColor() )
-	button.__texture = tex
-end
-
-local function Square_LayoutAura(self, parent)
-	local filter, status = self:GetStatusAurasFilter()
-	local button = self:AcquireAuraSlotButton(parent, filter)
-	local container = parent.container
-	button:ClearAllPoints()
-	button:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
-	button:SetPoint(self.anchor, container, self.anchorRel, self.offsetx, self.offsety)
-	button:SetSize(self.width or container:GetWidth() , self.height or container:GetHeight())
 	local tex = button.__texture
 	if not tex then
 		tex = button:CreateTexture(nil, "ARTWORK")

@@ -9,13 +9,11 @@ local SetAlphaFromBoolean = Grid2.SetAlphaFromBoolean
 
 local function Shape_Create(self, parent)
 	local f = self:Acquire("Frame", parent)
-	local Icon = f.Icon or f:CreateTexture(nil, "ARTWORK")
-	Icon:SetAllPoints()
-	f.Icon = Icon
 end
 
 local function Shape_OnUpdate(self, parent, unit, status, state, secret, invert)
 	local f = parent[self.name]
+	if not f.iconContainer then return end
 	if status then
 		if self.opacity then
 			local r, g, b, a = status:GetColor(unit)
@@ -29,11 +27,63 @@ local function Shape_OnUpdate(self, parent, unit, status, state, secret, invert)
 	end
 end
 
-local function Shape_Layout(self, parent)
+local function Shape_DisableIconContainer(self, parent)
+	local f = parent[self.name]
+	if f.iconContainer then
+		f:Hide()
+		f.iconContainer = nil
+	end
+end
+
+local function Shape_DisableAuraContainer(self, parent)
+	self:ReleaseAuraSlotButton(parent)
+end
+
+local function Shape_LayoutAura(self, parent)
+	local filter, status = self:GetStatusAurasFilter()
+	local f = self:AcquireAuraSlotButton(parent, filter)
+	local container = parent.container
+	local level = parent:GetFrameLevel() + self.frameLevel
+	local width = self.width or parent.container:GetWidth()
+	local height = self.height or parent.container:GetHeight()
+	if not f.Icon then
+		f.Icon = f:CreateTexture(nil, "ARTWORK")
+		f.Icon:SetAllPoints()
+	end
+	f:ClearAllPoints()
+	f:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
+	f:SetFrameLevel(level)
+	f:SetSize(width, height)
+	f.Icon:SetTexCoord( unpack(self.iconCoord) )
+	f.Icon:SetTexture( self.iconPath )
+	f.Icon:SetBlendMode(self.blendMode)
+	f.Icon:Show()
+	if self.dbx.shadowEnabled then
+		local IconShadow = f.IconShadow or f:CreateTexture(nil, "BORDER")
+		IconShadow:ClearAllPoints()
+		IconShadow:SetPoint("CENTER", self.shadowX, self.shadowY)
+		IconShadow:SetSize(width + self.shadowSize, height + self.shadowSize)
+		IconShadow:SetTexture(self.iconPath)
+		IconShadow:SetTexCoord( unpack(self.iconCoord) )
+		IconShadow:SetBlendMode(self.blendMode)
+		IconShadow:SetVertexColor(self.color.r, self.color.g, self.color.b, self.color.a)
+		IconShadow:Show()
+		f.IconShadow = IconShadow
+	elseif f.IconShadow then
+		f.IconShadow:Hide()
+	end
+end
+
+local function Shape_LayoutIcon(self, parent)
 	local f = parent[self.name]
 	local level = parent:GetFrameLevel() + self.frameLevel
 	local width = self.width or parent.container:GetWidth()
 	local height = self.height or parent.container:GetHeight()
+	if not f.Icon then
+		f.Icon = f:CreateTexture(nil, "ARTWORK")
+		f.Icon:SetAllPoints()
+	end
+	f.iconContainer = f
 	f:SetParent(parent)
 	f:ClearAllPoints()
 	f:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
@@ -60,6 +110,20 @@ local function Shape_Layout(self, parent)
 	f:SetAlpha(0)
 	f:Show()
 end
+
+local function Shape_Layout(self, parent)
+	if self.auraMode then
+		Shape_LayoutAura(self, parent)
+	else
+		Shape_DisableAuraContainer(self, parent)
+	end
+	if self.iconMode then
+		Shape_LayoutIcon(self, parent)
+	else
+		Shape_DisableIconContainer(self, parent)
+	end
+end
+
 
 local function Shape_Disable(self, parent)
 	local f = parent[self.name]
