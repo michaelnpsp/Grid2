@@ -124,7 +124,6 @@ local function Shape_Layout(self, parent)
 	end
 end
 
-
 local function Shape_Disable(self, parent)
 	local f = parent[self.name]
 	f.Icon:Hide()

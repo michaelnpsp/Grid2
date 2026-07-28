@@ -276,7 +276,7 @@ end
 -- blizzard secret aura containers 12.1+
 -------------------------------------------------------------
 
-local function Icon_SetupButtonB(self, parent, auraContainer, frame, borderOptions)
+local function Icon_SetupButtonB(self, parent, auraContainer, frame, borderOptions, status)
 	-- frame button
 	local iconSize = self.iconSize>1 and self.iconSize or self.iconSize * parent:GetHeight()
 	frame:SetSize(iconSize, iconSize)
@@ -286,7 +286,12 @@ local function Icon_SetupButtonB(self, parent, auraContainer, frame, borderOptio
 	-- aura icon
 	if not frame.icon then
 		frame.icon = frame:CreateTexture(nil, "ARTWORK")
+	end
+	if self.showIcons then
 		frame:SetIcon(frame.icon)
+	else
+		frame:ClearIcon()
+		frame.icon:SetColorTexture( status:GetColor() )
 	end
 	-- frame border
 	local borderSize = self.borderSize
@@ -418,7 +423,7 @@ local function Icon_LayoutB(self, parent)
 	auraContainer._buttons = {}
 	auraContainer:ClearAllPoints()
 	auraContainer:SetAllPoints()
-	auraContainer:SetSize(f:GetSize())
+	-- auraContainer:SetSize(f:GetSize())
 	auraContainer:SetFlowLayoutAxis(self.layoutAxis)
 	auraContainer:SetFlowLayoutMaximumLineSize( self.vertical and f:GetHeight() or f:GetWidth() )
 	auraContainer:SetFlowLayoutAnchorPoint(self.anchorIcon)
@@ -438,7 +443,7 @@ local function Icon_LayoutB(self, parent)
 				initializeFrame = function(button)
 					if count>0 then count = count -1; return end
 					buttons[#buttons+1] = button
-					Icon_SetupButtonB(self, parent, auraContainer, button, filter.borderOptions)
+					Icon_SetupButtonB(self, parent, auraContainer, button, filter.borderOptions, status)
 				end
 			} )
 			auraContainer:SetAuraGroupLayout(key, self.groupLayout)
