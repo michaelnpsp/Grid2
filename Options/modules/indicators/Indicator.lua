@@ -97,7 +97,18 @@ do
 		return true
 	end
 
+	local function AreCurrentStatusesIncompatible(indicator)
+		if indicator then
+			if indicator.dbx.type=='icons' then
+				return indicator.auraMode and indicator.iconMode and "Warning: This indicator does not support mixed auras and non-auras statuses. Remove some statuses from the list to fix this issue."
+			elseif (indicator.auraMode or 1)>1 then
+				return "Warning: This indicator only supports one linked aura status. Remove some statuses from the list to fix this issue."
+			end
+		end
+	end
+
 	local sharedOptions = {
+
 		current = {
 			type = "multiselect", dialogControl = "Grid2IndicatorCurrentStatuses",
 			order = 1,
@@ -137,6 +148,14 @@ do
 				-- Grid2Options:RefreshOptions()
 			end,
 		},
+
+		msg = { type = "description", order = 1.5, fontSize = "medium",
+			name = function()
+				return string.format("|cffDD571c%s|r", L[AreCurrentStatusesIncompatible(editedIndicator) or ''] )
+			end,
+			hidden = function() return not AreCurrentStatusesIncompatible(editedIndicator) end,
+		},
+
 		title = { type = "description", order = 2, fontSize = "medium", name = string.format("|cffffd200    %s|r",L["Available Statuses"]) },
 	}
 
