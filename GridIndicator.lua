@@ -26,7 +26,6 @@ indicator.__index = indicator
 indicator.EnableTooltips = Grid2.Dummy
 indicator.DisableTooltips = Grid2.Dummy
 indicator.UpdateDB = Grid2.Dummy
-indicator.OnUnitChanged = Grid2.Dummy
 
 function indicator:new(name)
 	local e = setmetatable({}, self)
@@ -266,86 +265,4 @@ end
 
 function Grid2:IterateIndicators(type)
 	return next, type and self.indicatorTypes[type] or self.indicators
-end
-
--- helper functions to manage aura containers 12.1+
-
-function indicator:GetStatusAurasFilter()
-	for _,status in ipairs(self.statuses) do
-		if status.GetAurasFilter then
-			return status:GetAurasFilter(), status
-		end
-	end
-end
-
-function indicator:StatusChanged(status, priority)
-	if status.GetAurasFilter then
-		self.auraMode = (self.auraMode or 0) + (priority and 1 or -1)
-		if self.auraMode==0 then self.auraMode = nil end
-	else
-		self.iconMode = (self.iconMode or 0) + (priority and 1 or -1)
-		if self.iconMode==0 then self.iconMode = nil end
-	end
-	-- self:UpdateFilter()
-	-- self:UpdateHighlight(status)
-end
-
-function indicator:UpdateAuraContainerUnit(parent, unit, frame)
-	local f = frame or parent[self.name]
-	if f then
-		local auraContainer = f.auraContainer
-		if auraContainer then
-			unit = unit or 'none'
-			if unit~=auraContainer:GetUnit() then
-				local enabled = unit~="none"
-				auraContainer:SetUnit(unit)
-				auraContainer:SetShown(enabled)
-				auraContainer:SetEnabled(enabled)
-			else
-				auraContainer:UpdateAllAuras()
-			end
-		end
-	end
-end
-
-function indicator:ReleaseAuraContainer(parent, frame)
-	local f = frame or parent[self.name]
-	local auraContainer = f.auraContainer
-	if auraContainer then
-		auraContainer:SetShown(false)
-		auraContainer:SetEnabled(false)
-		auraContainer:SetParent(nil)
-		f.auraContainer = nil
-	end
-end
-
-function indicator:AcquireAuraContainerSlot(parent, initFunc, filter, frame)
-	filter = filter or self:GetStatusAurasFilter()
-	if filter then
-		local f = frame or parent[self.name]
-		if f.auraContainer then
-			self:ReleaseAuraContainer(parent, f)
-		end
-		local auraContainer = CreateFrame("AuraContainer", nil, parent, "CustomAuraContainerTemplate")
-		auraContainer.borderOptions = filter.borderOptions
-		local button = auraContainer:AddAuraSlot( "1", filter.filter, {
-			sortMethod = filter.sortRule or 0,
-			sortDirection = filter.sortDir or 0,
-			candidateFilters = filter.candidateFilters,
-			initializeFrame = initFunc,
-		} )
-		self:SetAuraButtonTooltip(button)
-		auraContainer:Show()
-		f.auraContainer = auraContainer
-		return auraContainer
-	end
-end
-
-function indicator:SetAuraButtonTooltip(button)
-	if self.dbx.tooltipEnabled then
-		button:EnableMouse(true)
-		button:SetTooltipAnchorPoint(self.dbx.tooltipAnchor or "ANCHOR_BOTTOMLEFT")
-	else
-		button:EnableMouse(false)
-	end
 end

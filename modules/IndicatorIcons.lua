@@ -442,7 +442,6 @@ local function Icon_LayoutB(self, parent)
 			auraContainer:SetAuraGroupLayout(key, self.groupLayout)
 		end
 	end
-	auraContainer:Show()
 	f.auraContainer = auraContainer
 end
 
@@ -582,7 +581,6 @@ Grid2.setupFunc["icons"] = function(indicatorKey, dbx)
 	indicator.UpdateDB  = Icon_UpdateDB
 	indicator.Layout    = Icon_Layout
 	indicator.UpdateO   = Icon_Update -- special case used by multibar and icons indicator
-	indicator.OnUnitChanged = indicator.UpdateAuraContainerUnit
 	EnableDelayedUpdates()
 	Grid2:RegisterIndicator(indicator, { "icon", "icons" })
 	return indicator

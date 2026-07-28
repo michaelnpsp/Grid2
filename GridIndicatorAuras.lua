@@ -14,43 +14,74 @@ end
 
 --=====================================================================
 
-function indicator:AcquireAuraContainer(parent, key, frame)
-	local manager = parent.__auraManager
-	if not manager then
-		manager = setmetatable( {}, { __index = function(t,k)
-			local c = CreateFrame("AuraContainer", nil, frame or parent, "CustomAuraContainerTemplate")
-			if k==0 then -- special AuraContainer to manage all single aura slots for each unit frame
-				c.slotCount = 0
-				c.slotEnabled = {}
-				c.slotDisabled = {}
-			end
-			t[k] = c
-			return c
-		end } )
-		parent.__auraManager = manager
+function indicator:StatusChanged(status, priority)
+	if status.GetAurasFilter then
+		self.auraMode = (self.auraMode or 0) + (priority and 1 or -1)
+		if self.auraMode==0 then self.auraMode = nil end
+	else
+		self.iconMode = (self.iconMode or 0) + (priority and 1 or -1)
+		if self.iconMode==0 then self.iconMode = nil end
 	end
-	return manager[key]
+	-- self:UpdateFilter()
+	-- self:UpdateHighlight(status)
 end
 
-function indicator:ReleaseAuraContainer(parent, key)
-	local manager = parent.__auraManager
-	if manager then
-		local container = rawget( manager, key )
-		if container then
-			container:SetEnabled(false)
-			container:SetShown(false)
-			container:SetParent(nil)
-			container:SetUnit('none')
-			manager[key] = nil
+function indicator:GetStatusAurasFilter()
+	for _,status in ipairs(self.statuses) do
+		if status.GetAurasFilter then
+			return status:GetAurasFilter(), status
 		end
+	end
+end
+
+function indicator:SetAuraButtonTooltip(button)
+	if self.dbx.tooltipEnabled then
+		button:EnableMouse(true)
+		button:SetTooltipAnchorPoint(self.dbx.tooltipAnchor or "ANCHOR_BOTTOMLEFT")
+	else
+		button:EnableMouse(false)
 	end
 end
 
 --=====================================================================
 
+function indicator:AcquireAuraContainer(parent, key, frame)
+	local container = parent.__auraManager[key]
+	if not container then
+		container = CreateFrame("AuraContainer", nil, frame or parent, "CustomAuraContainerTemplate")
+		parent.__auraManager[key] = container
+	end
+	return container
+end
+
+function indicator:ReleaseAuraContainer(parent, key)
+	local container = parent.__auraManager[key]
+	if container then
+		container:SetEnabled(false)
+		container:SetShown(false)
+		container:SetParent(nil)
+		container:SetUnit('none')
+		parent.__auraManager[key] = nil
+	end
+end
+
+--=====================================================================
+
+local function GetAuraSlotsContainer(parent)
+	local container = parent.__auraManager[0]
+	if not container then
+		container = CreateFrame("AuraContainer", nil, parent, "CustomAuraContainerTemplate")
+		container.slotCount = 0
+		container.slotEnabled = {}
+		container.slotDisabled = {}
+		parent.__auraManager[0] = container
+	end
+	return container
+end
+
 function indicator:AcquireAuraSlotButton(parent, filter, releaseFunc, key)
 	filter = filter or self:GetStatusAurasFilter()
-	local container = self:AcquireAuraContainer(parent, 0)
+	local container = GetAuraSlotsContainer(parent)
 	local buttonKey, prefixKey = GetAuraSlotKey(self, key)
 	local button = container.slotEnabled[buttonKey]
 	if not button then -- search a disabled compatible slot button
@@ -80,7 +111,7 @@ function indicator:AcquireAuraSlotButton(parent, filter, releaseFunc, key)
 end
 
 function indicator:ReleaseAuraSlotButton(parent, key)
-	local container = self:AcquireAuraContainer(parent, 0)
+	local container = GetAuraSlotsContainer(parent)
 	local buttonKey, prefixKey = GetAuraSlotKey(self, key)
 	local button = container.slotEnabled[buttonKey]
 	if button then

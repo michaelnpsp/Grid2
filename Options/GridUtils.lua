@@ -602,7 +602,7 @@ function Grid2Options:UpdateIndicator(indicator)
 	for frame in next, Grid2Frame.activatedFrames do
 		local unit = frame.unit
 		if unit then
-			indicator:OnUnitChanged(frame, unit)
+			frame:UpdateAuraContainers()
 			indicator:Update(frame, unit)
 		end
 	end

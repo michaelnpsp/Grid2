@@ -88,7 +88,6 @@ function GridFrameEvents:OnAttributeChanged(name, value)
 		elseif old_unit then
 			Grid2Frame:Debug("removed", self:GetName(), name, old_unit)
 			Grid2:SetFrameUnit(self, nil)
-			self:NotifyIndicatorsUnitChanged()
 			self:UpdateAuraContainers()
 		end
 	end
@@ -113,6 +112,7 @@ end
 --{{{ GridFramePrototype
 local GridFramePrototype = {}
 local function GridFrame_Init(frame, width, height)
+	frame.__auraManager = {}
 	for name, value in pairs(GridFramePrototype) do
 		frame[name] = value
 	end
@@ -202,22 +202,11 @@ function GridFramePrototype:UpdateAuraContainers()
 	end
 end
 
-function GridFramePrototype:NotifyIndicatorsUnitChanged()
-	local unit = self.unit
-	local indicators = Grid2:GetIndicatorsEnabled()
-	for i=1,#indicators do
-		indicators[i]:OnUnitChanged(self, unit)
-	end
-end
-
 function GridFramePrototype:UpdateIndicators(unitChanged)
 	local unit = self.unit
 	if unit then
 		local indicators = Grid2:GetIndicatorsEnabled()
 		for i=1,#indicators do
-			if unitChanged then
-				indicators[i]:OnUnitChanged(self, unit)
-			end
 			indicators[i]:Update(self, unit)
 		end
 	end

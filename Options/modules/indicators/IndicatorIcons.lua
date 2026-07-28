@@ -155,7 +155,7 @@ function Grid2Options:MakeIndicatorAuraIconsSizeOptions(indicator, options, opti
 		name = L["Icons per row"],
 		desc = L["Select the number of icons per row."],
 		min = 1,
-		max = 6,
+		max = 9,
 		step = 1,
 		get = function () return indicator.dbx.maxIconsPerRow or 3 end,
 		set = function (_, v)
