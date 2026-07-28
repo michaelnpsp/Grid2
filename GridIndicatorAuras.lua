@@ -116,7 +116,6 @@ function indicator:ReleaseAuraSlotButton(parent, key)
 	local button = container.slotEnabled[buttonKey]
 	if button then
 		button:Hide()
-		container:SetAuraSlotFilterString(button.__slotKey, "HELPFUL|HARMFUL")
 		local func = button.__releaseFunc
 		if func then
 			func(self, parent, button)
@@ -127,6 +126,7 @@ function indicator:ReleaseAuraSlotButton(parent, key)
 			button:ClearDurationCooldown()
 			button:ClearApplicationBar()
 		end
+		container:SetAuraSlotFilterString(button.__slotKey, "")
 		local disabledButtons = container.slotDisabled
 		local buttons = disabledButtons[prefixKey]
 		if buttons then
