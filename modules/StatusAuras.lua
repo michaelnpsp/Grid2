@@ -198,7 +198,7 @@ end
 
 local DebuffsDispell = Grid2.statusPrototype:new("debuffs-DispellableByMe")
 
-local DEFAULTS = { filter = 'HARMFUL|RAID_PLAYER_DISPELLABLE', maxAuras = 64 }
+local DEFAULTS = { filter = 'HARMFUL|RAID', maxAuras = 64 }
 Grid2.setupFunc["mdebuffType"] = function(baseKey, dbx)
 	return Auras_Create(baseKey, dbx, DEFAULTS, DebuffsDispell)
 end

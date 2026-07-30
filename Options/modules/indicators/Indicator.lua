@@ -149,7 +149,7 @@ do
 			end,
 		},
 
-		msg = { type = "description", order = 1.5, fontSize = "medium",
+		msg = { type = "description", order = 0.5, fontSize = "medium",
 			name = function() return string.format("|cffFC6A03%s|r", L[AreCurrentStatusesIncompatible(editedIndicator) or ''] ) end,
 			hidden = function() return not AreCurrentStatusesIncompatible(editedIndicator) end,
 		},

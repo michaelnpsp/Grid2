@@ -1,5 +1,3 @@
-if Grid2.versionCli<120100 then return end
-
 local L = Grid2Options.L
 
 local tcontains = tContains
@@ -12,143 +10,232 @@ local GetSpellInfo = Grid2.API.GetSpellInfo
 --
 --==============================================
 
-local AuraFilters ={
+local BuffsTranslate = {
 	["filter;PLAYER"] = 'Casted by me',
+	["filter;RAID"] = "Applied by me",
 	["filter;RAID_IN_COMBAT"] = "Relevant for your Class",
-	["filter;!PLAYER"] = 'Not Casted by me',
-	["filter;!RAID_IN_COMBAT"] = "Not Relevant for your Class",
 	["filter;BIG_DEFENSIVE"] = "Big Defensive",
 	["filter;EXTERNAL_DEFENSIVE"] = "External Defensive",
+	["filter;DISPELLABLE"] = "Dispellable",
+	["filter;RAID_PLAYER_DISPELLABLE"] = "Dispellable by someone in party or raid",
+	["filter;CROWD_CONTROL"] = "Crown Control",
+	["filter;IMPORTANT"] = "Important",
+
+	["filter;!PLAYER"] = 'Not Casted by me',
+	["filter;!RAID"] = "Not Applied by me",
+	["filter;!RAID_IN_COMBAT"] = "Not Relevant for your Class",
+	["filter;!DISPELLABLE"] = "Not Dispellable",
+	["filter;!RAID_PLAYER_DISPELLABLE"] = "Not Dispellable by Me",
 	["filter;!BIG_DEFENSIVE"] = "Not Big Defensive",
 	["filter;!EXTERNAL_DEFENSIVE"] = "Not External Defensive",
-	["filter;DISPELLABLE"] = "Dispellable",
-	["filter;!DISPELLABLE"] = "Not Dispellable",
-	["filter;RAID_PLAYER_DISPELLABLE"] = "Dispellable be Me",
-	["filter;!RAID_PLAYER_DISPELLABLE"] = "Not Dispellable be Me",
-	["filter;CROWD_CONTROL"] = "Crown Control",
 	["filter;!CROWD_CONTROL"] = "Not Crown Control",
-	["filter;IMPORTANT"] = "Important",
 	["filter;!IMPORTANT"] = "Not Important",
+
 	["includeDispelTypes;Magic"] = "Magic",
 	["includeDispelTypes;Curse"] = "Curse",
 	["includeDispelTypes;Poison"] = "Poison",
 	["includeDispelTypes;Disease"] = "Disease",
+
 	["excludeDispelTypes;Magic"] = "Not Magic",
 	["excludeDispelTypes;Curse"] = "Not Curse",
 	["excludeDispelTypes;Poison"] = "Not Poison",
 	["excludeDispelTypes;Disease"] = "Not Disease",
-	["candidateFilters;canApplyAura"] = "Can Apply Aura",
-	["candidateFilters;isFromPlayerOrPlayerPet"] = "Is From Player or Pet",
-	["candidateFilters;isStealable"] = "Is Stealable",
-	["candidateFilters;isPriorityAura"] = "Is Priority Aura",
-	["candidateFilters;isBossAura"] = "Is Boss Aura",
-	["candidateFilters;isRoleAura"] = "Is Role Aura",
-	["candidateFilters;isBossOrRoleAura"] = "Is Boss or Role Aura",
+
+	["candidateFilters;canApplyAura;true"] = "Can Apply Aura",
+	["candidateFilters;isFromPlayerOrPlayerPet;true"] = "Is From Player or Pet",
+	["candidateFilters;isStealable;true"] = "Is Stealable",
+	["candidateFilters;isPriorityAura;true"] = "Is Priority Aura",
+	["candidateFilters;isBossAura;true"] = "Is Boss Aura",
+	["candidateFilters;isRoleAura;true"] = "Is Role Aura",
+	["candidateFilters;isBossOrRoleAura;true"] = "Is Boss or Role Aura",
+
+	["candidateFilters;canApplyAura;false"] = "Not Can Apply Aura",
+	["candidateFilters;isFromPlayerOrPlayerPet;false"] = "Not Is From Player or Pet",
+	["candidateFilters;isStealable;false"] = "Not Is Stealable",
+	["candidateFilters;isPriorityAura;false"] = "Not Is Priority Aura",
+	["candidateFilters;isBossAura;false"] = "Not Is Boss Aura",
+	["candidateFilters;isRoleAura;false"] = "Not Is Role Aura",
+	["candidateFilters;isBossOrRoleAura;false"] = "Not Is Boss or Role Aura",
+
 	["spells;includeSpellIDs"] = "List of Spell IDs to Display",
 	["spells;excludeSpellIDs"] = "List of Spell IDs to Ignore",
+
+	["root;excludeSatedDebuffs"] = "Not Sated Debuffs",
+}
+
+local DebuffsTranslate = {
+	["filter;PLAYER"] = 'Casted by me',
+	["filter;RAID_IN_COMBAT"] = "Relevant for your Class",
+	["filter;BIG_DEFENSIVE"] = "Big Defensive",
+	["filter;EXTERNAL_DEFENSIVE"] = "External Defensive",
+	["filter;RAID"] = "Dispellable be me",
+	["filter;DISPELLABLE"] = "Dispellable",
+	["filter;RAID_PLAYER_DISPELLABLE"] = "Dispellable by someone in party or raid",
+	["filter;CROWD_CONTROL"] = "Crown Control",
+	["filter;IMPORTANT"] = "Important",
+
+	["filter;!PLAYER"] = 'Not Casted by me',
+	["filter;!RAID_IN_COMBAT"] = "Not Relevant for your Class",
+	["filter;!DISPELLABLE"] = "Not Dispellable",
+	["filter;!RAID_PLAYER_DISPELLABLE"] = "Not Dispellable by Me",
+	["filter;!BIG_DEFENSIVE"] = "Not Big Defensive",
+	["filter;!EXTERNAL_DEFENSIVE"] = "Not External Defensive",
+	["filter;!CROWD_CONTROL"] = "Not Crown Control",
+	["filter;!IMPORTANT"] = "Not Important",
+
+	["includeDispelTypes;Magic"] = "Magic",
+	["includeDispelTypes;Curse"] = "Curse",
+	["includeDispelTypes;Poison"] = "Poison",
+	["includeDispelTypes;Disease"] = "Disease",
+
+	["excludeDispelTypes;Magic"] = "Not Magic",
+	["excludeDispelTypes;Curse"] = "Not Curse",
+	["excludeDispelTypes;Poison"] = "Not Poison",
+	["excludeDispelTypes;Disease"] = "Not Disease",
+
+	["candidateFilters;canApplyAura;true"] = "Can Apply Aura",
+	["candidateFilters;isFromPlayerOrPlayerPet;true"] = "Is From Player or Pet",
+	["candidateFilters;isStealable;true"] = "Is Stealable",
+	["candidateFilters;isPriorityAura;true"] = "Is Priority Aura",
+	["candidateFilters;isBossAura;true"] = "Is Boss Aura",
+	["candidateFilters;isRoleAura;true"] = "Is Role Aura",
+	["candidateFilters;isBossOrRoleAura;true"] = "Is Boss or Role Aura",
+
+	["candidateFilters;canApplyAura;false"] = "Not Can Apply Aura",
+	["candidateFilters;isFromPlayerOrPlayerPet;false"] = "Not Is From Player or Pet",
+	["candidateFilters;isStealable;false"] = "Not Is Stealable",
+	["candidateFilters;isPriorityAura;false"] = "Not Is Priority Aura",
+	["candidateFilters;isBossAura;false"] = "Not Is Boss Aura",
+	["candidateFilters;isRoleAura;false"] = "Not Is Role Aura",
+	["candidateFilters;isBossOrRoleAura;false"] = "Not Is Boss or Role Aura",
+
+	["spells;includeSpellIDs"] = "List of Spell IDs to Display",
+	["spells;excludeSpellIDs"] = "List of Spell IDs to Ignore",
+
 	["root;excludeSatedDebuffs"] = "Not Sated Debuffs",
 }
 
 local AuraFiltersNegate = {
 	["filter;PLAYER"] = "filter;!PLAYER",
-	["filter;!PLAYER"] = "filter;PLAYER",
+	["filter;RAID"] = "filter;!RAID",
 	["filter;RAID_IN_COMBAT"] = "filter;!RAID_IN_COMBAT",
-	["filter;!RAID_IN_COMBAT"] = "filter;RAID_IN_COMBAT",
 	["filter;BIG_DEFENSIVE"] = "filter;!BIG_DEFENSIVE",
-	["filter;!BIG_DEFENSIVE"] = "filter;BIG_DEFENSIVE",
 	["filter;EXTERNAL_DEFENSIVE"] = "filter;!EXTERNAL_DEFENSIVE",
-	["filter;!EXTERNAL_DEFENSIVE"] = "filter;EXTERNAL_DEFENSIVE",
 	["filter;RAID_PLAYER_DISPELLABLE"] = "filter;!RAID_PLAYER_DISPELLABLE",
-	["filter;!RAID_PLAYER_DISPELLABLE"] = "filter;RAID_PLAYER_DISPELLABLE",
 	["filter;DISPELLABLE"] = "filter;!DISPELLABLE",
-	["filter;!DISPELLABLE"] = "filter;DISPELLABLE",
 	["filter;CROWD_CONTROL"] = "filter;!CROWD_CONTROL",
+	["filter;IMPORTANT"] = "filter;!IMPORTANT",
+
+	["filter;!PLAYER"] = "filter;PLAYER",
+	["filter;!RAID"] = "filter;RAID",
+	["filter;!RAID_IN_COMBAT"] = "filter;RAID_IN_COMBAT",
+	["filter;!BIG_DEFENSIVE"] = "filter;BIG_DEFENSIVE",
+	["filter;!EXTERNAL_DEFENSIVE"] = "filter;EXTERNAL_DEFENSIVE",
+	["filter;!RAID_PLAYER_DISPELLABLE"] = "filter;RAID_PLAYER_DISPELLABLE",
+	["filter;!DISPELLABLE"] = "filter;DISPELLABLE",
 	["filter;!CROWD_CONTROL"] = "filter;CROWD_CONTROL",
+	["filter;!IMPORTANT"] = "filter;IMPORTANT",
+
 	["includeDispelTypes;Magic"] = "excludeDispelTypes;Magic",
 	["includeDispelTypes;Curse"] = "excludeDispelTypes;Curse",
 	["includeDispelTypes;Poison"] = "excludeDispelTypes;Poison",
 	["includeDispelTypes;Disease"] = "excludeDispelTypes;Disease",
+
 	["excludeDispelTypes;Magic"] = "includeDispelTypes;Magic",
 	["excludeDispelTypes;Curse"] = "includeDispelTypes;Curse",
 	["excludeDispelTypes;Poison"] = "includeDispelTypes;Poison",
 	["excludeDispelTypes;Disease"] = "includeDispelTypes;Disease",
+
+	["candidateFilters;canApplyAura;true"] = "candidateFilters;canApplyAura;false",
+	["candidateFilters;isFromPlayerOrPlayerPet;true"] = "candidateFilters;isFromPlayerOrPlayerPet;false",
+	["candidateFilters;isStealable;true"] = "candidateFilters;isStealable;false",
+	["candidateFilters;isPriorityAura;true"] = "candidateFilters;isPriorityAura;false",
+	["candidateFilters;isBossAura;true"] = "candidateFilters;isBossAura;false",
+	["candidateFilters;isRoleAura;true"] = "candidateFilters;isRoleAura;false",
+	["candidateFilters;isBossOrRoleAura;true"] = "candidateFilters;isBossOrRoleAura;false",
+
+	["candidateFilters;canApplyAura;false"] = "candidateFilters;canApplyAura;true",
+	["candidateFilters;isFromPlayerOrPlayerPet;false"] = "candidateFilters;isFromPlayerOrPlayerPet;true",
+	["candidateFilters;isStealable;false"] = "candidateFilters;isStealable;true",
+	["candidateFilters;isPriorityAura;false"] = "candidateFilters;isPriorityAura;true",
+	["candidateFilters;isBossAura;false"] = "candidateFilters;isBossAura;true",
+	["candidateFilters;isRoleAura;false"] = "candidateFilters;isRoleAura;true",
+	["candidateFilters;isBossOrRoleAura;false"] = "candidateFilters;isBossOrRoleAura;true",
+
 	["spells;includeSpellIDs"] = "spells;excludeSpellIDs",
 	["spells;excludeSpellIDs"] = "spells;includeSpellIDs",
 }
 
-local Filters = {}
-
-Filters.buffs = {
-	"filter;PLAYER",
-	"filter;RAID_IN_COMBAT",
-	"filter;DISPELLABLE",
-	"filter;RAID_PLAYER_DISPELLABLE",
-	"filter;BIG_DEFENSIVE",
-	"filter;EXTERNAL_DEFENSIVE",
-	"filter;!PLAYER",
-	"filter;!RAID_IN_COMBAT",
-	"filter;!DISPELLABLE",
-	"filter;!RAID_PLAYER_DISPELLABLE",
-	"filter;!BIG_DEFENSIVE",
-	"filter;!EXTERNAL_DEFENSIVE",
-	"candidateFilters;canApplyAura",
-	"candidateFilters;isFromPlayerOrPlayerPet",
-	"candidateFilters;isStealable",
-	"spells;includeSpellIDs",
-	"spells;excludeSpellIDs",
-}
-
-Filters.mbuff = {
-	"filter;PLAYER",
-	"filter;!PLAYER",
-}
-
-Filters.mbuffs = {
-	"filter;PLAYER",
-	"filter;RAID_IN_COMBAT",
-	"filter;DISPELLABLE",
-	"filter;RAID_PLAYER_DISPELLABLE",
-	"filter;IMPORTANT",
-	"filter;BIG_DEFENSIVE",
-	"filter;EXTERNAL_DEFENSIVE",
-	"filter;!PLAYER",
-	"filter;!RAID_IN_COMBAT",
-	"filter;!DISPELLABLE",
-	"filter;!RAID_PLAYER_DISPELLABLE",
-	"filter;!IMPORTANT",
-	"filter;!BIG_DEFENSIVE",
-	"filter;!EXTERNAL_DEFENSIVE",
-	"candidateFilters;canApplyAura",
-	"candidateFilters;isFromPlayerOrPlayerPet",
-	"candidateFilters;isStealable",
-	"spells;includeSpellIDs",
-	"spells;excludeSpellIDs",
-}
-
-Filters.mdebuffs ={
-	"filter;PLAYER",
-	"filter;RAID_IN_COMBAT",
-	"filter;RAID_PLAYER_DISPELLABLE",
-	"filter;CROWD_CONTROL",
-	"includeDispelTypes;Magic",
-	"includeDispelTypes;Curse",
-	"includeDispelTypes;Poison",
-	"includeDispelTypes;Disease",
-	"candidateFilters;canApplyAura",
-	"candidateFilters;isFromPlayerOrPlayerPet",
-	"candidateFilters;isStealable",
-	"candidateFilters;isPriorityAura",
-	"candidateFilters;isBossAura",
-	"candidateFilters;isRoleAura",
-	"candidateFilters;isBossOrRoleAura",
-	"filter;!PLAYER",
-	"filter;!RAID_IN_COMBAT",
-	"filter;!CROWD_CONTROL",
-	"excludeDispelTypes;Magic",
-	"excludeDispelTypes;Curse",
-	"excludeDispelTypes;Poison",
-	"excludeDispelTypes;Disease",
-	"root;excludeSatedDebuffs",
+local Filters = {
+	mbuff = { 'HELPFUL', BuffsTranslate, {
+		"filter;PLAYER",
+		"filter;!PLAYER",
+	} },
+	mbuffs = { 'HELPFUL', BuffsTranslate, {
+		"filter;PLAYER",
+		"filter;RAID_IN_COMBAT",
+		"filter;RAID",
+		"filter;IMPORTANT",
+		"filter;BIG_DEFENSIVE",
+		"filter;EXTERNAL_DEFENSIVE",
+		"filter;DISPELLABLE",
+		"filter;RAID_PLAYER_DISPELLABLE",
+		"candidateFilters;canApplyAura;true",
+		"candidateFilters;isFromPlayerOrPlayerPet;true",
+		"candidateFilters;isStealable;true",
+		"candidateFilters;isRoleAura;true",
+		"filter;!PLAYER",
+		"filter;!RAID_IN_COMBAT",
+		"filter;!RAID",
+		"filter;!DISPELLABLE",
+		"filter;!RAID_PLAYER_DISPELLABLE",
+		"filter;!IMPORTANT",
+		"filter;!BIG_DEFENSIVE",
+		"filter;!EXTERNAL_DEFENSIVE",
+		"candidateFilters;canApplyAura;false",
+		"candidateFilters;isFromPlayerOrPlayerPet;false",
+		"candidateFilters;isStealable;false",
+		"candidateFilters;isRoleAura;false",
+		"spells;includeSpellIDs",
+		"spells;excludeSpellIDs",
+	} },
+	mdebuffs = { 'HARMFUL', DebuffsTranslate, {
+		"filter;PLAYER",
+		"filter;RAID_IN_COMBAT",
+		"filter;RAID",
+		"filter;DISPELLABLE",
+		"filter;RAID_PLAYER_DISPELLABLE",
+		"filter;CROWD_CONTROL",
+		"includeDispelTypes;Magic",
+		"includeDispelTypes;Curse",
+		"includeDispelTypes;Poison",
+		"includeDispelTypes;Disease",
+		"candidateFilters;canApplyAura;true",
+		"candidateFilters;isFromPlayerOrPlayerPet;true",
+		"candidateFilters;isStealable;true",
+		"candidateFilters;isPriorityAura;true",
+		"candidateFilters;isBossAura;true",
+		"candidateFilters;isRoleAura;true",
+		"candidateFilters;isBossOrRoleAura;true",
+		"filter;!PLAYER",
+		"filter;!RAID_IN_COMBAT",
+		"filter;!RAID",
+		"filter;!DISPELLABLE",
+		"filter;!RAID_PLAYER_DISPELLABLE",
+		"filter;!CROWD_CONTROL",
+		"excludeDispelTypes;Magic",
+		"excludeDispelTypes;Curse",
+		"excludeDispelTypes;Poison",
+		"excludeDispelTypes;Disease",
+		"candidateFilters;canApplyAura;false",
+		"candidateFilters;isFromPlayerOrPlayerPet;false",
+		"candidateFilters;isStealable;false",
+		"candidateFilters;isPriorityAura;false",
+		"candidateFilters;isBossAura;false",
+		"candidateFilters;isRoleAura;false",
+		"candidateFilters;isBossOrRoleAura;false",
+		"root;excludeSatedDebuffs",
+	} },
 }
 
 local SORT_VALUES = {
@@ -252,17 +339,17 @@ end
 
 local function mfilter_set_disabled(status, filter, default, negated)
 	if filter==nil then return end
-	local typ, field = strsplit(";",filter)
+	local typ, field, value = strsplit(";",filter)
 	if typ == 'filter' then
 		filter_remove_substring(status, 'aura_filter', 'filter', field, default)
 	elseif typ == 'root' then
 		mfilter_set_tree_value(status, nil, 'aura_filter', field)
-	elseif typ == 'spells' then
+	elseif typ == 'spells' then -- whitelist/blacklist filters
 		status.dbx.auras = negated and status.dbx.auras or nil
 		mfilter_set_tree_value(status, nil, 'aura_filter', 'candidateFilters', field)
 	elseif typ == 'candidateFilters' then
 		mfilter_set_tree_value(status, nil, 'aura_filter', 'candidateFilters', field)
-	else
+	else -- debuffType filters
 		mfilter_set_tree_value(status, nil, 'aura_filter', 'candidateFilters', typ, field)
 	end
 	refresh_aura_status(status)
@@ -271,28 +358,30 @@ end
 local function mfilter_set_enabled(status, filter, default)
 	if filter==nil then return end
 	mfilter_set_disabled(status, AuraFiltersNegate[filter], default, true)
-	local typ, field = strsplit(";",filter)
+	local typ, field, value = strsplit(";",filter)
 	if typ == 'filter' then
 		filter_add_substring(status, 'aura_filter', 'filter', field, default)
 	elseif typ == 'root' then
 		mfilter_set_tree_value(status, true, 'aura_filter', field)
-	elseif typ == 'spells' then
+	elseif typ == 'spells' then -- whitelist/blacklist filters
 		status.dbx.auras = status.dbx.auras or {}
 		mfilter_set_tree_value(status, true, 'aura_filter', 'candidateFilters', field)
 	elseif typ == 'candidateFilters' then
-		mfilter_set_tree_value(status, true, 'aura_filter', 'candidateFilters', field)
-	else
+		mfilter_set_tree_value(status, value=="true", 'aura_filter', 'candidateFilters', field)
+	else -- debuffType filters
 		mfilter_set_tree_value(status, true, 'aura_filter', 'candidateFilters', typ, field)
 	end
 	refresh_aura_status(status)
 end
 
 local function mfilter_is_enabled(status, filter)
-	local typ, field = strsplit(";",filter)
+	local typ, field, value = strsplit(";",filter)
 	if typ == 'filter' then
 		return filter_exists_substring(status, 'aura_filter', 'filter', field)
 	elseif typ == 'root' then
 		return mfilter_get_tree_value(status, 'aura_filter', field)~=nil
+	elseif typ == 'candidateFilters' and value then
+		return mfilter_get_tree_value(status, 'aura_filter', 'candidateFilters', field)==(value=="true")
 	elseif typ == 'candidateFilters' or typ == 'spells' then
 		return mfilter_get_tree_value(status, 'aura_filter', 'candidateFilters', field)~=nil
 	else
@@ -453,11 +542,9 @@ function Grid2Options:MakeStatusAuraListOptions(status, options)
 end
 
 function Grid2Options:MakeStatusAuraFilterOptions(status, options)
-	local stype = status.dbx.type
-	local bsingle = stype=='mbuff'
+	local bsingle = status.dbx.type=='mbuff'
 	local fwidth = not bsingle and "full" or nil
-	local default = stype=='mdebuffs' and 'HARMFUL' or 'HELPFUL'
-	local filters = Filters[stype]
+	local default, translate, filters = unpack( Filters[status.dbx.type] )
 	options.header_filter = { type = "header", order = 99, name = "Auras to Display" }
 	options.select_filter = {
 		type = "select",
@@ -473,7 +560,7 @@ function Grid2Options:MakeStatusAuraFilterOptions(status, options)
 			local t = { [0] = "-- Select an aura filter --" }
 			for i,filter in ipairs(filters) do
 				if not mfilter_is_enabled(status, filter) then
-					t[i] = AuraFilters[filter]
+					t[i] = translate[filter]
 				end
 			end
 			return t
@@ -485,7 +572,7 @@ function Grid2Options:MakeStatusAuraFilterOptions(status, options)
 			type = "toggle",
 			order = i+100,
 			width = fwidth,
-			name = AuraFilters[filter] or "Unknow:".. filter,
+			name = translate[filter] or "Unknow:".. filter,
 			desc = L["Click to remove this filter"],
 			get = function() return true end,
 			set = (not bsingle) and function() mfilter_set_disabled(status, filter, default) end or nil,

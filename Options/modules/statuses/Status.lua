@@ -340,6 +340,7 @@ do
 			L["Load the status only if you are in the specified instance type."]
 		)
 		SetFilterZoneOptions(status, options, 55, 'instNameID')
+		--[[
 		if status.handlerType then
 			local spells, sorted = self:GetPlayerSpells()
 			SetFilterDropdownOptions( status, options, 60,
@@ -399,6 +400,7 @@ do
 				NOYES_TYPES
 			)
 		end
+		--]]
 		return options
 	end
 	Grid2:RegisterMessage("Grid_StatusLoadChanged", Grid2Options.NotifyChange)

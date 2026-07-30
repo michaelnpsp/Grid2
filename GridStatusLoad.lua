@@ -389,7 +389,7 @@ function status:RegisterLoad() -- called from Grid2:RegisterStatus() in GridStat
 	local load = self.dbx.load
 	if load then
 		FilterG_Register(self, load)
-		FilterU_Register(self, load)
+		-- FilterU_Register(self, load)
 	end
 end
 
@@ -397,7 +397,7 @@ function status:UnregisterLoad() -- called from Grid2:UnregisterStatus() in Grid
 	local load = self.dbx.load
 	if load then
 		FilterG_Unregister(self, load)
-		FilterU_Unregister(self, load)
+		-- FilterU_Unregister(self, load)
 	end
 	self.suspended = nil
 end
@@ -405,7 +405,7 @@ end
 function status:EnableLoad() -- called from status:RegisterIndicator() when the status is enabled
 	local load = self.dbx.load
 	if load then
-		FilterU_Enable(self, load)
+		-- FilterU_Enable(self, load)
 		FilterC_Enable(self, load)
 	end
 end
@@ -413,7 +413,7 @@ end
 function status:DisableLoad() -- called from status:UnregisterIndicator() when the status is disabled
 	local load = self.dbx.load
 	if load then
-		FilterU_Disable(self, load)
+		-- FilterU_Disable(self, load)
 		FilterC_Disable(self, load)
 	end
 end
@@ -421,7 +421,7 @@ end
 function status:RefreshLoad() -- used by Grid2Options
 	local load = self.dbx.load
 	FilterG_Refresh(self, load)
-	FilterU_Refresh(self, load)
+	-- FilterU_Refresh(self, load)
 	FilterC_Refresh(self, load)
 	self:Refresh()
 end
