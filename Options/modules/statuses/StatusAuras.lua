@@ -248,12 +248,51 @@ local SORT_VALUES = {
 	[6] = L["Name Only"],
 }
 
-local MAX_AURAS_VALUES = { [100] = "Unlimited" }
+local MAX_AURA_DURATIONS = {
+	[-1] = "Unlimited",
+	[5]  = "5sec",
+	[10] = "10sec",
+	[15] = "15sec",
+	[30] = "30sec",
+	[45] = "45sec",
+	[60] = "1min",
+	[300] = "5min",
+	[600] = "10min",
+	[1800] = "30min",
+	[3600] = "1hour",
+	[7200] = "2hour",
+	[18000] = "5hour",
+	[1E10] = "Other",
+}
+
+local MAX_AURAS_VALUES = { [-1] = "Unlimited" }
 for i=1,16 do MAX_AURAS_VALUES[i] = tostring(i) end
 
 local function refresh_aura_status(status)
 	status:UpdateDB()
 	Grid2Options:RefreshStatusIndicators(status, "Layout")
+end
+
+local function format_aura_duration(seconds)
+	if seconds<0 then
+		return "Unlimited"
+	elseif seconds<60 then
+		return string.format("%dsec",seconds)
+	elseif seconds<	3600 then
+		return string.format("%dmin", math.floor(seconds/60) )
+	elseif seconds<1E10 then
+		return string.format("%dhour", math.floor(seconds/3600) )
+	else
+		return ""
+	end
+end
+
+local function get_aura_duration(str)
+   str = strtrim(str):lower()
+   local pre, suf = strmatch(str,"(%d+)([mh])")
+   local mul = (suf=='h' and 3600) or (suf=='m' and 60) or 1
+   local num = tonumber(pre or str)
+   return num and num*mul or nil
 end
 
 local function get_similar_spells(typ, spell)
@@ -446,16 +485,43 @@ function Grid2Options:MakeStatusAuraMiscOptions(status, options)
 	options.max_auras = {
 		type = "select",
 		order = 20,
-		width = 0.75,
+		width = 0.6,
 		name = L["Max Auras"],
 		desc = L["Select the maximum number of auras to display."],
 		get = function ()
-			return filter_get_value( status, 'aura_filter', 'maxAuras', 100)
+			return filter_get_value( status, 'aura_filter', 'maxAuras', -1)
 		end,
 		set = function (_, v)
-			filter_set_value( status, 'aura_filter', 'maxAuras', v, 100 )
+			filter_set_value( status, 'aura_filter', 'maxAuras', v, -1 )
 		end,
 		values = MAX_AURAS_VALUES,
+	}
+	options.max_duration = {
+		type = "select",
+		order = 20,
+		width = 0.75,
+		name = L["Max Duration"],
+		desc = L["Select the maximum auras duration."],
+		get = function ()
+			return mfilter_get_tree_value(status, 'aura_filter', 'candidateFilters', "maxDuration") or -1
+		end,
+		set = function (_, v)
+			if v~=1E10 then
+				mfilter_set_tree_value(status, v~=-1 and v or nil, 'aura_filter', 'candidateFilters', "maxDuration")
+				refresh_aura_status(status)
+			else
+				Grid2Options:ShowEditDialog("Type the max duration for the auras", format_aura_duration(v), function(v)
+					mfilter_set_tree_value(status, get_aura_duration(v), 'aura_filter', 'candidateFilters', "maxDuration")
+					refresh_aura_status(status)
+					Grid2Options:RefreshOptions()
+				end)
+			end
+		end,
+		values = function()
+			local v = mfilter_get_tree_value(status, 'aura_filter', 'candidateFilters', "maxDuration") or -1
+			MAX_AURA_DURATIONS[v] = MAX_AURA_DURATIONS[v] or format_aura_duration(v)
+			return MAX_AURA_DURATIONS
+		end,
 	}
 	options.sort_rule = {
 		type = "select",
@@ -474,8 +540,8 @@ function Grid2Options:MakeStatusAuraMiscOptions(status, options)
 	options.sort_dir = {
 		type = "toggle",
 		order = 40,
-		width = 0.70,
-		name = L["Reverse sort"],
+		width = 0.50,
+		name = L["Reverse"],
 		desc = L["Reverse sort order."],
 		get = function()
 			return filter_get_value( status, 'aura_filter', 'sortDir' ) == 1

@@ -18,10 +18,6 @@
 <Script file="modules\statuses\StatusAurasNewSpells.lua"/>
 <Script file="modules\statuses\StatusAurasNewPredictor.lua"/>
 
-<Script file="modules\statuses\AurasTemp\StatusAuras.lua"/>
-<Script file="modules\statuses\AurasTemp\StatusAura.lua"/>
-<Script file="modules\statuses\AurasTemp\StatusAuraNew.lua"/>
-
 <Script file="modules\statuses\StatusColor.lua"/>
 <Script file="modules\statuses\StatusColorNew.lua"/>
 <Script file="modules\statuses\StatusDirection.lua"/>
