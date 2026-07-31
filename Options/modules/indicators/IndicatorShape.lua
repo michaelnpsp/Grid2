@@ -123,6 +123,7 @@ function Grid2Options:MakeIndicatorShapeCustomOptions(indicator, options)
 			self:RefreshIndicator(indicator, "Layout")
 		end,
 		values = SHAPES_VALUES,
+		disabled = function() return indicator.dbx.useDispelIcon end
 	}
 	options.shapeBlend = {
 		type = "select",
@@ -147,6 +148,7 @@ function Grid2Options:MakeIndicatorShapeCustomOptions(indicator, options)
 			self:RefreshIndicator(indicator, "Layout")
 		end,
 		values = SHAPE_ANGLE,
+		disabled = function() return indicator.dbx.useDispelIcon end
 	}
 	options.shapeOpacity = {
 		type = "range",
@@ -162,6 +164,7 @@ function Grid2Options:MakeIndicatorShapeCustomOptions(indicator, options)
 			indicator.dbx.opacity = v<1 and v or nil
 			self:RefreshIndicator(indicator, "Layout")
 		end,
+		disabled = function() return indicator.dbx.useDispelIcon end
 	}
 	options.shapePath = {
 		type = "input",
@@ -236,6 +239,22 @@ function Grid2Options:MakeIndicatorShapeCustomOptions(indicator, options)
 		end,
 		hidden = function() return (tonumber(indicator.dbx.iconIndex) or 0)~=-1 or C_Texture.GetAtlasInfo(indicator.dbx.iconPath or '')~=nil end,
 	}
+	options.useDispelTypeIcon = {
+		type = "toggle",
+		order = 26,
+		width = "full",
+		name = L["Display Dispel Type Icon for Auras"],
+		desc = L["Display Dispel Type Icon for Auras when available."],
+		get = function (info) return indicator.dbx.useDispelIcon end,
+		set = function (info, v)
+			indicator.dbx.iconPath  = nil
+			indicator.dbx.iconCoord = nil
+			indicator.dbx.iconIndex = nil
+			indicator.dbx.useDispelIcon = v or nil
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+	}
+
 	self:MakeHeaderOptions( options, "Shadow" )
 	options.shadowEnabled = {
 		type = "toggle",

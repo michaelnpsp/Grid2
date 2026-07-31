@@ -7,6 +7,14 @@ local GetAtlasInfo = C_Texture.GetAtlasInfo
 local canaccessvalue = Grid2.canaccessvalue
 local SetAlphaFromBoolean = Grid2.SetAlphaFromBoolean
 
+local AURA_SYMBOL_OPTIONS = {
+	showIcon = false,
+	showWhenHarmful = true,
+	showWhenHelpful = false,
+	showWithoutDispelType = false,
+	style = Enum.CustomAuraButtonDispelTypeTextureStyle.Icon,
+}
+
 local function Shape_Create(self, parent)
 	local f = self:Acquire("Frame", parent)
 end
@@ -54,11 +62,19 @@ local function Shape_LayoutAura(self, parent)
 	f:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
 	f:SetFrameLevel(level)
 	f:SetSize(width, height)
-	f.Icon:SetTexCoord( unpack(self.iconCoord) )
-	f.Icon:SetTexture( self.iconPath )
 	f.Icon:SetBlendMode(self.blendMode)
+	f.Icon:SetAlpha(self.opacity or 1)
+	if self.useDispelIcon then
+		f.Icon:SetTexCoord(0,1,0,1)
+		f.Icon:SetTexture(nil)
+		f:SetAuraBorder(f.Icon, AURA_SYMBOL_OPTIONS)
+	else
+		f:ClearAuraBorder()
+		f.Icon:SetTexCoord( unpack(self.iconCoord) )
+		f.Icon:SetTexture( self.iconPath )
+	end
 	f.Icon:Show()
-	if self.dbx.shadowEnabled then
+	if self.dbx.shadowEnabled and not self.useDispelIcon then
 		local IconShadow = f.IconShadow or f:CreateTexture(nil, "BORDER")
 		IconShadow:ClearAllPoints()
 		IconShadow:SetPoint("CENTER", self.shadowX, self.shadowY)
@@ -143,6 +159,7 @@ local function Shape_UpdateDB(self)
 	-- misc variables
 	self.color      = Grid2.MakeColor(dbx.shadowColor, "BLACK")
 	self.frameLevel = dbx.level or 4
+	self.useDispelIcon = dbx.useDispelIcon
 	self.iconPath   = dbx.iconPath or "Interface\\Addons\\Grid2\\media\\shapes"
 	self.blendMode  = dbx.blend or 'BLEND'
 	self.opacity    = dbx.opacity
