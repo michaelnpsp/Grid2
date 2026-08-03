@@ -1,4 +1,4 @@
-if Grid2.versionCli<120100 then return end
+local Grid2 = Grid2
 
 local L = Grid2Options.L
 
@@ -112,7 +112,12 @@ do
 				end
 				-- single buff, store specified spellID
 				if new_type=='mbuff' then
-					dbx.auras = type(new_spell) == 'number' and {new_spell} or {}
+					local spells = Grid2:GetSimilarPlayerBuffs(new_spell)
+					if spells then
+						dbx.auras = Grid2.CopyTable(spells)
+					else
+						dbx.auras = type(new_spell) == 'number' and {new_spell} or {}
+					end
 					dbx.aura_filter = dbx.aura_filter or {}
 					dbx.aura_filter.candidateFilters = { includeSpellIDs = true }
 				end

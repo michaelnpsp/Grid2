@@ -1,6 +1,8 @@
--- Players Buffs & Debuffs, used by StatusAuraNewPredictor.lua
+-- Players Buffs & Debuffs, used by GridDefaults.lua and StatusAuraNewPredictor.lua
 
-Grid2Options.PlayerBuffs = {
+local GetSpellInfo = Grid2.API.GetSpellInfo
+
+Grid2.PlayerBuffs = {
 	[""] = {
 		377234, -- Thrill of the Skies
 		388367, -- Ohn'ahra's Gusts
@@ -123,26 +125,11 @@ Grid2Options.PlayerBuffs = {
 		381757, -- Warlock
 		381758, -- Warrior
 	},
-	initFunc = function(self) -- create reverse table spellName => spellIDs
-		self.initFunc = nil
-		local GetSpellInfo = Grid2.API.GetSpellInfo
-		local list = {}
-		for category, spells in pairs(self) do
-			for i,spellID in ipairs(spells) do
-				local spellName = GetSpellInfo(spellID)
-				if spellName then
-					local t =  list[spellName]
-					if t==nil then t = {}; list[spellName] = t; end
-					t[#t+1] = spellID
-				end
-			end
-
-		end
-		Grid2Options.PlayerBuffsReverse = list
-	end
 }
 
-Grid2Options.PlayerDebuffs = {
+Grid2.PlayerBuffsReverse = {}
+
+Grid2.PlayerDebuffs = {
 	[""] = {},
 	["DEATHKNIGHT"] = {},
 	["DRUID"] = {},
@@ -159,3 +146,22 @@ Grid2Options.PlayerDebuffs = {
 	["EVOKER"] = {},
 	["MYTHIC+"] = {},
 }
+
+function Grid2:GetSimilarPlayerBuffs(spell)
+	local list = self.PlayerBuffsReverse
+	for category, spells in pairs(self.PlayerBuffs) do
+		for i,spellID in ipairs(spells) do
+			local spellName = GetSpellInfo(spellID)
+			if spellName then
+				local t =  list[spellName]
+				if t==nil then t = {}; list[spellName] = t; end
+				t[#t+1] = spellID
+			end
+		end
+	end
+	self.GetSimilarPlayerBuffs = function(self,spell)
+		local spellName = type(spell)=='number' and GetSpellInfo(spell) or spell
+		return self.PlayerBuffsReverse[spellName]
+	end
+	return self:GetSimilarPlayerBuffs(spell)
+end

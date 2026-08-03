@@ -19,8 +19,6 @@ function AuraPredictor:new( type, spells )
 end
 
 function AuraPredictor:Initialize()
-	local initFunc = self.spells.initFunc
-	if initFunc then initFunc(self.spells) end
 	classNames    = { [""] = "", ["MYTHIC+"] =  string.format(", |cfffe0000%s+|r ", PLAYER_DIFFICULTY6 or "Mythic") }
 	classNamesLoc = { [""] = "", ["MYTHIC+"] =  strupper(PLAYER_DIFFICULTY6) or "MYTHIC" }
 	for class,translation in pairs(LOCALIZED_CLASS_NAMES_MALE) do
@@ -130,5 +128,5 @@ function AuraPredictor:GetSpellDescription(spellID, spellName, spellIcon, classN
 end
 
 -- Registering EditBoxGrid2Buffs and EditBoxGrid2Debuffs to use with AceConfigTable dialogControl
-LibStub("AceGUI-3.0-Search-EditBox"):Register( "Grid2Buffs",    AuraPredictor:new( "buff",   Grid2Options.PlayerBuffs   ) )
-LibStub("AceGUI-3.0-Search-EditBox"):Register( "Grid2Debuffs",  AuraPredictor:new( "debuff", Grid2Options.PlayerDebuffs ) )
+LibStub("AceGUI-3.0-Search-EditBox"):Register( "Grid2Buffs",    AuraPredictor:new( "buff",   Grid2.PlayerBuffs   ) )
+LibStub("AceGUI-3.0-Search-EditBox"):Register( "Grid2Debuffs",  AuraPredictor:new( "debuff", Grid2.PlayerDebuffs ) )

@@ -76,8 +76,9 @@ local DebuffsTranslate = {
 
 	["filter;!PLAYER"] = 'Not Casted by me',
 	["filter;!RAID_IN_COMBAT"] = "Not Relevant for your Class",
+	["filter;!RAID"] = "Not Dispellable be me",
+	["filter;!RAID_PLAYER_DISPELLABLE"] = "Not Dispellable by someone in party or raid",
 	["filter;!DISPELLABLE"] = "Not Dispellable",
-	["filter;!RAID_PLAYER_DISPELLABLE"] = "Not Dispellable by Me",
 	["filter;!BIG_DEFENSIVE"] = "Not Big Defensive",
 	["filter;!EXTERNAL_DEFENSIVE"] = "Not External Defensive",
 	["filter;!CROWD_CONTROL"] = "Not Crown Control",
@@ -203,8 +204,8 @@ local Filters = {
 		"filter;PLAYER",
 		"filter;RAID_IN_COMBAT",
 		"filter;RAID",
-		"filter;DISPELLABLE",
 		"filter;RAID_PLAYER_DISPELLABLE",
+		"filter;DISPELLABLE",
 		"filter;CROWD_CONTROL",
 		"includeDispelTypes;Magic",
 		"includeDispelTypes;Curse",
@@ -220,8 +221,8 @@ local Filters = {
 		"filter;!PLAYER",
 		"filter;!RAID_IN_COMBAT",
 		"filter;!RAID",
-		"filter;!DISPELLABLE",
 		"filter;!RAID_PLAYER_DISPELLABLE",
+		"filter;!DISPELLABLE",
 		"filter;!CROWD_CONTROL",
 		"excludeDispelTypes;Magic",
 		"excludeDispelTypes;Curse",
@@ -297,7 +298,7 @@ end
 
 local function get_similar_spells(typ, spell)
 	local spellID = tonumber(spell)
-	return typ~='mdebuffs' and Grid2Options.PlayerBuffsReverse[spellID and GetSpellInfo(spellID)] or {spellID or spell}
+	return typ~='mdebuffs' and Grid2:GetSimilarPlayerBuffs(spellID) or {spellID or spell}
 end
 
 -- aura_filter management

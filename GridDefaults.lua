@@ -227,6 +227,17 @@ function Grid2:UpdateDefaults()
 				if typ=='buff' or typ=='buffs' then
 					dbx.type = 'm'..typ
 					dbx.auras = dbx.auras or (dbx.spellName and {dbx.spellName}) or nil
+					if dbx.auras then
+						for i=#dbx.auras,1,-1 do
+							local spells = self:GetSimilarPlayerBuffs(dbx.auras[i])
+							if spells then
+								table.remove(dbx.auras,i)
+								for j=1,#spells do
+									table.insert(dbx.auras, i, spells[j])
+								end
+							end
+						end
+					end
 					dbx.aura_filter = {
 						filter = (dbx.mine==1 and 'HELPFUL|PLAYER') or (dbx.mine==2 and 'HELPFUL|!PLAYER') or nil,
 						candidateFilters = { includeSpellIDs= true },

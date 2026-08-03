@@ -15,7 +15,6 @@
 
 <Script file="modules\statuses\StatusAuras.lua"/>
 <Script file="modules\statuses\StatusAurasNew.lua"/>
-<Script file="modules\statuses\StatusAurasNewSpells.lua"/>
 <Script file="modules\statuses\StatusAurasNewPredictor.lua"/>
 
 <Script file="modules\statuses\StatusColor.lua"/>
