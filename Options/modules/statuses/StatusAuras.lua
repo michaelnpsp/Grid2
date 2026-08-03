@@ -568,7 +568,7 @@ function Grid2Options:MakeStatusAuraListOptions(status, options)
 				for _,spell in pairs(get_similar_spells(status.dbx.type, spell)) do
 					table.insert(status.dbx.auras, spell)
 				end
-				status:Refresh()
+				refresh_aura_status(status)
 			end
 		end,
 		hidden = function() return status.dbx.auras==nil end
@@ -601,7 +601,7 @@ function Grid2Options:MakeStatusAuraListOptions(status, options)
 					end
 				end
 			end
-			status:Refresh()
+			refresh_aura_status(status)
 		end,
 		hidden = function() return status.dbx.auras==nil end
 	}

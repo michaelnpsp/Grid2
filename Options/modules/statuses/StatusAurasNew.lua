@@ -43,13 +43,11 @@ do
 			end,
 			values = { mbuff = L["Single Buff"], mbuffs = L["Multiple Buffs"] },
 		},
-		buffName = {
+		singleBuffName = {
 			type = "input", dialogControl = "EditBoxGrid2Buffs",
 			order = 20,
 			width = "full",
-			name = function(info)
-				return new_type=='mbuff' and L["Name or SpellId"] or L["Type a descriptive name for this status"]
-			end,
+			name = L["Name or SpellId"],
 			usage = L["You can include a descriptive prefix using separators \"@#>\""].." "..L["examples: Druid@Regrowth Chimaeron>Low Health"],
 			get = function()
 				return new_name
@@ -67,6 +65,21 @@ do
 				new_spell = spellID
 				new_name = prefix .. spell
 			end,
+			hidden = function() return new_type~='mbuff' end,
+		},
+		multipleBuffsName = {
+			type = "input",
+			order = 20,
+			width = "full",
+			name = L["Type a descriptive name for this status"],
+			get = function()
+				return new_name
+			end,
+			set = function(_, value)
+				new_name = value
+				new_spell = nil
+			end,
+			hidden = function() return new_type=='mbuff' end,
 		},
 		buffMine = {
 			type = "toggle",
