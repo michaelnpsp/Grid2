@@ -1,5 +1,7 @@
 --[[ Simple DataBroker launcher for Grid2. Created by Michael --]]
 
+if Grid2.versionCli<120001 then return end -- TODO REMOVE post 12.0.1
+
 local DataBroker = LibStub("LibDataBroker-1.1", true)
 if not DataBroker then return end
 

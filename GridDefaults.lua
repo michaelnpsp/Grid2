@@ -98,6 +98,8 @@ end
 -- Plugins can hook this function to initialize or update values in database
 function Grid2:UpdateDefaults()
 
+	if Grid2.versionCli<120001 then return end -- TODO REMOVE after 12.0.1 release
+
 	local version = Grid2:DbGetValue("versions","Grid2") or 0
 	if version>=DB_VERSION then return end
 	if version==0 then
