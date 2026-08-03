@@ -1,5 +1,5 @@
-## Interface: 120007
-## Interface-Retail: 120007
+## Interface: 120100
+## Interface-Retail: 120100
 ## Title: Grid2 |cd3ff7d0aLDB|r
 ## Notes: Grid2 Databroker Launcher.
 ## Notes-esES: Lanzador del Grid2 (Databroker)
