@@ -301,6 +301,17 @@ local function get_similar_spells(typ, spell)
 	return typ~='mdebuffs' and Grid2:GetSimilarPlayerBuffs(spellID) or {spellID or spell}
 end
 
+local function spells_are_valid(auras)
+	if auras then
+		for _,spell in ipairs(auras) do
+			if tonumber(spell)==nil then
+				return false
+			end
+		end
+	end
+	return true
+end
+
 -- aura_filter management
 
 local function filter_get_value(status, key, subkey, default)
@@ -554,6 +565,15 @@ function Grid2Options:MakeStatusAuraMiscOptions(status, options)
 end
 
 function Grid2Options:MakeStatusAuraListOptions(status, options)
+
+	options.auraListError = {
+		type = "description",
+		order = 510,
+		name = string.format("|cffFC6A03%s|r", L["Warning: There are missing spell identifiers in the buffs list. Grid2 cannot track auras by name anymore so you must specify spell identifiers."] ),
+		hidden = function()
+			return spells_are_valid(status.dbx.auras)
+		end,
+	}
 	options.auraListAdd = {
 		type = "input", dialogControl = (status.dbx.type=='mdebuffs') and "EditBoxGrid2Debuffs" or "EditBoxGrid2Buffs",
 		order = 500,

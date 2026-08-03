@@ -143,7 +143,7 @@ end
 function Grid2:OnEnable()
 
 	if Grid2.versionCli<120001 then
-		print("Grid2 Error: This addon version is only compatible with WoW Midnight Path 12.0.1 or superior!!!")
+		print("Grid2 Error: This Beta version is only compatible with WoW Midnight Path 12.0.1 or superior. Install a Grid2 stable version compatible with your game client.!!!")
 		return
 	end
 
