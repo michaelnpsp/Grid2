@@ -372,21 +372,23 @@ local function Icon_UpdateDB(self)
 	if self.cbOrientation=='HORIZONTAL' then self.cbOffsetX, self.cbOffsetY = self.cbOffsetY, self.cbOffsetX end
 	self.cbColor        = Grid2.MakeColor(dbx.cbColor, "WHITE")
 	self.cbColorBack    = Grid2.MakeColor(dbx.cbColorBack, "RED")
-	-- color curve
-	self.showColors      = dbx.ctColors~=nil
-	self.showColorsText  = dbx.ctColorsText
-	self.showColorsBorder= dbx.ctColorsBorder
-	self.showColorsBar   = dbx.ctColorsBar
-	if dbx.ctColors then
-		self.ctColorCurve =  self.ctColorCurve or C_CurveUtil.CreateColorCurve()
+	-- +12.1 only aura countdown text colorization supported
+	-- self.showColors      = dbx.ctColors~=nil
+	-- self.showColorsText  = dbx.ctColorsText
+	-- self.showColorsBorder= dbx.ctColorsBorder
+	-- self.showColorsBar   = dbx.ctColorsBar
+	-- self.needDur = self.showColors or self.showCoolBar
+	if dbx.ctColorsText and dbx.ctColors then
+		self.ctColorCurve = self.ctColorCurve or C_CurveUtil.CreateColorCurve()
 		self.ctColorCurve:SetType(Enum.LuaCurveType.Step)
 		self.ctColorCurve:ClearPoints()
 		for i,color in ipairs(dbx.ctColors) do
 			self.ctColorCurve:AddPoint(dbx.ctThresholds[i] or 0, color)
 		end
+		self.ctOptions = { textColor={ curve=self.ctColorCurve, property=Enum.DurationTextBindingProperty.RemainingDuration } }
+	else
+		self.ctOptions = nil
 	end
-	self.ctOptions = dbx.ctColors and { textColor={ curve=self.ctColorCurve, property=Enum.DurationTextBindingProperty.RemainingDuration } } or nil
-	self.needDur = self.showColors or self.showCoolBar
 	-- backdrop
 	self.backdrop = Grid2:GetBackdropTable("Interface\\Addons\\Grid2\\media\\white16x16", self.borderSize or 1)
 end

@@ -870,7 +870,7 @@ function Grid2Options:MakeIndicatorCooldownColorsOptions(indicator, options)
 		order = 160.1,
 		name = L["Cooldown Text"],
 		desc = L["Enable this option to apply cooldown colors to the countdown text."],
-		width = .7,
+		width = "full",
 		tristate = false,
 		get = function () return indicator.dbx.ctColorsText end,
 		set = function (_, v)
@@ -879,6 +879,7 @@ function Grid2Options:MakeIndicatorCooldownColorsOptions(indicator, options)
 		end,
 		disabled = function() return indicator.dbx.enableCooldownText==nil and indicator.dbx.ctColorsText==nil end,
 	}
+	--[[
 	options.ctColorTargetBar = {
 		type = "toggle",
 		order = 160.2,
@@ -907,6 +908,7 @@ function Grid2Options:MakeIndicatorCooldownColorsOptions(indicator, options)
 		end,
 		disabled = function() return indicator.dbx.borderSize==nil and indicator.dbx.ctColorsBorder==nil end,
 	}
+	--]]
 	options.ctFontColorCount = {
 		type = "select",
 		order = 161,
