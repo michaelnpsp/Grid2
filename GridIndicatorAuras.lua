@@ -7,13 +7,6 @@ local indicator = Grid2.indicatorPrototype
 
 --=====================================================================
 
-function GetAuraSlotKey(self, key)
-	local prefixKey = self.dbx.type .. (key or '')
-	return prefixKey..self.name, prefixKey
-end
-
---=====================================================================
-
 function indicator:StatusChanged(status, priority)
 	if status.GetAurasFilter then
 		self.auraMode = (self.auraMode or 0) + (priority and 1 or -1)
@@ -46,7 +39,7 @@ end
 --=====================================================================
 
 function indicator:AcquireAuraContainer(parent, key, frame)
-	local container = parent.__auraManager[key]
+	local container = parent.__auraManager[key] -- __auraManager declared in GridFrame.lua
 	if not container then
 		container = CreateFrame("AuraContainer", nil, frame or parent, "CustomAuraContainerTemplate")
 		parent.__auraManager[key] = container
@@ -67,8 +60,13 @@ end
 
 --=====================================================================
 
+local function GetAuraSlotKey(self, key)
+	local prefixKey = self.dbx.type .. (key or '')
+	return prefixKey..self.name, prefixKey
+end
+
 local function GetAuraSlotsContainer(parent)
-	local container = parent.__auraManager[0]
+	local container = parent.__auraManager[0] -- __auraManager declared in GridFrame.lua
 	if not container then
 		container = CreateFrame("AuraContainer", nil, parent, "CustomAuraContainerTemplate")
 		container.slotCount = 0

@@ -1,3 +1,5 @@
+if true then return end -- TODO maybe remove this file in future versions.
+
 local Grid2Options = Grid2Options
 local L = Grid2Options.L
 local indexValues = { 1, 2, 3, 4 }
