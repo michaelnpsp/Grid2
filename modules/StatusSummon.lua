@@ -1,4 +1,4 @@
-if Grid2.isClassic then return end
+if Grid2.versionCli<20000 then return end
 
 local L = LibStub:GetLibrary("AceLocale-3.0"):GetLocale("Grid2")
 

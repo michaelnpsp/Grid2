@@ -23,8 +23,6 @@ externals:
 
 ignore:
  - GridDefaultsRetail.lua
- - modules/StatusVehicle.lua
- - modules/StatusSummon.lua
  - modules/StatusStagger.lua
  - RaidDebuffsOptions/RaidDebuffsWoD.lua
  - RaidDebuffsOptions/RaidDebuffsBfA.lua
