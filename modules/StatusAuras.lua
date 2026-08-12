@@ -117,7 +117,7 @@ local function Auras_UpdateDB(self)
 	end
 	-- aura type colors
  	local colorMap, defColor = {}
-	if dbx.color1 then -- single buff
+	if dbx.type == "mbuff" or dbx.type == 'mbuffs' then -- buffs
 		defColor = dbx.color1 or Grid2.defaultColors.BLACK
 		for typ, data in pairs(Grid2.DispelCurveDefaults) do
 			colorMap[typ] = defColor

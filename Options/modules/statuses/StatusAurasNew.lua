@@ -186,7 +186,7 @@ do
 			desc = L["Create a new Debuffs status."],
 			func = function()
 				local baseKey = GetKey()
-				local dbx = { type = "mdebuffs", color1 = {r=1,g=0,b=0,a=1} }
+				local dbx = { type = "mdebuffs", color1 = {r=1,g=0,b=0,a=1} } -- TODO: maybe remove color1
 				Grid2.db.profile.statuses[baseKey]= dbx
 				local status = Grid2.setupFunc['mdebuffs'](baseKey, dbx)
 				Grid2Options:MakeStatusOptions(status)
