@@ -133,6 +133,18 @@ local function Auras_UpdateDB(self)
 	-- default status color
 	local r, g, b, a = Grid2.UnpackColor(defColor)
 	self.GetColor = function() return r, g, b, a end
+	-- color by remaining/elapsed time options
+	filter.cooldownTextOptions = nil
+	if dbx.colorThreshold and dbx.colorCount>1 then -- color by time or value
+		self.ctColorCurve = self.ctColorCurve or C_CurveUtil.CreateColorCurve()
+		self.ctColorCurve:SetType(Enum.LuaCurveType.Step)
+		self.ctColorCurve:ClearPoints()
+		for i=1,dbx.colorCount do
+			self.ctColorCurve:AddPoint( dbx.colorThreshold[i] or 0, dbx["color"..i] )
+		end
+		local durationType = dbx.colorThresholdElapsed and Enum.DurationTextBindingProperty.ElapsedDuration or Enum.DurationTextBindingProperty.RemainingDuration
+		filter.cooldownTextOptions = { textColor={ curve=self.ctColorCurve, property=durationType } }
+	end
 	-- save filter table
 	self.aura_filter = filter
 end

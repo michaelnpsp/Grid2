@@ -16,9 +16,10 @@ end
 local function Square_LayoutAura(self, parent)
 	local filter, status = self:GetStatusAurasFilter()
 	local button = self:AcquireAuraSlotButton(parent, filter)
+	local level = parent:GetFrameLevel() + self.frameLevel
 	local container = parent.container
 	button:ClearAllPoints()
-	button:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
+	button:SetFrameLevel(level)
 	button:SetPoint(self.anchor, container, self.anchorRel, self.offsetx, self.offsety)
 	button:SetSize(self.width or container:GetWidth() , self.height or container:GetHeight())
 	local tex = button.__texture
@@ -45,12 +46,41 @@ local function Square_LayoutAura(self, parent)
 		tex:SetAllPoints()
 		btex:Hide()
 	end
-	if self.borderSwap then
+	button:ClearDurationText()
+	if filter.cooldownTextOptions then -- coloring by remaining time, using a special font
+		local colorFrame = button._colorFrame
+		if not colorFrame then
+			colorFrame = CreateFrame("Frame", nil, button)
+			colorFrame:SetClipsChildren(true)
+			button._colorFrame = colorFrame
+			local text = colorFrame:CreateFontString(nil, "OVERLAY")
+			text:SetPoint('CENTER')
+			text:SetFont("Interface\\Addons\\Grid2\\media\\grid2-squares.ttf", 32, '')
+			text:SetMaxLines(1)
+			colorFrame.text = text
+		end
+		colorFrame:ClearAllPoints()
+		if borderSize then
+			colorFrame:SetPoint("TOPLEFT", borderSize, -borderSize)
+			colorFrame:SetPoint("BOTTOMRIGHT", -borderSize, borderSize)
+		else
+			colorFrame:SetAllPoints()
+		end
+		colorFrame:SetFrameLevel(level)
+		colorFrame:Show()
+		button:SetDurationText(colorFrame.text, filter.cooldownTextOptions)
+		btex:SetVertexColor( UnpackColor(self.color) )
+		tex:Hide()
+	elseif self.borderSwap then
+		if button._colorFrame then button._colorFrame:Hide() end
 		tex:SetColorTexture( UnpackColor(self.color) )
 		btex:SetVertexColor( status:GetColor() )
+		tex:Show()
 	else
+		if button._colorFrame then button._colorFrame:Hide() end
 		tex:SetColorTexture( status:GetColor() )
 		btex:SetVertexColor( UnpackColor(self.color) )
+		tex:Show()
 	end
 end
 

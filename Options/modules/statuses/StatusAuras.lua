@@ -436,7 +436,7 @@ end
 
 -- color options
 
-local function make_color_option(status, options, key, order, name, width)
+local function make_color_option(status, options, key, order, name, width, hiddenFunc)
 	options[key] = {
 		type = "color",
 		hasAlpha = true,
@@ -457,6 +457,7 @@ local function make_color_option(status, options, key, order, name, width)
 			status.dbx[key] = c
 			refresh_aura_status(status)
 		end,
+		hidden = hiddenFunc
 	}
 end
 
@@ -483,9 +484,102 @@ local function make_colortype_option(status, options, key, order, defColor, para
 	end
 end
 
---==============================================
+--============================================================================================
 --
---==============================================
+--============================================================================================
+do
+	local COLOR_TYPES = { [1] = L["Single Color"], [2] = L["Remaining time"], [3] = L["Elapsed time"] }
+	local COLOR_COUNT_VALUES = { [2] = "2", [3] = "3", [4] = "4", [5] = "5", [6] = "6" }
+	local DEF_COLORS = { Grid2.defaultColors.WHITE, Grid2.defaultColors.RED, Grid2.defaultColors.RED, Grid2.defaultColors.RED, Grid2.defaultColors.RED, Grid2.defaultColors.RED }
+	local DEF_THRESHOLDS = { 5, 0, 0, 0, 0, 0}
+
+	function Grid2Options:MakeStatusAuraCooldownColorsOptions(status, options)
+		local dbx = status.dbx
+
+		local function RefreshColors(colorCount, elapsed)
+			dbx.colorCount = (colorCount>1) and colorCount or nil
+			dbx.colorThreshold = dbx.colorThreshold or {}
+			dbx.colorThresholdElapsed = elapsed or nil
+			for i=1,16 do
+				dbx["color"..i] = i<=colorCount and (dbx["color"..i] or Grid2.CopyTable(DEF_COLORS[i])) or nil
+				dbx.colorThreshold[i] = i<=colorCount and (dbx.colorThreshold[i] or DEF_THRESHOLDS[i]) or nil
+			end
+			if colorCount==1 then dbx.colorThreshold = nil	end
+			refresh_aura_status(status)
+		end
+
+		options.colorizeBy = {
+			type = "select",
+			order = 10,
+			width ="normal",
+			name = L["Coloring based on"],
+			desc = L["Coloring based on"],
+			get = function()
+				return	(dbx.colorThresholdElapsed and 3) or -- elapsed time
+						(dbx.colorThreshold        and 2) or -- remaining time
+						1                                     -- single color
+			end,
+			set = function( _, v)
+				RefreshColors( (v==1 and 1) or dbx.colorCount or 2 , v==3 )
+			end,
+			values = COLOR_TYPES
+		}
+
+		make_color_option(status, options, "color1", 20, L["Color"], "half", function() return dbx.colorCount~=nil end)
+
+		options.separator = { type = "header", order = 30, name = "", hidden = function() return dbx.colorCount==nil end }
+
+		options.colorCount = {
+			type = "select",
+			order = 161,
+			name = L["Color Count"],
+			desc = L["Color Count"],
+			get = function () return dbx.colorCount end,
+			set = function (_, v) RefreshColors(v) end,
+			values = COLOR_COUNT_VALUES,
+			hidden = function() return dbx.colorCount==nil end,
+		}
+
+		for i=1,6 do
+			options['ctColors'..i] = {
+				type = "color",
+				order = 162 + i,
+				name = function()
+					if i==1 then
+						return string.format(L["Above %d seconds"], dbx.colorThreshold and dbx.colorThreshold[i] or 0)
+					else
+						return string.format(L["Less than %d seconds"], dbx.colorThreshold and dbx.colorThreshold[i-1] or 0)
+					end
+				end,
+				hasAlpha = true,
+				get = function() return self:UnpackColor( dbx["color"..i], "WHITE" ) end,
+				set = function(info, r,g,b,a)
+					self:PackColor( r,g,b,a, dbx, "color"..i )
+					refresh_aura_status(status)
+				end,
+				hidden = function() return dbx.colorThreshold==nil or (dbx.colorCount or 0)<i end,
+			}
+			options['ctThresholds'..i] = {
+				type = "input",
+				order = 162.5 + i,
+				name = L["Threshold (seconds)"],
+				get = function() return tostring(dbx.colorThreshold[i] or 0) end,
+				set = function(info, v)
+					dbx.colorThreshold[i] = tonumber(v) or 0
+					refresh_aura_status(status)
+				end,
+				hidden = function() return dbx.colorThreshold==nil or (dbx.colorCount or 0)<i+1 end,
+			}
+		end
+
+		return options
+	end
+
+end
+
+--============================================================================================
+--
+--============================================================================================
 
 function Grid2Options:MakeStatusAuraMiscOptions(status, options)
 	options.max_auras = {
@@ -666,11 +760,32 @@ end
 -- Grid2Options:MakeMidnightBuffsOptions(NewBuffsOptions.arg, NewBuffsOptions)
 
 Grid2Options:RegisterStatusOptions("mbuff", "buff", function(self, status, options, optionParams)
-	make_color_option(status, options, "color1", 100.1, L["Color"], "half")
-	self:MakeStatusAuraFilterOptions(status, options)
-	self:MakeStatusAuraListOptions(status, options)
+	local function MakeGeneralOptions(status, options, optionParams)
+		self:MakeStatusAuraFilterOptions(status, options)
+		self:MakeStatusAuraListOptions(status, options)
+		return options
+	end
+	self:MakeStatusTitleOptions(status, options, optionParams)
+	options.settings   = {
+		type = "group", order = 10, name = L['General'],
+		args = MakeGeneralOptions(status, {}, optionParams),
+	}
+	options.colors = {
+		type = "group", order = 20, name = L["Colors"],
+		desc = L["Colors"],
+		args = self:MakeStatusAuraCooldownColorsOptions( status, {}, optionParams ),
+	}
+	options.load = {
+		type = "group", order = 30, name = L['Load'],
+		args = self:MakeStatusLoadOptions( status, {}, optionParams )
+	}
+	options.indicators = {
+		type = "group", order = 40, name = L['indicators'],
+		args = self:MakeStatusIndicatorsOptions(status,{}, optionParams)
+	}
+	return options
 end,{
-	groupOrder = 5, isDeletable = true,
+	groupOrder = 5, isDeletable = true, hideTitle = true,
 	titleIcon = "Interface\\Icons\\Inv_enchant_shardbrilliantsmall",
 })
 
@@ -684,9 +799,9 @@ end,{
 	titleIcon = "Interface\\Icons\\Inv_enchant_shardbrilliantsmall",
 })
 
---==============================================
+--============================================================================================
 --
---==============================================
+--============================================================================================
 
 local function MakeDebuffTypesColorsOptions(status, options, optionParams)
 	local order = optionParams and optionParams.order or 1
