@@ -64,7 +64,7 @@ CreatureColor:Inject(Shared)
 
 function CreatureColor:UnitColor(unit)
 	local p = self.dbx
-	if p.colorHostile and UnitIsCharmed(unit) and UnitCanAttack(unit, "player") then
+	if p.colorHostile and UnitCanAttack(unit, "player") then
 		return p.colors.HOSTILE
 	else
 		local colors, color = p.colors, UnitCreatureType(unit)
@@ -97,7 +97,7 @@ end
 
 function FriendColor:UnitColor(unit)
 	local dbx = self.dbx
-	if dbx.colorHostile and UnitIsCharmed(unit) and UnitCanAttack(unit, "player") then
+	if dbx.colorHostile and UnitCanAttack(unit, "player") then
 		return dbx.color3
 	else
 		return Grid2:UnitIsPet(unit) and dbx.color2 or dbx.color1
@@ -148,7 +148,11 @@ Charmed:Inject(Shared)
 Charmed.GetColor = Color.GetColor
 
 function Charmed:IsActive(unit)
-	return UnitIsCharmed(unit) and UnitCanAttack("player", unit)
+	if UnitCanAttack("player", unit) then
+		local r = UnitIsCharmed(unit)
+		return canaccessvalue(r) and r
+	end
+	return false
 end
 
 local charmedText = L["Charmed"]
