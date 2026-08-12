@@ -352,7 +352,9 @@ do
 				sorted
 			)
 		end
-		if status.handlerType or (optionParams and optionParams.unitFilter) then -- hackish to detect buff/debuff type statuses
+		--]]
+		-- if status.handlerType or (optionParams and optionParams.unitFilter) then -- hackish to detect buff/debuff type statuses
+		if optionParams and optionParams.unitFilter then
 			SetFilterBooleanOptions( status, options, 65,
 				'unitAlive',
 				true,
@@ -400,7 +402,6 @@ do
 				NOYES_TYPES
 			)
 		end
-		--]]
 		return options
 	end
 	Grid2:RegisterMessage("Grid_StatusLoadChanged", Grid2Options.NotifyChange)

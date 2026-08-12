@@ -1,5 +1,8 @@
 -- Compatibility API functions to enable targetting different versions of the game
 
+local canaccessvalue = Grid2.canaccessvalue
+
+-- Functions Table
 local API = {}
 
 -- GetSpellInfo()
@@ -98,6 +101,36 @@ do
 		local typeID, actionID, spellID = C_SpellBook_GetSpellBookItemType(id, type=='pet' and 1 or 0)
 		return bookTypes[typeID], spellID or actionID
 	end
+end
+
+-- Safe functions (avoid returning secrets)
+
+local UnitClass = UnitClass
+API.UnitClassSafe = function(unit)
+	local loc, eng, idx = UnitClass(unit)
+	if canaccessvalue(eng) then
+		return loc, eng, idx
+	else
+		return 'None', 'NONE', 0
+	end
+end
+
+local UnitIsUnit = UnitIsUnit
+API.UnitIsUnitSafe = function(unit1, unit2)
+	local r = UnitIsUnit(unit1, unit2)
+	return canaccessvalue(r) and r
+end
+
+local UnitGroupRolesAssigned = UnitGroupRolesAssigned
+API.UnitGroupRolesAssignedSafe = function(unit)
+	local r = UnitGroupRolesAssigned(unit)
+	return canaccessvalue(r) and r or 'NONE'
+end
+
+local UnitPhaseReason = UnitPhaseReason
+API.UnitPhaseReasonSafe = function(unit)
+	local r = UnitPhaseReason(unit)
+	return canaccessvalue(r) and r
 end
 
 -- Publish functions

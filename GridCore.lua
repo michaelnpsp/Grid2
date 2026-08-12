@@ -10,6 +10,10 @@ local ipairs = ipairs
 local tostring = tostring
 local fmt = string.format
 
+-- midnight secrets check
+Grid2.issecretvalue = issecretvalue
+Grid2.canaccessvalue = canaccessvalue
+
 -- build/version tracking
 local GetAddOnMetadata = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata
 local IsAddOnLoaded = C_AddOns and C_AddOns.IsAddOnLoaded or IsAddOnLoaded

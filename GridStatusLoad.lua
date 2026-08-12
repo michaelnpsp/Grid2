@@ -4,18 +4,18 @@ local Grid2Frame = Grid2Frame
 local next = next
 local pairs = pairs
 local rawget = rawget
-local UnitClass = UnitClass
-local UnitExists = UnitExists
-local UnitIsUnit = UnitIsUnit
-local UnitIsFriend = UnitIsFriend
-local GetInstanceInfo = GetInstanceInfo
 local C_Timer_After = C_Timer.After
+local GetInstanceInfo = GetInstanceInfo
+local UnitExists = UnitExists
+local UnitIsFriend = UnitIsFriend
+local UnitIsUnit = Grid2.API.UnitIsUnitSafe
+local UnitClass = Grid2.API.UnitClassSafe
+local UnitGroupRolesAssigned = Grid2.API.UnitGroupRolesAssignedSafe
 local GetSpellCooldown = Grid2.API.GetSpellCooldown
-local UnitGroupRolesAssigned = Grid2.UnitGroupRolesAssigned
 local issecretvalue = Grid2.issecretvalue
+local canaccessvalue = Grid2.canaccessvalue
 local roster_types = Grid2.roster_types
 local roster_deads = Grid2.roster_deads
-local canaccessvalue = Grid2.canaccessvalue
 local empty = {}
 
 -------------------------------------------------------------------------
@@ -264,7 +264,7 @@ do
 
 	-- public
 	function FilterU_Register(self, load)
-		if load.unitType or load.unitReaction or load.unitClass or load.unitRole or load.cooldown or load.unitPlayer~=nil or load.unitAlive~=nil then
+		if not self.isAura and (load.unitType or load.unitReaction or load.unitClass or load.unitRole or load.cooldown or load.unitPlayer~=nil or load.unitAlive~=nil) then
 			self.filtered = setmetatable({source = load}, filter_mt)
 		else
 			self.filtered = nil
@@ -389,7 +389,7 @@ function status:RegisterLoad() -- called from Grid2:RegisterStatus() in GridStat
 	local load = self.dbx.load
 	if load then
 		FilterG_Register(self, load)
-		-- FilterU_Register(self, load)
+		FilterU_Register(self, load)
 	end
 end
 
@@ -397,7 +397,7 @@ function status:UnregisterLoad() -- called from Grid2:UnregisterStatus() in Grid
 	local load = self.dbx.load
 	if load then
 		FilterG_Unregister(self, load)
-		-- FilterU_Unregister(self, load)
+		FilterU_Unregister(self, load)
 	end
 	self.suspended = nil
 end
@@ -405,7 +405,7 @@ end
 function status:EnableLoad() -- called from status:RegisterIndicator() when the status is enabled
 	local load = self.dbx.load
 	if load then
-		-- FilterU_Enable(self, load)
+		FilterU_Enable(self, load)
 		FilterC_Enable(self, load)
 	end
 end
@@ -413,7 +413,7 @@ end
 function status:DisableLoad() -- called from status:UnregisterIndicator() when the status is disabled
 	local load = self.dbx.load
 	if load then
-		-- FilterU_Disable(self, load)
+		FilterU_Disable(self, load)
 		FilterC_Disable(self, load)
 	end
 end
@@ -421,7 +421,7 @@ end
 function status:RefreshLoad() -- used by Grid2Options
 	local load = self.dbx.load
 	FilterG_Refresh(self, load)
-	-- FilterU_Refresh(self, load)
+	FilterU_Refresh(self, load)
 	FilterC_Refresh(self, load)
 	self:Refresh()
 end

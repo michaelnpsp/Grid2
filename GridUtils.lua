@@ -17,10 +17,6 @@ Grid2.Dummy = function() end
 -- Empty table
 Grid2.EmptyTable = {}
 
--- Midnight Secrets check
-Grid2.issecretvalue = issecretvalue
-Grid2.canaccessvalue = canaccessvalue
-
 -- Abbreviate numbers
 do
 	local abbrevData = { breakpointData = {
