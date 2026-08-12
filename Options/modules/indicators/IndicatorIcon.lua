@@ -6,7 +6,7 @@ Grid2Options:RegisterIndicatorOptions("icon", true, function(self, indicator)
 	self:MakeIndicatorTypeLevelOptions(indicator, options)
 	self:MakeIndicatorLocationOptions(indicator, options)
 	self:MakeIndicatorIconSizeOptions(indicator, options)
-	self:MakeIndicatorBorderOptions(indicator, options)
+	self:MakeIndicatorBorderOptions(indicator, options, {RefreshMethod = 'Create'} )
 	self:MakeIndicatorCooldownOptions(indicator, options)
 	self:MakeIndicatorTooltipsOptions(indicator, options)
 	self:MakeIndicatorIconCustomOptions(indicator, options)
@@ -19,15 +19,17 @@ end)
 function Grid2Options:MakeIndicatorIconCustomOptions(indicator, options)
 	self:MakeHeaderOptions( options, "Icon"  )
 	options.disableIcon = {
-		type = "toggle",
-		name = L["Display Square"],
-		desc = L["Display a flat square texture instead of the icon provided by the status."],
+		type = 'select',
 		order = 15,
-		tristate = false,
-		get = function () return indicator.dbx.disableIcon end,
-		set = function (_, v)
-			indicator.dbx.disableIcon = v or nil
-			self:RefreshIndicator(indicator, "Update")
+		name = L["Icon Source"],
+		desc = L["Icon Source"],
+		values = { [0] = L["Status Icon"], [1] = L["Flat Square"], [2] = L["Display Nothing"] },
+		get = function()
+			return (not indicator.dbx.disableIcon and 0) or (indicator.dbx.disableIcon==true and 1) or 2
+		end,
+		set = function(_, v)
+			indicator.dbx.disableIcon = (v==2 and 0) or (v==1 and true) or nil
+			self:RefreshIndicator(indicator, "Create")
 		end,
 	}
 	options.useStatusColor = {

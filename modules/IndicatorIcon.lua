@@ -20,13 +20,20 @@ local function Icon_Create(self, parent)
 end
 
 local function Icon_ButtonCreate(self, parent, f, filter)
-	local Icon = f.Icon or f:CreateTexture(nil, "BACKGROUND")
+	local Icon = f.Icon or f:CreateTexture(nil, "ARTWORK")
 	f.Icon = Icon
 	Icon:SetTexCoord(0.05, 0.95, 0.05, 0.95)
 	Icon:ClearAllPoints()
 	Icon:SetAllPoints()
+	Icon:SetColorTexture(0,0,0,0)
 	Icon:Show()
-	if filter then f:SetIcon(Icon) end
+	if filter then -- icon & border
+		if self.disableIcon then
+			f:ClearIcon()
+		else
+			f:SetIcon(Icon)
+		end
+	end
 	if not self.disableCooldown then
 		local Cooldown = f.Cooldown or CreateFrame("Cooldown", nil, f, "CooldownFrameTemplate")
 		Cooldown:SetDrawEdge(not not self.dbx.drawEdge)
@@ -98,7 +105,7 @@ local function Icon_ButtonCreate(self, parent, f, filter)
 	end
 end
 
-local function Icon_ButtonLayout(self, parent, f, filter, size, level)
+local function Icon_ButtonLayout(self, parent, f, filter, size, level, status)
 	local Icon = f.Icon
 	local borderSize = self.borderSize
 	if filter then -- 12.1+ aura container
@@ -108,7 +115,16 @@ local function Icon_ButtonLayout(self, parent, f, filter, size, level)
 		else
 			Icon:SetAllPoints(f)
 		end
-		Icon:SetTexCoord(Grid2.statusPrototype.GetTexCoord())
+		if not self.disableIcon then
+			Icon:SetTexCoord(Grid2.statusPrototype.GetTexCoord())
+			Icon:Show()
+		elseif self.disableIcon==true then
+			Icon:SetTexCoord(0,1,0,1)
+			Icon:SetColorTexture(status:GetColor())
+			Icon:Show()
+		else -- 0 => icon hidden
+			Icon:Hide()
+		end
 	else -- non aura statuses
 		local r,g,b,a = f:GetBackdropBorderColor()
 		if borderSize then
@@ -283,7 +299,7 @@ end
 -------------------------------------------------------------
 
 local function Icon_LayoutAura(self, parent)
-	local button, filter = self:AcquireAuraSlotButton(parent, filter)
+	local button, filter, status = self:AcquireAuraSlotButton(parent, filter)
 	local level = parent:GetFrameLevel() + self.frameLevel
 	local size = self.iconSize
 	if size<=1 then size = size * parent:GetHeight() end
@@ -292,7 +308,7 @@ local function Icon_LayoutAura(self, parent)
 	button:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
 	button:SetSize(size, size)
 	Icon_ButtonCreate(self, parent, button, filter)
-	Icon_ButtonLayout(self, parent, button, filter, size, level)
+	Icon_ButtonLayout(self, parent, button, filter, size, level, status)
 end
 
 -------------------------------------------------------------

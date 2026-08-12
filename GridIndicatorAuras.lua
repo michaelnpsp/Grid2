@@ -78,7 +78,10 @@ local function GetAuraSlotsContainer(parent)
 end
 
 function indicator:AcquireAuraSlotButton(parent, filter, releaseFunc, key)
-	filter = filter or self:GetStatusAurasFilter()
+	local status
+	if not filter then
+		filter, status = self:GetStatusAurasFilter()
+	end
 	local container = GetAuraSlotsContainer(parent)
 	local buttonKey, prefixKey = GetAuraSlotKey(self, key)
 	local button = container.slotEnabled[buttonKey]
@@ -105,7 +108,7 @@ function indicator:AcquireAuraSlotButton(parent, filter, releaseFunc, key)
 		button.__releaseFunc = releaseFunc
 	end
 	self:SetAuraButtonTooltip(button)
-	return button, filter
+	return button, filter, status
 end
 
 function indicator:ReleaseAuraSlotButton(parent, key)

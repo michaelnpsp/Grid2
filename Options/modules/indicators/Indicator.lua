@@ -428,7 +428,7 @@ function Grid2Options:MakeIndicatorBorderSizeOptions(indicator, options, optionP
 		set = function (_, v)
 			if v == 0 then v = nil end
 			indicator.dbx.borderSize = v
-			self:RefreshIndicator(indicator, "Layout")
+			self:RefreshIndicator(indicator, (optionParams and optionParams.RefreshMethod) or "Layout")
 		end,
 	}
 end
