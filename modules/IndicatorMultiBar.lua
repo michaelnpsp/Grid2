@@ -97,7 +97,7 @@ local function Bar_LayoutAuraColor(self, parent, f, level)
 			ctex:SetTexture(setup.texture, setup.horWrap, setup.verWrap)
 			ctex:SetHorizTile(setup.horWrap~='CLAMP')
 			ctex:SetVertTile(setup.verWrap~='CLAMP')
-			ctex:SetBlendMode('ADD')
+			ctex:SetBlendMode('BLEND')
 			ctex:SetAllPoints(tex)
 			button:SetAuraBorder(ctex, filter.borderOptions)
 			button.__texture = ctex
