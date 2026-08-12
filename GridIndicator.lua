@@ -49,7 +49,7 @@ end
 
 function indicator:Release(parent)
 	local f = parent[self.name]
-	if self.Destroy then
+	if f and self.Destroy then
 		self:Destroy(parent, f)
 	end
 	-- We only release the first aura slot button created, if a indicator creates more slots (using a non nil key to identify them)
