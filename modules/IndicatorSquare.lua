@@ -46,6 +46,7 @@ local function Square_LayoutAura(self, parent)
 		tex:SetAllPoints()
 		btex:Hide()
 	end
+	button:ClearAuraBorder()
 	button:ClearDurationText()
 	if filter.cooldownTextOptions then -- coloring by remaining time, using a special font
 		local colorFrame = button._colorFrame
@@ -74,13 +75,12 @@ local function Square_LayoutAura(self, parent)
 	elseif self.borderSwap then
 		if button._colorFrame then button._colorFrame:Hide() end
 		tex:SetColorTexture( UnpackColor(self.color) )
-		btex:SetVertexColor( status:GetColor() )
-		tex:Show()
+		button:SetAuraBorder(btex, filter.borderOptions)
 	else
 		if button._colorFrame then button._colorFrame:Hide() end
-		tex:SetColorTexture( status:GetColor() )
 		btex:SetVertexColor( UnpackColor(self.color) )
-		tex:Show()
+		tex:SetColorTexture(1,1,1,1)
+		button:SetAuraBorder(tex, filter.borderOptions)
 	end
 end
 
