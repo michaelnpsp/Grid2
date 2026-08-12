@@ -72,6 +72,7 @@ local function Shape_LayoutAura(self, parent)
 		f:ClearAuraBorder()
 		f.Icon:SetTexCoord( unpack(self.iconCoord) )
 		f.Icon:SetTexture( self.iconPath )
+		f.Icon:SetVertexColor(status:GetColor())
 	end
 	f.Icon:Show()
 	if self.dbx.shadowEnabled and not self.useDispelIcon then
