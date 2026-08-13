@@ -24,7 +24,7 @@ do
 		if new_name ~= "" then
 			local mine = (new_mine==2 and "-not-mine") or (new_mine and "-mine") or ""
 			local key = string.format("%s-%s%s", strsub(new_type,2), new_name, mine )
-			return (Grid2.statuses[key]==nil) and key
+			if Grid2.statuses[key]==nil then return key end
 		end
 	end
 
@@ -144,7 +144,7 @@ do
 				Reset()
 			end,
 			disabled = function()
-				return GetKey()==nil
+				return not GetKey()
 			end,
 		},
 	} )
@@ -162,7 +162,7 @@ do
 		local key = new_name:gsub("[ %.\"]", "")
 		if key~="" then
 			key = "debuffs-"..key
-			return (Grid2.statuses[key]==nil) and key
+			if Grid2.statuses[key]==nil then return key end
 		end
 	end
 
@@ -194,7 +194,7 @@ do
 				new_name = ""
 			end,
 			disabled = function ()
-				return GetKey()==nil
+				return not GetKey()
 			end,
 		},
 	})
