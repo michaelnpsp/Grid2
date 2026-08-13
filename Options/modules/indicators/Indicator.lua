@@ -736,6 +736,18 @@ function Grid2Options:MakeIndicatorCooldownTextOptions(indicator, options)
 		end,
 		hidden= function() return indicator.dbx.enableCooldownText==nil end,
 	}
+	options.ctUseStatusColor = {
+		type = "toggle",
+		order = 142,
+		name = L["Use Status Color"],
+		tristate = false,
+		get = function () return indicator.dbx.ctUseStatusColor end,
+		set = function (_, v)
+			indicator.dbx.ctUseStatusColor = v or nil
+			self:RefreshIndicator(indicator, "Layout")
+		end,
+		hidden = function() return indicator.dbx.enableCooldownText==nil end,
+	}
 	options.ctFontColor = {
 		type = "color",
 		order = 143,
@@ -747,7 +759,7 @@ function Grid2Options:MakeIndicatorCooldownTextOptions(indicator, options)
 			self:PackColor( r,g,b,a, indicator.dbx, "ctColor" )
 			self:RefreshIndicator(indicator, "Layout" )
 		 end,
-		hidden = function() return indicator.dbx.enableCooldownText==nil end,
+		hidden = function() return indicator.dbx.enableCooldownText==nil or indicator.dbx.ctUseStatusColor end,
 	}
 end
 
@@ -877,7 +889,7 @@ function Grid2Options:MakeIndicatorCooldownColorsOptions(indicator, options)
 			indicator.dbx.ctColorsText = v or nil
 			RefreshColors()
 		end,
-		disabled = function() return indicator.dbx.enableCooldownText==nil and indicator.dbx.ctColorsText==nil end,
+		disabled = function() return indicator.dbx.ctUseStatusColor or (indicator.dbx.enableCooldownText==nil and indicator.dbx.ctColorsText==nil) end,
 	}
 	--[[
 	options.ctColorTargetBar = {

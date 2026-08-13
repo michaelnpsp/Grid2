@@ -73,6 +73,9 @@ local function Icon_OnFrameUpdate(f)
 			if showStack then
 				aura.text:SetText( TruncateWhenZero( status:GetCount(unit) or 0 ) )
 			end
+			if self.useStatusColorText then
+				aura.coolText:SetTextColor(status:GetColor(unit))
+			end
 			if showCool then
 				local expiration, duration = status:GetExpirationTime(unit), status:GetDuration(unit)
 				if expiration and duration then
@@ -276,7 +279,7 @@ end
 -- blizzard secret aura containers 12.1+
 -------------------------------------------------------------
 
-local function Icon_SetupButtonB(self, parent, auraContainer, frame, borderOptions, status)
+local function Icon_SetupButtonB(self, parent, auraContainer, frame, borderOptions, cooldownTextOptions, status)
 	-- frame button
 	local iconSize = self.iconSize>1 and self.iconSize or self.iconSize * parent:GetHeight()
 	frame:SetSize(iconSize, iconSize)
@@ -350,12 +353,21 @@ local function Icon_SetupButtonB(self, parent, auraContainer, frame, borderOptio
 			local ctFontSize = self.ctFontSize<1 and self.ctFontSize*iconSize or self.ctFontSize
 			local text = cooldown:GetCountdownFontString()
 			text:SetFont(self.ctFont, ctFontSize, self.ctFontFlags)
-			text:SetTextColor(UnpackColor(self.ctColor))
+			local ctOptions
+			if self.useStatusColorText then
+				ctOptions = cooldownTextOptions
+				if not ctOptions then
+					text:SetTextColor(status:GetColor())
+				end
+			else
+				ctOptions = self.ctOptions
+				text:SetTextColor(UnpackColor(self.ctColor))
+			end
 			text:ClearAllPoints()
 			text:SetPoint(self.ctFontPoint, self.ctFontOffsetX, self.ctFontOffsetY)
 			text:SetMaxLines(1)
 			frame.coolText = text
-			frame:SetDurationText(text, self.ctOptions)
+			frame:SetDurationText(text, ctOptions)
 		else
 			frame.coolText = nil
 			frame:ClearDurationText()
@@ -443,7 +455,7 @@ local function Icon_LayoutB(self, parent)
 				initializeFrame = function(button)
 					if count>0 then count = count -1; return end
 					buttons[#buttons+1] = button
-					Icon_SetupButtonB(self, parent, auraContainer, button, filter.borderOptions, status)
+					Icon_SetupButtonB(self, parent, auraContainer, button, filter.borderOptions, filter.cooldownTextOptions, status)
 				end
 			} )
 			auraContainer:SetAuraGroupLayout(key, self.groupLayout)
@@ -508,6 +520,7 @@ local function Icon_UpdateDB(self)
 	end
 	self.showSwipe       = not (dbx.disableCooldown or dbx.disableCooldownAnim)
 	self.showCoolText    = dbx.enableCooldownText
+	self.useStatusColorText = self.showCoolText and dbx.ctUseStatusColor
 	self.showCooldown    = dbx.enableCooldownText or not dbx.disableCooldown
 	self.showStack       = not dbx.disableStack
 	self.showIcons       = not dbx.disableIcons
@@ -551,7 +564,7 @@ local function Icon_UpdateDB(self)
 	-- self.showColorsText  = dbx.ctColorsText
 	-- self.showColorsBorder= dbx.ctColorsBorder
 	-- self.showColorsBar   = dbx.ctColorsBar
-	if dbx.ctColorsText and dbx.ctColors then
+	if not self.useStatusColorText and dbx.ctColorsText and dbx.ctColors then
 		self.ctColorCurve = self.ctColorCurve or C_CurveUtil.CreateColorCurve()
 		self.ctColorCurve:SetType(Enum.LuaCurveType.Step)
 		self.ctColorCurve:ClearPoints()
