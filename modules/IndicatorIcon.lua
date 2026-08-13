@@ -46,7 +46,13 @@ local function Icon_ButtonCreate(self, parent, f, filter)
 		f.Cooldown = Cooldown
 		if self.showCoolText then
 			f.coolText = Cooldown:GetCountdownFontString()
-			if filter then f:SetDurationText(f.coolText, self.ctOptions) end
+			if filter then
+				if self.useStatusColorText then
+					f:SetDurationText(f.coolText, filter.cooldownTextOptions)
+				else
+					f:SetDurationText(f.coolText, self.ctOptions)
+				end
+			end
 		end
 	end
 	if not self.disableStack then
@@ -144,7 +150,13 @@ local function Icon_ButtonLayout(self, parent, f, filter, size, level, status)
 	if self.showCoolText then
 		local color, text = self.ctColor, f.coolText
 		text:SetFont(self.ctFont, self.ctFontSize, self.ctFontFlags)
-		text:SetTextColor(color.r, color.g, color.b, color.a)
+		if self.useStatusColorText then
+			if status and not (filter and filter.cooldownTextOptions) then
+				text:SetTextColor(status:GetColor())
+			end
+		else
+			text:SetTextColor(color.r, color.g, color.b, color.a)
+		end
 		text:ClearAllPoints()
 		text:SetPoint(self.ctFontPoint, self.ctFontOffsetX, self.ctFontOffsetY)
 		text:SetMaxLines(1)
@@ -212,6 +224,9 @@ local function Icon_OnUpdate(self, parent, unit, status)
 	Icon:SetVertexColor(status:GetVertexColor(unit))
 	local durObject
 	local r,g,b,a = status:GetColor(unit)
+	if self.useStatusColorText and self.showCoolText then
+		Frame.coolText:SetTextColor(r, g, b, a)
+	end
 	if self.disableIcon then
 		Icon:SetColorTexture(r,g,b)
 	else
@@ -349,6 +364,7 @@ local function Icon_UpdateDB(self)
 	self.showSwipe       = not (dbx.disableCooldown or dbx.disableCooldownAnim)
 	self.showCoolBar     = dbx.enableCooldownBar
 	self.showCoolText    = dbx.enableCooldownText
+	self.useStatusColorText = self.showCoolText and dbx.ctUseStatusColor
 	self.disableCooldown = dbx.disableCooldown and not dbx.enableCooldownText
 	self.disableStack    = dbx.disableStack
 	self.frameLevel      = dbx.level
@@ -394,7 +410,7 @@ local function Icon_UpdateDB(self)
 	-- self.showColorsBorder= dbx.ctColorsBorder
 	-- self.showColorsBar   = dbx.ctColorsBar
 	-- self.needDur = self.showColors or self.showCoolBar
-	if dbx.ctColorsText and dbx.ctColors then
+	if not self.useStatusColorText and dbx.ctColorsText and dbx.ctColors then
 		self.ctColorCurve = self.ctColorCurve or C_CurveUtil.CreateColorCurve()
 		self.ctColorCurve:SetType(Enum.LuaCurveType.Step)
 		self.ctColorCurve:ClearPoints()
