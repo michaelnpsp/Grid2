@@ -435,7 +435,7 @@ function Grid2Options:IsCompatiblePair(indicator, status)
 		for type, list in pairs(Grid2.indicatorTypes) do
 			if list[indicator.name] then
 				for _, s in Grid2:IterateStatuses(type) do
-					if s == status then
+					if s == status and not (s.isAura and indicator.aurasNotSupported ) then
 						return type
 					end
 				end
