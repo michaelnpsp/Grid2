@@ -47,7 +47,9 @@ local function Icon_ButtonCreate(self, parent, f, filter)
 		if self.showCoolText then
 			f.coolText = Cooldown:GetCountdownFontString()
 			-- Icon_UpdateDB() clears ctOptions whenever the status color is used
-			if filter then f:SetDurationText(f.coolText, self.useStatusColorText and filter.cooldownTextOptions or self.ctOptions) end
+			if filter then
+				f:SetDurationText(f.coolText, self.useStatusColorText and filter.cooldownTextOptions or self.cooldownTextOptions)
+			end
 		end
 	end
 	if not self.disableStack then
@@ -415,9 +417,9 @@ local function Icon_UpdateDB(self)
 		for i,color in ipairs(dbx.ctColors) do
 			self.ctColorCurve:AddPoint(dbx.ctThresholds[i] or 0, color)
 		end
-		self.ctOptions = { textColor={ curve=self.ctColorCurve, property=Enum.DurationTextBindingProperty.RemainingDuration } }
+		self.cooldownTextOptions = { textColor={ curve=self.ctColorCurve, property=Enum.DurationTextBindingProperty.RemainingDuration } }
 	else
-		self.ctOptions = nil
+		self.cooldownTextOptions = nil
 	end
 	-- backdrop
 	self.backdrop = Grid2:GetBackdropTable("Interface\\Addons\\Grid2\\media\\white16x16", self.borderSize or 1)

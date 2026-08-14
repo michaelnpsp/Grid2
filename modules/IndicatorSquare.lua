@@ -36,6 +36,7 @@ local function Square_LayoutAura(self, parent)
 	tex:ClearAllPoints()
 	local borderSize = self.borderSize
 	if borderSize then
+		borderSize = math.ceil(borderSize)
 		tex:SetPoint("TOPLEFT", borderSize, -borderSize)
 		tex:SetPoint("BOTTOMRIGHT", -borderSize, borderSize)
 		btex:SetTexture( Grid2:GetSliceBorderTexture(borderSize) )

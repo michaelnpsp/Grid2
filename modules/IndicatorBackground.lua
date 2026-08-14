@@ -28,6 +28,7 @@ function Background:UpdateDB()
 end
 
 local function Create(indicatorKey, dbx)
+	Background.aurasNotSupported = true -- hackish way to hide auras in options, see Grid2Options:IsCompatiblePair()
 	Background.dbx = dbx
 	Grid2:RegisterIndicator(Background, { "color" })
 	return Background

@@ -866,7 +866,7 @@ local DEF_THRESHOLDS = { 5, 0, 0, 0}
 function Grid2Options:MakeIndicatorCooldownColorsOptions(indicator, options)
 	local function RefreshColors(v)
 		local dbx = indicator.dbx
-		if dbx.ctColorsBorder or dbx.ctColorsText or dbx.ctColorsBar then
+		if dbx.ctColorsText then
 			dbx.ctColors = dbx.ctColors or {}
 			dbx.ctThresholds = dbx.ctThresholds or {}
 			for i=1,4 do

@@ -68,6 +68,7 @@ end
 
 local function Create(indicatorKey, dbx)
 	local indicator = Grid2.indicatorPrototype:new(indicatorKey)
+	indicator.aurasNotSupported = true -- hackish way to hide auras in options, see Grid2Options:IsCompatiblePair()
 	indicator.dbx = dbx
 	indicator.Create = Grid2.Dummy
 	indicator.Layout = Grid2.Dummy

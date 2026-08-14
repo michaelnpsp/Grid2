@@ -11,7 +11,7 @@ Border.Create = Grid2.Dummy
 function Border:Layout(parent)
 	if self.auraMode then
 		local button, filter = self:AcquireAuraSlotButton(parent)
-		local borderSize = Grid2Frame.db.profile.frameBorder
+		local borderSize = math.ceil(Grid2Frame.db.profile.frameBorder)
 		button:SetAllPoints(parent)
 		button:SetFrameLevel(parent:GetFrameLevel())
 		local tex = button.__texture or button:CreateTexture(nil, "OVERLAY", nil, 7)

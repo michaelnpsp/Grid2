@@ -359,22 +359,18 @@ local function Icon_SetupButtonB(self, parent, auraContainer, frame, borderOptio
 			local ctFontSize = self.ctFontSize<1 and self.ctFontSize*iconSize or self.ctFontSize
 			local text = cooldown:GetCountdownFontString()
 			text:SetFont(self.ctFont, ctFontSize, self.ctFontFlags)
-			local ctOptions
-			if self.useStatusColorText then
-				ctOptions = cooldownTextOptions
-				if not ctOptions then -- no color curve on the status, use its flat color
-					local r,g,b = status:GetColor()
-					text:SetTextColor(r, g, b, 1) -- status alpha would hurt readability
-				end
-			else
-				ctOptions = self.ctOptions
+			if not self.useStatusColorText then
+				cooldownTextOptions = self.cooldownTextOptions
 				text:SetTextColor(UnpackColor(self.ctColor))
+			elseif not cooldownTextOptions then
+          local r,g,b = status:GetColor()
+					text:SetTextColor(r, g, b, 1) -- status alpha would hurt readability
 			end
 			text:ClearAllPoints()
 			text:SetPoint(self.ctFontPoint, self.ctFontOffsetX, self.ctFontOffsetY)
 			text:SetMaxLines(1)
 			frame.coolText = text
-			frame:SetDurationText(text, ctOptions)
+			frame:SetDurationText(text, cooldownTextOptions)
 		else
 			frame.coolText = nil
 			frame:ClearDurationText()
@@ -578,9 +574,9 @@ local function Icon_UpdateDB(self)
 		for i,color in ipairs(dbx.ctColors) do
 			self.ctColorCurve:AddPoint(dbx.ctThresholds[i] or 0, color)
 		end
-		self.ctOptions = { textColor={ curve=self.ctColorCurve, property=Enum.DurationTextBindingProperty.RemainingDuration } }
+		self.cooldownTextOptions = { textColor={ curve=self.ctColorCurve, property=Enum.DurationTextBindingProperty.RemainingDuration } }
 	else
-		self.ctOptions = nil
+		self.cooldownTextOptions = nil
 	end
 	-- hide duplicated icons, used if several buffs/debufs statuses are linked to the indicator
 	self.hideDupes = dbx.hideDupes and {} or nil
