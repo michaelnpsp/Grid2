@@ -49,6 +49,7 @@ local function Icon_OnFrameUpdate(f)
 	local showBar   = self.showCoolBar
 	local needDur   = showColors or showBar
 	local useStatus = self.useStatusColor
+	local useStatusText = self.useStatusColorText
 	local hideDupes = #self.statuses>1 and self.hideDupes
 	local function checkDupe(slotID)
 		if hideDupes[slotID] then return true end; hideDupes[slotID] = true
@@ -58,23 +59,28 @@ local function Icon_OnFrameUpdate(f)
 		if status:IsActive(unit) then -- TODO secret test maybe
 			local aura = auras[i]
 			aura.status, aura.slotID = status, nil
+			local sr, sg, sb -- status color, fetched once per aura
 			if showIcons then
 				aura.icon:SetTexture(status:GetIcon(unit))
 				aura.icon:SetTexCoord(status:GetTexCoord(unit))
 				aura.icon:SetVertexColor(status:GetVertexColor(unit))
-				if useStatus then
-					local r, g, b, a = status:GetColor(unit)
-					aura:SetBackdropBorderColor(r, g, b, self.borderOpacity)
+				if useStatus or useStatusText then
+					sr, sg, sb = status:GetColor(unit)
+					if useStatus then
+						aura:SetBackdropBorderColor(sr, sg, sb, self.borderOpacity)
+					end
 				end
 			else
-				local r, g, b = status:GetColor(unit)
-				aura.icon:SetColorTexture(r, g, b)
+				sr, sg, sb = status:GetColor(unit)
+				aura.icon:SetColorTexture(sr, sg, sb)
 			end
 			if showStack then
 				aura.text:SetText( TruncateWhenZero( status:GetCount(unit) or 0 ) )
 			end
-			if self.useStatusColorText then
-				aura.coolText:SetTextColor(status:GetColor(unit))
+			-- the status alpha is meant for the icon and border, applying it here can make
+			-- the countdown text unreadable, so only the status hue is used
+			if useStatusText then
+				aura.coolText:SetTextColor(sr, sg, sb, 1)
 			end
 			if showCool then
 				local expiration, duration = status:GetExpirationTime(unit), status:GetDuration(unit)
@@ -357,7 +363,8 @@ local function Icon_SetupButtonB(self, parent, auraContainer, frame, borderOptio
 				cooldownTextOptions = self.cooldownTextOptions
 				text:SetTextColor(UnpackColor(self.ctColor))
 			elseif not cooldownTextOptions then
-				text:SetTextColor(status:GetColor())
+          local r,g,b = status:GetColor()
+					text:SetTextColor(r, g, b, 1) -- status alpha would hurt readability
 			end
 			text:ClearAllPoints()
 			text:SetPoint(self.ctFontPoint, self.ctFontOffsetX, self.ctFontOffsetY)

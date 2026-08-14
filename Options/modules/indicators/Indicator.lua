@@ -740,6 +740,7 @@ function Grid2Options:MakeIndicatorCooldownTextOptions(indicator, options)
 		type = "toggle",
 		order = 142,
 		name = L["Use Status Color"],
+		desc = L["Color the countdown text with the status color instead of the color below. Statuses that define their own cooldown colors will use those instead."],
 		tristate = false,
 		get = function () return indicator.dbx.ctUseStatusColor end,
 		set = function (_, v)
@@ -759,7 +760,8 @@ function Grid2Options:MakeIndicatorCooldownTextOptions(indicator, options)
 			self:PackColor( r,g,b,a, indicator.dbx, "ctColor" )
 			self:RefreshIndicator(indicator, "Layout" )
 		 end,
-		hidden = function() return indicator.dbx.enableCooldownText==nil or indicator.dbx.ctUseStatusColor end,
+		hidden = function() return indicator.dbx.enableCooldownText==nil end,
+		disabled = function() return indicator.dbx.ctUseStatusColor end,
 	}
 end
 
