@@ -372,6 +372,7 @@ L["Rectangle"] = true
 L["Allows to independently adjust width and height."] = true
 L["Use Status Color"] = true
 L["Always use the status color for the border"] = true
+L["Color the countdown text with the status color instead of the color below. Statuses that define their own cooldown colors will use those instead."] = true
 
 L["Frame Texture"] = true
 L["Adjust the frame texture."] = true

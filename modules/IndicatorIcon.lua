@@ -46,13 +46,8 @@ local function Icon_ButtonCreate(self, parent, f, filter)
 		f.Cooldown = Cooldown
 		if self.showCoolText then
 			f.coolText = Cooldown:GetCountdownFontString()
-			if filter then
-				if self.useStatusColorText then
-					f:SetDurationText(f.coolText, filter.cooldownTextOptions)
-				else
-					f:SetDurationText(f.coolText, self.ctOptions)
-				end
-			end
+			-- Icon_UpdateDB() clears ctOptions whenever the status color is used
+			if filter then f:SetDurationText(f.coolText, self.useStatusColorText and filter.cooldownTextOptions or self.ctOptions) end
 		end
 	end
 	if not self.disableStack then
@@ -151,8 +146,11 @@ local function Icon_ButtonLayout(self, parent, f, filter, size, level, status)
 		local color, text = self.ctColor, f.coolText
 		text:SetFont(self.ctFont, self.ctFontSize, self.ctFontFlags)
 		if self.useStatusColorText then
+			-- the status alpha is meant for the icon and border, applying it here can make
+			-- the countdown text unreadable, so only the status hue is used
 			if status and not (filter and filter.cooldownTextOptions) then
-				text:SetTextColor(status:GetColor())
+				local r,g,b = status:GetColor()
+				text:SetTextColor(r, g, b, 1)
 			end
 		else
 			text:SetTextColor(color.r, color.g, color.b, color.a)
@@ -224,8 +222,8 @@ local function Icon_OnUpdate(self, parent, unit, status)
 	Icon:SetVertexColor(status:GetVertexColor(unit))
 	local durObject
 	local r,g,b,a = status:GetColor(unit)
-	if self.useStatusColorText and self.showCoolText then
-		Frame.coolText:SetTextColor(r, g, b, a)
+	if self.useStatusColorText then -- implies showCoolText, see Icon_UpdateDB()
+		Frame.coolText:SetTextColor(r, g, b, 1)
 	end
 	if self.disableIcon then
 		Icon:SetColorTexture(r,g,b)
