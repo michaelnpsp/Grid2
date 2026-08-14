@@ -1,17 +1,6 @@
 local media = LibStub("LibSharedMedia-3.0", true)
 local L = Grid2Options.L
 
-local FixSmartCenter
-do
-	local SMARTCENTER_POINTS = { LEFT = true, TOP = true, CENTER = true, BOTTOM = true, RIGHT = true }
-	function FixSmartCenter(indicator)
-		if not (indicator.maxRows==1 and SMARTCENTER_POINTS[indicator.anchorRel]) then
-			indicator.dbx.smartCenter = nil
-			return true
-		end
-	end
-end
-
 Grid2Options:RegisterIndicatorOptions("icons", true, function(self, indicator)
 	local statuses, options, filter =  {}, {}, {}
 	self:MakeIndicatorTypeLevelOptions(indicator,options)
@@ -163,21 +152,25 @@ function Grid2Options:MakeIndicatorAuraIconsSizeOptions(indicator, options, opti
 			self:RefreshIndicator(indicator, "Layout")
 		end,
 	}
-	options.smartCenter = {
-		type = "toggle",
-		name = L["Smart Center Align"],
-		desc = L["Dinamically center the visible icons. Not available for multi-row configurations."],
+	options.growthDirection = {
+		type = "select",
 		order = 18,
-		tristate = false,
+		name = L["Growth Direction"],
+		desc = L["Set the icons growth direction."],
 		get = function ()
-			FixSmartCenter(indicator)
-			return indicator.dbx.smartCenter
+			-- fixing the growth direction when the location point has changed
+			if(indicator.dbx.growthDirectionLocationPointCache ~= indicator.dbx.location.point) then
+				indicator.dbx.growthDirection = Grid2Options.mapDirectionDefaultToPoint[indicator.dbx.location.point]
+				self:RefreshIndicator(indicator, "Layout")
+			end
+			return indicator.dbx.growthDirection
 		end,
 		set = function (_, v)
-			indicator.dbx.smartCenter = v or nil
+			indicator.dbx.growthDirection = v
+			indicator.dbx.growthDirectionLocationPointCache = indicator.dbx.location.point
 			self:RefreshIndicator(indicator, "Layout")
 		end,
-		disabled = function() return FixSmartCenter(indicator) end,
+		values={ UP = L["UP"], DOWN = L["DOWN"], LEFT = L["LEFT"], RIGHT = L["RIGHT"], CENTER = L["CENTER"] }
 	}
 	options.disableIcons = {
 		type = "toggle",

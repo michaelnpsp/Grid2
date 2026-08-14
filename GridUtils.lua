@@ -249,6 +249,11 @@ Grid2.AlignPoints= {
 	}
 }
 
+-- flowDirection
+function Grid2.GetFlowDirection(direction)
+	return (direction == "LEFT" and AnchorUtil.FlowDirection.Left) or (direction == "RIGHT" and AnchorUtil.FlowDirection.Right) or (direction == "UP" and AnchorUtil.FlowDirection.Up) or AnchorUtil.FlowDirection.Down
+end
+
 -- Create/Manage/Sets frame backdrops
 do
 	local format = string.format

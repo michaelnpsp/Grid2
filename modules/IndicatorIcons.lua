@@ -13,6 +13,7 @@ local canaccessvalue = Grid2.canaccessvalue
 local TruncateWhenZero = C_StringUtil.TruncateWhenZero
 local UpdateIconColorCurve = Grid2.UpdateIconColorCurve
 local RemoveIconColorCurve = Grid2.RemoveIconColorCurve
+local GetFlowDirection = Grid2.GetFlowDirection
 
 -------------------------------------------------------------
 -- helps functions to disable old mode when mode switches
@@ -426,23 +427,57 @@ local function Icon_LayoutB(self, parent)
 	f:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
 	local iconSize = self.iconSize>1 and self.iconSize or self.iconSize * parent:GetHeight()
 	local size = iconSize + self.iconSpacing
-	if size>0 then
-		f:SetSize( size*self.pw+1, size*self.ph+1 )
-	else
-		f:SetSize( iconSize, iconSize ) -- to avoid 0 size frame when using a negative spacing: iconSize+iconSpacing==0
+	-- to avoid 0 size frame when using a negative spacing (iconSize+iconSpacing==0) check if size>0, otherwise use iconSize as a fallback
+	local sizeHorizontal = ((size>0) and size*self.pw or iconSize) + size * 0.5 -- add headroom to avoid icon wrapping early
+	local sizeVertical = (size>0) and size or iconSize
+	if self.vertical then
+		sizeHorizontal, sizeVertical = sizeVertical, sizeHorizontal
 	end
+	f:SetSize( sizeHorizontal, sizeVertical )
 	f:Show()
 	-- bliz aura container
 	Icon_DisableAuraContainer(self, parent, f)
 	local auraContainer = self:AcquireAuraContainer(parent, self.auraContainerKey, f)
 	auraContainer._buttons = {}
 	auraContainer:ClearAllPoints()
-	auraContainer:SetAllPoints()
+	local anchorPositionTop = self.anchorRel:find("TOP", 1, true)
+	local anchorPositionBottom = self.anchorRel:find("BOTTOM", 1, true)
+	local anchorPositionRight = self.anchorRel:find("RIGHT", 1, true)
+	local anchorPositionLeft = self.anchorRel:find("LEFT", 1, true)
+
+	local offsetX, offsetY = self.offsetx, self.offsety
+	local flowDirectionH, flowDirectionV = "RIGHT", "UP"
+
+	if self.growthDirection == "CENTER" then
+		-- couldnt decide if left and right positions should be offset or not, so i left it commented out for now
+		--offsetX = (((anchorPositionLeft) and (iconSize/2) or (anchorPositionRight and (-iconSize/2))) or 0) + offsetX
+		auraContainer:SetPoint((anchorPositionTop and "TOP") or (anchorPositionBottom and "BOTTOM") or "CENTER", parent, self.anchorRel, offsetX, offsetY)
+		flowDirectionV = anchorPositionBottom and "UP" or "DOWN"
+		auraContainer:SetFlowLayoutAnchorPoint ((flowDirectionV == "UP") and "BOTTOMLEFT" or "TOPLEFT")
+	else
+		flowDirectionH = (self.growthDirection == "LEFT") and "LEFT" or "RIGHT"
+		flowDirectionV = (self.growthDirection == "UP") and "UP" or "DOWN"
+
+		local iconOffSetY = (anchorPositionTop and 0) or (anchorPositionBottom and iconSize) or iconSize / 2
+		local iconOffSetX = (anchorPositionLeft and 0) or (anchorPositionRight and iconSize) or iconSize / 2
+
+		if self.growthDirection == "LEFT" or self.growthDirection == "RIGHT" then
+			offsetX = ((self.growthDirection == "LEFT") and (iconSize - iconOffSetX) or -iconOffSetX) + offsetX
+			offsetY = ((not anchorPositionTop and not anchorPositionBottom) and (iconSize / 2) or 0) + offsetY
+			flowDirectionV = anchorPositionBottom and "UP" or "DOWN"
+		else
+			offsetX = ((not anchorPositionRight and not anchorPositionLeft) and (iconOffSetX - iconSize) or 0) + offsetX
+			offsetY = ((self.growthDirection == "UP") and (iconOffSetY - iconSize) or iconOffSetY) + offsetY
+			flowDirectionH = anchorPositionRight and "LEFT" or "RIGHT"
+		end
+		local anchorPoint = ((flowDirectionV == "UP") and "BOTTOM" or "TOP") .. ((flowDirectionH == "LEFT") and "RIGHT" or "LEFT")
+		auraContainer:SetPoint(anchorPoint, parent, self.anchorRel, offsetX, offsetY)
+		auraContainer:SetFlowLayoutAnchorPoint(anchorPoint)
+	end
 	-- auraContainer:SetSize(f:GetSize())
 	auraContainer:SetFlowLayoutAxis(self.layoutAxis)
 	auraContainer:SetFlowLayoutMaximumLineSize( self.vertical and f:GetHeight() or f:GetWidth() )
-	auraContainer:SetFlowLayoutAnchorPoint(self.anchorIcon)
-	auraContainer:SetFlowLayoutGrowthDirection(self.horizontalDirection, self.verticalDirection)
+	auraContainer:SetFlowLayoutGrowthDirection(GetFlowDirection(flowDirectionH), GetFlowDirection(flowDirectionV))
 	auraContainer:SetFlowLayoutPadding(0,0,0,0)
 	local buttons = auraContainer._buttons
 	for i, status in ipairs(self.statuses) do
@@ -509,7 +544,7 @@ local function Icon_UpdateDB(self)
 	self.maxIcons       = dbx.maxIcons or 3
 	self.maxIconsPerRow = dbx.maxIconsPerRow or 3
 	self.maxRows        = math.floor(self.maxIcons/self.maxIconsPerRow) + (self.maxIcons%self.maxIconsPerRow==0 and 0 or 1)
-	self.smartCenter    = dbx.smartCenter and self.maxRows==1
+	self.growthDirection= dbx.growthDirection or "RIGHT"
 	self.uy 			= 0
 	self.vx 			= 0
 	self.ux 			= pointsX[self.anchorIcon]

@@ -84,6 +84,19 @@ Grid2Options.pointValueListExtra2 = {
 	["8"] = L["RIGHT"],
 }
 
+-- Growth directions
+Grid2Options.mapDirectionDefaultToPoint = {
+	["TOPLEFT"] = L["RIGHT"],
+	["LEFT"] = L["RIGHT"],
+	["BOTTOMLEFT"] = L["RIGHT"],
+	["TOP"] = L["DOWN"],
+	["CENTER"] = L["CENTER"],
+	["BOTTOM"] = L["UP"],
+	["TOPRIGHT"] = L["LEFT"],
+	["RIGHT"] = L["LEFT"],
+	["BOTTOMRIGHT"] = L["LEFT"],
+}
+
 -- Font Flags and Shadow
 do
 	local soft   = L["Soft"]
