@@ -81,7 +81,9 @@ local function Icon_ButtonCreate(self, parent, f, filter)
 	end
 	if filter then -- border
 		f:ClearAuraBorder()
-		if self.borderSize or self.useStatusColor then
+		-- the border texture covers the whole button and is masked by the icon, so it only
+		-- reads as a border when there is a border size to inset the icon by
+		if self.borderSize then
 			local border = f.border or f:CreateTexture(nil, "BACKGROUND")
 			border:ClearAllPoints()
 			border:SetAllPoints()
@@ -93,8 +95,8 @@ local function Icon_ButtonCreate(self, parent, f, filter)
 			end
 			border:Show()
 			f.border = border
-		elseif self.border then
-			border:Hide()
+		elseif f.border then
+			f.border:Hide()
 		end
 	end
 	if self.showCoolBar then
