@@ -428,7 +428,7 @@ local function Icon_LayoutB(self, parent)
 	local iconSize = self.iconSize>1 and self.iconSize or self.iconSize * parent:GetHeight()
 	local size = iconSize + self.iconSpacing
 	-- to avoid 0 size frame when using a negative spacing (iconSize+iconSpacing==0) check if size>0, otherwise use iconSize as a fallback
-	local sizeHorizontal = ((size>0) and size*self.pw or iconSize) + size * 0.5 -- add headroom to avoid icon wrapping early
+	local sizeHorizontal = ((size>0) and ((self.vertical) and size*self.ph or size*self.pw) or iconSize) + size * 0.5 -- add headroom to avoid icon wrapping early
 	local sizeVertical = (size>0) and size or iconSize
 	if self.vertical then
 		sizeHorizontal, sizeVertical = sizeVertical, sizeHorizontal
