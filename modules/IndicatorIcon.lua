@@ -46,7 +46,7 @@ local function Icon_ButtonCreate(self, parent, f, filter)
 		f.Cooldown = Cooldown
 		if self.showCoolText then
 			f.coolText = Cooldown:GetCountdownFontString()
-			-- Icon_UpdateDB() clears ctOptions whenever the status color is used
+			-- Icon_UpdateDB() clears cooldownTextOptions whenever the status color is used
 			if filter then
 				f:SetDurationText(f.coolText, self.useStatusColorText and filter.cooldownTextOptions or self.cooldownTextOptions)
 			end

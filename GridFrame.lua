@@ -279,6 +279,7 @@ end
 function Grid2Frame:OnModuleEnable()
 	self.mouseClickType = Grid2.db.global.clickOnMouseDown and "AnyDown" or "AnyUp"
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateFrameUnits")
+	Grid2.RegisterRosterUnitEvent(self, "UNIT_FACTION")
 	self:CreateIndicators()
 	self:RefreshIndicators()
 	self:LayoutFrames()
@@ -288,11 +289,19 @@ end
 
 function Grid2Frame:OnModuleDisable()
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	Grid2.UnregisterRosterUnitEvent(self, "UNIT_FACTION")
 end
 
 function Grid2Frame:OnModuleUpdate()
 	self:CreateIndicators()
 	self:RefreshTheme()
+end
+
+-- fix for auras not displayed after watching a cinematic (CF issue #1535)
+function Grid2Frame:UNIT_FACTION(_, unit)
+	for frame in next, Grid2:GetUnitFrames(unit) do
+		frame:UpdateAuraContainers()
+	end
 end
 
 function Grid2Frame:UpdateTheme()
