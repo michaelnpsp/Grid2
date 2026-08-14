@@ -177,7 +177,7 @@ function Grid2Options:MakeIndicatorAuraIconsSizeOptions(indicator, options, opti
 			indicator.dbx.smartCenter = v or nil
 			self:RefreshIndicator(indicator, "Layout")
 		end,
-		disabled = function() return FixSmartCenter(indicator) end,
+		disabled = function() return FixSmartCenter(indicator) or indicator.auraMode~=nil end,
 	}
 	options.disableIcons = {
 		type = "toggle",
