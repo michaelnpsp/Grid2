@@ -64,6 +64,7 @@ modules\IndicatorBorder.lua
 modules\IndicatorBorderGlow.lua
 modules\IndicatorBackground.lua
 modules\IndicatorBar.lua
+modules\IndicatorBarAura.lua
 modules\IndicatorMultiBar.lua
 modules\IndicatorText.lua
 modules\IndicatorIcon.lua

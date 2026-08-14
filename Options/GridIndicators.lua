@@ -12,7 +12,7 @@ Grid2Options.indicatorIconPath = "Interface\\Addons\\Grid2Options\\media\\indica
 Grid2Options.indicatorTypes = {}
 
 -- Indicators sort order
-Grid2Options.indicatorTypesOrder= { tooltip = 1, alpha = 2, background = 3, border = 4, glowborder = 5, multibar = 6, bar = 7, text = 8, square = 9, shape = 10, icon = 11, icons = 12, privateauras = 13, privateaurasdispel = 14, portrait = 15 }
+Grid2Options.indicatorTypesOrder= { tooltip = 1, alpha = 2, background = 3, border = 4, glowborder = 5, multibar = 6, bar = 7, baraura = 8, text = 9, square = 10, shape = 11, icon = 12, icons = 13, privateauras = 14, privateaurasdispel = 15, portrait = 16 }
 
 Grid2Options.indicatorTitleIconsOptions = {
 	size = 24, offsetx = -4, offsety = -3, anchor = 'TOPRIGHT', spacing = 5,
@@ -132,6 +132,16 @@ do
 					dbx.orientation= "HORIZONTAL"
 				end
 				Grid2:DbSetIndicator( newIndicatorName.."-color" , { type="multibar-color" })
+			elseif 	(newIndicatorValues.type == "baraura") then
+				dbx.level = 5
+				local point= newIndicatorValues.relPoint
+				if point=="LEFT" or point=="RIGHT" then
+					dbx.width= 4
+					dbx.orientation= "VERTICAL"
+				elseif point~="CENTER" then
+					dbx.height= 4
+					dbx.orientation= "HORIZONTAL"
+				end
 			elseif (newIndicatorValues.type == "icons") then
 				dbx.level = 8
 			elseif (newIndicatorValues.type == "portrait") then

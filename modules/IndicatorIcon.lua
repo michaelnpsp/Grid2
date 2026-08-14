@@ -316,7 +316,7 @@ end
 -------------------------------------------------------------
 
 local function Icon_LayoutAura(self, parent)
-	local button, filter, status = self:AcquireAuraSlotButton(parent, filter)
+	local button, filter, status = self:AcquireAuraSlotButton(parent)
 	local level = parent:GetFrameLevel() + self.frameLevel
 	local size = self.iconSize
 	if size<=1 then size = size * parent:GetHeight() end

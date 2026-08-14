@@ -500,6 +500,7 @@ L["multibar"] = true
 L["portrait"] = true
 L["glowborder"] = true
 L["privateauras"] = true
+L["baraura"] = "bar (auras)"
 
 -- indicators
 L["corner-top-left"]= true

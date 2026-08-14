@@ -156,7 +156,7 @@ local function Auras_Create(baseKey, dbx, defaults, status)
 	status.IsActive = Auras_IsActive
 	status.UpdateDB = Auras_UpdateDB
 	status.GetAurasFilter = Auras_GetAurasFilter
-	Grid2:RegisterStatus(status, { "icons", "icon", "color" }, baseKey, dbx)
+	Grid2:RegisterStatus(status, { "icons", "icon", "color", "aura" }, baseKey, dbx)
 	return status
 end
 
