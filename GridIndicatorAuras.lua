@@ -134,7 +134,8 @@ function indicator:AcquireAuraSlotButton(parent, filter, releaseFunc, key)
 end
 
 function indicator:ReleaseAuraSlotButton(parent, key)
-	local container = GetAuraSlotsContainer(parent)
+	local container = parent.__auraManager[0]
+	if not container then return end
 	local buttonKey, prefixKey = GetAuraSlotKey(self, key)
 	local button = container.slotEnabled[buttonKey]
 	if button then
