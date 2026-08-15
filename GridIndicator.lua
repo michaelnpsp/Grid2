@@ -88,6 +88,9 @@ function indicator:DisableAllFrames()
 		for _, frame in next, Grid2Frame.registeredFrames do
 			if GetFrame(self, frame) then
 				Disable(self, frame)
+				if frame.__auraManager then
+					self:ReleaseAuraSlotButton(frame)
+				end
 			end
 		end
 	end
