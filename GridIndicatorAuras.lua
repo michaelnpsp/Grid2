@@ -148,6 +148,8 @@ function indicator:ReleaseAuraSlotButton(parent, key)
 			button:ClearDispelTypeTextures()
 			button:ClearApplicationCount()
 			button:ClearDurationCooldown()
+			button:ClearDurationText()
+			button:ClearDurationBar()
 			button:ClearApplicationBar()
 		end
 		container:SetAuraSlotFilterString(button.__slotKey, "")
