@@ -188,10 +188,9 @@ end
 function GridFramePrototype:UpdateAuraContainers()
 	local manager = self.__auraManager
 	if manager then
-		local unit = self.unit or 'none'
-		local enabled = unit ~= 'none'
-		for _, container in pairs(manager) do
-			if enabled then
+		local unit = self.unit
+		if unit then
+			for _, container in pairs(manager) do
 				if unit ~= container:GetUnit() then
 					container:SetUnit(unit)
 				else
@@ -199,10 +198,12 @@ function GridFramePrototype:UpdateAuraContainers()
 				end
 				container:SetShown(true)
 				container:SetEnabled(true)
-			else
+			end
+		else
+			for _, container in pairs(manager) do
 				container:SetEnabled(false)
 				container:SetShown(false)
-				container:SetUnit(unit)
+				container:SetUnit('none')
 			end
 		end
 	end

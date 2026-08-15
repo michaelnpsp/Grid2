@@ -39,6 +39,12 @@ end
 --=====================================================================
 
 -- a new container is born enabled at unitToken "none", where it collects every unit's auras
+-- TODO verify if this is really necessary, because hidden auraContainers dont register unit events
+-- and the only auraContainers with "none" unit are the hidden ones (unit frames with no unit assigned).
+-- There should be only one case when this could be necessary: when a relayout is done and auraContainers
+-- are recreated, but this should only happen when active theme changes and in this case the Layout
+-- is reloaded, units frames headers are disabled/reenabled and GridFramePrototype:UpdateAuraContainers()
+-- is already called for each reenabled unit frame, reasigning the correct unit for every active unit frame.
 local function BindAuraContainer(container, unit)
 	if unit then
 		container:SetUnit(unit)
@@ -49,6 +55,8 @@ local function BindAuraContainer(container, unit)
 		container:SetShown(false)
 	end
 end
+
+--=====================================================================
 
 function indicator:AcquireAuraContainer(parent, key, frame)
 	local container = parent.__auraManager[key] -- __auraManager declared in GridFrame.lua

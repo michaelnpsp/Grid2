@@ -171,7 +171,7 @@ function Grid2Options:MakeIndicatorAuraIconsSizeOptions(indicator, options, opti
 		tristate = false,
 		get = function ()
 			FixSmartCenter(indicator)
-			return indicator.dbx.smartCenter
+			return indicator.dbx.smartCenter or indicator.auraMode~=nil
 		end,
 		set = function (_, v)
 			indicator.dbx.smartCenter = v or nil
