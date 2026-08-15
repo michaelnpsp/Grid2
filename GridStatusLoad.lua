@@ -57,23 +57,60 @@ end
 
 local FilterG_Register, FilterG_Unregister, FilterG_Refresh
 do
-	local indicators = {} -- indicators marked for update
+	local indicators = {} -- indicators marked for update or relayout
 
 	local function RegisterIndicators(self)
 		local method = self.suspended and "UnregisterStatus" or "RegisterStatus"
+		local layout = self.GetAurasFilter ~= nil
 		for indicator, priority in pairs(self.priorities) do -- wakeup/suspend status from linked indicators
 			indicator[method](indicator, self, priority)
-			indicators[indicator] = true
+			indicators[indicator] = indicators[indicator] or false
+			if layout then -- the parent indicator owns the aura slot
+				local owner = Grid2:GetIndicatorByName(indicator.parentName) or indicator
+				indicators[owner] = true
+			end
 		end
 	end
 
+	local combatFrame
+	local pendingLayout = {}
+
+	local function LayoutPendingIndicators()
+		for indicator in next, pendingLayout do
+			if not indicator.suspended then
+				indicator:LayoutAllFrames()
+				indicator:UpdateAllFrames()
+			end
+		end
+		wipe(pendingLayout)
+	end
+
 	local function UpdateMarkedIndicators()
+		if not next(indicators) then return end
+		local combat = InCombatLockdown()
+		for indicator, layout in next, indicators do
+			if layout then
+				if combat then
+					pendingLayout[indicator] = true
+				else
+					indicator:LayoutAllFrames()
+				end
+			end
+		end
 		for frame, unit in next, Grid2Frame.activatedFrames do
 			for indicator in next, indicators do
 				indicator:Update(frame, unit)
 			end
 		end
 		wipe(indicators)
+		if next(pendingLayout) then
+			combatFrame = combatFrame or CreateFrame("Frame")
+			combatFrame:SetScript("OnEvent", function(self)
+				self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+				LayoutPendingIndicators()
+			end)
+			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+		end
 	end
 
 	local function CheckZoneFilter(filter)
