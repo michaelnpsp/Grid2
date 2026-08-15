@@ -38,10 +38,23 @@ end
 
 --=====================================================================
 
+-- a new container is born enabled at unitToken "none", where it collects every unit's auras
+local function BindAuraContainer(container, unit)
+	if unit then
+		container:SetUnit(unit)
+		container:SetShown(true)
+		container:SetEnabled(true)
+	else
+		container:SetEnabled(false)
+		container:SetShown(false)
+	end
+end
+
 function indicator:AcquireAuraContainer(parent, key, frame)
 	local container = parent.__auraManager[key] -- __auraManager declared in GridFrame.lua
 	if not container then
 		container = CreateFrame("AuraContainer", nil, frame or parent, "CustomAuraContainerTemplate")
+		BindAuraContainer(container, parent.unit)
 		parent.__auraManager[key] = container
 	end
 	return container
@@ -69,6 +82,7 @@ local function GetAuraSlotsContainer(parent)
 	local container = parent.__auraManager[0] -- __auraManager declared in GridFrame.lua
 	if not container then
 		container = CreateFrame("AuraContainer", nil, parent, "CustomAuraContainerTemplate")
+		BindAuraContainer(container, parent.unit)
 		container.slotCount = 0
 		container.slotEnabled = {}
 		container.slotDisabled = {}
