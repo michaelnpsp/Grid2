@@ -438,6 +438,7 @@ local function Icon_LayoutB(self, parent)
 	auraContainer._buttons = {}
 	auraContainer:ClearAllPoints()
 	auraContainer:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
+	auraContainer:SetSize(f:GetSize())
 	auraContainer:SetFlowLayoutAxis(self.layoutAxis)
 	auraContainer:SetFlowLayoutMaximumLineSize( self.vertical and f:GetHeight() or f:GetWidth() )
 	auraContainer:SetFlowLayoutAnchorPoint(self.anchorIcon)
