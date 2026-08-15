@@ -191,12 +191,18 @@ function GridFramePrototype:UpdateAuraContainers()
 		local unit = self.unit or 'none'
 		local enabled = unit ~= 'none'
 		for _, container in pairs(manager) do
-			if unit ~= container:GetUnit() then
-				container:SetUnit(unit)
-				container:SetShown(enabled)
-				container:SetEnabled(enabled)
+			if enabled then
+				if unit ~= container:GetUnit() then
+					container:SetUnit(unit)
+				else
+					container:UpdateAllAuras()
+				end
+				container:SetShown(true)
+				container:SetEnabled(true)
 			else
-				container:UpdateAllAuras()
+				container:SetEnabled(false)
+				container:SetShown(false)
+				container:SetUnit(unit)
 			end
 		end
 	end

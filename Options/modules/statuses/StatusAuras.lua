@@ -233,14 +233,17 @@ local Filters = {
 	} },
 }
 
+-- keys are AuraContainerSortMethod values, not display order
 local SORT_VALUES = {
-	[0] = L["Unsorted"],
-	[1] = L["Default"],
-	[2] = L["Big Defensive"],
-	[3] = L["Expiration"],
-	[4] = L["Expiration Only"],
-	[5] = L["Name"],
-	[6] = L["Name Only"],
+	[0] = L["Default"],
+	[1] = L["Big Defensive"],
+	[2] = L["Unit Frame Debuff"],
+	[3] = L["Important Only"],
+	[4] = L["Expiration"],
+	[5] = L["Expiration Only"],
+	[6] = L["Name"],
+	[7] = L["Name Only"],
+	[8] = L["Aura Instance ID Only"],
 }
 
 local MAX_AURA_DURATIONS = {
