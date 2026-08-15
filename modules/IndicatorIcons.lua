@@ -39,6 +39,7 @@ end
 local function Icon_OnFrameUpdate(f)
 	local unit = f.myFrame.unit
 	if not unit then return end
+	if f.auraContainer then return end
 	local self = f.myIndicator
 	local max = self.maxIcons
 	local auras = f.auras
