@@ -65,7 +65,7 @@ do
 		for indicator, priority in pairs(self.priorities) do -- wakeup/suspend status from linked indicators
 			indicator[method](indicator, self, priority)
 			indicators[indicator] = indicators[indicator] or false
-			if layout then -- the parent indicator owns the aura slot
+			if layout then -- the parent indicator owns the aura slot, warning this assumption could be false on future indicators code refactor
 				local owner = Grid2:GetIndicatorByName(indicator.parentName) or indicator
 				indicators[owner] = true
 			end
