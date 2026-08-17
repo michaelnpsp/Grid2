@@ -88,23 +88,24 @@ local function Bar_LayoutAuraColor(self, parent, f, level)
 		local tex = f.myCTextures and f.myCTextures[1]
 		if tex and setup then
 			local filter = color:GetStatusAurasFilter()
-			local button = self:AcquireAuraSlotButton(parent, filter)
-			button:ClearAllPoints()
-			button:SetAllPoints(f)
-			button:SetFrameLevel(level)
-			local ctex = button.__texture or button:CreateTexture(nil, "OVERLAY", nil, setup.sublayer+1)
-			ctex:ClearAllPoints(tex)
-			ctex:SetTexture(setup.texture, setup.horWrap, setup.verWrap)
-			ctex:SetHorizTile(setup.horWrap~='CLAMP')
-			ctex:SetVertTile(setup.verWrap~='CLAMP')
-			ctex:SetBlendMode('BLEND')
-			ctex:SetAllPoints(tex)
-			button:SetAuraBorder(ctex, filter.borderOptions)
-			button.__texture = ctex
-			return
+			self:AcquireAuraSlotButton(parent, filter, function(_, _, button)
+				button:ClearAllPoints()
+				button:SetAllPoints(f)
+				button:SetFrameLevel(level)
+				local ctex = button.__texture or button:CreateTexture(nil, "OVERLAY", nil, setup.sublayer+1)
+				ctex:ClearAllPoints(tex)
+				ctex:SetTexture(setup.texture, setup.horWrap, setup.verWrap)
+				ctex:SetHorizTile(setup.horWrap~='CLAMP')
+				ctex:SetVertTile(setup.verWrap~='CLAMP')
+				ctex:SetBlendMode('BLEND')
+				ctex:SetAllPoints(tex)
+				button:SetAuraBorder(ctex, filter.borderOptions)
+				button.__texture = ctex
+			end)
 		end
+	else
+		self:ReleaseAuraSlotButton(parent)
 	end
-	self:ReleaseAuraSlotButton(parent)
 end
 
 local function Bar_Layout(self, parent)

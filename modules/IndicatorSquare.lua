@@ -14,75 +14,75 @@ local function Square_DisableAuraContainer(self, parent)
 end
 
 local function Square_LayoutAura(self, parent)
-	local filter, status = self:GetStatusAurasFilter()
-	local button = self:AcquireAuraSlotButton(parent, filter)
-	local level = parent:GetFrameLevel() + self.frameLevel
-	local container = parent.container
-	button:ClearAllPoints()
-	button:SetFrameLevel(level)
-	button:SetPoint(self.anchor, container, self.anchorRel, self.offsetx, self.offsety)
-	button:SetSize(self.width or container:GetWidth() , self.height or container:GetHeight())
-	local tex = button.__texture
-	if not tex then
-		tex = button:CreateTexture(nil, "ARTWORK")
-		button.__texture = tex
-	end
-	local btex = tex.__borderTexture
-	if not btex then
-		btex = button:CreateTexture(nil, "ARTWORK")
-		btex:SetAllPoints()
-		tex.__borderTexture = btex
-	end
-	tex:ClearAllPoints()
-	local borderSize = self.borderSize
-	if borderSize then
-		borderSize = math.ceil(borderSize)
-		tex:SetPoint("TOPLEFT", borderSize, -borderSize)
-		tex:SetPoint("BOTTOMRIGHT", -borderSize, borderSize)
-		btex:SetTexture( Grid2:GetSliceBorderTexture(borderSize) )
-		btex:SetTextureSliceMargins(borderSize, borderSize, borderSize, borderSize)
-		btex:SetTextureSliceMode(1)
-		btex:Show()
-	else
-		tex:SetAllPoints()
-		btex:Hide()
-	end
-	button:ClearAuraBorder()
-	button:ClearDurationText()
-	if filter.cooldownTextOptions then -- coloring by remaining time, using a special font
-		local colorFrame = button._colorFrame
-		if not colorFrame then
-			colorFrame = CreateFrame("Frame", nil, button)
-			colorFrame:SetClipsChildren(true)
-			button._colorFrame = colorFrame
-			local text = colorFrame:CreateFontString(nil, "OVERLAY")
-			text:SetPoint('CENTER')
-			text:SetFont("Interface\\Addons\\Grid2\\media\\grid2-squares.ttf", 32, '')
-			text:SetMaxLines(1)
-			colorFrame.text = text
+	self:AcquireAuraSlotButton(parent, nil, function(_, _, button, filter, status)
+		local level = parent:GetFrameLevel() + self.frameLevel
+		local container = parent.container
+		button:ClearAllPoints()
+		button:SetFrameLevel(level)
+		button:SetPoint(self.anchor, container, self.anchorRel, self.offsetx, self.offsety)
+		button:SetSize(self.width or container:GetWidth() , self.height or container:GetHeight())
+		local tex = button.__texture
+		if not tex then
+			tex = button:CreateTexture(nil, "ARTWORK")
+			button.__texture = tex
 		end
-		colorFrame:ClearAllPoints()
+		local btex = tex.__borderTexture
+		if not btex then
+			btex = button:CreateTexture(nil, "ARTWORK")
+			btex:SetAllPoints()
+			tex.__borderTexture = btex
+		end
+		tex:ClearAllPoints()
+		local borderSize = self.borderSize
 		if borderSize then
-			colorFrame:SetPoint("TOPLEFT", borderSize, -borderSize)
-			colorFrame:SetPoint("BOTTOMRIGHT", -borderSize, borderSize)
+			borderSize = math.ceil(borderSize)
+			tex:SetPoint("TOPLEFT", borderSize, -borderSize)
+			tex:SetPoint("BOTTOMRIGHT", -borderSize, borderSize)
+			btex:SetTexture( Grid2:GetSliceBorderTexture(borderSize) )
+			btex:SetTextureSliceMargins(borderSize, borderSize, borderSize, borderSize)
+			btex:SetTextureSliceMode(1)
+			btex:Show()
 		else
-			colorFrame:SetAllPoints()
+			tex:SetAllPoints()
+			btex:Hide()
 		end
-		colorFrame:SetFrameLevel(level)
-		colorFrame:Show()
-		button:SetDurationText(colorFrame.text, filter.cooldownTextOptions)
-		btex:SetVertexColor( UnpackColor(self.color) )
-		tex:Hide()
-	elseif self.borderSwap then
-		if button._colorFrame then button._colorFrame:Hide() end
-		tex:SetColorTexture( UnpackColor(self.color) )
-		button:SetAuraBorder(btex, filter.borderOptions)
-	else
-		if button._colorFrame then button._colorFrame:Hide() end
-		btex:SetVertexColor( UnpackColor(self.color) )
-		tex:SetColorTexture(1,1,1,1)
-		button:SetAuraBorder(tex, filter.borderOptions)
-	end
+		button:ClearAuraBorder()
+		button:ClearDurationText()
+		if filter.cooldownTextOptions then -- coloring by remaining time, using a special font
+			local colorFrame = button._colorFrame
+			if not colorFrame then
+				colorFrame = CreateFrame("Frame", nil, button)
+				colorFrame:SetClipsChildren(true)
+				button._colorFrame = colorFrame
+				local text = colorFrame:CreateFontString(nil, "OVERLAY")
+				text:SetPoint('CENTER')
+				text:SetFont("Interface\\Addons\\Grid2\\media\\grid2-squares.ttf", 32, '')
+				text:SetMaxLines(1)
+				colorFrame.text = text
+			end
+			colorFrame:ClearAllPoints()
+			if borderSize then
+				colorFrame:SetPoint("TOPLEFT", borderSize, -borderSize)
+				colorFrame:SetPoint("BOTTOMRIGHT", -borderSize, borderSize)
+			else
+				colorFrame:SetAllPoints()
+			end
+			colorFrame:SetFrameLevel(level)
+			colorFrame:Show()
+			button:SetDurationText(colorFrame.text, filter.cooldownTextOptions)
+			btex:SetVertexColor( UnpackColor(self.color) )
+			tex:Hide()
+		elseif self.borderSwap then
+			if button._colorFrame then button._colorFrame:Hide() end
+			tex:SetColorTexture( UnpackColor(self.color) )
+			button:SetAuraBorder(btex, filter.borderOptions)
+		else
+			if button._colorFrame then button._colorFrame:Hide() end
+			btex:SetVertexColor( UnpackColor(self.color) )
+			tex:SetColorTexture(1,1,1,1)
+			button:SetAuraBorder(tex, filter.borderOptions)
+		end
+	end)
 end
 
 --==============================================================

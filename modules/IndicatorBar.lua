@@ -22,18 +22,19 @@ local function Bar_LayoutAuraColor(self, parent, f, level)
 	local color = self.sideKick
 	if color.auraMode then
 		local filter = color:GetStatusAurasFilter()
-		local button = self:AcquireAuraSlotButton(parent, filter)
-		local tex = f:GetStatusBarTexture()
-		button:ClearAllPoints()
-		button:SetAllPoints(f)
-		button:SetFrameLevel(level)
-		local ctex = button.__texture or button:CreateTexture(nil, "OVERLAY", nil, 7)
-		ctex:ClearAllPoints(tex)
-		ctex:SetTexture(self.texture)
-		ctex:SetBlendMode('BLEND')
-		ctex:SetAllPoints(tex)
-		button:SetAuraBorder(ctex, filter.borderOptions)
-		button.__texture = ctex
+		self:AcquireAuraSlotButton(parent, filter, function(_, _, button)
+			local tex = f:GetStatusBarTexture()
+			button:ClearAllPoints()
+			button:SetAllPoints(f)
+			button:SetFrameLevel(level)
+			local ctex = button.__texture or button:CreateTexture(nil, "OVERLAY", nil, 7)
+			ctex:ClearAllPoints(tex)
+			ctex:SetTexture(self.texture)
+			ctex:SetBlendMode('BLEND')
+			ctex:SetAllPoints(tex)
+			button:SetAuraBorder(ctex, filter.borderOptions)
+			button.__texture = ctex
+		end)
 	else
 		self:ReleaseAuraSlotButton(parent)
 	end

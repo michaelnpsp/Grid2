@@ -2,6 +2,8 @@
 
 local rawget = rawget
 local tostring = tostring
+local tremove = table.remove
+local ShouldAurasBeSecret = C_Secrets.ShouldAurasBeSecret
 
 local indicator = Grid2.indicatorPrototype
 
@@ -99,7 +101,7 @@ local function GetAuraSlotsContainer(parent)
 	return container
 end
 
-function indicator:AcquireAuraSlotButton(parent, filter, releaseFunc, key)
+function indicator:AcquireAuraSlotButton(parent, filter, initFunc, releaseFunc, key)
 	local status
 	if not filter then
 		filter, status = self:GetStatusAurasFilter()
@@ -107,9 +109,14 @@ function indicator:AcquireAuraSlotButton(parent, filter, releaseFunc, key)
 	local container = GetAuraSlotsContainer(parent)
 	local buttonKey, prefixKey = GetAuraSlotKey(self, key)
 	local button = container.slotEnabled[buttonKey]
-	if not button then -- search a disabled compatible slot button
+	if ShouldAurasBeSecret() then -- we cannot reuse slot buttons if auras are secret
+		if button then
+			container:SetAuraSlotFilterString(button.__slotKey, "")
+			button = nil
+		end
+	else -- search a disabled compatible slot button
 		local buttons = container.slotDisabled[prefixKey]
-		button = buttons and table.remove(buttons, #buttons)
+		button = buttons and tremove(buttons, #buttons)
 		container.slotEnabled[buttonKey] = button
 	end
 	if button then -- configure already existing slot button
@@ -117,6 +124,10 @@ function indicator:AcquireAuraSlotButton(parent, filter, releaseFunc, key)
 		 container:SetAuraSlotFilterString(slotKey, filter.filter)
 		 container:SetAuraSlotCandidateFilters(slotKey, filter.candidateFilters)
 		 container:SetAuraSlotSortMethod(slotKey, filter.sortRule or 0, filter.sortDir or 0)
+		 self:SetAuraButtonTooltip(button)
+		 if initFunc then
+			initFunc(indicator, parent, button, filter, status, key)
+		 end
 	else -- create new slot button
 		container.slotCount = container.slotCount + 1
 		local slotKey = tostring(container.slotCount)
@@ -124,12 +135,17 @@ function indicator:AcquireAuraSlotButton(parent, filter, releaseFunc, key)
 			sortMethod = filter.sortRule or 0,
 			sortDirection = filter.sortDir or 0,
 			candidateFilters = filter.candidateFilters,
+			initializeFrame = function(button)
+				self:SetAuraButtonTooltip(button)
+				if initFunc then
+					initFunc(indicator, parent, button, filter, status, key)
+				end
+			end
 		} )
 		container.slotEnabled[buttonKey] = button
 		button.__slotKey = slotKey -- key used by blizzard aura container system
 		button.__releaseFunc = releaseFunc
 	end
-	self:SetAuraButtonTooltip(button)
 	return button, filter, status
 end
 

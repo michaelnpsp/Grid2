@@ -16,55 +16,55 @@ local function Bar_Layout(self, parent)
 	end
 	local f = parent[self.name]
 	f:SetAllPoints()
-	-- f:SetSize(1,1)
-	local button, filter, status = self:AcquireAuraSlotButton(parent)
-	button:Hide()
-	button.coolBar = button.coolBar or CreateFrame("StatusBar", nil, button)
-	local Bar = button.coolBar
-	if self.backColor then
-		Bar.bgTex = Bar.bgTex or Bar:CreateTexture()
-	end
-	local bgTex = Bar.bgTex
-	local orient = self.orientation
-	local points = AlignPoints[orient][not self.reverseFill]
-	local level  = parent:GetFrameLevel() + self.frameLevel
-	Bar:ClearAllPoints()
-	Bar:SetOrientation(orient)
-	Bar:SetStatusBarTexture(self.texture)
-	Bar:SetReverseFill(self.reverseFill)
-	local w = self.width  or parent.container:GetWidth()
-	local h = self.height or parent.container:GetHeight()
-	Bar:SetFrameLevel(level)
-	Bar:SetSize(w, h)
-	Bar:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
-	local color = self.barColor
-	if color then
-		Bar:SetStatusBarColor( color.r, color.g, color.b, color.a )
-	else
-		Bar:SetStatusBarColor( status:GetColor() )
-	end
-	local color = self.backColor
-	if color then
-		local tex = Bar:GetStatusBarTexture()
-		local layer, sublayer = tex:GetDrawLayer()
-		bgTex:SetDrawLayer(layer, sublayer-1)
-		bgTex:SetTexture(self.backTexture)
-		bgTex:ClearAllPoints()
-		if self.dbx.invertColor then
-			bgTex:SetAllPoints(Bar)
-		else
-			bgTex:SetPoint( points[1], tex, points[2], 0, 0)
-			bgTex:SetPoint( points[3], tex, points[4], 0, 0)
-			bgTex:SetPoint( points[2], Bar, points[2], 0, 0)
-			bgTex:SetPoint( points[4], Bar, points[4], 0, 0)
-			bgTex:SetVertexColor( color.r, color.g, color.b, color.a )
+	self:AcquireAuraSlotButton(parent, nil, function(_, _, button, filter, status)
+		button:Hide()
+		button.coolBar = button.coolBar or CreateFrame("StatusBar", nil, button)
+		local Bar = button.coolBar
+		if self.backColor then
+			Bar.bgTex = Bar.bgTex or Bar:CreateTexture()
 		end
-		bgTex:Show()
-	elseif bgTex then
-		bgTex:Hide()
-	end
-	button:SetDurationBar(Bar, self.cbOptions)
-	f:Show()
+		local bgTex = Bar.bgTex
+		local orient = self.orientation
+		local points = AlignPoints[orient][not self.reverseFill]
+		local level  = parent:GetFrameLevel() + self.frameLevel
+		Bar:ClearAllPoints()
+		Bar:SetOrientation(orient)
+		Bar:SetStatusBarTexture(self.texture)
+		Bar:SetReverseFill(self.reverseFill)
+		local w = self.width  or parent.container:GetWidth()
+		local h = self.height or parent.container:GetHeight()
+		Bar:SetFrameLevel(level)
+		Bar:SetSize(w, h)
+		Bar:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
+		local color = self.barColor
+		if color then
+			Bar:SetStatusBarColor( color.r, color.g, color.b, color.a )
+		else
+			Bar:SetStatusBarColor( status:GetColor() )
+		end
+		local color = self.backColor
+		if color then
+			local tex = Bar:GetStatusBarTexture()
+			local layer, sublayer = tex:GetDrawLayer()
+			bgTex:SetDrawLayer(layer, sublayer-1)
+			bgTex:SetTexture(self.backTexture)
+			bgTex:ClearAllPoints()
+			if self.dbx.invertColor then
+				bgTex:SetAllPoints(Bar)
+			else
+				bgTex:SetPoint( points[1], tex, points[2], 0, 0)
+				bgTex:SetPoint( points[3], tex, points[4], 0, 0)
+				bgTex:SetPoint( points[2], Bar, points[2], 0, 0)
+				bgTex:SetPoint( points[4], Bar, points[4], 0, 0)
+				bgTex:SetVertexColor( color.r, color.g, color.b, color.a )
+			end
+			bgTex:Show()
+		elseif bgTex then
+			bgTex:Hide()
+		end
+		button:SetDurationBar(Bar, self.cbOptions)
+		f:Show()
+	end)
 end
 
 local function Bar_SetOrientation(self, orientation)

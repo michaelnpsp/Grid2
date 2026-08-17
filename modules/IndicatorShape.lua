@@ -48,47 +48,46 @@ local function Shape_DisableAuraContainer(self, parent)
 end
 
 local function Shape_LayoutAura(self, parent)
-	local filter, status = self:GetStatusAurasFilter()
-	local f = self:AcquireAuraSlotButton(parent, filter)
-	local container = parent.container
-	local level = parent:GetFrameLevel() + self.frameLevel
-	local width = self.width or parent.container:GetWidth()
-	local height = self.height or parent.container:GetHeight()
-	if not f.Icon then
-		f.Icon = f:CreateTexture(nil, "ARTWORK")
-		f.Icon:SetAllPoints()
-	end
-	f:ClearAllPoints()
-	f:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
-	f:SetFrameLevel(level)
-	f:SetSize(width, height)
-	f.Icon:SetBlendMode(self.blendMode)
-	f.Icon:SetAlpha(self.opacity or 1)
-	if self.useDispelIcon then
-		f.Icon:SetTexCoord(0,1,0,1)
-		f.Icon:SetTexture(nil)
-		f:SetAuraBorder(f.Icon, AURA_SYMBOL_OPTIONS)
-	else
-		f:ClearAuraBorder()
-		f.Icon:SetTexCoord(unpack(self.iconCoord))
-		f.Icon:SetTexture(self.iconPath)
-		f:SetAuraBorder(f.Icon, filter.borderOptions)
-	end
-	f.Icon:Show()
-	if self.dbx.shadowEnabled and not self.useDispelIcon then
-		local IconShadow = f.IconShadow or f:CreateTexture(nil, "BORDER")
-		IconShadow:ClearAllPoints()
-		IconShadow:SetPoint("CENTER", self.shadowX, self.shadowY)
-		IconShadow:SetSize(width + self.shadowSize, height + self.shadowSize)
-		IconShadow:SetTexture(self.iconPath)
-		IconShadow:SetTexCoord( unpack(self.iconCoord) )
-		IconShadow:SetBlendMode(self.blendMode)
-		IconShadow:SetVertexColor(self.color.r, self.color.g, self.color.b, self.color.a)
-		IconShadow:Show()
-		f.IconShadow = IconShadow
-	elseif f.IconShadow then
-		f.IconShadow:Hide()
-	end
+	self:AcquireAuraSlotButton(parent, nil, function(_, _, f, filter, status)
+		local container = parent.container
+		local level = parent:GetFrameLevel() + self.frameLevel
+		local width = self.width or parent.container:GetWidth()
+		local height = self.height or parent.container:GetHeight()
+		if not f.Icon then
+			f.Icon = f:CreateTexture(nil, "ARTWORK")
+			f.Icon:SetAllPoints()
+		end
+		f:ClearAllPoints()
+		f:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
+		f:SetFrameLevel(level)
+		f:SetSize(width, height)
+		f.Icon:SetBlendMode(self.blendMode)
+		f.Icon:SetAlpha(self.opacity or 1)
+		if self.useDispelIcon then
+			f.Icon:SetTexCoord(0,1,0,1)
+			f.Icon:SetTexture(nil)
+			f:SetAuraBorder(f.Icon, AURA_SYMBOL_OPTIONS)
+		else
+			f.Icon:SetTexCoord(unpack(self.iconCoord))
+			f.Icon:SetTexture(self.iconPath)
+			f:SetAuraBorder(f.Icon, filter.borderOptions)
+		end
+		f.Icon:Show()
+		if self.dbx.shadowEnabled and not self.useDispelIcon then
+			local IconShadow = f.IconShadow or f:CreateTexture(nil, "BORDER")
+			IconShadow:ClearAllPoints()
+			IconShadow:SetPoint("CENTER", self.shadowX, self.shadowY)
+			IconShadow:SetSize(width + self.shadowSize, height + self.shadowSize)
+			IconShadow:SetTexture(self.iconPath)
+			IconShadow:SetTexCoord( unpack(self.iconCoord) )
+			IconShadow:SetBlendMode(self.blendMode)
+			IconShadow:SetVertexColor(self.color.r, self.color.g, self.color.b, self.color.a)
+			IconShadow:Show()
+			f.IconShadow = IconShadow
+		elseif f.IconShadow then
+			f.IconShadow:Hide()
+		end
+	end)
 end
 
 local function Shape_LayoutIcon(self, parent)

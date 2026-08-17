@@ -316,16 +316,17 @@ end
 -------------------------------------------------------------
 
 local function Icon_LayoutAura(self, parent)
-	local button, filter, status = self:AcquireAuraSlotButton(parent)
-	local level = parent:GetFrameLevel() + self.frameLevel
-	local size = self.iconSize
-	if size<=1 then size = size * parent:GetHeight() end
-	button:ClearAllPoints()
-	button:SetFrameLevel(level)
-	button:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
-	button:SetSize(size, size)
-	Icon_ButtonCreate(self, parent, button, filter)
-	Icon_ButtonLayout(self, parent, button, filter, size, level, status)
+	self:AcquireAuraSlotButton(parent, nil, function(_, _, button, filter, status)
+		local level = parent:GetFrameLevel() + self.frameLevel
+		local size = self.iconSize
+		if size<=1 then size = size * parent:GetHeight() end
+		button:ClearAllPoints()
+		button:SetFrameLevel(level)
+		button:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
+		button:SetSize(size, size)
+		Icon_ButtonCreate(self, parent, button, filter)
+		Icon_ButtonLayout(self, parent, button, filter, size, level, status)
+	end)
 end
 
 -------------------------------------------------------------
