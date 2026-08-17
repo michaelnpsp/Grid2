@@ -114,7 +114,7 @@ function indicator:AcquireAuraSlotButton(parent, filter, initFunc, releaseFunc, 
 			container:SetAuraSlotFilterString(button.__slotKey, "")
 			button = nil
 		end
-	else -- search a disabled compatible slot button
+	elseif not button then  -- search a disabled compatible slot button
 		local buttons = container.slotDisabled[prefixKey]
 		button = buttons and tremove(buttons, #buttons)
 		container.slotEnabled[buttonKey] = button
