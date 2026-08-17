@@ -8,20 +8,24 @@ Border.Create = Grid2.Dummy
 
 -- aura containers management
 
+-- runs inside the aura button styling window (see AcquireAuraSlotButton)
+local function Border_StyleAuraButton(self, parent, button, filter, status)
+	local borderSize = math.ceil(Grid2Frame.db.profile.frameBorder)
+	button:SetAllPoints(parent)
+	button:SetFrameLevel(parent:GetFrameLevel())
+	local tex = button.__texture or button:CreateTexture(nil, "OVERLAY", nil, 7)
+	tex:SetTexture( Grid2:GetSliceBorderTexture(borderSize) )
+	tex:SetTextureSliceMargins(borderSize, borderSize, borderSize, borderSize)
+	tex:SetTextureSliceMode(1)
+	tex:SetAllPoints()
+	tex:SetVertexColor(1, 1, 1, 1)
+	button:SetAuraBorder(tex, filter.borderOptions)
+	button.__texture = tex
+end
+
 function Border:Layout(parent)
 	if self.auraMode then
-		local button, filter = self:AcquireAuraSlotButton(parent)
-		local borderSize = math.ceil(Grid2Frame.db.profile.frameBorder)
-		button:SetAllPoints(parent)
-		button:SetFrameLevel(parent:GetFrameLevel())
-		local tex = button.__texture or button:CreateTexture(nil, "OVERLAY", nil, 7)
-		tex:SetTexture( Grid2:GetSliceBorderTexture(borderSize) )
-		tex:SetTextureSliceMargins(borderSize, borderSize, borderSize, borderSize)
-		tex:SetTextureSliceMode(1)
-		tex:SetAllPoints()
-		tex:SetVertexColor(1, 1, 1, 1)
-		button:SetAuraBorder(tex, filter.borderOptions)
-		button.__texture = tex
+		self:AcquireAuraSlotButton(parent, nil, nil, nil, Border_StyleAuraButton)
 	else
 		self:ReleaseAuraSlotButton(parent)
 	end

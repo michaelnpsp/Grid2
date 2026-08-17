@@ -13,9 +13,8 @@ local function Square_DisableAuraContainer(self, parent)
 	self:ReleaseAuraSlotButton(parent)
 end
 
-local function Square_LayoutAura(self, parent)
-	local filter, status = self:GetStatusAurasFilter()
-	local button = self:AcquireAuraSlotButton(parent, filter)
+-- runs inside the aura button styling window (see AcquireAuraSlotButton)
+local function Square_StyleAuraButton(self, parent, button, filter, status)
 	local level = parent:GetFrameLevel() + self.frameLevel
 	local container = parent.container
 	button:ClearAllPoints()
@@ -83,6 +82,11 @@ local function Square_LayoutAura(self, parent)
 		tex:SetColorTexture(1,1,1,1)
 		button:SetAuraBorder(tex, filter.borderOptions)
 	end
+end
+
+local function Square_LayoutAura(self, parent)
+	local filter = self:GetStatusAurasFilter()
+	self:AcquireAuraSlotButton(parent, filter, nil, nil, Square_StyleAuraButton)
 end
 
 --==============================================================

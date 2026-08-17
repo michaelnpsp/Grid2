@@ -47,9 +47,8 @@ local function Shape_DisableAuraContainer(self, parent)
 	self:ReleaseAuraSlotButton(parent)
 end
 
-local function Shape_LayoutAura(self, parent)
-	local filter, status = self:GetStatusAurasFilter()
-	local f = self:AcquireAuraSlotButton(parent, filter)
+-- runs inside the aura button styling window (see AcquireAuraSlotButton)
+local function Shape_StyleAuraButton(self, parent, f, filter, status)
 	local container = parent.container
 	local level = parent:GetFrameLevel() + self.frameLevel
 	local width = self.width or parent.container:GetWidth()
@@ -89,6 +88,11 @@ local function Shape_LayoutAura(self, parent)
 	elseif f.IconShadow then
 		f.IconShadow:Hide()
 	end
+end
+
+local function Shape_LayoutAura(self, parent)
+	local filter = self:GetStatusAurasFilter()
+	self:AcquireAuraSlotButton(parent, filter, nil, nil, Shape_StyleAuraButton)
 end
 
 local function Shape_LayoutIcon(self, parent)

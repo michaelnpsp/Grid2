@@ -315,8 +315,8 @@ end
 -- 12.1+ aura containers
 -------------------------------------------------------------
 
-local function Icon_LayoutAura(self, parent)
-	local button, filter, status = self:AcquireAuraSlotButton(parent)
+-- runs inside the aura button styling window (see AcquireAuraSlotButton)
+local function Icon_StyleAuraButton(self, parent, button, filter, status)
 	local level = parent:GetFrameLevel() + self.frameLevel
 	local size = self.iconSize
 	if size<=1 then size = size * parent:GetHeight() end
@@ -326,6 +326,10 @@ local function Icon_LayoutAura(self, parent)
 	button:SetSize(size, size)
 	Icon_ButtonCreate(self, parent, button, filter)
 	Icon_ButtonLayout(self, parent, button, filter, size, level, status)
+end
+
+local function Icon_LayoutAura(self, parent)
+	self:AcquireAuraSlotButton(parent, nil, nil, nil, Icon_StyleAuraButton)
 end
 
 -------------------------------------------------------------

@@ -81,6 +81,27 @@ local function Bar_UpdateMulti(self, parent, unit, status)
 	end
 end
 
+-- runs inside the aura button styling window (see AcquireAuraSlotButton)
+local function Bar_StyleAuraColorButton(self, parent, button, filter, status)
+	local f = parent[self.name]
+	local level = parent:GetFrameLevel() + self.frameLevel
+	local setup = self.bars[1]
+	local tex = f.myCTextures and f.myCTextures[1]
+	if not (tex and setup) then return end
+	button:ClearAllPoints()
+	button:SetAllPoints(f)
+	button:SetFrameLevel(level)
+	local ctex = button.__texture or button:CreateTexture(nil, "OVERLAY", nil, setup.sublayer+1)
+	ctex:ClearAllPoints(tex)
+	ctex:SetTexture(setup.texture, setup.horWrap, setup.verWrap)
+	ctex:SetHorizTile(setup.horWrap~='CLAMP')
+	ctex:SetVertTile(setup.verWrap~='CLAMP')
+	ctex:SetBlendMode('BLEND')
+	ctex:SetAllPoints(tex)
+	button:SetAuraBorder(ctex, filter.borderOptions)
+	button.__texture = ctex
+end
+
 local function Bar_LayoutAuraColor(self, parent, f, level)
 	local color = self.sideKick
 	if color.auraMode then
@@ -88,19 +109,7 @@ local function Bar_LayoutAuraColor(self, parent, f, level)
 		local tex = f.myCTextures and f.myCTextures[1]
 		if tex and setup then
 			local filter = color:GetStatusAurasFilter()
-			local button = self:AcquireAuraSlotButton(parent, filter)
-			button:ClearAllPoints()
-			button:SetAllPoints(f)
-			button:SetFrameLevel(level)
-			local ctex = button.__texture or button:CreateTexture(nil, "OVERLAY", nil, setup.sublayer+1)
-			ctex:ClearAllPoints(tex)
-			ctex:SetTexture(setup.texture, setup.horWrap, setup.verWrap)
-			ctex:SetHorizTile(setup.horWrap~='CLAMP')
-			ctex:SetVertTile(setup.verWrap~='CLAMP')
-			ctex:SetBlendMode('BLEND')
-			ctex:SetAllPoints(tex)
-			button:SetAuraBorder(ctex, filter.borderOptions)
-			button.__texture = ctex
+			self:AcquireAuraSlotButton(parent, filter, nil, nil, Bar_StyleAuraColorButton)
 			return
 		end
 	end

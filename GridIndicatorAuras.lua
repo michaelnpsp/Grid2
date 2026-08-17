@@ -38,6 +38,46 @@ end
 
 --=====================================================================
 
+-- Aura slot buttons are created by Blizzard's aura container with
+-- DenyTaintedAccessWhenAurasAreSecret (see Blizzard_AuraContainer), so addon
+-- code cannot touch them at all while auras are secret - which is the entire
+-- duration of an arena, regardless of when the button was created. The
+-- initializeFrame callback passed to AddAuraSlot runs before the restriction
+-- is applied and is the only styling window available in that state. Styling
+-- a button after AddAuraSlot returns therefore only works out of arenas,
+-- which is why aura indicators died for the whole match after a reload or
+-- disconnect into an arena: every post-acquire styling call was denied (and
+-- the first denial aborted the frame's entire indicator layout).
+--
+-- The fix: indicators hand their button styling to AcquireAuraSlotButton as a
+-- function, which runs it inside initializeFrame for new buttons, or directly
+-- for reused buttons when auras are not secret. A reused button that cannot
+-- be restyled keeps the style baked at its creation, and a full relayout is
+-- queued for when secrecy ends.
+local function CanAccessAuraButtons()
+	return not (C_Secrets and C_Secrets.ShouldAurasBeSecret and C_Secrets.ShouldAurasBeSecret())
+end
+Grid2.CanAccessAuraButtons = CanAccessAuraButtons
+
+local relayoutPending = false
+local relayoutFrame = CreateFrame("Frame")
+relayoutFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+relayoutFrame:SetScript("OnEvent", function()
+	if relayoutPending and CanAccessAuraButtons() then
+		relayoutPending = false
+		local Grid2Frame = _G.Grid2Frame
+		if Grid2Frame and Grid2Frame.LayoutFrames then
+			Grid2Frame:LayoutFrames()
+		end
+	end
+end)
+
+local function RequestRelayoutWhenAccessible()
+	relayoutPending = true
+end
+
+--=====================================================================
+
 -- a new container is born enabled at unitToken "none", where it collects every unit's auras
 -- TODO verify if this is really necessary, because hidden auraContainers dont register unit events
 -- and the only auraContainers with "none" unit are the hidden ones (unit frames with no unit assigned).
@@ -94,12 +134,17 @@ local function GetAuraSlotsContainer(parent)
 		container.slotCount = 0
 		container.slotEnabled = {}
 		container.slotDisabled = {}
+		-- bookkeeping lives addon-side, keyed by button reference: raw field
+		-- access on a restricted button is not proven legal while auras are
+		-- secret, and these must be readable at any time
+		container.slotKeys = {}
+		container.slotReleaseFuncs = {}
 		parent.__auraManager[0] = container
 	end
 	return container
 end
 
-function indicator:AcquireAuraSlotButton(parent, filter, releaseFunc, key)
+function indicator:AcquireAuraSlotButton(parent, filter, releaseFunc, key, styleFunc)
 	local status
 	if not filter then
 		filter, status = self:GetStatusAurasFilter()
@@ -113,23 +158,43 @@ function indicator:AcquireAuraSlotButton(parent, filter, releaseFunc, key)
 		container.slotEnabled[buttonKey] = button
 	end
 	if button then -- configure already existing slot button
-		 local slotKey = button.__slotKey
+		 local slotKey = container.slotKeys[button]
 		 container:SetAuraSlotFilterString(slotKey, filter.filter)
 		 container:SetAuraSlotCandidateFilters(slotKey, filter.candidateFilters)
 		 container:SetAuraSlotSortMethod(slotKey, filter.sortRule or 0, filter.sortDir or 0)
+		 container.slotReleaseFuncs[button] = releaseFunc
+		 if CanAccessAuraButtons() then
+			if styleFunc then
+				styleFunc(self, parent, button, filter, status)
+			end
+			self:SetAuraButtonTooltip(button)
+		 else
+			-- the button keeps the style baked at its creation; a relayout
+			-- replays this styling once auras stop being secret
+			RequestRelayoutWhenAccessible()
+		 end
 	else -- create new slot button
 		container.slotCount = container.slotCount + 1
 		local slotKey = tostring(container.slotCount)
+		local acquiringIndicator = self
 		button = container:AddAuraSlot(slotKey, filter.filter, {
 			sortMethod = filter.sortRule or 0,
 			sortDirection = filter.sortDir or 0,
 			candidateFilters = filter.candidateFilters,
+			-- runs before the access restriction is applied to the new
+			-- button: the only place a button born while auras are secret
+			-- can ever be styled
+			initializeFrame = function(newButton)
+				if styleFunc then
+					styleFunc(acquiringIndicator, parent, newButton, filter, status)
+				end
+				acquiringIndicator:SetAuraButtonTooltip(newButton)
+			end,
 		} )
 		container.slotEnabled[buttonKey] = button
-		button.__slotKey = slotKey -- key used by blizzard aura container system
-		button.__releaseFunc = releaseFunc
+		container.slotKeys[button] = slotKey -- key used by blizzard aura container system
+		container.slotReleaseFuncs[button] = releaseFunc
 	end
-	self:SetAuraButtonTooltip(button)
 	return button, filter, status
 end
 
@@ -139,20 +204,30 @@ function indicator:ReleaseAuraSlotButton(parent, key)
 	local buttonKey, prefixKey = GetAuraSlotKey(self, key)
 	local button = container.slotEnabled[buttonKey]
 	if button then
-		button:Hide()
-		local func = button.__releaseFunc
-		if func then
-			func(self, parent, button)
+		-- emptying the filter is a container call and always permitted; the
+		-- visual clears touch the button and are only possible while auras
+		-- are not secret. A button released while secret shows nothing (its
+		-- filter is empty), keeps its stale visuals for later reuse, and the
+		-- queued relayout restyles whatever acquires it again.
+		container:SetAuraSlotFilterString(container.slotKeys[button], "")
+		if CanAccessAuraButtons() then
+			button:Hide()
+			local func = container.slotReleaseFuncs[button]
+			if func then
+				func(self, parent, button)
+			else
+				button:ClearIcon()
+				button:ClearDispelTypeTextures()
+				button:ClearApplicationCount()
+				button:ClearDurationCooldown()
+				button:ClearDurationText()
+				button:ClearDurationBar()
+				button:ClearApplicationBar()
+			end
 		else
-			button:ClearIcon()
-			button:ClearDispelTypeTextures()
-			button:ClearApplicationCount()
-			button:ClearDurationCooldown()
-			button:ClearDurationText()
-			button:ClearDurationBar()
-			button:ClearApplicationBar()
+			RequestRelayoutWhenAccessible()
 		end
-		container:SetAuraSlotFilterString(button.__slotKey, "")
+		container.slotReleaseFuncs[button] = nil
 		local disabledButtons = container.slotDisabled
 		local buttons = disabledButtons[prefixKey]
 		if buttons then

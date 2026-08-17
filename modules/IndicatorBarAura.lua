@@ -9,15 +9,8 @@ local function Bar_Create(self, parent)
 	self:Acquire("Frame", parent)
 end
 
-local function Bar_Layout(self, parent)
-	if not self.auraMode then
-		self:ReleaseAuraSlotButton(parent)
-		return
-	end
-	local f = parent[self.name]
-	f:SetAllPoints()
-	-- f:SetSize(1,1)
-	local button, filter, status = self:AcquireAuraSlotButton(parent)
+-- runs inside the aura button styling window (see AcquireAuraSlotButton)
+local function Bar_StyleAuraButton(self, parent, button, filter, status)
 	button:Hide()
 	button.coolBar = button.coolBar or CreateFrame("StatusBar", nil, button)
 	local Bar = button.coolBar
@@ -64,6 +57,17 @@ local function Bar_Layout(self, parent)
 		bgTex:Hide()
 	end
 	button:SetDurationBar(Bar, self.cbOptions)
+end
+
+local function Bar_Layout(self, parent)
+	if not self.auraMode then
+		self:ReleaseAuraSlotButton(parent)
+		return
+	end
+	local f = parent[self.name]
+	f:SetAllPoints()
+	-- f:SetSize(1,1)
+	self:AcquireAuraSlotButton(parent, nil, nil, nil, Bar_StyleAuraButton)
 	f:Show()
 end
 
