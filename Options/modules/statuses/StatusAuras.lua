@@ -88,11 +88,13 @@ local DebuffsTranslate = {
 	["includeDispelTypes;Curse"] = "Curse",
 	["includeDispelTypes;Poison"] = "Poison",
 	["includeDispelTypes;Disease"] = "Disease",
+	["includeDispelTypes;Bleed"] = "Bleed",
 
 	["excludeDispelTypes;Magic"] = "Not Magic",
 	["excludeDispelTypes;Curse"] = "Not Curse",
 	["excludeDispelTypes;Poison"] = "Not Poison",
 	["excludeDispelTypes;Disease"] = "Not Disease",
+	["excludeDispelTypes;Bleed"] = "Not Bleed",
 
 	["candidateFilters;canApplyAura;true"] = "Can Apply Aura",
 	["candidateFilters;isFromPlayerOrPlayerPet;true"] = "Is From Player or Pet",
@@ -141,11 +143,13 @@ local AuraFiltersNegate = {
 	["includeDispelTypes;Curse"] = "excludeDispelTypes;Curse",
 	["includeDispelTypes;Poison"] = "excludeDispelTypes;Poison",
 	["includeDispelTypes;Disease"] = "excludeDispelTypes;Disease",
+	["includeDispelTypes;Bleed"] = "excludeDispelTypes;Bleed",
 
 	["excludeDispelTypes;Magic"] = "includeDispelTypes;Magic",
 	["excludeDispelTypes;Curse"] = "includeDispelTypes;Curse",
 	["excludeDispelTypes;Poison"] = "includeDispelTypes;Poison",
 	["excludeDispelTypes;Disease"] = "includeDispelTypes;Disease",
+	["excludeDispelTypes;Bleed"] = "includeDispelTypes;Bleed",
 
 	["candidateFilters;canApplyAura;true"] = "candidateFilters;canApplyAura;false",
 	["candidateFilters;isFromPlayerOrPlayerPet;true"] = "candidateFilters;isFromPlayerOrPlayerPet;false",
@@ -205,6 +209,7 @@ local Filters = {
 		"includeDispelTypes;Curse",
 		"includeDispelTypes;Poison",
 		"includeDispelTypes;Disease",
+		"includeDispelTypes;Bleed",
 		"candidateFilters;canApplyAura;true",
 		"candidateFilters;isFromPlayerOrPlayerPet;true",
 		"candidateFilters;isStealable;true",
@@ -222,6 +227,7 @@ local Filters = {
 		"excludeDispelTypes;Curse",
 		"excludeDispelTypes;Poison",
 		"excludeDispelTypes;Disease",
+		"excludeDispelTypes;Bleed",
 		"candidateFilters;canApplyAura;false",
 		"candidateFilters;isFromPlayerOrPlayerPet;false",
 		"candidateFilters;isStealable;false",
