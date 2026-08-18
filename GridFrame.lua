@@ -122,10 +122,6 @@ local function GridFrame_Init(frame, width, height)
 	if frame:CanChangeAttribute() then
 		frame:SetAttribute("initial-width", width)
 		frame:SetAttribute("initial-height", height)
-		if PingUtil then
-			frame:SetAttribute("ping-receiver", true)
-			frame.IsPingable = true
-		end
 	end
 	frame:RegisterForClicks( Grid2Frame.mouseClickType or "AnyUp" )
 	if Clique then Clique:UpdateRegisteredClicks(frame) end

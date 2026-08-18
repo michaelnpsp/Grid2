@@ -26,8 +26,8 @@ local SPECIAL_HEADERS = {
 	targettarget = 'Grid2InsecureGroupTargetTargetHeaderTemplate',
 	focustarget  = 'Grid2InsecureGroupFocusTargetHeaderTemplate' ,
 }
-local FRAMES_TEMPLATE = "SecureUnitButtonTemplate"                        .. (BackdropTemplateMixin and ",BackdropTemplate" or "")
-local FRAMEC_TEMPLATE = "ClickCastUnitTemplate,SecureUnitButtonTemplate"  .. (BackdropTemplateMixin and ",BackdropTemplate" or "")
+local FRAMES_TEMPLATE = "SecureUnitButtonTemplate,BackdropTemplate,PingableUnitFrameTemplate"
+local FRAMEC_TEMPLATE = "ClickCastUnitTemplate,SecureUnitButtonTemplate,BackdropTemplate,PingableUnitFrameTemplate"
 local SECURE_INIT_TMP =  [[
 	self:SetAttribute("*type1", "target")
 	self:SetAttribute("*type2", "togglemenu")
