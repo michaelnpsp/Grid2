@@ -142,10 +142,12 @@ end
 
 local function Shape_Disable(self, parent)
 	local f = parent[self.name]
-	f.Icon:Hide()
-	if f.IconShadow then f.IconShadow:Hide() end
-	f:SetParent(nil)
-	f:ClearAllPoints()
+	if f then
+		if f.Icon then f.Icon:Hide() end
+		if f.IconShadow then f.IconShadow:Hide() end
+		f:SetParent(nil)
+		f:ClearAllPoints()
+	end
 end
 
 local function Shape_UpdateDB(self)
