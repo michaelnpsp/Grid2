@@ -501,6 +501,7 @@ L["portrait"] = true
 L["glowborder"] = true
 L["privateauras"] = true
 L["baraura"] = "bar (auras)"
+L["textaura"] = "text (auras)"
 
 -- indicators
 L["corner-top-left"]= true

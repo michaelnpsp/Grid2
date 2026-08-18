@@ -264,6 +264,7 @@ function Grid2:CheckTheme()
 end
 
 function Grid2:UpdateTheme()
+	self:UpdateGeneralTextFormatting()
 	for _,module in ipairs(self.orderedModules) do
 		if module.UpdateTheme then module:UpdateTheme()	end
 	end

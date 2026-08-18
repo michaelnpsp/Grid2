@@ -12,7 +12,25 @@ Grid2Options.indicatorIconPath = "Interface\\Addons\\Grid2Options\\media\\indica
 Grid2Options.indicatorTypes = {}
 
 -- Indicators sort order
-Grid2Options.indicatorTypesOrder= { tooltip = 1, alpha = 2, background = 3, border = 4, glowborder = 5, multibar = 6, bar = 7, baraura = 8, text = 9, square = 10, shape = 11, icon = 12, icons = 13, privateauras = 14, privateaurasdispel = 15, portrait = 16 }
+Grid2Options.indicatorTypesOrder= {
+	tooltip = 1,
+	alpha = 2,
+	background = 3,
+	border = 4,
+	glowborder = 5,
+	multibar = 6,
+	bar = 7,
+	baraura = 8,
+	text = 9,
+	textaura = 10,
+	square = 11,
+	shape = 12,
+	icon = 13,
+	icons = 14,
+	privateauras = 15,
+	privateaurasdispel = 16,
+	portrait = 17
+}
 
 Grid2Options.indicatorTitleIconsOptions = {
 	size = 24, offsetx = -4, offsety = -3, anchor = 'TOPRIGHT', spacing = 5,
@@ -109,6 +127,9 @@ do
 				dbx.textlength= defaults.text.textlength
 				dbx.fontSize= defaults.text.fontSize
 				Grid2:DbSetIndicator( newIndicatorName.."-color" , { type="text-color" })
+			elseif (newIndicatorValues.type == "textaura") then
+				dbx.level = 7
+				dbx.fontSize= defaults.text.fontSize
 			elseif (newIndicatorValues.type == "bar") then
 				dbx.level = 3
 				local point= newIndicatorValues.relPoint

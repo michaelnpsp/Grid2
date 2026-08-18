@@ -100,9 +100,9 @@ do
 	local function AreCurrentStatusesIncompatible(indicator)
 		if indicator then
 			if indicator.dbx.type=='icons' then
-				return indicator.auraMode and indicator.iconMode and "Warning: This indicator does not support mixing auras and non-auras statuses. Remove some statuses from the list to fix the issue."
+				return indicator.auraMode and indicator.iconMode and "Warning: This indicator does not support mixing auras and non-auras statuses. Remove some statuses from the list to fix this issue."
 			elseif (indicator.auraMode or 1)>1 then
-				return "Warning: Only one aura status can be assigned to this indicator. Remove some aura statuses from the list to fix the issue."
+				return "Warning: Only one aura status can be assigned to this indicator. Remove some aura statuses from the list to fix this issue."
 			end
 		end
 	end

@@ -10,18 +10,6 @@ local next = next
 local justifyH = { CENTER = "CENTER", TOP = "CENTER", BOTTOM = "CENTER", LEFT = "LEFT",   RIGHT = "RIGHT",  TOPLEFT = "LEFT", TOPRIGHT = "RIGHT", BOTTOMLEFT = "LEFT",   BOTTOMRIGHT = "RIGHT"  }
 local justifyV = { CENTER = "MIDDLE", TOP = "TOP",    BOTTOM = "BOTTOM", LEFT = "MIDDLE", RIGHT = "MIDDLE", TOPLEFT = "TOP",  TOPRIGHT = "TOP",   BOTTOMLEFT = "BOTTOM", BOTTOMRIGHT = "BOTTOM" }
 
-Grid2.defaults.profile.formatting = {
-	longDecimalFormat        = "%.1f",
-	shortDecimalFormat       = "%.0f",
-	longDurationStackFormat  = "%.1f:%d",
-	shortDurationStackFormat = "%.0f:%d",
-	invertDurationStack      = false,
-	secondsElapsedFormat     = "%ds",
-	minutesElapsedFormat     = "%dm",
-	percentFormat            = "%.0f%%",
-	numbersUseGameFormat     = nil,
-}
-
 local timers = {}
 local stacks = {}
 local expirations = {}

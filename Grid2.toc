@@ -40,6 +40,7 @@ GridCore.lua
 GridShims.lua
 GridUtils.lua
 GridUtilsCmd.lua
+GridTextFormatting.lua
 GridPlayerSpells.lua
 GridRosterUnitEvents.lua
 GridRoster.lua
@@ -67,6 +68,7 @@ modules\IndicatorBar.lua
 modules\IndicatorBarAura.lua
 modules\IndicatorMultiBar.lua
 modules\IndicatorText.lua
+modules\IndicatorTextAura.lua
 modules\IndicatorIcon.lua
 modules\IndicatorIcons.lua
 modules\IndicatorSquare.lua

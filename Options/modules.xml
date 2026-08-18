@@ -46,6 +46,7 @@
 <Script file="modules\indicators\IndicatorSquare.lua"/>
 <Script file="modules\indicators\IndicatorShape.lua"/>
 <Script file="modules\indicators\IndicatorText.lua"/>
+<Script file="modules\indicators\IndicatorTextAura.lua"/>
 <Script file="modules\indicators\IndicatorTooltip.lua"/>
 <Script file="modules\indicators\IndicatorPortrait.lua"/>
 <Script file="modules\indicators\IndicatorPrivateAuras.lua"/>
