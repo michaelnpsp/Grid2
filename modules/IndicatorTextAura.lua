@@ -16,8 +16,8 @@ local function Text_CreateDurationOptions(self, filter)
 			options.textColor = foptions.textColor
 			options.property = foptions.property
 		end
-		self.textOptions = options
 	end
+	self.textOptions = options
 	return options
 end
 
