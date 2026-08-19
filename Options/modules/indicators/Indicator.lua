@@ -102,7 +102,8 @@ do
 			if indicator.dbx.type=='icons' then
 				return indicator.auraMode and indicator.iconMode and "Warning: This indicator does not support mixing auras and non-auras statuses. Remove some statuses from this list."
 			elseif indicator.dbx.type=='bar' or indicator.dbx.type=='multibar' then
-				return (indicator.auraMode or 1)>2 and "Warning: Only a maximum of two aura statuses can be assigned to this indicator. Remove some statuses from this list."
+				local maxSlots = Grid2.db.profile.formatting.maxAuraColorSlots or 3
+				return (indicator.auraMode or 1)>maxSlots and string.format("Warning: Only a maximum of %d aura statuses can be assigned to this indicator. Remove some statuses from this list.",maxSlots)
 			elseif (indicator.auraMode or 1)>1 then
 				return "Warning: Only one aura status can be assigned to this indicator. Remove some statuses from this list."
 			end

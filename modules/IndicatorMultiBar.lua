@@ -9,9 +9,6 @@ local pairs = pairs
 local ipairs = ipairs
 local canaccessvalue = Grid2.canaccessvalue
 
--- Limiting number of auras statuses for the main bar color to 2 to avoid performance issues
-local AURAS_MAX_COLORS = 2
-
 local POINTS = {
 	HORIZONTAL = { [true] = "LEFT",   [false] = "RIGHT" }, -- normal, reverse fill
 	VERTICAL   = { [true] = "BOTTOM", [false] = "TOP"   }, -- normal, reverse fill
@@ -46,9 +43,13 @@ local function SetMultibarMinMaxValue(bar, unit, status, interpol)
 end
 
 -- release aura slot containers
-local function ReleaseAuraColorsSlots(self, parent)
-	for i=1,AURAS_MAX_COLORS do
-		self:ReleaseAuraSlotButton(parent, i)
+local function ReleaseAuraColorsSlots(self, parent, f)
+	local count = f.countSlots
+	if count then
+		for i=1,count do
+			self:ReleaseAuraSlotButton(parent, i)
+		end
+		f.countSlots = nil
 	end
 end
 
@@ -92,18 +93,18 @@ local function Bar_UpdateMulti(self, parent, unit, status)
 end
 
 local function Bar_LayoutAuraColor(self, parent, f, level)
+	ReleaseAuraColorsSlots(self, parent, f)
 	local color = self.sideKick
 	if color.auraMode then
 		local setup = self.bars[1]
 		local tex = f.myCTextures and f.myCTextures[1]
 		if tex and setup then
-			local sublayer = setup.sublayer+AURAS_MAX_COLORS+1
-			for filter, status, index in color:IterateStatusAurasFilters(AURAS_MAX_COLORS) do
+			for filter, status, index in color:IterateStatusAurasFilters(self.maxSlots) do
 				self:AcquireAuraSlotButton(parent, filter, function(_, _, button)
 					button:ClearAllPoints()
 					button:SetAllPoints(f)
 					button:SetFrameLevel(level)
-					local ctex = button.__texture or button:CreateTexture(nil, "OVERLAY", nil, sublayer-index)
+					local ctex = button.__texture or button:CreateTexture(nil, "OVERLAY", nil, -index)
 					ctex:ClearAllPoints(tex)
 					ctex:SetTexture(setup.texture, setup.horWrap, setup.verWrap)
 					ctex:SetHorizTile(setup.horWrap~='CLAMP')
@@ -112,11 +113,10 @@ local function Bar_LayoutAuraColor(self, parent, f, level)
 					ctex:SetAllPoints(tex)
 					button:SetAuraBorder(ctex, filter.borderOptions)
 					button.__texture = ctex
+					f.countSlots = index
 				end, nil, index)
 			end
 		end
-	else
-		ReleaseAuraColorsSlots(self, parent)
 	end
 end
 
@@ -220,7 +220,7 @@ local function Bar_Disable(self, parent)
 	bar:Hide()
 	bar:SetParent(nil)
 	bar:ClearAllPoints()
-	ReleaseAuraColorsSlots(self, parent)
+	ReleaseAuraColorsSlots(self, parent, bar)
 end
 
 local function Bar_SortStatuses(self)
@@ -320,6 +320,7 @@ local function Bar_UpdateDB(self)
 		self.UpdateO = Bar_Update
 	end
     self.Update = self.UpdateO
+	self.maxSlots = Grid2.db.profile.formatting.maxAuraColorSlots or 3
 end
 
 --{{ Bar Color indicator
