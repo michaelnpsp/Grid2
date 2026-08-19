@@ -9,6 +9,9 @@ local pairs = pairs
 local ipairs = ipairs
 local canaccessvalue = Grid2.canaccessvalue
 
+-- Limiting number of auras statuses for the main bar color to 2 to avoid performance issues
+local AURAS_MAX_COLORS = 2
+
 local POINTS = {
 	HORIZONTAL = { [true] = "LEFT",   [false] = "RIGHT" }, -- normal, reverse fill
 	VERTICAL   = { [true] = "BOTTOM", [false] = "TOP"   }, -- normal, reverse fill
@@ -40,6 +43,13 @@ local function SetMultibarMinMaxValue(bar, unit, status, interpol)
 	local value, minVal, maxVal = status:GetValueMinMax(unit)
 	bar:SetMinMaxValues(minVal, maxVal)
 	bar:SetValue(value, interpol or bar.interpol)
+end
+
+-- release aura slot containers
+local function ReleaseAuraColorsSlots(self, parent)
+	for i=1,AURAS_MAX_COLORS do
+		self:ReleaseAuraSlotButton(parent, i)
+	end
 end
 
 -- Warning: This is an overrided indicator:Update() NOT the standard indicator:OnUpdate()
@@ -87,24 +97,26 @@ local function Bar_LayoutAuraColor(self, parent, f, level)
 		local setup = self.bars[1]
 		local tex = f.myCTextures and f.myCTextures[1]
 		if tex and setup then
-			local filter = color:GetStatusAurasFilter()
-			self:AcquireAuraSlotButton(parent, filter, function(_, _, button)
-				button:ClearAllPoints()
-				button:SetAllPoints(f)
-				button:SetFrameLevel(level)
-				local ctex = button.__texture or button:CreateTexture(nil, "OVERLAY", nil, setup.sublayer+1)
-				ctex:ClearAllPoints(tex)
-				ctex:SetTexture(setup.texture, setup.horWrap, setup.verWrap)
-				ctex:SetHorizTile(setup.horWrap~='CLAMP')
-				ctex:SetVertTile(setup.verWrap~='CLAMP')
-				ctex:SetBlendMode('BLEND')
-				ctex:SetAllPoints(tex)
-				button:SetAuraBorder(ctex, filter.borderOptions)
-				button.__texture = ctex
-			end)
+			local sublayer = setup.sublayer+AURAS_MAX_COLORS+1
+			for filter, status, index in color:IterateStatusAurasFilters(AURAS_MAX_COLORS) do
+				self:AcquireAuraSlotButton(parent, filter, function(_, _, button)
+					button:ClearAllPoints()
+					button:SetAllPoints(f)
+					button:SetFrameLevel(level)
+					local ctex = button.__texture or button:CreateTexture(nil, "OVERLAY", nil, sublayer-index)
+					ctex:ClearAllPoints(tex)
+					ctex:SetTexture(setup.texture, setup.horWrap, setup.verWrap)
+					ctex:SetHorizTile(setup.horWrap~='CLAMP')
+					ctex:SetVertTile(setup.verWrap~='CLAMP')
+					ctex:SetBlendMode('BLEND')
+					ctex:SetAllPoints(tex)
+					button:SetAuraBorder(ctex, filter.borderOptions)
+					button.__texture = ctex
+				end, nil, index)
+			end
 		end
 	else
-		self:ReleaseAuraSlotButton(parent)
+		ReleaseAuraColorsSlots(self, parent)
 	end
 end
 
@@ -208,6 +220,7 @@ local function Bar_Disable(self, parent)
 	bar:Hide()
 	bar:SetParent(nil)
 	bar:ClearAllPoints()
+	ReleaseAuraColorsSlots(self, parent)
 end
 
 local function Bar_SortStatuses(self)

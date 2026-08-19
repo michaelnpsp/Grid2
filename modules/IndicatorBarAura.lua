@@ -107,7 +107,6 @@ local function Create(indicatorKey, dbx)
 	local Bar = Grid2.indicatorPrototype:new(indicatorKey)
 	Bar.dbx            = dbx
 	Bar.Create         = Bar_Create
-	Bar.Destroy        = Bar_Destroy
 	Bar.SetOrientation = Bar_SetOrientation
 	Bar.Disable        = Bar_Disable
 	Bar.Layout         = Bar_Layout

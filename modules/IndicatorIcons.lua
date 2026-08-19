@@ -603,7 +603,6 @@ Grid2.setupFunc["icons"] = function(indicatorKey, dbx)
 	indicator.dbx       = dbx
 	indicator.Create    = Icon_Create
 	indicator.Disable   = Icon_Disable
-	indicator.Destroy   = Icon_Disable
 	indicator.UpdateDB  = Icon_UpdateDB
 	indicator.Layout    = Icon_Layout
 	indicator.UpdateO   = Icon_Update -- special case used by multibar and icons indicator

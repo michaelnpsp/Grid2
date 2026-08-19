@@ -58,11 +58,9 @@ local function BorderGlow_UpdateDB(self)
 	if dbx.load then
 		self.Create = BorderGlow_CreateFilter
 		self.GetFrame = BorderGlow_GetFrameFilter
-		self.Destroy = BorderGlow_Disable
 	else
 		self.Create = Grid2.Dummy
 		self.GetFrame = BorderGlow_GetFrame
-		self.Destroy = nil
 	end
 end
 
