@@ -17,10 +17,11 @@ local function Square_LayoutAura(self, parent)
 	self:AcquireAuraSlotButton(parent, nil, function(_, _, button, filter, status)
 		local level = parent:GetFrameLevel() + self.frameLevel
 		local container = parent.container
+		local w, h = self.width or container:GetWidth(), self.height or container:GetHeight()
 		button:ClearAllPoints()
 		button:SetFrameLevel(level)
 		button:SetPoint(self.anchor, container, self.anchorRel, self.offsetx, self.offsety)
-		button:SetSize(self.width or container:GetWidth() , self.height or container:GetHeight())
+		button:SetSize(w, h)
 		local tex = button.__texture
 		if not tex then
 			tex = button:CreateTexture(nil, "ARTWORK")
@@ -56,7 +57,7 @@ local function Square_LayoutAura(self, parent)
 				button._colorFrame = colorFrame
 				local text = colorFrame:CreateFontString(nil, "OVERLAY")
 				text:SetPoint('CENTER')
-				text:SetFont("Interface\\Addons\\Grid2\\media\\grid2-squares.ttf", 32, '')
+				text:SetFont("Interface\\Addons\\Grid2\\media\\grid2-squares.ttf", h*2, '') -- big font covering the whole frame to simulate a square/rectangle
 				text:SetMaxLines(1)
 				colorFrame.text = text
 			end
