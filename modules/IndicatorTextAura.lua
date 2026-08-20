@@ -42,12 +42,14 @@ local function Text_Layout(self, parent)
 		self:ReleaseAuraSlotButton(parent)
 		return
 	end
+	local level = parent:GetFrameLevel() + self.frameLevel
 	local Frame = parent[self.name]
 	Frame:SetParent(parent)
 	Frame:ClearAllPoints()
 	Frame:SetAllPoints()
-	Frame:SetFrameLevel(parent:GetFrameLevel() + self.frameLevel)
+	Frame:SetFrameLevel(level)
 	self:AcquireAuraSlotButton(parent, nil, function(_, _, button, filter, status)
+		button:SetFrameLevel(level)
 		button.coolText = button.coolText or button:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		local Text = button.coolText
 		Text_ApplyColor(self, status, Text)
