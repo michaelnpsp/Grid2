@@ -82,6 +82,7 @@ modules\IndicatorPrivateAurasDispel.lua
 modules\StatusHealth.lua
 modules\StatusShields.lua
 modules\StatusHealAbsorbs.lua
+modules\StatusHealthMaxLoss.lua
 modules\StatusMana.lua
 modules\StatusColor.lua
 modules\StatusName.lua

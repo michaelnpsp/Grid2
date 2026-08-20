@@ -91,9 +91,13 @@ end, {
 })
 
 Grid2Options:RegisterStatusOptions( "death", "combat", Grid2Options.MakeStatusColorOptions,{
-	titleIcon = "Interface\\ICONS\\Ability_creature_cursed_05",
+	titleIcon = "Interface\\Icons\\Ability_creature_cursed_05",
 } )
 
 Grid2Options:RegisterStatusOptions( "feign-death", "combat", Grid2Options.MakeStatusColorOptions,{
-	titleIcon = "Interface\\ICONS\\Ability_fiegndead"
+	titleIcon = "Interface\\Icons\\Ability_fiegndead"
 } )
+
+Grid2Options:RegisterStatusOptions("health-max-loss", "health", Grid2Options.MakeStatusColorOptions, {
+	titleIcon = "Interface\\Icons\\Spell_shadow_lifedrain"
+})
