@@ -1,5 +1,8 @@
 --=====================================================================
+-- blizzard aura containers & slots managament
+--=====================================================================
 
+local ipairs = ipairs
 local rawget = rawget
 local tostring = tostring
 local tremove = table.remove

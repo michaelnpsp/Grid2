@@ -36,11 +36,10 @@ end
 -- standard non-secret statuses
 -------------------------------------------------------------
 
-local function Icon_OnFrameUpdate(f)
-	local unit = f.myFrame.unit
-	if not unit then return end
-	if f.auraContainer then return end
-	local self = f.myIndicator
+-- Warning: This is an overrided indicator:Update() NOT the standard indicator:OnUpdate()
+local function Icon_Update(self, parent, unit)
+	local f = parent[self.name]
+	if unit==nil or f==nil or f.auraContainer then return end
 	local max = self.maxIcons
 	local auras = f.auras
 	local showStack = self.showStack
@@ -123,32 +122,6 @@ local function Icon_OnFrameUpdate(f)
 	end
 	f:SetShown(i>1)
 	if hideDupes then wipe(hideDupes) end
-end
-
--- Delayed updates
-local updates, updateFrame = {}
-local EnableDelayedUpdates = function()
-	updateFrame = CreateFrame("Frame", nil, Grid2LayoutFrame)
-	updateFrame:Hide()
-	updateFrame:SetScript("OnUpdate", function()
-		for f in next, updates do
-			Icon_OnFrameUpdate(f)
-		end
-		wipe(updates)
-		updateFrame:Hide()
-	end)
-	EnableDelayedUpdates = Grid2.Dummy
-end
-
--- Warning: This is an overrided indicator:Update() NOT the standard indicator:OnUpdate()
-local function Icon_Update(self, parent, unit)
-	local f = parent[self.name]
-	if not f then return end
-	if f.auraContainer then return end
-	if not next(updates) then
-		updateFrame:Show()
-	end
-	updates[f] = true
 end
 
 -- Layout icons
@@ -474,8 +447,6 @@ end
 
 local function Icon_Create(self, parent)
 	local f = self:Acquire("Frame", parent)
-	f.myIndicator = self
-	f.myFrame = parent
 	f.auras = f.auras or {}
 	f.visibleCount = 0
 end
@@ -606,7 +577,6 @@ Grid2.setupFunc["icons"] = function(indicatorKey, dbx)
 	indicator.UpdateDB  = Icon_UpdateDB
 	indicator.Layout    = Icon_Layout
 	indicator.UpdateO   = Icon_Update -- special case used by multibar and icons indicator
-	EnableDelayedUpdates()
 	Grid2:RegisterIndicator(indicator, { "icon", "icons" })
 	return indicator
 end
