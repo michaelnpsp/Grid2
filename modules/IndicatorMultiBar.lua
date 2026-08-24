@@ -59,6 +59,7 @@ local function Bar_Update(self, parent, unit, status)
 		local frame = parent[self.name]
 		if frame then
 			local textures = frame.myTextures
+			if not textures then return end
 			if status then
 				local index = self.priorities[status]
 				textures[index]:SetMultibarValue(unit, status)
@@ -77,6 +78,7 @@ local function Bar_UpdateMulti(self, parent, unit, status)
 		local frame = parent[self.name]
 		if frame then
 			local textures = frame.myTextures
+			if not textures then return end
 			if status then
 				local indexes = self.priorities[status]
 				repeat

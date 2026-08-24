@@ -182,6 +182,7 @@ end
 local function BarColor_OnUpdate(self, parent, unit, status)
 	local bar = parent[self.parentName]
 	if bar then
+		if not bar.fgTex then return end
 		if status then
 			local r, g, b, a = status:GetColor(unit)
 			bar.fgTex:SetVertexColor(r, g, b, self.opacity or a )
@@ -194,6 +195,7 @@ end
 local function BarColor_OnUpdateInverted(self, parent, unit, status)
 	local bar = parent[self.parentName]
 	if bar then
+		if not bar.fgTex then return end
 		local r, g, b, a
 		if status then
 			r, g, b, a = status:GetColor(unit)
