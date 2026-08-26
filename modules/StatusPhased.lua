@@ -1,14 +1,12 @@
-if not (UnitInPhase or UnitPhaseReason) then return end
-
 local Phased = Grid2.statusPrototype:new("phased")
 
 local next = next
 local Grid2 = Grid2
 local IsInInstance = IsInInstance
-local UnitInPhase = UnitInPhase
 local UnitPhaseReason = UnitPhaseReason
 local UnitDistanceSquared = UnitDistanceSquared
 local UnitInOtherParty = UnitInOtherParty
+local issecretvalue = Grid2.issecretvalue
 
 local timer
 local einst -- enabled inside instances
@@ -22,6 +20,9 @@ end
 
 local function UpdateUnit(_, unit)
 	local phased = UnitPhaseReason(unit)
+	if issecretvalue(phased) then
+		phased = nil
+	end
 	if phased~=cache[unit] then
 		cache[unit] = phased
 		Phased:UpdateIndicators(unit)
