@@ -216,3 +216,19 @@ Grid2.setupFunc["mdebuffType"] = function(baseKey, dbx)
 end
 
 Grid2:DbSetStatusDefaultValue( "debuffs-DispellableByMe", {type = "mdebuffType", subType = "DispellableByMe", colors = {}} )
+
+-- Blizzard's own "dispellable by me" aura flag (filter;RAID) does not recognize Poison as
+-- dispellable for a Shaman with the Poison Cleansing Totem talent, because the cleanse is
+-- performed by the totem rather than a direct player-cast dispel. The "Add Poison (for Shamans)"
+-- option (Options/modules/statuses/StatusAuras.lua) lets players opt in manually; when enabled,
+-- this supplemental filter is picked up by border/icon indicators via GetAurasFilterExtra.
+function DebuffsDispell:GetAurasFilterExtra()
+	if not self.dbx.includePoisonForShaman then return end
+	local f = self.extraFilter
+	if not f then
+		f = { filter = 'HARMFUL', maxAuras = 64, candidateFilters = { includeDispelTypes = { Poison = true } } }
+		self.extraFilter = f
+	end
+	f.borderOptions = self.aura_filter and self.aura_filter.borderOptions
+	return f
+end

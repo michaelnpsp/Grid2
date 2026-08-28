@@ -8,23 +8,36 @@ Border.Create = Grid2.Dummy
 
 -- aura containers management
 
+local function Border_InitButton(_, parent, button, filter)
+	local borderSize = math.ceil(Grid2Frame.db.profile.frameBorder)
+	button:SetAllPoints(parent)
+	button:SetFrameLevel(parent:GetFrameLevel())
+	local tex = button.__texture or button:CreateTexture(nil, "OVERLAY", nil, 7)
+	tex:SetTexture( Grid2:GetSliceBorderTexture(borderSize) )
+	tex:SetTextureSliceMargins(borderSize, borderSize, borderSize, borderSize)
+	tex:SetTextureSliceMode(1)
+	tex:SetAllPoints()
+	tex:SetVertexColor(1, 1, 1, 1)
+	button:SetAuraBorder(tex, filter.borderOptions)
+	button.__texture = tex
+end
+
+-- Some statuses expose a supplemental aura filter (status:GetAurasFilterExtra()), shown as an
+-- extra layered border slot alongside the main one (e.g. debuffs-DispellableByMe's
+-- "Add Poison" option, since it can't just be merged into the main filter string).
 function Border:Layout(parent)
 	if self.auraMode then
-		self:AcquireAuraSlotButton(parent, nil, function(_, _, button, filter)
-			local borderSize = math.ceil(Grid2Frame.db.profile.frameBorder)
-			button:SetAllPoints(parent)
-			button:SetFrameLevel(parent:GetFrameLevel())
-			local tex = button.__texture or button:CreateTexture(nil, "OVERLAY", nil, 7)
-			tex:SetTexture( Grid2:GetSliceBorderTexture(borderSize) )
-			tex:SetTextureSliceMargins(borderSize, borderSize, borderSize, borderSize)
-			tex:SetTextureSliceMode(1)
-			tex:SetAllPoints()
-			tex:SetVertexColor(1, 1, 1, 1)
-			button:SetAuraBorder(tex, filter.borderOptions)
-			button.__texture = tex
-		end)
+		self:AcquireAuraSlotButton(parent, nil, Border_InitButton)
+		local _, status = self:GetStatusAurasFilter()
+		local extraFilter = status and status.GetAurasFilterExtra and status:GetAurasFilterExtra()
+		if extraFilter then
+			self:AcquireAuraSlotButton(parent, extraFilter, Border_InitButton, nil, 'extra')
+		else
+			self:ReleaseAuraSlotButton(parent, 'extra')
+		end
 	else
 		self:ReleaseAuraSlotButton(parent)
+		self:ReleaseAuraSlotButton(parent, 'extra')
 	end
 end
 

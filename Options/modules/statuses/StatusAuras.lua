@@ -896,6 +896,20 @@ end,{
 
 function Grid2Options:MakeMidnightDispellableByMeOptions(status, options)
 	MakeDebuffTypesColorsOptions( status, options, {width=.75, ignore_none=true} )
+	if Grid2.playerClass == "SHAMAN" then
+		options.includePoisonForShaman = {
+			type = "toggle",
+			order = 25,
+			width = "full",
+			name = L["Add Poison (for Shamans)"],
+			desc = L["Shows Poison debuffs as dispellable by you. Enable this if you have the Poison Cleansing Totem talent, which the game does not report as a dispel ability."],
+			get = function() return status.dbx.includePoisonForShaman end,
+			set = function(_, v)
+				status.dbx.includePoisonForShaman = v or nil
+				refresh_aura_status(status)
+			end,
+		}
+	end
 end
 
 Grid2Options:RegisterStatusOptions("mdebuffType", "debuff", function(self, status, options, optionParams)
