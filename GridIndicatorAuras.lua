@@ -34,13 +34,24 @@ end
 
 function indicator:IterateStatusAurasFilters(max)
 	local statuses, mid, idx = self.statuses, 0, 0
+	local extraFilter, extraStatus
 	return function()
 		if mid>=max then return end
+		if extraFilter then
+			local f, s = extraFilter, extraStatus
+			extraFilter, extraStatus = nil, nil
+			mid = mid + 1
+			return f, s, mid
+		end
 		while idx<#statuses do
 			idx = idx + 1
 			local status = statuses[idx]
 			if status.GetAurasFilter then
 				mid = mid + 1
+				if status.GetAurasFilterExtra then -- e.g. debuffs-DispellableByMe's "Add Poison" option
+					extraFilter = status:GetAurasFilterExtra()
+					extraStatus = extraFilter and status
+				end
 				return status:GetAurasFilter(), status, mid
 			end
 		end
