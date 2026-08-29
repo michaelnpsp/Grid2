@@ -186,7 +186,7 @@ local function Icon_ButtonLayout(self, parent, f, filter, size, level, status)
 		bar:SetStatusBarTexture(self.cbTexture)
 		bar:SetStatusBarColor(UnpackColor(self.cbColor))
 		bar:SetReverseFill(self.cbReverse)
-		bar:Show()
+		bar:SetShown(filter~=nil) -- in non-aura mode there are no statuses displaying bars
 	end
 
 	if not filter then
@@ -278,6 +278,8 @@ local function Icon_OnUpdate(self, parent, unit, status)
 			Cooldown:Hide()
 		end
 	end
+	 -- TODO: No statuses implement GetDurationObject() method so this code is not required, this implies only aura statuses display
+	 -- cooldown bars in icon indicators. So remove this code or keep it for the future (maybe some future status could need this method).
 	if self.needDur then
 		durObject = durObject or status:GetDurationObject(unit)
 		if self.showCoolBar then
