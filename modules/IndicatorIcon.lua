@@ -295,9 +295,8 @@ local function Icon_OnUpdate(self, parent, unit, status)
 	Frame:Show()
 end
 
-local function Icon_LayoutIcon(self, parent)
+local function Icon_LayoutIcon(self, parent, level)
 	local f = parent[self.name]
-	local level = parent:GetFrameLevel() + self.frameLevel
 	local size = self.iconSize
 	if size<=1 then size = size * parent:GetHeight() end
 	f:SetParent(parent)
@@ -315,9 +314,8 @@ end
 -- 12.1+ aura containers
 -------------------------------------------------------------
 
-local function Icon_LayoutAura(self, parent)
+local function Icon_LayoutAura(self, parent, level)
 	self:AcquireAuraSlotButton(parent, nil, function(_, _, button, filter, status)
-		local level = parent:GetFrameLevel() + self.frameLevel
 		local size = self.iconSize
 		if size<=1 then size = size * parent:GetHeight() end
 		button:ClearAllPoints()
@@ -333,14 +331,36 @@ end
 -- shared
 -------------------------------------------------------------
 
+-- An aura status is never active for the priority system: its state lives inside
+-- the blizzard container, which is also what draws it. So an icon indicator that
+-- holds both an aura status and a normal one draws them on two separate frames
+-- at the same time, and the frame level is the only thing deciding which of the
+-- two is seen. With both frames on the same level the winner is whatever order
+-- they happened to be created in, which is why the configured priority looked
+-- ignored or inverted. Raise the frame of the highest priority status instead.
+local function Icon_GetFrameLevels(self)
+	local level = self.frameLevel
+	local first = self.auraMode and self.iconMode and self.statuses[1] -- statuses are sorted by descending priority
+	if first then
+		if first.GetAurasFilter then
+			return level+1, level -- aura status wins
+		else
+			return level, level+1 -- normal status wins
+		end
+	end
+	return level, level
+end
+
 local function Icon_Layout(self, parent)
+	local auraLevel, iconLevel = Icon_GetFrameLevels(self)
+	local base = parent:GetFrameLevel()
 	if self.auraMode then
-		Icon_LayoutAura(self, parent)
+		Icon_LayoutAura(self, parent, base + auraLevel)
 	else
 		Icon_DisableAuraContainer(self, parent)
 	end
 	if self.iconMode then
-		Icon_LayoutIcon(self, parent)
+		Icon_LayoutIcon(self, parent, base + iconLevel)
 	else
 		Icon_DisableIconContainer(self, parent)
 	end

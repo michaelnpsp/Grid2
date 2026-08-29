@@ -195,6 +195,7 @@ function GridFramePrototype:UpdateAuraContainers()
 				container:SetShown(true)
 				container:SetEnabled(true)
 			end
+			Grid2:RefreshAuraFilters(self)
 		else
 			for _, container in pairs(manager) do
 				container:SetEnabled(false)
@@ -274,6 +275,25 @@ Grid2Frame.defaultDB = {
 	}
 }
 
+-- Part of our aura filters is not evaluated by the client for units it cannot
+-- see, see Grid2.GetAuraFilterString() in GridIndicatorAuras.lua. No event is
+-- fired when a grouped player crosses the visible range in raids, so the state
+-- has to be polled.
+local visibleTimer
+local visibleState = {}
+
+local function UpdateAuraVisibleState()
+	for unit in Grid2:IterateGroupedPlayers() do
+		local visible = Grid2:AreUnitAurasFilterable(unit)
+		if visible ~= visibleState[unit] then
+			visibleState[unit] = visible
+			for frame in next, Grid2:GetUnitFrames(unit) do
+				Grid2:RefreshAuraFilters(frame)
+			end
+		end
+	end
+end
+
 function Grid2Frame:OnModuleInitialize()
 	self.dba = self.db
 	self.db = { global = self.dba.global, profile = self.dba.profile, shared = self.dba.profile }
@@ -282,7 +302,9 @@ end
 function Grid2Frame:OnModuleEnable()
 	self.mouseClickType = Grid2.db.global.clickOnMouseDown and "AnyDown" or "AnyUp"
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateFrameUnits")
+	self:RegisterMessage("Grid_UnitLeft")
 	Grid2.RegisterRosterUnitEvent(self, "UNIT_FACTION")
+	visibleTimer = Grid2:CreateTimer(UpdateAuraVisibleState, 1)
 	self:CreateIndicators()
 	self:RefreshIndicators()
 	self:LayoutFrames()
@@ -292,7 +314,14 @@ end
 
 function Grid2Frame:OnModuleDisable()
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	self:UnregisterMessage("Grid_UnitLeft")
 	Grid2.UnregisterRosterUnitEvent(self, "UNIT_FACTION")
+	visibleTimer = Grid2:CancelTimer(visibleTimer)
+	wipe(visibleState)
+end
+
+function Grid2Frame:Grid_UnitLeft(_, unit)
+	visibleState[unit] = nil
 end
 
 function Grid2Frame:OnModuleUpdate()

@@ -410,6 +410,7 @@ local function Icon_LayoutB(self, parent)
 	Icon_DisableAuraContainer(self, parent, f)
 	local auraContainer = self:AcquireAuraContainer(parent, self.auraContainerKey, f)
 	auraContainer._buttons = {}
+	auraContainer.__groups = {} -- groupKey => filter, see Grid2:RefreshAuraFilters()
 	auraContainer:ClearAllPoints()
 	auraContainer:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
 	auraContainer:SetSize(f:GetSize())
@@ -424,7 +425,8 @@ local function Icon_LayoutB(self, parent)
 			local key, filter = tostring(i), status:GetAurasFilter()
 			local maxFrameCount = math.min(self.maxIcons, filter.maxAuras or 64)
 			local count = 10 - maxFrameCount
-			auraContainer:AddAuraGroup( key, filter.filter, {
+			auraContainer.__groups[key] = filter
+			auraContainer:AddAuraGroup( key, Grid2.GetAuraFilterString(filter, parent.unit), {
 				maxFrameCount = maxFrameCount,
 				sortMethod = filter.sortRule or 0,
 				sortDirection = filter.sortDir or 0,

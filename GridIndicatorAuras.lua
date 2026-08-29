@@ -2,13 +2,103 @@
 -- blizzard aura containers & slots managament
 --=====================================================================
 
+local Grid2 = Grid2
 local ipairs = ipairs
+local pairs = pairs
 local rawget = rawget
+local gmatch = string.gmatch
 local tostring = tostring
 local tremove = table.remove
+local UnitIsVisible = UnitIsVisible
+local issecretvalue = Grid2.issecretvalue
 local ShouldAurasBeSecret = C_Secrets.ShouldAurasBeSecret
 
 local indicator = Grid2.indicatorPrototype
+
+--=====================================================================
+-- aura filter components the client does not evaluate
+--
+-- Some filter string components are only applied to units the client can see.
+-- On a unit with UnitIsVisible() false every aura passes them instead of being
+-- filtered out, so a status built on one of them displays whatever the unit
+-- happens to carry: a player out of visible range getting on a mount puts his
+-- mount buff into a "big defensive" indicator.
+--
+-- Measured on a raid member out of visible range carrying a single aura, that
+-- mount: "HELPFUL" returned 1 and both "HELPFUL|BIG_DEFENSIVE" and
+-- "HELPFUL|IMPORTANT" also returned 1, while the very same components filtered
+-- all 8 buffs of the mounted (and visible) player down to 0. "HELPFUL|RAID"
+-- returned 0 on both, so not every component is affected and the ones that are
+-- have to be listed rather than assumed.
+--
+-- There is no addon side fix, the filtering happens inside the client. All we
+-- can do is display nothing instead of displaying everything unfiltered.
+--
+-- FILTER_NONE is a filter string that cannot match any aura. HELPFUL and HARMFUL
+-- select which set of auras is read and the last one in the string wins, they do
+-- not intersect: "HELPFUL|HARMFUL" and "HELPFUL|!HELPFUL" both return the harmful
+-- auras of the unit. Requesting neither set is what returns nothing.
+--=====================================================================
+
+local FILTER_NONE = ""
+
+local UNRELIABLE_COMPONENTS = {
+	BIG_DEFENSIVE = true,
+	IMPORTANT = true,
+}
+
+local unreliableFilters = setmetatable({}, {__index = function(self, filterString)
+	local result = false
+	for component in gmatch(filterString, "[^|%s]+") do
+		if UNRELIABLE_COMPONENTS[ (component:gsub("^!","")) ] then -- a negated component is not evaluated either
+			result = true
+			break
+		end
+	end
+	self[filterString] = result
+	return result
+end})
+
+function Grid2:AreUnitAurasFilterable(unit)
+	local visible = UnitIsVisible(unit)
+	return issecretvalue(visible) or visible -- assume yes when the answer is a secret
+end
+
+local function GetAuraFilterString(filter, unit)
+	local filterString = filter.filter
+	if unit and unreliableFilters[filterString] and not Grid2:AreUnitAurasFilterable(unit) then
+		return FILTER_NONE
+	end
+	return filterString
+end
+
+Grid2.GetAuraFilterString = GetAuraFilterString
+
+-- GetAuraFilterString() depends on the unit, so every filter string already
+-- pushed into a container has to be recalculated when the unit of the frame or
+-- its visibility changes. Called from GridFramePrototype:UpdateAuraContainers()
+-- and from the visibility poll in GridFrame.lua.
+function Grid2:RefreshAuraFilters(frame)
+	local manager, unit = frame.__auraManager, frame.unit
+	if not (manager and unit) then return end
+	for _, container in pairs(manager) do
+		local groups = container.__groups -- icons indicators, see IndicatorIcons.lua
+		if groups then
+			for groupKey, filter in pairs(groups) do
+				container:SetAuraGroupFilterString(groupKey, GetAuraFilterString(filter, unit))
+			end
+		end
+		local buttons = container.slotEnabled -- aura slots container
+		if buttons then
+			for _, button in pairs(buttons) do
+				local filter = button.__filter
+				if filter then
+					container:SetAuraSlotFilterString(button.__slotKey, GetAuraFilterString(filter, unit))
+				end
+			end
+		end
+	end
+end
 
 --=====================================================================
 
@@ -152,7 +242,7 @@ function indicator:AcquireAuraSlotButton(parent, filter, initFunc, releaseFunc, 
 			button.__dirty = nil
 		end
 		local slotKey = button.__slotKey
-		container:SetAuraSlotFilterString(slotKey, filter.filter)
+		container:SetAuraSlotFilterString(slotKey, GetAuraFilterString(filter, parent.unit))
 		container:SetAuraSlotCandidateFilters(slotKey, filter.candidateFilters)
 		container:SetAuraSlotSortMethod(slotKey, filter.sortRule or 0, filter.sortDir or 0)
 		self:SetAuraButtonTooltip(button)
@@ -162,7 +252,7 @@ function indicator:AcquireAuraSlotButton(parent, filter, initFunc, releaseFunc, 
 	else -- create new slot button
 		container.slotCount = container.slotCount + 1
 		local slotKey = tostring(container.slotCount)
-		button = container:AddAuraSlot(slotKey, filter.filter, {
+		button = container:AddAuraSlot(slotKey, GetAuraFilterString(filter, parent.unit), {
 			sortMethod = filter.sortRule or 0,
 			sortDirection = filter.sortDir or 0,
 			candidateFilters = filter.candidateFilters,
@@ -177,6 +267,7 @@ function indicator:AcquireAuraSlotButton(parent, filter, initFunc, releaseFunc, 
 		button.__slotKey = slotKey -- key used by blizzard aura container system
 		button.__releaseFunc = releaseFunc
 	end
+	button.__filter = filter -- kept to be able to recalculate the filter string, see Grid2:RefreshAuraFilters()
 	return button, filter, status
 end
 
@@ -197,7 +288,8 @@ function indicator:ReleaseAuraSlotButton(parent, key)
 				ClearAuraSlotWidgets(button)
 			end
 		end
-		container:SetAuraSlotFilterString(button.__slotKey, "")
+		button.__filter = nil
+		container:SetAuraSlotFilterString(button.__slotKey, FILTER_NONE)
 		local disabledButtons = container.slotDisabled
 		local buttons = disabledButtons[prefixKey]
 		if buttons then
