@@ -116,8 +116,6 @@ function status:RegisterIndicator(indicator, priority, suspended)
 				self:OnEnable()
 				self:EnableLoad()
 			end
-			-- resolved, not the argument: WakeUpIndicator passes no priority and that reads as a removal
-			indicator:StatusChanged(self, self.priorities[indicator])
 		end
 	end
 end
@@ -136,7 +134,6 @@ function status:UnregisterIndicator(indicator, suspended)
 			self:DisableLoad()
 			self:OnDisable()
 		end
-		indicator:StatusChanged(self)
 	end
 end
 

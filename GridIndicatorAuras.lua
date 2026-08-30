@@ -6,22 +6,36 @@ local ipairs = ipairs
 local rawget = rawget
 local tostring = tostring
 local tremove = table.remove
+local tsort = table.sort
 local ShouldAurasBeSecret = C_Secrets.ShouldAurasBeSecret
 
 local indicator = Grid2.indicatorPrototype
 
 --=====================================================================
 
-function indicator:StatusChanged(status, priority)
-	if status.GetAurasFilter then
-		self.auraMode = (self.auraMode or 0) + (priority and 1 or -1)
-		if self.auraMode==0 then self.auraMode = nil end
-	else
-		self.iconMode = (self.iconMode or 0) + (priority and 1 or -1)
-		if self.iconMode==0 then self.iconMode = nil end
+-- overriding Grid2.indicatorPrototype:SortStatuses()
+function indicator:SortStatuses()
+	local statuses = self.statuses
+	self.auraMode, self.iconMode, self.auraLevel, self.iconLevel  = nil, nil, 0 ,0
+	if #statuses>0 then
+		-- sort statuses by priority
+		tsort(statuses, self.sortStatuses)
+		-- aura/icon mode calculation
+		local auraCount = 0
+		for _, status in ipairs(statuses) do
+			if status.isAura then
+				auraCount = auraCount + 1
+			end
+		end
+		local iconCount = #statuses - auraCount
+		self.auraMode = auraCount>0 and auraCount or nil
+		self.iconMode = iconCount>0 and iconCount or nil
+		if auraCount>0 and iconCount>0 then
+			local isAura = statuses[1].isAura
+			self.auraLevel = isAura and 1 or 0
+			self.iconLevel = isAura and 0 or 1
+		end
 	end
-	-- self:UpdateFilter()
-	-- self:UpdateHighlight(status)
 end
 
 function indicator:GetStatusAurasFilter()

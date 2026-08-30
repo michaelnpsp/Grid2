@@ -299,7 +299,7 @@ end
 
 local function Icon_LayoutIcon(self, parent)
 	local f = parent[self.name]
-	local level = parent:GetFrameLevel() + self.frameLevel
+	local level = parent:GetFrameLevel() + self.frameLevel + self.iconLevel*2 -- hackish, we need to increase frame level by 2 because aura cooldown frames are set to frameLevel+1
 	local size = self.iconSize
 	if size<=1 then size = size * parent:GetHeight() end
 	f:SetParent(parent)
@@ -319,7 +319,7 @@ end
 
 local function Icon_LayoutAura(self, parent)
 	self:AcquireAuraSlotButton(parent, nil, function(_, _, button, filter, status)
-		local level = parent:GetFrameLevel() + self.frameLevel
+		local level = parent:GetFrameLevel() + self.frameLevel + self.auraLevel*2 -- hackish, we need to increase frame level by 2 because icon cooldown frames are set to frameLevel+1
 		local size = self.iconSize
 		if size<=1 then size = size * parent:GetHeight() end
 		button:ClearAllPoints()
