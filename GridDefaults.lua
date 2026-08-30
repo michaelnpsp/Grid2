@@ -5,7 +5,7 @@ Created by Michael, based on Grid2Options\GridDefaults.lua from original Grid2 a
 local Grid2 = Grid2
 
 -- Latest database profile version
-local DB_VERSION = 200
+local DB_VERSION = 201
 
 -- Database manipulation functions
 function Grid2:DbSetStatusDefaultValue(name, value)
@@ -256,6 +256,34 @@ function Grid2:UpdateDefaults()
 							aura_filter.candidateFilters = { excludeDispelTypes = { None=true } }
 						end
 						aura_filter.typed = nil
+					end
+				end
+			end
+		end
+		if version<201 then
+			-- v200 renamed buff/buffs statuses to mbuff/mbuffs, backed by the new secure aura-slot
+			-- engine (icons/icon/color/aura roles only). "text" duration indicators bound to those
+			-- statuses were left behind: the classic status-changed polling path they rely on isn't
+			-- driven for aura statuses anymore, so they silently stop showing anything. Indicators
+			-- used exclusively by aura-capable statuses are safe to convert to "textaura", which
+			-- renders through the same secure aura-slot widget the working icon/square types use.
+			local AURA_STATUS_TYPES = { mbuff=true, mbuffs=true, mdebuffs=true, mdebuffType=true }
+			for indicatorName, statuses in pairs(dbm) do
+				local dbx = dbi[indicatorName]
+				if dbx and dbx.type=='text' and dbx.duration then
+					local allAura, any = true, false
+					for statusName in pairs(statuses) do
+						local status = dbs[statusName]
+						if status then
+							any = true
+							if not AURA_STATUS_TYPES[status.type] then
+								allAura = false
+								break
+							end
+						end
+					end
+					if any and allAura then
+						dbx.type = 'textaura'
 					end
 				end
 			end

@@ -229,7 +229,7 @@ end
 -- Grid2Options:MakeIndicatorTypeOptions()
 do
 	local typeMorphValue  = {}
-	local typeMorphValues = { icon = L["icon"], square = L["square"], shape = L["shape"], text = L["text"] }
+	local typeMorphValues = { icon = L["icon"], square = L["square"], shape = L["shape"], text = L["text"], textaura = L["textaura"] }
 
 	local function GetIndicatorTypeValues(info)
 		local typeKey = info.arg.dbx.type

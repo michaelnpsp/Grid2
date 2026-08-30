@@ -73,6 +73,7 @@ do
 		square = { size = 5 },
 		shape  = { size = 5 },
 		text   = { duration = true, stack= false, textlength = 12, fontSize = 11, font = "Friz Quadrata TT" },
+		textaura = { fontSize = 11, font = "Friz Quadrata TT" },
 	}
 
 	-- Deletes the specific indicator
