@@ -229,7 +229,7 @@ end
 -- Grid2Options:MakeIndicatorTypeOptions()
 do
 	local typeMorphValue  = {}
-	local typeMorphValues = { icon = L["icon"], square = L["square"], shape = L["shape"], text = L["text"] }
+	local typeMorphValues = { icon = L["icon"], square = L["square"], shape = L["shape"], text = L["text"], textaura = L["textaura"] }
 
 	local function GetIndicatorTypeValues(info)
 		local typeKey = info.arg.dbx.type
@@ -261,7 +261,7 @@ do
 		-- Set new fields width defaults values
 		dbx.type = value
 		dbx.animEnabled = nil
-		for k, v in pairs(Grid2Options.indicatorDefaultValues[value]) do
+		for k, v in pairs(Grid2Options.indicatorDefaultValues[value] or {}) do
 			if not dbx[k] then
 				indicator.dbx[k] = v
 				dbx[k] = v
