@@ -77,6 +77,10 @@ function indicator:GetFrame(parent)
 	return parent[self.name]
 end
 
+function indicator:GetFrameLevel(level)
+	return (level or 1) * 5
+end
+
 function indicator:ReleaseAllFrames()
 	if self.framesCreated then
 		local Release = self.Release

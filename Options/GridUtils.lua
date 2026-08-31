@@ -539,13 +539,13 @@ do
 				Grid2Frame:WithAllFrames(indicator, method)
 			end
 		end
-		self:UpdateIndicator(indicator)
 		if indicator.parentName then
-			local pindicator =Grid2:GetIndicatorByName(indicator.parentName)
+			local pindicator = Grid2:GetIndicatorByName(indicator.parentName)
 			if pindicator then
 				self:RefreshIndicatorNow(pindicator, method)
 			end
 		end
+		self:UpdateIndicator(indicator)
 	end
 	function Grid2Options:RefreshIndicator(indicator, method)
 		local skip = qtime

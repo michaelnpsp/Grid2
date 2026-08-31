@@ -186,7 +186,7 @@ local function Square_UpdateDB(self)
 	self.anchorRel = l.relPoint
 	self.offsetx = l.x
 	self.offsety = l.y
-	self.frameLevel = dbx.level
+	self.frameLevel = self:GetFrameLevel(dbx.level)
 	self.color = Grid2.MakeColor(dbx.color1)
 	self.borderSize = dbx.borderSize
 	self.borderSwap = dbx.borderSwap

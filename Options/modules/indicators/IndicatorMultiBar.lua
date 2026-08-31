@@ -382,7 +382,7 @@ do
 					end
 					color.r, color.g, color.b = 0, 0, 0
 				end
-				self:RefreshIndicator(indicator, "Layout" )
+				self:RefreshIndicator(indicator.sideKick, "Layout" )
 				self:MakeIndicatorOptions(indicator)
 			end,
 			values = MAINBAR_COLOR_SOURCES,

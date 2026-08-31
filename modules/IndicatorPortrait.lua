@@ -77,7 +77,7 @@ local function Portrait_Layout(self, parent)
 	local l   = dbx.location
 	Portrait:SetParent(parent)
 	Portrait:ClearAllPoints()
-	Portrait:SetFrameLevel(parent:GetFrameLevel() + (dbx.level or 4) )
+	Portrait:SetFrameLevel( parent:GetFrameLevel() + self:GetFrameLevel(dbx.level or 4) )
 	Portrait:SetPoint(l.point, container, l.relPoint, l.x, l.y)
 	Portrait:SetWidth( dbx.width or container:GetWidth() )
 	Portrait:SetHeight( dbx.height or container:GetHeight() )

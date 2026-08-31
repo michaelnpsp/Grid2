@@ -372,7 +372,7 @@ local function Icon_UpdateDB(self)
 	self.useStatusColorText = self.showCoolText and dbx.ctUseStatusColor
 	self.disableCooldown = dbx.disableCooldown and not dbx.enableCooldownText
 	self.disableStack    = dbx.disableStack
-	self.frameLevel      = dbx.level
+	self.frameLevel      = self:GetFrameLevel(dbx.level)
 	self.borderSize      = dbx.borderSize
 	self.useStatusColor  = dbx.useStatusColor
 	self.iconSize        = dbx.size or theme.iconSize or 14

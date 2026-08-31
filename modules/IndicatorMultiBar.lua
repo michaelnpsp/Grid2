@@ -15,9 +15,16 @@ local POINTS = {
 	OPOSITE    = { LEFT = 'RIGHT', RIGHT = 'LEFT', TOP = 'BOTTOM', BOTTOM = 'TOP' },
 }
 
+-- Warning: SetClipChildren() enables flattening mode for child status bars, this implies that sublayers are
+-- ignored for aura color textures anchored to the mainBar because those textures don't have the same parent.
+-- Due to this we cannot use sublayers to put aura color textures between the main bar and the other bars,
+-- because those textures are always painted on top of all bars.
+-- To fix this issue the mainBar should have a different parent and a lower frameLevel than the other bars.
+-- In flattening mode the frameLevel of the status bars are ignored by the render engine too and only
+-- the frame level of the parent frame doing the clipping is used.
 local function Bar_CreateHH(self, parent)
-	local bar = self:Acquire("Frame", parent)
-	bar:SetClipsChildren(true)
+	local frame = self:Acquire("Frame", parent)
+	frame:SetClipsChildren(true)
 end
 
 -- value assignments for different types of bars/statuses
@@ -92,8 +99,10 @@ local function Bar_UpdateMulti(self, parent, unit, status)
 	end
 end
 
+-- aura color textures have the same framelevel than the first bar, but in a higher draw layer
 local function Bar_LayoutAuraColor(self, parent, f, level)
 	ReleaseAuraColorsSlots(self, parent, f)
+	if self.reverseMain then return end -- in this case main bar is never visible so colorization is not need
 	local color = self.sideKick
 	if color.auraMode then
 		local setup = self.bars[1]
@@ -120,6 +129,11 @@ local function Bar_LayoutAuraColor(self, parent, f, level)
 	end
 end
 
+-- First bar should have different parent to avoid SetClipsChildren() flattening issue when aura color textures are anchored to the main bar.
+-- The game ignores frameLevel assigned to statusbars because SetClipsChildren() is enabled in parent frame, except for the main bar when
+-- it has a different parent, in this case: first statusbar frame level = frameLevel, and others bars inherits its parent frame level = frameLevel+1.
+-- Aura color textures are set in the same frameLevel than first status bar but in a higher draw layer, ensuring aura color textures are drawn over
+-- the first bar (+0 frameLevel) but behind the other bars (+1 framelevel).
 local function Bar_Layout(self, parent)
 	local frame = parent[self.name]
 	local width = self.width  or parent.container:GetWidth()
@@ -127,7 +141,7 @@ local function Bar_Layout(self, parent)
 	local frameLevel = parent:GetFrameLevel() + self.frameLevel
 	frame:SetParent(parent)
 	frame:ClearAllPoints()
-	frame:SetFrameLevel(frameLevel)
+	frame:SetFrameLevel(frameLevel+1) -- for aura colors the first bar goes behind this frame and it has different parent: first bar = frameLevel / other bars = framelevel+1
 	frame:SetSize(width, height)
 	frame:SetPoint(self.anchor, parent.container, self.anchorRel, self.offsetx, self.offsety)
 	-- bars
@@ -139,12 +153,13 @@ local function Bar_Layout(self, parent)
 	local ctextures
 	for i=1,barCount do
 		local setup = barSetup[i]
-		local texture = textures[i] or CreateFrame("StatusBar", nil, frame) -- texture is a StatusBar frame, not a texture
+		local texture = textures[i] or CreateFrame("StatusBar") -- texture is a StatusBar frame, not a texture
 		texture:Hide()
+		texture:SetParent( (i==1 and not self.reverseMain and self.sideKick.auraMode) and parent or frame)
+		texture:SetFrameLevel(frameLevel) -- this has effect only on the first bar and only when aura colorization (auraMode) is enabled
 		texture:ClearAllPoints()
 		texture:SetMinMaxValues(0, 1)
 		texture:SetValue(setup.defValue or 0)
-		texture:SetFrameLevel(frameLevel)
 		texture:SetOrientation(self.orientation)
 		texture:SetReverseFill(setup.reverse)
 		texture:SetStatusBarTexture(setup.texture) -- , "ARTWORK", setup.sublayer)
@@ -251,7 +266,7 @@ local function Bar_UpdateDB(self)
 	self.orientation   = orientation
 	self.alignPoint    = alignPoint
 	self.alignPointOp  = opositePoint[alignPoint]
-	self.frameLevel    = dbx.level or 1
+	self.frameLevel    = self:GetFrameLevel(dbx.level)
 	self.anchor        = l.point
 	self.anchorRel     = l.relPoint
 	self.offsetx       = l.x
@@ -261,6 +276,7 @@ local function Bar_UpdateDB(self)
 	self.horizontal    = (orientation == "HORIZONTAL")
 	self.reverseFill   = not not dbx.reverseFill
 	self.backAnchor    = dbx.backAnchor
+	self.reverseMain   = dbx.reverseMainBar
 	self.bars          = bars
 	local mainBar = {
 		reverse  =  not ( not self.reverseFill == not dbx.reverseMainBar ),

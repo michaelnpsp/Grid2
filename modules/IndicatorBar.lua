@@ -162,7 +162,7 @@ local function Bar_UpdateDB(self)
 	self.texture     = Grid2:MediaFetch("statusbar", dbx.texture or theme.barTexture, "Gradient")
 	self.backTexture = dbx.backTexture and Grid2:MediaFetch("statusbar", dbx.backTexture, "Gradient") or self.texture
 	self.orientation = dbx.orientation or theme.orientation
-	self.frameLevel  = dbx.level or 1
+	self.frameLevel  = self:GetFrameLevel(dbx.level)
 	self.anchor      = l.point
 	self.anchorRel   = l.relPoint
 	self.offsetx     = l.x

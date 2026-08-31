@@ -477,7 +477,7 @@ local function Icon_UpdateDB(self)
 	self.layoutAxis     = AnchorUtil.FlowLayoutAxis[dbx.orientation=='VERTICAL' and 'Vertical' or 'Horizontal']
 	self.vertical       = dbx.orientation=='VERTICAL'
 	self.borderSize     = dbx.borderSize or 0
-	self.frameLevel     = dbx.level or 1
+	self.frameLevel     = self:GetFrameLevel(dbx.level)
 	self.iconSize       = dbx.iconSize or theme.iconSize or 14
 	self.iconSpacing    = dbx.iconSpacing or 1
 	self.maxIcons       = dbx.maxIcons or 3

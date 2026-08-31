@@ -82,7 +82,7 @@ local function Text_UpdateDB(self)
 	self.anchorRel = l.relPoint
 	self.offsetx = l.x
 	self.offsety = l.y
-	self.frameLevel = dbx.level or 8
+	self.frameLevel = self:GetFrameLevel(dbx.level or 8)
 	self.textlength = dbx.textlength or 16
 	self.textfont = Grid2:MediaFetch("font", dbx.font or theme.font) or STANDARD_TEXT_FONT
 	self.textsize = dbx.fontSize or theme.fontSize or 11

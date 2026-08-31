@@ -119,7 +119,7 @@ end
 
 local function Overlay_UpdateDB(self)
 	local dbx = self.dbx
-	self.frameLevel = dbx.level or 7
+	self.frameLevel = self:GetFrameLevel(dbx.level or 7)
 	self.dispelType = dbx.displayAllDispells and 2 or 1 -- 1=dispellableByMe 2=any dispellable debuff
 	self.sizeAdjust = dbx.sizeAdjust or 0
 	self.opacity    = dbx.opacity or 1

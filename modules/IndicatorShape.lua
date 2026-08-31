@@ -160,7 +160,7 @@ local function Shape_UpdateDB(self)
 	self.offsety   = l.y
 	-- misc variables
 	self.color      = Grid2.MakeColor(dbx.shadowColor, "BLACK")
-	self.frameLevel = dbx.level or 4
+	self.frameLevel = self:GetFrameLevel(dbx.level or 4)
 	self.useDispelIcon = dbx.useDispelIcon
 	self.iconPath   = dbx.iconPath or "Interface\\Addons\\Grid2\\media\\shapes"
 	self.blendMode  = dbx.blend or 'BLEND'
