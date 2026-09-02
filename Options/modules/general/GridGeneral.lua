@@ -51,6 +51,28 @@ Grid2Options:AddGeneralOptions( "General", "Icon Textures Zoom", {
 })
 
 --==========================================================================
+-- Aura Containers Visiblity
+--==========================================================================
+
+Grid2Options:AddGeneralOptions( "General", "Buffs and Debuffs Visibility", {
+	aurasVisibility = {
+		type = "toggle",
+		name = L["Hide auras for non visible units"],
+		desc = L["Hide auras for units not in the same instance or very far away."],
+		width = "full",
+		order = 10,
+		get = function ()
+			return not Grid2Frame.db.shared.showAurasForNonVisibleUnits
+		end,
+		set = function (_, v)
+			Grid2Frame.db.shared.showAurasForNonVisibleUnits = not v or nil
+			Grid2Frame:UpdateAuraSettings()
+			Grid2Frame:UpdateAuraContainers()
+		end
+	},
+})
+
+--==========================================================================
 -- Raid Size calculation
 --==========================================================================
 

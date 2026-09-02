@@ -6,6 +6,7 @@ local pairs = pairs
 local strfind = strfind
 local UnitGUID = UnitGUID
 local UnitExists = UnitExists
+local UnitIsVisibleForAuras = UnitIsVisible
 local pet_of_unit = Grid2.pet_of_unit
 local C_Timer_After = C_Timer.After
 local SecureButton_GetModifiedUnit = SecureButton_GetModifiedUnit
@@ -185,7 +186,7 @@ function GridFramePrototype:UpdateAuraContainers()
 	local manager = self.__auraManager
 	if manager then
 		local unit = self.unit
-		if unit then
+		if unit and UnitIsVisibleForAuras(unit) then
 			for _, container in pairs(manager) do
 				if unit ~= container:GetUnit() then
 					container:SetUnit(unit)
@@ -214,7 +215,7 @@ function GridFramePrototype:UpdateIndicators(unitChanged)
 		end
 	end
 	if unitChanged then
-		self:UpdateAuraContainers(unit)
+		self:UpdateAuraContainers()
 	end
 end
 
@@ -283,6 +284,7 @@ function Grid2Frame:OnModuleEnable()
 	self.mouseClickType = Grid2.db.global.clickOnMouseDown and "AnyDown" or "AnyUp"
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateFrameUnits")
 	Grid2.RegisterRosterUnitEvent(self, "UNIT_FACTION")
+	self:UpdateAuraSettings()
 	self:CreateIndicators()
 	self:RefreshIndicators()
 	self:LayoutFrames()
@@ -292,21 +294,48 @@ end
 
 function Grid2Frame:OnModuleDisable()
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-	Grid2.UnregisterRosterUnitEvent(self, "UNIT_FACTION")
+	self:UpdateAuraSettings(false)
 end
 
 function Grid2Frame:OnModuleUpdate()
+	self:UpdateAuraSettings()
 	self:CreateIndicators()
 	self:RefreshTheme()
 end
 
--- fix for auras not displayed after watching a cinematic (CF issue #1535)
+-- fix for non-visible units displaying all aruas and auras not displayed after watching cinematics (CF issue #1535)
 function Grid2Frame:UNIT_FACTION(_, unit)
-	for frame in next, Grid2:GetUnitFrames(unit) do
-		frame:UpdateAuraContainers()
+	C_Timer_After(0, function() -- We need to wait one frame, because UnitIsVisible() used in UpdateAuraContainers() does not return updated information in PARTY_MEMBER_DISABLE event
+		for frame in next, Grid2:GetUnitFrames(unit) do
+			frame:UpdateAuraContainers()
+		end
+	end)
+end
+
+function Grid2Frame:UpdateAuraContainers()
+	for frame in next, activatedFrames do
+		frame:UpdateIndicators(true)
 	end
 end
 
+function Grid2Frame:UpdateAuraSettings(showAuras)
+	if showAuras == nil then
+		showAuras = self.db.shared.showAurasForNonVisibleUnits
+	end
+	if showAuras then
+		UnitIsVisibleForAuras = function() return true end
+		Grid2.UnregisterRosterUnitEvent(self, "UNIT_FACTION")
+		Grid2.UnregisterRosterUnitEvent(self, "PARTY_MEMBER_ENABLE")
+		Grid2.UnregisterRosterUnitEvent(self, "PARTY_MEMBER_DISABLE")
+	else
+		UnitIsVisibleForAuras = UnitIsVisible
+		Grid2.UnregisterRosterUnitEvent(self, "UNIT_FACTION")
+		Grid2.RegisterRosterUnitEvent(self, "PARTY_MEMBER_ENABLE", "UNIT_FACTION")
+		Grid2.RegisterRosterUnitEvent(self, "PARTY_MEMBER_DISABLE", "UNIT_FACTION")
+	end
+end
+
+-- themes management
 function Grid2Frame:UpdateTheme()
 	local themes = self.dba.profile.extraThemes
 	self.db.profile = themes and themes[Grid2.currentTheme] or self.dba.profile
