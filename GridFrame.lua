@@ -77,7 +77,7 @@ function GridFrameEvents:OnHide()
 end
 
 function GridFrameEvents:OnAttributeChanged(name, value)
-	if name == "unit" then
+	if name == "unit" and not Grid2.forceFramesCreationEnabled then
 		local old_unit = self.unit
 		if value then
 			local unit = SecureButton_GetModifiedUnit(self)
@@ -303,7 +303,7 @@ function Grid2Frame:OnModuleUpdate()
 	self:RefreshTheme()
 end
 
--- fix for non-visible units displaying all aruas and auras not displayed after watching cinematics (CF issue #1535)
+-- fix for non-visible units displaying all auras and auras not displayed after watching cinematics (CF issue #1535)
 function Grid2Frame:UNIT_FACTION(_, unit)
 	C_Timer_After(0, function() -- We need to wait one frame, because UnitIsVisible() used in UpdateAuraContainers() does not return updated information in PARTY_MEMBER_DISABLE event
 		for frame in next, Grid2:GetUnitFrames(unit) do
@@ -312,7 +312,7 @@ function Grid2Frame:UNIT_FACTION(_, unit)
 	end)
 end
 
-function Grid2Frame:UpdateAuraContainers()
+function Grid2Frame:UpdateAuraContainers() -- used from options
 	for frame in next, activatedFrames do
 		frame:UpdateIndicators(true)
 	end
@@ -435,12 +435,15 @@ function Grid2Frame:SetEventHook( event, func, enabled )
 end
 
 -- Event handlers
-function Grid2Frame:UpdateFrameUnits()
+function Grid2Frame:UpdateFrameUnits(event, isLogin, isReload)
+	local update = (event=="PLAYER_ENTERING_WORLD") and not (isLogin or isReload)
 	for frame, old_unit in next, activatedFrames do
 		local unit = SecureButton_GetModifiedUnit(frame)
 		if old_unit ~= unit then
 			Grid2:SetFrameUnit(frame, unit)
 			frame:UpdateIndicators(true)
+		elseif update then
+			frame:UpdateAuraContainers()
 		end
 	end
 end
