@@ -725,20 +725,20 @@ end
 -- Precreate frames to avoid a blizzard bug that prevents initializing unit frames in combat
 -- https://authors.curseforge.com/forums/world-of-warcraft/official-addon-threads/unit-frames/grid-grid2/222076-grid?page=159#c3169
 function Grid2Layout:ForceFramesCreation(header)
-	Grid2.forceFramesCreationEnabled = true -- flag to avoid unnecessary frame updates in GridFrame.lua
 	local startingIndex = header:GetAttribute("startingIndex")
 	local maxColumns = header:GetAttribute("maxColumns") or 1
 	local unitsPerColumn = header:GetAttribute("unitsPerColumn") or 5
 	local maxFrames = maxColumns * unitsPerColumn
 	local count= header.FrameCount
 	if not count or count<maxFrames then
+		Grid2.forceFramesCreationEnabled = true -- flag to avoid unnecessary frame updates in GridFrame.lua
 		header:Show()
 		header:SetAttribute("startingIndex", 1-maxFrames )
 		header:SetAttribute("startingIndex", startingIndex)
 		header.FrameCount = maxFrames
 		header:Hide()
+		Grid2.forceFramesCreationEnabled = nil
 	end
-	Grid2.forceFramesCreationEnabled = nil
 end
 
 function Grid2Layout:GetFramesSizeForHeader(header)
