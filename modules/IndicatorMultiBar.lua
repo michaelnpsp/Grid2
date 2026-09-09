@@ -212,8 +212,9 @@ local function Bar_Layout(self, parent)
 		textures[i]:Hide()
 		textures[i]:ClearAllPoints()
 	end
-	frame.myTextures = textures
-	frame.myCTextures = ctextures
+	frame.myTextures = textures -- statusbars
+	frame.myCTextures = ctextures -- real textures
+	frame.myBTexture = self.backColor and textures[barCount]:GetStatusBarTexture() or nil -- back texture
 	frame:Show()
 	-- aura container colorization
 	Bar_LayoutAuraColor(self, parent, frame, frameLevel)
@@ -262,6 +263,7 @@ local function Bar_UpdateDB(self)
 	local texColor     = dbx.textureColor.r and dbx.textureColor
 	local alignPoint   = POINTS[orientation][not dbx.reverseFill]
 	local opositePoint = POINTS.OPOSITE
+	self.backColor     = backColor
 	self.foreColor     = dbx.invertColor and backColor or texColor
 	self.orientation   = orientation
 	self.alignPoint    = alignPoint
@@ -367,9 +369,9 @@ end
 local function BarColor_SetBarColorInverted(self, parent, r, g, b, a)
 	local frame = parent[self.parentName]
 	if frame then
-		local textures = frame.myTextures
-		if textures then
-			textures[#textures]:GetStatusBarTexture():SetVertexColor(r, g, b, a)
+		local texture = frame.myBTexture
+		if texture then
+			texture:SetVertexColor(r, g, b, a)
 		end
 	end
 end
