@@ -3,10 +3,6 @@
 local Grid2Options = Grid2Options
 local L = Grid2Options.L
 
-local function RefreshIndicator(indicator)
-	Grid2Options:RefreshIndicator(indicator.sideKick, "Layout")
-end
-
 Grid2Options:RegisterIndicatorOptions("multibar", true, function(self, indicator)
 	local layout, filter = {}, {}, {}
 	self:MakeIndicatorTypeLevelOptions(indicator,layout)
@@ -42,7 +38,7 @@ function Grid2Options:MakeIndicatorMultiBarAppearanceOptions(indicator,options)
 		set = function (_, v)
 			if v==0 then v= nil end
 			indicator.dbx.width = v
-			RefreshIndicator(indicator)
+			self:RefreshIndicator(indicator, "Layout")
 		end,
 	}
 	options.barHeight= {
@@ -59,7 +55,7 @@ function Grid2Options:MakeIndicatorMultiBarAppearanceOptions(indicator,options)
 		set = function (_, v)
 			if v==0 then v= nil end
 			indicator.dbx.height = v
-			RefreshIndicator(indicator)
+			self:RefreshIndicator(indicator, "Layout")
 		end,
 	}
 	options.orientation = {
@@ -73,7 +69,7 @@ function Grid2Options:MakeIndicatorMultiBarAppearanceOptions(indicator,options)
 		set = function (_, v)
 			if v=="DEFAULT" then v= nil	end
 			indicator:SetOrientation(v)
-			RefreshIndicator(indicator)
+			self:RefreshIndicator(indicator, "Layout")
 		end,
 		values={ ["DEFAULT"]= L["DEFAULT"], ["VERTICAL"] = L["VERTICAL"], ["HORIZONTAL"] = L["HORIZONTAL"]}
 	}
@@ -86,7 +82,7 @@ function Grid2Options:MakeIndicatorMultiBarAppearanceOptions(indicator,options)
 		get = function () return indicator.dbx.reverseFill end,
 		set = function (_, v)
 			indicator.dbx.reverseFill = v or nil
-			RefreshIndicator(indicator)
+			self:RefreshIndicator(indicator, "Layout")
 		end,
 	}
 end
@@ -253,7 +249,7 @@ do
 					barDbx.glowLine = 6
 					barDbx.texture = orientation=='HORIZONTAL' and 'Grid2 GlowV' or 'Grid2 GlowH'
 				end
-				RefreshIndicator(indicator)
+				self:RefreshIndicator(indicator, "Layout")
 			end,
 			values = TYPE_VALUES,
 			disabled = function() return barIndex<=0 end,
@@ -297,7 +293,7 @@ do
 			end,
 			set = function(_, v)
 				barDbx[barIndex==0 and 'reverseMainBar' or 'reverse'] = (v==2) or nil
-				RefreshIndicator(indicator)
+				self:RefreshIndicator(indicator, "Layout")
 			end,
 			values = DIRECTION_VALUES,
 		},
@@ -312,7 +308,7 @@ do
 			end,
 			set = function (_, v)
 				barDbx.prevBar = (v~=100) and v or nil
-				RefreshIndicator(indicator)
+				self:RefreshIndicator(indicator, "Layout")
 			end,
 			values = function()
 				for i=1,9 do MIDNIGHT_ANCHOR_VALUES[i+1] = i<barIndex and L['Bar']..i or nil; end
@@ -337,7 +333,7 @@ do
 			end,
 			set = function (_, v)
 				barDbx.glowLine = v
-				RefreshIndicator(indicator)
+				self:RefreshIndicator(indicator, "Layout")
 			end,
 			hidden = function() return not barDbx.glowLine end,
 		},
@@ -356,7 +352,7 @@ do
 			end,
 			set = function (_, v)
 				barDbx.glowLineAdjust = (v~=0) and v or nil
-				RefreshIndicator(indicator)
+				self:RefreshIndicator(indicator, "Layout")
 			end,
 			hidden = function() return not barDbx.glowLine end,
 		},
@@ -386,7 +382,7 @@ do
 					end
 					color.r, color.g, color.b = 0, 0, 0
 				end
-				RefreshIndicator(indicator)
+				self:RefreshIndicator(indicator, "Layout")
 				self:MakeIndicatorOptions(indicator)
 			end,
 			values = MAINBAR_COLOR_SOURCES,
@@ -407,7 +403,7 @@ do
 				else -- Main Bar Color
 					c.r, c.g, c.b = nil, nil, nil
 				end
-				RefreshIndicator(indicator)
+				self:RefreshIndicator(indicator, "Layout")
 			end,
 			values = EXTRABAR_COLOR_SOURCES,
 			hidden = function() return barIndex==0 end,
@@ -428,7 +424,7 @@ do
 			end,
 			set = function(_, v)
 				(barDbx.textureColor or barDbx.color).a = v>0 and v or nil
-				RefreshIndicator(indicator)
+				self:RefreshIndicator(indicator, "Layout")
 			end,
 			hidden = false,
 		},
@@ -447,7 +443,7 @@ do
 			set = function( info, r,g,b,a )
 				local c = barDbx.color or barDbx.textureColor
 				c.r, c.g, c.b, c.a = r, g, b, a
-				RefreshIndicator(indicator)
+				self:RefreshIndicator(indicator, "Layout")
 			end,
 			disabled = function() return (barDbx.textureColor or barDbx.color).r == nil end,
 			hidden = false,
@@ -473,7 +469,7 @@ do
 					indicator.dbx.backColor = { r=0, g=0, b=0, a=1 }
 					self:MakeIndicatorOptions(indicator)
 				end
-				RefreshIndicator(indicator)
+				self:RefreshIndicator(indicator, "Layout")
 			end,
 			disabled = function() return barIndex~=0 end,
 		},
@@ -491,7 +487,7 @@ do
 			get = function (info) return barDbx.texture or indicator.dbx.texture or self.MEDIA_VALUE_DEFAULT end,
 			set = function (info, v)
 				barDbx.texture = (v~=indicator.dbx.texture and v~=self.MEDIA_VALUE_DEFAULT) and v or nil
-				RefreshIndicator(indicator)
+				self:RefreshIndicator(indicator, "Layout")
 			end,
 			values = self.GetStatusBarValues,
 			disabled = function() return barIndex==0 and indicator.dbx.reverseMainBar end,
@@ -509,7 +505,7 @@ do
 			end,
 			set = function(_, v)
 				barDbx.horTile = tileTranslate(v)
-				RefreshIndicator(indicator)
+				self:RefreshIndicator(indicator, "Layout")
 			end,
 			values = TILE_BAR_VALUES,
 			hidden = false,
@@ -526,7 +522,7 @@ do
 			end,
 			set = function(_, v)
 				barDbx.verTile = tileTranslate(v)
-				RefreshIndicator(indicator)
+				self:RefreshIndicator(indicator, "Layout")
 			end,
 			values = TILE_BAR_VALUES,
 			hidden = false,
@@ -542,9 +538,9 @@ do
 			get = function () return (barDbx.blendMode=='BLEND') and 1 or 2 end,
 			set = function (_, v)
 				barDbx.blendMode = (v==2) and 'ADD' or 'BLEND'
-				RefreshIndicator(indicator)
+				self:RefreshIndicator(indicator, "Layout")
 				if v==2 then barDbx.blendMode = nil end
-				RefreshIndicator(indicator)
+				self:RefreshIndicator(indicator, "Layout")
 			end,
 			values = Grid2Options.blendSimpleValues,
 		},
@@ -561,7 +557,7 @@ do
 			get = function() return barDbx.interpolation==1 end,
 			set = function(_, v)
 				barDbx.interpolation = v and 1 or nil
-				RefreshIndicator(indicator)
+				self:RefreshIndicator(indicator, "Layout")
 			end,
 			hidden = function() return barDbx.glowLine~=nil end,
 		},
@@ -578,7 +574,7 @@ do
 			desc = L["Add a new bar"],
 			func = function(info)
 				indicator.dbx[#indicator.dbx+1] = { color = {a=1} }
-				RefreshIndicator(indicator)
+				self:RefreshIndicator(indicator, "Layout")
 				SelectTab( #indicator.dbx )
 			end,
 			disabled = function() return #indicator.dbx>=6 end,
@@ -629,7 +625,7 @@ do
 				indicator.dbx.backTexture = nil
 				indicator.dbx.backAnchor  = nil
 				indicator.dbx.backColor   = not indicator.dbx.backColor and { r=0,g=0,b=0,a=1 } or nil
-				RefreshIndicator(indicator)
+				self:RefreshIndicator(indicator, "Layout")
 				SelectTab(indicator.dbx.backColor and 'background' or 0)
 			end,
 			confirm = function() return indicator.dbx.backColor~=nil and L["This action cannot be undone. Are you sure?"] end,
@@ -657,7 +653,7 @@ do
 			end,
 			set = function (_, v)
 				indicator.dbx.backAnchor = v>0 and v or nil
-				RefreshIndicator(indicator)
+				self:RefreshIndicator(indicator, "Layout")
 			end,
 			values = BANCHOR_VALUES,
 			hidden = false,
@@ -673,7 +669,7 @@ do
 			get = function() return self:UnpackColor( indicator.dbx.backColor ) end,
 			set = function(info,r,g,b,a)
 				self:PackColor( r,g,b,a, indicator.dbx, "backColor" )
-				RefreshIndicator(indicator)
+				self:RefreshIndicator(indicator, "Layout")
 			end,
 			hidden = false,
 		},
@@ -689,7 +685,7 @@ do
 			get = function (info) return indicator.dbx.backTexture or indicator.dbx.texture or self.MEDIA_VALUE_DEFAULT end,
 			set = function (info, v)
 				indicator.dbx.backTexture = (v~=indicator.dbx.texture and v~=self.MEDIA_VALUE_DEFAULT) and v or nil
-				RefreshIndicator(indicator)
+				self:RefreshIndicator(indicator, "Layout")
 			end,
 			values = self.GetStatusBarValues,
 			hidden = false,
@@ -706,7 +702,7 @@ do
 			end,
 			set = function(_, v)
 				indicator.dbx.backHorTile = tileTranslate(v)
-				RefreshIndicator(indicator)
+				self:RefreshIndicator(indicator, "Layout")
 			end,
 			values = TILE_BACK_VALUES,
 			hidden = false,
@@ -723,7 +719,7 @@ do
 			end,
 			set = function(_, v)
 				indicator.dbx.backVerTile = tileTranslate(v)
-				RefreshIndicator(indicator)
+				self:RefreshIndicator(indicator, "Layout")
 			end,
 			values = TILE_BACK_VALUES,
 			hidden = false,
@@ -744,7 +740,7 @@ do
 				indicator.dbx.backColor   = nil
 				indicator.dbx.backHorTile = nil
 				indicator.dbx.backVerTile = nil
-				RefreshIndicator(indicator)
+				self:RefreshIndicator(indicator, "Layout")
 				SelectTab(0)
 			end,
 			confirm = function() return L["This action cannot be undone. Are you sure?"] end,
