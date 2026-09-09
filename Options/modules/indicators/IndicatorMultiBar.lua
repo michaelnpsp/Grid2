@@ -414,7 +414,7 @@ do
 			order = 6,
 			width = 0.9,
 			name = L["Opacity"],
-			desc = L["Set the opacity, select zero to use the status color opacity."],
+			desc = function() return indicator.dbx.invertColor and L["Set the opacity."] or L["Set the opacity, select zero to use the status color opacity."] end,
 			min = 0,
 			max = 1,
 			step = 0.01,
@@ -424,7 +424,7 @@ do
 			end,
 			set = function(_, v)
 				(barDbx.textureColor or barDbx.color).a = v>0 and v or nil
-				self:RefreshIndicator(indicator, "Layout")
+				self:RefreshIndicator(indicator.sideKick, "Layout")
 			end,
 			hidden = false,
 		},
@@ -469,7 +469,7 @@ do
 					indicator.dbx.backColor = { r=0, g=0, b=0, a=1 }
 					self:MakeIndicatorOptions(indicator)
 				end
-				self:RefreshIndicator(indicator, "Layout")
+				self:RefreshIndicator(indicator.sideKick, "Layout")
 			end,
 			disabled = function() return barIndex~=0 end,
 		},
