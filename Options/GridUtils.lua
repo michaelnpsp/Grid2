@@ -503,7 +503,6 @@ function Grid2Options:UpdateIndicatorDB(indicator)
 		indicator:UpdateFilter()
 		indicator:UpdateHighlight()
 		self:UpdateIndicatorDB( indicator.sideKick )
-		self:UpdateIndicatorDB( Grid2:GetIndicatorByName(indicator.childName) )
 	end
 end
 
@@ -614,9 +613,6 @@ function Grid2Options:UpdateIndicators(typ)
 		if indicator.parentName==nil and ( typ==nil or indicator.dbx.type == typ ) then
 			self:UpdateIndicatorDB(indicator)
 			indicator:LayoutAllFrames()
-			if indicator.childName then
-				Grid2:GetIndicatorByName(indicator.childName):LayoutAllFrames()
-			end
 		end
 	end
 	Grid2Frame:UpdateIndicators()

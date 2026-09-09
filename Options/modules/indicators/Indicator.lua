@@ -1295,9 +1295,6 @@ do
 				end
 			end
 		end
-		if indicator.childName then
-			RefreshIndicator( Grid2:GetIndicatorByName(indicator.childName) )
-		end
 		if not indicator.parentName then
 			Grid2Frame:UpdateIndicators()
 		end
@@ -1326,7 +1323,7 @@ do
 				end
 				updateFunc(indicator)
 			end,
-			disabled = function() return indicator.parentName~=nil or indicator.childName~=nil end,
+			disabled = function() return indicator.parentName~=nil end,
 		}
 		options[key..'1'] = {
 			type = "select",
@@ -1337,7 +1334,7 @@ do
 				wipe(filter)[v] = true
 				updateFunc(indicator)
 			end,
-			disabled = function() return not filter or indicator.parentName~=nil or indicator.childName~=nil end,
+			disabled = function() return not filter or indicator.parentName~=nil end,
 			hidden   = function() return multi end,
 			values   = values,
 		}
@@ -1351,7 +1348,7 @@ do
 				updateFunc(indicator)
 			end,
 			hidden = function() return not multi end,
-			disabled = function() return not filter or indicator.parentName~=nil or indicator.childName~=nil end,
+			disabled = function() return not filter or indicator.parentName~=nil end,
 			values = values,
 		}
 		options[key.."3"] = {

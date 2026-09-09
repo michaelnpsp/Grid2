@@ -30,9 +30,6 @@ function Grid2Options:MakeIndicatorBarAppearanceOptions(indicator,options)
 			if v=="DEFAULT" then v= nil	end
 			indicator:SetOrientation(v)
 			self:RefreshIndicator(indicator, "Layout")
-			if indicator.childName then
-				self:RefreshIndicator( Grid2.indicators[indicator.childName], "Layout" )
-			end
 		end,
 		values={ ["DEFAULT"]= L["DEFAULT"], ["VERTICAL"] = L["VERTICAL"], ["HORIZONTAL"] = L["HORIZONTAL"]}
 	}
@@ -80,9 +77,6 @@ function Grid2Options:MakeIndicatorBarAppearanceOptions(indicator,options)
 		set = function (_, v)
 			indicator.dbx.reverseFill = v or nil
 			self:RefreshIndicator(indicator, "Layout")
-			if indicator.childName then
-				self:RefreshIndicator( Grid2.indicators[indicator.childName], "Layout" )
-			end
 		end,
 	}
 	self:MakeHeaderOptions( options, "Background" )

@@ -515,7 +515,7 @@ end
 --Check if the indicator is in use (and can not be safetly deleted).
 function Grid2Options:IndicatorIsInUse(indicator)
 	indicator = type(indicator)~='string' and indicator or Grid2.indicators[indicator]
-	return indicator==nil or indicator.parentName or indicator.childName
+	return indicator==nil or indicator.parentName
 end
 
 -- Calculate icon type path
