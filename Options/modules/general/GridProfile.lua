@@ -28,6 +28,11 @@ do
 	GetDefaultProfiles = function() return GetProfiles(0) end
 end
 
+local function IsNewProfileNameValid(name)
+	name = strtrim(name)
+	return (strlenutf8(name)>3 and strlenutf8(name)<=50 and not GetAllProfiles()[name])
+end
+
 --==============================
 
 local options = {}
@@ -127,6 +132,9 @@ options.new = {
 			Grid2.db:SetProfile(v)
 		end
 	end,
+	validate = function(info, v)
+		return IsNewProfileNameValid(v)
+	end,
 }
 
 --==============
@@ -144,6 +152,7 @@ options.rename = {
 	order = 55,
 	get = false,
 	set = function(_, v)
+		Grid2.defaultProfileIndex = -1 -- to avoid opening First Boot Profile Dialog
 		local old = Grid2.db:GetCurrentProfile()
 		Grid2.db:SetProfile(strtrim(v))
 		Grid2:ProfileShutdown()
@@ -151,7 +160,7 @@ options.rename = {
 		Grid2.db:DeleteProfile(old)
 	end,
 	validate = function(info, v)
-		return (strlen(v)>3 and not GetAllProfiles()[v])
+		return IsNewProfileNameValid(v)
 	end,
 }
 

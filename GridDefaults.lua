@@ -88,7 +88,7 @@ function Grid2:MakeDatabaseDefaults()
 	if not defaultProfile and (Grid2Options or C_AddOns.LoadAddOn('Grid2Options')) then
 		Grid2Options:OpenFirstBootProfilesDialog()
 		return false
-	else
+	elseif (defaultProfile or 0)>=0 then
 		local info = self.defaultProfiles[defaultProfile or 0]
 		info.func(self, info)
 		return true

@@ -154,10 +154,12 @@ local function ValidateProfileName(profileName)
 			if name==value then return true end
 		end
 	end
-	if not profileName then
+	if profileName then
+		profileName = strsub(profileName,1,50) -- new AceDB characters limit for profiles
+	else
 		profileName = UnitName("player").." - "..GetRealmName()
 	end
-	local name,i = profileName,1
+	local i, name = 1, strsub(profileName,1,48)
 	while ProfileExists(profileName) do
 		i = i + 1
 		profileName= name .. i

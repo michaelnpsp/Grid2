@@ -184,7 +184,14 @@ end
 
 -- Profiles
 function Grid2:GetDefaultProfileName()
-	return (Grid2DB and Grid2DB.global and Grid2DB.global.defaultProfileName) or nil
+	local name = Grid2DB and Grid2DB.global and Grid2DB.global.defaultProfileName
+	if name then
+		if strlenutf8(name)<=50 then
+			return name
+		else
+			self:Debug("Error, defaultProfileName length must be between 1 and 50 characteres:", name)
+		end
+	end
 end
 
 function Grid2:ProfileShutdown()
