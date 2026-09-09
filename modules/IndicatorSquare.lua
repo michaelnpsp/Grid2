@@ -4,6 +4,7 @@ local Grid2 = Grid2
 
 local SetAlphaFromBoolean = Grid2.SetAlphaFromBoolean
 local UnpackColor = Grid2.UnpackColor
+local math_max = math.max
 
 --==============================================================
 --
@@ -57,7 +58,7 @@ local function Square_LayoutAura(self, parent)
 				button._colorFrame = colorFrame
 				local text = colorFrame:CreateFontString(nil, "OVERLAY")
 				text:SetPoint('CENTER')
-				text:SetFont("Interface\\Addons\\Grid2\\media\\grid2-squares.ttf", h*2, '') -- big font covering the whole frame to simulate a square/rectangle
+				text:SetFont("Interface\\Addons\\Grid2\\media\\grid2-squares.ttf", math_max(w,h)*2, '') -- big font covering the whole frame to simulate a square/rectangle
 				text:SetMaxLines(1)
 				colorFrame.text = text
 			end
