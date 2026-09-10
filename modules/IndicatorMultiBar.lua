@@ -139,6 +139,7 @@ local function Bar_Layout(self, parent)
 	local width = self.width  or parent.container:GetWidth()
 	local height = self.height or parent.container:GetHeight()
 	local frameLevel = parent:GetFrameLevel() + self.frameLevel
+	local normalMode = not self.sideKick.auraMode
 	frame:SetParent(parent)
 	frame:ClearAllPoints()
 	frame:SetFrameLevel(frameLevel+1) -- for aura colors the first bar goes behind this frame and it has different parent: first bar = frameLevel / other bars = framelevel+1
@@ -155,7 +156,15 @@ local function Bar_Layout(self, parent)
 		local setup = barSetup[i]
 		local texture = textures[i] or CreateFrame("StatusBar") -- texture is a StatusBar frame, not a texture
 		texture:Hide()
-		texture:SetParent( (i==1 and not self.reverseMain and self.sideKick.auraMode) and parent or frame)
+		if normalMode then
+			texture:SetParent(frame)
+		elseif i==1 then
+			texture:SetParent(self.reverseMain and frame or parent) -- a reversed mainBar is non visible so we need to use frame as parent to clip the bar
+		elseif setup.background	 then
+			texture:SetParent(parent) -- background in auraMode, we need the background behind the main bar
+		else
+			texture:SetParent(frame) -- other bars always above the mainBar
+		end
 		texture:SetFrameLevel(frameLevel) -- this has effect only on the first bar and only when aura colorization (auraMode) is enabled
 		texture:ClearAllPoints()
 		texture:SetMinMaxValues(0, 1)
@@ -185,8 +194,8 @@ local function Bar_Layout(self, parent)
 				prevTex, prevPnt = frame, prevBarIndex==0 and self.alignPoint or self.alignPointOp
 			end
 		end
-		if setup.background then
-			texture:SetAllPoints()
+		if setup.wholeBack then
+			texture:SetAllPoints(frame)
 		elseif setup.lineSize then
 			texture.SetMultibarValue = SetMultibarLineValue
 			if self.orientation == "HORIZONTAL" then
@@ -326,10 +335,11 @@ local function Bar_UpdateDB(self)
 			verWrap = dbx.backVerTile or 'CLAMP',
 			color = dbx.invertColor and texColor or backColor,
 			opacity = backColor.a,
-			background = not self.backAnchor,
 			prevBar = 1,
 			sublayer = -1,
 			defValue = 1,
+			wholeBack = not self.backAnchor,
+			background = true,
 		}
 	end
 	if dbx.multiStatus then -- at least one status linked to several bars: status priority stores several bar indexes
