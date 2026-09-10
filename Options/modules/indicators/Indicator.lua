@@ -1487,8 +1487,8 @@ do
 			'unitType',
 			GetHeaderTypes,
 			'player',
-			L["Unit Type"],
-			L["Load the indicator only for the specified unit types."],
+			L["Header Type"],
+			L["Load the indicator only for the specified header types."],
 			false,
 			RefreshIndicator
 		)
