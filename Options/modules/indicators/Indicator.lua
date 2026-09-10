@@ -31,7 +31,11 @@ do
 			Grid2:DbSetMap(indicator.name, status.name, nil)
 			indicator:UnregisterStatus(status)
 		end
-		Grid2Options:RefreshIndicator(indicator, "Layout")
+		if indicator.parentName then
+			Grid2Options:RefreshIndicator(Grid2:GetIndicatorByName(indicator.parentName), "Layout")
+		else
+			Grid2Options:RefreshIndicator(indicator, "Layout")
+		end
 	end
 
 	local function GetIndexOfValue(map, status)
