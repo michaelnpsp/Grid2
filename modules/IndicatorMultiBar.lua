@@ -239,7 +239,7 @@ local function Bar_Disable(self, parent)
 	ReleaseAuraColorsSlots(self, parent, bar)
 end
 
-local function Bar_SortStatuses(self)
+local function Bar_SortStatusesMulti(self)
 	local statuses = self.statuses
 	table.sort(statuses, self.sortStatuses)
 	local bstatuses = self.bstatuses
@@ -251,6 +251,10 @@ local function Bar_SortStatuses(self)
 			indexes = floor( indexes / 10 )
 		until indexes==0
 	end
+end
+
+local function Bar_SortStatusesSingle(self)
+	table.sort(self.statuses, self.sortStatuses)
 end
 
 local function Bar_UpdateDB(self)
@@ -330,11 +334,11 @@ local function Bar_UpdateDB(self)
 	end
 	if dbx.multiStatus then -- at least one status linked to several bars: status priority stores several bar indexes
 		self.bstatuses = (self.statuses~=self.bstatuses) and self.bstatuses or {}
-		self.SortStatuses = Bar_SortStatuses
+		self.SortStatuses = Bar_SortStatusesMulti
 		self.UpdateO = Bar_UpdateMulti
 	else -- no repeated statuses: status priority == bar index
 		self.bstatuses = self.statuses
-		self.SortStatuses = Grid2.indicatorPrototype.SortStatuses
+		self.SortStatuses = Bar_SortStatusesSingle
 		self.UpdateO = Bar_Update
 	end
     self.Update = self.UpdateO

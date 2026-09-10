@@ -6,6 +6,7 @@ local Grid2 = Grid2
 local Grid2Frame = Grid2Frame
 local next = next
 local wipe = wipe
+local tsort = table.sort
 local tinsert = table.insert
 local tremove = table.remove
 local setmetatable = setmetatable
@@ -153,7 +154,7 @@ function indicator:GetStatusIndex(status)
 end
 
 function indicator:SortStatuses()
-	table.sort(self.statuses, self.sortStatuses)
+	tsort(self.statuses, self.sortStatuses)
 end
 
 function indicator:SetStatusPriority(status, priority)
