@@ -69,17 +69,17 @@ function Combat:Grid_UnitLeft(_, unit)
 	cache[unit] = nil
 end
 
-function Combat:_IsActive(unit)
+function Combat:IsActiveCombat(unit)
 	return cache[unit]==true
 end
 
-function Combat:_IsNotActive(unit)
+function Combat:IsNotActiveCombat(unit)
 	return not cache[unit]
 end
 
 function Combat:UpdateDB()
 	self.GetTexCoord = self.dbx.useEmptyIcon and GetTexCoordEmpty or GetTexCoordIcon
-	self.IsActive = self.dbx.enabledOOC and self._IsNotActive or self._IsActive
+	self.IsActive = self.dbx.enabledOOC and self.IsNotActiveCombat or self.IsActiveCombat
 	timer = timer or Grid2:CreateTimer( UpdateUnits, 1, false)
 end
 
@@ -103,11 +103,11 @@ MyCombat.GetPercent = GetPercent
 MyCombat.GetText = GetText
 MyCombat.GetIcon = GetIcon
 
-function MyCombat:_IsActive()
+function MyCombat:IsActiveMyCombat()
 	return inCombat
 end
 
-function MyCombat:_IsNotActive()
+function MyCombat:IsNotActiveMyCombat()
 	return not inCombat
 end
 
@@ -129,7 +129,7 @@ end
 
 function MyCombat:UpdateDB()
 	self.GetTexCoord = self.dbx.useEmptyIcon and GetTexCoordEmpty or GetTexCoordIcon
-	self.IsActive = self.dbx.enabledOOC and self._IsNotActive or self._IsActive
+	self.IsActive = self.dbx.enabledOOC and self.IsNotActiveMyCombat or self.IsActiveMyCombat
 end
 
 local function Create(baseKey, dbx)
