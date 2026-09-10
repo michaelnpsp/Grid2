@@ -139,7 +139,7 @@ local function Bar_Layout(self, parent)
 	local width = self.width  or parent.container:GetWidth()
 	local height = self.height or parent.container:GetHeight()
 	local frameLevel = parent:GetFrameLevel() + self.frameLevel
-	local normalMode = not self.sideKick.auraMode
+	local auraMode = self.sideKick.auraMode
 	frame:SetParent(parent)
 	frame:ClearAllPoints()
 	frame:SetFrameLevel(frameLevel+1) -- for aura colors the first bar goes behind this frame and it has different parent: first bar = frameLevel / other bars = framelevel+1
@@ -156,15 +156,7 @@ local function Bar_Layout(self, parent)
 		local setup = barSetup[i]
 		local texture = textures[i] or CreateFrame("StatusBar") -- texture is a StatusBar frame, not a texture
 		texture:Hide()
-		if normalMode then
-			texture:SetParent(frame)
-		elseif i==1 then
-			texture:SetParent(self.reverseMain and frame or parent) -- a reversed mainBar is non visible so we need to use frame as parent to clip the bar
-		elseif setup.background	 then
-			texture:SetParent(parent) -- background in auraMode, we need the background behind the main bar
-		else
-			texture:SetParent(frame) -- other bars always above the mainBar
-		end
+		texture:SetParent((auraMode and setup.auraParent) and parent or frame)
 		texture:SetFrameLevel(frameLevel) -- this has effect only on the first bar and only when aura colorization (auraMode) is enabled
 		texture:ClearAllPoints()
 		texture:SetMinMaxValues(0, 1)
@@ -194,7 +186,7 @@ local function Bar_Layout(self, parent)
 				prevTex, prevPnt = frame, prevBarIndex==0 and self.alignPoint or self.alignPointOp
 			end
 		end
-		if setup.wholeBack then
+		if setup.background then
 			texture:SetAllPoints(frame)
 		elseif setup.lineSize then
 			texture.SetMultibarValue = SetMultibarLineValue
@@ -290,20 +282,21 @@ local function Bar_UpdateDB(self)
 	self.height        = dbx.height
 	self.horizontal    = (orientation == "HORIZONTAL")
 	self.reverseFill   = not not dbx.reverseFill
-	self.backAnchor    = dbx.backAnchor
+	self.backAnchor    = dbx.backAnchor -- anchor background to mainBar
 	self.reverseMain   = dbx.reverseMainBar
 	self.bars          = bars
 	local mainBar = {
-		reverse  =  not ( not self.reverseFill == not dbx.reverseMainBar ),
-		pointFrom = dbx.reverseMainBar and opositePoint[alignPoint] or alignPoint,
-		pointTo   = dbx.reverseMainBar and alignPoint or opositePoint[alignPoint],
-		interpol  = dbx.interpolation or 0,
-		opacity   = dbx.textureColor.a,
-		color     = self.foreColor,
-		texture   = Grid2:MediaFetch("statusbar", dbx.texture or theme.barTexture, "Gradient"),
-		horWrap   = dbx.horTile or 'CLAMP',
-		verWrap   = dbx.verTile or 'CLAMP',
-		sublayer  = 0,
+		reverse   =  not ( not self.reverseFill == not dbx.reverseMainBar ),
+		pointFrom  = dbx.reverseMainBar and opositePoint[alignPoint] or alignPoint,
+		pointTo    = dbx.reverseMainBar and alignPoint or opositePoint[alignPoint],
+		interpol   = dbx.interpolation or 0,
+		opacity    = dbx.textureColor.a,
+		color      = self.foreColor,
+		texture    = Grid2:MediaFetch("statusbar", dbx.texture or theme.barTexture, "Gradient"),
+		horWrap    = dbx.horTile or 'CLAMP',
+		verWrap    = dbx.verTile or 'CLAMP',
+		sublayer   = 0,
+		auraParent = not dbx.reverseMainBar,
 	}
 	bars[1] = mainBar
 	for i,setup in ipairs(dbx) do
@@ -338,8 +331,8 @@ local function Bar_UpdateDB(self)
 			prevBar = 1,
 			sublayer = -1,
 			defValue = 1,
-			wholeBack = not self.backAnchor,
-			background = true,
+			background = not self.backAnchor,
+			auraParent = not self.backAnchor,
 		}
 	end
 	if dbx.multiStatus then -- at least one status linked to several bars: status priority stores several bar indexes
