@@ -22,6 +22,7 @@ local MAIN_ASSIST = MAIN_ASSIST
 local raid_indexes = Grid2.raid_indexes
 local party_indexes = Grid2.party_indexes
 local next, select = next, select
+local issecretvalue = Grid2.issecretvalue
 local canaccessvalue = Grid2.canaccessvalue
 
 -- Code to disable statuses in combat
@@ -74,9 +75,12 @@ function Role:Grid_RosterUpdate(event)
 	for unit in Grid2:IterateGroupedPlayers() do
 		local index, role = raid_indexes[unit]
 		if index then
-			role = select(10,GetRaidRosterInfo(index)) or nil
+			role = select(10,GetRaidRosterInfo(index))
+			if issecretvalue(role) then return end -- if value is secret for the first unit checked we assume all units in roster have secret info.
 		elseif party_indexes[unit] then
-			role = (GetPartyAssignment("MAINTANK",unit) and "MAINTANK") or (GetPartyAssignment("MAINASSIST",unit) and "MAINASSIST") or nil
+			local isTank = GetPartyAssignment("MAINTANK",unit)
+			if issecretvalue(isTank) then return end
+			role = (isTank and "MAINTANK") or (GetPartyAssignment("MAINASSIST",unit) and "MAINASSIST") or nil
 		end
 		if role ~= role_cache[unit] then
 			role_cache[unit] = role
@@ -163,6 +167,7 @@ function Assistant:Grid_RosterUpdate(event)
 			local index = raid_indexes[unit]
 			if index then
 				local name, rank = GetRaidRosterInfo(index)
+				if issecretvalue(rank) then return end
 				local assis = rank==1 or nil
 				if assis ~= assis_cache[unit] then
 					assis_cache[unit] = assis
@@ -219,6 +224,11 @@ Grid2:DbSetStatusDefaultValue( "raid-assistant", { type = "raid-assistant", colo
 
 local raidLeader
 
+local function UnitIsGroupLeaderSafe(unit)
+	local leader = UnitIsGroupLeader(raidLeader)
+	return canaccessvalue(leader) and leader
+end
+
 function Leader:UpdateActiveUnits()
 	if raidLeader then
 		self:UpdateIndicators(raidLeader)
@@ -226,10 +236,11 @@ function Leader:UpdateActiveUnits()
 end
 
 function Leader:UpdateLeader(event)
-	if not (raidLeader and UnitIsGroupLeader(raidLeader) and Grid2:IsUnitInRaid(raidLeader)) then
+	if not (raidLeader and UnitIsGroupLeaderSafe(raidLeader) and Grid2:IsUnitInRaid(raidLeader)) then
 		local prevLeader = raidLeader
-		raidLeader = self:CalculateLeader()
-		if raidLeader ~= prevLeader then
+		local newLeader = self:CalculateLeader()
+		if newLeader ~= true and newLeader ~= prevLeader then
+			raidLeader = newLeader
 			if prevLeader then self:UpdateIndicators(prevLeader) end
 			if raidLeader then self:UpdateIndicators(raidLeader) end
 		end
@@ -238,7 +249,10 @@ end
 
 function Leader:CalculateLeader()
 	for unit in Grid2:IterateGroupedPlayers() do
-		if UnitIsGroupLeader(unit) then
+		local leader = UnitIsGroupLeader(unit)
+		if issecretvalue(leader) then
+			return true
+		elseif leader then
 			return unit
 		end
 	end
@@ -295,8 +309,9 @@ end
 
 function MasterLooter:UpdateMasterLooter()
 	local prevMaster = masterLooter
-	masterLooter = self:CalculateMasterLooter()
-	if masterLooter ~= prevMaster then
+	local newMaster = self:CalculateMasterLooter()
+	if newMaster~=true and masterLooter ~= prevMaster then
+		masterLoter = newMaster
 		if prevMaster   then self:UpdateIndicators(prevMaster) end
 		if masterLooter then self:UpdateIndicators(masterLooter) end
 	end
@@ -304,6 +319,7 @@ end
 
 function MasterLooter:CalculateMasterLooter()
 	local method, partyID, raidID = GetLootMethod()
+	if issecretvalue(method) then return true end
 	if method=='master' or method==2 then -- 2 => masterlooter in retail
 		if raidID then
 			return 'raid'..raidID

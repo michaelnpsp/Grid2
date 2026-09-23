@@ -214,7 +214,7 @@ end
 
 local function Icon_OnUpdate(self, parent, unit, status)
 	local Frame = parent[self.name]
-	if not Frame.iconContainer then
+	if not (Frame and Frame.iconContainer) then
 		return
 	end
 	if not status then
