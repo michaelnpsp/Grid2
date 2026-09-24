@@ -94,8 +94,9 @@ Grid2Options:RegisterStatusOptions("summon", "misc", nil, {
 	color3 = L["Summon Declined"],
 	colorDesc3 = L["Player declined the summon."],
 	width = "full",
-	titleIcon = "2470702",
-	titleIconCoords = {0.5890625, 0.7390625, 0.115625,  0.415625},
+	titleIcon = "7526019",
+	titleIconCoords = {0.54296875, 0.71484375, 0.2890625, 0.6328125},
+
 })
 
 Grid2Options:RegisterStatusOptions("monk-stagger", "combat", nil, {
@@ -206,8 +207,4 @@ Grid2Options:RegisterStatusOptions("unit-index", "misc", function(self, status, 
 	}
 end, {
 	titleIcon = "Interface\\BUTTONS\\UI-GuildButton-PublicNote-Up"
-})
-
-Grid2Options:RegisterStatusOptions("tortos-crystal-shell", "misc", nil, {
-	titleIcon = "Interface\\ICONS\\INV_DataCrystal01"
 })

@@ -41,7 +41,7 @@ function Grid2Options:MakeIndicatorIconCustomOptions(indicator, options)
 		get = function () return indicator.dbx.useStatusColor end,
 		set = function (_, v)
 			indicator.dbx.useStatusColor = v or nil
-			self:RefreshIndicator(indicator, "Update")
+			self:RefreshIndicator(indicator, "Create")
 		end,
 	}
 	self:MakeHeaderOptions( options, "StackText" )

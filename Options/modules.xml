@@ -32,6 +32,7 @@
 <Script file="modules\statuses\StatusCombat.lua"/>
 <Script file="modules\statuses\StatusMisc.lua"/>
 <Script file="modules\statuses\StatusName.lua"/>
+<Script file="modules\statuses\StatusPing.lua"/>
 
 <Script file="modules\indicators\Indicator.lua"/>
 <Script file="modules\indicators\IndicatorAlpha.lua"/>

@@ -19,6 +19,11 @@ local function Icon_Create(self, parent)
 	self:Acquire("Frame", parent, "BackdropTemplate")
 end
 
+local function Icon_GetBlinkFrame(self, parent)
+	local frame = parent[self.name]
+	return frame and frame.iconContainer
+end
+
 local function Icon_ButtonCreate(self, parent, f, filter)
 	local Icon = f.Icon or f:CreateTexture(nil, "ARTWORK")
 	f.Icon = Icon
@@ -86,10 +91,9 @@ local function Icon_ButtonCreate(self, parent, f, filter)
 			border:SetAllPoints()
 			border:SetColorTexture(1,1,1,1)
 			if self.useStatusColor then
-				f:ClearDispelTypeTextures()
 				f:AddDispelTypeTexture(border, filter.borderOptions)
 			else
-				border:SetColorTexture(UnpackColor(self.color))
+				border:SetVertexColor(UnpackColor(self.color))
 			end
 			border:Show()
 			f.border = border
@@ -132,15 +136,16 @@ local function Icon_ButtonLayout(self, parent, f, filter, size, level, status)
 			Icon:Hide()
 		end
 	else -- non aura statuses
-		local r,g,b,a = f:GetBackdropBorderColor()
+		local r, g, b, a = f:GetBackdropBorderColor()
 		if borderSize then
 			Icon:SetPoint("TOPLEFT", borderSize, -borderSize)
 			Icon:SetPoint("BOTTOMRIGHT", -borderSize, borderSize)
+			Grid2:SetFrameBackdrop(f, self.backdrop)
+			if r then f:SetBackdropBorderColor(r, g, b, a) end
 		else
 			Icon:SetAllPoints(f)
+			Grid2:SetFrameBackdrop(f, nil)
 		end
-		Grid2:SetFrameBackdrop(f, self.backdrop)
-		if r then f:SetBackdropBorderColor(r, g, b, a) end
 	end
 
 	if not self.disableCooldown then
@@ -235,14 +240,15 @@ local function Icon_OnUpdate(self, parent, unit, status)
 	else
 		Icon:SetTexture(status:GetIcon(unit))
 	end
-	local border = status:GetBorder()
-	if border==1 or self.useStatusColor then 	-- border=1 => always draw a border with the status color
-		Frame:SetBackdropBorderColor(r,g,b,a)
-	elseif border and self.borderSize then   	-- border=0 => status supports a border
-		local c = self.color
-		Frame:SetBackdropBorderColor(c.r, c.g, c.b, c.a)
-	else										-- border=nil => never draw a border for the status
-		Frame:SetBackdropBorderColor(0,0,0,0)
+	if self.borderSize then
+		if not status:GetBorder() then
+			Frame:SetBackdropBorderColor(0,0,0,0)
+		elseif self.useStatusColor then
+			Frame:SetBackdropBorderColor(r, g, b, a)
+		else
+			local c = self.color
+			Frame:SetBackdropBorderColor(c.r, c.g, c.b, c.a)
+		end
 	end
 	Icon:SetAlpha(a or 1)
 	if not self.disableStack then
@@ -295,6 +301,7 @@ local function Icon_OnUpdate(self, parent, unit, status)
 			UpdateIconColorCurve(Frame, durObject)
 		end
 	end
+
 	Frame:Show()
 end
 
@@ -428,7 +435,7 @@ local function Icon_UpdateDB(self)
 		self.cooldownTextOptions = nil
 	end
 	-- backdrop
-	self.backdrop = Grid2:GetBackdropTable("Interface\\Addons\\Grid2\\media\\white16x16", self.borderSize or 1)
+	self.backdrop = self.borderSize and Grid2:GetBackdropTable("Interface\\Addons\\Grid2\\media\\white16x16", self.borderSize) or nil
 end
 
 local function CreateIcon(indicatorKey, dbx)
@@ -439,7 +446,7 @@ local function CreateIcon(indicatorKey, dbx)
 	indicator.Disable = Icon_Disable
 	indicator.UpdateDB = Icon_UpdateDB
 	indicator.OnUpdate = Icon_OnUpdate
-	-- indicator.GetBlinkFrame = indicator.GetFrame    -- Not compatible with 12.1 auras container TODO / fix
+	indicator.GetBlinkFrame = Icon_GetBlinkFrame
 	Grid2:RegisterIndicator(indicator, { "icon" })
 	return indicator
 end
