@@ -44,7 +44,8 @@ local function Bar_LayoutAuraColor(self, parent, f, level)
 				ctex:SetTexture(self.texture)
 				ctex:SetBlendMode('BLEND')
 				ctex:SetAllPoints(tex)
-				button:SetAuraBorder(ctex, filter.borderOptions)
+				button:ClearDispelTypeTextures()
+				button:AddDispelTypeTexture(ctex, filter.borderOptions)
 				button.__texture = ctex
 				f.countSlots = index
 			end, nil, index)

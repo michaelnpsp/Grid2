@@ -77,7 +77,7 @@ local function Icon_ButtonCreate(self, parent, f, filter)
 		if filter then f:SetApplicationCount(stackText, {}) end
 	end
 	if filter then -- border
-		f:ClearAuraBorder()
+		f:ClearDispelTypeTextures()
 		-- the border texture covers the whole button and is masked by the icon, so it only
 		-- reads as a border when there is a border size to inset the icon by
 		if self.borderSize then
@@ -86,7 +86,8 @@ local function Icon_ButtonCreate(self, parent, f, filter)
 			border:SetAllPoints()
 			border:SetColorTexture(1,1,1,1)
 			if self.useStatusColor then
-				f:SetAuraBorder(border, filter.borderOptions)
+				f:ClearDispelTypeTextures()
+				f:AddDispelTypeTexture(border, filter.borderOptions)
 			else
 				border:SetColorTexture(UnpackColor(self.color))
 			end

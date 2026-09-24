@@ -290,14 +290,15 @@ local function Icon_SetupButtonB(self, parent, auraContainer, frame, borderOptio
 			frame.border = border
 		end
 		if self.useStatusColor then -- dispel border
-			frame:SetAuraBorder(border, borderOptions)
+			frame:ClearDispelTypeTextures()
+			frame:AddDispelTypeTexture(border, borderOptions)
 		else -- fixed border
-			frame:ClearAuraBorder()
+			frame:ClearDispelTypeTextures()
 			border:SetColorTexture(UnpackColor(self.colorBorder))
 		end
 		border:Show()
 	elseif frame.border then
-		frame:ClearAuraBorder(frame.border)
+		frame:ClearDispelTypeTextures()
 		frame.border:Hide()
 	end
 	-- stack count text

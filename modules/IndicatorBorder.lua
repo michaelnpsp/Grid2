@@ -20,7 +20,8 @@ function Border:Layout(parent)
 			tex:SetTextureSliceMode(1)
 			tex:SetAllPoints()
 			tex:SetVertexColor(1, 1, 1, 1)
-			button:SetAuraBorder(tex, filter.borderOptions)
+			button:ClearDispelTypeTextures()
+			button:AddDispelTypeTexture(tex, filter.borderOptions)
 			button.__texture = tex
 		end)
 	else

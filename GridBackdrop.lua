@@ -12,23 +12,17 @@ for k,v in pairs(BackdropTemplateMixin) do
 end
 
 function Grid2BackdropTemplateMixin:SetAuraBackdropBorder()
-	self:SetAuraBorder(self.TopLeftCorner, BORDER_SETTINGS)
-	self:SetAuraBorder(self.TopRightCorner, BORDER_SETTINGS)
-	self:SetAuraBorder(self.BottomLeftCorner, BORDER_SETTINGS)
-	self:SetAuraBorder(self.BottomRightCorner, BORDER_SETTINGS)
-	self:SetAuraBorder(self.TopEdge, BORDER_SETTINGS)
-	self:SetAuraBorder(self.BottomEdge, BORDER_SETTINGS)
-	self:SetAuraBorder(self.LeftEdge, BORDER_SETTINGS)
-	self:SetAuraBorder(self.RightEdge, BORDER_SETTINGS)
+	self:ClearDispelTypeTextures()
+	self:AddDispelTypeTexture(self.TopLeftCorner, BORDER_SETTINGS)
+	self:AddDispelTypeTexture(self.TopRightCorner, BORDER_SETTINGS)
+	self:AddDispelTypeTexture(self.BottomLeftCorner, BORDER_SETTINGS)
+	self:AddDispelTypeTexture(self.BottomRightCorner, BORDER_SETTINGS)
+	self:AddDispelTypeTexture(self.TopEdge, BORDER_SETTINGS)
+	self:AddDispelTypeTexture(self.BottomEdge, BORDER_SETTINGS)
+	self:AddDispelTypeTexture(self.LeftEdge, BORDER_SETTINGS)
+	self:AddDispelTypeTexture(self.RightEdge, BORDER_SETTINGS)
 end
 
 function Grid2BackdropTemplateMixin:ClearAuraBackdropBorder()
-	self:ClearAuraBorder(self.TopLeftCorner)
-	self:ClearAuraBorder(self.TopRightCorner)
-	self:ClearAuraBorder(self.BottomLeftCorner)
-	self:ClearAuraBorder(self.BottomRightCorner)
-	self:ClearAuraBorder(self.TopEdge)
-	self:ClearAuraBorder(self.BottomEdge)
-	self:ClearAuraBorder(self.LeftEdge)
-	self:ClearAuraBorder(self.RightEdge)
+	self:ClearDispelTypeTextures()
 end

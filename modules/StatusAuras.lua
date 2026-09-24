@@ -39,27 +39,6 @@ Grid2.SatedDebuffs = {
 	[71041]  = true, -- Dungeon Deserter
 }
 
---[[
-	if style == Enum.CustomAuraButtonDispelTypeTextureStyle.Border then
-		local showIcon = false;
-		AuraUtil.SetAuraBorderAtlas(texture, auraData.dispelName, showIcon);
-		texture:SetVertexColor(1, 1, 1, 1);
-	elseif style == Enum.CustomAuraButtonDispelTypeTextureStyle.BorderWithIcon then
-		local showIcon = true;
-		AuraUtil.SetAuraBorderAtlas(texture, auraData.dispelName, showIcon);
-		texture:SetVertexColor(1, 1, 1, 1);
-	elseif style == Enum.CustomAuraButtonDispelTypeTextureStyle.Icon then
-		AuraUtil.SetAuraDispelTypeIcon(texture, auraData.dispelName);
-		texture:SetVertexColor(1, 1, 1, 1);
-	elseif style == Enum.CustomAuraButtonDispelTypeTextureStyle.PreserveAsset then
-		AuraUtil.SetAuraBorderColor(texture, auraData.dispelName);
-	elseif style == Enum.CustomAuraButtonDispelTypeTextureStyle.CustomAsset then
-		local customAsset = secretwrap(GetCustomDispelTypeTextureAsset(options, auraData));
-		ApplyDispelTypeTextureAsset(texture, customAsset);
-		texture:SetVertexColor(1, 1, 1, 1);
-	end
---]]
-
 -------------------------------------------------------------------------------
 -- shared methods
 -------------------------------------------------------------------------------
