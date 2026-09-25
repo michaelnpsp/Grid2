@@ -79,6 +79,19 @@ end, {
 Grid2Options:RegisterStatusOptions("my-heals-incoming", "health", function(self, status, options, optionParams)
 	self:MakeStatusStandardOptions(status, options, optionParams)
 	self:MakeStatusHealthFormatOptions(status, options, optionParams)
+	options.showOnlyOnCast = {
+		type = "toggle",
+		order = 300,
+		width = "full",
+		name = L["Display only when casting a spell"],
+		desc = L["Display your incoming heals only when you are casting or channeling a spell."],
+		tristate = false,
+		get = function () return status.dbx.showOnlyOnCast end,
+		set = function (_, v)
+			status.dbx.showOnlyOnCast = v or nil
+			status:Refresh()
+		end,
+	}
 end, {
 	titleIcon = "Interface\\Icons\\Spell_Holy_DivineProvidence"
 })

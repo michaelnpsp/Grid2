@@ -204,13 +204,14 @@ function MyHeals:GetText(unit)
 	return MyHealsFmtFunc(value, MyHealsFmtData), MyHealsTruncate and value or nil
 end
 
-function MyHeals:IsActive(unit)
-	return true
+function MyHeals:IsActiveCasting()
+	return UnitCastingInfo('player') ~= nil or UnitChannelInfo('player') ~= nil
 end
 
 function MyHeals:UpdateDB()
 	MyHealsFmtFunc, MyHealsFmtData = Grid2:GetNumbersFormatFunction(self.dbx.displayRawNumbers)
 	MyHealsTruncate = self.dbx.truncateWhenZero
+	self.IsActive = self.dbx.showOnlyOnCast and self.IsActiveCasting or Grid2.statusLibrary.IsActive
 end
 
 local function CreateMyHeals(baseKey, dbx)
