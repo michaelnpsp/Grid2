@@ -25,7 +25,7 @@ function Grid2:GetGeneralElapsedTimeFormatter()
 end
 
 function Grid2:UpdateGeneralTextFormatting()
-	local fmt = Grid2.db.profile.formatting
+	local fmt = self.db.profile.formatting
 	wipe(breakpoints)
 	if fmt.longDecimalFormat==fmt.shortDecimalFormat then
 		local step = strfind(fmt.longDecimalFormat,"%%.1f") and 0.1 or 1
@@ -34,7 +34,7 @@ function Grid2:UpdateGeneralTextFormatting()
 		breakpoints[#breakpoints+1] = { threshold = 0, format = fmt.longDecimalFormat, step = .1 }
 		breakpoints[#breakpoints+1] = { threshold = 1, format = fmt.shortDecimalFormat, step = 1 }
 	end
-	breakpoints[#breakpoints+1]	= { threshold = 60, format = fmt.minutesDecimalFormat, step = 1, components = {{div = 60}} }
-	breakpoints[#breakpoints+1]	= {	threshold = 3600, format = fmt.hoursDecimalFormat,	step = 1, components = {{div = 3600}} }
+	breakpoints[#breakpoints+1]	= { threshold = 60, format = fmt.minutesDecimalFormat or self.defaults.profile.formatting.minutesDecimalFormat, step = 1, components = {{div = 60}} }
+	breakpoints[#breakpoints+1]	= {	threshold = 3600, format = fmt.hoursDecimalFormat or self.defaults.profile.formatting.hoursDecimalFormat, step = 1, components = {{div = 3600}} }
 	formatter:SetBreakpoints(breakpoints)
 end
