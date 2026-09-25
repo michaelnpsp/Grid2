@@ -1,5 +1,6 @@
-## Interface: 120100
+## Interface: 120100, 16001
 ## Interface-Retail: 120100
+## Interface-Forever: 16001
 ## Title: Grid2 |cd0ff7d0aOptions|r
 ## Title-esES: Grid2 |cd0ff7d0aOpciones|r
 ## Notes: Configuration module for Grid2
@@ -31,10 +32,8 @@ GridStatuses.lua
 GridThemes.lua
 GridProfiles.lua
 
-#@retail@
 profiles\ProfileClassic.lua
 profiles\ProfileModern.lua
 profiles\ProfileBlizzard.lua
-#@end-retail@
 
 modules.xml

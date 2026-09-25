@@ -1,5 +1,6 @@
-﻿## Interface: 120100
+﻿## Interface: 120100, 16001
 ## Interface-Retail: 120100
+## Interface-Forever: 16001
 ## Title: Grid2
 ## Author: Pastamancer & Maia, Jerry, Toadkiller
 ## Version: @project-version@
@@ -14,7 +15,7 @@
 ## DefaultState: enabled
 ## LoadOnDemand: 0
 ## SavedVariables: Grid2DB
-## OptionalDeps: Ace3, Clique, LibHealComm-4.0
+## OptionalDeps: Ace3, Clique
 
 # Ace Libraries
 #@no-lib-strip@

@@ -42,8 +42,8 @@ local textDeath = L["DEAD"]
 local textGhost = L["GHOST"]
 
 -- provide alternative missing api functions for classic
-Grid2.GetSpecialization = GetSpecialization
-Grid2.GetNumSpecializations = GetNumSpecializations
+Grid2.GetSpecialization = GetSpecialization or C_SpecializationInfo.GetSpecialization
+Grid2.GetNumSpecializations = GetNumSpecializations or C_SpecializationInfo.GetNumSpecializations
 Grid2.UnitGroupRolesAssigned = UnitGroupRolesAssigned
 
 -- populate unit tables
