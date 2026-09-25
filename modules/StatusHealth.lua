@@ -108,7 +108,7 @@ end
 function HealthDeficit:GetText(unit)
 	if not UnitExists(unit) then return '' end
 	local value = UnitHealthMissing(unit)
-	return HealthDeficitFmtFunc(value, HealthDeficitFmtData), HealthDeficitTruncate and value or nil
+	return '-'..HealthDeficitFmtFunc(value, HealthDeficitFmtData), HealthDeficitTruncate and value or nil
 end
 
 function HealthDeficit:UpdateDB()
