@@ -6,9 +6,15 @@ on:
       retail:
         type: boolean
         description: Retail
+      forever:
+        type: boolean
+        description: Forever
       retailtest:
         type: boolean
         description: Retail Test
+      forevertest:
+        type: boolean
+        description: Forever Test
 
 jobs:
   build:
@@ -27,11 +33,29 @@ jobs:
         env:
           GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Forever Test Package
+        if: ${{ inputs.forevertest }}
+        uses: BigWigsMods/packager@master
+        with:
+          args: -g forever -m .pkgmeta-retail
+        env:
+          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create Retail Package
         if: ${{ inputs.retail }}
         uses: BigWigsMods/packager@master
         with:
           args: -g retail -m .pkgmeta-retail
+        env:
+          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+          WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
+
+      - name: Create Forever Package
+        if: ${{ inputs.forever }}
+        uses: BigWigsMods/packager@master
+        with:
+          args: -g forever -m .pkgmeta-retail
         env:
           GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
