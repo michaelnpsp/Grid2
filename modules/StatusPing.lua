@@ -2,10 +2,8 @@ local Ping = Grid2.statusPrototype:new("ping")
 
 --===============================================================
 
-local _G = _G
 local pcall = pcall
 local hooksecurefunc = hooksecurefunc
-local format = string.format
 local canaccessvalue = Grid2.canaccessvalue
 
 --===============================================================
@@ -14,11 +12,12 @@ local Ping_Enabled
 local cache = {}
 local textures = {}
 do
+	local GetAtlasInfo = C_Texture.GetAtlasInfo
 	local function st(msg)
-		local d = C_Texture.GetAtlasInfo("Ping_Wheel_Icon_"..msg)
+		local d = GetAtlasInfo("Ping_Chat_"..msg) or GetAtlasInfo("Ping_Wheel_Icon_"..msg) or GetAtlasInfo("Ping_Frame_"..msg)
 		textures[msg] = { msg, d.file, d.leftTexCoord, d.rightTexCoord, d.topTexCoord, d.bottomTexCoord }
 	end
-	st("Warning"); st("Assist"); st("Attack"); st("OnMyWay")
+	st("Warning"); st("Assist"); st("Attack"); st("OnMyWay"); st("NonThreat"); st("Threat")
 end
 
 local function ShowPingEvent(icon, msg)
@@ -60,17 +59,17 @@ end
 --===============================================================
 
 function Ping:OnEnable()
-	if Ping_Enabled==nil then -- hook only on first enable
-		for i=1,5 do HookFrame(_G["CompactPartyFrameMember"..i]) end
-		for g=1,8 do for i=1,5 do HookFrame(_G[format("CompactRaidGroup%dMember%d",g,i)]) end; end
-		hooksecurefunc("CompactUnitFrame_UpdateUnitEvents", HookFrame)
-	end
-	Ping_Enabled = true
+	local _G, format = _G, string.format
+	for i=1,5 do HookFrame(_G["CompactPartyFrameMember"..i]) end
+	for g=1,8 do for i=1,5 do HookFrame(_G[format("CompactRaidGroup%dMember%d",g,i)]) end; end
+	hooksecurefunc("CompactUnitFrame_UpdateUnitEvents", HookFrame)
+	self.OnEnable = function() Ping_Enabled = true end
+	self:OnEnable()
 end
 
 function Ping:OnDisable()
 	wipe(cache)
-	Ping_Enabled = false
+	Ping_Enabled = nil
 end
 
 function Ping:GetColor(unit)
@@ -101,8 +100,10 @@ Grid2.setupFunc["ping"] = function(baseKey, dbx)
 end
 
 Grid2:DbSetStatusDefaultValue( "ping", {type = "ping", colors = {
-	Warning = {r=1,g=0,b=0,a=1},
-    Attack  = {r=1,g=1,b=0,a=1},
-	Assist  = {r=0,g=1,b=0,a=1},
-	OnMyWay = {r=0,g=0,b=1,a=1},
+	Warning   = {r=1,g=0,b=0,a=1},
+    Attack    = {r=1,g=1,b=0,a=1},
+	Assist    = {r=0,g=1,b=0,a=1},
+	OnMyWay   = {r=0,g=0,b=1,a=1},
+	Threat    = {r=1,g=.7,b=0,a=1},
+	NonThreat = {r=.3,g=.6,b=.8,a=1},
 }})
