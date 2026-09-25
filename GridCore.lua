@@ -21,6 +21,7 @@ local LoadAddOn = C_AddOns and C_AddOns.LoadAddOn or LoadAddOn
 local versionToc = GetAddOnMetadata("Grid2","Version")
 local versionCli = select(4,GetBuildInfo())
 Grid2.versionCli = versionCli
+Grid2.isForever = versionCli>=16000 and versionCli<20000
 Grid2.isDevelop = versionToc=='\@project-version\@'
 Grid2.versionstring = "Grid2 v"..(Grid2.isDevelop and 'Dev' or versionToc)
 
