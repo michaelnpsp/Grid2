@@ -340,8 +340,8 @@ local function Icon_SetupButtonB(self, parent, auraContainer, frame, borderOptio
 				cooldownTextOptions = self.cooldownTextOptions
 				text:SetTextColor(UnpackColor(self.ctColor))
 			elseif not cooldownTextOptions then
-          local r,g,b = status:GetColor()
-					text:SetTextColor(r, g, b, 1) -- status alpha would hurt readability
+				local r,g,b = status:GetColor()
+				text:SetTextColor(r, g, b, 1) -- status alpha would hurt readability
 			end
 			text:ClearAllPoints()
 			text:SetPoint(self.ctFontPoint, self.ctFontOffsetX, self.ctFontOffsetY)

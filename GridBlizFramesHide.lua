@@ -66,8 +66,20 @@ local function HideRaidFrames()
 		end)
 	end
 	local function HideFrames()
-		HideFrame(CompactRaidFrameContainer)
 		HideFrame(CompactRaidFrameManager)
+		HideFrame(CompactRaidFrameContainer)
+		-- Needed by the blizzard ping system (to update .unit variable for CompactUnitFrame raid units):
+		-- because we need UNIT_PING_PIN_ADDED, UNIT_PING_PIN_REMOVED events operative in StatusPing.lua.
+		-- Warning to properly test this we need a big raid (more than 5 people), because ping system
+		-- works via CompactPartyFrame units events too (even while in raid the first 5 players are
+		-- registered in party frames too, and  party frames are not fully disabled in this code)
+		-- UNIT_PING_PIN_ADDED, UNIT_PING_PIN_REMOVED are registered inside pingIconFrame, not in the parent
+		-- frame so we can safe unregister all events in raid and party frames without disabling PING events.
+		-- TODO: check if ping status is not enabled in current profile, to avoid registering those events.
+		pcall(function()
+			CompactRaidFrameContainer:RegisterEvent("PLAYER_ENTERING_WORLD")
+			CompactRaidFrameContainer:RegisterEvent("GROUP_ROSTER_UPDATE")
+		end)
 	end
 	hooksecurefunc("CompactUnitFrame_UpdateUnitEvents", UnregisterUnitEvents)
 	hooksecurefunc('CompactRaidFrameManager_UpdateShown', HideFrames)
