@@ -3,6 +3,7 @@ local ipairs = ipairs
 local strlower = string.lower
 local strmatch = string.match
 local GetSpellInfo = Grid2.API.GetSpellInfo
+local GetSpellSubtext = C_Spell.GetSpellSubtext
 
 -- translated&colorized players class names table
 local classNames, classNamesLoc
@@ -29,7 +30,7 @@ function AuraPredictor:Initialize()
 	AuraPredictor.Initialize = nil -- Only one initialization for all instances
 end
 
-function AuraPredictor:GetValues(text, values, max)
+function AuraPredictor:GetValues(text, values, maxResults)
 	-- The user can optionally type a prefix, for example: "Druid>Rejuvenation",
 	-- so we have to remove the prefix if exists, valid prefix separators: "@#>"
 	local _, suffix = strmatch(text, "^(.-[@#>])(.*)$")
@@ -40,7 +41,7 @@ function AuraPredictor:GetValues(text, values, max)
 		local spellName,_,spellIcon = GetSpellInfo(spellID)
 		values[spellID] = self:GetSpellDescription(spellID, spellName, spellIcon, "")
 	elseif text ~= "" then
-		max = 12
+		local max = maxResults
 		text = strlower(suffix or text)
 		-- search buffs or debuffs
 		for className,spells in pairs(self.spells) do
@@ -61,7 +62,7 @@ function AuraPredictor:GetValues(text, values, max)
 			end
 		end
 		-- If no results, look for className/category
-		if max==12 then
+		if max==maxResults then
 			local str = strupper(text)
 			for key,spells in pairs(self.spells) do
 				if strfind(classNamesLoc[key] or '', str) then
@@ -103,7 +104,7 @@ end
 
 function AuraPredictor:GetTableValues(spells, values, text, max, className, isBoss)
 	for _, spellID in ipairs(spells) do
-		local spellName,_,spellIcon = GetSpellInfo(spellID)
+		local spellName, spellIcon = self:GetFullSpellName(spellID)
 		if spellName and (text=='' or strfind(strlower(spellName), text, 1, true)==1) then
 			local key = self:GetSpellKey(spellID, className, isBoss)
 			values[key] = self:GetSpellDescription(spellID, spellName, spellIcon, className, isBoss)
@@ -122,9 +123,20 @@ function AuraPredictor:GetSpellKey(spellID, className)
 	end
 end
 
+function AuraPredictor:GetFullSpellName(spellID)
+	local spellName,_,spellIcon = GetSpellInfo(spellID)
+	if spellName then
+		local rank = GetSpellSubtext(spellID)
+		if rank and rank~='' then
+			spellName = string.format("%s(%s)", spellName, rank)
+		end
+	end
+	return spellName, spellIcon
+end
+
 function AuraPredictor:GetSpellDescription(spellID, spellName, spellIcon, className, isBoss)
 	className = isBoss and string.format( ", |TInterface\\TargetingFrame\\UI-TargetingFrame-Skull:0|t|cFFff0000%s|r ", className) or classNames[className]
-	return string.format( "|T%s:0|t%s %s, %s%d|r", spellIcon or "", spellName or "Unknown", className or "", GRAY_FONT_COLOR_CODE, spellID )
+	return string.format( "|T%s:0|t%s %s, %s%d|r", spellIcon or "", spellName or 'Unknown', className or "", GRAY_FONT_COLOR_CODE, spellID )
 end
 
 -- Registering EditBoxGrid2Buffs and EditBoxGrid2Debuffs to use with AceConfigTable dialogControl

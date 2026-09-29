@@ -5,6 +5,7 @@ local tinsert = table.insert
 local tconcat = table.concat
 local tdelete = Grid2.TableRemoveByValue
 local GetSpellInfo = Grid2.API.GetSpellInfo
+local GetSpellSubtext = C_Spell.GetSpellSubtext
 
 --==============================================
 --
@@ -297,6 +298,13 @@ local function get_aura_duration(str)
    local mul = (suf=='h' and 3600) or (suf=='m' and 60) or 1
    local num = tonumber(pre or str)
    return num and num*mul or nil
+end
+
+local function get_full_spellname(spellID)
+	local spellName = GetSpellInfo(spellID)
+	if not spellName then return nil end
+	local rank = GetSpellSubtext(spellID)
+	return (rank and rank~='') and string.format("%s(%s)", spellName, rank) or spellName
 end
 
 local function get_similar_spells(typ, spell)
@@ -699,7 +707,7 @@ function Grid2Options:MakeStatusAuraListOptions(status, options)
 		get = function()
 			local auras = {}
 			for _,aura in pairs(status.dbx.auras) do
-				auras[#auras+1] = type(aura)~='number' and aura or string.format("%s <%d>", GetSpellInfo(aura) or UNKNOWN or L["Unknown"], aura)
+				auras[#auras+1] = type(aura)~='number' and aura or string.format("%s <%d>", get_full_spellname(aura) or  UNKNOWN or L["Unknown"], aura)
 			end
 			return table.concat( auras, "\n" )
 		end,
