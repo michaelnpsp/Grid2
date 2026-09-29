@@ -42,6 +42,8 @@ GridShims.lua
 GridUtils.lua
 GridUtilsCmd.lua
 GridTextFormatting.lua
+GridPlayerSpellsRetail.lua
+GridPlayerSpellsForever.lua
 GridPlayerSpells.lua
 GridRosterUnitEvents.lua
 GridRoster.lua
