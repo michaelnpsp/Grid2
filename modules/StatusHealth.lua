@@ -6,7 +6,9 @@ local Heals = Grid2.statusPrototype:new("heals-incoming")
 local MyHeals = Grid2.statusPrototype:new("my-heals-incoming")
 local Death = Grid2.statusPrototype:new("death")
 local FeignDeath = Grid2.statusPrototype:new("feign-death")
+local HealthMaxLoss = Grid2.statusPrototype:new("health-max-loss")
 
+local Grid2 = Grid2
 local UnitExists = UnitExists
 local UnitHealth = UnitHealth
 local UnitHealthMax = UnitHealthMax
@@ -15,6 +17,7 @@ local UnitHealthMissing = UnitHealthMissing
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitIsFeignDeath = UnitIsFeignDeath
 local UnitGetIncomingHeals = UnitGetIncomingHeals
+local GetUnitTotalModifiedMaxHealthPercent = GetUnitTotalModifiedMaxHealthPercent
 local format = string.format
 local tostring = tostring
 local fmtPercent = "%.0f%%"
@@ -318,3 +321,34 @@ end
 Grid2.setupFunc["feign-death"] = CreateFeignDeath
 
 Grid2:DbSetStatusDefaultValue( "feign-death", {type = "feign-death", color1 = {r=1,g=.5,b=1,a=1}})
+
+-- Health Max loss status
+HealthMaxLoss.GetColor = Grid2.statusLibrary.GetColor
+
+function HealthMaxLoss:OnEnable()
+	self:RegisterRosterUnitEvent("UNIT_MAX_HEALTH_MODIFIERS_CHANGED", self.UpdateIndicatorsFromEvent)
+end
+
+function HealthMaxLoss:OnDisable()
+	self:UnregisterRosterUnitEvent("UNIT_MAX_HEALTH_MODIFIERS_CHANGED")
+end
+
+function HealthMaxLoss:GetPercent(unit)
+	return GetUnitTotalModifiedMaxHealthPercent(unit)
+end
+
+function HealthMaxLoss:IsActive()
+	return true
+end
+
+function HealthMaxLoss:UpdateDB()
+end
+
+local function Create(baseKey, dbx)
+	Grid2:RegisterStatus(HealthMaxLoss, {"percent"}, baseKey, dbx)
+	return HealthMaxLoss
+end
+
+Grid2.setupFunc["health-max-loss"] = Create
+
+Grid2:DbSetStatusDefaultValue( "health-max-loss", {type = "health-max-loss", color1 = {r=1,g=0,b=0,a=1} })
