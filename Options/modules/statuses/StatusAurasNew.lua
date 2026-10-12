@@ -139,6 +139,7 @@ do
 					dbx.aura_filter.candidateFilters = { includeSpellIDs = true }
 				elseif new_type=='mbuff-missing' then
 					dbx.auras = GetAuras(new_spell)
+					dbx.texture = self:GetTextureFromSpells(dbx.auras)
 				end
 				-- create status
 				local baseKey = GetKey()

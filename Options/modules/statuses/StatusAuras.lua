@@ -508,6 +508,26 @@ end
 --============================================================================================
 --
 --============================================================================================
+
+function Grid2Options:GetTextureFromSpells(spells)
+	local i,texture = 1
+	while texture==nil and i<=#spells do
+		local spell = spells[i]
+		if type(spell)=='string' then
+			local similar = Grid2:GetSimilarPlayerBuffs(spell)
+			spell = similar and similar[1]
+		end
+		if type(spell)=='number' then
+			texture = C_Spell.GetSpellTexture(spell)
+		end
+		i = i + 1
+	end
+	return texture
+end
+
+--============================================================================================
+--
+--============================================================================================
 do
 	local COLOR_TYPES = { [1] = L["Single Color"], [2] = L["Remaining time"], [3] = L["Elapsed time"] }
 	local COLOR_COUNT_VALUES = { [2] = "2", [3] = "3", [4] = "4", [5] = "5", [6] = "6" }
@@ -673,14 +693,14 @@ function Grid2Options:MakeStatusAuraMiscOptions(status, options)
 	}
 end
 
-function Grid2Options:MakeStatusAuraListOptions(status, options, hideWarning)
+function Grid2Options:MakeStatusAuraListOptions(status, options)
 
 	options.auraListError = {
 		type = "description",
 		order = 510,
 		name = string.format("|cffFC6A03%s|r", L["Warning: There are missing spell identifiers in the buffs list. Grid2 cannot track auras by name anymore so you must specify spell identifiers."] ),
 		hidden = function()
-			return hideWarning or spells_are_valid(status.dbx.auras)
+			return not status.isAura or spells_are_valid(status.dbx.auras)
 		end,
 	}
 	options.auraListAdd = {
@@ -696,6 +716,9 @@ function Grid2Options:MakeStatusAuraListOptions(status, options, hideWarning)
 			if #spell>0 then
 				for _,spell in pairs(get_similar_spells(status.dbx.type, spell)) do
 					table.insert(status.dbx.auras, spell)
+				end
+				if status.dbx.type=='mbuff-missing' then
+					status.dbx.texture = self:GetTextureFromSpells(status.dbx.auras)
 				end
 				refresh_aura_status(status)
 			end
@@ -729,6 +752,9 @@ function Grid2Options:MakeStatusAuraListOptions(status, options, hideWarning)
 						table.insert( status.dbx.auras, tonumber(aura) or aura )
 					end
 				end
+			end
+			if status.dbx.type=='mbuff-missing' then
+				status.dbx.texture = self:GetTextureFromSpells(status.dbx.auras)
 			end
 			refresh_aura_status(status)
 		end,
@@ -932,7 +958,7 @@ end
 Grid2Options:RegisterStatusOptions("mbuff-missing", "buff", function(self, status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
 	self:MakeMissingBuffsSecretWarningOptions(status, options)
-	self:MakeStatusAuraListOptions(status, options, true)
+	self:MakeStatusAuraListOptions(status, options)
 	return options
 end,{
 	groupOrder = 15, isDeletable = true,

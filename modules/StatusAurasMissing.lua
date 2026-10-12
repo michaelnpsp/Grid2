@@ -76,7 +76,7 @@ function status:GetIcon()
 end
 
 function status:UpdateDB()
-	local spells, texture = {}
+	local spells, texture = {}, self.dbx.texture
 	for _, spell in ipairs(self.dbx.auras) do
 		if type(spell)=='number' then
 			texture = texture or GetSpellTexture(spell)
