@@ -57,7 +57,6 @@ end
 function status:OnEnable()
 	self:RegisterMessage("Grid_UnitUpdated")
 	self:RegisterEvent("ADDON_RESTRICTION_STATE_CHANGED")
-	self:ADDON_RESTRICTION_STATE_CHANGED()
 	self:UpdateRestrictions()
 end
 
