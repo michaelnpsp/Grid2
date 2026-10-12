@@ -28,12 +28,12 @@ do
 		end
 	end
 
-	local function GetAuras(new_spell)
+	local function GetAuras(new_spell, allowNames)
 		local spells = Grid2:GetSimilarPlayerBuffs(new_spell)
 		if spells then
 			return Grid2.CopyTable(spells)
 		else
-			return type(new_spell) == 'number' and {new_spell} or {}
+			return (allowNames or type(new_spell) == 'number') and {new_spell} or {}
 		end
 	end
 
@@ -138,8 +138,8 @@ do
 					dbx.aura_filter = dbx.aura_filter or {}
 					dbx.aura_filter.candidateFilters = { includeSpellIDs = true }
 				elseif new_type=='mbuff-missing' then
-					dbx.auras = GetAuras(new_spell)
-					dbx.texture = self:GetTextureFromSpells(dbx.auras)
+					dbx.auras = GetAuras(new_spell, true)
+					dbx.texture = Grid2Options:GetTextureFromSpells(dbx.auras)
 				end
 				-- create status
 				local baseKey = GetKey()
