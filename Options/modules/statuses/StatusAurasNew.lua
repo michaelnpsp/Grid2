@@ -28,6 +28,15 @@ do
 		end
 	end
 
+	local function GetAuras(new_spell)
+		local spells = Grid2:GetSimilarPlayerBuffs(new_spell)
+		if spells then
+			return Grid2.CopyTable(spells)
+		else
+			return type(new_spell) == 'number' and {new_spell} or {}
+		end
+	end
+
 	Grid2Options:RegisterStatusCategoryOptions("buff", {
 		buffType = {
 			type = "select",
@@ -41,7 +50,7 @@ do
 			set = function(info, value)
 				Reset(value)
 			end,
-			values = { mbuff = L["Single Buff"], mbuffs = L["Multiple Buffs"] },
+			values = { mbuff = L["Single Buff"], mbuffs = L["Multiple Buffs"], ['mbuff-missing'] = L["Missing Buff"] },
 		},
 		singleBuffName = {
 			type = "input", dialogControl = "EditBoxGrid2Buffs",
@@ -65,7 +74,7 @@ do
 				new_spell = spellID
 				new_name = prefix .. spell
 			end,
-			hidden = function() return new_type~='mbuff' end,
+			hidden = function() return new_type~='mbuff' and new_type~="mbuff-missing" end,
 		},
 		multipleBuffsName = {
 			type = "input",
@@ -79,7 +88,7 @@ do
 				new_name = value
 				new_spell = nil
 			end,
-			hidden = function() return new_type=='mbuff' end,
+			hidden = function() return new_type=='mbuff' or new_type=='mbuff-missing' end,
 		},
 		buffMine = {
 			type = "toggle",
@@ -125,14 +134,11 @@ do
 				end
 				-- single buff, store specified spellID
 				if new_type=='mbuff' then
-					local spells = Grid2:GetSimilarPlayerBuffs(new_spell)
-					if spells then
-						dbx.auras = Grid2.CopyTable(spells)
-					else
-						dbx.auras = type(new_spell) == 'number' and {new_spell} or {}
-					end
+					dbx.auras = GetAuras(new_spell)
 					dbx.aura_filter = dbx.aura_filter or {}
 					dbx.aura_filter.candidateFilters = { includeSpellIDs = true }
+				elseif new_type=='mbuff-missing' then
+					dbx.auras = GetAuras(new_spell)
 				end
 				-- create status
 				local baseKey = GetKey()

@@ -274,8 +274,12 @@ local MAX_AURAS_VALUES = { [-1] = "Unlimited" }
 for i=1,16 do MAX_AURAS_VALUES[i] = tostring(i) end
 
 local function refresh_aura_status(status)
-	status:UpdateDB()
-	Grid2Options:RefreshStatusIndicators(status, "Layout")
+	if status.isAura then -- blizz aura containers
+		status:UpdateDB()
+		Grid2Options:RefreshStatusIndicators(status, "Layout")
+	else -- buffs-missing status
+		status:Refresh()
+	end
 end
 
 local function format_aura_duration(seconds)
@@ -669,14 +673,14 @@ function Grid2Options:MakeStatusAuraMiscOptions(status, options)
 	}
 end
 
-function Grid2Options:MakeStatusAuraListOptions(status, options)
+function Grid2Options:MakeStatusAuraListOptions(status, options, hideWarning)
 
 	options.auraListError = {
 		type = "description",
 		order = 510,
 		name = string.format("|cffFC6A03%s|r", L["Warning: There are missing spell identifiers in the buffs list. Grid2 cannot track auras by name anymore so you must specify spell identifiers."] ),
 		hidden = function()
-			return spells_are_valid(status.dbx.auras)
+			return hideWarning or spells_are_valid(status.dbx.auras)
 		end,
 	}
 	options.auraListAdd = {
@@ -911,3 +915,27 @@ Grid2Options:RegisterStatusOptions("mdebuffType", "debuff", function(self, statu
 end,{
 	groupOrder = 5,
 })
+
+--==============================================
+--
+--==============================================
+
+function Grid2Options:MakeMissingBuffsSecretWarningOptions(status, options)
+	options.warning = {
+		type = "description",
+		order = 0,
+		name = string.format("|cffFFCC00%s|r", L["Attention: Due to Blizzard restrictions missing buffs cannot be displayed while in combat or in competitive content like PvP or Mythic Dungeons and Raids."] ),
+	}
+	-- options.header = { type = "header", order = 1, name = "" }
+end
+
+Grid2Options:RegisterStatusOptions("mbuff-missing", "buff", function(self, status, options, optionParams)
+	self:MakeStatusColorOptions(status, options, optionParams)
+	self:MakeMissingBuffsSecretWarningOptions(status, options)
+	self:MakeStatusAuraListOptions(status, options, true)
+	return options
+end,{
+	groupOrder = 15, isDeletable = true,
+	titleIcon = "Interface\\RaidFrame\\ReadyCheck-NotReady",
+})
+
