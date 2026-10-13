@@ -1,5 +1,5 @@
-﻿## Interface: 120100, 16001
-## Interface-Retail: 120100
+﻿## Interface: 120105, 16001
+## Interface-Retail: 120105
 ## Interface-Forever: 16001
 ## Title: Grid2
 ## Author: Pastamancer & Maia, Jerry, Toadkiller
