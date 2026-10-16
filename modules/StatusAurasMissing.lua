@@ -28,7 +28,7 @@ function status:UpdateUnitCache(unit, update)
 end
 
 function status:UpdateRestrictions(update)
-	local secrets_enabled = ShouldAurasBeSecret()
+	local secrets_enabled = self.empty or ShouldAurasBeSecret()
 	if self.secrets_enabled ~= secrets_enabled then
 		self.secrets_enabled = secrets_enabled
 		if secrets_enabled then
@@ -54,15 +54,26 @@ function status:ADDON_RESTRICTION_STATE_CHANGED(event, typ, state)
 	C_Timer_After(0, function() self:UpdateRestrictions(true) end)
 end
 
+function status:PLAYER_TALENT_UPDATE()
+	self:UpdateDB()
+	self:UpdateRestrictions(true)
+end
+
 function status:OnEnable()
 	self:RegisterMessage("Grid_UnitUpdated")
 	self:RegisterEvent("ADDON_RESTRICTION_STATE_CHANGED")
+	if self.dbx.ignoreUnknownSpells then
+		self:RegisterEvent("PLAYER_TALENT_UPDATE")
+	end
 	self:UpdateRestrictions()
 end
 
 function status:OnDisable()
 	self:UnregisterMessage("Grid_UnitUpdated")
 	self:UnregisterEvent("ADDON_RESTRICTION_STATE_CHANGED")
+	if self.dbx.ignoreUnknownSpells then
+		self:UnregisterEvent("PLAYER_TALENT_UPDATE")
+	end
 	self.secrets_enabled = nil
 	wipe(self.cache)
 end
@@ -76,15 +87,17 @@ function status:GetIcon()
 end
 
 function status:UpdateDB()
+	local IsSpellInSpellBook = self.dbx.ignoreUnknownSpells and C_SpellBook.IsSpellInSpellBook or Grid2.statusLibrary.IsActive
 	local spells, texture = {}, self.dbx.texture
 	for _, spell in ipairs(self.dbx.auras) do
-		if type(spell)=='number' then
+		if type(spell)~='number' then
+			spells[spell] = GetAuraDataBySpellName
+		elseif IsSpellInSpellBook(spell, Enum.SpellBookSpellBank.Player, true) then
 			texture = texture or GetSpellTexture(spell)
 			spells[spell] = GetUnitAuraBySpellID
-		else
-			spells[spell] = GetAuraDataBySpellName
 		end
 	end
+	self.empty = not next(spells)
 	self.spells = spells
 	self.texture = texture or "Interface\\ICONS\\Achievement_General"
 end

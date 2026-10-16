@@ -946,18 +946,31 @@ end,{
 --
 --==============================================
 
-function Grid2Options:MakeMissingBuffsSecretWarningOptions(status, options)
+function Grid2Options:MakeMissingBuffsOptions(status, options)
 	options.warning = {
 		type = "description",
 		order = 0,
 		name = string.format("|cffFFCC00%s|r", L["Attention: Due to Blizzard restrictions missing buffs cannot be displayed while in combat or in competitive content like PvP or Mythic Dungeons and Raids."] ),
+	}
+	options.hideUnknown = {
+		type = "toggle",
+		order = 15,
+		name = L["Ignore unknown buffs"],
+		desc = L["Do not check buffs that your character does not know."],
+		get = function()
+			return status.dbx.ignoreUnknownSpells
+		end,
+		set = function(_, v)
+			status.dbx.ignoreUnknownSpells = v or nil
+			status:Refresh()
+		end,
 	}
 	-- options.header = { type = "header", order = 1, name = "" }
 end
 
 Grid2Options:RegisterStatusOptions("mbuff-missing", "buff", function(self, status, options, optionParams)
 	self:MakeStatusColorOptions(status, options, optionParams)
-	self:MakeMissingBuffsSecretWarningOptions(status, options)
+	self:MakeMissingBuffsOptions(status, options)
 	self:MakeStatusAuraListOptions(status, options)
 	return options
 end,{
