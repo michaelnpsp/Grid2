@@ -17,7 +17,7 @@ externals:
  Options/Libs/AceConfig-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceConfig-3.0
  Options/Libs/AceComm-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceComm-3.0
  Options/Libs/AceSerializer-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceSerializer-3.0
- Options/Libs/LibCompress: https://repos.curseforge.com/wow/libcompress/trunk
+ Options/Libs/LibCompress: https://github.com/galmok/LibCompress
  LDB/Libs/LibDBIcon-1.0: https://repos.curseforge.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
  LDB/Libs/LibDataBroker-1.1: https://github.com/tekkub/libdatabroker-1-1
 
