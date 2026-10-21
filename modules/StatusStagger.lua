@@ -1,4 +1,4 @@
-if Grid2.isClassic then return end
+if Grid2.versionCli<50000 then return end
 
 -- Stagger monk status, created by Michael
 local Stagger = Grid2.statusPrototype:new("monk-stagger")
