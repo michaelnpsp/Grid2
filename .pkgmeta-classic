@@ -23,7 +23,6 @@ externals:
 
 ignore:
  - GridDefaultsRetail.lua
- - modules/StatusStagger.lua
  - RaidDebuffsOptions/RaidDebuffsWoD.lua
  - RaidDebuffsOptions/RaidDebuffsBfA.lua
  - RaidDebuffsOptions/RaidDebuffsLegion.lua
