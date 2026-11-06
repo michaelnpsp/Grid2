@@ -17,6 +17,7 @@ local issecretvalue = Grid2.issecretvalue
 local roster_guids = Grid2.roster_guids
 local roster_external = Grid2.roster_external
 local grouped_units = Grid2.grouped_units
+local grouped_solo = {}
 
 -------------------------------------------------------------------------
 --  range check spells initialization
@@ -91,11 +92,14 @@ end
 
 local InCombat = false
 
-local petCheckUnit = nil
-
+-- rez spells
 local rezSpellID = ({DRUID=20484,PRIEST=2006,PALADIN=7328,SHAMAN=2008,MONK=115178,DEATHKNIGHT=61999,WARLOCK=20707,EVOKER=361227})[playerClass]
 local rezSpell = rezSpellID and GetSpellInfo(rezSpellID)
 
+-- warlock pet spell 755 doe not exist in midnight but we need to assign some number to petSpellID for warlocks because UnitInRange() does not work
+-- for pets when solo, so when petSpellID is not a known spell we have to treat pet as an external unit (like target or focus), so pet unit is removed
+-- from grouped_units and the timer and IsSpellInRange(spellFriendly) code for external units is used for pet.
+local petCheckUnit = nil
 local petSpellID = ({HUNTER=136,WARLOCK=755,DEATHKNIGHT=47541})[playerClass]
 local petSpell = petSpellID and GetSpellInfo(petSpellID)
 
@@ -103,7 +107,7 @@ local function CreateRangeCheck(spellFriendly, spellHostile, blizRange)
 	return function(unit)
 		if unit=='player' then
 			return true
-		elseif unit==petCheckUnit then -- solo player with pet
+		elseif unit==petCheckUnit then -- solo player with pet, only when a pet spell is available
 			return IsSpellInRange(petSpell, unit) == true
 		elseif blizRange and grouped_units[unit] then -- 38y range check
 			return UnitInRange(unit)
@@ -164,22 +168,29 @@ end
 -- and a pet spell range check for 38 yards range for classes with pets when when not in group.
 function Shared:Grid_GroupTypeChanged()
 	if petSpell then -- is a class with pet ?
-		petCheckUnit = (Grid2.groupType=='solo') and 'pet' or nil
-		roster_external.pet = roster_guids[petCheckUnit] -- roster_external == self.refreshUnits for 38 yard range
+		if Grid2.groupType=='solo' then
+			petCheckUnit = IsPlayerSpell(petSpellID) and 'pet' or nil -- for warlock in midnight there is not pet spell available so we have to rely on spellFriendly
+			grouped_units = grouped_solo -- when solo pet unit is not considered a grouped unit by the game so UnitInRange() fails for pet.
+			roster_external.pet = roster_guids.pet -- roster_external == self.refreshUnits for 38 yard range
+		else
+			petCheckUnit = nil
+			grouped_units = Grid2.grouped_units
+			roster_external.pet = nil -- roster_external == self.refreshUnits for 38 yard range
+		end
 	end
 	self.timer:SetPlaying( next(self.refreshUnits)~=nil )
 end
 
 function Shared:Grid_UnitUpdated(_, unit)
 	self.cache[unit] = self.UnitRangeCheck(unit)
-	if unit==petCheckUnit then -- special case for pet units while solo
+	if grouped_units == grouped_solo then -- special case for pet units while solo
 		roster_external.pet = roster_guids.pet
 	end
 	self.timer:SetPlaying( next(self.refreshUnits)~=nil )
 end
 
 function Shared:Grid_UnitLeft(_, unit)
-	if unit==petCheckUnit then -- special case for pet units while solo
+	if unit=='pet' and grouped_units == grouped_solo then -- special case for pet units while solo
 		roster_external.pet = nil
 	end
 	self.cache[unit] = nil
