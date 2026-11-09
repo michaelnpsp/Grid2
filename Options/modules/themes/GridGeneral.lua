@@ -462,7 +462,7 @@ do
 	layoutOptions1.boss  = {
 		type = "group", order = 9, name = L['Bosses'],
 		args = layoutAnchorOptions,
-		disabled = function() return Grid2.versionCli<50000 or theme.layout.specialHeaders==nil or theme.layout.specialHeaders.boss==nil end
+		disabled = function() return (not Grid2Layout.supportBosses) or theme.layout.specialHeaders==nil or theme.layout.specialHeaders.boss==nil end
 	}
 	layoutOptions1.other  = {
 		type = "group", order = 10, name = L['Others'],

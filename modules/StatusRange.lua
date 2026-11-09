@@ -165,7 +165,7 @@ function Shared:Refresh()
 end
 
 -- UNIT_IN_RANGE_UPDATE and UnitInRange() don't work for pet units when solo, so we use a timer
--- and a pet spell range check for 38 yards range for classes with pets when when not in group.
+-- and a pet spell range check for 38 yards range for classes with pets when not in group.
 function Shared:Grid_GroupTypeChanged()
 	if petSpell then -- is a class with pet ?
 		if Grid2.groupType=='solo' then

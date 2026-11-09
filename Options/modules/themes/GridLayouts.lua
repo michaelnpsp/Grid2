@@ -549,11 +549,12 @@ local generalOptions = {
 		name = L["Bosses"],
 		desc = L["Enable this option to display bosses units."],
 		get = function(info)
-			return theme.layout.specialHeaders and theme.layout.specialHeaders.boss~=nil
+			return Grid2Layout.supportBosses and theme.layout.specialHeaders and theme.layout.specialHeaders.boss~=nil
 		end,
 		set = function(info,v)
 			SetupSpecialHeader('boss', v)
 		end,
+		disabled = function() return not Grid2Layout.supportBosses end,
 	},
 
 	displayFocusTarget = {

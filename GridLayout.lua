@@ -617,16 +617,16 @@ end
 
 -- Display special units
 do
+	Grid2Layout.supportBosses = Grid2.versionCli>=50000
 	local template = { type = 'custom', detachHeader = true }
 	local headers = { -- headerName, units/column, unitsFilter | template
-		{ 'self',   1, 'player' },
-		{ 'target', 1, 'target' },
-		{ 'focus',  1, 'focus'  },
-		{ 'tanks',  5, { type = "player", roleFilter = "TANK", strictFiltering = true, groupFilter = "auto", detachHeader = true } },
+		[1] = { 'self',   1, 'player' },
+		[2] = { 'target', 1, 'target' },
+		[3] = { 'focus',  1, 'focus'  },
+		[4] = { 'tanks',  5, { type = "player", roleFilter = "TANK", strictFiltering = true, groupFilter = "auto", detachHeader = true } },
+		[5] = { 'targettarget', 1, 'targettarget' },
+		[6] = Grid2Layout.supportBosses and { 'boss', 8, 'boss1,boss2,boss3,boss4,boss5' } or nil
 	}
-	headers[#headers+1] = { 'targettarget', 1, 'targettarget' }
-	-- headers[#headers+1] = { 'focustarget',  1, 'focustarget'  }
-	headers[#headers+1] = { 'boss',   8, 'boss1,boss2,boss3,boss4,boss5' }
 	function Grid2Layout:AddSpecialHeaders()
 		local specialHeaders = self.db.profile.specialHeaders
 		if specialHeaders then
