@@ -32,7 +32,7 @@ function Grid2:GetSimilarPlayerBuffs(spell)
 				if t==nil then t = {}; list[spellName] = t; end
 				t[#t+1] = spellID
 			else
-				print("Invalid spell", spellID)
+				print("Grid2: Invalid spell", spellID)
 			end
 		end
 	end
