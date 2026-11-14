@@ -33,84 +33,40 @@ if not isRangeAvail then
 	-- range spells data
 	local getHostile, getFriendly
 	local function IVS(spellID)	return IsPlayerSpell(spellID) and spellID end
-	if Grid2.isWoW90 then -- retail
-		if playerClass == 'DRUID' then
-			getHostile  = function() return 8921 end -- Moonfire
-			getFriendly = function() return 8936 end -- Regrowth
-		elseif playerClass == 'PRIEST' then
-			getHostile  = function() return 585  end  -- Smite
-			getFriendly = function() return 2061 end  -- Flash Heal
-		elseif playerClass == 'SHAMAN' then
-			getHostile  = function() return 188196  end -- Lightning Bolt
-			getFriendly = function() return 8004 end    -- Healing Surge
-		elseif playerClass == 'PALADIN' then
-			getHostile  = function() return 62124 end -- Hand of Reckoning
-			getFriendly = function() return 19750 end -- Flash of light
-		elseif playerClass == 'MONK' then
-			getHostile  = function() return 115546 end -- Provoke
-			getFriendly = function() return 116670 end -- Vivify
-		elseif playerClass == 'EVOKER' then
-			getHostile  = function() return 361469 end -- Living flame
-			getFriendly = function() return 355913 end -- Emerald Blossom
-		elseif playerClass == 'WARLOCK' then
-			getHostile  = function() return 686 end   -- Shadow Bolt
-			getFriendly = function() return 20707 end -- Soulstone
-		elseif playerClass == 'WARRIOR' then
-			getHostile  = function() return 355 end  -- Taunt
-			getFriendly = function() return nil end  -- no avail
-		elseif playerClass == 'DEMONHUNTER' then
-			getHostile  = function() return 185123 end -- Throw Glaive
-			getFriendly = function() return nil    end -- no avail
-		elseif playerClass == 'HUNTER' then
-			getHostile  = function() return IVS(193455) or IVS(19434) or IVS(132031) end -- Cobra Shot, Aimed Short, Steady shot
-			getFriendly = function() return nil end -- no avail
-		elseif playerClass == 'ROGUE' then
-			getHostile  = function() return IVS(36554) or IVS(6770) end -- Shadowstep, Sap
-			getFriendly = function() return IVS(36554) end -- Shadowstep
-		elseif playerClass == 'DEATHKNIGHT' then
-			getHostile  = function() return IVS(47541) or IVS(49576) end -- Death Coil, Death Grip
-			getFriendly = function() return IVS(47541) end -- Death Coil
-		elseif playerClass == 'MAGE' then
-			getHostile  = function() return IVS(116) or IVS(30451) or IVS(133) end -- Frostbolt, Arcane Blast, Fireball
-			getFriendly = function() return 1459 end -- Arcane intellect
-		end
-	else -- classic
-		if playerClass == 'DRUID' then
-			getHostile  = function() return 5176 end -- Wrath
-			getFriendly = function() return 5185 end -- Healing Touchaw
-		elseif playerClass == 'PRIEST' then
-			getHostile  = function() return 585  end -- Smite
-			getFriendly = function() return 2050 end -- Lesser Heal
-		elseif playerClass == 'SHAMAN' then
-			getHostile  = function() return 403  end -- Lightning Bolt
-			getFriendly = function() return 331  end -- Healing Wave
-		elseif playerClass == 'PALADIN' then
-			getHostile  = function() return IVS(20271) end -- Judgement
-			getFriendly = function() return 635 end -- Holy Light
-		elseif playerClass == 'WARLOCK' then
-			getHostile  = function() return 686 end -- Shadow Bolt
-			getFriendly = function() return IVS(20707) end -- Soulstone
-		elseif playerClass == 'WARRIOR' then
-			getHostile  = function() return IVS(355) or IVS(772) end  -- Taunt, Rend
-			getFriendly = function() return nil end  -- no avail
-		elseif playerClass == 'HUNTER' then
-			getHostile  = function() return IVS(3044) or IVS(1978) end -- Arcane Shot, Serpent Sting
-			getFriendly = function() return nil end -- no avail
-		elseif playerClass == 'ROGUE' then
-			getHostile  = function() return IVS(1752) end -- Sinister Strike
-			getFriendly = function() return nil end -- no avail
-		elseif playerClass == 'MAGE' then
-			getHostile  = function() return IVS(116) or IVS(133)  end -- Frostbolt, Fireball
-			getFriendly = function() return IVS(1459) end -- Arcane intellect
-		elseif playerClass == 'DEATHKNIGHT' then
-			getHostile  = function() return IVS(47541) or IVS(49576) end -- Death Coil, Death Grip
-			getFriendly = function() return IVS(47541) end -- Death Coil
-		elseif playerClass == 'MONK' then
-			getHostile  = function() return 115546 end -- Provoke
-			getFriendly = function() return 116670 end -- Vivify
-		end
+	if playerClass == 'DRUID' then
+		getHostile  = function() return 5176 end -- Wrath
+		getFriendly = function() return 5185 end -- Healing Touchaw
+	elseif playerClass == 'PRIEST' then
+		getHostile  = function() return 585  end -- Smite
+		getFriendly = function() return 2050 end -- Lesser Heal
+	elseif playerClass == 'SHAMAN' then
+		getHostile  = function() return 403  end -- Lightning Bolt
+		getFriendly = function() return 331  end -- Healing Wave
+	elseif playerClass == 'PALADIN' then
+		getHostile  = function() return IVS(20271) end -- Judgement
+		getFriendly = function() return 635 end -- Holy Light
+	elseif playerClass == 'WARLOCK' then
+		getHostile  = function() return 686 end -- Shadow Bolt
+		getFriendly = function() return IVS(20707) end -- Soulstone
+	elseif playerClass == 'WARRIOR' then
+		getHostile  = function() return IVS(355) or IVS(772) end  -- Taunt, Rend
+		getFriendly = function() return nil end  -- no avail
+	elseif playerClass == 'HUNTER' then
+		getHostile  = function() return IVS(3044) or IVS(1978) end -- Arcane Shot, Serpent Sting
+		getFriendly = function() return nil end -- no avail
+	elseif playerClass == 'ROGUE' then
+		getHostile  = function() return IVS(1752) end -- Sinister Strike
+		getFriendly = function() return nil end -- no avail
+	elseif playerClass == 'MAGE' then
+		getHostile  = function() return IVS(116) or IVS(133)  end -- Frostbolt, Fireball
+		getFriendly = function() return IVS(1459) end -- Arcane intellect
+	elseif playerClass == 'DEATHKNIGHT' then
+		getHostile  = function() return IVS(47541) or IVS(49576) end -- Death Coil, Death Grip
+		getFriendly = function() return IVS(47541) end -- Death Coil
+	elseif playerClass == 'MONK' then
+		getHostile  = function() return 115546 end -- Provoke
+		getFriendly = function() return 116670 end -- Vivify
 	end
-
 	-- update range spells, called from Grid2.lua
 	local spellHostile, spellFriendly = nil, nil
 	function Grid2:UpdatePlayerRangeSpells()
