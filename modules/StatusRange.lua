@@ -100,7 +100,7 @@ do
 	local pendingUpdate
 	local function UpdateSpells(...)
 		pendingUpdate = nil
-		spellHostile  = GetSpellInfo( getHostile() )
+		spellHostile  = GetSpellInfo( getHostile() ) or ""
 		spellFriendly = GetSpellInfo( getFriendly() )
 		if Range.enabled then Range:UpdateDB() end
 		if RangeAlt.enabled then RangeAlt:UpdateDB() end
