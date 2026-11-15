@@ -66,7 +66,7 @@ do
 			getHostile  = function() return 188196  end -- Lightning Bolt
 			getFriendly = function() return 8004 end    -- Healing Surge
 		elseif playerClass == 'PALADIN' then
-			getHostile  = function() return 62124 end -- Hand of Reckoning
+			getHostile  = function() return 20271 end -- Judgement
 			getFriendly = function() return 19750 end -- Flash of light
 		elseif playerClass == 'MONK' then
 			getHostile  = function() return 115546 end -- Provoke
