@@ -3,6 +3,8 @@ local Grid2 = Grid2
 local pairs = pairs
 local C_Timer_After = C_Timer.After
 local ShouldAurasBeSecret = C_Secrets.ShouldAurasBeSecret
+local UnitIsPlayer = UnitIsPlayer
+local UnitCanAttack = UnitCanAttack
 local GetSpellTexture = C_Spell.GetSpellTexture
 local GetUnitAuraBySpellID = C_UnitAuras.GetUnitAuraBySpellID
 local GetAuraDataBySpellName = C_UnitAuras.GetAuraDataBySpellName
@@ -10,12 +12,25 @@ local GetAuraDataBySpellName = C_UnitAuras.GetAuraDataBySpellName
 --
 local status = { GetColor = Grid2.statusLibrary.GetColor }
 
+local function GetFilterFunc(dbx)
+	if dbx.onlyFriendly and dbx.onlyPlayers then
+		return function(unit, spell, func) return not UnitIsPlayer(unit) or UnitCanAttack("player", unit) or func(unit, spell, 'HELPFUL')~=nil; end
+	elseif dbx.onlyFriendly then
+		return function(unit, spell, func) return UnitCanAttack("player", unit) or func(unit, spell, 'HELPFUL')~=nil; end
+	elseif dbx.onlyPlayers then
+		return function(unit, spell, func) return not UnitIsPlayer(unit) or func(unit, spell, 'HELPFUL')~=nil; end
+	else
+		return function(unit, spell, func) return func(unit, spell, 'HELPFUL')~=nil end
+	end
+end
+
 function status:UpdateUnitCache(unit, update)
 	local new_cache
 	if not self.secrets_enabled then
+		local filterFunc = self.filterFunc
 		new_cache = true
 		for spell, func in pairs(self.spells) do
-			if func(unit, spell, 'HELPFUL')~=nil then
+			if filterFunc(unit, spell, func) then
 				new_cache = nil
 				break
 			end
@@ -97,6 +112,7 @@ function status:UpdateDB()
 			spells[spell] = GetUnitAuraBySpellID
 		end
 	end
+	self.filterFunc = GetFilterFunc(self.dbx)
 	self.empty = not next(spells)
 	self.spells = spells
 	self.texture = texture or "Interface\\ICONS\\Achievement_General"

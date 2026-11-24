@@ -302,13 +302,15 @@ do
 				status:RefreshLoad()
 			end,
 		}
-		SetFilterBooleanOptions( status, options, 5,
-			'combat',
-			true,
-			L["Combat"],
-			L["Combat"],
-			COMBAT_TYPES
-		)
+		if not status.isAura then
+			SetFilterBooleanOptions( status, options, 5,
+				'combat',
+				true,
+				L["Combat"],
+				L["Combat"],
+				COMBAT_TYPES
+			)
+		end
 		SetFilterOptions( status, options, 10,
 			'playerClass',
 			PLAYER_CLASSES,

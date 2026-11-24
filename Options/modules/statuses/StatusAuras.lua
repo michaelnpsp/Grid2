@@ -952,9 +952,38 @@ function Grid2Options:MakeMissingBuffsOptions(status, options)
 		order = 0,
 		name = string.format("|cffFFCC00%s|r", L["Attention: Due to Blizzard restrictions missing buffs cannot be displayed while in combat or in competitive content like PvP or Mythic Dungeons and Raids."] ),
 	}
-	options.hideUnknown = {
+	options.onlyPlayers = {
 		type = "toggle",
 		order = 15,
+		width = "full",
+		name = L["Display only for players"],
+		desc = L["Display missing buffs only for players, excluding NPCs."],
+		get = function()
+			return status.dbx.onlyPlayers
+		end,
+		set = function(_, v)
+			status.dbx.onlyPlayers = v or nil
+			status:Refresh()
+		end,
+	}
+	options.onlyFriendly = {
+		type = "toggle",
+		order = 16,
+		width = "full",
+		name = L["Display only for friendly units"],
+		desc = L["Display missing buffs only for friendly units."],
+		get = function()
+			return status.dbx.onlyFriendly
+		end,
+		set = function(_, v)
+			status.dbx.onlyFriendly = v or nil
+			status:Refresh()
+		end,
+	}
+	options.hideUnknown = {
+		type = "toggle",
+		order = 17,
+		width = "full",
 		name = L["Ignore unknown buffs"],
 		desc = L["Do not check buffs that your character does not know."],
 		get = function()
